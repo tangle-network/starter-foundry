@@ -1,0 +1,9 @@
+{
+  "name": "{{packageName}}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node worker.mjs",
+    "validate": "node --check worker.mjs"
+  }
+}

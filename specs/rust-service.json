@@ -1,0 +1,13 @@
+{
+  "projectName": "rust-health-service",
+  "family": "rust-service",
+  "layers": [
+    "framework:rust-http"
+  ],
+  "slots": {
+    "database": "database:postgres"
+  },
+  "variables": {
+    "serviceName": "rust-health-service"
+  }
+}

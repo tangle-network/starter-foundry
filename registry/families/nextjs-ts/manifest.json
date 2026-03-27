@@ -1,0 +1,69 @@
+{
+  "id": "nextjs-ts",
+  "description": "Next.js ready TypeScript starter with instant preview shell.",
+  "tags": ["frontend", "typescript", "nextjs", "preview"],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "frontend"
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "port": 4175,
+    "headline": "Starter Foundry App Router",
+    "subheadline": "A Next.js ready app shell with an immediate preview path."
+  },
+  "slots": {
+    "sdk": {
+      "options": [
+        "sdk:none",
+        "sdk:coinbase-cdp",
+        "sdk:solana-web3"
+      ],
+      "default": "sdk:none"
+    }
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/preview-server.mjs",
+      "target": "preview-server.mjs"
+    },
+    {
+      "source": "files/validate-types.mjs",
+      "target": "validate-types.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "app/layout.tsx"
+    },
+    {
+      "type": "file-exists",
+      "path": "app/page.tsx"
+    },
+    {
+      "type": "command-success",
+      "command": ["node", "validate-types.mjs"],
+      "expect": "typescript ok"
+    },
+    {
+      "type": "http-start",
+      "command": ["node", "preview-server.mjs"],
+      "path": "/",
+      "expect": "{{headline}}"
+    }
+  ],
+  "contextHints": {
+    "commands": ["npm install", "npm run dev", "node preview-server.mjs"],
+    "entrypoints": ["app/layout.tsx", "app/page.tsx", "next.config.ts"],
+    "preview": {
+      "path": "/"
+    },
+    "extensionPoints": ["starter-data.json", "starter-brand.json", "sdk-config.json"]
+  }
+}

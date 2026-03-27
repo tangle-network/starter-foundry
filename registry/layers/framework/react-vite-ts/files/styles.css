@@ -1,0 +1,86 @@
+:root {
+  color-scheme: light;
+  --bg: #fff7ed;
+  --ink: #101010;
+  --muted: #4c4c4c;
+  --accent: #e85d04;
+  --card: rgba(255, 255, 255, 0.85);
+  --border: rgba(16, 16, 16, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(232, 93, 4, 0.15), transparent 28rem),
+    linear-gradient(180deg, #fffdf8, var(--bg));
+  color: var(--ink);
+}
+
+.shell {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 4rem 1.25rem 5rem;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: clamp(2.8rem, 7vw, 5.25rem);
+  line-height: 0.95;
+}
+
+.eyebrow {
+  margin-bottom: 1rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font: 600 0.8rem/1.2 ui-monospace, "SFMono-Regular", monospace;
+  color: var(--accent);
+}
+
+.subheadline,
+.notes {
+  max-width: 46rem;
+  color: var(--muted);
+}
+
+.metrics {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+}
+
+.brand-card,
+.metric-card,
+.notes {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  backdrop-filter: blur(12px);
+}
+
+.brand-kicker,
+.metric-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--accent);
+  font: 600 0.75rem/1.2 ui-monospace, "SFMono-Regular", monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.metric-value {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 2rem;
+}
+
+.metric-note {
+  margin: 0;
+  color: var(--muted);
+}

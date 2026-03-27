@@ -1,0 +1,23 @@
+{
+  "id": "web-static",
+  "description": "Static web framework layer with preview shell.",
+  "appliesTo": ["frontend-static"],
+  "defaults": {
+    "headline": "Starter Foundry Frontend",
+    "subheadline": "An immediate UI artifact with room for agent extension."
+  },
+  "files": [
+    {
+      "source": "files/index.html",
+      "target": "index.html"
+    },
+    {
+      "source": "files/app.js",
+      "target": "app.js"
+    },
+    {
+      "source": "files/styles.css",
+      "target": "styles.css"
+    }
+  ]
+}

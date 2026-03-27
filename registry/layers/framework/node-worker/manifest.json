@@ -1,0 +1,11 @@
+{
+  "id": "node-worker",
+  "description": "Node worker framework layer.",
+  "appliesTo": ["worker-job"],
+  "files": [
+    {
+      "source": "files/worker.mjs",
+      "target": "worker.mjs"
+    }
+  ]
+}

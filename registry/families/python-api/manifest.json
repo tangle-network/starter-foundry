@@ -1,0 +1,64 @@
+{
+  "id": "python-api",
+  "description": "Minimal Python API starter with health endpoint.",
+  "tags": ["python", "api"],
+  "taxonomy": {
+    "language": "python",
+    "runtime": "python",
+    "surface": "api"
+  },
+  "slots": {
+    "database": {
+      "options": [
+        "database:sqlite",
+        "database:postgres",
+        "database:mongodb",
+        "database:convex"
+      ],
+      "default": "database:sqlite"
+    },
+    "sdk": {
+      "options": [
+        "sdk:none",
+        "sdk:coinbase-cdp",
+        "sdk:solana-web3"
+      ],
+      "default": "sdk:none"
+    }
+  },
+  "defaults": {
+    "serviceName": "starter-foundry-python",
+    "port": 8090,
+    "databaseProvider": "sqlite"
+  },
+  "files": [
+    {
+      "source": "files/requirements.txt",
+      "target": "requirements.txt"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "app.py"
+    },
+    {
+      "type": "python-compile",
+      "path": "app.py"
+    },
+    {
+      "type": "http-start",
+      "command": ["python3", "app.py"],
+      "path": "/health",
+      "expect": "\"{{serviceName}}\""
+    }
+  ],
+  "contextHints": {
+    "commands": ["python3 app.py"],
+    "entrypoints": ["app.py"],
+    "preview": {
+      "path": "/health"
+    },
+    "extensionPoints": ["database-config.json", "sdk-config.json"]
+  }
+}

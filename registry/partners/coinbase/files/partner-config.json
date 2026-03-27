@@ -1,0 +1,6 @@
+{
+  "name": "coinbase",
+  "preferredAuth": "wallet",
+  "preferredPayments": "usdc",
+  "preferredDatabase": "sqlite"
+}

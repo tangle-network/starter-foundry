@@ -1,0 +1,11 @@
+{
+  "id": "cloudflare-worker-ts",
+  "description": "Cloudflare Worker framework layer.",
+  "appliesTo": ["cloudflare-worker-ts"],
+  "files": [
+    {
+      "source": "files/worker.ts",
+      "target": "src/worker.ts"
+    }
+  ]
+}

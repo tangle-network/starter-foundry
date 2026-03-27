@@ -1,0 +1,33 @@
+{
+  "id": "coinbase",
+  "description": "Partner pack that biases starters toward Coinbase-flavored copy and defaults.",
+  "appliesTo": [
+    "frontend-static",
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "api-service",
+    "cloudflare-worker-ts",
+    "python-api",
+    "rust-service",
+    "go-api"
+  ],
+  "slotDefaults": {
+    "database": "database:sqlite",
+    "sdk": "sdk:coinbase-cdp"
+  },
+  "defaults": {
+    "headline": "Build a Coinbase-ready product surface",
+    "subheadline": "Starter shell tuned for partner-facing crypto product workflows."
+  },
+  "files": [
+    {
+      "source": "files/starter-brand.json",
+      "target": "starter-brand.json"
+    },
+    {
+      "source": "files/partner-config.json",
+      "target": "partner-config.json"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "id": "worker-job",
+  "description": "Runnable worker starter for bots and background jobs.",
+  "tags": ["worker", "bot"],
+  "taxonomy": {
+    "language": "javascript",
+    "runtime": "node",
+    "surface": "worker"
+  },
+  "defaults": {
+    "projectType": "worker",
+    "workerName": "Starter Foundry Worker",
+    "databaseProvider": "none"
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "worker.mjs"
+    },
+    {
+      "type": "node-syntax",
+      "path": "worker.mjs"
+    },
+    {
+      "type": "command-success",
+      "command": ["node", "worker.mjs"],
+      "env": {
+        "RUN_ONCE": "1"
+      },
+      "expect": "cycle complete"
+    }
+  ],
+  "contextHints": {
+    "commands": ["npm run start"],
+    "entrypoints": ["worker.mjs"],
+    "preview": null,
+    "extensionPoints": ["market-feed.json", "hooks.mjs"]
+  }
+}

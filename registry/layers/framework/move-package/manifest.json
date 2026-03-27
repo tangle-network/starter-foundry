@@ -1,0 +1,19 @@
+{
+  "id": "move-package",
+  "description": "Move package framework layer.",
+  "appliesTo": ["move-contracts"],
+  "files": [
+    {
+      "source": "files/Move.toml",
+      "target": "Move.toml"
+    },
+    {
+      "source": "files/module.move",
+      "target": "sources/{{moduleName}}.move"
+    },
+    {
+      "source": "files/test.move",
+      "target": "tests/{{moduleName}}Tests.move"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "{{packageName}}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --experimental-strip-types src/server.ts",
+    "validate": "node validate-types.mjs"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "projectName": "health-api",
+  "family": "api-service",
+  "layers": [
+    "framework:node-http",
+    "capability:logging"
+  ],
+  "slots": {
+    "database": "database:postgres"
+  },
+  "variables": {
+    "serviceName": "Health API"
+  }
+}

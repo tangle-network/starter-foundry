@@ -1,0 +1,10 @@
+{
+  "projectName": "starter-counter",
+  "family": "forge-contracts",
+  "layers": [
+    "framework:forge-foundation"
+  ],
+  "variables": {
+    "contractName": "StarterCounter"
+  }
+}

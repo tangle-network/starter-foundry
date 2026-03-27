@@ -1,0 +1,5 @@
+{
+  "provider": "sqlite",
+  "driver": "better-sqlite3",
+  "connection": "file:./data/app.db"
+}

@@ -1,0 +1,297 @@
+{
+  "name": "vibecode-e2e",
+  "scenarios": [
+    {
+      "id": "landing-coinbase",
+      "complexity": "simple",
+      "partner": "coinbase",
+      "prompt": "Build a Coinbase landing page with charts and a fast preview.",
+      "expected": {
+        "kind": "starter",
+        "family": "frontend-static"
+      }
+    },
+    {
+      "id": "react-dashboard",
+      "complexity": "simple",
+      "partner": "coinbase",
+      "prompt": "Build a React Vite dashboard with reusable components and wallet onboarding.",
+      "expected": {
+        "kind": "starter",
+        "family": "react-vite-ts",
+        "slots": {
+          "sdk": "sdk:coinbase-cdp"
+        }
+      }
+    },
+    {
+      "id": "next-saas",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Create a Next.js app router SaaS shell with SEO and pricing.",
+      "expected": {
+        "kind": "starter",
+        "family": "nextjs-ts"
+      }
+    },
+    {
+      "id": "fullstack-admin",
+      "complexity": "medium",
+      "partner": "coinbase",
+      "prompt": "Build a fullstack dashboard with API, database-backed admin flows, and Coinbase wallet setup.",
+      "expected": {
+        "kind": "starter",
+        "family": "fullstack-ts",
+        "slots": {
+          "sdk": "sdk:coinbase-cdp"
+        }
+      }
+    },
+    {
+      "id": "node-api",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Create a webhook API service with request logging and health checks.",
+      "expected": {
+        "kind": "starter",
+        "family": "api-service"
+      }
+    },
+    {
+      "id": "python-api",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build a Python API in FastAPI style for summarization jobs.",
+      "expected": {
+        "kind": "starter",
+        "family": "python-api"
+      }
+    },
+    {
+      "id": "rust-service",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Create a Rust backend service with a health endpoint.",
+      "expected": {
+        "kind": "starter",
+        "family": "rust-service"
+      }
+    },
+    {
+      "id": "go-risk-engine",
+      "complexity": "medium",
+      "partner": "coinbase",
+      "prompt": "Build a Golang API risk engine with Postgres and Coinbase CDP support.",
+      "expected": {
+        "kind": "starter",
+        "family": "go-api",
+        "slots": {
+          "database": "database:postgres",
+          "sdk": "sdk:coinbase-cdp"
+        }
+      }
+    },
+    {
+      "id": "cloudflare-edge",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Create a Cloudflare Worker edge API for session checks.",
+      "expected": {
+        "kind": "starter",
+        "family": "cloudflare-worker-ts"
+      }
+    },
+    {
+      "id": "trading-bot",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build a trading bot that reacts to a market stream and runs on a worker.",
+      "expected": {
+        "kind": "starter",
+        "family": "worker-job"
+      }
+    },
+    {
+      "id": "forge-erc20",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build a Foundry ERC20 contract in Solidity.",
+      "expected": {
+        "kind": "starter",
+        "family": "forge-contracts"
+      }
+    },
+    {
+      "id": "solana-treasury",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Create a Solana treasury program with PDA setup.",
+      "expected": {
+        "kind": "starter",
+        "family": "solana-program"
+      }
+    },
+    {
+      "id": "move-vault",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Build a Sui Move treasury module.",
+      "expected": {
+        "kind": "starter",
+        "family": "move-contracts"
+      }
+    },
+    {
+      "id": "frontend-plus-evm",
+      "complexity": "complex",
+      "partner": "coinbase",
+      "prompt": "Build a frontend product app with a Foundry treasury contract and a fast preview.",
+      "expected": {
+        "kind": "workspace",
+        "primaryProjectId": "web",
+        "projectIds": ["web", "evm"]
+      }
+    },
+    {
+      "id": "frontend-plus-solana",
+      "complexity": "complex",
+      "partner": null,
+      "prompt": "Create a React dashboard with a Solana treasury program and wallet adapter support.",
+      "expected": {
+        "kind": "workspace",
+        "primaryProjectId": "web",
+        "projectIds": ["web", "solana"],
+        "projectFamilies": {
+          "web": "react-vite-ts",
+          "solana": "solana-program"
+        }
+      }
+    },
+    {
+      "id": "multichain-studio",
+      "complexity": "mostly-complex",
+      "partner": "coinbase",
+      "prompt": "Build a multichain product studio with a frontend plus Solidity, Solana, and Move contract lanes.",
+      "expected": {
+        "kind": "workspace",
+        "primaryProjectId": "web",
+        "projectIds": ["web", "evm", "solana", "move"],
+        "projectFamilies": {
+          "web": "react-vite-ts",
+          "evm": "forge-contracts",
+          "solana": "solana-program",
+          "move": "move-contracts"
+        }
+      }
+    },
+    {
+      "id": "next-python-workspace",
+      "complexity": "complex",
+      "partner": null,
+      "prompt": "Create a Next.js marketing shell with a separate Python API for summarization jobs.",
+      "expected": {
+        "kind": "workspace",
+        "primaryProjectId": "web",
+        "projectIds": ["web", "api"],
+        "projectFamilies": {
+          "web": "nextjs-ts",
+          "api": "python-api"
+        }
+      }
+    },
+    {
+      "id": "react-go-risk-workspace",
+      "complexity": "complex",
+      "partner": "coinbase",
+      "prompt": "Build a React dashboard with a separate Golang risk engine API using Postgres and Coinbase CDP.",
+      "expected": {
+        "kind": "workspace",
+        "primaryProjectId": "web",
+        "projectIds": ["web", "api"],
+        "projectFamilies": {
+          "web": "react-vite-ts",
+          "api": "go-api"
+        }
+      }
+    },
+    {
+      "id": "next-edge-workspace",
+      "complexity": "complex",
+      "partner": "coinbase",
+      "prompt": "Create a Next.js app with a separate Cloudflare edge API for wallet session checks and Coinbase onboarding.",
+      "expected": {
+        "kind": "workspace",
+        "primaryProjectId": "web",
+        "projectIds": ["web", "api"],
+        "projectFamilies": {
+          "web": "nextjs-ts",
+          "api": "cloudflare-worker-ts"
+        }
+      }
+    },
+    {
+      "id": "frontend-worker-studio",
+      "complexity": "complex",
+      "partner": null,
+      "prompt": "Build a React operator console with a background worker that reacts to market streams.",
+      "expected": {
+        "kind": "workspace",
+        "primaryProjectId": "web",
+        "projectIds": ["web", "worker"],
+        "projectFamilies": {
+          "web": "react-vite-ts",
+          "worker": "worker-job"
+        }
+      }
+    },
+    {
+      "id": "rust-worker-platform",
+      "complexity": "mostly-complex",
+      "partner": null,
+      "prompt": "Build a Rust API with a separate trading bot worker and a React dashboard for operations.",
+      "expected": {
+        "kind": "workspace",
+        "primaryProjectId": "web",
+        "projectIds": ["web", "api", "worker"],
+        "projectFamilies": {
+          "web": "react-vite-ts",
+          "api": "rust-service",
+          "worker": "worker-job"
+        }
+      }
+    },
+    {
+      "id": "full-product-platform",
+      "complexity": "mostly-complex",
+      "partner": "coinbase",
+      "prompt": "Create a monorepo with a Next.js frontend, a Node API, and a background worker for Coinbase trading automation.",
+      "expected": {
+        "kind": "workspace",
+        "primaryProjectId": "web",
+        "projectIds": ["web", "api", "worker"],
+        "projectFamilies": {
+          "web": "nextjs-ts",
+          "api": "api-service",
+          "worker": "worker-job"
+        }
+      }
+    },
+    {
+      "id": "crosschain-ops-hub",
+      "complexity": "mostly-complex",
+      "partner": "coinbase",
+      "prompt": "Build a monorepo with a Next.js control plane, a worker for market streams, and Solidity plus Solana contract lanes.",
+      "expected": {
+        "kind": "workspace",
+        "primaryProjectId": "web",
+        "projectIds": ["web", "worker", "evm", "solana"],
+        "projectFamilies": {
+          "web": "nextjs-ts",
+          "worker": "worker-job",
+          "evm": "forge-contracts",
+          "solana": "solana-program"
+        }
+      }
+    }
+  ]
+}

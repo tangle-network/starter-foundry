@@ -1,0 +1,19 @@
+{
+  "id": "solana-native-rust",
+  "description": "Rust-native Solana program architecture layer.",
+  "appliesTo": ["solana-program"],
+  "files": [
+    {
+      "source": "files/Cargo.toml",
+      "target": "Cargo.toml"
+    },
+    {
+      "source": "files/lib.rs",
+      "target": "src/lib.rs"
+    },
+    {
+      "source": "files/README.md",
+      "target": "client/README.md"
+    }
+  ]
+}

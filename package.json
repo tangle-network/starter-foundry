@@ -1,0 +1,29 @@
+{
+  "name": "starter-foundry",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "starter-foundry": "./src/cli.mjs"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "catalog": "node src/cli.mjs catalog",
+    "select": "node src/cli.mjs select",
+    "compose": "node src/cli.mjs compose",
+    "workspace:compose": "node src/cli.mjs workspace-compose",
+    "validate": "node src/cli.mjs validate",
+    "context": "node src/cli.mjs context",
+    "workspace:context": "node src/cli.mjs workspace-context",
+    "bench": "node src/cli.mjs bench",
+    "workspace:bench": "node src/cli.mjs workspace-bench",
+    "prompt:e2e": "node src/cli.mjs prompt-e2e",
+    "prove": "node src/cli.mjs prove",
+    "audit": "node src/cli.mjs audit",
+    "evaluate": "node src/cli.mjs evaluate",
+    "release": "node src/cli.mjs release"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

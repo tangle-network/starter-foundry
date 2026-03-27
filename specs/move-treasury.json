@@ -1,0 +1,10 @@
+{
+  "projectName": "move_treasury",
+  "family": "move-contracts",
+  "layers": ["framework:move-package"],
+  "partner": null,
+  "slots": {},
+  "variables": {
+    "moduleName": "TreasuryVault"
+  }
+}

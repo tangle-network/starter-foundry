@@ -1,0 +1,73 @@
+{
+  "id": "react-vite-ts",
+  "description": "React and Vite ready TypeScript starter with instant preview shell.",
+  "tags": ["frontend", "typescript", "react", "vite", "preview"],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "frontend"
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "port": 4174,
+    "headline": "Starter Foundry React Surface",
+    "subheadline": "A React and Vite ready shell with a zero-install preview path."
+  },
+  "slots": {
+    "sdk": {
+      "options": [
+        "sdk:none",
+        "sdk:coinbase-cdp",
+        "sdk:solana-web3"
+      ],
+      "default": "sdk:none"
+    }
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/preview-server.mjs",
+      "target": "preview-server.mjs"
+    },
+    {
+      "source": "files/validate-types.mjs",
+      "target": "validate-types.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "index.html"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/main.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/App.ts"
+    },
+    {
+      "type": "command-success",
+      "command": ["node", "validate-types.mjs"],
+      "expect": "typescript ok"
+    },
+    {
+      "type": "http-start",
+      "command": ["node", "preview-server.mjs"],
+      "path": "/",
+      "expect": "{{headline}}"
+    }
+  ],
+  "contextHints": {
+    "commands": ["npm install", "npm run dev", "node preview-server.mjs"],
+    "entrypoints": ["index.html", "src/main.ts", "src/App.ts", "vite.config.ts"],
+    "preview": {
+      "path": "/"
+    },
+    "extensionPoints": ["starter-data.json", "starter-brand.json", "sdk-config.json"]
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "id": "fullstack-ts",
+  "description": "Lean fullstack TypeScript starter with live preview and API path.",
+  "tags": ["fullstack", "typescript", "preview", "api"],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "fullstack"
+  },
+  "slots": {
+    "database": {
+      "options": [
+        "database:sqlite",
+        "database:postgres",
+        "database:mongodb",
+        "database:convex"
+      ],
+      "default": "database:sqlite"
+    },
+    "sdk": {
+      "options": [
+        "sdk:none",
+        "sdk:coinbase-cdp",
+        "sdk:solana-web3"
+      ],
+      "default": "sdk:none"
+    }
+  },
+  "defaults": {
+    "projectType": "fullstack",
+    "port": 4176,
+    "headline": "Starter Foundry Fullstack App",
+    "subheadline": "A live web shell plus a typed API seam for the agent to extend.",
+    "serviceName": "starter-foundry-fullstack",
+    "databaseProvider": "sqlite"
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/validate-types.mjs",
+      "target": "validate-types.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "src/server.ts"
+    },
+    {
+      "type": "command-success",
+      "command": ["node", "validate-types.mjs"],
+      "expect": "typescript ok"
+    },
+    {
+      "type": "http-start",
+      "command": ["node", "--experimental-strip-types", "src/server.ts"],
+      "path": "/api/health",
+      "expect": "\"ok\""
+    },
+    {
+      "type": "http-start",
+      "command": ["node", "--experimental-strip-types", "src/server.ts"],
+      "path": "/",
+      "expect": "{{headline}}"
+    }
+  ],
+  "contextHints": {
+    "commands": ["node --experimental-strip-types src/server.ts", "npm install", "npm run dev"],
+    "entrypoints": ["src/server.ts", "src/client.ts", "web/index.html"],
+    "preview": {
+      "path": "/"
+    },
+    "extensionPoints": ["database-config.json", "sdk-config.json", "starter-data.json", "starter-brand.json", "hooks.mjs"]
+  }
+}

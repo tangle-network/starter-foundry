@@ -1,0 +1,11 @@
+{
+  "projectName": "react-coinbase-surface",
+  "family": "react-vite-ts",
+  "layers": ["framework:react-vite-ts", "capability:chart-widget"],
+  "partner": "coinbase",
+  "slots": {},
+  "variables": {
+    "headline": "Launch a React-first Coinbase-ready surface",
+    "subheadline": "Fast preview now, full React and Vite workflow when the stack settles."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "projectName": "control-plane",
+  "family": "fullstack-ts",
+  "layers": ["framework:fullstack-node-ts", "capability:chart-widget", "capability:logging"],
+  "partner": "coinbase",
+  "slots": {
+    "database": "database:convex"
+  },
+  "variables": {
+    "headline": "Operate a fullstack control plane quickly",
+    "subheadline": "Live web shell, API health, and partner-ready dependency defaults."
+  }
+}

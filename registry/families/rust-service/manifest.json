@@ -1,0 +1,54 @@
+{
+  "id": "rust-service",
+  "description": "Minimal Rust HTTP service starter.",
+  "tags": ["rust", "backend"],
+  "taxonomy": {
+    "language": "rust",
+    "runtime": "rust",
+    "surface": "service"
+  },
+  "slots": {
+    "database": {
+      "options": [
+        "database:sqlite",
+        "database:postgres",
+        "database:mongodb",
+        "database:convex"
+      ],
+      "default": "database:sqlite"
+    },
+    "sdk": {
+      "options": [
+        "sdk:none",
+        "sdk:coinbase-cdp",
+        "sdk:solana-web3"
+      ],
+      "default": "sdk:none"
+    }
+  },
+  "defaults": {
+    "serviceName": "starter-foundry-rust",
+    "port": 8091,
+    "databaseProvider": "sqlite"
+  },
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "Cargo.toml"
+    },
+    {
+      "type": "http-start",
+      "command": ["cargo", "run", "--quiet"],
+      "path": "/health",
+      "expect": "\"{{serviceName}}\""
+    }
+  ],
+  "contextHints": {
+    "commands": ["cargo run", "cargo check"],
+    "entrypoints": ["src/main.rs", "Cargo.toml"],
+    "preview": {
+      "path": "/health"
+    },
+    "extensionPoints": ["database-config.json", "sdk-config.json"]
+  }
+}

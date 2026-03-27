@@ -1,0 +1,13 @@
+{
+  "projectName": "python-health-api",
+  "family": "python-api",
+  "layers": [
+    "framework:python-http"
+  ],
+  "slots": {
+    "database": "database:mongodb"
+  },
+  "variables": {
+    "serviceName": "python-health-api"
+  }
+}

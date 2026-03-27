@@ -1,0 +1,10 @@
+{
+  "projectName": "solana-treasury",
+  "family": "solana-program",
+  "layers": ["framework:solana-native-rust"],
+  "partner": null,
+  "slots": {},
+  "variables": {
+    "instructionName": "InitializeTreasury"
+  }
+}

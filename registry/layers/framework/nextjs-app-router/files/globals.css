@@ -1,0 +1,56 @@
+:root {
+  color-scheme: light;
+  --bg: #eef5ff;
+  --ink: #101828;
+  --muted: #475467;
+  --accent: #155eef;
+  --card: rgba(255, 255, 255, 0.88);
+  --border: rgba(16, 24, 40, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Iowan Old Style", "Palatino Linotype", serif;
+  background:
+    radial-gradient(circle at top right, rgba(21, 94, 239, 0.16), transparent 28rem),
+    linear-gradient(180deg, #fdfdff, var(--bg));
+  color: var(--ink);
+}
+
+.page-shell {
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: 4rem 1.25rem 5rem;
+}
+
+.eyebrow {
+  margin-bottom: 1rem;
+  color: var(--accent);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font: 600 0.8rem/1.2 ui-monospace, "SFMono-Regular", monospace;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2.8rem, 8vw, 5rem);
+  line-height: 0.95;
+}
+
+.subheadline {
+  max-width: 42rem;
+  color: var(--muted);
+}
+
+.step-list {
+  margin-top: 1.5rem;
+  padding-left: 1.25rem;
+}
+
+.step-list li {
+  margin-top: 0.75rem;
+}

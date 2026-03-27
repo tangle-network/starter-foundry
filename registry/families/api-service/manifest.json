@@ -1,0 +1,66 @@
+{
+  "id": "api-service",
+  "description": "Minimal Node HTTP API starter with health endpoint.",
+  "tags": ["api", "backend"],
+  "taxonomy": {
+    "language": "javascript",
+    "runtime": "node",
+    "surface": "api"
+  },
+  "slots": {
+    "database": {
+      "options": [
+        "database:sqlite",
+        "database:postgres",
+        "database:mongodb",
+        "database:convex"
+      ],
+      "default": "database:sqlite"
+    },
+    "sdk": {
+      "options": [
+        "sdk:none",
+        "sdk:coinbase-cdp",
+        "sdk:solana-web3"
+      ],
+      "default": "sdk:none"
+    }
+  },
+  "defaults": {
+    "projectType": "api",
+    "port": 4180,
+    "serviceName": "Starter Foundry API"
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "server.mjs"
+    },
+    {
+      "type": "node-syntax",
+      "path": "server.mjs"
+    },
+    {
+      "type": "http-start",
+      "command": ["node", "server.mjs"],
+      "port": "{{port}}",
+      "path": "/health",
+      "expect": "\"ok\""
+    }
+  ],
+  "contextHints": {
+    "commands": ["npm run start"],
+    "entrypoints": ["server.mjs"],
+    "preview": {
+      "port": "{{port}}",
+      "path": "/health"
+    },
+    "extensionPoints": ["hooks.mjs", "partner-config.json", "sdk-config.json"]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "cards": [
+    {
+      "label": "Time To Artifact",
+      "value": "12s",
+      "note": "First visible surface should appear before the full implementation lands."
+    },
+    {
+      "label": "Conversion Lift",
+      "value": "+18%",
+      "note": "Placeholder metric for a partner-facing dashboard or landing page."
+    },
+    {
+      "label": "Live Users",
+      "value": "128",
+      "note": "Mock data intended to prove the shell and interaction model."
+    }
+  ]
+}

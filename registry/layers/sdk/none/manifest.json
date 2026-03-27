@@ -1,0 +1,18 @@
+{
+  "id": "none",
+  "slot": "sdk",
+  "description": "No partner SDK selected.",
+  "appliesTo": [
+    "api-service",
+    "cloudflare-worker-ts",
+    "python-api",
+    "rust-service",
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "go-api"
+  ],
+  "defaults": {
+    "sdkProvider": "none"
+  }
+}

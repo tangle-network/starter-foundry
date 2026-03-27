@@ -1,0 +1,39 @@
+{
+  "id": "nextjs-app-router",
+  "description": "Next.js app router framework layer with instant preview.",
+  "appliesTo": ["nextjs-ts"],
+  "defaults": {
+    "headline": "Starter Foundry App Router",
+    "subheadline": "A Next.js ready shell with a staged path from preview to full app router."
+  },
+  "files": [
+    {
+      "source": "files/next.config.ts",
+      "target": "next.config.ts"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/layout.tsx",
+      "target": "app/layout.tsx"
+    },
+    {
+      "source": "files/page.tsx",
+      "target": "app/page.tsx"
+    },
+    {
+      "source": "files/globals.css",
+      "target": "app/globals.css"
+    },
+    {
+      "source": "files/preview-index.html",
+      "target": "preview/index.html"
+    },
+    {
+      "source": "files/preview-client.js",
+      "target": "preview/client.js"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "python-http",
+  "description": "Python standard-library HTTP framework layer.",
+  "appliesTo": ["python-api"],
+  "files": [
+    {
+      "source": "files/app.py",
+      "target": "app.py"
+    }
+  ]
+}

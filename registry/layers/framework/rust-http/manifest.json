@@ -1,0 +1,15 @@
+{
+  "id": "rust-http",
+  "description": "Rust standard-library HTTP starter.",
+  "appliesTo": ["rust-service"],
+  "files": [
+    {
+      "source": "files/Cargo.toml",
+      "target": "Cargo.toml"
+    },
+    {
+      "source": "files/main.rs",
+      "target": "src/main.rs"
+    }
+  ]
+}

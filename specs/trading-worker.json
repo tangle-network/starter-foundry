@@ -1,0 +1,12 @@
+{
+  "projectName": "btc-trading-bot",
+  "family": "worker-job",
+  "layers": [
+    "framework:node-worker",
+    "capability:market-sim",
+    "capability:logging"
+  ],
+  "variables": {
+    "workerName": "BTC Trading Worker"
+  }
+}

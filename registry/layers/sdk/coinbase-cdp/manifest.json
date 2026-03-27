@@ -1,0 +1,24 @@
+{
+  "id": "coinbase-cdp",
+  "slot": "sdk",
+  "description": "Coinbase CDP-ready dependency profile.",
+  "appliesTo": [
+    "api-service",
+    "cloudflare-worker-ts",
+    "python-api",
+    "rust-service",
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "go-api"
+  ],
+  "defaults": {
+    "sdkProvider": "coinbase-cdp"
+  },
+  "files": [
+    {
+      "source": "files/sdk-config.json",
+      "target": "sdk-config.json"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "projectName": "saas-app-router",
+  "family": "nextjs-ts",
+  "layers": ["framework:nextjs-app-router", "capability:chart-widget"],
+  "partner": "coinbase",
+  "slots": {},
+  "variables": {
+    "headline": "Open with an app-router quality shell",
+    "subheadline": "A fast preview path while the agent shapes the full Next.js product."
+  }
+}

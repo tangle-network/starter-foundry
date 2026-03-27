@@ -1,0 +1,170 @@
+import assert from "node:assert/strict";
+import fs from "node:fs/promises";
+import path from "node:path";
+import test from "node:test";
+import { evaluateAgents } from "../src/lib/agent-runners.mjs";
+import { createAuditBundle } from "../src/lib/audit.mjs";
+import { benchmarkStarter } from "../src/lib/benchmark.mjs";
+import { buildCatalog } from "../src/lib/catalog.mjs";
+import { createContextPack } from "../src/lib/context-pack.mjs";
+import { createRelease } from "../src/lib/release.mjs";
+import { createTempDir, fileExists, removeDir } from "../src/lib/fs.mjs";
+import { loadProjectSpec } from "../src/lib/registry.mjs";
+import { validateStarter } from "../src/lib/validate.mjs";
+
+test("validate passes for api starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/api-health.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for worker starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/trading-worker.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for python starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/python-api.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for rust starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/rust-service.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for forge starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/forge-counter.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for cloudflare worker starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/cloudflare-edge.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for react vite starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/react-vite-coinbase.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for nextjs starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/nextjs-saas.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for fullstack typescript starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/fullstack-control-plane.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for go api starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/go-api.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for solana program starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/solana-treasury.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for move starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/move-treasury.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("context pack captures entrypoints and ownership", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/coinbase-landing.json"));
+  const result = await createContextPack({ spec });
+
+  assert.equal(result.contextPack.components.family, "frontend-static");
+  assert.match(result.contextPack.agentBrief.summary, /frontend-static/);
+  assert.ok(result.contextPack.entrypoints.includes("index.html"));
+  assert.equal(result.contextPack.fileOwnership["starter-brand.json"], "coinbase");
+});
+
+test("benchmark produces summary and pass rate", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/coinbase-landing.json"));
+  const report = await benchmarkStarter({ spec, runs: 2 });
+
+  assert.equal(report.runs, 2);
+  assert.equal(report.summary.passRate, 1);
+  assert.ok(report.summary.totalMs.mean >= 0);
+});
+
+test("audit bundle emits agent prompts", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/api-health.json"));
+  const outDir = await createTempDir("starter-foundry-audit-test");
+
+  try {
+    const result = await createAuditBundle({ spec, outDir });
+    const codexPrompt = await fs.readFile(result.promptPaths.codex, "utf8");
+    const opencodePrompt = await fs.readFile(result.promptPaths.opencode, "utf8");
+    assert.match(codexPrompt, /Audit and familiarize yourself/);
+    assert.match(opencodePrompt, /OpenCode/);
+    assert.equal(await fileExists(result.auditBundlePath), true);
+  } finally {
+    await removeDir(outDir);
+  }
+});
+
+test("evaluate handles unavailable agent commands without aborting the whole run", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/api-health.json"));
+  const outDir = await createTempDir("starter-foundry-evaluate-test");
+  process.env.STARTER_FOUNDRY_CLAUDE_BIN = "/definitely/missing/claude";
+
+  try {
+    const result = await evaluateAgents({
+      spec,
+      outDir,
+      agents: ["claude"],
+    });
+
+    assert.equal(result.results.length, 1);
+    assert.equal(result.results[0].status, "unavailable");
+    assert.equal(await fileExists(result.reportPath), true);
+  } finally {
+    delete process.env.STARTER_FOUNDRY_CLAUDE_BIN;
+    await removeDir(outDir);
+  }
+});
+
+test("release bundles validation and benchmark evidence", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/coinbase-landing.json"));
+  const outDir = await createTempDir("starter-foundry-release-test");
+  process.env.STARTER_FOUNDRY_CODEX_BIN = "/definitely/missing/codex";
+
+  try {
+    const result = await createRelease({ spec, outDir, benchmarkRuns: 1, agents: ["codex"] });
+    assert.equal(result.validationOk, true);
+    assert.equal(result.benchmarkPassRate, 1);
+    assert.equal(result.agentEvaluationPassRate, 0);
+    assert.equal(await fileExists(result.releasePath), true);
+  } finally {
+    delete process.env.STARTER_FOUNDRY_CODEX_BIN;
+    await removeDir(outDir);
+  }
+});
+
+test("catalog separates implemented and planned families", async () => {
+  const catalog = await buildCatalog();
+  assert.ok(catalog.implemented.some((item) => item.id === "frontend-static"));
+  assert.ok(catalog.implemented.some((item) => item.id === "forge-contracts"));
+  assert.ok(catalog.implemented.some((item) => item.id === "react-vite-ts"));
+  assert.ok(catalog.implemented.some((item) => item.id === "nextjs-ts"));
+  assert.ok(catalog.implemented.some((item) => item.id === "fullstack-ts"));
+  assert.ok(catalog.implemented.some((item) => item.id === "go-api"));
+  assert.ok(catalog.implemented.some((item) => item.id === "solana-program"));
+  assert.ok(catalog.implemented.some((item) => item.id === "move-contracts"));
+});

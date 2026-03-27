@@ -1,0 +1,41 @@
+{
+  "id": "move-contracts",
+  "description": "Move package starter with structural validation for Aptos and Sui style flows.",
+  "tags": ["move", "aptos", "sui", "crypto"],
+  "taxonomy": {
+    "language": "move",
+    "runtime": "move",
+    "surface": "contracts"
+  },
+  "defaults": {
+    "projectType": "contracts",
+    "moduleName": "TreasuryVault"
+  },
+  "files": [
+    {
+      "source": "files/validate-move.mjs",
+      "target": "validate-move.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "Move.toml"
+    },
+    {
+      "type": "file-exists",
+      "path": "sources/{{moduleName}}.move"
+    },
+    {
+      "type": "command-success",
+      "command": ["node", "validate-move.mjs"],
+      "expect": "move starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": ["aptos move test", "sui move test"],
+    "entrypoints": ["Move.toml", "sources/{{moduleName}}.move", "tests/{{moduleName}}Tests.move"],
+    "preview": null,
+    "extensionPoints": ["tests/{{moduleName}}Tests.move"]
+  }
+}

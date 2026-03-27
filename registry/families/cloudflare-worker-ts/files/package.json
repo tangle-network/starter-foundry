@@ -1,0 +1,8 @@
+{
+  "name": "{{packageName}}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate": "node --experimental-strip-types validate-worker.mjs"
+  }
+}

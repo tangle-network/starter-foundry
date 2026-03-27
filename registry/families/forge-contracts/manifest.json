@@ -1,0 +1,34 @@
+{
+  "id": "forge-contracts",
+  "description": "Foundry-first Solidity starter.",
+  "tags": ["solidity", "forge", "contracts"],
+  "taxonomy": {
+    "language": "solidity",
+    "runtime": "forge",
+    "surface": "contracts"
+  },
+  "defaults": {
+    "contractName": "StarterCounter"
+  },
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "foundry.toml"
+    },
+    {
+      "type": "command-success",
+      "command": ["forge", "build"]
+    },
+    {
+      "type": "command-success",
+      "command": ["forge", "test"],
+      "expect": "passed"
+    }
+  ],
+  "contextHints": {
+    "commands": ["forge build", "forge test"],
+    "entrypoints": ["src/{{contractName}}.sol", "test/{{contractName}}.t.sol", "script/Deploy.s.sol"],
+    "preview": null,
+    "extensionPoints": ["script/Deploy.s.sol", "test/{{contractName}}.t.sol"]
+  }
+}

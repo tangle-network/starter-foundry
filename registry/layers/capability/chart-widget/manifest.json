@@ -1,0 +1,11 @@
+{
+  "id": "chart-widget",
+  "description": "Adds mock dashboard metrics for frontend flows.",
+  "appliesTo": ["frontend-static", "react-vite-ts", "nextjs-ts", "fullstack-ts"],
+  "files": [
+    {
+      "source": "files/starter-data.json",
+      "target": "starter-data.json"
+    }
+  ]
+}

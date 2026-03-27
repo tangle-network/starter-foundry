@@ -1,0 +1,64 @@
+{
+  "id": "go-api",
+  "description": "Lean Go HTTP API starter with structural validation and clear runtime seams.",
+  "tags": ["go", "api", "backend"],
+  "taxonomy": {
+    "language": "go",
+    "runtime": "go",
+    "surface": "api"
+  },
+  "slots": {
+    "database": {
+      "options": [
+        "database:sqlite",
+        "database:postgres",
+        "database:mongodb",
+        "database:convex"
+      ],
+      "default": "database:sqlite"
+    },
+    "sdk": {
+      "options": [
+        "sdk:none",
+        "sdk:coinbase-cdp",
+        "sdk:solana-web3"
+      ],
+      "default": "sdk:none"
+    }
+  },
+  "defaults": {
+    "projectType": "api",
+    "serviceName": "starter-foundry-go",
+    "port": 8094,
+    "databaseProvider": "sqlite"
+  },
+  "files": [
+    {
+      "source": "files/validate-go.mjs",
+      "target": "validate-go.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "go.mod"
+    },
+    {
+      "type": "file-exists",
+      "path": "cmd/server/main.go"
+    },
+    {
+      "type": "command-success",
+      "command": ["node", "validate-go.mjs"],
+      "expect": "go starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": ["go run ./cmd/server", "go test ./..."],
+    "entrypoints": ["cmd/server/main.go", "internal/app/handlers.go", "go.mod"],
+    "preview": {
+      "path": "/health"
+    },
+    "extensionPoints": ["database-config.json", "sdk-config.json", "partner-config.json"]
+  }
+}

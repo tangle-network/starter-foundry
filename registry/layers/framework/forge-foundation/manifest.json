@@ -1,0 +1,23 @@
+{
+  "id": "forge-foundation",
+  "description": "Foundry project framework layer.",
+  "appliesTo": ["forge-contracts"],
+  "files": [
+    {
+      "source": "files/foundry.toml",
+      "target": "foundry.toml"
+    },
+    {
+      "source": "files/Counter.sol",
+      "target": "src/{{contractName}}.sol"
+    },
+    {
+      "source": "files/Counter.t.sol",
+      "target": "test/{{contractName}}.t.sol"
+    },
+    {
+      "source": "files/Deploy.s.sol",
+      "target": "script/Deploy.s.sol"
+    }
+  ]
+}

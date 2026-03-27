@@ -1,0 +1,36 @@
+{
+  "id": "fullstack-node-ts",
+  "description": "Lean TypeScript fullstack framework layer with built-in preview and API.",
+  "appliesTo": ["fullstack-ts"],
+  "defaults": {
+    "headline": "Starter Foundry Fullstack App",
+    "subheadline": "A live web shell plus a typed API seam for the agent to extend.",
+    "serviceName": "starter-foundry-fullstack"
+  },
+  "files": [
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/server.ts",
+      "target": "src/server.ts"
+    },
+    {
+      "source": "files/client.ts",
+      "target": "src/client.ts"
+    },
+    {
+      "source": "files/index.html",
+      "target": "web/index.html"
+    },
+    {
+      "source": "files/client.js",
+      "target": "web/client.js"
+    },
+    {
+      "source": "files/styles.css",
+      "target": "web/styles.css"
+    }
+  ]
+}

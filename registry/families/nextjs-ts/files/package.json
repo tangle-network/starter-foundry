@@ -1,0 +1,16 @@
+{
+  "name": "{{packageName}}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "preview:instant": "node preview-server.mjs",
+    "validate": "node validate-types.mjs"
+  },
+  "dependencies": {
+    "next": "^15.2.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  }
+}

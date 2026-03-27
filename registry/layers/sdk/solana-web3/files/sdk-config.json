@@ -1,0 +1,5 @@
+{
+  "provider": "solana-web3",
+  "package": "@solana/web3.js",
+  "guidance": "Bias the agent toward Solana account, instruction, and transaction primitives."
+}

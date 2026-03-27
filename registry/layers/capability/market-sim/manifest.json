@@ -1,0 +1,11 @@
+{
+  "id": "market-sim",
+  "description": "Adds a dry-run market feed for worker and bot flows.",
+  "appliesTo": ["worker-job"],
+  "files": [
+    {
+      "source": "files/market-feed.json",
+      "target": "market-feed.json"
+    }
+  ]
+}

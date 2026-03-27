@@ -1,0 +1,11 @@
+{
+  "id": "node-http",
+  "description": "Node HTTP server framework layer.",
+  "appliesTo": ["api-service"],
+  "files": [
+    {
+      "source": "files/server.mjs",
+      "target": "server.mjs"
+    }
+  ]
+}

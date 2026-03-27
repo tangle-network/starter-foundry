@@ -1,0 +1,24 @@
+{
+  "id": "solana-web3",
+  "slot": "sdk",
+  "description": "Solana web3-ready dependency profile.",
+  "appliesTo": [
+    "api-service",
+    "cloudflare-worker-ts",
+    "python-api",
+    "rust-service",
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "go-api"
+  ],
+  "defaults": {
+    "sdkProvider": "solana-web3"
+  },
+  "files": [
+    {
+      "source": "files/sdk-config.json",
+      "target": "sdk-config.json"
+    }
+  ]
+}

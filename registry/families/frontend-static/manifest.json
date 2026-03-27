@@ -1,0 +1,57 @@
+{
+  "id": "frontend-static",
+  "description": "Runnable static frontend starter with instant preview.",
+  "tags": ["frontend", "preview"],
+  "taxonomy": {
+    "language": "javascript",
+    "runtime": "node",
+    "surface": "frontend"
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "port": 4173,
+    "headline": "Starter Foundry Frontend",
+    "subheadline": "A fast first artifact for UI prompts.",
+    "databaseProvider": "none"
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/serve.mjs",
+      "target": "serve.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "index.html"
+    },
+    {
+      "type": "node-syntax",
+      "path": "serve.mjs"
+    },
+    {
+      "type": "node-syntax",
+      "path": "app.js"
+    },
+    {
+      "type": "http-start",
+      "command": ["node", "serve.mjs"],
+      "port": "{{port}}",
+      "path": "/",
+      "expect": "{{headline}}"
+    }
+  ],
+  "contextHints": {
+    "commands": ["npm run start"],
+    "entrypoints": ["index.html", "app.js"],
+    "preview": {
+      "port": "{{port}}",
+      "path": "/"
+    },
+    "extensionPoints": ["starter-data.json", "starter-brand.json"]
+  }
+}

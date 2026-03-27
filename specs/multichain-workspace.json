@@ -1,0 +1,74 @@
+{
+  "workspaceName": "multichain-studio",
+  "userPrompt": "Build a multichain product studio with a frontend plus Solidity, Solana, and Move contract lanes.",
+  "launchPlan": {
+    "primaryProjectId": "web",
+    "primaryArtifact": {
+      "kind": "preview",
+      "path": "/",
+      "targetMs": 2500
+    },
+    "initialAgentMission": "Build the user's prompt on top of this prepared workspace. Start with the web surface, then extend the contract lanes without collapsing them into one runtime."
+  },
+  "projects": [
+    {
+      "id": "web",
+      "path": "apps/web",
+      "spec": {
+        "projectName": "multichain-web",
+        "family": "nextjs-ts",
+        "layers": ["framework:nextjs-app-router", "capability:chart-widget"],
+        "partner": "coinbase",
+        "slots": {
+          "sdk": "sdk:coinbase-cdp"
+        },
+        "variables": {
+          "headline": "Launch a multichain control surface fast",
+          "subheadline": "Immediate web preview first, then deepen each chain lane behind it."
+        }
+      }
+    },
+    {
+      "id": "evm",
+      "path": "contracts/evm",
+      "spec": {
+        "projectName": "evm-contracts",
+        "family": "forge-contracts",
+        "layers": ["framework:forge-foundation"],
+        "partner": null,
+        "slots": {},
+        "variables": {
+          "contractName": "TreasuryRouter"
+        }
+      }
+    },
+    {
+      "id": "solana",
+      "path": "contracts/solana",
+      "spec": {
+        "projectName": "solana-program",
+        "family": "solana-program",
+        "layers": ["framework:solana-native-rust"],
+        "partner": null,
+        "slots": {},
+        "variables": {
+          "instructionName": "InitializeTreasury"
+        }
+      }
+    },
+    {
+      "id": "move",
+      "path": "contracts/move",
+      "spec": {
+        "projectName": "move_treasury",
+        "family": "move-contracts",
+        "layers": ["framework:move-package"],
+        "partner": null,
+        "slots": {},
+        "variables": {
+          "moduleName": "TreasuryVault"
+        }
+      }
+    }
+  ]
+}

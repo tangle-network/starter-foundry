@@ -1,0 +1,13 @@
+{
+  "projectName": "edge-status-worker",
+  "family": "cloudflare-worker-ts",
+  "layers": [
+    "framework:cloudflare-worker-ts"
+  ],
+  "slots": {
+    "database": "database:convex"
+  },
+  "variables": {
+    "serviceName": "edge-status-worker"
+  }
+}

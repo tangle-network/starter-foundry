@@ -1,0 +1,19 @@
+{
+  "id": "go-net-http",
+  "description": "Go net/http framework layer for API starters.",
+  "appliesTo": ["go-api"],
+  "files": [
+    {
+      "source": "files/go.mod",
+      "target": "go.mod"
+    },
+    {
+      "source": "files/main.go",
+      "target": "cmd/server/main.go"
+    },
+    {
+      "source": "files/handlers.go",
+      "target": "internal/app/handlers.go"
+    }
+  ]
+}

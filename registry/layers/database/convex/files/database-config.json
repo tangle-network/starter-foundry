@@ -1,0 +1,5 @@
+{
+  "provider": "convex",
+  "driver": "@convex-dev/server",
+  "connection": "convex://example-project"
+}

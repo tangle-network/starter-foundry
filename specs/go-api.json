@@ -1,0 +1,12 @@
+{
+  "projectName": "go-risk-engine",
+  "family": "go-api",
+  "layers": ["framework:go-net-http"],
+  "partner": "coinbase",
+  "slots": {
+    "database": "database:postgres"
+  },
+  "variables": {
+    "serviceName": "risk-engine"
+  }
+}

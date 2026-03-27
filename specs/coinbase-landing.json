@@ -1,0 +1,13 @@
+{
+  "projectName": "coinbase-growth-surface",
+  "family": "frontend-static",
+  "layers": [
+    "framework:web-static",
+    "capability:chart-widget"
+  ],
+  "partner": "coinbase",
+  "variables": {
+    "headline": "Launch a Coinbase-ready growth surface",
+    "subheadline": "Fast first preview for a partner-aware frontend starter."
+  }
+}

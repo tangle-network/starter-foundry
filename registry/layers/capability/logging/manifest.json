@@ -1,0 +1,11 @@
+{
+  "id": "logging",
+  "description": "Adds request and cycle hooks for backend-style starters.",
+  "appliesTo": ["api-service", "worker-job", "fullstack-ts"],
+  "files": [
+    {
+      "source": "files/hooks.mjs",
+      "target": "hooks.mjs"
+    }
+  ]
+}

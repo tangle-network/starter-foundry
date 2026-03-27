@@ -1,0 +1,5 @@
+{
+  "provider": "coinbase-cdp",
+  "package": "@coinbase/cdp-sdk",
+  "guidance": "Bias the agent toward Coinbase CDP primitives and hosted wallet flows."
+}

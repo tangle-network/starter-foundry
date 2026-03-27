@@ -1,0 +1,54 @@
+{
+  "id": "playwright-worker",
+  "description": "Browser automation worker starter with a runnable local cycle path.",
+  "tags": ["playwright", "automation", "worker"],
+  "taxonomy": {
+    "language": "javascript",
+    "runtime": "node",
+    "surface": "automation"
+  },
+  "slots": {
+    "queue": {
+      "options": [
+        "queue:none",
+        "queue:bullmq",
+        "queue:trigger-dev"
+      ],
+      "default": "queue:none"
+    }
+  },
+  "defaults": {
+    "projectType": "worker",
+    "workerName": "Starter Foundry Playwright Worker"
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "worker.mjs"
+    },
+    {
+      "type": "node-syntax",
+      "path": "worker.mjs"
+    },
+    {
+      "type": "command-success",
+      "command": ["node", "worker.mjs"],
+      "env": {
+        "RUN_ONCE": "1"
+      },
+      "expect": "browser cycle complete"
+    }
+  ],
+  "contextHints": {
+    "commands": ["node worker.mjs", "npm install"],
+    "entrypoints": ["worker.mjs"],
+    "preview": null,
+    "extensionPoints": ["queue-config.json"]
+  }
+}

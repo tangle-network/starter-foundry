@@ -1,0 +1,10 @@
+{
+  "name": "{{packageName}}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "cargo tauri dev",
+    "preview:instant": "node preview-server.mjs",
+    "validate": "node validate-types.mjs"
+  }
+}

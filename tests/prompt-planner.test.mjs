@@ -54,6 +54,17 @@ test("planPrompt routes web plus worker prompts to a workspace", async () => {
   assert.equal(result.spec.projects.find((project) => project.id === "worker")?.spec.family, "worker-job");
 });
 
+test("planPrompt routes web plus playwright automation prompts to a workspace", async () => {
+  const result = await planPrompt({
+    prompt: "Build a Next.js control plane with a separate Playwright worker for browser automation.",
+    partner: null,
+  });
+
+  assert.equal(result.kind, "workspace");
+  assert.equal(result.spec.projects.find((project) => project.id === "web")?.spec.family, "nextjs-ts");
+  assert.equal(result.spec.projects.find((project) => project.id === "worker")?.spec.family, "playwright-worker");
+});
+
 test("planPrompt carries auth, payments, and queue slots for starter prompts", async () => {
   const result = await planPrompt({
     prompt: "Build a fullstack SaaS control plane with Better Auth, Stripe subscriptions, and BullMQ background jobs.",

@@ -13,7 +13,8 @@
     "go-api",
     "expo-react-native-ts",
     "browser-extension-ts",
-    "electron-desktop-ts"
+    "electron-desktop-ts",
+    "tauri-desktop"
   ],
   "defaults": {
     "sdkProvider": "none"

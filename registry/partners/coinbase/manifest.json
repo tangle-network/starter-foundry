@@ -9,11 +9,14 @@
     "expo-react-native-ts",
     "browser-extension-ts",
     "electron-desktop-ts",
+    "tauri-desktop",
     "api-service",
     "cloudflare-worker-ts",
     "python-api",
     "rust-service",
-    "go-api"
+    "go-api",
+    "go-worker",
+    "playwright-worker"
   ],
   "slotDefaults": {
     "database": "database:sqlite",

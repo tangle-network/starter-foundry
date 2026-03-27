@@ -30,7 +30,7 @@ So the agent spends more time building the product and less time writing boilerp
 
 - Routes prompts into a `starter` or a multi-project `workspace`
 - Composes families, layers, slots, and partner policy
-- Supports partner-steered dependency choices like `database` and `sdk`
+- Supports partner-steered dependency choices like `database`, `sdk`, `auth`, `payments`, and `queue`
 - Generates `PROJECT.md`, `AGENTS.md`, and structured context packs
 - Validates the output
 - Benchmarks time to first artifact and full validation
@@ -59,9 +59,9 @@ So the answer is:
 
 ## Current Shape
 
-- Starter families: frontend, API, worker, fullstack, edge, Rust, Go, Python, Solidity/Forge, Solana, Move
+- Starter families: frontend, mobile, extension, desktop, CLI, API, worker, automation, fullstack, edge, Rust, Go, Python data, Solidity/Forge, Solana, Move
 - Workspace composition: web + API + worker + multi-contract lanes
-- Partner policy: currently `database` and `sdk` slots
+- Partner policy: `database`, `sdk`, `auth`, `payments`, and `queue` slots
 - Proof corpus: real prompt suite across simple to mostly-complex scenarios
 
 ## Install
@@ -156,8 +156,8 @@ That is why it is useful for AI coding products:
 
 The current proof corpus covers:
 
-- `23` prompt scenarios
-- `13` starter families
+- `33` prompt scenarios
+- `21` starter families
 - both starters and multi-project workspaces
 - simple, medium, complex, and mostly-complex prompts
 

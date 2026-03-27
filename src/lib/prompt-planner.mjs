@@ -131,6 +131,35 @@ function buildWebProject(prompt, partner, text) {
   };
 }
 
+function chooseWorkerFamily(text) {
+  if (hasAny(text, ["playwright", "browser automation", "web scraping", "scraper", "crawler"])) {
+    return {
+      family: "playwright-worker",
+      layers: ["framework:playwright-worker"],
+      path: "apps/worker",
+    };
+  }
+
+  if (hasAny(text, ["go worker", "golang worker", "go cron", "go queue", "go background job"])) {
+    return {
+      family: "go-worker",
+      layers: ["framework:go-worker"],
+      path: "apps/worker",
+    };
+  }
+
+  const layers = ["framework:node-worker"];
+  if (hasAny(text, ["trading", "market", "feed", "stream"])) {
+    layers.push("capability:market-sim");
+  }
+
+  return {
+    family: "worker-job",
+    layers,
+    path: "apps/worker",
+  };
+}
+
 function chooseApiFamily(text) {
   if (hasAny(text, ["cloudflare", "durable object", "edge api", "edge function", "hono edge"])) {
     return {
@@ -213,11 +242,8 @@ function buildApiProject(prompt, partner, text) {
 }
 
 function buildWorkerProject(prompt, partner, text) {
-  const layers = ["framework:node-worker"];
+  const choice = chooseWorkerFamily(text);
   const slots = {};
-  if (hasAny(text, ["trading", "market", "feed", "stream"])) {
-    layers.push("capability:market-sim");
-  }
   const queueSlot = detectQueueSlot(text);
   if (queueSlot) {
     slots.queue = queueSlot;
@@ -225,11 +251,11 @@ function buildWorkerProject(prompt, partner, text) {
 
   return {
     id: "worker",
-    path: "apps/worker",
+    path: choice.path,
     spec: {
       projectName: `${buildSlug(prompt, "workspace")}-worker`,
-      family: "worker-job",
-      layers,
+      family: choice.family,
+      layers: choice.layers,
       partner: null,
       slots,
       variables: {
@@ -258,6 +284,7 @@ function buildWorkspacePromptPlan({ prompt, partner, text }) {
     "streamlit",
     "gradio",
     "data app",
+    "tauri",
   ]);
 
   if (specialSingleLane) {
@@ -294,6 +321,10 @@ function buildWorkspacePromptPlan({ prompt, partner, text }) {
     "background job",
     "background worker",
     "worker for",
+    "playwright worker",
+    "automation worker",
+    "go worker",
+    "golang worker",
     "queue",
     "cron",
     "market stream",
@@ -457,7 +488,7 @@ export async function planPrompt({ prompt, partner = null }) {
     spec.slots.queue = queueSlot;
   }
 
-  if (hasAny(text, ["rust", "cargo"])) {
+  if (hasAny(text, ["rust", "cargo"]) && spec.family === "api-service") {
     spec.family = "rust-service";
     spec.layers = ["framework:rust-http"];
   }

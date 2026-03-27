@@ -2,5 +2,5 @@
   "id": "none",
   "slot": "payments",
   "description": "No payments provider selected.",
-  "appliesTo": ["react-vite-ts", "nextjs-ts", "fullstack-ts", "api-service", "cloudflare-worker-ts", "python-api", "rust-service", "go-api", "expo-react-native-ts", "electron-desktop-ts"]
+  "appliesTo": ["react-vite-ts", "nextjs-ts", "fullstack-ts", "api-service", "cloudflare-worker-ts", "python-api", "rust-service", "go-api", "expo-react-native-ts", "electron-desktop-ts", "tauri-desktop"]
 }

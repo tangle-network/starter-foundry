@@ -1,0 +1,35 @@
+{
+  "id": "tauri-desktop",
+  "description": "Tauri desktop framework layer.",
+  "appliesTo": ["tauri-desktop"],
+  "files": [
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/index.html",
+      "target": "web/index.html"
+    },
+    {
+      "source": "files/app.ts",
+      "target": "web/app.ts"
+    },
+    {
+      "source": "files/styles.css",
+      "target": "web/styles.css"
+    },
+    {
+      "source": "files/Cargo.toml",
+      "target": "src-tauri/Cargo.toml"
+    },
+    {
+      "source": "files/main.rs",
+      "target": "src-tauri/src/main.rs"
+    },
+    {
+      "source": "files/tauri.conf.json",
+      "target": "src-tauri/tauri.conf.json"
+    }
+  ]
+}

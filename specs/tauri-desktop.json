@@ -1,0 +1,13 @@
+{
+  "projectName": "tauri-desktop",
+  "family": "tauri-desktop",
+  "layers": ["framework:tauri-desktop"],
+  "slots": {
+    "auth": "auth:supabase-auth",
+    "payments": "payments:stripe"
+  },
+  "variables": {
+    "headline": "Run native desktop workflows fast",
+    "subheadline": "A Tauri shell with a web surface and native host layout."
+  }
+}

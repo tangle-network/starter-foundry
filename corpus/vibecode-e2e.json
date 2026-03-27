@@ -127,6 +127,20 @@
       }
     },
     {
+      "id": "tauri-desktop",
+      "complexity": "simple",
+      "partner": "coinbase",
+      "prompt": "Build a Tauri desktop app for native operations workflows with Coinbase CDP and Stripe billing.",
+      "expected": {
+        "kind": "starter",
+        "family": "tauri-desktop",
+        "slots": {
+          "sdk": "sdk:coinbase-cdp",
+          "payments": "payments:stripe"
+        }
+      }
+    },
+    {
       "id": "cli-tool",
       "complexity": "simple",
       "partner": null,
@@ -134,6 +148,32 @@
       "expected": {
         "kind": "starter",
         "family": "cli-ts"
+      }
+    },
+    {
+      "id": "go-worker",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build a Golang worker for cron-driven reconciliations with BullMQ queue wiring.",
+      "expected": {
+        "kind": "starter",
+        "family": "go-worker",
+        "slots": {
+          "queue": "queue:bullmq"
+        }
+      }
+    },
+    {
+      "id": "playwright-worker",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Create a Playwright worker for browser automation with Trigger.dev scheduling.",
+      "expected": {
+        "kind": "starter",
+        "family": "playwright-worker",
+        "slots": {
+          "queue": "queue:trigger-dev"
+        }
       }
     },
     {
@@ -299,6 +339,21 @@
         "projectFamilies": {
           "web": "react-vite-ts",
           "worker": "worker-job"
+        }
+      }
+    },
+    {
+      "id": "next-playwright-workspace",
+      "complexity": "complex",
+      "partner": null,
+      "prompt": "Build a Next.js control plane with a separate Playwright worker for browser automation.",
+      "expected": {
+        "kind": "workspace",
+        "primaryProjectId": "web",
+        "projectIds": ["web", "worker"],
+        "projectFamilies": {
+          "web": "nextjs-ts",
+          "worker": "playwright-worker"
         }
       }
     },

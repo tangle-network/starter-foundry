@@ -1,0 +1,11 @@
+{
+  "projectName": "go-worker",
+  "family": "go-worker",
+  "layers": ["framework:go-worker"],
+  "slots": {
+    "queue": "queue:bullmq"
+  },
+  "variables": {
+    "serviceName": "go-worker"
+  }
+}

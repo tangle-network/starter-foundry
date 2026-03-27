@@ -18,16 +18,36 @@ export async function selectStarter({ prompt, partner = null }) {
       reasons: ["browser extension language detected"],
     },
     {
+      family: "tauri-desktop",
+      layers: ["framework:tauri-desktop"],
+      score: keywordScore(prompt, ["tauri", "native desktop", "rust desktop", "tauri app"]),
+      reasons: ["tauri desktop language detected"],
+    },
+    {
       family: "electron-desktop-ts",
       layers: ["framework:electron-desktop-ts"],
       score: keywordScore(prompt, ["electron", "desktop app", "desktop assistant", "tray app"]),
       reasons: ["desktop language detected"],
     },
     {
+      family: "go-worker",
+      layers: ["framework:go-worker"],
+      score:
+        keywordScore(prompt, ["go worker", "golang worker", "go cron", "go queue", "go background job"]) +
+        (prompt.toLowerCase().includes("go worker") || prompt.toLowerCase().includes("golang worker") ? 2 : 0),
+      reasons: ["go worker language detected"],
+    },
+    {
       family: "cli-ts",
       layers: ["framework:cli-ts"],
       score: keywordScore(prompt, ["cli", "command line", "terminal tool", "shell tool", "developer tool"]),
       reasons: ["cli language detected"],
+    },
+    {
+      family: "playwright-worker",
+      layers: ["framework:playwright-worker"],
+      score: keywordScore(prompt, ["playwright", "browser automation", "web scraping", "scraper", "crawler"]),
+      reasons: ["playwright automation language detected"],
     },
     {
       family: "python-data-app",

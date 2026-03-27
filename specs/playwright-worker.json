@@ -1,0 +1,11 @@
+{
+  "projectName": "playwright-worker",
+  "family": "playwright-worker",
+  "layers": ["framework:playwright-worker"],
+  "slots": {
+    "queue": "queue:trigger-dev"
+  },
+  "variables": {
+    "workerName": "playwright-worker"
+  }
+}

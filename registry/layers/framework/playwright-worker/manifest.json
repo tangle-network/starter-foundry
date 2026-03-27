@@ -1,0 +1,11 @@
+{
+  "id": "playwright-worker",
+  "description": "Playwright automation worker framework layer.",
+  "appliesTo": ["playwright-worker"],
+  "files": [
+    {
+      "source": "files/worker.mjs",
+      "target": "worker.mjs"
+    }
+  ]
+}

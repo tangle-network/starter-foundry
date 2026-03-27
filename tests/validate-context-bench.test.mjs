@@ -60,8 +60,26 @@ test("validate passes for browser extension starter", async () => {
   assert.equal(result.ok, true);
 });
 
+test("validate passes for tauri desktop starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/tauri-desktop.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
 test("validate passes for cli starter", async () => {
   const spec = await loadProjectSpec(path.resolve("specs/cli-release-tool.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for go worker starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/go-worker.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for playwright worker starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/playwright-worker.json"));
   const result = await validateStarter({ spec });
   assert.equal(result.ok, true);
 });
@@ -202,4 +220,7 @@ test("catalog separates implemented and planned families", async () => {
   assert.ok(catalog.implemented.some((item) => item.id === "cli-ts"));
   assert.ok(catalog.implemented.some((item) => item.id === "python-data-app"));
   assert.ok(catalog.implemented.some((item) => item.id === "electron-desktop-ts"));
+  assert.ok(catalog.implemented.some((item) => item.id === "go-worker"));
+  assert.ok(catalog.implemented.some((item) => item.id === "playwright-worker"));
+  assert.ok(catalog.implemented.some((item) => item.id === "tauri-desktop"));
 });

@@ -116,6 +116,16 @@ test("select chooses browser extension starter for extension prompts", async () 
   assert.deepEqual(result.spec.layers, ["framework:browser-extension-ts"]);
 });
 
+test("select chooses tauri starter for native desktop prompts", async () => {
+  const result = await selectStarter({
+    prompt: "Build a Tauri desktop app for native operations workflows",
+    partner: null,
+  });
+
+  assert.equal(result.spec.family, "tauri-desktop");
+  assert.deepEqual(result.spec.layers, ["framework:tauri-desktop"]);
+});
+
 test("select chooses cli starter for command line prompts", async () => {
   const result = await selectStarter({
     prompt: "Build a TypeScript CLI for release automation",
@@ -124,6 +134,26 @@ test("select chooses cli starter for command line prompts", async () => {
 
   assert.equal(result.spec.family, "cli-ts");
   assert.deepEqual(result.spec.layers, ["framework:cli-ts"]);
+});
+
+test("select chooses go worker starter for golang worker prompts", async () => {
+  const result = await selectStarter({
+    prompt: "Build a Golang worker for cron-driven reconciliations",
+    partner: null,
+  });
+
+  assert.equal(result.spec.family, "go-worker");
+  assert.deepEqual(result.spec.layers, ["framework:go-worker"]);
+});
+
+test("select chooses playwright worker starter for automation prompts", async () => {
+  const result = await selectStarter({
+    prompt: "Create a Playwright worker for browser automation and scraping",
+    partner: null,
+  });
+
+  assert.equal(result.spec.family, "playwright-worker");
+  assert.deepEqual(result.spec.layers, ["framework:playwright-worker"]);
 });
 
 test("select chooses python data starter for analytics prompts", async () => {

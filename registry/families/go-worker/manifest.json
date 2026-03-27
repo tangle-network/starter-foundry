@@ -1,0 +1,51 @@
+{
+  "id": "go-worker",
+  "description": "Lean Go worker starter for cron, queues, and background jobs.",
+  "tags": ["go", "worker", "jobs"],
+  "taxonomy": {
+    "language": "go",
+    "runtime": "go",
+    "surface": "worker"
+  },
+  "slots": {
+    "queue": {
+      "options": [
+        "queue:none",
+        "queue:bullmq",
+        "queue:trigger-dev"
+      ],
+      "default": "queue:none"
+    }
+  },
+  "defaults": {
+    "projectType": "worker",
+    "serviceName": "starter-foundry-go-worker"
+  },
+  "files": [
+    {
+      "source": "files/validate-go-worker.mjs",
+      "target": "validate-go-worker.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "go.mod"
+    },
+    {
+      "type": "file-exists",
+      "path": "cmd/worker/main.go"
+    },
+    {
+      "type": "command-success",
+      "command": ["node", "validate-go-worker.mjs"],
+      "expect": "go worker ok"
+    }
+  ],
+  "contextHints": {
+    "commands": ["go run ./cmd/worker", "go test ./..."],
+    "entrypoints": ["cmd/worker/main.go", "internal/worker/cycle.go", "go.mod"],
+    "preview": null,
+    "extensionPoints": ["queue-config.json"]
+  }
+}

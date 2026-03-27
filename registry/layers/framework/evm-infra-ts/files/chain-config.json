@@ -1,0 +1,5 @@
+{
+  "chainName": "{{chainName}}",
+  "nativeToken": "{{nativeToken}}",
+  "transport": "rpc+ws"
+}

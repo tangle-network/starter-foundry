@@ -1,0 +1,11 @@
+{
+  "projectName": "tangle-custody",
+  "family": "tangle-blueprint",
+  "layers": ["framework:tangle-blueprint", "capability:tangle-custody"],
+  "partner": "tangle",
+  "variables": {
+    "blueprintName": "custody-blueprint",
+    "jobName": "ApproveTransaction"
+  },
+  "primaryArtifactTargetMs": 2500
+}

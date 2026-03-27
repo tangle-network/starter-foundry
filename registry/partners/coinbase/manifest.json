@@ -16,7 +16,9 @@
     "rust-service",
     "go-api",
     "go-worker",
-    "playwright-worker"
+    "playwright-worker",
+    "evm-infra-ts",
+    "forge-contracts"
   ],
   "slotDefaults": {
     "database": "database:sqlite",

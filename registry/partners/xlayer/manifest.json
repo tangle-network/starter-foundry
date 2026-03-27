@@ -1,0 +1,37 @@
+{
+  "id": "xlayer",
+  "description": "Partner pack for X Layer monitoring, deploy, and OKB-native workflows.",
+  "appliesTo": [
+    "frontend-static",
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "api-service",
+    "python-api",
+    "rust-service",
+    "go-api",
+    "worker-job",
+    "go-worker",
+    "playwright-worker",
+    "evm-infra-ts",
+    "forge-contracts"
+  ],
+  "slotDefaults": {
+    "database": "database:sqlite",
+    "sdk": "sdk:evm-wallet"
+  },
+  "defaults": {
+    "headline": "Build an X Layer-ready service surface",
+    "subheadline": "Starter shell tuned for OKB-native deploy, monitoring, and chain client workflows."
+  },
+  "files": [
+    {
+      "source": "files/starter-brand.json",
+      "target": "starter-brand.json"
+    },
+    {
+      "source": "files/partner-config.json",
+      "target": "partner-config.json"
+    }
+  ]
+}

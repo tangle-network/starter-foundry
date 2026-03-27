@@ -1,0 +1,17 @@
+{
+  "projectName": "xlayer-relayer",
+  "family": "api-service",
+  "layers": ["framework:node-http", "capability:logging", "capability:evm-protocol-api"],
+  "partner": "xlayer",
+  "slots": {
+    "database": "database:sqlite",
+    "sdk": "sdk:evm-wallet"
+  },
+  "variables": {
+    "serviceName": "xlayer-relayer",
+    "protocolRole": "relayer",
+    "protocolScope": "xlayer",
+    "port": 4198
+  },
+  "primaryArtifactTargetMs": 2500
+}

@@ -27,6 +27,112 @@ function buildSlug(prompt, fallback) {
   return slug || fallback;
 }
 
+function resolvePartnerForFamily(partner, family) {
+  if (!partner) {
+    return null;
+  }
+
+  const familySets = {
+    coinbase: new Set([
+      "frontend-static",
+      "react-vite-ts",
+      "nextjs-ts",
+      "fullstack-ts",
+      "expo-react-native-ts",
+      "browser-extension-ts",
+      "electron-desktop-ts",
+      "tauri-desktop",
+      "api-service",
+      "cloudflare-worker-ts",
+      "python-api",
+      "rust-service",
+      "go-api",
+      "worker-job",
+      "go-worker",
+      "playwright-worker",
+      "evm-infra-ts",
+      "forge-contracts",
+    ]),
+    tangle: new Set([
+      "frontend-static",
+      "react-vite-ts",
+      "nextjs-ts",
+      "fullstack-ts",
+      "api-service",
+      "python-api",
+      "rust-service",
+      "go-api",
+      "worker-job",
+      "go-worker",
+      "playwright-worker",
+      "evm-infra-ts",
+      "tangle-blueprint",
+    ]),
+    eigenlayer: new Set([
+      "frontend-static",
+      "react-vite-ts",
+      "nextjs-ts",
+      "fullstack-ts",
+      "api-service",
+      "python-api",
+      "rust-service",
+      "go-api",
+      "worker-job",
+      "go-worker",
+      "playwright-worker",
+      "evm-infra-ts",
+      "eigenlayer-avs",
+    ]),
+    arbitrum: new Set([
+      "frontend-static",
+      "react-vite-ts",
+      "nextjs-ts",
+      "fullstack-ts",
+      "api-service",
+      "python-api",
+      "rust-service",
+      "go-api",
+      "worker-job",
+      "go-worker",
+      "playwright-worker",
+      "evm-infra-ts",
+      "forge-contracts",
+      "stylus-contracts",
+    ]),
+    xlayer: new Set([
+      "frontend-static",
+      "react-vite-ts",
+      "nextjs-ts",
+      "fullstack-ts",
+      "api-service",
+      "python-api",
+      "rust-service",
+      "go-api",
+      "worker-job",
+      "go-worker",
+      "playwright-worker",
+      "evm-infra-ts",
+      "forge-contracts",
+    ]),
+    solana: new Set([
+      "frontend-static",
+      "react-vite-ts",
+      "nextjs-ts",
+      "fullstack-ts",
+      "api-service",
+      "python-api",
+      "rust-service",
+      "go-api",
+      "worker-job",
+      "go-worker",
+      "playwright-worker",
+      "solana-program",
+    ]),
+  };
+
+  return familySets[partner]?.has(family) ? partner : null;
+}
+
 function detectDatabaseSlot(text) {
   if (text.includes("convex")) {
     return "database:convex";
@@ -52,6 +158,13 @@ function detectSdkSlot(text, partner) {
   }
   if (text.includes("coinbase cdp") || text.includes("coinbase sdk")) {
     return "sdk:coinbase-cdp";
+  }
+  if (
+    partner === "xlayer" ||
+    partner === "arbitrum" ||
+    hasAny(text, ["walletconnect", "wallet connect", "okx wallet", "metamask", "viem", "ethers"])
+  ) {
+    return "sdk:evm-wallet";
   }
   return null;
 }
@@ -102,7 +215,19 @@ function detectTangleLane(text) {
     "tangle's",
     "tangle native",
     "frost blueprint",
+    "tangle oracle",
+    "tangle custody",
   ]);
+}
+
+function detectTangleOraclePattern(text) {
+  return hasAny(text, ["tangle", "tangle network", "tangle native"]) &&
+    hasAny(text, ["oracle", "price feed", "attestation", "feeder", "operator rewards", "slashing", "data source"]);
+}
+
+function detectTangleCustodyPattern(text) {
+  return hasAny(text, ["tangle", "tangle network", "tangle native", "frost"]) &&
+    hasAny(text, ["custody", "mpc", "threshold signing", "key resharing", "policy engine", "signing ceremony"]);
 }
 
 function detectAvsLane(text) {
@@ -127,6 +252,55 @@ function detectDspyLane(text) {
 
 function detectX402Lane(text) {
   return hasAny(text, ["x402", "micropayments", "pay-per-request", "monetized api"]);
+}
+
+function detectEvmInfraLane(text) {
+  return hasAny(text, [
+    "viem",
+    "ethers",
+    "websocket",
+    "rpc",
+    "block monitor",
+    "gas price",
+    "transaction count",
+    "multicall",
+    "wallet balance",
+    "wallet balances",
+    "stats json endpoint",
+    "monitor x layer",
+    "monitor ethereum",
+    "monitor arbitrum",
+    "okb",
+    "oklink",
+    "okx",
+  ]);
+}
+
+function detectImplicitEvmApiPattern(text) {
+  return hasAny(text, [
+    "indexer",
+    "subgraph",
+    "events",
+    "relayer",
+    "paymaster",
+    "bundler",
+    "keeper",
+    "oracle",
+    "deploy",
+    "deployment",
+    "bridge",
+    "staking",
+    "liquid staking",
+    "lending",
+    "yield",
+    "insurance",
+    "amm",
+    "swap",
+    "hook",
+    "analytics",
+    "portfolio",
+    "metrics",
+  ]);
 }
 
 function detectEvmLane(text) {
@@ -169,6 +343,53 @@ function detectEvmLane(text) {
   ]);
 }
 
+function inferPartner(text) {
+  if (hasAny(text, ["coinbase", "base network", "coinbase commerce", "coinbase wallet", "coinbase cdp"])) {
+    return "coinbase";
+  }
+  if (hasAny(text, ["tangle", "blueprint sdk", "cargo tangle"])) {
+    return "tangle";
+  }
+  if (hasAny(text, ["eigenlayer", "avs"])) {
+    return "eigenlayer";
+  }
+  if (hasAny(text, ["x layer", "xlayer", "okb", "oklink", "okx"])) {
+    return "xlayer";
+  }
+  if (hasAny(text, ["arbitrum", "stylus"])) {
+    return "arbitrum";
+  }
+  if (hasAny(text, ["solana", "anchor", "pda", "wallet adapter"])) {
+    return "solana";
+  }
+  return null;
+}
+
+function needsSupportApiLane(text) {
+  return hasAny(text, [
+    "order management",
+    "order history",
+    "payment webhook",
+    "quote generation",
+    "claims",
+    "transaction history",
+    "history/audit",
+    "portfolio",
+    "analytics",
+    "monitoring",
+    "indexer",
+    "websocket",
+    "database",
+    "metrics",
+    "p&l",
+    "api endpoints",
+    "consumer integration",
+    "historical data",
+    "data source",
+    "programmatic access",
+  ]);
+}
+
 function buildWebProject(prompt, partner, text) {
   const isNext = hasAny(text, ["next", "next.js", "nextjs", "app router", "seo"]);
   const family = isNext ? "nextjs-ts" : "react-vite-ts";
@@ -200,7 +421,7 @@ function buildWebProject(prompt, partner, text) {
       projectName: `${buildSlug(prompt, "workspace")}-web`,
       family,
       layers,
-      partner,
+      partner: resolvePartnerForFamily(partner, family),
       slots,
       variables: {
         headline: "Ship the primary product surface first",
@@ -273,6 +494,14 @@ function chooseApiFamily(text) {
     };
   }
 
+  if (detectEvmInfraLane(text)) {
+    return {
+      family: "evm-infra-ts",
+      layers: ["framework:evm-infra-ts"],
+      path: "apps/api",
+    };
+  }
+
   if (hasAny(text, ["cloudflare", "durable object", "edge api", "edge function", "hono edge"])) {
     return {
       family: "cloudflare-worker-ts",
@@ -314,6 +543,7 @@ function chooseApiFamily(text) {
 
 function buildApiProject(prompt, partner, text) {
   const choice = chooseApiFamily(text);
+  const layers = [...choice.layers];
   const slots = {};
   const databaseSlot = detectDatabaseSlot(text);
   const sdkSlot = detectSdkSlot(text, partner);
@@ -338,14 +568,18 @@ function buildApiProject(prompt, partner, text) {
     slots.sdk = sdkSlot;
   }
 
+  if ((choice.family === "api-service" || choice.family === "evm-infra-ts") && detectImplicitEvmApiPattern(text)) {
+    layers.push("capability:evm-protocol-api");
+  }
+
   return {
     id: "api",
     path: choice.path,
     spec: {
       projectName: `${buildSlug(prompt, "workspace")}-api`,
       family: choice.family,
-      layers: choice.layers,
-      partner,
+      layers,
+      partner: resolvePartnerForFamily(partner, choice.family),
       slots,
       variables: {},
       primaryArtifactTargetMs: 2500,
@@ -458,8 +692,19 @@ function buildWorkspacePromptPlan({ prompt, partner, text }) {
   const hasMcp = detectMcpLane(text);
   const hasDspy = detectDspyLane(text);
   const hasX402 = detectX402Lane(text);
+  const hasEvmInfra = detectEvmInfraLane(text);
   const runtimeCount = [hasEvm, hasSolana, hasMove].filter(Boolean).length;
   const apiChoice = hasApi ? chooseApiFamily(text) : null;
+  const commerceSupportApi =
+    !hasApi &&
+    hasFrontend &&
+    needsSupportApiLane(text) &&
+    (partner === "coinbase" || detectPaymentsSlot(text) !== null || detectSdkSlot(text, partner) !== null);
+  const implicitApi =
+    !hasApi &&
+    ((hasEvm || hasTangle || hasAvs || hasStylus || hasEvmInfra) &&
+      (needsSupportApiLane(text) || detectImplicitEvmApiPattern(text)) ||
+      commerceSupportApi);
   const workspaceSignals = hasAny(text, [
     "workspace",
     "monorepo",
@@ -469,6 +714,32 @@ function buildWorkspacePromptPlan({ prompt, partner, text }) {
     "contract lane",
     "contract lanes",
   ]);
+  const fitsFullstackStarter =
+    !workspaceSignals &&
+    !hasWorker &&
+    !hasEvm &&
+    !hasSolana &&
+    !hasMove &&
+    !hasTangle &&
+    !hasAvs &&
+    !hasStylus &&
+    !hasZk &&
+    !hasMcp &&
+    !hasDspy &&
+    !hasX402 &&
+    !hasEvmInfra &&
+    hasFrontend &&
+    hasApi &&
+    hasAny(text, [
+      "fullstack",
+      "full stack",
+      "dashboard with api",
+      "app with api",
+      "admin app",
+      "database-backed",
+      "dashboard and api",
+      "admin flows",
+    ]);
   const laneCount = [
     hasFrontend,
     hasApi,
@@ -483,6 +754,8 @@ function buildWorkspacePromptPlan({ prompt, partner, text }) {
     hasMcp,
     hasDspy,
     hasX402,
+    hasEvmInfra,
+    implicitApi,
   ].filter(Boolean).length;
   const needsWorkspace =
     runtimeCount > 1 ||
@@ -491,9 +764,10 @@ function buildWorkspacePromptPlan({ prompt, partner, text }) {
     (hasWorker && laneCount > 1) ||
     (hasFrontend && (hasTangle || hasAvs || hasStylus || hasZk || hasMcp || hasDspy || hasX402)) ||
     (hasFrontend && hasApi && apiChoice && apiChoice.family !== "api-service") ||
+    (hasFrontend && implicitApi) ||
     (workspaceSignals && laneCount > 1);
 
-  if (!needsWorkspace) {
+  if (!needsWorkspace || fitsFullstackStarter) {
     return null;
   }
 
@@ -502,7 +776,7 @@ function buildWorkspacePromptPlan({ prompt, partner, text }) {
     projects.push(buildWebProject(prompt, partner, text));
   }
 
-  if (hasApi) {
+  if (hasApi || implicitApi) {
     projects.push(buildApiProject(prompt, partner, text));
   }
 
@@ -548,7 +822,7 @@ function buildWorkspacePromptPlan({ prompt, partner, text }) {
         projectName: `${buildSlug(prompt, "workspace")}-api`,
         family: "x402-service",
         layers: ["framework:x402-service"],
-        partner,
+        partner: resolvePartnerForFamily(partner, "x402-service"),
         slots: {},
         variables: {},
         primaryArtifactTargetMs: 2500,
@@ -557,24 +831,43 @@ function buildWorkspacePromptPlan({ prompt, partner, text }) {
   }
 
   if (hasTangle) {
+    const tangleLayers = ["framework:tangle-blueprint"];
+    if (detectTangleCustodyPattern(text)) {
+      tangleLayers.push("capability:tangle-custody");
+    } else if (detectTangleOraclePattern(text)) {
+      tangleLayers.push("capability:tangle-oracle");
+    }
+    const blueprintProfile = text.includes("custody")
+      ? { blueprintName: "custody-blueprint", jobName: "ApproveTransaction" }
+      : text.includes("oracle")
+        ? { blueprintName: "oracle-blueprint", jobName: "UpdatePriceFeed" }
+        : text.includes("zk")
+          ? { blueprintName: "zk-prover-blueprint", jobName: "GenerateProof" }
+          : { blueprintName: "storage-blueprint", jobName: "StoreObject" };
     projects.push({
       id: "tangle",
       path: "protocols/tangle",
       spec: {
         projectName: `${buildSlug(prompt, "workspace")}-tangle`,
         family: "tangle-blueprint",
-        layers: ["framework:tangle-blueprint"],
-        partner: null,
+        layers: tangleLayers,
+        partner: resolvePartnerForFamily(partner, "tangle-blueprint"),
         slots: {},
-        variables: {
-          blueprintName: "partner-blueprint",
-          jobName: "HandleRequest",
-        },
+        variables: blueprintProfile,
       },
     });
   }
 
   if (hasAvs) {
+    const avsName = text.includes("oracle")
+      ? "oracle-avs"
+      : text.includes("keeper")
+        ? "keeper-avs"
+        : text.includes("sequencer")
+          ? "sequencer-avs"
+          : text.includes("bridge")
+            ? "bridge-avs"
+            : "data-availability-avs";
     projects.push({
       id: "avs",
       path: "protocols/avs",
@@ -582,10 +875,10 @@ function buildWorkspacePromptPlan({ prompt, partner, text }) {
         projectName: `${buildSlug(prompt, "workspace")}-avs`,
         family: "eigenlayer-avs",
         layers: ["framework:eigenlayer-avs"],
-        partner: null,
+        partner: resolvePartnerForFamily(partner, "eigenlayer-avs"),
         slots: {},
         variables: {
-          avsName: "partner-avs",
+          avsName,
         },
       },
     });
@@ -599,7 +892,7 @@ function buildWorkspacePromptPlan({ prompt, partner, text }) {
         projectName: `${buildSlug(prompt, "workspace")}-stylus`,
         family: "stylus-contracts",
         layers: ["framework:stylus-contracts"],
-        partner: null,
+        partner: resolvePartnerForFamily(partner, "stylus-contracts"),
         slots: {},
         variables: {
           contractName: "StylusPool",
@@ -633,7 +926,7 @@ function buildWorkspacePromptPlan({ prompt, partner, text }) {
         projectName: `${buildSlug(prompt, "workspace")}-evm`,
         family: "forge-contracts",
         layers: ["framework:forge-foundation"],
-        partner: null,
+        partner: resolvePartnerForFamily(partner, "forge-contracts"),
         slots: {},
         variables: {
           contractName: "TreasuryRouter",
@@ -650,7 +943,7 @@ function buildWorkspacePromptPlan({ prompt, partner, text }) {
         projectName: `${buildSlug(prompt, "workspace")}-solana`,
         family: "solana-program",
         layers: ["framework:solana-native-rust"],
-        partner: null,
+        partner: resolvePartnerForFamily(partner, "solana-program"),
         slots: {},
         variables: {
           instructionName: "InitializeTreasury",
@@ -702,13 +995,14 @@ function buildWorkspacePromptPlan({ prompt, partner, text }) {
 
 export async function planPrompt({ prompt, partner = null }) {
   const text = prompt.toLowerCase();
-  const workspacePlan = buildWorkspacePromptPlan({ prompt, partner, text });
+  const effectivePartner = partner ?? inferPartner(text);
+  const workspacePlan = buildWorkspacePromptPlan({ prompt, partner: effectivePartner, text });
 
   if (workspacePlan) {
     return workspacePlan;
   }
 
-  const starterSelection = await selectStarter({ prompt, partner });
+  const starterSelection = await selectStarter({ prompt, partner: effectivePartner });
   const registry = await loadRegistry();
   const family = registry.families.get(starterSelection.spec.family);
   const spec = {
@@ -718,7 +1012,7 @@ export async function planPrompt({ prompt, partner = null }) {
   };
 
   const databaseSlot = detectDatabaseSlot(text);
-  const sdkSlot = detectSdkSlot(text, partner);
+  const sdkSlot = detectSdkSlot(text, effectivePartner);
   const authSlot = detectAuthSlot(text);
   const paymentsSlot = detectPaymentsSlot(text);
   const queueSlot = detectQueueSlot(text);
@@ -747,6 +1041,11 @@ export async function planPrompt({ prompt, partner = null }) {
   if (detectTangleLane(text)) {
     spec.family = "tangle-blueprint";
     spec.layers = ["framework:tangle-blueprint"];
+    if (detectTangleCustodyPattern(text)) {
+      spec.layers.push("capability:tangle-custody");
+    } else if (detectTangleOraclePattern(text)) {
+      spec.layers.push("capability:tangle-oracle");
+    }
   }
 
   if (detectAvsLane(text)) {

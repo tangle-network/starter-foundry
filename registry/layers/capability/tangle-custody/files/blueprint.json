@@ -1,0 +1,17 @@
+{
+  "name": "{{blueprintName}}",
+  "jobs": [
+    {
+      "id": "{{jobName}}",
+      "description": "Approve a threshold signing request and emit a deterministic ceremony result"
+    }
+  ],
+  "operatorRequirements": {
+    "minimumStake": "25",
+    "ceremony": "threshold-signing"
+  },
+  "slashing": {
+    "enabled": true,
+    "reason": "invalid signature share"
+  }
+}

@@ -420,6 +420,69 @@
           "solana": "solana-program"
         }
       }
+    },
+    {
+      "id": "xlayer-bridge-dashboard",
+      "complexity": "complex",
+      "partner": null,
+      "prompt": "Build a React bridge dashboard for X Layer with WalletConnect, viem, transaction analytics, and a relayer API.",
+      "expected": {
+        "kind": "workspace",
+        "primaryProjectId": "web",
+        "projectIds": ["web", "api", "evm"],
+        "projectFamilies": {
+          "web": "react-vite-ts",
+          "api": "evm-infra-ts",
+          "evm": "forge-contracts"
+        }
+      }
+    },
+    {
+      "id": "ethereum-liquid-staking",
+      "complexity": "mostly-complex",
+      "partner": null,
+      "prompt": "Build a Next.js liquid staking app on Ethereum with Foundry contracts, an indexer API, and wallet onboarding.",
+      "expected": {
+        "kind": "workspace",
+        "primaryProjectId": "web",
+        "projectIds": ["web", "api", "evm"],
+        "projectFamilies": {
+          "web": "nextjs-ts",
+          "api": "api-service",
+          "evm": "forge-contracts"
+        }
+      }
+    },
+    {
+      "id": "tangle-oracle-workspace",
+      "complexity": "complex",
+      "partner": null,
+      "prompt": "Build a Tangle oracle network with a React dashboard, attestation feeds, and operator analytics.",
+      "expected": {
+        "kind": "workspace",
+        "primaryProjectId": "web",
+        "projectIds": ["web", "api", "tangle"],
+        "projectFamilies": {
+          "web": "react-vite-ts",
+          "api": "api-service",
+          "tangle": "tangle-blueprint"
+        }
+      }
+    },
+    {
+      "id": "tangle-custody-workspace",
+      "complexity": "complex",
+      "partner": null,
+      "prompt": "Build a Tangle custody network for threshold signing, key resharing, and a React operator dashboard.",
+      "expected": {
+        "kind": "workspace",
+        "primaryProjectId": "web",
+        "projectIds": ["web", "tangle"],
+        "projectFamilies": {
+          "web": "react-vite-ts",
+          "tangle": "tangle-blueprint"
+        }
+      }
     }
   ]
 }

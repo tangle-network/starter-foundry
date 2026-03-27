@@ -1,0 +1,33 @@
+{
+  "id": "evm-wallet",
+  "slot": "sdk",
+  "description": "Generic EVM wallet and RPC client profile for viem, ethers, and WalletConnect flows.",
+  "appliesTo": [
+    "api-service",
+    "cloudflare-worker-ts",
+    "python-api",
+    "rust-service",
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "go-api",
+    "expo-react-native-ts",
+    "browser-extension-ts",
+    "electron-desktop-ts",
+    "tauri-desktop",
+    "mcp-server-ts",
+    "dspy-pipeline-py",
+    "x402-service",
+    "zk-prover-service",
+    "evm-infra-ts"
+  ],
+  "defaults": {
+    "sdkProvider": "evm-wallet"
+  },
+  "files": [
+    {
+      "source": "files/sdk-config.json",
+      "target": "sdk-config.json"
+    }
+  ]
+}

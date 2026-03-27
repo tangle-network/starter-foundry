@@ -48,6 +48,18 @@ test("validate passes for x402 service starter", async () => {
   assert.equal(result.ok, true);
 });
 
+test("validate passes for evm infra starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/evm-infra.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for api starter with evm protocol capability", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/api-evm-protocol.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
 test("validate passes for zk prover starter", async () => {
   const spec = await loadProjectSpec(path.resolve("specs/zk-prover.json"));
   const result = await validateStarter({ spec });
@@ -56,6 +68,18 @@ test("validate passes for zk prover starter", async () => {
 
 test("validate passes for stylus contracts starter", async () => {
   const spec = await loadProjectSpec(path.resolve("specs/stylus-contracts.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for tangle custody starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/tangle-custody.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for tangle oracle starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/tangle-oracle.json"));
   const result = await validateStarter({ spec });
   assert.equal(result.ok, true);
 });
@@ -251,6 +275,7 @@ test("catalog separates implemented and planned families", async () => {
   const catalog = await buildCatalog();
   assert.ok(catalog.implemented.some((item) => item.id === "frontend-static"));
   assert.ok(catalog.implemented.some((item) => item.id === "forge-contracts"));
+  assert.ok(catalog.implemented.some((item) => item.id === "evm-infra-ts"));
   assert.ok(catalog.implemented.some((item) => item.id === "react-vite-ts"));
   assert.ok(catalog.implemented.some((item) => item.id === "nextjs-ts"));
   assert.ok(catalog.implemented.some((item) => item.id === "fullstack-ts"));

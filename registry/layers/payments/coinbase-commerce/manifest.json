@@ -2,7 +2,7 @@
   "id": "coinbase-commerce",
   "slot": "payments",
   "description": "Coinbase Commerce payments profile.",
-  "appliesTo": ["react-vite-ts", "nextjs-ts", "fullstack-ts", "api-service", "cloudflare-worker-ts", "python-api", "rust-service", "go-api", "expo-react-native-ts", "electron-desktop-ts", "tauri-desktop", "mcp-server-ts", "dspy-pipeline-py", "x402-service", "zk-prover-service"],
+  "appliesTo": ["react-vite-ts", "nextjs-ts", "fullstack-ts", "api-service", "cloudflare-worker-ts", "python-api", "rust-service", "go-api", "expo-react-native-ts", "electron-desktop-ts", "tauri-desktop", "mcp-server-ts", "dspy-pipeline-py", "x402-service", "zk-prover-service", "evm-infra-ts"],
   "defaults": {
     "paymentsProvider": "coinbase-commerce"
   },

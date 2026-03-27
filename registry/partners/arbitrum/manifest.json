@@ -1,0 +1,38 @@
+{
+  "id": "arbitrum",
+  "description": "Partner pack for Arbitrum and Stylus application workflows.",
+  "appliesTo": [
+    "frontend-static",
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "api-service",
+    "python-api",
+    "rust-service",
+    "go-api",
+    "worker-job",
+    "go-worker",
+    "playwright-worker",
+    "evm-infra-ts",
+    "forge-contracts",
+    "stylus-contracts"
+  ],
+  "slotDefaults": {
+    "database": "database:sqlite",
+    "sdk": "sdk:evm-wallet"
+  },
+  "defaults": {
+    "headline": "Build an Arbitrum-ready product surface",
+    "subheadline": "Starter shell tuned for L2 dapps, infra, and Stylus-powered runtimes."
+  },
+  "files": [
+    {
+      "source": "files/starter-brand.json",
+      "target": "starter-brand.json"
+    },
+    {
+      "source": "files/partner-config.json",
+      "target": "partner-config.json"
+    }
+  ]
+}

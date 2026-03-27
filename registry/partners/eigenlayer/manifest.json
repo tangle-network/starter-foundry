@@ -1,0 +1,36 @@
+{
+  "id": "eigenlayer",
+  "description": "Partner pack for EigenLayer AVS and offchain service workflows.",
+  "appliesTo": [
+    "frontend-static",
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "api-service",
+    "python-api",
+    "rust-service",
+    "go-api",
+    "worker-job",
+    "go-worker",
+    "playwright-worker",
+    "evm-infra-ts",
+    "eigenlayer-avs"
+  ],
+  "slotDefaults": {
+    "database": "database:sqlite"
+  },
+  "defaults": {
+    "headline": "Build an EigenLayer-ready service surface",
+    "subheadline": "Starter shell tuned for AVS operators, coprocessors, and delegated services."
+  },
+  "files": [
+    {
+      "source": "files/starter-brand.json",
+      "target": "starter-brand.json"
+    },
+    {
+      "source": "files/partner-config.json",
+      "target": "partner-config.json"
+    }
+  ]
+}

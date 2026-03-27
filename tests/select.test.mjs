@@ -23,6 +23,16 @@ test("select chooses tangle blueprint starter for tangle prompts", async () => {
   assert.deepEqual(result.spec.layers, ["framework:tangle-blueprint"]);
 });
 
+test("select chooses tangle blueprint starter for broader tangle custody prompts", async () => {
+  const result = await selectStarter({
+    prompt: "Build a Tangle network custody workflow for threshold signing and key resharing",
+    partner: null,
+  });
+
+  assert.equal(result.spec.family, "tangle-blueprint");
+  assert.deepEqual(result.spec.layers, ["framework:tangle-blueprint"]);
+});
+
 test("select chooses eigenlayer avs starter for avs prompts", async () => {
   const result = await selectStarter({
     prompt: "Build an Oracle AVS on EigenLayer for decentralized price feeds",
@@ -61,6 +71,16 @@ test("select chooses x402 starter for x402 prompts", async () => {
 
   assert.equal(result.spec.family, "x402-service");
   assert.deepEqual(result.spec.layers, ["framework:x402-service"]);
+});
+
+test("select chooses evm infra starter for chain monitoring prompts", async () => {
+  const result = await selectStarter({
+    prompt: "Build a viem-based WebSocket block monitor for X Layer that exposes a stats JSON endpoint",
+    partner: null,
+  });
+
+  assert.equal(result.spec.family, "evm-infra-ts");
+  assert.deepEqual(result.spec.layers, ["framework:evm-infra-ts"]);
 });
 
 test("select chooses zk prover starter for zk prompts", async () => {

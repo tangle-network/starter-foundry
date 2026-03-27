@@ -1,0 +1,5 @@
+{
+  "partnerId": "eigenlayer",
+  "runtimeFocus": "avs",
+  "preferredOutputs": ["operators", "quorums", "telemetry"]
+}

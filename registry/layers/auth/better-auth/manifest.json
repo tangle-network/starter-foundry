@@ -2,7 +2,7 @@
   "id": "better-auth",
   "slot": "auth",
   "description": "Better Auth profile for app and API starters.",
-  "appliesTo": ["react-vite-ts", "nextjs-ts", "fullstack-ts", "api-service", "cloudflare-worker-ts", "python-api", "rust-service", "go-api", "expo-react-native-ts", "browser-extension-ts", "electron-desktop-ts", "tauri-desktop", "mcp-server-ts", "dspy-pipeline-py", "x402-service", "zk-prover-service"],
+  "appliesTo": ["react-vite-ts", "nextjs-ts", "fullstack-ts", "api-service", "cloudflare-worker-ts", "python-api", "rust-service", "go-api", "expo-react-native-ts", "browser-extension-ts", "electron-desktop-ts", "tauri-desktop", "mcp-server-ts", "dspy-pipeline-py", "x402-service", "zk-prover-service", "evm-infra-ts"],
   "defaults": {
     "authProvider": "better-auth"
   },

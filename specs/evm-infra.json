@@ -1,0 +1,15 @@
+{
+  "projectName": "xlayer-monitor",
+  "family": "evm-infra-ts",
+  "layers": ["framework:evm-infra-ts"],
+  "partner": "xlayer",
+  "slots": {
+    "database": "database:sqlite"
+  },
+  "variables": {
+    "serviceName": "xlayer-monitor",
+    "chainName": "xlayer",
+    "nativeToken": "OKB"
+  },
+  "primaryArtifactTargetMs": 2500
+}

@@ -2,7 +2,7 @@
   "id": "convex",
   "slot": "database",
   "description": "Database profile for Convex-backed starters.",
-  "appliesTo": ["api-service", "python-api", "rust-service", "cloudflare-worker-ts", "fullstack-ts", "go-api", "mcp-server-ts", "dspy-pipeline-py", "x402-service", "zk-prover-service"],
+  "appliesTo": ["api-service", "python-api", "rust-service", "cloudflare-worker-ts", "fullstack-ts", "go-api", "mcp-server-ts", "dspy-pipeline-py", "x402-service", "zk-prover-service", "evm-infra-ts"],
   "defaults": {
     "databaseProvider": "convex"
   },

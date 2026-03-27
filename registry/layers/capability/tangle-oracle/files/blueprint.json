@@ -1,0 +1,17 @@
+{
+  "name": "{{blueprintName}}",
+  "jobs": [
+    {
+      "id": "{{jobName}}",
+      "description": "Fetch a deterministic data source and produce an attested price update"
+    }
+  ],
+  "operatorRequirements": {
+    "minimumStake": "10",
+    "rewardModel": "attestation"
+  },
+  "slashing": {
+    "enabled": true,
+    "reason": "invalid oracle report"
+  }
+}

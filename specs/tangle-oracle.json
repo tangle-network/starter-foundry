@@ -1,0 +1,11 @@
+{
+  "projectName": "tangle-oracle",
+  "family": "tangle-blueprint",
+  "layers": ["framework:tangle-blueprint", "capability:tangle-oracle"],
+  "partner": "tangle",
+  "variables": {
+    "blueprintName": "oracle-blueprint",
+    "jobName": "UpdatePriceFeed"
+  },
+  "primaryArtifactTargetMs": 2500
+}

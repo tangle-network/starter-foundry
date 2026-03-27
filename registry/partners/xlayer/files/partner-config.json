@@ -1,0 +1,5 @@
+{
+  "partnerId": "xlayer",
+  "runtimeFocus": "evm-infra",
+  "preferredOutputs": ["monitoring", "deploy", "wallet-clients"]
+}

@@ -1,0 +1,8 @@
+{
+  "scope": "{{protocolScope}}",
+  "role": "{{protocolRole}}",
+  "notes": [
+    "Attach contract indexing, relayer flows, or protocol health logic here.",
+    "This seam is meant for product APIs that support an EVM frontend or contract lane."
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "id": "solana",
+  "description": "Partner pack for Solana runtime and wallet-aware application workflows.",
+  "appliesTo": [
+    "frontend-static",
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "api-service",
+    "python-api",
+    "rust-service",
+    "go-api",
+    "worker-job",
+    "go-worker",
+    "playwright-worker",
+    "solana-program"
+  ],
+  "slotDefaults": {
+    "database": "database:sqlite",
+    "sdk": "sdk:solana-web3"
+  },
+  "defaults": {
+    "headline": "Build a Solana-ready product surface",
+    "subheadline": "Starter shell tuned for Solana programs, wallets, and index-driven product flows."
+  },
+  "files": [
+    {
+      "source": "files/starter-brand.json",
+      "target": "starter-brand.json"
+    },
+    {
+      "source": "files/partner-config.json",
+      "target": "partner-config.json"
+    }
+  ]
+}

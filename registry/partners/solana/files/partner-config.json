@@ -1,0 +1,5 @@
+{
+  "partnerId": "solana",
+  "runtimeFocus": "programs",
+  "preferredOutputs": ["wallets", "programs", "indexers"]
+}

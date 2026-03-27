@@ -1,0 +1,5 @@
+{
+  "provider": "evm-wallet",
+  "packages": ["viem", "ethers", "@walletconnect/ethereum-provider"],
+  "guidance": "Bias the agent toward portable EVM wallet, RPC, and chain-client flows instead of partner-specific SDKs."
+}

@@ -18,7 +18,8 @@
     "mcp-server-ts",
     "dspy-pipeline-py",
     "x402-service",
-    "zk-prover-service"
+    "zk-prover-service",
+    "evm-infra-ts"
   ],
   "defaults": {
     "sdkProvider": "coinbase-cdp"

@@ -1,0 +1,15 @@
+{
+  "id": "evm-infra-ts",
+  "description": "Node service for EVM monitoring and infrastructure endpoints.",
+  "appliesTo": ["evm-infra-ts"],
+  "files": [
+    {
+      "source": "files/server.mjs",
+      "target": "server.mjs"
+    },
+    {
+      "source": "files/chain-config.json",
+      "target": "chain-config.json"
+    }
+  ]
+}

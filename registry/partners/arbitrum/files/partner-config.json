@@ -1,0 +1,5 @@
+{
+  "partnerId": "arbitrum",
+  "runtimeFocus": "l2",
+  "preferredOutputs": ["dapps", "bridges", "stylus"]
+}

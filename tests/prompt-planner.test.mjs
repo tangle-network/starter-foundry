@@ -68,6 +68,17 @@ test("planPrompt routes x402 agent prompts to a worker plus x402 workspace", asy
   assert.equal(result.spec.projects.find((project) => project.id === "api")?.spec.family, "x402-service");
 });
 
+test("planPrompt keeps x402-specific api lanes ahead of generic evm infra routing", async () => {
+  const result = await planPrompt({
+    prompt:
+      "Create an AI agent using the x402 payment protocol with viem signing, automatic 402 retries, and a Node.js backend.",
+    partner: "coinbase",
+  });
+
+  assert.equal(result.kind, "workspace");
+  assert.equal(result.spec.projects.find((project) => project.id === "api")?.spec.family, "x402-service");
+});
+
 test("planPrompt routes ethereum protocol prompts to a web plus evm workspace", async () => {
   const result = await planPrompt({
     prompt: "Build a decentralized lending protocol on Ethereum with LendingPool contracts and a Vite + React supply/borrow interface.",
@@ -79,6 +90,24 @@ test("planPrompt routes ethereum protocol prompts to a web plus evm workspace", 
   assert.equal(result.spec.projects.find((project) => project.id === "evm")?.spec.family, "forge-contracts");
 });
 
+test("planPrompt adds an api lane for evm protocol prompts that imply backend seams", async () => {
+  const result = await planPrompt({
+    prompt:
+      "Build a Next.js liquid staking app on Ethereum with Foundry contracts, an indexer API, and wallet onboarding.",
+    partner: null,
+  });
+
+  assert.equal(result.kind, "workspace");
+  assert.equal(result.spec.projects.find((project) => project.id === "web")?.spec.family, "nextjs-ts");
+  assert.equal(result.spec.projects.find((project) => project.id === "api")?.spec.family, "api-service");
+  assert.ok(
+    result.spec.projects
+      .find((project) => project.id === "api")
+      ?.spec.layers.includes("capability:evm-protocol-api"),
+  );
+  assert.equal(result.spec.projects.find((project) => project.id === "evm")?.spec.family, "forge-contracts");
+});
+
 test("planPrompt routes broad tangle prompts to a blueprint workspace", async () => {
   const result = await planPrompt({
     prompt: "Build a threshold signature custody solution using Tangle's native MPC capabilities with a React dashboard and API endpoints.",
@@ -87,6 +116,43 @@ test("planPrompt routes broad tangle prompts to a blueprint workspace", async ()
 
   assert.equal(result.kind, "workspace");
   assert.equal(result.spec.projects.find((project) => project.id === "tangle")?.spec.family, "tangle-blueprint");
+  assert.ok(
+    result.spec.projects
+      .find((project) => project.id === "tangle")
+      ?.spec.layers.includes("capability:tangle-custody"),
+  );
+});
+
+test("planPrompt routes xlayer infra prompts to the evm infra starter", async () => {
+  const result = await planPrompt({
+    prompt: "Build a Node/TypeScript service that monitors X Layer via WebSocket and exposes a /stats JSON endpoint.",
+    partner: null,
+  });
+
+  assert.equal(result.kind, "starter");
+  assert.equal(result.spec.family, "evm-infra-ts");
+  assert.equal(result.spec.partner, "xlayer");
+});
+
+test("planPrompt infers coinbase partner when not provided", async () => {
+  const result = await planPrompt({
+    prompt: "Build a Coinbase Wallet and Commerce storefront with a Vite frontend and order history.",
+    partner: null,
+  });
+
+  assert.equal(result.kind, "workspace");
+  assert.equal(result.spec.projects.find((project) => project.id === "web")?.spec.partner, "coinbase");
+});
+
+test("planPrompt assigns evm wallet sdk for xlayer frontend prompts", async () => {
+  const result = await planPrompt({
+    prompt: "Build a React bridge dashboard for X Layer with WalletConnect, viem, and transaction analytics.",
+    partner: null,
+  });
+
+  assert.equal(result.kind, "workspace");
+  assert.equal(result.spec.projects.find((project) => project.id === "web")?.spec.partner, "xlayer");
+  assert.equal(result.spec.projects.find((project) => project.id === "web")?.spec.slots.sdk, "sdk:evm-wallet");
 });
 
 test("planPrompt routes mixed web and python api prompts to a workspace", async () => {
@@ -109,6 +175,17 @@ test("planPrompt routes dspy prompts to the dedicated pipeline family", async ()
 
   assert.equal(result.kind, "starter");
   assert.equal(result.spec.family, "dspy-pipeline-py");
+});
+
+test("planPrompt keeps mcp server prompts on the mcp lane even when they mention json-rpc", async () => {
+  const result = await planPrompt({
+    prompt:
+      "Build a Model Context Protocol server with JSON-RPC transport, TypeScript implementation, and a React testing dashboard.",
+    partner: null,
+  });
+
+  assert.equal(result.kind, "workspace");
+  assert.equal(result.spec.projects.find((project) => project.id === "api")?.spec.family, "mcp-server-ts");
 });
 
 test("planPrompt routes web plus worker prompts to a workspace", async () => {

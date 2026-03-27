@@ -1,0 +1,36 @@
+{
+  "id": "tangle",
+  "description": "Partner pack for Tangle-flavored blueprint and cross-chain workflows.",
+  "appliesTo": [
+    "frontend-static",
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "api-service",
+    "python-api",
+    "rust-service",
+    "go-api",
+    "worker-job",
+    "go-worker",
+    "playwright-worker",
+    "evm-infra-ts",
+    "tangle-blueprint"
+  ],
+  "slotDefaults": {
+    "database": "database:sqlite"
+  },
+  "defaults": {
+    "headline": "Build a Tangle-ready operator surface",
+    "subheadline": "Starter shell tuned for blueprint operators, jobs, and cross-chain service flows."
+  },
+  "files": [
+    {
+      "source": "files/starter-brand.json",
+      "target": "starter-brand.json"
+    },
+    {
+      "source": "files/partner-config.json",
+      "target": "partner-config.json"
+    }
+  ]
+}

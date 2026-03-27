@@ -1,0 +1,5 @@
+{
+  "partnerId": "tangle",
+  "runtimeFocus": "blueprint-operators",
+  "preferredOutputs": ["jobs", "metrics", "cross-chain"]
+}

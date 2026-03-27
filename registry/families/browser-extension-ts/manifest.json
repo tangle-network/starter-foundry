@@ -21,7 +21,8 @@
       "options": [
         "sdk:none",
         "sdk:coinbase-cdp",
-        "sdk:solana-web3"
+        "sdk:solana-web3",
+        "sdk:evm-wallet"
       ],
       "default": "sdk:none"
     }

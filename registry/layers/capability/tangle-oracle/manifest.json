@@ -1,0 +1,18 @@
+{
+  "id": "tangle-oracle",
+  "description": "Specializes a Tangle blueprint for oracle and attestation workloads.",
+  "appliesTo": ["tangle-blueprint"],
+  "files": [
+    {
+      "source": "files/blueprint.json",
+      "target": "blueprint.json"
+    },
+    {
+      "source": "files/lib.rs",
+      "target": "src/lib.rs"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": ["blueprint.json", "src/lib.rs"]
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "id": "python-data-app",
+  "description": "Python data app starter with an instant dashboard page.",
+  "tags": ["python", "data", "analytics"],
+  "taxonomy": {
+    "language": "python",
+    "runtime": "python",
+    "surface": "data-app"
+  },
+  "defaults": {
+    "serviceName": "starter-foundry-data",
+    "port": 8096,
+    "headline": "Starter Foundry Data App",
+    "subheadline": "A lightweight Python data surface for uploads, metrics, and model demos."
+  },
+  "files": [
+    {
+      "source": "files/requirements.txt",
+      "target": "requirements.txt"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "app.py"
+    },
+    {
+      "type": "python-compile",
+      "path": "app.py"
+    },
+    {
+      "type": "http-start",
+      "command": ["python3", "app.py"],
+      "path": "/",
+      "expect": "{{headline}}"
+    }
+  ],
+  "contextHints": {
+    "commands": ["python3 app.py"],
+    "entrypoints": ["app.py"],
+    "preview": {
+      "path": "/"
+    },
+    "extensionPoints": ["starter-data.json"]
+  }
+}

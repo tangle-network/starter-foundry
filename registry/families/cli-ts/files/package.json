@@ -1,0 +1,12 @@
+{
+  "name": "{{packageName}}",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "{{packageName}}": "./src/index.ts"
+  },
+  "scripts": {
+    "dev": "node --experimental-strip-types src/index.ts",
+    "validate": "node validate-types.mjs"
+  }
+}

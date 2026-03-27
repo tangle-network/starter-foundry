@@ -1,0 +1,14 @@
+{
+  "name": "{{packageName}}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "expo start",
+    "validate": "node validate-types.mjs"
+  },
+  "dependencies": {
+    "expo": "^53.0.0",
+    "react": "^19.1.0",
+    "react-native": "^0.79.0"
+  }
+}

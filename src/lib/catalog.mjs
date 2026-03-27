@@ -9,6 +9,22 @@ const plannedFamilies = [
     status: "planned",
     notes: "Lean queue or cron worker starter.",
   },
+  {
+    id: "playwright-worker",
+    language: "typescript",
+    runtime: "node",
+    surface: "automation",
+    status: "planned",
+    notes: "Browser automation and scraping worker starter."
+  },
+  {
+    id: "tauri-desktop",
+    language: "rust",
+    runtime: "tauri",
+    surface: "desktop",
+    status: "planned",
+    notes: "Native desktop shell for teams that prefer Tauri over Electron."
+  }
 ];
 
 export async function buildCatalog() {
@@ -26,10 +42,18 @@ export async function buildCatalog() {
     planned: plannedFamilies.filter((item) => item.status !== "implemented"),
     capabilityThemes: [
       "frontend",
+      "mobile",
+      "extension",
+      "desktop",
+      "cli",
       "backend",
       "worker",
       "edge",
+      "data",
       "database",
+      "auth",
+      "payments",
+      "queue",
       "sdk",
       "crypto",
     ],

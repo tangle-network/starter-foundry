@@ -1,0 +1,15 @@
+{
+  "id": "coinbase-commerce",
+  "slot": "payments",
+  "description": "Coinbase Commerce payments profile.",
+  "appliesTo": ["react-vite-ts", "nextjs-ts", "fullstack-ts", "api-service", "cloudflare-worker-ts", "python-api", "rust-service", "go-api", "expo-react-native-ts", "electron-desktop-ts"],
+  "defaults": {
+    "paymentsProvider": "coinbase-commerce"
+  },
+  "files": [
+    {
+      "source": "files/payments-config.json",
+      "target": "payments-config.json"
+    }
+  ]
+}

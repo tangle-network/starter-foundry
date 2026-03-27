@@ -1,0 +1,12 @@
+{
+  "projectName": "browser-extension-research",
+  "family": "browser-extension-ts",
+  "layers": ["framework:browser-extension-ts"],
+  "slots": {
+    "auth": "auth:supabase-auth"
+  },
+  "variables": {
+    "headline": "Capture page context quickly",
+    "subheadline": "Popup, background worker, and content seams are ready."
+  }
+}

@@ -6,6 +6,36 @@ function keywordScore(prompt, keywords) {
 export async function selectStarter({ prompt, partner = null }) {
   const candidates = [
     {
+      family: "expo-react-native-ts",
+      layers: ["framework:expo-react-native-ts"],
+      score: keywordScore(prompt, ["expo", "react native", "mobile app", "ios app", "android app"]),
+      reasons: ["mobile language detected"],
+    },
+    {
+      family: "browser-extension-ts",
+      layers: ["framework:browser-extension-ts"],
+      score: keywordScore(prompt, ["browser extension", "chrome extension", "manifest v3", "extension popup", "firefox addon"]),
+      reasons: ["browser extension language detected"],
+    },
+    {
+      family: "electron-desktop-ts",
+      layers: ["framework:electron-desktop-ts"],
+      score: keywordScore(prompt, ["electron", "desktop app", "desktop assistant", "tray app"]),
+      reasons: ["desktop language detected"],
+    },
+    {
+      family: "cli-ts",
+      layers: ["framework:cli-ts"],
+      score: keywordScore(prompt, ["cli", "command line", "terminal tool", "shell tool", "developer tool"]),
+      reasons: ["cli language detected"],
+    },
+    {
+      family: "python-data-app",
+      layers: ["framework:python-data-app"],
+      score: keywordScore(prompt, ["streamlit", "gradio", "data app", "csv upload", "analytics app", "ml demo"]),
+      reasons: ["python data app language detected"],
+    },
+    {
       family: "go-api",
       layers: ["framework:go-net-http"],
       score: keywordScore(prompt, ["golang", "go api", "go backend", "go service", "net/http"]),
@@ -52,7 +82,7 @@ export async function selectStarter({ prompt, partner = null }) {
     {
       family: "cloudflare-worker-ts",
       layers: ["framework:cloudflare-worker-ts"],
-      score: keywordScore(prompt, ["cloudflare", "durable object", "worker", "edge", "hono edge"]),
+      score: keywordScore(prompt, ["cloudflare", "durable object", "edge api", "edge function", "hono edge", "workerd"]),
       reasons: ["edge/cloudflare language detected"],
     },
     {

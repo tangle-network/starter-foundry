@@ -1,0 +1,35 @@
+{
+  "id": "electron-desktop-ts",
+  "description": "Electron desktop framework layer.",
+  "appliesTo": ["electron-desktop-ts"],
+  "defaults": {
+    "headline": "Starter Foundry Desktop App",
+    "subheadline": "A renderer shell for command surfaces, local files, and background automation."
+  },
+  "files": [
+    {
+      "source": "files/main.ts",
+      "target": "src/main.ts"
+    },
+    {
+      "source": "files/preload.ts",
+      "target": "src/preload.ts"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/index.html",
+      "target": "renderer/index.html"
+    },
+    {
+      "source": "files/app.ts",
+      "target": "renderer/app.ts"
+    },
+    {
+      "source": "files/styles.css",
+      "target": "renderer/styles.css"
+    }
+  ]
+}

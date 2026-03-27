@@ -10,7 +10,10 @@
     "react-vite-ts",
     "nextjs-ts",
     "fullstack-ts",
-    "go-api"
+    "go-api",
+    "expo-react-native-ts",
+    "browser-extension-ts",
+    "electron-desktop-ts"
   ],
   "defaults": {
     "sdkProvider": "solana-web3"

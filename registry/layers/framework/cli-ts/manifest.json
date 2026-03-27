@@ -1,0 +1,15 @@
+{
+  "id": "cli-ts",
+  "description": "TypeScript CLI framework layer.",
+  "appliesTo": ["cli-ts"],
+  "files": [
+    {
+      "source": "files/index.ts",
+      "target": "src/index.ts"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    }
+  ]
+}

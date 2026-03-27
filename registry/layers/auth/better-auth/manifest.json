@@ -1,0 +1,15 @@
+{
+  "id": "better-auth",
+  "slot": "auth",
+  "description": "Better Auth profile for app and API starters.",
+  "appliesTo": ["react-vite-ts", "nextjs-ts", "fullstack-ts", "api-service", "cloudflare-worker-ts", "python-api", "rust-service", "go-api", "expo-react-native-ts", "browser-extension-ts", "electron-desktop-ts"],
+  "defaults": {
+    "authProvider": "better-auth"
+  },
+  "files": [
+    {
+      "source": "files/auth-config.json",
+      "target": "auth-config.json"
+    }
+  ]
+}

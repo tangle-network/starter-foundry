@@ -1,0 +1,73 @@
+{
+  "id": "expo-react-native-ts",
+  "description": "Expo and React Native TypeScript starter for mobile product surfaces.",
+  "tags": ["mobile", "react-native", "expo", "typescript"],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "expo",
+    "surface": "mobile"
+  },
+  "slots": {
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk",
+        "auth:supabase-auth"
+      ],
+      "default": "auth:none"
+    },
+    "payments": {
+      "options": [
+        "payments:none",
+        "payments:stripe",
+        "payments:coinbase-commerce"
+      ],
+      "default": "payments:none"
+    },
+    "sdk": {
+      "options": [
+        "sdk:none",
+        "sdk:coinbase-cdp",
+        "sdk:solana-web3"
+      ],
+      "default": "sdk:none"
+    }
+  },
+  "defaults": {
+    "projectType": "mobile",
+    "headline": "Starter Foundry Mobile App",
+    "subheadline": "An Expo-ready mobile shell with clean seams for auth, billing, and wallet flows."
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/validate-types.mjs",
+      "target": "validate-types.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "App.tsx"
+    },
+    {
+      "type": "file-exists",
+      "path": "app.json"
+    },
+    {
+      "type": "command-success",
+      "command": ["node", "validate-types.mjs"],
+      "expect": "typescript ok"
+    }
+  ],
+  "contextHints": {
+    "commands": ["npm install", "npx expo start", "node validate-types.mjs"],
+    "entrypoints": ["App.tsx", "app.json", "tsconfig.json"],
+    "preview": null,
+    "extensionPoints": ["auth-config.json", "payments-config.json", "sdk-config.json"]
+  }
+}

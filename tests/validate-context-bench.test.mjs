@@ -48,6 +48,36 @@ test("validate passes for cloudflare worker starter", async () => {
   assert.equal(result.ok, true);
 });
 
+test("validate passes for expo mobile starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/expo-wallet-mobile.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for browser extension starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/browser-extension-research.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for cli starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/cli-release-tool.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for python data starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/python-data-insights.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for electron desktop starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/electron-ops-console.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
 test("validate passes for react vite starter", async () => {
   const spec = await loadProjectSpec(path.resolve("specs/react-vite-coinbase.json"));
   const result = await validateStarter({ spec });
@@ -167,4 +197,9 @@ test("catalog separates implemented and planned families", async () => {
   assert.ok(catalog.implemented.some((item) => item.id === "go-api"));
   assert.ok(catalog.implemented.some((item) => item.id === "solana-program"));
   assert.ok(catalog.implemented.some((item) => item.id === "move-contracts"));
+  assert.ok(catalog.implemented.some((item) => item.id === "expo-react-native-ts"));
+  assert.ok(catalog.implemented.some((item) => item.id === "browser-extension-ts"));
+  assert.ok(catalog.implemented.some((item) => item.id === "cli-ts"));
+  assert.ok(catalog.implemented.some((item) => item.id === "python-data-app"));
+  assert.ok(catalog.implemented.some((item) => item.id === "electron-desktop-ts"));
 });

@@ -1,0 +1,23 @@
+{
+  "id": "expo-react-native-ts",
+  "description": "Expo React Native framework layer.",
+  "appliesTo": ["expo-react-native-ts"],
+  "defaults": {
+    "headline": "Starter Foundry Mobile App",
+    "subheadline": "A mobile shell for wallet, auth, and premium flows."
+  },
+  "files": [
+    {
+      "source": "files/App.tsx",
+      "target": "App.tsx"
+    },
+    {
+      "source": "files/app.json",
+      "target": "app.json"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    }
+  ]
+}

@@ -56,6 +56,39 @@ function detectSdkSlot(text, partner) {
   return null;
 }
 
+function detectAuthSlot(text) {
+  if (text.includes("clerk")) {
+    return "auth:clerk";
+  }
+  if (text.includes("better auth") || text.includes("better-auth")) {
+    return "auth:better-auth";
+  }
+  if (text.includes("supabase auth") || text.includes("supabase-auth")) {
+    return "auth:supabase-auth";
+  }
+  return null;
+}
+
+function detectPaymentsSlot(text) {
+  if (text.includes("coinbase commerce")) {
+    return "payments:coinbase-commerce";
+  }
+  if (text.includes("stripe") || text.includes("subscription") || text.includes("billing") || text.includes("checkout")) {
+    return "payments:stripe";
+  }
+  return null;
+}
+
+function detectQueueSlot(text) {
+  if (text.includes("trigger.dev") || text.includes("trigger dev")) {
+    return "queue:trigger-dev";
+  }
+  if (text.includes("bullmq") || text.includes("queue") || text.includes("background job")) {
+    return "queue:bullmq";
+  }
+  return null;
+}
+
 function buildWebProject(prompt, partner, text) {
   const isNext = hasAny(text, ["next", "next.js", "nextjs", "app router", "seo"]);
   const family = isNext ? "nextjs-ts" : "react-vite-ts";
@@ -68,6 +101,14 @@ function buildWebProject(prompt, partner, text) {
 
   const slots = {};
   const sdkSlot = detectSdkSlot(text, partner);
+  const authSlot = detectAuthSlot(text);
+  const paymentsSlot = detectPaymentsSlot(text);
+  if (authSlot) {
+    slots.auth = authSlot;
+  }
+  if (paymentsSlot) {
+    slots.payments = paymentsSlot;
+  }
   if (sdkSlot) {
     slots.sdk = sdkSlot;
   }
@@ -135,9 +176,21 @@ function buildApiProject(prompt, partner, text) {
   const slots = {};
   const databaseSlot = detectDatabaseSlot(text);
   const sdkSlot = detectSdkSlot(text, partner);
+  const authSlot = detectAuthSlot(text);
+  const paymentsSlot = detectPaymentsSlot(text);
+  const queueSlot = detectQueueSlot(text);
 
   if (databaseSlot) {
     slots.database = databaseSlot;
+  }
+  if (authSlot) {
+    slots.auth = authSlot;
+  }
+  if (paymentsSlot) {
+    slots.payments = paymentsSlot;
+  }
+  if (queueSlot) {
+    slots.queue = queueSlot;
   }
 
   if (sdkSlot) {
@@ -161,8 +214,13 @@ function buildApiProject(prompt, partner, text) {
 
 function buildWorkerProject(prompt, partner, text) {
   const layers = ["framework:node-worker"];
+  const slots = {};
   if (hasAny(text, ["trading", "market", "feed", "stream"])) {
     layers.push("capability:market-sim");
+  }
+  const queueSlot = detectQueueSlot(text);
+  if (queueSlot) {
+    slots.queue = queueSlot;
   }
 
   return {
@@ -173,7 +231,7 @@ function buildWorkerProject(prompt, partner, text) {
       family: "worker-job",
       layers,
       partner: null,
-      slots: {},
+      slots,
       variables: {
         workerName: partner ? `${partner} worker lane` : "workspace worker lane",
       },
@@ -183,6 +241,29 @@ function buildWorkerProject(prompt, partner, text) {
 }
 
 function buildWorkspacePromptPlan({ prompt, partner, text }) {
+  const specialSingleLane = hasAny(text, [
+    "expo",
+    "react native",
+    "mobile app",
+    "ios app",
+    "android app",
+    "browser extension",
+    "chrome extension",
+    "manifest v3",
+    "electron",
+    "desktop app",
+    "desktop assistant",
+    "command line",
+    "terminal tool",
+    "streamlit",
+    "gradio",
+    "data app",
+  ]);
+
+  if (specialSingleLane) {
+    return null;
+  }
+
   const hasFrontend = hasAny(text, [
     "frontend",
     "ui",
@@ -313,7 +394,7 @@ function buildWorkspacePromptPlan({ prompt, partner, text }) {
   return {
     kind: "workspace",
     confidence: runtimeCount > 1 ? "high" : "medium",
-    reasons: ["multi-runtime or frontend-plus-contract prompt detected"],
+    reasons: ["multi-lane workspace prompt detected"],
     spec: {
       workspaceName: `${buildSlug(prompt, "workspace")}-workspace`,
       userPrompt: prompt,
@@ -351,6 +432,9 @@ export async function planPrompt({ prompt, partner = null }) {
 
   const databaseSlot = detectDatabaseSlot(text);
   const sdkSlot = detectSdkSlot(text, partner);
+  const authSlot = detectAuthSlot(text);
+  const paymentsSlot = detectPaymentsSlot(text);
+  const queueSlot = detectQueueSlot(text);
   spec.slots = { ...(spec.slots ?? {}) };
 
   if (databaseSlot && family?.slots?.database) {
@@ -359,6 +443,18 @@ export async function planPrompt({ prompt, partner = null }) {
 
   if (sdkSlot && family?.slots?.sdk) {
     spec.slots.sdk = sdkSlot;
+  }
+
+  if (authSlot && family?.slots?.auth) {
+    spec.slots.auth = authSlot;
+  }
+
+  if (paymentsSlot && family?.slots?.payments) {
+    spec.slots.payments = paymentsSlot;
+  }
+
+  if (queueSlot && family?.slots?.queue) {
+    spec.slots.queue = queueSlot;
   }
 
   if (hasAny(text, ["rust", "cargo"])) {

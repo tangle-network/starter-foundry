@@ -1,0 +1,39 @@
+{
+  "id": "browser-extension-ts",
+  "description": "Browser extension framework layer.",
+  "appliesTo": ["browser-extension-ts"],
+  "defaults": {
+    "headline": "Starter Foundry Extension",
+    "subheadline": "Ship a popup, background worker, and content seam quickly."
+  },
+  "files": [
+    {
+      "source": "files/manifest.json",
+      "target": "manifest.json"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/background.ts",
+      "target": "src/background.ts"
+    },
+    {
+      "source": "files/content.ts",
+      "target": "src/content.ts"
+    },
+    {
+      "source": "files/popup.ts",
+      "target": "src/popup.ts"
+    },
+    {
+      "source": "files/popup.html",
+      "target": "popup.html"
+    },
+    {
+      "source": "files/popup.css",
+      "target": "popup.css"
+    }
+  ]
+}

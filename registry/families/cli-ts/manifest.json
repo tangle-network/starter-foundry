@@ -1,0 +1,56 @@
+{
+  "id": "cli-ts",
+  "description": "TypeScript CLI starter with a runnable usage path.",
+  "tags": ["cli", "typescript", "terminal"],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "cli"
+  },
+  "slots": {
+    "queue": {
+      "options": [
+        "queue:none",
+        "queue:bullmq",
+        "queue:trigger-dev"
+      ],
+      "default": "queue:none"
+    }
+  },
+  "defaults": {
+    "projectType": "cli",
+    "binaryName": "{{packageName}}"
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/validate-types.mjs",
+      "target": "validate-types.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "src/index.ts"
+    },
+    {
+      "type": "command-success",
+      "command": ["node", "validate-types.mjs"],
+      "expect": "typescript ok"
+    },
+    {
+      "type": "command-success",
+      "command": ["node", "--experimental-strip-types", "src/index.ts", "--help"],
+      "expect": "Usage:"
+    }
+  ],
+  "contextHints": {
+    "commands": ["node --experimental-strip-types src/index.ts --help", "npm install"],
+    "entrypoints": ["src/index.ts", "tsconfig.json"],
+    "preview": null,
+    "extensionPoints": ["queue-config.json"]
+  }
+}

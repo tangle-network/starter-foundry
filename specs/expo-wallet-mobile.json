@@ -1,0 +1,14 @@
+{
+  "projectName": "expo-wallet-mobile",
+  "family": "expo-react-native-ts",
+  "layers": ["framework:expo-react-native-ts"],
+  "partner": "coinbase",
+  "slots": {
+    "auth": "auth:clerk",
+    "payments": "payments:stripe"
+  },
+  "variables": {
+    "headline": "Launch a mobile wallet surface quickly",
+    "subheadline": "Start with auth, paywall, and wallet seams already mapped."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "stripe",
+  "slot": "payments",
+  "description": "Stripe payments profile.",
+  "appliesTo": ["react-vite-ts", "nextjs-ts", "fullstack-ts", "api-service", "cloudflare-worker-ts", "python-api", "rust-service", "go-api", "expo-react-native-ts", "electron-desktop-ts"],
+  "defaults": {
+    "paymentsProvider": "stripe"
+  },
+  "files": [
+    {
+      "source": "files/payments-config.json",
+      "target": "payments-config.json"
+    }
+  ]
+}

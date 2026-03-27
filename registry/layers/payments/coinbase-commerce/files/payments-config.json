@@ -1,0 +1,5 @@
+{
+  "provider": "coinbase-commerce",
+  "mode": "crypto-checkout",
+  "notes": "Attach hosted checkout or onchain payment flows here."
+}

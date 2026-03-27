@@ -1,0 +1,9 @@
+{
+  "projectName": "python-data-insights",
+  "family": "python-data-app",
+  "layers": ["framework:python-data-app"],
+  "variables": {
+    "headline": "Inspect product metrics fast",
+    "subheadline": "Upload data, render KPI tiles, and extend into full analytics flows."
+  }
+}

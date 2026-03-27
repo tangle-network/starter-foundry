@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "{{projectName}}",
+  "version": "1.0.0",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "src/background.ts",
+    "type": "module"
+  },
+  "permissions": ["storage", "activeTab", "scripting"]
+}

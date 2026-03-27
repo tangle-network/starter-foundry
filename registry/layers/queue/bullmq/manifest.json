@@ -1,0 +1,15 @@
+{
+  "id": "bullmq",
+  "slot": "queue",
+  "description": "BullMQ queue profile for worker-backed flows.",
+  "appliesTo": ["fullstack-ts", "api-service", "cloudflare-worker-ts", "python-api", "rust-service", "go-api", "worker-job", "cli-ts"],
+  "defaults": {
+    "queueProvider": "bullmq"
+  },
+  "files": [
+    {
+      "source": "files/queue-config.json",
+      "target": "queue-config.json"
+    }
+  ]
+}

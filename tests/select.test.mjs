@@ -95,3 +95,53 @@ test("select chooses move starter for move prompts", async () => {
   assert.equal(result.spec.family, "move-contracts");
   assert.deepEqual(result.spec.layers, ["framework:move-package"]);
 });
+
+test("select chooses expo starter for mobile prompts", async () => {
+  const result = await selectStarter({
+    prompt: "Build an Expo React Native mobile wallet app with sign in",
+    partner: null,
+  });
+
+  assert.equal(result.spec.family, "expo-react-native-ts");
+  assert.deepEqual(result.spec.layers, ["framework:expo-react-native-ts"]);
+});
+
+test("select chooses browser extension starter for extension prompts", async () => {
+  const result = await selectStarter({
+    prompt: "Create a browser extension popup that summarizes the current page",
+    partner: null,
+  });
+
+  assert.equal(result.spec.family, "browser-extension-ts");
+  assert.deepEqual(result.spec.layers, ["framework:browser-extension-ts"]);
+});
+
+test("select chooses cli starter for command line prompts", async () => {
+  const result = await selectStarter({
+    prompt: "Build a TypeScript CLI for release automation",
+    partner: null,
+  });
+
+  assert.equal(result.spec.family, "cli-ts");
+  assert.deepEqual(result.spec.layers, ["framework:cli-ts"]);
+});
+
+test("select chooses python data starter for analytics prompts", async () => {
+  const result = await selectStarter({
+    prompt: "Build a Python data app for CSV upload and charts",
+    partner: null,
+  });
+
+  assert.equal(result.spec.family, "python-data-app");
+  assert.deepEqual(result.spec.layers, ["framework:python-data-app"]);
+});
+
+test("select chooses electron starter for desktop prompts", async () => {
+  const result = await selectStarter({
+    prompt: "Create an Electron desktop app for local operations",
+    partner: null,
+  });
+
+  assert.equal(result.spec.family, "electron-desktop-ts");
+  assert.deepEqual(result.spec.layers, ["framework:electron-desktop-ts"]);
+});

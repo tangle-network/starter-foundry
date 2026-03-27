@@ -1,0 +1,6 @@
+{
+  "id": "none",
+  "slot": "queue",
+  "description": "No queue provider selected.",
+  "appliesTo": ["fullstack-ts", "api-service", "cloudflare-worker-ts", "python-api", "rust-service", "go-api", "worker-job", "cli-ts"]
+}

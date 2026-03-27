@@ -1,0 +1,15 @@
+{
+  "id": "python-data-app",
+  "description": "Python data app framework layer.",
+  "appliesTo": ["python-data-app"],
+  "defaults": {
+    "headline": "Starter Foundry Data App",
+    "subheadline": "A Python dashboard shell for uploads, metrics, and experiments."
+  },
+  "files": [
+    {
+      "source": "files/app.py",
+      "target": "app.py"
+    }
+  ]
+}

@@ -51,16 +51,25 @@ test("compose carries slot overrides and partner files into fullstack starters",
     const report = await readJson(result.composeReportPath);
     const dbConfig = await fs.readFile(path.join(outDir, "database-config.json"), "utf8");
     const sdkConfig = await fs.readFile(path.join(outDir, "sdk-config.json"), "utf8");
+    const authConfig = await fs.readFile(path.join(outDir, "auth-config.json"), "utf8");
+    const paymentsConfig = await fs.readFile(path.join(outDir, "payments-config.json"), "utf8");
+    const queueConfig = await fs.readFile(path.join(outDir, "queue-config.json"), "utf8");
     const brandConfig = await fs.readFile(path.join(outDir, "starter-brand.json"), "utf8");
 
     assert.equal(report.components.family, "fullstack-ts");
     assert.equal(report.components.slots.database, "database:convex");
     assert.equal(report.components.slots.sdk, "sdk:coinbase-cdp");
+    assert.equal(report.components.slots.auth, "auth:clerk");
+    assert.equal(report.components.slots.payments, "payments:stripe");
+    assert.equal(report.components.slots.queue, "queue:bullmq");
     assert.ok(report.components.layers.includes("framework:fullstack-node-ts"));
     assert.ok(report.components.layers.includes("database:convex"));
     assert.ok(report.components.layers.includes("sdk:coinbase-cdp"));
     assert.match(dbConfig, /convex/);
     assert.match(sdkConfig, /coinbase-cdp/);
+    assert.match(authConfig, /clerk/);
+    assert.match(paymentsConfig, /stripe/);
+    assert.match(queueConfig, /bullmq/);
     assert.match(brandConfig, /Coinbase/);
   } finally {
     await removeDir(outDir);

@@ -1,0 +1,78 @@
+{
+  "id": "browser-extension-ts",
+  "description": "Manifest v3 browser extension TypeScript starter with popup preview.",
+  "tags": ["browser-extension", "chrome", "manifest-v3", "typescript"],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "browser-extension",
+    "surface": "extension"
+  },
+  "slots": {
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk",
+        "auth:supabase-auth"
+      ],
+      "default": "auth:none"
+    },
+    "sdk": {
+      "options": [
+        "sdk:none",
+        "sdk:coinbase-cdp",
+        "sdk:solana-web3"
+      ],
+      "default": "sdk:none"
+    }
+  },
+  "defaults": {
+    "projectType": "extension",
+    "port": 4184,
+    "headline": "Starter Foundry Extension",
+    "subheadline": "A manifest v3 popup shell for lightweight browser automation."
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/preview-server.mjs",
+      "target": "preview-server.mjs"
+    },
+    {
+      "source": "files/validate-types.mjs",
+      "target": "validate-types.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "manifest.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/background.ts"
+    },
+    {
+      "type": "command-success",
+      "command": ["node", "validate-types.mjs"],
+      "expect": "typescript ok"
+    },
+    {
+      "type": "http-start",
+      "command": ["node", "preview-server.mjs"],
+      "path": "/",
+      "expect": "{{headline}}"
+    }
+  ],
+  "contextHints": {
+    "commands": ["npm install", "node preview-server.mjs", "node validate-types.mjs"],
+    "entrypoints": ["manifest.json", "src/background.ts", "src/popup.ts", "popup.html"],
+    "preview": {
+      "path": "/"
+    },
+    "extensionPoints": ["auth-config.json", "sdk-config.json"]
+  }
+}

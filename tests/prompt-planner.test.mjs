@@ -54,6 +54,19 @@ test("planPrompt routes web plus worker prompts to a workspace", async () => {
   assert.equal(result.spec.projects.find((project) => project.id === "worker")?.spec.family, "worker-job");
 });
 
+test("planPrompt carries auth, payments, and queue slots for starter prompts", async () => {
+  const result = await planPrompt({
+    prompt: "Build a fullstack SaaS control plane with Better Auth, Stripe subscriptions, and BullMQ background jobs.",
+    partner: null,
+  });
+
+  assert.equal(result.kind, "starter");
+  assert.equal(result.spec.family, "fullstack-ts");
+  assert.equal(result.spec.slots.auth, "auth:better-auth");
+  assert.equal(result.spec.slots.payments, "payments:stripe");
+  assert.equal(result.spec.slots.queue, "queue:bullmq");
+});
+
 test("runPromptCorpus executes a tiny real prompt suite end to end", async () => {
   const outDir = await createTempDir("starter-foundry-prompt-corpus-test");
   const corpusPath = path.join(outDir, "tiny-corpus.json");

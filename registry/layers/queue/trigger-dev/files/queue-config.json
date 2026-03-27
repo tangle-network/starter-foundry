@@ -1,0 +1,5 @@
+{
+  "provider": "trigger-dev",
+  "mode": "workflow",
+  "notes": "Attach workflow orchestration and background task definitions here."
+}

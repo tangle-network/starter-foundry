@@ -1,0 +1,5 @@
+{
+  "provider": "bullmq",
+  "mode": "redis",
+  "notes": "Attach queue producers and consumers here."
+}

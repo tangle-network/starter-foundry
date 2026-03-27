@@ -1,0 +1,5 @@
+{
+  "provider": "better-auth",
+  "mode": "session",
+  "notes": "Wire Better Auth server and client flows here."
+}

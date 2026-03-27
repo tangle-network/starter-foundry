@@ -1,0 +1,15 @@
+{
+  "id": "supabase-auth",
+  "slot": "auth",
+  "description": "Supabase auth profile.",
+  "appliesTo": ["react-vite-ts", "nextjs-ts", "fullstack-ts", "api-service", "cloudflare-worker-ts", "python-api", "rust-service", "go-api", "expo-react-native-ts", "browser-extension-ts", "electron-desktop-ts"],
+  "defaults": {
+    "authProvider": "supabase-auth"
+  },
+  "files": [
+    {
+      "source": "files/auth-config.json",
+      "target": "auth-config.json"
+    }
+  ]
+}

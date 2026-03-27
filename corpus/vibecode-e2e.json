@@ -102,6 +102,64 @@
       }
     },
     {
+      "id": "expo-wallet-mobile",
+      "complexity": "simple",
+      "partner": "coinbase",
+      "prompt": "Build an Expo React Native mobile wallet app with Clerk auth and Stripe billing.",
+      "expected": {
+        "kind": "starter",
+        "family": "expo-react-native-ts",
+        "slots": {
+          "auth": "auth:clerk",
+          "payments": "payments:stripe",
+          "sdk": "sdk:coinbase-cdp"
+        }
+      }
+    },
+    {
+      "id": "browser-extension",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Create a browser extension with a popup that summarizes the current page.",
+      "expected": {
+        "kind": "starter",
+        "family": "browser-extension-ts"
+      }
+    },
+    {
+      "id": "cli-tool",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build a TypeScript CLI for release automation with a help command.",
+      "expected": {
+        "kind": "starter",
+        "family": "cli-ts"
+      }
+    },
+    {
+      "id": "python-data-app",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build a Python data app for CSV upload and KPI charts.",
+      "expected": {
+        "kind": "starter",
+        "family": "python-data-app"
+      }
+    },
+    {
+      "id": "electron-desktop",
+      "complexity": "simple",
+      "partner": "coinbase",
+      "prompt": "Create an Electron desktop app for internal operations with Coinbase Commerce billing.",
+      "expected": {
+        "kind": "starter",
+        "family": "electron-desktop-ts",
+        "slots": {
+          "payments": "payments:coinbase-commerce"
+        }
+      }
+    },
+    {
       "id": "trading-bot",
       "complexity": "simple",
       "partner": null,
@@ -273,6 +331,21 @@
           "web": "nextjs-ts",
           "api": "api-service",
           "worker": "worker-job"
+        }
+      }
+    },
+    {
+      "id": "fullstack-saas-platform",
+      "complexity": "mostly-complex",
+      "partner": null,
+      "prompt": "Build a fullstack SaaS control plane with Better Auth, Stripe subscriptions, and BullMQ background jobs.",
+      "expected": {
+        "kind": "starter",
+        "family": "fullstack-ts",
+        "slots": {
+          "auth": "auth:better-auth",
+          "payments": "payments:stripe",
+          "queue": "queue:bullmq"
         }
       }
     },

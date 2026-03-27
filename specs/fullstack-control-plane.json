@@ -4,7 +4,10 @@
   "layers": ["framework:fullstack-node-ts", "capability:chart-widget", "capability:logging"],
   "partner": "coinbase",
   "slots": {
-    "database": "database:convex"
+    "database": "database:convex",
+    "auth": "auth:clerk",
+    "payments": "payments:stripe",
+    "queue": "queue:bullmq"
   },
   "variables": {
     "headline": "Operate a fullstack control plane quickly",

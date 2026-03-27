@@ -12,6 +12,16 @@
     "workerName": "Starter Foundry Worker",
     "databaseProvider": "none"
   },
+  "slots": {
+    "queue": {
+      "options": [
+        "queue:none",
+        "queue:bullmq",
+        "queue:trigger-dev"
+      ],
+      "default": "queue:none"
+    }
+  },
   "files": [
     {
       "source": "files/package.json",
@@ -40,6 +50,6 @@
     "commands": ["npm run start"],
     "entrypoints": ["worker.mjs"],
     "preview": null,
-    "extensionPoints": ["market-feed.json", "hooks.mjs"]
+    "extensionPoints": ["market-feed.json", "hooks.mjs", "queue-config.json"]
   }
 }

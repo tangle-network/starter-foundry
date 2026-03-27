@@ -1,0 +1,9 @@
+{
+  "projectName": "cli-release-tool",
+  "family": "cli-ts",
+  "layers": ["framework:cli-ts"],
+  "slots": {
+    "queue": "queue:trigger-dev"
+  },
+  "variables": {}
+}

@@ -1,0 +1,14 @@
+{
+  "projectName": "electron-ops-console",
+  "family": "electron-desktop-ts",
+  "layers": ["framework:electron-desktop-ts"],
+  "slots": {
+    "auth": "auth:better-auth",
+    "payments": "payments:coinbase-commerce"
+  },
+  "partner": "coinbase",
+  "variables": {
+    "headline": "Operate local workflows from one desktop shell",
+    "subheadline": "Desktop commands, local files, and partner-ready crypto flows start here."
+  }
+}

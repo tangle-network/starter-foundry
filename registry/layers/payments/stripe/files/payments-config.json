@@ -1,0 +1,5 @@
+{
+  "provider": "stripe",
+  "mode": "checkout",
+  "notes": "Attach products, checkout sessions, or subscription billing here."
+}

@@ -1,0 +1,5 @@
+{
+  "provider": "supabase-auth",
+  "mode": "jwt",
+  "notes": "Connect Supabase auth and row-level security flows here."
+}

@@ -1,0 +1,13 @@
+{
+  "name": "{{packageName}}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "electron .",
+    "preview:instant": "node preview-server.mjs",
+    "validate": "node validate-types.mjs"
+  },
+  "devDependencies": {
+    "electron": "^36.0.0"
+  }
+}

@@ -14,6 +14,23 @@
     "subheadline": "A React and Vite ready shell with a zero-install preview path."
   },
   "slots": {
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk",
+        "auth:supabase-auth"
+      ],
+      "default": "auth:none"
+    },
+    "payments": {
+      "options": [
+        "payments:none",
+        "payments:stripe",
+        "payments:coinbase-commerce"
+      ],
+      "default": "payments:none"
+    },
     "sdk": {
       "options": [
         "sdk:none",
@@ -68,6 +85,6 @@
     "preview": {
       "path": "/"
     },
-    "extensionPoints": ["starter-data.json", "starter-brand.json", "sdk-config.json"]
+    "extensionPoints": ["starter-data.json", "starter-brand.json", "auth-config.json", "payments-config.json", "sdk-config.json"]
   }
 }

@@ -1,0 +1,5 @@
+{
+  "provider": "clerk",
+  "mode": "hosted",
+  "notes": "Attach Clerk publishable and secret key wiring here."
+}

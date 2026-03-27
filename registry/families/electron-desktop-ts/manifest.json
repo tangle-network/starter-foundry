@@ -1,0 +1,82 @@
+{
+  "id": "electron-desktop-ts",
+  "description": "Electron desktop TypeScript starter with an instant renderer preview.",
+  "tags": ["desktop", "electron", "typescript"],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "electron",
+    "surface": "desktop"
+  },
+  "slots": {
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk",
+        "auth:supabase-auth"
+      ],
+      "default": "auth:none"
+    },
+    "payments": {
+      "options": [
+        "payments:none",
+        "payments:stripe",
+        "payments:coinbase-commerce"
+      ],
+      "default": "payments:none"
+    },
+    "sdk": {
+      "options": [
+        "sdk:none",
+        "sdk:coinbase-cdp",
+        "sdk:solana-web3"
+      ],
+      "default": "sdk:none"
+    }
+  },
+  "defaults": {
+    "projectType": "desktop",
+    "port": 4185,
+    "headline": "Starter Foundry Desktop App",
+    "subheadline": "An Electron-ready shell for local-first workflows and privileged desktop actions."
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/preview-server.mjs",
+      "target": "preview-server.mjs"
+    },
+    {
+      "source": "files/validate-types.mjs",
+      "target": "validate-types.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "src/main.ts"
+    },
+    {
+      "type": "command-success",
+      "command": ["node", "validate-types.mjs"],
+      "expect": "typescript ok"
+    },
+    {
+      "type": "http-start",
+      "command": ["node", "preview-server.mjs"],
+      "path": "/",
+      "expect": "{{headline}}"
+    }
+  ],
+  "contextHints": {
+    "commands": ["npm install", "node preview-server.mjs", "node validate-types.mjs"],
+    "entrypoints": ["src/main.ts", "src/preload.ts", "renderer/index.html"],
+    "preview": {
+      "path": "/"
+    },
+    "extensionPoints": ["auth-config.json", "payments-config.json", "sdk-config.json"]
+  }
+}

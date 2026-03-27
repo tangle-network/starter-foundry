@@ -1,0 +1,9 @@
+{
+  "name": "{{packageName}}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node preview-server.mjs",
+    "validate": "node validate-types.mjs"
+  }
+}

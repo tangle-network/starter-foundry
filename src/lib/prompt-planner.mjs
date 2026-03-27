@@ -89,6 +89,86 @@ function detectQueueSlot(text) {
   return null;
 }
 
+function detectTangleLane(text) {
+  return hasAny(text, [
+    "tangle blueprint",
+    "blueprint sdk",
+    "cargo tangle",
+    "oracle blueprint",
+    "storage blueprint",
+    "blueprint for tangle",
+    "tangle network",
+    "using tangle",
+    "tangle's",
+    "tangle native",
+    "frost blueprint",
+  ]);
+}
+
+function detectAvsLane(text) {
+  return hasAny(text, ["eigenlayer", "avs", "oracle avs", "keeper avs", "sequencer avs", "coprocessor avs"]);
+}
+
+function detectStylusLane(text) {
+  return hasAny(text, ["stylus", "arbitrum stylus"]);
+}
+
+function detectZkLane(text) {
+  return hasAny(text, ["risc zero", "sp1", "circom", "snarkjs", "fhenix", "zk prover", "verifiable ml", "private voting", "dark pool", "mixer"]);
+}
+
+function detectMcpLane(text) {
+  return hasAny(text, ["model context protocol", "mcp server", "mcp tools", "mcp tool server"]);
+}
+
+function detectDspyLane(text) {
+  return hasAny(text, ["dspy", "rag system", "summarization system", "text classification system", "prompt engineering"]);
+}
+
+function detectX402Lane(text) {
+  return hasAny(text, ["x402", "micropayments", "pay-per-request", "monetized api"]);
+}
+
+function detectEvmLane(text) {
+  return hasAny(text, [
+    "solidity",
+    "foundry",
+    "forge",
+    "erc20",
+    "erc-20",
+    "erc721",
+    "erc-721",
+    "erc-4337",
+    "erc4337",
+    "evm",
+    "ethereum",
+    "arbitrum",
+    "base network",
+    "base mainnet",
+    "polygon",
+    "x layer",
+    "xlayer",
+    "layerzero",
+    "chainlink",
+    "walletconnect",
+    "flashbots",
+    "flash loan",
+    "aave",
+    "uniswap",
+    "sushiswap",
+    "curve",
+    "convex",
+    "reservoir api",
+    "marketplace core",
+    "auction house",
+    "lendingpool",
+    "cover manager",
+    "wallet factory",
+    "bonding curve",
+    "gateway",
+  ]);
+}
+
 function buildWebProject(prompt, partner, text) {
   const isNext = hasAny(text, ["next", "next.js", "nextjs", "app router", "seo"]);
   const family = isNext ? "nextjs-ts" : "react-vite-ts";
@@ -161,6 +241,38 @@ function chooseWorkerFamily(text) {
 }
 
 function chooseApiFamily(text) {
+  if (detectX402Lane(text)) {
+    return {
+      family: "x402-service",
+      layers: ["framework:x402-service"],
+      path: "apps/api",
+    };
+  }
+
+  if (detectMcpLane(text)) {
+    return {
+      family: "mcp-server-ts",
+      layers: ["framework:mcp-server-ts"],
+      path: "apps/mcp",
+    };
+  }
+
+  if (detectDspyLane(text)) {
+    return {
+      family: "dspy-pipeline-py",
+      layers: ["framework:dspy-pipeline-py"],
+      path: "apps/ai",
+    };
+  }
+
+  if (detectZkLane(text)) {
+    return {
+      family: "zk-prover-service",
+      layers: ["framework:zk-prover-service"],
+      path: "apps/prover",
+    };
+  }
+
   if (hasAny(text, ["cloudflare", "durable object", "edge api", "edge function", "hono edge"])) {
     return {
       family: "cloudflare-worker-ts",
@@ -315,12 +427,18 @@ function buildWorkspacePromptPlan({ prompt, partner, text }) {
     "durable object",
     "edge api",
     "edge function",
+    "payment webhook",
+    "server wallet",
+    "rest api",
+    "graphql api",
   ]);
   const hasWorker = hasAny(text, [
     "trading bot",
     "background job",
     "background worker",
     "worker for",
+    "ai agent",
+    "agent",
     "playwright worker",
     "automation worker",
     "go worker",
@@ -330,9 +448,16 @@ function buildWorkspacePromptPlan({ prompt, partner, text }) {
     "market stream",
     "bot",
   ]);
-  const hasEvm = hasAny(text, ["solidity", "foundry", "forge", "erc20", "evm"]);
+  const hasEvm = detectEvmLane(text);
   const hasSolana = hasAny(text, ["solana", "anchor", "pda"]);
   const hasMove = hasAny(text, ["move", "aptos", "sui"]);
+  const hasTangle = detectTangleLane(text);
+  const hasAvs = detectAvsLane(text);
+  const hasStylus = detectStylusLane(text);
+  const hasZk = detectZkLane(text);
+  const hasMcp = detectMcpLane(text);
+  const hasDspy = detectDspyLane(text);
+  const hasX402 = detectX402Lane(text);
   const runtimeCount = [hasEvm, hasSolana, hasMove].filter(Boolean).length;
   const apiChoice = hasApi ? chooseApiFamily(text) : null;
   const workspaceSignals = hasAny(text, [
@@ -344,11 +469,27 @@ function buildWorkspacePromptPlan({ prompt, partner, text }) {
     "contract lane",
     "contract lanes",
   ]);
-  const laneCount = [hasFrontend, hasApi, hasWorker, hasEvm, hasSolana, hasMove].filter(Boolean).length;
+  const laneCount = [
+    hasFrontend,
+    hasApi,
+    hasWorker,
+    hasEvm,
+    hasSolana,
+    hasMove,
+    hasTangle,
+    hasAvs,
+    hasStylus,
+    hasZk,
+    hasMcp,
+    hasDspy,
+    hasX402,
+  ].filter(Boolean).length;
   const needsWorkspace =
     runtimeCount > 1 ||
     (hasFrontend && runtimeCount > 0) ||
+    (hasFrontend && hasApi) ||
     (hasWorker && laneCount > 1) ||
+    (hasFrontend && (hasTangle || hasAvs || hasStylus || hasZk || hasMcp || hasDspy || hasX402)) ||
     (hasFrontend && hasApi && apiChoice && apiChoice.family !== "api-service") ||
     (workspaceSignals && laneCount > 1);
 
@@ -367,6 +508,121 @@ function buildWorkspacePromptPlan({ prompt, partner, text }) {
 
   if (hasWorker) {
     projects.push(buildWorkerProject(prompt, partner, text));
+  }
+
+  if (hasMcp && !hasApi) {
+    projects.push({
+      id: "mcp",
+      path: "apps/mcp",
+      spec: {
+        projectName: `${buildSlug(prompt, "workspace")}-mcp`,
+        family: "mcp-server-ts",
+        layers: ["framework:mcp-server-ts"],
+        partner: null,
+        slots: {},
+        variables: {},
+      },
+    });
+  }
+
+  if (hasDspy && !hasApi) {
+    projects.push({
+      id: "ai",
+      path: "apps/ai",
+      spec: {
+        projectName: `${buildSlug(prompt, "workspace")}-ai`,
+        family: "dspy-pipeline-py",
+        layers: ["framework:dspy-pipeline-py"],
+        partner: null,
+        slots: {},
+        variables: {},
+      },
+    });
+  }
+
+  if (hasX402 && !hasApi) {
+    projects.push({
+      id: "api",
+      path: "apps/api",
+      spec: {
+        projectName: `${buildSlug(prompt, "workspace")}-api`,
+        family: "x402-service",
+        layers: ["framework:x402-service"],
+        partner,
+        slots: {},
+        variables: {},
+        primaryArtifactTargetMs: 2500,
+      },
+    });
+  }
+
+  if (hasTangle) {
+    projects.push({
+      id: "tangle",
+      path: "protocols/tangle",
+      spec: {
+        projectName: `${buildSlug(prompt, "workspace")}-tangle`,
+        family: "tangle-blueprint",
+        layers: ["framework:tangle-blueprint"],
+        partner: null,
+        slots: {},
+        variables: {
+          blueprintName: "partner-blueprint",
+          jobName: "HandleRequest",
+        },
+      },
+    });
+  }
+
+  if (hasAvs) {
+    projects.push({
+      id: "avs",
+      path: "protocols/avs",
+      spec: {
+        projectName: `${buildSlug(prompt, "workspace")}-avs`,
+        family: "eigenlayer-avs",
+        layers: ["framework:eigenlayer-avs"],
+        partner: null,
+        slots: {},
+        variables: {
+          avsName: "partner-avs",
+        },
+      },
+    });
+  }
+
+  if (hasStylus) {
+    projects.push({
+      id: "stylus",
+      path: "contracts/stylus",
+      spec: {
+        projectName: `${buildSlug(prompt, "workspace")}-stylus`,
+        family: "stylus-contracts",
+        layers: ["framework:stylus-contracts"],
+        partner: null,
+        slots: {},
+        variables: {
+          contractName: "StylusPool",
+        },
+      },
+    });
+  }
+
+  if (hasZk && !hasApi) {
+    projects.push({
+      id: "zk",
+      path: "apps/prover",
+      spec: {
+        projectName: `${buildSlug(prompt, "workspace")}-zk`,
+        family: "zk-prover-service",
+        layers: ["framework:zk-prover-service"],
+        partner: null,
+        slots: {},
+        variables: {
+          proofSystem: text.includes("circom") ? "circom" : text.includes("fhenix") ? "fhenix" : text.includes("risc zero") ? "risc-zero" : "sp1",
+        },
+      },
+    });
   }
 
   if (hasEvm) {
@@ -486,6 +742,45 @@ export async function planPrompt({ prompt, partner = null }) {
 
   if (queueSlot && family?.slots?.queue) {
     spec.slots.queue = queueSlot;
+  }
+
+  if (detectTangleLane(text)) {
+    spec.family = "tangle-blueprint";
+    spec.layers = ["framework:tangle-blueprint"];
+  }
+
+  if (detectAvsLane(text)) {
+    spec.family = "eigenlayer-avs";
+    spec.layers = ["framework:eigenlayer-avs"];
+  }
+
+  if (detectStylusLane(text)) {
+    spec.family = "stylus-contracts";
+    spec.layers = ["framework:stylus-contracts"];
+  }
+
+  if (detectZkLane(text)) {
+    spec.family = "zk-prover-service";
+    spec.layers = ["framework:zk-prover-service"];
+    spec.variables = {
+      ...(spec.variables ?? {}),
+      proofSystem: text.includes("circom") ? "circom" : text.includes("fhenix") ? "fhenix" : text.includes("risc zero") ? "risc-zero" : "sp1",
+    };
+  }
+
+  if (detectMcpLane(text)) {
+    spec.family = "mcp-server-ts";
+    spec.layers = ["framework:mcp-server-ts"];
+  }
+
+  if (detectDspyLane(text)) {
+    spec.family = "dspy-pipeline-py";
+    spec.layers = ["framework:dspy-pipeline-py"];
+  }
+
+  if (detectX402Lane(text)) {
+    spec.family = "x402-service";
+    spec.layers = ["framework:x402-service"];
   }
 
   if (hasAny(text, ["rust", "cargo"]) && spec.family === "api-service") {

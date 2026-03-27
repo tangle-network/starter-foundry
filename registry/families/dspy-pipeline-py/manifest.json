@@ -1,0 +1,81 @@
+{
+  "id": "dspy-pipeline-py",
+  "description": "Minimal Python DSPy-style pipeline starter.",
+  "tags": ["python", "dspy", "ai", "pipeline"],
+  "taxonomy": {
+    "language": "python",
+    "runtime": "python",
+    "surface": "ai-pipeline"
+  },
+  "slots": {
+    "database": {
+      "options": [
+        "database:sqlite",
+        "database:postgres",
+        "database:mongodb",
+        "database:convex"
+      ],
+      "default": "database:sqlite"
+    },
+    "sdk": {
+      "options": [
+        "sdk:none",
+        "sdk:coinbase-cdp",
+        "sdk:solana-web3"
+      ],
+      "default": "sdk:none"
+    },
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk",
+        "auth:supabase-auth"
+      ],
+      "default": "auth:none"
+    },
+    "payments": {
+      "options": [
+        "payments:none",
+        "payments:stripe",
+        "payments:coinbase-commerce"
+      ],
+      "default": "payments:none"
+    },
+    "queue": {
+      "options": [
+        "queue:none",
+        "queue:bullmq",
+        "queue:trigger-dev"
+      ],
+      "default": "queue:none"
+    }
+  },
+  "defaults": {
+    "pipelineName": "starter-foundry-dspy"
+  },
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "main.py"
+    },
+    {
+      "type": "python-compile",
+      "path": "main.py"
+    },
+    {
+      "type": "command-success",
+      "command": ["python3", "main.py"],
+      "env": {
+        "RUN_ONCE": "1"
+      },
+      "expect": "dspy pipeline ok"
+    }
+  ],
+  "contextHints": {
+    "commands": ["python3 main.py"],
+    "entrypoints": ["main.py", "pipeline.json"],
+    "preview": null,
+    "extensionPoints": ["pipeline.json"]
+  }
+}

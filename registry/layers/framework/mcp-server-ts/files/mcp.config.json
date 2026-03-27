@@ -1,0 +1,9 @@
+{
+  "name": "{{serverName}}",
+  "transport": "stdio",
+  "tools": [
+    "search",
+    "read_file",
+    "run_command"
+  ]
+}

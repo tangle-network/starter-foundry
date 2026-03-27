@@ -1,0 +1,8 @@
+{
+  "projectName": "eigenlayer-avs",
+  "family": "eigenlayer-avs",
+  "layers": ["framework:eigenlayer-avs"],
+  "variables": {
+    "avsName": "oracle-avs"
+  }
+}

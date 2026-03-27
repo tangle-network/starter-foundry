@@ -1,0 +1,15 @@
+{
+  "id": "x402-service",
+  "description": "x402 API framework layer.",
+  "appliesTo": ["x402-service"],
+  "files": [
+    {
+      "source": "files/server.mjs",
+      "target": "server.mjs"
+    },
+    {
+      "source": "files/x402.config.json",
+      "target": "x402.config.json"
+    }
+  ]
+}

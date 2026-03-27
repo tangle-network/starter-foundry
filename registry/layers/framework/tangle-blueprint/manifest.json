@@ -1,0 +1,23 @@
+{
+  "id": "tangle-blueprint",
+  "description": "Tangle Blueprint framework layer.",
+  "appliesTo": ["tangle-blueprint"],
+  "files": [
+    {
+      "source": "files/Cargo.toml",
+      "target": "Cargo.toml"
+    },
+    {
+      "source": "files/lib.rs",
+      "target": "src/lib.rs"
+    },
+    {
+      "source": "files/main.rs",
+      "target": "src/main.rs"
+    },
+    {
+      "source": "files/blueprint.json",
+      "target": "blueprint.json"
+    }
+  ]
+}

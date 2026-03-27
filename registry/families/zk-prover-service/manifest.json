@@ -1,0 +1,93 @@
+{
+  "id": "zk-prover-service",
+  "description": "Minimal ZK prover service starter with live status endpoint.",
+  "tags": ["zk", "proofs", "service"],
+  "taxonomy": {
+    "language": "javascript",
+    "runtime": "node",
+    "surface": "zk-service"
+  },
+  "slots": {
+    "database": {
+      "options": [
+        "database:sqlite",
+        "database:postgres",
+        "database:mongodb",
+        "database:convex"
+      ],
+      "default": "database:sqlite"
+    },
+    "sdk": {
+      "options": [
+        "sdk:none",
+        "sdk:coinbase-cdp",
+        "sdk:solana-web3"
+      ],
+      "default": "sdk:none"
+    },
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk",
+        "auth:supabase-auth"
+      ],
+      "default": "auth:none"
+    },
+    "payments": {
+      "options": [
+        "payments:none",
+        "payments:stripe",
+        "payments:coinbase-commerce"
+      ],
+      "default": "payments:none"
+    },
+    "queue": {
+      "options": [
+        "queue:none",
+        "queue:bullmq",
+        "queue:trigger-dev"
+      ],
+      "default": "queue:none"
+    }
+  },
+  "defaults": {
+    "serviceName": "starter-foundry-zk",
+    "port": 4196,
+    "proofSystem": "sp1"
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "server.mjs"
+    },
+    {
+      "type": "file-exists",
+      "path": "proof-system.json"
+    },
+    {
+      "type": "node-syntax",
+      "path": "server.mjs"
+    },
+    {
+      "type": "http-start",
+      "command": ["node", "server.mjs"],
+      "path": "/health",
+      "expect": "\"zk\""
+    }
+  ],
+  "contextHints": {
+    "commands": ["node server.mjs"],
+    "entrypoints": ["server.mjs", "proof-system.json"],
+    "preview": {
+      "path": "/health"
+    },
+    "extensionPoints": ["proof-system.json"]
+  }
+}

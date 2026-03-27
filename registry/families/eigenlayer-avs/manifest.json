@@ -1,0 +1,40 @@
+{
+  "id": "eigenlayer-avs",
+  "description": "Lean EigenLayer AVS starter with operator and contract seam.",
+  "tags": ["eigenlayer", "avs", "ethereum", "infra"],
+  "taxonomy": {
+    "language": "solidity",
+    "runtime": "eigenlayer",
+    "surface": "avs"
+  },
+  "files": [
+    {
+      "source": "files/validate-avs.mjs",
+      "target": "validate-avs.mjs"
+    }
+  ],
+  "defaults": {
+    "avsName": "StarterAVS"
+  },
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "avs.config.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "contracts/ServiceManager.sol"
+    },
+    {
+      "type": "command-success",
+      "command": ["node", "validate-avs.mjs"],
+      "expect": "avs ok"
+    }
+  ],
+  "contextHints": {
+    "commands": ["node validate-avs.mjs", "forge build", "cargo check"],
+    "entrypoints": ["avs.config.json", "contracts/ServiceManager.sol", "operator/main.rs"],
+    "preview": null,
+    "extensionPoints": ["avs.config.json", "contracts/ServiceManager.sol"]
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "{{avsName}}",
+  "operator": {
+    "heartbeatSeconds": 30
+  },
+  "contracts": {
+    "serviceManager": "contracts/ServiceManager.sol"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "projectName": "tangle-blueprint",
+  "family": "tangle-blueprint",
+  "layers": ["framework:tangle-blueprint"],
+  "variables": {
+    "blueprintName": "price-oracle-blueprint",
+    "jobName": "AggregatePrices"
+  }
+}

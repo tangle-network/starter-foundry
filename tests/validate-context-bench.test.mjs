@@ -18,6 +18,48 @@ test("validate passes for api starter", async () => {
   assert.equal(result.ok, true);
 });
 
+test("validate passes for tangle blueprint starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/tangle-blueprint.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for eigenlayer avs starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/eigenlayer-avs.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for mcp server starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/mcp-server.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for dspy pipeline starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/dspy-pipeline.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for x402 service starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/x402-service.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for zk prover starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/zk-prover.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for stylus contracts starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/stylus-contracts.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
 test("validate passes for worker starter", async () => {
   const spec = await loadProjectSpec(path.resolve("specs/trading-worker.json"));
   const result = await validateStarter({ spec });
@@ -223,4 +265,11 @@ test("catalog separates implemented and planned families", async () => {
   assert.ok(catalog.implemented.some((item) => item.id === "go-worker"));
   assert.ok(catalog.implemented.some((item) => item.id === "playwright-worker"));
   assert.ok(catalog.implemented.some((item) => item.id === "tauri-desktop"));
+  assert.ok(catalog.implemented.some((item) => item.id === "tangle-blueprint"));
+  assert.ok(catalog.implemented.some((item) => item.id === "eigenlayer-avs"));
+  assert.ok(catalog.implemented.some((item) => item.id === "mcp-server-ts"));
+  assert.ok(catalog.implemented.some((item) => item.id === "dspy-pipeline-py"));
+  assert.ok(catalog.implemented.some((item) => item.id === "x402-service"));
+  assert.ok(catalog.implemented.some((item) => item.id === "zk-prover-service"));
+  assert.ok(catalog.implemented.some((item) => item.id === "stylus-contracts"));
 });

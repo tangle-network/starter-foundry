@@ -1,0 +1,8 @@
+{
+  "projectName": "zk-prover",
+  "family": "zk-prover-service",
+  "layers": ["framework:zk-prover-service"],
+  "variables": {
+    "proofSystem": "sp1"
+  }
+}

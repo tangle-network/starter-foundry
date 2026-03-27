@@ -2,5 +2,5 @@
   "id": "none",
   "slot": "queue",
   "description": "No queue provider selected.",
-  "appliesTo": ["fullstack-ts", "api-service", "cloudflare-worker-ts", "python-api", "rust-service", "go-api", "worker-job", "cli-ts", "go-worker", "playwright-worker"]
+  "appliesTo": ["fullstack-ts", "api-service", "cloudflare-worker-ts", "python-api", "rust-service", "go-api", "worker-job", "cli-ts", "go-worker", "playwright-worker", "mcp-server-ts", "dspy-pipeline-py", "x402-service", "zk-prover-service"]
 }

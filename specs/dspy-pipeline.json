@@ -1,0 +1,8 @@
+{
+  "projectName": "dspy-pipeline",
+  "family": "dspy-pipeline-py",
+  "layers": ["framework:dspy-pipeline-py"],
+  "variables": {
+    "pipelineName": "support-rag-pipeline"
+  }
+}

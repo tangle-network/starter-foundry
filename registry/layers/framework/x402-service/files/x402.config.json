@@ -1,0 +1,7 @@
+{
+  "service": "{{serviceName}}",
+  "pricing": {
+    "/premium": "0.01"
+  },
+  "settlement": "x402"
+}

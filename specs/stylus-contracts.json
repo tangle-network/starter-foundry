@@ -1,0 +1,8 @@
+{
+  "projectName": "stylus-contracts",
+  "family": "stylus-contracts",
+  "layers": ["framework:stylus-contracts"],
+  "variables": {
+    "contractName": "StylusPool"
+  }
+}

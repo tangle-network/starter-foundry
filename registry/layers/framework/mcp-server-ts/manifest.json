@@ -1,0 +1,15 @@
+{
+  "id": "mcp-server-ts",
+  "description": "MCP server framework layer.",
+  "appliesTo": ["mcp-server-ts"],
+  "files": [
+    {
+      "source": "files/server.mjs",
+      "target": "server.mjs"
+    },
+    {
+      "source": "files/mcp.config.json",
+      "target": "mcp.config.json"
+    }
+  ]
+}

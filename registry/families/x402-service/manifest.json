@@ -1,0 +1,88 @@
+{
+  "id": "x402-service",
+  "description": "Minimal x402-aware API starter for paid requests and agent flows.",
+  "tags": ["x402", "payments", "api"],
+  "taxonomy": {
+    "language": "javascript",
+    "runtime": "node",
+    "surface": "paid-api"
+  },
+  "slots": {
+    "database": {
+      "options": [
+        "database:sqlite",
+        "database:postgres",
+        "database:mongodb",
+        "database:convex"
+      ],
+      "default": "database:sqlite"
+    },
+    "sdk": {
+      "options": [
+        "sdk:none",
+        "sdk:coinbase-cdp",
+        "sdk:solana-web3"
+      ],
+      "default": "sdk:none"
+    },
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk",
+        "auth:supabase-auth"
+      ],
+      "default": "auth:none"
+    },
+    "payments": {
+      "options": [
+        "payments:none",
+        "payments:stripe",
+        "payments:coinbase-commerce"
+      ],
+      "default": "payments:none"
+    },
+    "queue": {
+      "options": [
+        "queue:none",
+        "queue:bullmq",
+        "queue:trigger-dev"
+      ],
+      "default": "queue:none"
+    }
+  },
+  "defaults": {
+    "serviceName": "starter-foundry-x402",
+    "port": 4195
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "server.mjs"
+    },
+    {
+      "type": "node-syntax",
+      "path": "server.mjs"
+    },
+    {
+      "type": "http-start",
+      "command": ["node", "server.mjs"],
+      "path": "/health",
+      "expect": "\"x402\""
+    }
+  ],
+  "contextHints": {
+    "commands": ["node server.mjs"],
+    "entrypoints": ["server.mjs", "x402.config.json"],
+    "preview": {
+      "path": "/health"
+    },
+    "extensionPoints": ["x402.config.json"]
+  }
+}

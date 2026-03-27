@@ -19,6 +19,21 @@ test("planPrompt routes simple prompts to starter families", async () => {
   assert.equal(result.spec.slots.sdk, "sdk:coinbase-cdp");
 });
 
+test("planPrompt routes coinbase ecommerce prompt to a web plus api workspace", async () => {
+  const result = await planPrompt({
+    prompt: `Create a Web3 e-commerce store using Coinbase Wallet SDK and Commerce API.
+
+Tech Stack:
+- Frontend: Vite + React + TypeScript
+- Backend: Node.js + Express + PostgreSQL`,
+    partner: "coinbase",
+  });
+
+  assert.equal(result.kind, "workspace");
+  assert.equal(result.spec.projects.find((project) => project.id === "web")?.spec.family, "react-vite-ts");
+  assert.equal(result.spec.projects.find((project) => project.id === "api")?.spec.family, "api-service");
+});
+
 test("planPrompt routes multiruntime prompts to workspaces", async () => {
   const result = await planPrompt({
     prompt: "Build a frontend product app with a Foundry treasury contract and a fast preview.",
@@ -31,6 +46,49 @@ test("planPrompt routes multiruntime prompts to workspaces", async () => {
   assert.ok(result.spec.projects.some((project) => project.id === "evm"));
 });
 
+test("planPrompt routes tangle prompts with ui to a web plus blueprint workspace", async () => {
+  const result = await planPrompt({
+    prompt: "Build a decentralized storage service Blueprint for Tangle Network with a dashboard for file management.",
+    partner: null,
+  });
+
+  assert.equal(result.kind, "workspace");
+  assert.equal(result.spec.projects.find((project) => project.id === "web")?.spec.family, "react-vite-ts");
+  assert.equal(result.spec.projects.find((project) => project.id === "tangle")?.spec.family, "tangle-blueprint");
+});
+
+test("planPrompt routes x402 agent prompts to a worker plus x402 workspace", async () => {
+  const result = await planPrompt({
+    prompt: "Create an AI agent that can autonomously pay for premium HTTP services using the x402 payment protocol.",
+    partner: null,
+  });
+
+  assert.equal(result.kind, "workspace");
+  assert.equal(result.spec.projects.find((project) => project.id === "worker")?.spec.family, "worker-job");
+  assert.equal(result.spec.projects.find((project) => project.id === "api")?.spec.family, "x402-service");
+});
+
+test("planPrompt routes ethereum protocol prompts to a web plus evm workspace", async () => {
+  const result = await planPrompt({
+    prompt: "Build a decentralized lending protocol on Ethereum with LendingPool contracts and a Vite + React supply/borrow interface.",
+    partner: null,
+  });
+
+  assert.equal(result.kind, "workspace");
+  assert.equal(result.spec.projects.find((project) => project.id === "web")?.spec.family, "react-vite-ts");
+  assert.equal(result.spec.projects.find((project) => project.id === "evm")?.spec.family, "forge-contracts");
+});
+
+test("planPrompt routes broad tangle prompts to a blueprint workspace", async () => {
+  const result = await planPrompt({
+    prompt: "Build a threshold signature custody solution using Tangle's native MPC capabilities with a React dashboard and API endpoints.",
+    partner: null,
+  });
+
+  assert.equal(result.kind, "workspace");
+  assert.equal(result.spec.projects.find((project) => project.id === "tangle")?.spec.family, "tangle-blueprint");
+});
+
 test("planPrompt routes mixed web and python api prompts to a workspace", async () => {
   const result = await planPrompt({
     prompt: "Create a Next.js marketing shell with a separate Python API for summarization jobs.",
@@ -41,6 +99,16 @@ test("planPrompt routes mixed web and python api prompts to a workspace", async 
   assert.equal(result.spec.launchPlan.primaryProjectId, "web");
   assert.equal(result.spec.projects.find((project) => project.id === "web")?.spec.family, "nextjs-ts");
   assert.equal(result.spec.projects.find((project) => project.id === "api")?.spec.family, "python-api");
+});
+
+test("planPrompt routes dspy prompts to the dedicated pipeline family", async () => {
+  const result = await planPrompt({
+    prompt: "Build an optimized AI pipeline using DSPy for automated prompt engineering.",
+    partner: null,
+  });
+
+  assert.equal(result.kind, "starter");
+  assert.equal(result.spec.family, "dspy-pipeline-py");
 });
 
 test("planPrompt routes web plus worker prompts to a workspace", async () => {

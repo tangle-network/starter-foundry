@@ -1,0 +1,4 @@
+{
+  "contract": "{{contractName}}",
+  "target": "arbitrum-stylus"
+}

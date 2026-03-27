@@ -1,0 +1,15 @@
+{
+  "id": "dspy-pipeline-py",
+  "description": "DSPy pipeline framework layer.",
+  "appliesTo": ["dspy-pipeline-py"],
+  "files": [
+    {
+      "source": "files/main.py",
+      "target": "main.py"
+    },
+    {
+      "source": "files/pipeline.json",
+      "target": "pipeline.json"
+    }
+  ]
+}

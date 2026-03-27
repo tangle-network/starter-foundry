@@ -1,0 +1,8 @@
+[package]
+name = "{{packageName}}"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "stylus_contract"
+path = "src/lib.rs"

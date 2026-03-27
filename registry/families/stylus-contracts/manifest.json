@@ -1,0 +1,30 @@
+{
+  "id": "stylus-contracts",
+  "description": "Minimal Arbitrum Stylus Rust contract starter.",
+  "tags": ["stylus", "rust", "contracts"],
+  "taxonomy": {
+    "language": "rust",
+    "runtime": "stylus",
+    "surface": "contracts"
+  },
+  "defaults": {
+    "contractName": "StarterStylusContract"
+  },
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "Cargo.toml"
+    },
+    {
+      "type": "command-success",
+      "command": ["cargo", "test", "--quiet"],
+      "expect": "test result: ok"
+    }
+  ],
+  "contextHints": {
+    "commands": ["cargo test", "cargo check"],
+    "entrypoints": ["src/lib.rs", "Cargo.toml", "stylus.json"],
+    "preview": null,
+    "extensionPoints": ["stylus.json", "src/lib.rs"]
+  }
+}

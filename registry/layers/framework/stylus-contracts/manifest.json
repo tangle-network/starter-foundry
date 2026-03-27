@@ -1,0 +1,19 @@
+{
+  "id": "stylus-contracts",
+  "description": "Stylus Rust contract framework layer.",
+  "appliesTo": ["stylus-contracts"],
+  "files": [
+    {
+      "source": "files/Cargo.toml",
+      "target": "Cargo.toml"
+    },
+    {
+      "source": "files/lib.rs",
+      "target": "src/lib.rs"
+    },
+    {
+      "source": "files/stylus.json",
+      "target": "stylus.json"
+    }
+  ]
+}

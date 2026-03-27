@@ -1,0 +1,8 @@
+{
+  "projectName": "mcp-server",
+  "family": "mcp-server-ts",
+  "layers": ["framework:mcp-server-ts"],
+  "variables": {
+    "serverName": "starter-foundry-mcp"
+  }
+}

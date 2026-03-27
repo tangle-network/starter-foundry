@@ -1,0 +1,15 @@
+{
+  "id": "zk-prover-service",
+  "description": "ZK prover service framework layer.",
+  "appliesTo": ["zk-prover-service"],
+  "files": [
+    {
+      "source": "files/server.mjs",
+      "target": "server.mjs"
+    },
+    {
+      "source": "files/proof-system.json",
+      "target": "proof-system.json"
+    }
+  ]
+}

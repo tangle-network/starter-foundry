@@ -2,7 +2,7 @@
   "id": "mongodb",
   "slot": "database",
   "description": "Database profile for MongoDB-backed starters.",
-  "appliesTo": ["api-service", "python-api", "rust-service", "cloudflare-worker-ts", "fullstack-ts", "go-api"],
+  "appliesTo": ["api-service", "python-api", "rust-service", "cloudflare-worker-ts", "fullstack-ts", "go-api", "mcp-server-ts", "dspy-pipeline-py", "x402-service", "zk-prover-service"],
   "defaults": {
     "databaseProvider": "mongodb"
   },

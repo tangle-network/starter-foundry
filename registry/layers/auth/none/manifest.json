@@ -2,5 +2,5 @@
   "id": "none",
   "slot": "auth",
   "description": "No auth provider selected.",
-  "appliesTo": ["react-vite-ts", "nextjs-ts", "fullstack-ts", "api-service", "cloudflare-worker-ts", "python-api", "rust-service", "go-api", "expo-react-native-ts", "browser-extension-ts", "electron-desktop-ts", "tauri-desktop"]
+  "appliesTo": ["react-vite-ts", "nextjs-ts", "fullstack-ts", "api-service", "cloudflare-worker-ts", "python-api", "rust-service", "go-api", "expo-react-native-ts", "browser-extension-ts", "electron-desktop-ts", "tauri-desktop", "mcp-server-ts", "dspy-pipeline-py", "x402-service", "zk-prover-service"]
 }

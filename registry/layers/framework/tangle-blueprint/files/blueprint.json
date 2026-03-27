@@ -1,0 +1,16 @@
+{
+  "name": "{{blueprintName}}",
+  "jobs": [
+    {
+      "id": "{{jobName}}",
+      "description": "Process a single deterministic input payload"
+    }
+  ],
+  "operatorRequirements": {
+    "minimumStake": "1"
+  },
+  "slashing": {
+    "enabled": true,
+    "reason": "invalid job result"
+  }
+}

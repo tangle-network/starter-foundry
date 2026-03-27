@@ -1,0 +1,9 @@
+{
+  "name": "{{pipelineName}}",
+  "signature": "question -> answer",
+  "stages": [
+    "retrieve",
+    "reason",
+    "respond"
+  ]
+}

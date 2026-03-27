@@ -1,0 +1,19 @@
+{
+  "id": "eigenlayer-avs",
+  "description": "EigenLayer AVS framework layer.",
+  "appliesTo": ["eigenlayer-avs"],
+  "files": [
+    {
+      "source": "files/avs.config.json",
+      "target": "avs.config.json"
+    },
+    {
+      "source": "files/ServiceManager.sol",
+      "target": "contracts/ServiceManager.sol"
+    },
+    {
+      "source": "files/main.rs",
+      "target": "operator/main.rs"
+    }
+  ]
+}

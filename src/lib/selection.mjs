@@ -6,6 +6,48 @@ function keywordScore(prompt, keywords) {
 export async function selectStarter({ prompt, partner = null }) {
   const candidates = [
     {
+      family: "tangle-blueprint",
+      layers: ["framework:tangle-blueprint"],
+      score: keywordScore(prompt, ["tangle blueprint", "blueprint sdk", "cargo tangle", "oracle blueprint", "storage blueprint"]),
+      reasons: ["tangle blueprint language detected"],
+    },
+    {
+      family: "eigenlayer-avs",
+      layers: ["framework:eigenlayer-avs"],
+      score: keywordScore(prompt, ["eigenlayer", "avs", "oracle avs", "keeper avs", "sequencer avs", "coprocessor avs"]),
+      reasons: ["eigenlayer avs language detected"],
+    },
+    {
+      family: "stylus-contracts",
+      layers: ["framework:stylus-contracts"],
+      score: keywordScore(prompt, ["stylus", "arbitrum stylus"]),
+      reasons: ["stylus language detected"],
+    },
+    {
+      family: "zk-prover-service",
+      layers: ["framework:zk-prover-service"],
+      score: keywordScore(prompt, ["risc zero", "sp1", "circom", "snarkjs", "fhenix", "zk prover", "verifiable ml", "private voting", "dark pool", "mixer"]),
+      reasons: ["zk infrastructure language detected"],
+    },
+    {
+      family: "mcp-server-ts",
+      layers: ["framework:mcp-server-ts"],
+      score: keywordScore(prompt, ["model context protocol", "mcp server", "mcp tools", "mcp tool server"]),
+      reasons: ["mcp server language detected"],
+    },
+    {
+      family: "dspy-pipeline-py",
+      layers: ["framework:dspy-pipeline-py"],
+      score: keywordScore(prompt, ["dspy", "rag system", "summarization system", "text classification system", "prompt engineering"]),
+      reasons: ["dspy pipeline language detected"],
+    },
+    {
+      family: "x402-service",
+      layers: ["framework:x402-service"],
+      score: keywordScore(prompt, ["x402", "micropayments", "pay-per-request", "monetized api"]),
+      reasons: ["x402 language detected"],
+    },
+    {
       family: "expo-react-native-ts",
       layers: ["framework:expo-react-native-ts"],
       score: keywordScore(prompt, ["expo", "react native", "mobile app", "ios app", "android app"]),
@@ -120,7 +162,30 @@ export async function selectStarter({ prompt, partner = null }) {
     {
       family: "forge-contracts",
       layers: ["framework:forge-foundation"],
-      score: keywordScore(prompt, ["solidity", "foundry", "forge", "erc20", "evm contract"]),
+      score: keywordScore(prompt, [
+        "solidity",
+        "foundry",
+        "forge",
+        "erc20",
+        "erc-20",
+        "erc721",
+        "erc-721",
+        "erc-4337",
+        "erc4337",
+        "evm contract",
+        "ethereum",
+        "arbitrum",
+        "base network",
+        "x layer",
+        "xlayer",
+        "layerzero",
+        "chainlink",
+        "wallet factory",
+        "auction house",
+        "lendingpool",
+        "cover manager",
+        "gateway",
+      ]),
       reasons: ["forge/solidity language detected"],
     },
     {
@@ -162,7 +227,10 @@ export async function selectStarter({ prompt, partner = null }) {
     spec.variables.headline = "Ship a Coinbase-ready product surface";
   }
 
-  if (partner === "coinbase" && (family === "react-vite-ts" || family === "nextjs-ts" || family === "fullstack-ts")) {
+  if (
+    partner === "coinbase" &&
+    (family === "react-vite-ts" || family === "nextjs-ts" || family === "fullstack-ts" || family === "x402-service")
+  ) {
     spec.layers = [...new Set([...layers, "capability:chart-widget"])];
     spec.variables.headline = "Ship a Coinbase-ready product surface";
   }

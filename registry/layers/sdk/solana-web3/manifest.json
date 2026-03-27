@@ -14,7 +14,11 @@
     "expo-react-native-ts",
     "browser-extension-ts",
     "electron-desktop-ts",
-    "tauri-desktop"
+    "tauri-desktop",
+    "mcp-server-ts",
+    "dspy-pipeline-py",
+    "x402-service",
+    "zk-prover-service"
   ],
   "defaults": {
     "sdkProvider": "solana-web3"

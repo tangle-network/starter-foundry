@@ -1,0 +1,8 @@
+{
+  "projectName": "x402-service",
+  "family": "x402-service",
+  "layers": ["framework:x402-service"],
+  "variables": {
+    "serviceName": "premium-http-x402"
+  }
+}

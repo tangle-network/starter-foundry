@@ -13,6 +13,76 @@ test("select chooses frontend starter for landing-page prompts", async () => {
   assert.equal(result.spec.partner, "coinbase");
 });
 
+test("select chooses tangle blueprint starter for tangle prompts", async () => {
+  const result = await selectStarter({
+    prompt: "Build a Tangle Blueprint with the Blueprint SDK and cargo tangle",
+    partner: null,
+  });
+
+  assert.equal(result.spec.family, "tangle-blueprint");
+  assert.deepEqual(result.spec.layers, ["framework:tangle-blueprint"]);
+});
+
+test("select chooses eigenlayer avs starter for avs prompts", async () => {
+  const result = await selectStarter({
+    prompt: "Build an Oracle AVS on EigenLayer for decentralized price feeds",
+    partner: null,
+  });
+
+  assert.equal(result.spec.family, "eigenlayer-avs");
+  assert.deepEqual(result.spec.layers, ["framework:eigenlayer-avs"]);
+});
+
+test("select chooses mcp starter for mcp prompts", async () => {
+  const result = await selectStarter({
+    prompt: "Build a Model Context Protocol server providing tools for AI assistants",
+    partner: null,
+  });
+
+  assert.equal(result.spec.family, "mcp-server-ts");
+  assert.deepEqual(result.spec.layers, ["framework:mcp-server-ts"]);
+});
+
+test("select chooses dspy starter for dspy prompts", async () => {
+  const result = await selectStarter({
+    prompt: "Build an optimized AI pipeline using DSPy for automated prompt engineering",
+    partner: null,
+  });
+
+  assert.equal(result.spec.family, "dspy-pipeline-py");
+  assert.deepEqual(result.spec.layers, ["framework:dspy-pipeline-py"]);
+});
+
+test("select chooses x402 starter for x402 prompts", async () => {
+  const result = await selectStarter({
+    prompt: "Create a monetized API service that accepts x402 micropayments for access",
+    partner: null,
+  });
+
+  assert.equal(result.spec.family, "x402-service");
+  assert.deepEqual(result.spec.layers, ["framework:x402-service"]);
+});
+
+test("select chooses zk prover starter for zk prompts", async () => {
+  const result = await selectStarter({
+    prompt: "Build a ZK oracle network on RISC Zero for verifiable external data feeds",
+    partner: null,
+  });
+
+  assert.equal(result.spec.family, "zk-prover-service");
+  assert.deepEqual(result.spec.layers, ["framework:zk-prover-service"]);
+});
+
+test("select chooses stylus starter for stylus prompts", async () => {
+  const result = await selectStarter({
+    prompt: "Build a high-performance AMM DEX using Arbitrum Stylus in Rust",
+    partner: null,
+  });
+
+  assert.equal(result.spec.family, "stylus-contracts");
+  assert.deepEqual(result.spec.layers, ["framework:stylus-contracts"]);
+});
+
 test("select chooses worker starter for trading bot prompts", async () => {
   const result = await selectStarter({
     prompt: "Create a trading bot that reacts to a market stream",

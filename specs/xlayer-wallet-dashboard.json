@@ -1,0 +1,18 @@
+{
+  "projectName": "xlayer-wallet-dashboard",
+  "family": "evm-infra-ts",
+  "layers": [
+    "framework:evm-infra-ts",
+    "capability:evm-wallet-dashboard"
+  ],
+  "partner": "xlayer",
+  "slots": {
+    "database": "database:sqlite",
+    "sdk": "sdk:evm-wallet"
+  },
+  "variables": {
+    "serviceName": "xlayer-wallet-dashboard",
+    "chainName": "xlayer",
+    "nativeToken": "OKB"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "network": "xlayer",
+  "nativeToken": "OKB",
+  "verificationExplorer": "oklink",
+  "env": ["PRIVATE_KEY", "OKLINK_API_KEY"],
+  "notes": [
+    "Bias the agent toward Foundry-based deploy and verify commands.",
+    "Preserve OKB-specific chain assumptions instead of defaulting to ETH."
+  ]
+}

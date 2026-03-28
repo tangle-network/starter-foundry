@@ -1,0 +1,22 @@
+{
+  "id": "solana-prediction",
+  "description": "Specializes a Solana program lane for markets, resolution, and disputes.",
+  "appliesTo": ["solana-program"],
+  "files": [
+    {
+      "source": "files/lib.rs",
+      "target": "src/lib.rs"
+    },
+    {
+      "source": "files/README.md",
+      "target": "client/README.md"
+    },
+    {
+      "source": "files/prediction-config.json",
+      "target": "prediction-config.json"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": ["src/lib.rs", "prediction-config.json", "client/README.md"]
+  }
+}

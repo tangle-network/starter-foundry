@@ -1,0 +1,6 @@
+{
+  "product": "amm",
+  "liquidityModel": "concentrated",
+  "integrations": ["jupiter", "openbook"],
+  "features": ["tickMath", "twap", "flashLoans"]
+}

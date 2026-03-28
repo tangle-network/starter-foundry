@@ -1,0 +1,6 @@
+{
+  "product": "prediction-market",
+  "marketTypes": ["binary", "scalar", "categorical"],
+  "oracle": ["pyth", "switchboard"],
+  "resolution": ["optimistic", "disputeWindow"]
+}

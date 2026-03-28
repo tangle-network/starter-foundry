@@ -1,0 +1,12 @@
+{
+  "projectName": "xlayer-foundry-deploy",
+  "family": "forge-contracts",
+  "layers": [
+    "framework:forge-foundation",
+    "capability:evm-deploy-foundry"
+  ],
+  "partner": "xlayer",
+  "variables": {
+    "contractName": "Counter"
+  }
+}

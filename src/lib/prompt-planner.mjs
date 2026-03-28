@@ -267,6 +267,11 @@ function detectEvmInfraLane(text) {
     "wallet balance",
     "wallet balances",
     "stats json endpoint",
+    "layerzero",
+    "oft",
+    "sendtokens",
+    "bundler",
+    "permissionless.js",
     "monitor x layer",
     "monitor ethereum",
     "monitor arbitrum",
@@ -276,7 +281,21 @@ function detectEvmInfraLane(text) {
   ]);
 }
 
-function detectImplicitEvmApiPattern(text) {
+function detectEvmDeployPattern(text) {
+  return hasAny(text, [
+    "foundry.toml",
+    "deploy script",
+    "deploy task",
+    "contract verification",
+    "verify",
+    "oklink explorer",
+    ".env template",
+    "private_key",
+    "sample erc20",
+  ]);
+}
+
+function detectEvmSupportApiPattern(text) {
   return hasAny(text, [
     "indexer",
     "subgraph",
@@ -286,20 +305,21 @@ function detectImplicitEvmApiPattern(text) {
     "bundler",
     "keeper",
     "oracle",
-    "deploy",
-    "deployment",
     "bridge",
-    "staking",
-    "liquid staking",
-    "lending",
-    "yield",
-    "insurance",
-    "amm",
-    "swap",
+    "bridges",
+    "layerzero",
+    "oft",
+    "sendtokens",
     "hook",
     "analytics",
     "portfolio",
     "metrics",
+    "multicall",
+    "wallet balance",
+    "transaction count",
+    "gas price",
+    "websocket",
+    "/stats",
   ]);
 }
 
@@ -388,6 +408,119 @@ function needsSupportApiLane(text) {
     "data source",
     "programmatic access",
   ]);
+}
+
+function detectSolanaProductApiPattern(text) {
+  return hasAny(text, [
+    "pyth",
+    "switchboard",
+    "jupiter",
+    "openbook",
+    "analytics",
+    "leaderboard",
+    "activity feed",
+    "creator dashboard",
+    "launch calendar",
+    "pool discovery",
+    "market browser",
+    "market data",
+    "oracle integration",
+    "price feeds",
+    "dashboard",
+  ]);
+}
+
+function detectSolanaWorkerPattern(text) {
+  return hasAny(text, [
+    "keeper",
+    "liquidation",
+    "funding rate",
+    "pyth price feeds",
+    "switchboard",
+    "oracle integration",
+    "disputes",
+    "auto-deleveraging",
+  ]);
+}
+
+function buildEvmContractLayers(text) {
+  const layers = ["framework:forge-foundation"];
+
+  if (detectEvmDeployPattern(text)) {
+    layers.push("capability:evm-deploy-foundry");
+  }
+
+  if (hasAny(text, ["layerzero", "oft", "bridge tokens", "sendtokens script", "omnichain fungible token"])) {
+    layers.push("capability:evm-layerzero-oft");
+  } else if (hasAny(text, ["erc-4337", "erc4337", "bundler", "permissionless.js", "gasless mint", "account abstraction"])) {
+    layers.push("capability:evm-account-abstraction");
+  }
+
+  return layers;
+}
+
+function buildEvmContractVariables(text) {
+  if (hasAny(text, ["layerzero", "oft", "omnichain fungible token"])) {
+    return { contractName: "OmnichainToken" };
+  }
+
+  if (hasAny(text, ["erc721", "erc-721", "nft collection", "gasless mint"])) {
+    return { contractName: "GaslessCollectible" };
+  }
+
+  if (hasAny(text, ["erc20", "erc-20", "sample erc20"])) {
+    return { contractName: "XLayerToken" };
+  }
+
+  return { contractName: "Counter" };
+}
+
+function buildSolanaProgramLayers(text) {
+  const layers = ["framework:solana-native-rust"];
+
+  if (hasAny(text, ["perpetual", "futures", "funding rate", "liquidation", "insurance fund", "cross-collateral"])) {
+    layers.push("capability:solana-perps");
+  } else if (hasAny(text, ["concentrated liquidity", "tick-based liquidity", "swap router", "position nft"])) {
+    layers.push("capability:solana-amm");
+  } else if (hasAny(text, ["nft marketplace", "compressed nfts", "royalty enforcement", "bundle sales"])) {
+    layers.push("capability:solana-nft");
+  } else if (hasAny(text, ["launchpad", "fair launches", "dutch auction", "bonding curve", "claim portal"])) {
+    layers.push("capability:solana-launchpad");
+  } else if (hasAny(text, ["staking platform", "veToken", "rewards dashboard", "auto-compound", "validator delegation"])) {
+    layers.push("capability:solana-staking");
+  } else if (hasAny(text, ["prediction market", "binary (yes/no)", "switchboard oracle", "scalar", "categorical"])) {
+    layers.push("capability:solana-prediction");
+  }
+
+  return layers;
+}
+
+function buildSolanaProgramVariables(text) {
+  if (hasAny(text, ["perpetual", "futures"])) {
+    return { instructionName: "InitializePerpMarket" };
+  }
+
+  if (hasAny(text, ["concentrated liquidity", "amm dex", "swap router"])) {
+    return { instructionName: "InitializePool" };
+  }
+
+  if (hasAny(text, ["nft marketplace", "compressed nfts"])) {
+    return { instructionName: "CreateListing" };
+  }
+
+  if (hasAny(text, ["launchpad", "fair launches", "bonding curve"])) {
+    return { instructionName: "CreateLaunch" };
+  }
+
+  if (hasAny(text, ["staking platform", "veToken", "auto-compound"])) {
+    return { instructionName: "InitializeStakePool" };
+  }
+
+  if (hasAny(text, ["prediction market", "scalar", "categorical"])) {
+    return { instructionName: "CreateMarket" };
+  }
+
+  return { instructionName: "InitializeTreasury" };
 }
 
 function buildWebProject(prompt, partner, text) {
@@ -568,8 +701,16 @@ function buildApiProject(prompt, partner, text) {
     slots.sdk = sdkSlot;
   }
 
-  if ((choice.family === "api-service" || choice.family === "evm-infra-ts") && detectImplicitEvmApiPattern(text)) {
+  if ((choice.family === "api-service" || choice.family === "evm-infra-ts") && detectEvmSupportApiPattern(text)) {
     layers.push("capability:evm-protocol-api");
+  }
+
+  if (choice.family === "evm-infra-ts") {
+    if (hasAny(text, ["block monitor", "new blocks", "gas price", "tps", "/stats", "websocket"])) {
+      layers.push("capability:evm-chain-monitor");
+    } else if (hasAny(text, ["wallet balance", "wallet address", "multicall", "summary table"])) {
+      layers.push("capability:evm-wallet-dashboard");
+    }
   }
 
   return {
@@ -589,10 +730,15 @@ function buildApiProject(prompt, partner, text) {
 
 function buildWorkerProject(prompt, partner, text) {
   const choice = chooseWorkerFamily(text);
+  const layers = [...choice.layers];
   const slots = {};
   const queueSlot = detectQueueSlot(text);
   if (queueSlot) {
     slots.queue = queueSlot;
+  }
+
+  if (choice.family === "worker-job" && hasAny(text, ["solana", "anchor", "pyth", "switchboard", "keeper", "liquidation"])) {
+    layers.push("capability:solana-keeper");
   }
 
   return {
@@ -601,8 +747,8 @@ function buildWorkerProject(prompt, partner, text) {
     spec: {
       projectName: `${buildSlug(prompt, "workspace")}-worker`,
       family: choice.family,
-      layers: choice.layers,
-      partner: null,
+      layers,
+      partner: resolvePartnerForFamily(partner, choice.family),
       slots,
       variables: {
         workerName: partner ? `${partner} worker lane` : "workspace worker lane",
@@ -702,9 +848,12 @@ function buildWorkspacePromptPlan({ prompt, partner, text }) {
     (partner === "coinbase" || detectPaymentsSlot(text) !== null || detectSdkSlot(text, partner) !== null);
   const implicitApi =
     !hasApi &&
-    ((hasEvm || hasTangle || hasAvs || hasStylus || hasEvmInfra) &&
-      (needsSupportApiLane(text) || detectImplicitEvmApiPattern(text)) ||
+    ((hasEvm || hasSolana || hasTangle || hasAvs || hasStylus || hasEvmInfra) &&
+      (needsSupportApiLane(text) ||
+        detectEvmSupportApiPattern(text) ||
+        (hasSolana && detectSolanaProductApiPattern(text))) ||
       commerceSupportApi);
+  const implicitWorker = !hasWorker && ((hasSolana && detectSolanaWorkerPattern(text)) || (hasEvm && hasAny(text, ["keeper", "bundler"])));
   const workspaceSignals = hasAny(text, [
     "workspace",
     "monorepo",
@@ -765,6 +914,8 @@ function buildWorkspacePromptPlan({ prompt, partner, text }) {
     (hasFrontend && (hasTangle || hasAvs || hasStylus || hasZk || hasMcp || hasDspy || hasX402)) ||
     (hasFrontend && hasApi && apiChoice && apiChoice.family !== "api-service") ||
     (hasFrontend && implicitApi) ||
+    (implicitApi && (hasEvm || hasSolana || hasMove || hasTangle || hasAvs || hasStylus)) ||
+    implicitWorker ||
     (workspaceSignals && laneCount > 1);
 
   if (!needsWorkspace || fitsFullstackStarter) {
@@ -780,7 +931,7 @@ function buildWorkspacePromptPlan({ prompt, partner, text }) {
     projects.push(buildApiProject(prompt, partner, text));
   }
 
-  if (hasWorker) {
+  if (hasWorker || implicitWorker) {
     projects.push(buildWorkerProject(prompt, partner, text));
   }
 
@@ -925,12 +1076,10 @@ function buildWorkspacePromptPlan({ prompt, partner, text }) {
       spec: {
         projectName: `${buildSlug(prompt, "workspace")}-evm`,
         family: "forge-contracts",
-        layers: ["framework:forge-foundation"],
+        layers: buildEvmContractLayers(text),
         partner: resolvePartnerForFamily(partner, "forge-contracts"),
         slots: {},
-        variables: {
-          contractName: "TreasuryRouter",
-        },
+        variables: buildEvmContractVariables(text),
       },
     });
   }
@@ -942,12 +1091,10 @@ function buildWorkspacePromptPlan({ prompt, partner, text }) {
       spec: {
         projectName: `${buildSlug(prompt, "workspace")}-solana`,
         family: "solana-program",
-        layers: ["framework:solana-native-rust"],
+        layers: buildSolanaProgramLayers(text),
         partner: resolvePartnerForFamily(partner, "solana-program"),
         slots: {},
-        variables: {
-          instructionName: "InitializeTreasury",
-        },
+        variables: buildSolanaProgramVariables(text),
       },
     });
   }
@@ -1080,6 +1227,39 @@ export async function planPrompt({ prompt, partner = null }) {
   if (detectX402Lane(text)) {
     spec.family = "x402-service";
     spec.layers = ["framework:x402-service"];
+  }
+
+  if (detectEvmDeployPattern(text) && hasAny(text, ["foundry", "forge", "hardhat", "solidity", "erc20", "erc721", "layerzero"])) {
+    spec.family = "forge-contracts";
+    spec.layers = buildEvmContractLayers(text);
+    spec.variables = {
+      ...(spec.variables ?? {}),
+      ...buildEvmContractVariables(text),
+    };
+  }
+
+  if (spec.family === "forge-contracts") {
+    spec.layers = buildEvmContractLayers(text);
+    spec.variables = {
+      ...(spec.variables ?? {}),
+      ...buildEvmContractVariables(text),
+    };
+  }
+
+  if (spec.family === "solana-program") {
+    spec.layers = buildSolanaProgramLayers(text);
+    spec.variables = {
+      ...(spec.variables ?? {}),
+      ...buildSolanaProgramVariables(text),
+    };
+  }
+
+  if (spec.family === "evm-infra-ts") {
+    if (hasAny(text, ["block monitor", "new blocks", "gas price", "tps", "/stats", "websocket"])) {
+      spec.layers = [...new Set([...(spec.layers ?? []), "capability:evm-chain-monitor"])];
+    } else if (hasAny(text, ["wallet balance", "wallet address", "multicall", "summary table"])) {
+      spec.layers = [...new Set([...(spec.layers ?? []), "capability:evm-wallet-dashboard"])];
+    }
   }
 
   if (hasAny(text, ["rust", "cargo"]) && spec.family === "api-service") {

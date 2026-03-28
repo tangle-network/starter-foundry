@@ -1,0 +1,6 @@
+{
+  "product": "perpetuals",
+  "oracle": "pyth",
+  "riskEngine": ["twap", "maintenanceMargin", "autoDeleveraging"],
+  "collateral": "USDC"
+}

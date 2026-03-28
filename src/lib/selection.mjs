@@ -4,6 +4,7 @@ function keywordScore(prompt, keywords) {
 }
 
 export async function selectStarter({ prompt, partner = null }) {
+  const lower = prompt.toLowerCase();
   const candidates = [
     {
       family: "tangle-blueprint",
@@ -76,6 +77,7 @@ export async function selectStarter({ prompt, partner = null }) {
         "okx",
         "x layer",
         "xlayer",
+        "/stats",
       ]),
       reasons: ["evm infrastructure language detected"],
     },
@@ -138,7 +140,17 @@ export async function selectStarter({ prompt, partner = null }) {
     {
       family: "solana-program",
       layers: ["framework:solana-native-rust"],
-      score: keywordScore(prompt, ["solana", "anchor", "solana program", "program derived address", "pda"]),
+      score: keywordScore(prompt, [
+        "solana",
+        "anchor",
+        "solana program",
+        "program derived address",
+        "pda",
+        "pyth",
+        "switchboard",
+        "jupiter",
+        "openbook",
+      ]),
       reasons: ["solana language detected"],
     },
     {
@@ -198,6 +210,14 @@ export async function selectStarter({ prompt, partner = null }) {
         "solidity",
         "foundry",
         "forge",
+        "hardhat",
+        "foundry.toml",
+        "deploy script",
+        "deploy task",
+        "contract verification",
+        "verify",
+        "private_key",
+        ".env template",
         "erc20",
         "erc-20",
         "erc721",
@@ -242,6 +262,42 @@ export async function selectStarter({ prompt, partner = null }) {
       reasons: ["worker/bot language detected"],
     },
   ];
+
+  for (const candidate of candidates) {
+    if (
+      candidate.family === "forge-contracts" &&
+      (lower.includes("foundry") ||
+        lower.includes("forge") ||
+        lower.includes("hardhat") ||
+        lower.includes("foundry.toml") ||
+        lower.includes("contract verification"))
+    ) {
+      candidate.score += 3;
+    }
+
+    if (
+      candidate.family === "evm-infra-ts" &&
+      (lower.includes("foundry") ||
+        lower.includes("forge") ||
+        lower.includes("hardhat") ||
+        lower.includes("solidity") ||
+        lower.includes("erc20") ||
+        lower.includes("erc721"))
+    ) {
+      candidate.score -= 2;
+    }
+
+    if (
+      candidate.family === "evm-infra-ts" &&
+      (lower.includes("block monitor") ||
+        lower.includes("websocket") ||
+        lower.includes("multicall") ||
+        lower.includes("wallet balance") ||
+        lower.includes("/stats"))
+    ) {
+      candidate.score += 2;
+    }
+  }
 
   candidates.sort((left, right) => right.score - left.score);
   const winner = candidates[0];

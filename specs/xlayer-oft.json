@@ -1,0 +1,13 @@
+{
+  "projectName": "xlayer-oft",
+  "family": "forge-contracts",
+  "layers": [
+    "framework:forge-foundation",
+    "capability:evm-deploy-foundry",
+    "capability:evm-layerzero-oft"
+  ],
+  "partner": "xlayer",
+  "variables": {
+    "contractName": "OmnichainToken"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "id": "evm-deploy-foundry",
+  "description": "Adds chain-aware deploy and verification scaffolding for Foundry-first EVM deployments.",
+  "appliesTo": ["forge-contracts"],
+  "files": [
+    {
+      "source": "files/foundry.toml",
+      "target": "foundry.toml"
+    },
+    {
+      "source": "files/Deploy.s.sol",
+      "target": "script/Deploy.s.sol"
+    },
+    {
+      "source": "files/deploy-config.json",
+      "target": "deploy-config.json"
+    },
+    {
+      "source": "files/env.example",
+      "target": ".env.example"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": ["foundry.toml", "script/Deploy.s.sol", "deploy-config.json", ".env.example"]
+  }
+}

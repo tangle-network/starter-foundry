@@ -1,0 +1,18 @@
+{
+  "id": "solana-keeper",
+  "description": "Adds keeper-oriented feed and lifecycle hooks for Solana workers.",
+  "appliesTo": ["worker-job"],
+  "files": [
+    {
+      "source": "files/hooks.mjs",
+      "target": "hooks.mjs"
+    },
+    {
+      "source": "files/market-feed.json",
+      "target": "market-feed.json"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": ["hooks.mjs", "market-feed.json"]
+  }
+}

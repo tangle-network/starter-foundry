@@ -1,0 +1,5 @@
+{
+  "product": "launchpad",
+  "saleModes": ["fixed-price", "dutch-auction", "bonding-curve"],
+  "postSale": ["lpProvision", "lpLock", "vesting"]
+}

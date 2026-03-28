@@ -1,0 +1,6 @@
+{
+  "mode": "wallet-balance-summary",
+  "nativeCurrency": "OKB",
+  "erc20Assets": ["USDC", "USDT"],
+  "transport": "multicall"
+}

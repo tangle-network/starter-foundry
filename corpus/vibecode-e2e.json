@@ -483,6 +483,65 @@
           "tangle": "tangle-blueprint"
         }
       }
+    },
+    {
+      "id": "xlayer-foundry-deploy",
+      "complexity": "complex",
+      "partner": null,
+      "prompt": "Scaffold a Foundry project targeting X Layer with foundry.toml network configs, a deploy script reading PRIVATE_KEY, and OKLink verification.",
+      "expected": {
+        "kind": "starter",
+        "family": "forge-contracts"
+      }
+    },
+    {
+      "id": "xlayer-aa-workspace",
+      "complexity": "mostly-complex",
+      "partner": null,
+      "prompt": "Scaffold a Foundry ERC721 collection on X Layer, then add a TypeScript minting client using permissionless.js and viem that sends a gasless mint through an ERC-4337 bundler.",
+      "expected": {
+        "kind": "workspace",
+        "primaryProjectId": "api",
+        "projectIds": ["api", "evm"],
+        "projectFamilies": {
+          "api": "evm-infra-ts",
+          "evm": "forge-contracts"
+        }
+      }
+    },
+    {
+      "id": "solana-perps-workspace",
+      "complexity": "mostly-complex",
+      "partner": null,
+      "prompt": "Build a perpetual futures DEX on Solana using Anchor with Pyth price feeds, liquidation keepers, and a Vite + React trading interface.",
+      "expected": {
+        "kind": "workspace",
+        "primaryProjectId": "web",
+        "projectIds": ["web", "api", "worker", "solana"],
+        "projectFamilies": {
+          "web": "react-vite-ts",
+          "api": "api-service",
+          "worker": "worker-job",
+          "solana": "solana-program"
+        }
+      }
+    },
+    {
+      "id": "solana-prediction-workspace",
+      "complexity": "complex",
+      "partner": null,
+      "prompt": "Build a prediction market on Solana with Anchor, Pyth or Switchboard oracles, dispute handling, and a React market browser.",
+      "expected": {
+        "kind": "workspace",
+        "primaryProjectId": "web",
+        "projectIds": ["web", "api", "worker", "solana"],
+        "projectFamilies": {
+          "web": "react-vite-ts",
+          "api": "api-service",
+          "worker": "worker-job",
+          "solana": "solana-program"
+        }
+      }
     }
   ]
 }

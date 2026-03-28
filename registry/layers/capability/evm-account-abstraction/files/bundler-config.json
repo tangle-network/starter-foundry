@@ -1,0 +1,10 @@
+{
+  "stack": "erc-4337",
+  "client": "permissionless.js",
+  "transport": "viem",
+  "gasMode": "sponsored",
+  "notes": [
+    "Bias the agent toward a separate bundler client lane instead of mixing UI and deploy concerns.",
+    "Treat OKB gas abstraction as a first-class product behavior."
+  ]
+}

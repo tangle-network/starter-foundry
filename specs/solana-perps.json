@@ -1,0 +1,12 @@
+{
+  "projectName": "solana-perps",
+  "family": "solana-program",
+  "layers": [
+    "framework:solana-native-rust",
+    "capability:solana-perps"
+  ],
+  "partner": "solana",
+  "variables": {
+    "instructionName": "InitializePerpMarket"
+  }
+}

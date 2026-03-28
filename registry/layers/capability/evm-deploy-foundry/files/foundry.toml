@@ -1,0 +1,13 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = []
+test = "test"
+script = "script"
+
+[rpc_endpoints]
+xlayer_mainnet = "https://rpc.xlayer.tech"
+xlayer_testnet = "https://testrpc.xlayer.tech"
+
+[etherscan]
+xlayer = { key = "${OKLINK_API_KEY}", url = "https://www.oklink.com/api/v5/explorer/contract/verify-source-code-plugin/XLAYER" }

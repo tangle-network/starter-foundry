@@ -1,0 +1,7 @@
+{
+  "ticks": [
+    { "symbol": "SOL-PERP", "price": 172.4 },
+    { "symbol": "BTC-PERP", "price": 68421.2 },
+    { "symbol": "JUP-SOL", "price": 0.0152 }
+  ]
+}

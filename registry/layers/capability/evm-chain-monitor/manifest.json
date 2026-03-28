@@ -1,0 +1,18 @@
+{
+  "id": "evm-chain-monitor",
+  "description": "Adds block, gas, and TPS monitoring guidance to the EVM infra starter.",
+  "appliesTo": ["evm-infra-ts"],
+  "files": [
+    {
+      "source": "files/hooks.mjs",
+      "target": "hooks.mjs"
+    },
+    {
+      "source": "files/monitor-config.json",
+      "target": "monitor-config.json"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": ["hooks.mjs", "monitor-config.json"]
+  }
+}

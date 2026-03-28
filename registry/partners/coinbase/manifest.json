@@ -15,6 +15,7 @@
     "python-api",
     "rust-service",
     "go-api",
+    "worker-job",
     "go-worker",
     "playwright-worker",
     "evm-infra-ts",

@@ -1,0 +1,4 @@
+{
+  "product": "nft-marketplace",
+  "features": ["auctions", "offers", "royalties", "compressedNFTs", "bundleSales"]
+}

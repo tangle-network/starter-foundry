@@ -1,0 +1,13 @@
+{
+  "projectName": "xlayer-aa",
+  "family": "forge-contracts",
+  "layers": [
+    "framework:forge-foundation",
+    "capability:evm-deploy-foundry",
+    "capability:evm-account-abstraction"
+  ],
+  "partner": "xlayer",
+  "variables": {
+    "contractName": "GaslessCollectible"
+  }
+}

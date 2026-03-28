@@ -1,0 +1,30 @@
+{
+  "id": "evm-account-abstraction",
+  "description": "Specializes a Foundry lane for ERC-4337, gasless minting, and permissionless bundler flows.",
+  "appliesTo": ["forge-contracts"],
+  "files": [
+    {
+      "source": "files/GaslessCollectible.sol",
+      "target": "src/{{contractName}}.sol"
+    },
+    {
+      "source": "files/GaslessCollectible.t.sol",
+      "target": "test/{{contractName}}.t.sol"
+    },
+    {
+      "source": "files/Deploy.s.sol",
+      "target": "script/Deploy.s.sol"
+    },
+    {
+      "source": "files/MintWithBundler.s.sol",
+      "target": "script/MintWithBundler.s.sol"
+    },
+    {
+      "source": "files/bundler-config.json",
+      "target": "bundler-config.json"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": ["src/{{contractName}}.sol", "script/MintWithBundler.s.sol", "bundler-config.json"]
+  }
+}

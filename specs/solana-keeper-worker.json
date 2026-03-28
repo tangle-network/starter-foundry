@@ -1,0 +1,13 @@
+{
+  "projectName": "solana-keeper-worker",
+  "family": "worker-job",
+  "layers": [
+    "framework:node-worker",
+    "capability:market-sim",
+    "capability:solana-keeper"
+  ],
+  "partner": "solana",
+  "variables": {
+    "workerName": "Solana Keeper Worker"
+  }
+}

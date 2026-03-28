@@ -1,0 +1,6 @@
+{
+  "stream": "newHeads",
+  "metrics": ["gasPrice", "transactionCount", "blockTime", "tps"],
+  "reconnect": "exponential-backoff",
+  "output": "/stats"
+}

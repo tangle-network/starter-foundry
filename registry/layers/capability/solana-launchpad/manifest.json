@@ -1,0 +1,22 @@
+{
+  "id": "solana-launchpad",
+  "description": "Specializes a Solana program lane for token sale and vesting flows.",
+  "appliesTo": ["solana-program"],
+  "files": [
+    {
+      "source": "files/lib.rs",
+      "target": "src/lib.rs"
+    },
+    {
+      "source": "files/README.md",
+      "target": "client/README.md"
+    },
+    {
+      "source": "files/sale-config.json",
+      "target": "sale-config.json"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": ["src/lib.rs", "sale-config.json", "client/README.md"]
+  }
+}

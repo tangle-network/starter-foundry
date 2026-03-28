@@ -132,6 +132,54 @@ test("planPrompt routes xlayer infra prompts to the evm infra starter", async ()
   assert.equal(result.kind, "starter");
   assert.equal(result.spec.family, "evm-infra-ts");
   assert.equal(result.spec.partner, "xlayer");
+  assert.ok(result.spec.layers.includes("capability:evm-chain-monitor"));
+});
+
+test("planPrompt routes xlayer foundry deploy prompts to forge with deploy scaffolding", async () => {
+  const result = await planPrompt({
+    prompt:
+      "Scaffold a Foundry project targeting X Layer, configure foundry.toml, include a deploy script reading PRIVATE_KEY, and set up OKLink verification.",
+    partner: null,
+  });
+
+  assert.equal(result.kind, "starter");
+  assert.equal(result.spec.family, "forge-contracts");
+  assert.equal(result.spec.partner, "xlayer");
+  assert.ok(result.spec.layers.includes("capability:evm-deploy-foundry"));
+});
+
+test("planPrompt routes xlayer account abstraction prompts to an api plus evm workspace", async () => {
+  const result = await planPrompt({
+    prompt:
+      "Scaffold a Foundry ERC721 collection on X Layer, then add a TypeScript minting client using permissionless.js and viem that sends a gasless mint through an ERC-4337 bundler.",
+    partner: null,
+  });
+
+  assert.equal(result.kind, "workspace");
+  assert.equal(result.spec.projects.find((project) => project.id === "api")?.spec.family, "evm-infra-ts");
+  assert.equal(result.spec.projects.find((project) => project.id === "evm")?.spec.family, "forge-contracts");
+  assert.ok(
+    result.spec.projects
+      .find((project) => project.id === "evm")
+      ?.spec.layers.includes("capability:evm-account-abstraction"),
+  );
+});
+
+test("planPrompt routes layerzero oft prompts to an api plus evm workspace", async () => {
+  const result = await planPrompt({
+    prompt:
+      "Create a Hardhat TypeScript project that deploys a LayerZero OFT on X Layer with a sendTokens bridge script and PRIVATE_KEY env setup.",
+    partner: null,
+  });
+
+  assert.equal(result.kind, "workspace");
+  assert.equal(result.spec.projects.find((project) => project.id === "api")?.spec.family, "evm-infra-ts");
+  assert.equal(result.spec.projects.find((project) => project.id === "evm")?.spec.family, "forge-contracts");
+  assert.ok(
+    result.spec.projects
+      .find((project) => project.id === "evm")
+      ?.spec.layers.includes("capability:evm-layerzero-oft"),
+  );
 });
 
 test("planPrompt infers coinbase partner when not provided", async () => {
@@ -165,6 +213,42 @@ test("planPrompt routes mixed web and python api prompts to a workspace", async 
   assert.equal(result.spec.launchPlan.primaryProjectId, "web");
   assert.equal(result.spec.projects.find((project) => project.id === "web")?.spec.family, "nextjs-ts");
   assert.equal(result.spec.projects.find((project) => project.id === "api")?.spec.family, "python-api");
+});
+
+test("planPrompt expands solana perps prompts into web, api, worker, and solana lanes", async () => {
+  const result = await planPrompt({
+    prompt:
+      "Build a perpetual futures DEX on Solana using Anchor with Pyth price feeds, liquidation keepers, and a Vite + React trading interface.",
+    partner: null,
+  });
+
+  assert.equal(result.kind, "workspace");
+  assert.equal(result.spec.projects.find((project) => project.id === "web")?.spec.family, "react-vite-ts");
+  assert.equal(result.spec.projects.find((project) => project.id === "api")?.spec.family, "api-service");
+  assert.equal(result.spec.projects.find((project) => project.id === "worker")?.spec.family, "worker-job");
+  assert.equal(result.spec.projects.find((project) => project.id === "solana")?.spec.family, "solana-program");
+  assert.ok(
+    result.spec.projects
+      .find((project) => project.id === "solana")
+      ?.spec.layers.includes("capability:solana-perps"),
+  );
+});
+
+test("planPrompt expands solana prediction prompts into api, worker, and solana specialization", async () => {
+  const result = await planPrompt({
+    prompt:
+      "Build a prediction market on Solana with Anchor, Pyth or Switchboard oracles, dispute handling, and a React market browser.",
+    partner: null,
+  });
+
+  assert.equal(result.kind, "workspace");
+  assert.equal(result.spec.projects.find((project) => project.id === "api")?.spec.family, "api-service");
+  assert.equal(result.spec.projects.find((project) => project.id === "worker")?.spec.family, "worker-job");
+  assert.ok(
+    result.spec.projects
+      .find((project) => project.id === "solana")
+      ?.spec.layers.includes("capability:solana-prediction"),
+  );
 });
 
 test("planPrompt routes dspy prompts to the dedicated pipeline family", async () => {

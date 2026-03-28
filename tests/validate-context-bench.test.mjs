@@ -108,6 +108,24 @@ test("validate passes for forge starter", async () => {
   assert.equal(result.ok, true);
 });
 
+test("validate passes for xlayer foundry deploy starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/xlayer-foundry-deploy.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for xlayer layerzero oft starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/xlayer-oft.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for xlayer account abstraction starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/xlayer-aa.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
 test("validate passes for cloudflare worker starter", async () => {
   const spec = await loadProjectSpec(path.resolve("specs/cloudflare-edge.json"));
   const result = await validateStarter({ spec });
@@ -188,6 +206,24 @@ test("validate passes for go api starter", async () => {
 
 test("validate passes for solana program starter", async () => {
   const spec = await loadProjectSpec(path.resolve("specs/solana-treasury.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for solana perps starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/solana-perps.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for solana prediction starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/solana-prediction.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for solana keeper worker starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/solana-keeper-worker.json"));
   const result = await validateStarter({ spec });
   assert.equal(result.ok, true);
 });

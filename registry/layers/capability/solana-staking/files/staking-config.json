@@ -1,0 +1,5 @@
+{
+  "product": "staking",
+  "rewardModel": ["per-second", "boostMultiplier", "multiReward"],
+  "advanced": ["veToken", "autoCompound"]
+}

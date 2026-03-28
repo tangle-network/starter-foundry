@@ -1,0 +1,22 @@
+{
+  "id": "solana-nft",
+  "description": "Specializes a Solana program lane for marketplace and collection flows.",
+  "appliesTo": ["solana-program"],
+  "files": [
+    {
+      "source": "files/lib.rs",
+      "target": "src/lib.rs"
+    },
+    {
+      "source": "files/README.md",
+      "target": "client/README.md"
+    },
+    {
+      "source": "files/marketplace-config.json",
+      "target": "marketplace-config.json"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": ["src/lib.rs", "marketplace-config.json", "client/README.md"]
+  }
+}

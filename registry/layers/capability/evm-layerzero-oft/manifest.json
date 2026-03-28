@@ -1,0 +1,26 @@
+{
+  "id": "evm-layerzero-oft",
+  "description": "Specializes a Foundry contract lane for omnichain token and bridge flows.",
+  "appliesTo": ["forge-contracts"],
+  "files": [
+    {
+      "source": "files/OmnichainToken.sol",
+      "target": "src/{{contractName}}.sol"
+    },
+    {
+      "source": "files/OmnichainToken.t.sol",
+      "target": "test/{{contractName}}.t.sol"
+    },
+    {
+      "source": "files/SendTokens.s.sol",
+      "target": "script/SendTokens.s.sol"
+    },
+    {
+      "source": "files/bridge-config.json",
+      "target": "bridge-config.json"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": ["src/{{contractName}}.sol", "script/SendTokens.s.sol", "bridge-config.json"]
+  }
+}

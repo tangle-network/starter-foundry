@@ -1,0 +1,22 @@
+{
+  "id": "solana-amm",
+  "description": "Specializes a Solana program lane for concentrated liquidity and swap routing.",
+  "appliesTo": ["solana-program"],
+  "files": [
+    {
+      "source": "files/lib.rs",
+      "target": "src/lib.rs"
+    },
+    {
+      "source": "files/README.md",
+      "target": "client/README.md"
+    },
+    {
+      "source": "files/pool-config.json",
+      "target": "pool-config.json"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": ["src/lib.rs", "pool-config.json", "client/README.md"]
+  }
+}

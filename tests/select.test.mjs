@@ -123,6 +123,17 @@ test("select chooses forge starter for solidity prompts", async () => {
   assert.deepEqual(result.spec.layers, ["framework:forge-foundation"]);
 });
 
+test("select keeps xlayer foundry deploy prompts on the forge lane", async () => {
+  const result = await selectStarter({
+    prompt:
+      "Scaffold a Foundry project targeting X Layer with foundry.toml network config, deploy script, and OKLink contract verification.",
+    partner: null,
+  });
+
+  assert.equal(result.spec.family, "forge-contracts");
+  assert.deepEqual(result.spec.layers, ["framework:forge-foundation"]);
+});
+
 test("select chooses react starter for react prompts", async () => {
   const result = await selectStarter({
     prompt: "Build a React Vite dashboard with reusable components",

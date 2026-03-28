@@ -1,0 +1,22 @@
+{
+  "id": "solana-perps",
+  "description": "Specializes a Solana program lane for perpetuals and liquidation flows.",
+  "appliesTo": ["solana-program"],
+  "files": [
+    {
+      "source": "files/lib.rs",
+      "target": "src/lib.rs"
+    },
+    {
+      "source": "files/README.md",
+      "target": "client/README.md"
+    },
+    {
+      "source": "files/market-config.json",
+      "target": "market-config.json"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": ["src/lib.rs", "market-config.json", "client/README.md"]
+  }
+}

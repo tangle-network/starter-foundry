@@ -1,0 +1,12 @@
+{
+  "projectName": "solana-prediction",
+  "family": "solana-program",
+  "layers": [
+    "framework:solana-native-rust",
+    "capability:solana-prediction"
+  ],
+  "partner": "solana",
+  "variables": {
+    "instructionName": "CreateMarket"
+  }
+}

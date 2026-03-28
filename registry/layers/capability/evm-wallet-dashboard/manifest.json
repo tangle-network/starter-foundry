@@ -1,0 +1,18 @@
+{
+  "id": "evm-wallet-dashboard",
+  "description": "Adds wallet balance and multicall summary guidance to the EVM infra starter.",
+  "appliesTo": ["evm-infra-ts"],
+  "files": [
+    {
+      "source": "files/hooks.mjs",
+      "target": "hooks.mjs"
+    },
+    {
+      "source": "files/wallet-dashboard.json",
+      "target": "wallet-dashboard.json"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": ["hooks.mjs", "wallet-dashboard.json"]
+  }
+}

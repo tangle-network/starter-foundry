@@ -1,0 +1,10 @@
+{
+  "bridgeProtocol": "layerzero-oft",
+  "sourceChain": "xlayer",
+  "targetChain": "another-evm-chain",
+  "env": ["PRIVATE_KEY"],
+  "notes": [
+    "Keep the omnichain token lane separate from the API/relayer lane.",
+    "Bias the agent toward sendTokens-style bridge scripts."
+  ]
+}

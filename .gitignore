@@ -1,5 +1,8 @@
 node_modules/
+dist/
+dist-tests/
 artifacts/
+package-lock.json
 .tmp/
 .DS_Store
 *.log

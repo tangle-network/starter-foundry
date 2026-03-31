@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { selectStarter } from "../src/lib/selection.mjs";
+import { selectStarter } from "../dist/lib/selection.js";
 
 test("select chooses frontend starter for landing-page prompts", async () => {
   const result = await selectStarter({
@@ -61,6 +61,36 @@ test("select chooses dspy starter for dspy prompts", async () => {
 
   assert.equal(result.spec.family, "dspy-pipeline-py");
   assert.deepEqual(result.spec.layers, ["framework:dspy-pipeline-py"]);
+});
+
+test("select chooses typescript agent starter for langgraph prompts", async () => {
+  const result = await selectStarter({
+    prompt: "Build an AI agent service in TypeScript using LangGraph with tool execution and memory.",
+    partner: null,
+  });
+
+  assert.equal(result.spec.family, "agent-service-ts");
+  assert.deepEqual(result.spec.layers, ["framework:agent-service-ts"]);
+});
+
+test("select chooses python agent starter for pydanticai prompts", async () => {
+  const result = await selectStarter({
+    prompt: "Build a Python agent service using PydanticAI with retries and tool calling.",
+    partner: null,
+  });
+
+  assert.equal(result.spec.family, "agent-service-py");
+  assert.deepEqual(result.spec.layers, ["framework:agent-service-py"]);
+});
+
+test("select chooses hardhat starter for explicit hardhat prompts", async () => {
+  const result = await selectStarter({
+    prompt: "Create a Hardhat TypeScript project configured for X Layer with deploy task and contract verification.",
+    partner: null,
+  });
+
+  assert.equal(result.spec.family, "hardhat-contracts");
+  assert.deepEqual(result.spec.layers, ["framework:hardhat-ts"]);
 });
 
 test("select chooses x402 starter for x402 prompts", async () => {
@@ -141,8 +171,8 @@ test("select chooses react starter for react prompts", async () => {
   });
 
   assert.equal(result.spec.family, "react-vite-ts");
-  assert.ok(result.spec.layers.includes("framework:react-vite-ts"));
-  assert.ok(result.spec.layers.includes("capability:chart-widget"));
+  assert.ok(result.spec.layers!.includes("framework:react-vite-ts"));
+  assert.ok(result.spec.layers!.includes("capability:chart-widget"));
 });
 
 test("select chooses next starter for next prompts", async () => {
@@ -162,9 +192,9 @@ test("select chooses fullstack starter for dashboard and api prompts", async () 
   });
 
   assert.equal(result.spec.family, "fullstack-ts");
-  assert.ok(result.spec.layers.includes("framework:fullstack-node-ts"));
-  assert.ok(result.spec.layers.includes("capability:logging"));
-  assert.ok(result.spec.layers.includes("capability:chart-widget"));
+  assert.ok(result.spec.layers!.includes("framework:fullstack-node-ts"));
+  assert.ok(result.spec.layers!.includes("capability:logging"));
+  assert.ok(result.spec.layers!.includes("capability:chart-widget"));
 });
 
 test("select chooses go api starter for golang prompts", async () => {

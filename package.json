@@ -4,26 +4,31 @@
   "private": true,
   "type": "module",
   "bin": {
-    "starter-foundry": "./src/cli.mjs"
+    "starter-foundry": "./dist/cli.js"
   },
   "scripts": {
-    "test": "node --test tests/*.test.mjs",
-    "catalog": "node src/cli.mjs catalog",
-    "select": "node src/cli.mjs select",
-    "compose": "node src/cli.mjs compose",
-    "workspace:compose": "node src/cli.mjs workspace-compose",
-    "validate": "node src/cli.mjs validate",
-    "context": "node src/cli.mjs context",
-    "workspace:context": "node src/cli.mjs workspace-context",
-    "bench": "node src/cli.mjs bench",
-    "workspace:bench": "node src/cli.mjs workspace-bench",
-    "prompt:e2e": "node src/cli.mjs prompt-e2e",
-    "prove": "node src/cli.mjs prove",
-    "audit": "node src/cli.mjs audit",
-    "evaluate": "node src/cli.mjs evaluate",
-    "release": "node src/cli.mjs release"
+    "build": "tsc",
+    "test": "tsc && tsc -p tsconfig.test.json && node --test dist-tests/*.test.js",
+    "catalog": "node dist/cli.js catalog",
+    "select": "node dist/cli.js select",
+    "compose": "node dist/cli.js compose",
+    "workspace:compose": "node dist/cli.js workspace-compose",
+    "validate": "node dist/cli.js validate",
+    "context": "node dist/cli.js context",
+    "workspace:context": "node dist/cli.js workspace-context",
+    "bench": "node dist/cli.js bench",
+    "workspace:bench": "node dist/cli.js workspace-bench",
+    "prompt:e2e": "node dist/cli.js prompt-e2e",
+    "prove": "node dist/cli.js prove",
+    "audit": "node dist/cli.js audit",
+    "evaluate": "node dist/cli.js evaluate",
+    "release": "node dist/cli.js release"
   },
   "engines": {
     "node": ">=20"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.7.0"
   }
 }

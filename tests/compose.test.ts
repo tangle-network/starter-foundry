@@ -2,9 +2,10 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
-import { composeStarter } from "../src/lib/compose.mjs";
-import { createTempDir, readJson, removeDir } from "../src/lib/fs.mjs";
-import { loadProjectSpec } from "../src/lib/registry.mjs";
+import { composeStarter } from "../dist/lib/compose.js";
+import { createTempDir, readJson, removeDir } from "../dist/lib/fs.js";
+import { loadProjectSpec } from "../dist/lib/registry.js";
+import type { ComposeReport } from "../dist/types.js";
 
 test("compose writes files and ownership report", async () => {
   const spec = await loadProjectSpec(path.resolve("specs/coinbase-landing.json"));
@@ -12,7 +13,7 @@ test("compose writes files and ownership report", async () => {
 
   try {
     const result = await composeStarter({ spec, outDir });
-    const report = await readJson(result.composeReportPath);
+    const report = await readJson<ComposeReport>(result.composeReportPath);
     const indexHtml = await fs.readFile(path.join(outDir, "index.html"), "utf8");
 
     assert.equal(report.components.family, "frontend-static");
@@ -31,7 +32,7 @@ test("compose resolves dependency slots with spec overrides", async () => {
 
   try {
     const result = await composeStarter({ spec, outDir });
-    const report = await readJson(result.composeReportPath);
+    const report = await readJson<ComposeReport>(result.composeReportPath);
     const dbConfig = await fs.readFile(path.join(outDir, "database-config.json"), "utf8");
 
     assert.equal(report.components.slots.database, "database:postgres");
@@ -48,7 +49,7 @@ test("compose carries slot overrides and partner files into fullstack starters",
 
   try {
     const result = await composeStarter({ spec, outDir });
-    const report = await readJson(result.composeReportPath);
+    const report = await readJson<ComposeReport>(result.composeReportPath);
     const dbConfig = await fs.readFile(path.join(outDir, "database-config.json"), "utf8");
     const sdkConfig = await fs.readFile(path.join(outDir, "sdk-config.json"), "utf8");
     const authConfig = await fs.readFile(path.join(outDir, "auth-config.json"), "utf8");

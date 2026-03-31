@@ -2,10 +2,11 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
-import { createTempDir, removeDir, writeJson } from "../src/lib/fs.mjs";
-import { runPromptCorpus } from "../src/lib/prompt-e2e.mjs";
-import { planPrompt } from "../src/lib/prompt-planner.mjs";
-import { runProofSuite } from "../src/lib/prove.mjs";
+import { createTempDir, removeDir, writeJson } from "../dist/lib/fs.js";
+import { runPromptCorpus } from "../dist/lib/prompt-e2e.js";
+import { planPrompt } from "../dist/lib/prompt-planner.js";
+import { runProofSuite } from "../dist/lib/prove.js";
+import type { ProofReport } from "../dist/lib/prove.js";
 
 test("planPrompt routes simple prompts to starter families", async () => {
   const result = await planPrompt({
@@ -15,8 +16,8 @@ test("planPrompt routes simple prompts to starter families", async () => {
 
   assert.equal(result.kind, "starter");
   assert.equal(result.spec.family, "go-api");
-  assert.equal(result.spec.slots.database, "database:postgres");
-  assert.equal(result.spec.slots.sdk, "sdk:coinbase-cdp");
+  assert.equal(result.spec.slots!.database, "database:postgres");
+  assert.equal(result.spec.slots!.sdk, "sdk:coinbase-cdp");
 });
 
 test("planPrompt routes coinbase ecommerce prompt to a web plus api workspace", async () => {
@@ -41,7 +42,7 @@ test("planPrompt routes multiruntime prompts to workspaces", async () => {
   });
 
   assert.equal(result.kind, "workspace");
-  assert.equal(result.spec.launchPlan.primaryProjectId, "web");
+  assert.equal(result.spec.launchPlan!.primaryProjectId, "web");
   assert.ok(result.spec.projects.some((project) => project.id === "web"));
   assert.ok(result.spec.projects.some((project) => project.id === "evm"));
 });
@@ -103,7 +104,7 @@ test("planPrompt adds an api lane for evm protocol prompts that imply backend se
   assert.ok(
     result.spec.projects
       .find((project) => project.id === "api")
-      ?.spec.layers.includes("capability:evm-protocol-api"),
+      ?.spec.layers!.includes("capability:evm-protocol-api"),
   );
   assert.equal(result.spec.projects.find((project) => project.id === "evm")?.spec.family, "forge-contracts");
 });
@@ -119,7 +120,7 @@ test("planPrompt routes broad tangle prompts to a blueprint workspace", async ()
   assert.ok(
     result.spec.projects
       .find((project) => project.id === "tangle")
-      ?.spec.layers.includes("capability:tangle-custody"),
+      ?.spec.layers!.includes("capability:tangle-custody"),
   );
 });
 
@@ -132,7 +133,19 @@ test("planPrompt routes xlayer infra prompts to the evm infra starter", async ()
   assert.equal(result.kind, "starter");
   assert.equal(result.spec.family, "evm-infra-ts");
   assert.equal(result.spec.partner, "xlayer");
-  assert.ok(result.spec.layers.includes("capability:evm-chain-monitor"));
+  assert.ok(result.spec.layers!.includes("capability:evm-chain-monitor"));
+});
+
+test("planPrompt routes explicit hardhat config prompts to the hardhat starter", async () => {
+  const result = await planPrompt({
+    prompt:
+      "Create a Hardhat TypeScript project configured for X Layer, add network config, contract verification, and a deploy task for an ERC20 sample contract.",
+    partner: null,
+  });
+
+  assert.equal(result.kind, "starter");
+  assert.equal(result.spec.family, "hardhat-contracts");
+  assert.equal(result.spec.partner, "xlayer");
 });
 
 test("planPrompt routes xlayer foundry deploy prompts to forge with deploy scaffolding", async () => {
@@ -145,7 +158,7 @@ test("planPrompt routes xlayer foundry deploy prompts to forge with deploy scaff
   assert.equal(result.kind, "starter");
   assert.equal(result.spec.family, "forge-contracts");
   assert.equal(result.spec.partner, "xlayer");
-  assert.ok(result.spec.layers.includes("capability:evm-deploy-foundry"));
+  assert.ok(result.spec.layers!.includes("capability:evm-deploy-foundry"));
 });
 
 test("planPrompt routes xlayer account abstraction prompts to an api plus evm workspace", async () => {
@@ -161,7 +174,7 @@ test("planPrompt routes xlayer account abstraction prompts to an api plus evm wo
   assert.ok(
     result.spec.projects
       .find((project) => project.id === "evm")
-      ?.spec.layers.includes("capability:evm-account-abstraction"),
+      ?.spec.layers!.includes("capability:evm-account-abstraction"),
   );
 });
 
@@ -174,11 +187,9 @@ test("planPrompt routes layerzero oft prompts to an api plus evm workspace", asy
 
   assert.equal(result.kind, "workspace");
   assert.equal(result.spec.projects.find((project) => project.id === "api")?.spec.family, "evm-infra-ts");
-  assert.equal(result.spec.projects.find((project) => project.id === "evm")?.spec.family, "forge-contracts");
+  assert.equal(result.spec.projects.find((project) => project.id === "evm")?.spec.family, "hardhat-contracts");
   assert.ok(
-    result.spec.projects
-      .find((project) => project.id === "evm")
-      ?.spec.layers.includes("capability:evm-layerzero-oft"),
+    result.spec.projects.find((project) => project.id === "evm")?.spec.layers!.includes("framework:hardhat-ts"),
   );
 });
 
@@ -200,7 +211,7 @@ test("planPrompt assigns evm wallet sdk for xlayer frontend prompts", async () =
 
   assert.equal(result.kind, "workspace");
   assert.equal(result.spec.projects.find((project) => project.id === "web")?.spec.partner, "xlayer");
-  assert.equal(result.spec.projects.find((project) => project.id === "web")?.spec.slots.sdk, "sdk:evm-wallet");
+  assert.equal(result.spec.projects.find((project) => project.id === "web")?.spec.slots!.sdk, "sdk:evm-wallet");
 });
 
 test("planPrompt routes mixed web and python api prompts to a workspace", async () => {
@@ -210,7 +221,7 @@ test("planPrompt routes mixed web and python api prompts to a workspace", async 
   });
 
   assert.equal(result.kind, "workspace");
-  assert.equal(result.spec.launchPlan.primaryProjectId, "web");
+  assert.equal(result.spec.launchPlan!.primaryProjectId, "web");
   assert.equal(result.spec.projects.find((project) => project.id === "web")?.spec.family, "nextjs-ts");
   assert.equal(result.spec.projects.find((project) => project.id === "api")?.spec.family, "python-api");
 });
@@ -230,7 +241,7 @@ test("planPrompt expands solana perps prompts into web, api, worker, and solana 
   assert.ok(
     result.spec.projects
       .find((project) => project.id === "solana")
-      ?.spec.layers.includes("capability:solana-perps"),
+      ?.spec.layers!.includes("capability:solana-perps"),
   );
 });
 
@@ -247,8 +258,49 @@ test("planPrompt expands solana prediction prompts into api, worker, and solana 
   assert.ok(
     result.spec.projects
       .find((project) => project.id === "solana")
-      ?.spec.layers.includes("capability:solana-prediction"),
+      ?.spec.layers!.includes("capability:solana-prediction"),
   );
+});
+
+test("planPrompt expands solana staking prompts into web, api, worker, and solana specialization", async () => {
+  const result = await planPrompt({
+    prompt:
+      "Build a Solana staking dashboard with validator delegation, rewards distribution, auto-compound jobs, and a React position explorer.",
+    partner: null,
+  });
+
+  assert.equal(result.kind, "workspace");
+  assert.equal(result.spec.projects.find((project) => project.id === "web")?.spec.family, "react-vite-ts");
+  assert.equal(result.spec.projects.find((project) => project.id === "api")?.spec.family, "api-service");
+  assert.equal(result.spec.projects.find((project) => project.id === "worker")?.spec.family, "worker-job");
+  assert.ok(
+    result.spec.projects
+      .find((project) => project.id === "solana")
+      ?.spec.layers!.includes("capability:solana-staking"),
+  );
+});
+
+test("planPrompt routes agent webapp prompts to web plus agent workspace", async () => {
+  const result = await planPrompt({
+    prompt:
+      "Build a Next.js control plane for a LangGraph AI agent with tool logs, memory, and an agent service backend.",
+    partner: null,
+  });
+
+  assert.equal(result.kind, "workspace");
+  assert.equal(result.spec.projects.find((project) => project.id === "web")?.spec.family, "nextjs-ts");
+  assert.equal(result.spec.projects.find((project) => project.id === "agent")?.spec.family, "agent-service-ts");
+});
+
+test("planPrompt routes python agent service prompts to the dedicated agent family", async () => {
+  const result = await planPrompt({
+    prompt: "Build a Python agent service using PydanticAI with a small HTTP control plane.",
+    partner: null,
+  });
+
+  assert.equal(result.kind, "starter");
+  assert.equal(result.spec.family, "agent-service-py");
+  assert.equal(result.spec.variables!.agentLibrary, "pydanticai");
 });
 
 test("planPrompt routes dspy prompts to the dedicated pipeline family", async () => {
@@ -302,9 +354,9 @@ test("planPrompt carries auth, payments, and queue slots for starter prompts", a
 
   assert.equal(result.kind, "starter");
   assert.equal(result.spec.family, "fullstack-ts");
-  assert.equal(result.spec.slots.auth, "auth:better-auth");
-  assert.equal(result.spec.slots.payments, "payments:stripe");
-  assert.equal(result.spec.slots.queue, "queue:bullmq");
+  assert.equal(result.spec.slots!.auth, "auth:better-auth");
+  assert.equal(result.spec.slots!.payments, "payments:stripe");
+  assert.equal(result.spec.slots!.queue, "queue:bullmq");
 });
 
 test("runPromptCorpus executes a tiny real prompt suite end to end", async () => {
@@ -380,11 +432,12 @@ test("runProofSuite summarizes coverage for a tiny corpus", async () => {
       outDir,
     });
 
-    assert.equal(result.report.summary.passRate, 1);
-    assert.equal(result.report.coverage.kinds.starter, 1);
-    assert.equal(result.report.coverage.kinds.workspace, 1);
-    assert.ok(result.report.coverage.families.includes("frontend-static"));
-    assert.ok(result.report.coverage.families.includes("worker-job"));
+    const report = result.report as ProofReport;
+    assert.equal(report.summary.passRate, 1);
+    assert.equal(report.coverage.kinds['starter'], 1);
+    assert.equal(report.coverage.kinds['workspace'], 1);
+    assert.ok(report.coverage.families.includes("frontend-static"));
+    assert.ok(report.coverage.families.includes("worker-job"));
   } finally {
     await fs.rm(outDir, { recursive: true, force: true });
   }

@@ -2,15 +2,15 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
-import { evaluateAgents } from "../src/lib/agent-runners.mjs";
-import { createAuditBundle } from "../src/lib/audit.mjs";
-import { benchmarkStarter } from "../src/lib/benchmark.mjs";
-import { buildCatalog } from "../src/lib/catalog.mjs";
-import { createContextPack } from "../src/lib/context-pack.mjs";
-import { createRelease } from "../src/lib/release.mjs";
-import { createTempDir, fileExists, removeDir } from "../src/lib/fs.mjs";
-import { loadProjectSpec } from "../src/lib/registry.mjs";
-import { validateStarter } from "../src/lib/validate.mjs";
+import { evaluateAgents } from "../dist/lib/agent-runners.js";
+import { createAuditBundle } from "../dist/lib/audit.js";
+import { benchmarkStarter } from "../dist/lib/benchmark.js";
+import { buildCatalog } from "../dist/lib/catalog.js";
+import { createContextPack } from "../dist/lib/context-pack.js";
+import { createRelease } from "../dist/lib/release.js";
+import { createTempDir, fileExists, removeDir } from "../dist/lib/fs.js";
+import { loadProjectSpec } from "../dist/lib/registry.js";
+import { validateStarter } from "../dist/lib/validate.js";
 
 test("validate passes for api starter", async () => {
   const spec = await loadProjectSpec(path.resolve("specs/api-health.json"));
@@ -38,6 +38,24 @@ test("validate passes for mcp server starter", async () => {
 
 test("validate passes for dspy pipeline starter", async () => {
   const spec = await loadProjectSpec(path.resolve("specs/dspy-pipeline.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for typescript agent starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/agent-ts-control-plane.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for python agent starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/agent-python-research.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for rust agent starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/agent-rust-runtime.json"));
   const result = await validateStarter({ spec });
   assert.equal(result.ok, true);
 });
@@ -122,6 +140,12 @@ test("validate passes for xlayer layerzero oft starter", async () => {
 
 test("validate passes for xlayer account abstraction starter", async () => {
   const spec = await loadProjectSpec(path.resolve("specs/xlayer-aa.json"));
+  const result = await validateStarter({ spec });
+  assert.equal(result.ok, true);
+});
+
+test("validate passes for hardhat xlayer starter", async () => {
+  const spec = await loadProjectSpec(path.resolve("specs/hardhat-xlayer-config.json"));
   const result = await validateStarter({ spec });
   assert.equal(result.ok, true);
 });
@@ -330,7 +354,11 @@ test("catalog separates implemented and planned families", async () => {
   assert.ok(catalog.implemented.some((item) => item.id === "eigenlayer-avs"));
   assert.ok(catalog.implemented.some((item) => item.id === "mcp-server-ts"));
   assert.ok(catalog.implemented.some((item) => item.id === "dspy-pipeline-py"));
+  assert.ok(catalog.implemented.some((item) => item.id === "agent-service-ts"));
+  assert.ok(catalog.implemented.some((item) => item.id === "agent-service-py"));
+  assert.ok(catalog.implemented.some((item) => item.id === "agent-service-rust"));
   assert.ok(catalog.implemented.some((item) => item.id === "x402-service"));
   assert.ok(catalog.implemented.some((item) => item.id === "zk-prover-service"));
   assert.ok(catalog.implemented.some((item) => item.id === "stylus-contracts"));
+  assert.ok(catalog.implemented.some((item) => item.id === "hardhat-contracts"));
 });

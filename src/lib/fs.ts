@@ -17,7 +17,35 @@ export async function readJson<T = unknown>(filePath: string): Promise<T> {
 }
 
 export function resolveRepoRoot(): string {
-  return path.resolve(new URL('../../', import.meta.url).pathname)
+  // Resolve from import.meta.url, handling Vite's /@fs/ prefix and URL mangling
+  let modulePath: string
+  try {
+    const url = new URL(import.meta.url)
+    modulePath = url.protocol === 'file:' ? url.pathname : import.meta.url
+  } catch {
+    modulePath = import.meta.url
+  }
+  // Strip Vite's /@fs/ prefix
+  if (modulePath.startsWith('/@fs/')) modulePath = modulePath.slice(4)
+  // On Windows, strip leading slash from /C:/...
+  if (/^\/[A-Z]:/.test(modulePath)) modulePath = modulePath.slice(1)
+
+  // Walk up from the module file to find the directory containing registry/
+  let dir = path.dirname(path.resolve(modulePath))
+  for (let i = 0; i < 10; i++) {
+    try {
+      const registryPath = path.join(dir, 'registry')
+      // Use accessSync to check if registry/ exists (sync because this runs at module init)
+      const stat = require('node:fs').statSync(registryPath)
+      if (stat.isDirectory()) return dir
+    } catch { /* continue walking up */ }
+    const parent = path.dirname(dir)
+    if (parent === dir) break
+    dir = parent
+  }
+
+  // Fallback: standard ../../ resolution
+  return path.resolve(path.dirname(modulePath), '..', '..')
 }
 
 export async function createTempDir(prefix: string): Promise<string> {

@@ -1,0 +1,16 @@
+{
+  "id": "agent-multi-agent",
+  "description": "Adds supervisor/worker multi-agent orchestration with routing and handoff protocols.",
+  "appliesTo": ["agent-service-ts", "agent-service-py", "agent-service-rust"],
+  "defaults": {
+    "orchestrationStrategy": "supervisor",
+    "maxAgentTurns": 10
+  },
+  "files": [
+    { "source": "files/orchestration-config.json", "target": "orchestration-config.json" },
+    { "source": "files/supervisor.mjs", "target": "supervisor.mjs" }
+  ],
+  "contextHints": {
+    "extensionPoints": ["orchestration-config.json", "supervisor.mjs"]
+  }
+}

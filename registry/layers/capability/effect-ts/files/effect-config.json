@@ -1,0 +1,5 @@
+{
+  "framework": "effect-ts",
+  "features": ["typed-errors", "dependency-injection", "structured-concurrency", "streaming", "schema-validation"],
+  "notes": ["Use Effect.gen for generator-based control flow.", "Layer system replaces manual dependency injection.", "Schema module replaces zod/joi for runtime validation.", "Structured concurrency prevents resource leaks in async workflows."]
+}

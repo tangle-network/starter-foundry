@@ -1,0 +1,15 @@
+{
+  "provider": "{{billingProvider}}",
+  "plans": [
+    { "id": "free", "name": "Free", "priceMonthly": 0, "limits": { "apiCalls": 100, "seats": 1 } },
+    { "id": "pro", "name": "Pro", "priceMonthly": 29, "limits": { "apiCalls": 10000, "seats": 5 } },
+    { "id": "team", "name": "Team", "priceMonthly": 99, "limits": { "apiCalls": 100000, "seats": 25 } }
+  ],
+  "usageMetering": true,
+  "trialDays": 14,
+  "notes": [
+    "billing-hooks.mjs handles Stripe webhook events for subscription lifecycle.",
+    "Usage metering tracks API calls per billing period.",
+    "Plan limits are enforced at the API layer via middleware."
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "id": "agent-service-py",
+  "description": "Python AI agent service starter with a small HTTP control plane.",
+  "tags": ["ai", "agent", "python", "service"],
+  "taxonomy": {
+    "language": "python",
+    "runtime": "python",
+    "surface": "agent-service"
+  },
+  "slots": {
+    "database": {
+      "options": [
+        "database:sqlite",
+        "database:postgres",
+        "database:mongodb",
+        "database:convex"
+      ],
+      "default": "database:sqlite"
+    },
+    "sdk": {
+      "options": [
+        "sdk:none",
+        "sdk:coinbase-cdp",
+        "sdk:solana-web3",
+        "sdk:evm-wallet"
+      ],
+      "default": "sdk:none"
+    },
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk",
+        "auth:supabase-auth"
+      ],
+      "default": "auth:none"
+    },
+    "payments": {
+      "options": [
+        "payments:none",
+        "payments:stripe",
+        "payments:coinbase-commerce"
+      ],
+      "default": "payments:none"
+    },
+    "queue": {
+      "options": [
+        "queue:none",
+        "queue:bullmq",
+        "queue:trigger-dev"
+      ],
+      "default": "queue:none"
+    }
+  },
+  "defaults": {
+    "projectType": "agent-service",
+    "serviceName": "starter-foundry-agent-py",
+    "port": 4193,
+    "agentLibrary": "pydanticai",
+    "agentSurface": "service"
+  },
+  "files": [
+    {
+      "source": "files/requirements.txt",
+      "target": "requirements.txt"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "app.py"
+    },
+    {
+      "type": "python-compile",
+      "path": "app.py"
+    },
+    {
+      "type": "http-start",
+      "command": ["python3", "app.py"],
+      "port": "{{port}}",
+      "path": "/health",
+      "expect": "\"agent\""
+    }
+  ],
+  "contextHints": {
+    "commands": ["python3 app.py"],
+    "entrypoints": ["app.py", "agent.config.json"],
+    "preview": {
+      "port": "{{port}}",
+      "path": "/health"
+    },
+    "extensionPoints": ["agent.config.json", "sdk-config.json", "queue-config.json", "database-config.json"]
+  }
+}

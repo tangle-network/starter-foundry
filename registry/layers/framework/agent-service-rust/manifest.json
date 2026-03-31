@@ -1,0 +1,19 @@
+{
+  "id": "agent-service-rust",
+  "description": "Rust agent service framework layer.",
+  "appliesTo": ["agent-service-rust"],
+  "files": [
+    {
+      "source": "files/Cargo.toml",
+      "target": "Cargo.toml"
+    },
+    {
+      "source": "files/main.rs",
+      "target": "src/main.rs"
+    },
+    {
+      "source": "files/agent.config.json",
+      "target": "agent.config.json"
+    }
+  ]
+}

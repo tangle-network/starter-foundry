@@ -1,0 +1,31 @@
+{
+  "id": "hardhat-ts",
+  "description": "Hardhat TypeScript framework layer.",
+  "appliesTo": ["hardhat-contracts"],
+  "files": [
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/hardhat.config.ts",
+      "target": "hardhat.config.ts"
+    },
+    {
+      "source": "files/contract.sol",
+      "target": "contracts/{{contractName}}.sol"
+    },
+    {
+      "source": "files/deploy.ts",
+      "target": "scripts/deploy.ts"
+    },
+    {
+      "source": "files/test.ts",
+      "target": "test/{{contractName}}.test.ts"
+    },
+    {
+      "source": "files/env.example",
+      "target": ".env.example"
+    }
+  ]
+}

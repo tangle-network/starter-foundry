@@ -1,0 +1,12 @@
+{
+  "provider": "github-actions",
+  "triggers": ["push:main", "pull_request"],
+  "stages": ["lint", "test", "build", "deploy"],
+  "deployTarget": null,
+  "notes": [
+    "Generate .github/workflows/ci.yml with steps appropriate for the project language.",
+    "Use language-specific caching (npm, pip, cargo, go modules).",
+    "Deploy stage should be conditional on branch (main only).",
+    "Add secrets for API keys and deploy credentials in GitHub repo settings."
+  ]
+}

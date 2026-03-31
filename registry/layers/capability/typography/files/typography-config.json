@@ -1,0 +1,24 @@
+{
+  "fonts": {
+    "sans": "Inter, system-ui, -apple-system, sans-serif",
+    "mono": "JetBrains Mono, ui-monospace, SFMono-Regular, monospace",
+    "heading": "Inter, system-ui, -apple-system, sans-serif"
+  },
+  "scale": {
+    "xs": "0.75rem",
+    "sm": "0.875rem",
+    "base": "1rem",
+    "lg": "1.125rem",
+    "xl": "1.25rem",
+    "2xl": "1.5rem",
+    "3xl": "1.875rem",
+    "4xl": "2.25rem"
+  },
+  "prose": true,
+  "notes": [
+    "Use @tailwindcss/typography plugin for prose classes on rich content.",
+    "Load Inter from Google Fonts or use next/font for Next.js projects.",
+    "JetBrains Mono for code blocks and monospace contexts.",
+    "Heading scale follows Tailwind defaults — override in tailwind.config if needed."
+  ]
+}

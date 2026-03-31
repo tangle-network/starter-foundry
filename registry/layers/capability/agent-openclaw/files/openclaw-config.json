@@ -1,0 +1,6 @@
+{
+  "orchestrator": "{{orchestrator}}",
+  "features": ["session-management", "tool-routing", "multi-model", "streaming", "context-windows"],
+  "models": ["claude-sonnet-4-6", "gpt-4o", "llama-3.1-70b"],
+  "notes": ["OpenClaw provides a unified orchestration layer across model providers.", "Session management handles context windows and conversation persistence.", "Tool routing dispatches function calls to the appropriate handler."]
+}

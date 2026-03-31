@@ -1,0 +1,17 @@
+{
+  "exchange": "{{exchangeName}}",
+  "mode": "{{tradingMode}}",
+  "endpoints": {
+    "rest": "https://www.okx.com",
+    "websocket": "wss://ws.okx.com:8443/ws/v5",
+    "demo": "https://www.okx.com (with x-simulated-trading header)"
+  },
+  "pairs": ["BTC-USDT", "ETH-USDT"],
+  "rateLimit": { "requestsPerSecond": 20 },
+  "features": ["spot", "futures", "options", "swap", "websocket-channels", "copytrading"],
+  "notes": [
+    "Set OKX_API_KEY, OKX_SECRET, and OKX_PASSPHRASE in your environment.",
+    "Use x-simulated-trading: 1 header for demo mode.",
+    "OKX uses instrument IDs not trading pairs for some endpoints."
+  ]
+}

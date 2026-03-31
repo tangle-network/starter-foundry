@@ -1,0 +1,15 @@
+{
+  "id": "exchange-okx",
+  "description": "Adds OKX API integration with spot/futures/options endpoints, WebSocket feeds, and order management.",
+  "appliesTo": ["agent-service-ts", "agent-service-py", "agent-service-rust", "worker-job", "go-worker"],
+  "defaults": {
+    "exchangeName": "okx",
+    "tradingMode": "spot"
+  },
+  "files": [
+    { "source": "files/exchange-config.json", "target": "exchange-config.json" }
+  ],
+  "contextHints": {
+    "extensionPoints": ["exchange-config.json", "strategy.mjs"]
+  }
+}

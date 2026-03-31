@@ -1,0 +1,12 @@
+{
+  "projectName": "agent-python-research",
+  "family": "agent-service-py",
+  "layers": ["framework:agent-service-py"],
+  "slots": {
+    "database": "database:postgres",
+    "queue": "queue:bullmq"
+  },
+  "variables": {
+    "agentLibrary": "pydanticai"
+  }
+}

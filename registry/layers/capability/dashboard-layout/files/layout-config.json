@@ -1,0 +1,29 @@
+{
+  "layout": "sidebar",
+  "sidebar": {
+    "width": "16rem",
+    "collapsible": true,
+    "collapsedWidth": "4rem",
+    "position": "left",
+    "sections": [
+      { "label": "Main", "items": ["Dashboard", "Analytics", "Settings"] },
+      { "label": "Resources", "items": ["Documentation", "Support"] }
+    ]
+  },
+  "header": {
+    "height": "4rem",
+    "sticky": true,
+    "elements": ["breadcrumb", "search", "theme-toggle", "user-menu"]
+  },
+  "content": {
+    "maxWidth": "80rem",
+    "padding": "1.5rem"
+  },
+  "notes": [
+    "Generate a layout component with collapsible sidebar, sticky header, and scrollable content area.",
+    "Sidebar uses shadcn NavigationMenu or custom nav links with active state.",
+    "Header includes breadcrumb trail, command palette trigger, dark mode toggle, and avatar dropdown.",
+    "Use CSS grid or flexbox for the shell — sidebar is fixed, content scrolls independently.",
+    "Mobile: sidebar collapses to a sheet/drawer triggered by hamburger icon."
+  ]
+}

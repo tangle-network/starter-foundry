@@ -19,7 +19,11 @@
     "go-worker",
     "playwright-worker",
     "evm-infra-ts",
-    "forge-contracts"
+    "agent-service-ts",
+    "agent-service-py",
+    "agent-service-rust",
+    "forge-contracts",
+    "hardhat-contracts"
   ],
   "slotDefaults": {
     "database": "database:sqlite",

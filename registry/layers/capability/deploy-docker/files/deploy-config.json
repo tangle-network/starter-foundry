@@ -1,0 +1,15 @@
+{
+  "containerRuntime": "docker",
+  "compose": true,
+  "services": [
+    { "name": "app", "port": 3000, "healthCheck": "/health" }
+  ],
+  "environment": ["NODE_ENV=production"],
+  "volumes": [],
+  "notes": [
+    "Generate a Dockerfile appropriate for the project language and runtime.",
+    "docker-compose.yml should include the app service and any dependencies (postgres, redis).",
+    "Use multi-stage builds to keep production images lean.",
+    "Add .dockerignore to exclude node_modules, .git, and build artifacts."
+  ]
+}

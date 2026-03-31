@@ -1,0 +1,10 @@
+{
+  "users": [
+    { "id": "usr_001", "email": "admin@example.com", "role": "admin", "createdAt": "2025-01-15T10:00:00Z" },
+    { "id": "usr_002", "email": "user@example.com", "role": "user", "createdAt": "2025-02-20T14:30:00Z" }
+  ],
+  "orders": [
+    { "id": "ord_001", "userId": "usr_002", "status": "completed", "total": 99.00, "createdAt": "2025-03-01T09:00:00Z" },
+    { "id": "ord_002", "userId": "usr_002", "status": "pending", "total": 49.00, "createdAt": "2025-03-10T16:45:00Z" }
+  ]
+}

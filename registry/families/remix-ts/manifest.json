@@ -1,0 +1,23 @@
+{
+  "id": "remix-ts",
+  "description": "Remix TypeScript starter with nested routing, loaders, and actions.",
+  "tags": ["frontend", "typescript", "remix", "preview"],
+  "taxonomy": { "language": "typescript", "runtime": "node", "surface": "frontend" },
+  "slots": {
+    "auth": { "options": ["auth:none", "auth:better-auth", "auth:clerk", "auth:supabase-auth"], "default": "auth:none" },
+    "payments": { "options": ["payments:none", "payments:stripe", "payments:coinbase-commerce"], "default": "payments:none" },
+    "sdk": { "options": ["sdk:none", "sdk:coinbase-cdp", "sdk:solana-web3", "sdk:evm-wallet"], "default": "sdk:none" }
+  },
+  "defaults": { "projectType": "frontend", "port": 5173, "headline": "Starter Foundry Remix App", "subheadline": "A Remix shell with loaders and actions ready for extension." },
+  "files": [{ "source": "files/package.json", "target": "package.json" }],
+  "validationChecks": [
+    { "type": "file-exists", "path": "app/root.tsx" },
+    { "type": "file-exists", "path": "app/routes/_index.tsx" }
+  ],
+  "contextHints": {
+    "commands": ["npm run dev"],
+    "entrypoints": ["app/root.tsx", "app/routes/_index.tsx"],
+    "preview": { "port": "{{port}}", "path": "/" },
+    "extensionPoints": ["app/routes/_index.tsx", "app/root.tsx", "auth-config.json", "payments-config.json"]
+  }
+}

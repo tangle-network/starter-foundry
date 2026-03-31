@@ -1,0 +1,15 @@
+{
+  "id": "defi-dex",
+  "description": "Adds DEX/AMM protocol patterns with pool creation, swap routing, and liquidity management.",
+  "appliesTo": ["forge-contracts", "hardhat-contracts", "api-service", "evm-infra-ts"],
+  "defaults": {
+    "dexModel": "constant-product",
+    "feeModel": "fixed"
+  },
+  "files": [
+    { "source": "files/dex-config.json", "target": "dex-config.json" }
+  ],
+  "contextHints": {
+    "extensionPoints": ["dex-config.json"]
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "id": "defi-restaking",
+  "description": "Adds restaking protocol patterns for EigenLayer-style shared security and operator management.",
+  "appliesTo": ["forge-contracts", "hardhat-contracts", "api-service", "evm-infra-ts"],
+  "defaults": { "restakingProtocol": "eigenlayer-compatible" },
+  "files": [{ "source": "files/restaking-config.json", "target": "restaking-config.json" }],
+  "contextHints": { "extensionPoints": ["restaking-config.json"] }
+}

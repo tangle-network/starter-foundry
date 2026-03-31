@@ -1,0 +1,6 @@
+{
+  "sampleRuns": [
+    { "id": "run_001", "agent": "support-bot", "status": "completed", "durationMs": 2340, "tokensUsed": 1850, "toolCalls": 3, "costUsd": 0.012 },
+    { "id": "run_002", "agent": "research-agent", "status": "completed", "durationMs": 8900, "tokensUsed": 12400, "toolCalls": 7, "costUsd": 0.089 }
+  ]
+}

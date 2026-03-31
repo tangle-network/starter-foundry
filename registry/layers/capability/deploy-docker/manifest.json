@@ -1,0 +1,17 @@
+{
+  "id": "deploy-docker",
+  "description": "Adds Dockerfile, docker-compose.yml, and container deployment patterns.",
+  "appliesTo": [
+    "api-service", "python-api", "rust-service", "go-api",
+    "agent-service-ts", "agent-service-py", "agent-service-rust",
+    "worker-job", "python-worker", "go-worker",
+    "fullstack-ts", "nextjs-ts", "evm-infra-ts",
+    "mcp-server-ts", "x402-service", "zk-prover-service"
+  ],
+  "files": [
+    { "source": "files/deploy-config.json", "target": "deploy-config.json" }
+  ],
+  "contextHints": {
+    "extensionPoints": ["deploy-config.json", "Dockerfile", "docker-compose.yml"]
+  }
+}

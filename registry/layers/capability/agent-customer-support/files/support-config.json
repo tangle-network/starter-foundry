@@ -1,0 +1,15 @@
+{
+  "kbSource": "{{kbSource}}",
+  "escalation": "{{supportEscalation}}",
+  "intents": ["billing", "technical", "account", "feature-request", "bug-report"],
+  "escalationRules": [
+    { "condition": "negative-sentiment", "action": "escalate-human" },
+    { "condition": "repeated-contact", "action": "escalate-human" },
+    { "condition": "billing-dispute", "action": "escalate-human" }
+  ],
+  "notes": [
+    "Classify intent first, then search KB for matching articles.",
+    "Escalate to human when confidence is low or escalation rules trigger.",
+    "Track resolution rate and CSAT for quality monitoring."
+  ]
+}

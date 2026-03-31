@@ -1,0 +1,9 @@
+{
+  "projectName": "hardhat-xlayer-config",
+  "family": "hardhat-contracts",
+  "layers": ["framework:hardhat-ts"],
+  "partner": "xlayer",
+  "variables": {
+    "contractName": "XLayerToken"
+  }
+}

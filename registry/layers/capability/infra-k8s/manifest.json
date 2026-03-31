@@ -1,0 +1,7 @@
+{
+  "id": "infra-k8s",
+  "description": "Adds Kubernetes deployment manifests, services, and Helm chart scaffolding.",
+  "appliesTo": ["api-service", "python-api", "rust-service", "go-api", "agent-service-ts", "agent-service-py", "agent-service-rust", "fullstack-ts", "nextjs-ts", "worker-job", "python-worker", "go-worker"],
+  "files": [{ "source": "files/k8s-config.json", "target": "k8s-config.json" }],
+  "contextHints": { "extensionPoints": ["k8s-config.json", "k8s/deployment.yaml", "k8s/service.yaml"] }
+}

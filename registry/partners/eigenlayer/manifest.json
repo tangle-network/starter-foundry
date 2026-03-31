@@ -14,6 +14,9 @@
     "go-worker",
     "playwright-worker",
     "evm-infra-ts",
+    "agent-service-ts",
+    "agent-service-py",
+    "agent-service-rust",
     "eigenlayer-avs"
   ],
   "slotDefaults": {

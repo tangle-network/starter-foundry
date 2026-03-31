@@ -1,0 +1,17 @@
+{
+  "exchange": "{{exchangeName}}",
+  "mode": "{{tradingMode}}",
+  "endpoints": {
+    "rest": "https://api.binance.com",
+    "websocket": "wss://stream.binance.com:9443/ws",
+    "testnet": "https://testnet.binance.vision"
+  },
+  "pairs": ["BTCUSDT", "ETHUSDT"],
+  "rateLimit": { "requestsPerMinute": 1200, "ordersPerSecond": 10 },
+  "features": ["spot", "futures", "margin", "websocket-streams"],
+  "notes": [
+    "Set BINANCE_API_KEY and BINANCE_SECRET in your environment.",
+    "Start with testnet endpoints before going live.",
+    "Rate limits are enforced per IP and per account. Respect both."
+  ]
+}

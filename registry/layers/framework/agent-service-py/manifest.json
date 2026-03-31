@@ -1,0 +1,15 @@
+{
+  "id": "agent-service-py",
+  "description": "Python agent service framework layer.",
+  "appliesTo": ["agent-service-py"],
+  "files": [
+    {
+      "source": "files/app.py",
+      "target": "app.py"
+    },
+    {
+      "source": "files/agent.config.json",
+      "target": "agent.config.json"
+    }
+  ]
+}

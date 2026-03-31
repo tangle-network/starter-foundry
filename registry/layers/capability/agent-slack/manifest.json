@@ -1,0 +1,15 @@
+{
+  "id": "agent-slack",
+  "description": "Adds Slack event handling, message routing, and thread-aware response patterns.",
+  "appliesTo": ["agent-service-ts", "agent-service-py", "agent-service-rust"],
+  "defaults": {
+    "slackThreadMode": "reply-in-thread"
+  },
+  "files": [
+    { "source": "files/slack-config.json", "target": "slack-config.json" },
+    { "source": "files/slack-handler.mjs", "target": "slack-handler.mjs" }
+  ],
+  "contextHints": {
+    "extensionPoints": ["slack-config.json", "slack-handler.mjs"]
+  }
+}

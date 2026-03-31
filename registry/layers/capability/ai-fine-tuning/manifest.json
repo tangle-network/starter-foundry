@@ -1,0 +1,8 @@
+{
+  "id": "ai-fine-tuning",
+  "description": "Adds LLM fine-tuning pipeline with dataset preparation, training config, and evaluation.",
+  "appliesTo": ["agent-service-py", "python-api", "python-worker"],
+  "defaults": { "finetuneFramework": "unsloth", "baseModel": "llama-3.1-8b" },
+  "files": [{ "source": "files/finetune-config.json", "target": "finetune-config.json" }],
+  "contextHints": { "extensionPoints": ["finetune-config.json", "dataset/", "training/"] }
+}

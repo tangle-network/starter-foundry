@@ -1,0 +1,14 @@
+{
+  "id": "typography",
+  "description": "Adds typography system with prose classes, font loading, and heading scale.",
+  "appliesTo": [
+    "react-vite-ts", "nextjs-ts", "fullstack-ts", "sveltekit-ts", "remix-ts", "vue-ts", "angular-ts",
+    "frontend-static"
+  ],
+  "files": [
+    { "source": "files/typography-config.json", "target": "typography-config.json" }
+  ],
+  "contextHints": {
+    "extensionPoints": ["typography-config.json"]
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "id": "angular-ts",
+  "description": "Angular standalone components framework layer.",
+  "appliesTo": ["angular-ts"],
+  "files": [
+    { "source": "files/app.component.ts", "target": "src/app/app.component.ts" },
+    { "source": "files/main.ts", "target": "src/main.ts" }
+  ]
+}

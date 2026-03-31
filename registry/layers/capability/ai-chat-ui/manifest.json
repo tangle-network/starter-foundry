@@ -1,0 +1,15 @@
+{
+  "id": "ai-chat-ui",
+  "description": "Adds streaming AI chat interface with message history and markdown rendering.",
+  "appliesTo": ["react-vite-ts", "nextjs-ts", "fullstack-ts"],
+  "defaults": {
+    "chatModel": "gpt-4o"
+  },
+  "files": [
+    { "source": "files/chat-config.json", "target": "chat-config.json" },
+    { "source": "files/chat-data.json", "target": "chat-data.json" }
+  ],
+  "contextHints": {
+    "extensionPoints": ["chat-config.json", "chat-data.json"]
+  }
+}

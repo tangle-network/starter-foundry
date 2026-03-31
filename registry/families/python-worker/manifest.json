@@ -1,0 +1,43 @@
+{
+  "id": "python-worker",
+  "description": "Python background worker starter for async tasks, cron jobs, and queue processing.",
+  "tags": ["python", "worker", "jobs", "async"],
+  "taxonomy": {
+    "language": "python",
+    "runtime": "python",
+    "surface": "worker"
+  },
+  "slots": {
+    "queue": {
+      "options": ["queue:none", "queue:bullmq", "queue:trigger-dev"],
+      "default": "queue:none"
+    },
+    "database": {
+      "options": ["database:sqlite", "database:postgres", "database:mongodb"],
+      "default": "database:sqlite"
+    }
+  },
+  "defaults": {
+    "projectType": "worker",
+    "workerName": "starter-foundry-python-worker"
+  },
+  "files": [
+    { "source": "files/requirements.txt", "target": "requirements.txt" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "worker.py" },
+    { "type": "python-compile", "path": "worker.py" },
+    {
+      "type": "command-success",
+      "command": ["python3", "worker.py"],
+      "env": { "RUN_ONCE": "1" },
+      "expect": "cycle complete"
+    }
+  ],
+  "contextHints": {
+    "commands": ["python3 worker.py"],
+    "entrypoints": ["worker.py"],
+    "preview": null,
+    "extensionPoints": ["queue-config.json", "database-config.json"]
+  }
+}

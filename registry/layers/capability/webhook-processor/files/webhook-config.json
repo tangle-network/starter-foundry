@@ -1,0 +1,16 @@
+{
+  "providers": [
+    { "id": "stripe", "signatureHeader": "stripe-signature", "algorithm": "hmac-sha256" },
+    { "id": "github", "signatureHeader": "x-hub-signature-256", "algorithm": "hmac-sha256" },
+    { "id": "slack", "signatureHeader": "x-slack-signature", "algorithm": "hmac-sha256" }
+  ],
+  "retryPolicy": {
+    "maxRetries": 3,
+    "backoffMs": [1000, 5000, 15000]
+  },
+  "notes": [
+    "webhook-router.mjs verifies signatures and routes to the correct handler.",
+    "Add new providers by extending the providers array.",
+    "Failed deliveries are retried with exponential backoff."
+  ]
+}

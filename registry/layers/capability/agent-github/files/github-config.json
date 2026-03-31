@@ -1,0 +1,10 @@
+{
+  "events": ["pull_request", "issues", "push", "issue_comment"],
+  "actions": "{{githubActions}}",
+  "repos": [],
+  "notes": [
+    "Set GITHUB_TOKEN and GITHUB_WEBHOOK_SECRET in your environment.",
+    "github-handler.mjs routes events to the appropriate agent action.",
+    "PR reviews use diff analysis; issue triage uses label classification."
+  ]
+}

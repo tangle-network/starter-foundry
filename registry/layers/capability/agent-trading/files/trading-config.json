@@ -1,0 +1,16 @@
+{
+  "exchange": "{{exchangeMode}}",
+  "pairs": "{{tradingPairs}}",
+  "riskLimits": {
+    "maxPositionSizeUsd": 1000,
+    "stopLossPercent": 5,
+    "maxOpenPositions": 3,
+    "dailyLossLimitUsd": 500
+  },
+  "dataFeeds": ["orderbook", "trades", "candles"],
+  "notes": [
+    "Start in paper mode. Never deploy live trading without manual review.",
+    "strategy.mjs defines signal generation and position management.",
+    "Risk limits are enforced before any order execution."
+  ]
+}

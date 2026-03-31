@@ -1,0 +1,16 @@
+{
+  "roles": [
+    { "id": "owner", "permissions": ["*"] },
+    { "id": "admin", "permissions": ["manage-members", "manage-billing", "manage-settings", "read", "write"] },
+    { "id": "member", "permissions": ["read", "write"] },
+    { "id": "viewer", "permissions": ["read"] }
+  ],
+  "defaultRole": "{{defaultRole}}",
+  "invitationFlow": "email",
+  "maxTeamSize": 100,
+  "notes": [
+    "teams-middleware.mjs resolves team context from the request.",
+    "Permissions are checked against the role's permission set.",
+    "Invitation flow sends email with a signed join link."
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "entities": [
+    {
+      "name": "users",
+      "fields": [
+        { "name": "id", "type": "string", "primaryKey": true },
+        { "name": "email", "type": "string", "searchable": true },
+        { "name": "role", "type": "enum", "options": ["admin", "user", "viewer"] },
+        { "name": "createdAt", "type": "datetime" }
+      ]
+    },
+    {
+      "name": "orders",
+      "fields": [
+        { "name": "id", "type": "string", "primaryKey": true },
+        { "name": "userId", "type": "string", "relation": "users" },
+        { "name": "status", "type": "enum", "options": ["pending", "completed", "canceled"] },
+        { "name": "total", "type": "number" },
+        { "name": "createdAt", "type": "datetime" }
+      ]
+    }
+  ],
+  "features": ["search", "filter", "sort", "export-csv", "bulk-actions"],
+  "notes": [
+    "Entity definitions drive the admin table schema and form generation.",
+    "Add new entities by extending the entities array.",
+    "Bulk actions apply to selected rows in the data table."
+  ]
+}

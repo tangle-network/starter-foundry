@@ -1,0 +1,10 @@
+{
+  "framework": "{{finetuneFramework}}",
+  "baseModel": "{{baseModel}}",
+  "quantization": "4bit",
+  "loraConfig": { "r": 16, "alpha": 16, "dropout": 0.05, "targetModules": ["q_proj", "v_proj"] },
+  "training": { "epochs": 3, "batchSize": 4, "learningRate": 2e-4, "warmupSteps": 10 },
+  "dataset": { "format": "alpaca", "path": "dataset/train.jsonl" },
+  "references": ["Unsloth", "QLoRA", "PEFT", "TRL"],
+  "notes": ["Unsloth provides 2x faster training with 60% less memory.", "Use 4-bit quantization for consumer GPUs (24GB VRAM).", "Export to GGUF for local inference or push to HuggingFace Hub."]
+}

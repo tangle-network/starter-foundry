@@ -1,0 +1,17 @@
+{
+  "exchange": "{{exchangeName}}",
+  "mode": "{{tradingMode}}",
+  "endpoints": {
+    "rest": "https://api.coinbase.com/api/v3/brokerage",
+    "websocket": "wss://advanced-trade-ws.coinbase.com",
+    "sandbox": "https://api-public.sandbox.exchange.coinbase.com"
+  },
+  "pairs": ["BTC-USD", "ETH-USD"],
+  "rateLimit": { "requestsPerSecond": 10 },
+  "features": ["spot", "advanced-trade", "portfolios", "websocket-channels"],
+  "notes": [
+    "Set COINBASE_API_KEY and COINBASE_API_SECRET in your environment.",
+    "Use the sandbox endpoint for testing. Production keys have different permissions.",
+    "Advanced Trade API replaces the legacy Pro API."
+  ]
+}

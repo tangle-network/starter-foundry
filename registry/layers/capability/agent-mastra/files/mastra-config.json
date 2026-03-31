@@ -1,0 +1,6 @@
+{
+  "framework": "{{agentFramework}}",
+  "features": ["tools", "workflows", "syncs", "rag", "evals"],
+  "integrations": [],
+  "notes": ["Mastra provides tools, workflows, and syncs out of the box.", "Use mastra.init() to bootstrap the agent runtime.", "Add integrations via the Mastra integration registry."]
+}

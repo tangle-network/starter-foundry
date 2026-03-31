@@ -1,0 +1,7 @@
+{
+  "orchestrator": "kubernetes",
+  "manifests": ["deployment", "service", "configmap", "ingress"],
+  "replicas": 2,
+  "resources": { "requests": { "cpu": "100m", "memory": "128Mi" }, "limits": { "cpu": "500m", "memory": "512Mi" } },
+  "notes": ["Generate k8s/ directory with deployment.yaml, service.yaml, and configmap.yaml.", "Use resource limits to prevent noisy neighbor issues.", "Add HPA for auto-scaling based on CPU or custom metrics.", "Helm chart in chart/ directory for parameterized deployments."]
+}

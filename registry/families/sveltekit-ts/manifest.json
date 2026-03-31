@@ -1,0 +1,24 @@
+{
+  "id": "sveltekit-ts",
+  "description": "SvelteKit TypeScript starter with SSR, file-based routing, and instant preview.",
+  "tags": ["frontend", "typescript", "svelte", "sveltekit", "preview"],
+  "taxonomy": { "language": "typescript", "runtime": "node", "surface": "frontend" },
+  "slots": {
+    "auth": { "options": ["auth:none", "auth:better-auth", "auth:clerk", "auth:supabase-auth"], "default": "auth:none" },
+    "payments": { "options": ["payments:none", "payments:stripe", "payments:coinbase-commerce"], "default": "payments:none" },
+    "sdk": { "options": ["sdk:none", "sdk:coinbase-cdp", "sdk:solana-web3", "sdk:evm-wallet"], "default": "sdk:none" }
+  },
+  "defaults": { "projectType": "frontend", "port": 5173, "headline": "Starter Foundry SvelteKit App", "subheadline": "A SvelteKit shell ready for the agent to extend." },
+  "files": [{ "source": "files/package.json", "target": "package.json" }],
+  "validationChecks": [
+    { "type": "file-exists", "path": "src/routes/+page.svelte" },
+    { "type": "node-syntax", "path": "package.json" },
+    { "type": "file-exists", "path": "svelte.config.js" }
+  ],
+  "contextHints": {
+    "commands": ["npm run dev"],
+    "entrypoints": ["src/routes/+page.svelte", "src/routes/+layout.svelte", "svelte.config.js"],
+    "preview": { "port": "{{port}}", "path": "/" },
+    "extensionPoints": ["src/routes/+page.svelte", "src/lib/", "auth-config.json", "payments-config.json", "sdk-config.json"]
+  }
+}

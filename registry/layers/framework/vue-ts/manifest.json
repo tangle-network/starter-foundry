@@ -1,0 +1,10 @@
+{
+  "id": "vue-ts",
+  "description": "Vue 3 Composition API framework layer with Vite.",
+  "appliesTo": ["vue-ts"],
+  "files": [
+    { "source": "files/App.vue", "target": "src/App.vue" },
+    { "source": "files/main.ts", "target": "src/main.ts" },
+    { "source": "files/index.html", "target": "index.html" }
+  ]
+}

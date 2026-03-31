@@ -1,0 +1,8 @@
+{
+  "sampleThread": [
+    { "role": "user", "content": "What does this project do?" },
+    { "role": "assistant", "content": "This is a starter project with a streaming chat interface. You can extend it with custom tools, RAG retrieval, or connect it to any LLM backend." },
+    { "role": "user", "content": "How do I add a new tool?" },
+    { "role": "assistant", "content": "Define the tool schema in your agent config, then register the handler in the API route. The chat UI will automatically render tool call results." }
+  ]
+}

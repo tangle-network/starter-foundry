@@ -1,0 +1,12 @@
+{
+  "vectorDb": "{{vectorDb}}",
+  "embeddingModel": "{{embeddingModel}}",
+  "chunkSize": "{{chunkSize}}",
+  "chunkOverlap": 50,
+  "topK": 5,
+  "notes": [
+    "Configure the vector store connection in your environment.",
+    "The retrieval pipeline handles ingest, chunk, embed, and query.",
+    "Extend retrieval-pipeline.mjs with reranking or hybrid search if needed."
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "strategy": "{{orchestrationStrategy}}",
+  "maxTurns": "{{maxAgentTurns}}",
+  "agents": [
+    { "role": "planner", "description": "Decomposes tasks into subtasks" },
+    { "role": "executor", "description": "Executes individual subtasks" },
+    { "role": "reviewer", "description": "Validates outputs and catches errors" }
+  ],
+  "handoff": {
+    "protocol": "structured-message",
+    "retryOnFailure": true
+  },
+  "notes": [
+    "The supervisor routes tasks to the right agent role.",
+    "Each agent reports back with structured results or escalates.",
+    "Add new roles by extending the agents array and supervisor routing."
+  ]
+}

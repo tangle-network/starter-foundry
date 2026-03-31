@@ -1141,6 +1141,57 @@ const PRODUCT_ARCHETYPES: ProductArchetype[] = [
   // Crypto slang
   { patterns: ['pump.fun', 'memecoin launcher', 'meme coin launcher', 'token launcher'], family: 'forge-contracts', capabilities: ['capability:defi-dex'], surface: 'workspace-hint' },
   { patterns: ['telegram bot', 'telegram trading bot', 'tg bot'], family: 'worker-job', capabilities: ['capability:market-sim'], surface: 'starter' },
+
+  // === Generic product patterns (no framework keyword, just what the app does) ===
+
+  // Web apps with backend (fullstack-ts)
+  { patterns: ['url shortener', 'link shortener', 'short url'], family: 'fullstack-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['waitlist', 'waitlist page', 'email collection', 'launch page', 'coming soon'], family: 'nextjs-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['feedback widget', 'feedback form', 'nps survey', 'user feedback'], family: 'fullstack-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['feature flag', 'feature toggle', 'feature gate', 'ab test', 'a/b test'], family: 'fullstack-ts', capabilities: ['capability:admin-crud'], surface: 'starter' },
+  { patterns: ['changelog', 'release notes', 'product updates'], family: 'nextjs-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['link in bio', 'linktree', 'bio page', 'link page'], family: 'nextjs-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['form wizard', 'multi-step form', 'form builder', 'survey builder'], family: 'fullstack-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['shopping cart', 'checkout', 'cart system', 'e-commerce cart'], family: 'fullstack-ts', capabilities: ['capability:saas-billing'], surface: 'starter' },
+  { patterns: ['inventory management', 'inventory tracker', 'stock management', 'warehouse'], family: 'fullstack-ts', capabilities: ['capability:admin-crud'], surface: 'starter' },
+  { patterns: ['product review', 'review system', 'rating system', 'star rating'], family: 'fullstack-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['recipe app', 'recipe sharing', 'cookbook', 'meal planner'], family: 'nextjs-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['photo gallery', 'image gallery', 'portfolio gallery', 'media gallery'], family: 'nextjs-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['log viewer', 'log dashboard', 'log search', 'log explorer'], family: 'fullstack-ts', capabilities: ['capability:realtime-ws', 'capability:admin-crud'], surface: 'starter' },
+  { patterns: ['database migration', 'migration tool', 'schema migration'], family: 'cli-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['podcast', 'rss feed', 'feed generator', 'rss reader'], family: 'nextjs-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['markdown blog', 'blog platform', 'static blog', 'mdx blog'], family: 'nextjs-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['calculator', 'converter', 'unit converter'], family: 'react-vite-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['timer', 'countdown', 'stopwatch', 'pomodoro'], family: 'react-vite-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['weather app', 'weather dashboard'], family: 'react-vite-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['todo', 'to-do', 'task list', 'checklist'], family: 'react-vite-ts', capabilities: [], surface: 'starter' },
+
+  // Crypto product patterns
+  { patterns: ['nft drop', 'nft mint', 'mint page', 'allowlist', 'nft launch'], family: 'nextjs-ts', capabilities: [], surface: 'workspace-hint' },
+  { patterns: ['staking calculator', 'rewards calculator', 'yield calculator', 'apy calculator'], family: 'react-vite-ts', capabilities: ['capability:chart-widget'], surface: 'starter' },
+  { patterns: ['whale watcher', 'whale alert', 'large transfer', 'whale tracker'], family: 'worker-job', capabilities: ['capability:market-sim'], surface: 'starter' },
+  { patterns: ['gas tracker', 'gas price', 'gas estimator'], family: 'evm-infra-ts', capabilities: ['capability:evm-chain-monitor'], surface: 'starter' },
+  { patterns: ['copy trading', 'copy trade', 'mirror trading'], family: 'worker-job', capabilities: ['capability:market-sim'], surface: 'starter' },
+  { patterns: ['token gating', 'token gate', 'nft gating', 'gated content'], family: 'api-service', capabilities: [], surface: 'starter' },
+  { patterns: ['treasury dashboard', 'dao dashboard', 'governance dashboard'], family: 'fullstack-ts', capabilities: ['capability:chart-widget', 'capability:admin-crud'], surface: 'starter' },
+
+  // AI product patterns
+  { patterns: ['text-to-sql', 'text to sql', 'sql agent', 'natural language sql', 'query builder ai'], family: 'agent-service-ts', capabilities: ['capability:agent-data-pipeline'], surface: 'starter' },
+  { patterns: ['email assistant', 'email agent', 'email drafter', 'email writer', 'ai email'], family: 'agent-service-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['resume parser', 'cv parser', 'resume analyzer', 'cv analyzer'], family: 'agent-service-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['meeting summarizer', 'meeting notes', 'transcript summarizer', 'call summary'], family: 'agent-service-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['document ocr', 'ocr pipeline', 'text extraction', 'pdf parser', 'document parser'], family: 'agent-service-py', capabilities: [], surface: 'starter' },
+  { patterns: ['image upscaler', 'super resolution', 'image enhancer', 'upscale image'], family: 'agent-service-py', capabilities: ['capability:gpu-replicate'], surface: 'starter' },
+  { patterns: ['code search', 'semantic search', 'codebase search', 'code finder'], family: 'agent-service-ts', capabilities: ['capability:agent-rag'], surface: 'starter' },
+  { patterns: ['ai translator', 'translation tool', 'language translator'], family: 'agent-service-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['ai tutor', 'learning assistant', 'homework helper', 'study buddy'], family: 'agent-service-ts', capabilities: ['capability:ai-chat-ui'], surface: 'workspace-hint' },
+  { patterns: ['content moderator', 'content moderation', 'toxicity filter'], family: 'agent-service-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['sentiment analysis', 'sentiment analyzer', 'opinion mining'], family: 'agent-service-py', capabilities: [], surface: 'starter' },
+
+  // Developer tool patterns
+  { patterns: ['webhook tester', 'requestbin', 'webhook debugger', 'webhook inspector'], family: 'api-service', capabilities: ['capability:webhook-processor'], surface: 'starter' },
+  { patterns: ['cron dashboard', 'job scheduler', 'task scheduler', 'cron manager'], family: 'fullstack-ts', capabilities: ['capability:admin-crud'], surface: 'starter' },
+  { patterns: ['api docs', 'api documentation', 'swagger', 'openapi'], family: 'nextjs-ts', capabilities: [], surface: 'starter' },
 ]
 
 function resolveProductArchetype(text: string): ProductArchetype | null {

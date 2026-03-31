@@ -119,6 +119,29 @@ function applyBoosts(candidates: Candidate[], prompt: string, lower: string): vo
       candidate.score += 4
     }
 
+    // Explicit framework name boosts — when user names a specific framework, it always wins
+    if (candidate.family === 'nextjs-ts' && (lower.includes('next.js') || lower.includes('nextjs') || lower.includes('next js'))) {
+      candidate.score += 3
+    }
+    if (candidate.family === 'react-vite-ts' && (lower.includes('vite') || (lower.includes('react') && !lower.includes('react native')))) {
+      candidate.score += 2
+    }
+    if (candidate.family === 'expo-react-native-ts' && lower.includes('react native')) {
+      candidate.score += 3
+    }
+    if (candidate.family === 'sveltekit-ts' && (lower.includes('svelte') || lower.includes('sveltekit'))) {
+      candidate.score += 3
+    }
+    if (candidate.family === 'remix-ts' && lower.includes('remix')) {
+      candidate.score += 3
+    }
+    if (candidate.family === 'vue-ts' && (lower.includes('vue') || lower.includes('nuxt'))) {
+      candidate.score += 3
+    }
+    if (candidate.family === 'angular-ts' && lower.includes('angular')) {
+      candidate.score += 3
+    }
+
     // Go worker boost
     if (candidate.family === 'go-worker' && (lower.includes('go worker') || lower.includes('golang worker'))) {
       candidate.score += 2

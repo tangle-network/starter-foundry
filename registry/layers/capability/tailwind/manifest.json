@@ -38,5 +38,12 @@
     "tailwindcss",
     "utility css",
     "postcss"
-  ]
+  ],
+  "buildHints": {
+    "architectureNotes": [
+      "Generate tailwind.config.ts from tailwind-config.json",
+      "Add CSS variables from design-tokens.json to globals.css",
+      "Use class-based dark mode with .dark class toggle"
+    ]
+  }
 }

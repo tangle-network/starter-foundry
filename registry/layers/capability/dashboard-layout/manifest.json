@@ -31,5 +31,23 @@
   ],
   "capabilityRequires": [
     "tailwind"
-  ]
+  ],
+  "buildHints": {
+    "pages": [
+      "/dashboard"
+    ],
+    "components": [
+      "Sidebar",
+      "SidebarNav",
+      "Header",
+      "BreadcrumbTrail",
+      "ThemeToggle",
+      "UserMenu",
+      "CommandPalette"
+    ],
+    "architectureNotes": [
+      "Collapsible sidebar with mobile sheet drawer",
+      "Sticky header with breadcrumbs"
+    ]
+  }
 }

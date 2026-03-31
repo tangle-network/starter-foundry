@@ -34,5 +34,28 @@
     "exchange api agent",
     "order execution agent",
     "backtesting agent"
-  ]
+  ],
+  "buildHints": {
+    "apiRoutes": [
+      "/api/strategy",
+      "/api/positions",
+      "/api/risk"
+    ],
+    "components": [
+      "StrategyConfig",
+      "PositionTable",
+      "PnLChart",
+      "RiskDashboard"
+    ],
+    "dataModels": [
+      "Position",
+      "Order",
+      "Signal",
+      "RiskLimit"
+    ],
+    "integrations": [
+      "Exchange API (from exchange config)",
+      "Market data WebSocket"
+    ]
+  }
 }

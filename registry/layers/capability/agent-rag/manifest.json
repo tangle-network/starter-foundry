@@ -39,5 +39,27 @@
     "chromadb",
     "weaviate",
     "qdrant"
-  ]
+  ],
+  "buildHints": {
+    "apiRoutes": [
+      "/api/ingest",
+      "/api/query"
+    ],
+    "components": [
+      "DocumentUploader",
+      "SearchResults",
+      "SourceCitation"
+    ],
+    "dataModels": [
+      "Document",
+      "Chunk",
+      "Embedding",
+      "SearchResult"
+    ],
+    "integrations": [
+      "Vector database",
+      "Embedding API",
+      "Document parser"
+    ]
+  }
 }

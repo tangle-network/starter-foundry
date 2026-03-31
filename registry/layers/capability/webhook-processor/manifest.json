@@ -28,5 +28,23 @@
     "inbound webhook",
     "webhook ingestion",
     "webhook endpoint"
-  ]
+  ],
+  "buildHints": {
+    "apiRoutes": [
+      "/api/webhooks",
+      "/api/webhooks/[provider]"
+    ],
+    "components": [
+      "WebhookLog",
+      "RetryQueue"
+    ],
+    "dataModels": [
+      "WebhookEvent",
+      "DeliveryAttempt"
+    ],
+    "integrations": [
+      "Signature verification per provider",
+      "Retry queue with backoff"
+    ]
+  }
 }

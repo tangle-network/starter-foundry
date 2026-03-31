@@ -1,6 +1,8 @@
 import path from 'node:path'
+import { generateBuildPlan } from './build-plan.js'
 import { composeStarter } from './compose.js'
 import { createTempDir, listFilesRecursive, readJson, removeDir, writeJson } from './fs.js'
+import { resolveComponents } from './registry.js'
 import type { ComposeSpec, ContextPack, ComposeReport } from '../types.js'
 
 export interface ContextPackResult {
@@ -23,6 +25,9 @@ export async function createContextPack({
   try {
     const composeReport = await readJson<ComposeReport>(composeResult.composeReportPath)
     const files = await listFilesRecursive(composedDir)
+    const components = await resolveComponents(spec)
+    const buildPlan = generateBuildPlan(spec, components)
+
     const contextPack: ContextPack = {
       schemaVersion: 1,
       generatedAt: new Date().toISOString(),
@@ -37,13 +42,11 @@ export async function createContextPack({
       extensionPoints: composeReport.contextHints.extensionPoints,
       validationChecks: composeReport.validationChecks,
       agentBrief: {
-        summary: `Starter ${composeReport.components.family} with ${composeReport.components.layers.length} layers and partner ${composeReport.components.partner ?? 'none'}.`,
-        firstMoves: [
-          'Read the entrypoints first.',
-          'Run one of the validated commands before making changes.',
-          'Prefer extending owned files before replacing core family files.',
-        ],
+        summary: buildPlan.goal,
+        firstMoves: buildPlan.firstMoves,
       },
+      buildPlan,
+      userPrompt: spec.userPrompt ?? null,
     }
 
     const contextPath = path.join(composedDir, '.starter-foundry', 'context-pack.json')

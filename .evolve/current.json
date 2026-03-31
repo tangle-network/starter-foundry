@@ -1,9 +1,9 @@
 {
-  "mode": "evolve",
-  "goal": "adversarial hardening + proof suite validation",
-  "status": "converged",
+  "mode": "pursue",
+  "goal": "scoring hierarchy + composition quality audit",
+  "status": "evaluated",
   "round": 5,
-  "generation": 2,
-  "activePursuit": null,
-  "updatedAt": "2026-03-30T05:00:00Z"
+  "generation": 3,
+  "activePursuit": ".evolve/pursuits/2026-03-30-scoring-hierarchy.md",
+  "updatedAt": "2026-03-30T06:00:00Z"
 }

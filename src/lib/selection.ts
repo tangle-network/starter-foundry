@@ -1,4 +1,4 @@
-import { keywordScore, matchesKeyword } from './keywords.js'
+import { fuzzyKeywordScore, keywordScore, matchesKeyword } from './keywords.js'
 import { loadRegistry } from './registry.js'
 import type { SelectionResult, Confidence, ComposeSpec, FamilyManifest } from '../types.js'
 
@@ -178,6 +178,20 @@ export async function selectStarter({
   applyBoosts(candidates, prompt, lower)
 
   candidates.sort((left, right) => right.score - left.score)
+
+  // Fuzzy fallback: when exact matching found nothing, try Levenshtein distance ≤ 1
+  // on keywords ≥ 5 chars. Catches typos like "pytohn" → "python", "Nex.js" → "next.js"
+  if (candidates[0]!.score === 0) {
+    for (const candidate of candidates) {
+      const familyManifest = registry.families.get(candidate.family)
+      if (!familyManifest?.keywords?.length) continue
+      candidate.score = fuzzyKeywordScore(prompt, familyManifest.keywords)
+    }
+    candidates.sort((left, right) => right.score - left.score)
+    applyBoosts(candidates, prompt, lower)
+    candidates.sort((left, right) => right.score - left.score)
+  }
+
   const winner = candidates[0]!
   const family = winner.score > 0 ? winner.family : 'frontend-static'
   const layers = winner.score > 0 ? winner.layers : ['framework:web-static']

@@ -1,15 +1,37 @@
 {
   "id": "saas-teams",
   "description": "Adds multi-tenant teams with roles, invitations, and permission boundaries.",
-  "appliesTo": ["nextjs-ts", "fullstack-ts", "api-service"],
+  "appliesTo": [
+    "nextjs-ts",
+    "fullstack-ts",
+    "api-service"
+  ],
   "defaults": {
     "defaultRole": "member"
   },
   "files": [
-    { "source": "files/teams-config.json", "target": "teams-config.json" },
-    { "source": "files/teams-middleware.mjs", "target": "teams-middleware.mjs" }
+    {
+      "source": "files/teams-config.json",
+      "target": "teams-config.json"
+    },
+    {
+      "source": "files/teams-middleware.mjs",
+      "target": "teams-middleware.mjs"
+    }
   ],
   "contextHints": {
-    "extensionPoints": ["teams-config.json", "teams-middleware.mjs"]
-  }
+    "extensionPoints": [
+      "teams-config.json",
+      "teams-middleware.mjs"
+    ]
+  },
+  "keywords": [
+    "team management",
+    "multi-tenant",
+    "organization management",
+    "team roles",
+    "invitation system",
+    "rbac",
+    "workspace management"
+  ]
 }

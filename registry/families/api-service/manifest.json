@@ -1,7 +1,10 @@
 {
   "id": "api-service",
   "description": "Minimal Node HTTP API starter with health endpoint.",
-  "tags": ["api", "backend"],
+  "tags": [
+    "api",
+    "backend"
+  ],
   "taxonomy": {
     "language": "javascript",
     "runtime": "node",
@@ -74,19 +77,41 @@
     },
     {
       "type": "http-start",
-      "command": ["node", "server.mjs"],
+      "command": [
+        "node",
+        "server.mjs"
+      ],
       "port": "{{port}}",
       "path": "/health",
       "expect": "\"ok\""
     }
   ],
   "contextHints": {
-    "commands": ["npm run start"],
-    "entrypoints": ["server.mjs"],
+    "commands": [
+      "npm run start"
+    ],
+    "entrypoints": [
+      "server.mjs"
+    ],
     "preview": {
       "port": "{{port}}",
       "path": "/health"
     },
-    "extensionPoints": ["hooks.mjs", "partner-config.json", "auth-config.json", "payments-config.json", "queue-config.json", "sdk-config.json"]
-  }
+    "extensionPoints": [
+      "hooks.mjs",
+      "partner-config.json",
+      "auth-config.json",
+      "payments-config.json",
+      "queue-config.json",
+      "sdk-config.json"
+    ]
+  },
+  "keywords": [
+    "api",
+    "server",
+    "endpoint",
+    "backend",
+    "service",
+    "webhook"
+  ]
 }

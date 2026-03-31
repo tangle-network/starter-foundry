@@ -1,8 +1,32 @@
 {
   "id": "gpu-together",
   "description": "Adds Together AI API for inference, fine-tuning, and dedicated GPU clusters.",
-  "appliesTo": ["agent-service-ts", "agent-service-py", "agent-service-rust", "api-service", "python-api", "worker-job", "python-worker"],
-  "defaults": { "gpuProvider": "together" },
-  "files": [{ "source": "files/gpu-config.json", "target": "gpu-config.json" }],
-  "contextHints": { "extensionPoints": ["gpu-config.json"] }
+  "appliesTo": [
+    "agent-service-ts",
+    "agent-service-py",
+    "agent-service-rust",
+    "api-service",
+    "python-api",
+    "worker-job",
+    "python-worker"
+  ],
+  "defaults": {
+    "gpuProvider": "together"
+  },
+  "files": [
+    {
+      "source": "files/gpu-config.json",
+      "target": "gpu-config.json"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": [
+      "gpu-config.json"
+    ]
+  },
+  "keywords": [
+    "together ai",
+    "together api",
+    "together inference"
+  ]
 }

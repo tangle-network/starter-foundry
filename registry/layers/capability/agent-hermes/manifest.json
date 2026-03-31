@@ -1,14 +1,30 @@
 {
   "id": "agent-hermes",
   "description": "Adds NousResearch Hermes function-calling model configuration for tool-use agents.",
-  "appliesTo": ["agent-service-ts", "agent-service-py", "agent-service-rust"],
+  "appliesTo": [
+    "agent-service-ts",
+    "agent-service-py",
+    "agent-service-rust"
+  ],
   "defaults": {
     "hermesModel": "NousResearch/Hermes-3-Llama-3.1-8B"
   },
   "files": [
-    { "source": "files/hermes-config.json", "target": "hermes-config.json" }
+    {
+      "source": "files/hermes-config.json",
+      "target": "hermes-config.json"
+    }
   ],
   "contextHints": {
-    "extensionPoints": ["hermes-config.json"]
-  }
+    "extensionPoints": [
+      "hermes-config.json"
+    ]
+  },
+  "keywords": [
+    "hermes",
+    "hermes model",
+    "hermes agent",
+    "nousresearch",
+    "hermes function calling"
+  ]
 }

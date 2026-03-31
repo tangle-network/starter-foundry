@@ -2,14 +2,41 @@
   "id": "tailwind",
   "description": "Adds Tailwind CSS v4 configuration with PostCSS, dark mode support, and design tokens.",
   "appliesTo": [
-    "react-vite-ts", "nextjs-ts", "fullstack-ts", "sveltekit-ts", "remix-ts", "vue-ts", "angular-ts",
-    "frontend-static", "browser-extension-ts", "electron-desktop-ts", "tauri-desktop"
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "sveltekit-ts",
+    "remix-ts",
+    "vue-ts",
+    "angular-ts",
+    "frontend-static",
+    "browser-extension-ts",
+    "electron-desktop-ts",
+    "tauri-desktop"
   ],
   "files": [
-    { "source": "files/tailwind-config.json", "target": "tailwind-config.json" },
-    { "source": "files/design-tokens.json", "target": "design-tokens.json" }
+    {
+      "source": "files/tailwind-config.json",
+      "target": "tailwind-config.json"
+    },
+    {
+      "source": "files/design-tokens.json",
+      "target": "design-tokens.json"
+    }
   ],
   "contextHints": {
-    "extensionPoints": ["tailwind-config.json", "design-tokens.json", "tailwind.config.ts", "postcss.config.js", "src/globals.css"]
-  }
+    "extensionPoints": [
+      "tailwind-config.json",
+      "design-tokens.json",
+      "tailwind.config.ts",
+      "postcss.config.js",
+      "src/globals.css"
+    ]
+  },
+  "keywords": [
+    "tailwind",
+    "tailwindcss",
+    "utility css",
+    "postcss"
+  ]
 }

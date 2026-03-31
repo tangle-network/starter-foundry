@@ -1,7 +1,10 @@
 {
   "id": "worker-job",
   "description": "Runnable worker starter for bots and background jobs.",
-  "tags": ["worker", "bot"],
+  "tags": [
+    "worker",
+    "bot"
+  ],
   "taxonomy": {
     "language": "javascript",
     "runtime": "node",
@@ -39,7 +42,10 @@
     },
     {
       "type": "command-success",
-      "command": ["node", "worker.mjs"],
+      "command": [
+        "node",
+        "worker.mjs"
+      ],
       "env": {
         "RUN_ONCE": "1"
       },
@@ -47,9 +53,25 @@
     }
   ],
   "contextHints": {
-    "commands": ["npm run start"],
-    "entrypoints": ["worker.mjs"],
+    "commands": [
+      "npm run start"
+    ],
+    "entrypoints": [
+      "worker.mjs"
+    ],
     "preview": null,
-    "extensionPoints": ["market-feed.json", "hooks.mjs", "queue-config.json"]
-  }
+    "extensionPoints": [
+      "market-feed.json",
+      "hooks.mjs",
+      "queue-config.json"
+    ]
+  },
+  "keywords": [
+    "bot",
+    "worker",
+    "trading",
+    "queue",
+    "cron",
+    "stream"
+  ]
 }

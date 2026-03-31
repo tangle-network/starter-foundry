@@ -1,7 +1,10 @@
 {
   "id": "frontend-static",
   "description": "Runnable static frontend starter with instant preview.",
-  "tags": ["frontend", "preview"],
+  "tags": [
+    "frontend",
+    "preview"
+  ],
   "taxonomy": {
     "language": "javascript",
     "runtime": "node",
@@ -39,19 +42,39 @@
     },
     {
       "type": "http-start",
-      "command": ["node", "serve.mjs"],
+      "command": [
+        "node",
+        "serve.mjs"
+      ],
       "port": "{{port}}",
       "path": "/",
       "expect": "{{headline}}"
     }
   ],
   "contextHints": {
-    "commands": ["npm run start"],
-    "entrypoints": ["index.html", "app.js"],
+    "commands": [
+      "npm run start"
+    ],
+    "entrypoints": [
+      "index.html",
+      "app.js"
+    ],
     "preview": {
       "port": "{{port}}",
       "path": "/"
     },
-    "extensionPoints": ["starter-data.json", "starter-brand.json"]
-  }
+    "extensionPoints": [
+      "starter-data.json",
+      "starter-brand.json"
+    ]
+  },
+  "keywords": [
+    "website",
+    "landing",
+    "frontend",
+    "dashboard",
+    "page",
+    "ui",
+    "preview"
+  ]
 }

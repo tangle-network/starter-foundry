@@ -1,7 +1,11 @@
 {
   "id": "zk-prover-service",
   "description": "Minimal ZK prover service starter with live status endpoint.",
-  "tags": ["zk", "proofs", "service"],
+  "tags": [
+    "zk",
+    "proofs",
+    "service"
+  ],
   "taxonomy": {
     "language": "javascript",
     "runtime": "node",
@@ -78,17 +82,39 @@
     },
     {
       "type": "http-start",
-      "command": ["node", "server.mjs"],
+      "command": [
+        "node",
+        "server.mjs"
+      ],
       "path": "/health",
       "expect": "\"zk\""
     }
   ],
   "contextHints": {
-    "commands": ["node server.mjs"],
-    "entrypoints": ["server.mjs", "proof-system.json"],
+    "commands": [
+      "node server.mjs"
+    ],
+    "entrypoints": [
+      "server.mjs",
+      "proof-system.json"
+    ],
     "preview": {
       "path": "/health"
     },
-    "extensionPoints": ["proof-system.json"]
-  }
+    "extensionPoints": [
+      "proof-system.json"
+    ]
+  },
+  "keywords": [
+    "risc zero",
+    "sp1",
+    "circom",
+    "snarkjs",
+    "fhenix",
+    "zk prover",
+    "verifiable ml",
+    "private voting",
+    "dark pool",
+    "mixer"
+  ]
 }

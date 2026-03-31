@@ -1,15 +1,36 @@
 {
   "id": "agent-github",
   "description": "Adds GitHub webhook handling for PR review, issue triage, and commit analysis.",
-  "appliesTo": ["agent-service-ts", "agent-service-py", "agent-service-rust"],
+  "appliesTo": [
+    "agent-service-ts",
+    "agent-service-py",
+    "agent-service-rust"
+  ],
   "defaults": {
     "githubActions": "review,label,comment"
   },
   "files": [
-    { "source": "files/github-config.json", "target": "github-config.json" },
-    { "source": "files/github-handler.mjs", "target": "github-handler.mjs" }
+    {
+      "source": "files/github-config.json",
+      "target": "github-config.json"
+    },
+    {
+      "source": "files/github-handler.mjs",
+      "target": "github-handler.mjs"
+    }
   ],
   "contextHints": {
-    "extensionPoints": ["github-config.json", "github-handler.mjs"]
-  }
+    "extensionPoints": [
+      "github-config.json",
+      "github-handler.mjs"
+    ]
+  },
+  "keywords": [
+    "github bot",
+    "github integration",
+    "pr review agent",
+    "issue triage",
+    "github agent",
+    "github webhook agent"
+  ]
 }

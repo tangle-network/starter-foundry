@@ -1,7 +1,12 @@
 {
   "id": "eigenlayer-avs",
   "description": "Lean EigenLayer AVS starter with operator and contract seam.",
-  "tags": ["eigenlayer", "avs", "ethereum", "infra"],
+  "tags": [
+    "eigenlayer",
+    "avs",
+    "ethereum",
+    "infra"
+  ],
   "taxonomy": {
     "language": "solidity",
     "runtime": "eigenlayer",
@@ -27,14 +32,36 @@
     },
     {
       "type": "command-success",
-      "command": ["node", "validate-avs.mjs"],
+      "command": [
+        "node",
+        "validate-avs.mjs"
+      ],
       "expect": "avs ok"
     }
   ],
   "contextHints": {
-    "commands": ["node validate-avs.mjs", "forge build", "cargo check"],
-    "entrypoints": ["avs.config.json", "contracts/ServiceManager.sol", "operator/main.rs"],
+    "commands": [
+      "node validate-avs.mjs",
+      "forge build",
+      "cargo check"
+    ],
+    "entrypoints": [
+      "avs.config.json",
+      "contracts/ServiceManager.sol",
+      "operator/main.rs"
+    ],
     "preview": null,
-    "extensionPoints": ["avs.config.json", "contracts/ServiceManager.sol"]
-  }
+    "extensionPoints": [
+      "avs.config.json",
+      "contracts/ServiceManager.sol"
+    ]
+  },
+  "keywords": [
+    "eigenlayer",
+    "avs",
+    "oracle avs",
+    "keeper avs",
+    "sequencer avs",
+    "coprocessor avs"
+  ]
 }

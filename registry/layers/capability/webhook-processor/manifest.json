@@ -1,12 +1,32 @@
 {
   "id": "webhook-processor",
   "description": "Adds webhook ingestion with signature verification, provider routing, and retry handling.",
-  "appliesTo": ["api-service", "agent-service-ts", "agent-service-py"],
+  "appliesTo": [
+    "api-service",
+    "agent-service-ts",
+    "agent-service-py"
+  ],
   "files": [
-    { "source": "files/webhook-config.json", "target": "webhook-config.json" },
-    { "source": "files/webhook-router.mjs", "target": "webhook-router.mjs" }
+    {
+      "source": "files/webhook-config.json",
+      "target": "webhook-config.json"
+    },
+    {
+      "source": "files/webhook-router.mjs",
+      "target": "webhook-router.mjs"
+    }
   ],
   "contextHints": {
-    "extensionPoints": ["webhook-config.json", "webhook-router.mjs"]
-  }
+    "extensionPoints": [
+      "webhook-config.json",
+      "webhook-router.mjs"
+    ]
+  },
+  "keywords": [
+    "webhook handler",
+    "webhook processor",
+    "inbound webhook",
+    "webhook ingestion",
+    "webhook endpoint"
+  ]
 }

@@ -1,15 +1,33 @@
 {
   "id": "exchange-coinbase",
   "description": "Adds Coinbase Advanced Trade API integration with order management, market data, and portfolio tracking.",
-  "appliesTo": ["agent-service-ts", "agent-service-py", "agent-service-rust", "worker-job", "go-worker"],
+  "appliesTo": [
+    "agent-service-ts",
+    "agent-service-py",
+    "agent-service-rust",
+    "worker-job",
+    "go-worker"
+  ],
   "defaults": {
     "exchangeName": "coinbase",
     "tradingMode": "spot"
   },
   "files": [
-    { "source": "files/exchange-config.json", "target": "exchange-config.json" }
+    {
+      "source": "files/exchange-config.json",
+      "target": "exchange-config.json"
+    }
   ],
   "contextHints": {
-    "extensionPoints": ["exchange-config.json", "strategy.mjs"]
-  }
+    "extensionPoints": [
+      "exchange-config.json",
+      "strategy.mjs"
+    ]
+  },
+  "keywords": [
+    "coinbase advanced trade",
+    "coinbase exchange",
+    "coinbase pro",
+    "coinbase api trading"
+  ]
 }

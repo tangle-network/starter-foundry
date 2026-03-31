@@ -1,7 +1,12 @@
 {
   "id": "agent-service-ts",
   "description": "TypeScript AI agent service starter with a lightweight control surface.",
-  "tags": ["ai", "agent", "typescript", "service"],
+  "tags": [
+    "ai",
+    "agent",
+    "typescript",
+    "service"
+  ],
   "taxonomy": {
     "language": "javascript",
     "runtime": "node",
@@ -76,19 +81,75 @@
     },
     {
       "type": "http-start",
-      "command": ["node", "agent.mjs"],
+      "command": [
+        "node",
+        "agent.mjs"
+      ],
       "port": "{{port}}",
       "path": "/health",
       "expect": "\"agent\""
     }
   ],
   "contextHints": {
-    "commands": ["node agent.mjs"],
-    "entrypoints": ["agent.mjs", "agent.config.json"],
+    "commands": [
+      "node agent.mjs"
+    ],
+    "entrypoints": [
+      "agent.mjs",
+      "agent.config.json"
+    ],
     "preview": {
       "port": "{{port}}",
       "path": "/health"
     },
-    "extensionPoints": ["agent.config.json", "hooks.mjs", "sdk-config.json", "queue-config.json", "database-config.json"]
-  }
+    "extensionPoints": [
+      "agent.config.json",
+      "hooks.mjs",
+      "sdk-config.json",
+      "queue-config.json",
+      "database-config.json"
+    ]
+  },
+  "keywords": [
+    "ai agent",
+    "agent runtime",
+    "agent service",
+    "chatbot",
+    "chat bot",
+    "ai assistant",
+    "ai copilot",
+    "support agent",
+    "support bot",
+    "slack bot",
+    "slack agent",
+    "github bot",
+    "github agent",
+    "trading agent",
+    "code review agent",
+    "data agent",
+    "data analysis agent",
+    "research agent",
+    "rag",
+    "retrieval augmented",
+    "agent backend",
+    "ai that can",
+    "ai that answers",
+    "ai to answer",
+    "ai to search",
+    "hermes agent",
+    "hermes function calling",
+    "openclaw agent",
+    "function-calling agent",
+    "fine-tuning",
+    "fine tuning",
+    "finetune",
+    "unsloth",
+    "modal gpu",
+    "train a model",
+    "langgraph",
+    "mastra",
+    "openai agents",
+    "openai agents sdk",
+    "typescript agent"
+  ]
 }

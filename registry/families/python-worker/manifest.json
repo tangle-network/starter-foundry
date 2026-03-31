@@ -1,7 +1,12 @@
 {
   "id": "python-worker",
   "description": "Python background worker starter for async tasks, cron jobs, and queue processing.",
-  "tags": ["python", "worker", "jobs", "async"],
+  "tags": [
+    "python",
+    "worker",
+    "jobs",
+    "async"
+  ],
   "taxonomy": {
     "language": "python",
     "runtime": "python",
@@ -9,11 +14,19 @@
   },
   "slots": {
     "queue": {
-      "options": ["queue:none", "queue:bullmq", "queue:trigger-dev"],
+      "options": [
+        "queue:none",
+        "queue:bullmq",
+        "queue:trigger-dev"
+      ],
       "default": "queue:none"
     },
     "database": {
-      "options": ["database:sqlite", "database:postgres", "database:mongodb"],
+      "options": [
+        "database:sqlite",
+        "database:postgres",
+        "database:mongodb"
+      ],
       "default": "database:sqlite"
     }
   },
@@ -22,22 +35,52 @@
     "workerName": "starter-foundry-python-worker"
   },
   "files": [
-    { "source": "files/requirements.txt", "target": "requirements.txt" }
+    {
+      "source": "files/requirements.txt",
+      "target": "requirements.txt"
+    }
   ],
   "validationChecks": [
-    { "type": "file-exists", "path": "worker.py" },
-    { "type": "python-compile", "path": "worker.py" },
+    {
+      "type": "file-exists",
+      "path": "worker.py"
+    },
+    {
+      "type": "python-compile",
+      "path": "worker.py"
+    },
     {
       "type": "command-success",
-      "command": ["python3", "worker.py"],
-      "env": { "RUN_ONCE": "1" },
+      "command": [
+        "python3",
+        "worker.py"
+      ],
+      "env": {
+        "RUN_ONCE": "1"
+      },
       "expect": "cycle complete"
     }
   ],
   "contextHints": {
-    "commands": ["python3 worker.py"],
-    "entrypoints": ["worker.py"],
+    "commands": [
+      "python3 worker.py"
+    ],
+    "entrypoints": [
+      "worker.py"
+    ],
     "preview": null,
-    "extensionPoints": ["queue-config.json", "database-config.json"]
-  }
+    "extensionPoints": [
+      "queue-config.json",
+      "database-config.json"
+    ]
+  },
+  "keywords": [
+    "python worker",
+    "python cron",
+    "python queue",
+    "python background job",
+    "celery",
+    "python task",
+    "python async worker"
+  ]
 }

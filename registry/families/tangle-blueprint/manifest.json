@@ -1,7 +1,12 @@
 {
   "id": "tangle-blueprint",
   "description": "Lean Tangle Blueprint starter with Rust job handler and manifest.",
-  "tags": ["tangle", "blueprint", "rust", "infra"],
+  "tags": [
+    "tangle",
+    "blueprint",
+    "rust",
+    "infra"
+  ],
   "taxonomy": {
     "language": "rust",
     "runtime": "tangle",
@@ -22,14 +27,41 @@
     },
     {
       "type": "command-success",
-      "command": ["cargo", "test", "--quiet"],
+      "command": [
+        "cargo",
+        "test",
+        "--quiet"
+      ],
       "expect": "test result: ok"
     }
   ],
   "contextHints": {
-    "commands": ["cargo test", "cargo run -- --once"],
-    "entrypoints": ["src/main.rs", "src/lib.rs", "blueprint.json", "Cargo.toml"],
+    "commands": [
+      "cargo test",
+      "cargo run -- --once"
+    ],
+    "entrypoints": [
+      "src/main.rs",
+      "src/lib.rs",
+      "blueprint.json",
+      "Cargo.toml"
+    ],
     "preview": null,
-    "extensionPoints": ["blueprint.json", "src/lib.rs"]
-  }
+    "extensionPoints": [
+      "blueprint.json",
+      "src/lib.rs"
+    ]
+  },
+  "keywords": [
+    "tangle blueprint",
+    "blueprint sdk",
+    "cargo tangle",
+    "oracle blueprint",
+    "storage blueprint",
+    "tangle network",
+    "tangle native",
+    "tangle oracle",
+    "tangle custody",
+    "frost blueprint"
+  ]
 }

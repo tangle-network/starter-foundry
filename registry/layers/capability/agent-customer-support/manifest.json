@@ -1,16 +1,38 @@
 {
   "id": "agent-customer-support",
   "description": "Adds customer support workflow with KB search, intent classification, and escalation.",
-  "appliesTo": ["agent-service-ts", "agent-service-py", "agent-service-rust"],
+  "appliesTo": [
+    "agent-service-ts",
+    "agent-service-py",
+    "agent-service-rust"
+  ],
   "defaults": {
     "supportEscalation": "human-handoff",
     "kbSource": "docs"
   },
   "files": [
-    { "source": "files/support-config.json", "target": "support-config.json" },
-    { "source": "files/support-pipeline.mjs", "target": "support-pipeline.mjs" }
+    {
+      "source": "files/support-config.json",
+      "target": "support-config.json"
+    },
+    {
+      "source": "files/support-pipeline.mjs",
+      "target": "support-pipeline.mjs"
+    }
   ],
   "contextHints": {
-    "extensionPoints": ["support-config.json", "support-pipeline.mjs"]
-  }
+    "extensionPoints": [
+      "support-config.json",
+      "support-pipeline.mjs"
+    ]
+  },
+  "keywords": [
+    "customer support agent",
+    "support agent",
+    "help desk agent",
+    "ticket agent",
+    "support bot",
+    "customer service agent",
+    "helpdesk"
+  ]
 }

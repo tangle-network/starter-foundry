@@ -1,7 +1,30 @@
 {
   "id": "effect-ts",
   "description": "Adds Effect-TS patterns for typed errors, dependency injection, and structured concurrency.",
-  "appliesTo": ["api-service", "agent-service-ts", "fullstack-ts", "worker-job", "cli-ts", "cloudflare-worker-ts"],
-  "files": [{ "source": "files/effect-config.json", "target": "effect-config.json" }],
-  "contextHints": { "extensionPoints": ["effect-config.json"] }
+  "appliesTo": [
+    "api-service",
+    "agent-service-ts",
+    "fullstack-ts",
+    "worker-job",
+    "cli-ts",
+    "cloudflare-worker-ts"
+  ],
+  "files": [
+    {
+      "source": "files/effect-config.json",
+      "target": "effect-config.json"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": [
+      "effect-config.json"
+    ]
+  },
+  "keywords": [
+    "effect-ts",
+    "effect ts",
+    "effect runtime",
+    "typed errors",
+    "structured concurrency"
+  ]
 }

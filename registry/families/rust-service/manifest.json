@@ -1,7 +1,10 @@
 {
   "id": "rust-service",
   "description": "Minimal Rust HTTP service starter.",
-  "tags": ["rust", "backend"],
+  "tags": [
+    "rust",
+    "backend"
+  ],
   "taxonomy": {
     "language": "rust",
     "runtime": "rust",
@@ -64,17 +67,46 @@
     },
     {
       "type": "http-start",
-      "command": ["cargo", "run", "--quiet"],
+      "command": [
+        "cargo",
+        "run",
+        "--quiet"
+      ],
       "path": "/health",
       "expect": "\"{{serviceName}}\""
     }
   ],
   "contextHints": {
-    "commands": ["cargo run", "cargo check"],
-    "entrypoints": ["src/main.rs", "Cargo.toml"],
+    "commands": [
+      "cargo run",
+      "cargo check"
+    ],
+    "entrypoints": [
+      "src/main.rs",
+      "Cargo.toml"
+    ],
     "preview": {
       "path": "/health"
     },
-    "extensionPoints": ["database-config.json", "auth-config.json", "payments-config.json", "queue-config.json", "sdk-config.json"]
+    "extensionPoints": [
+      "database-config.json",
+      "auth-config.json",
+      "payments-config.json",
+      "queue-config.json",
+      "sdk-config.json"
+    ]
+  },
+  "keywords": [
+    "rust",
+    "rust service",
+    "axum",
+    "rust api",
+    "rust backend",
+    "cargo"
+  ],
+  "scoring": {
+    "boost": {
+      "rust": 2
+    }
   }
 }

@@ -1,7 +1,12 @@
 {
   "id": "dspy-pipeline-py",
   "description": "Minimal Python DSPy-style pipeline starter.",
-  "tags": ["python", "dspy", "ai", "pipeline"],
+  "tags": [
+    "python",
+    "dspy",
+    "ai",
+    "pipeline"
+  ],
   "taxonomy": {
     "language": "python",
     "runtime": "python",
@@ -66,7 +71,10 @@
     },
     {
       "type": "command-success",
-      "command": ["python3", "main.py"],
+      "command": [
+        "python3",
+        "main.py"
+      ],
       "env": {
         "RUN_ONCE": "1"
       },
@@ -74,9 +82,23 @@
     }
   ],
   "contextHints": {
-    "commands": ["python3 main.py"],
-    "entrypoints": ["main.py", "pipeline.json"],
+    "commands": [
+      "python3 main.py"
+    ],
+    "entrypoints": [
+      "main.py",
+      "pipeline.json"
+    ],
     "preview": null,
-    "extensionPoints": ["pipeline.json"]
-  }
+    "extensionPoints": [
+      "pipeline.json"
+    ]
+  },
+  "keywords": [
+    "dspy",
+    "rag system",
+    "summarization system",
+    "text classification system",
+    "prompt engineering"
+  ]
 }

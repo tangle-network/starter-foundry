@@ -1,23 +1,90 @@
 {
   "id": "angular-ts",
   "description": "Angular TypeScript starter with standalone components and signals.",
-  "tags": ["frontend", "typescript", "angular", "preview"],
-  "taxonomy": { "language": "typescript", "runtime": "node", "surface": "frontend" },
-  "slots": {
-    "auth": { "options": ["auth:none", "auth:better-auth", "auth:clerk", "auth:supabase-auth"], "default": "auth:none" },
-    "payments": { "options": ["payments:none", "payments:stripe", "payments:coinbase-commerce"], "default": "payments:none" },
-    "sdk": { "options": ["sdk:none", "sdk:coinbase-cdp", "sdk:solana-web3", "sdk:evm-wallet"], "default": "sdk:none" }
+  "tags": [
+    "frontend",
+    "typescript",
+    "angular",
+    "preview"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "frontend"
   },
-  "defaults": { "projectType": "frontend", "port": 4200, "headline": "Starter Foundry Angular App", "subheadline": "An Angular shell with standalone components ready for extension." },
-  "files": [{ "source": "files/package.json", "target": "package.json" }],
+  "slots": {
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk",
+        "auth:supabase-auth"
+      ],
+      "default": "auth:none"
+    },
+    "payments": {
+      "options": [
+        "payments:none",
+        "payments:stripe",
+        "payments:coinbase-commerce"
+      ],
+      "default": "payments:none"
+    },
+    "sdk": {
+      "options": [
+        "sdk:none",
+        "sdk:coinbase-cdp",
+        "sdk:solana-web3",
+        "sdk:evm-wallet"
+      ],
+      "default": "sdk:none"
+    }
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "port": 4200,
+    "headline": "Starter Foundry Angular App",
+    "subheadline": "An Angular shell with standalone components ready for extension."
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    }
+  ],
   "validationChecks": [
-    { "type": "file-exists", "path": "src/app/app.component.ts" },
-    { "type": "file-exists", "path": "src/main.ts" }
+    {
+      "type": "file-exists",
+      "path": "src/app/app.component.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/main.ts"
+    }
   ],
   "contextHints": {
-    "commands": ["ng serve"],
-    "entrypoints": ["src/app/app.component.ts", "src/main.ts"],
-    "preview": { "port": "{{port}}", "path": "/" },
-    "extensionPoints": ["src/app/app.component.ts", "src/app/", "auth-config.json", "payments-config.json"]
-  }
+    "commands": [
+      "ng serve"
+    ],
+    "entrypoints": [
+      "src/app/app.component.ts",
+      "src/main.ts"
+    ],
+    "preview": {
+      "port": "{{port}}",
+      "path": "/"
+    },
+    "extensionPoints": [
+      "src/app/app.component.ts",
+      "src/app/",
+      "auth-config.json",
+      "payments-config.json"
+    ]
+  },
+  "keywords": [
+    "angular",
+    "angular app",
+    "ng serve",
+    "standalone component"
+  ]
 }

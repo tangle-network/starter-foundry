@@ -1,8 +1,31 @@
 {
   "id": "gpu-modal",
   "description": "Adds Modal serverless GPU configuration for training, inference, and batch jobs.",
-  "appliesTo": ["agent-service-py", "python-api", "python-worker", "agent-service-ts"],
-  "defaults": { "gpuProvider": "modal", "gpuType": "A100" },
-  "files": [{ "source": "files/gpu-config.json", "target": "gpu-config.json" }],
-  "contextHints": { "extensionPoints": ["gpu-config.json"] }
+  "appliesTo": [
+    "agent-service-py",
+    "python-api",
+    "python-worker",
+    "agent-service-ts"
+  ],
+  "defaults": {
+    "gpuProvider": "modal",
+    "gpuType": "A100"
+  },
+  "files": [
+    {
+      "source": "files/gpu-config.json",
+      "target": "gpu-config.json"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": [
+      "gpu-config.json"
+    ]
+  },
+  "keywords": [
+    "modal",
+    "modal gpu",
+    "modal serverless",
+    "modal.com"
+  ]
 }

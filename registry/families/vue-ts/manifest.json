@@ -1,23 +1,94 @@
 {
   "id": "vue-ts",
   "description": "Vue 3 TypeScript starter with Vite, Composition API, and instant preview.",
-  "tags": ["frontend", "typescript", "vue", "vite", "preview"],
-  "taxonomy": { "language": "typescript", "runtime": "node", "surface": "frontend" },
-  "slots": {
-    "auth": { "options": ["auth:none", "auth:better-auth", "auth:clerk", "auth:supabase-auth"], "default": "auth:none" },
-    "payments": { "options": ["payments:none", "payments:stripe", "payments:coinbase-commerce"], "default": "payments:none" },
-    "sdk": { "options": ["sdk:none", "sdk:coinbase-cdp", "sdk:solana-web3", "sdk:evm-wallet"], "default": "sdk:none" }
+  "tags": [
+    "frontend",
+    "typescript",
+    "vue",
+    "vite",
+    "preview"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "frontend"
   },
-  "defaults": { "projectType": "frontend", "port": 5173, "headline": "Starter Foundry Vue App", "subheadline": "A Vue 3 shell with Composition API ready for extension." },
-  "files": [{ "source": "files/package.json", "target": "package.json" }],
+  "slots": {
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk",
+        "auth:supabase-auth"
+      ],
+      "default": "auth:none"
+    },
+    "payments": {
+      "options": [
+        "payments:none",
+        "payments:stripe",
+        "payments:coinbase-commerce"
+      ],
+      "default": "payments:none"
+    },
+    "sdk": {
+      "options": [
+        "sdk:none",
+        "sdk:coinbase-cdp",
+        "sdk:solana-web3",
+        "sdk:evm-wallet"
+      ],
+      "default": "sdk:none"
+    }
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "port": 5173,
+    "headline": "Starter Foundry Vue App",
+    "subheadline": "A Vue 3 shell with Composition API ready for extension."
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    }
+  ],
   "validationChecks": [
-    { "type": "file-exists", "path": "src/App.vue" },
-    { "type": "file-exists", "path": "index.html" }
+    {
+      "type": "file-exists",
+      "path": "src/App.vue"
+    },
+    {
+      "type": "file-exists",
+      "path": "index.html"
+    }
   ],
   "contextHints": {
-    "commands": ["npm run dev"],
-    "entrypoints": ["src/App.vue", "src/main.ts", "index.html"],
-    "preview": { "port": "{{port}}", "path": "/" },
-    "extensionPoints": ["src/App.vue", "src/components/", "auth-config.json", "payments-config.json"]
-  }
+    "commands": [
+      "npm run dev"
+    ],
+    "entrypoints": [
+      "src/App.vue",
+      "src/main.ts",
+      "index.html"
+    ],
+    "preview": {
+      "port": "{{port}}",
+      "path": "/"
+    },
+    "extensionPoints": [
+      "src/App.vue",
+      "src/components/",
+      "auth-config.json",
+      "payments-config.json"
+    ]
+  },
+  "keywords": [
+    "vue",
+    "vue.js",
+    "vuejs",
+    "nuxt",
+    "composition api",
+    "vue app"
+  ]
 }

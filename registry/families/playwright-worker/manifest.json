@@ -1,7 +1,11 @@
 {
   "id": "playwright-worker",
   "description": "Browser automation worker starter with a runnable local cycle path.",
-  "tags": ["playwright", "automation", "worker"],
+  "tags": [
+    "playwright",
+    "automation",
+    "worker"
+  ],
   "taxonomy": {
     "language": "javascript",
     "runtime": "node",
@@ -38,7 +42,10 @@
     },
     {
       "type": "command-success",
-      "command": ["node", "worker.mjs"],
+      "command": [
+        "node",
+        "worker.mjs"
+      ],
       "env": {
         "RUN_ONCE": "1"
       },
@@ -46,9 +53,23 @@
     }
   ],
   "contextHints": {
-    "commands": ["node worker.mjs", "npm install"],
-    "entrypoints": ["worker.mjs"],
+    "commands": [
+      "node worker.mjs",
+      "npm install"
+    ],
+    "entrypoints": [
+      "worker.mjs"
+    ],
     "preview": null,
-    "extensionPoints": ["queue-config.json"]
-  }
+    "extensionPoints": [
+      "queue-config.json"
+    ]
+  },
+  "keywords": [
+    "playwright",
+    "browser automation",
+    "web scraping",
+    "scraper",
+    "crawler"
+  ]
 }

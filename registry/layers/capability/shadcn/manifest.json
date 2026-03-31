@@ -2,14 +2,39 @@
   "id": "shadcn",
   "description": "Adds shadcn/ui component system with cn() utility, path aliases, and component registry config.",
   "appliesTo": [
-    "react-vite-ts", "nextjs-ts", "fullstack-ts", "remix-ts",
-    "sveltekit-ts", "vue-ts",
-    "electron-desktop-ts", "tauri-desktop"
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "remix-ts",
+    "sveltekit-ts",
+    "vue-ts",
+    "electron-desktop-ts",
+    "tauri-desktop"
   ],
   "files": [
-    { "source": "files/shadcn-config.json", "target": "shadcn-config.json" }
+    {
+      "source": "files/shadcn-config.json",
+      "target": "shadcn-config.json"
+    }
   ],
   "contextHints": {
-    "extensionPoints": ["shadcn-config.json", "components.json", "src/lib/utils.ts", "src/components/ui/"]
-  }
+    "extensionPoints": [
+      "shadcn-config.json",
+      "components.json",
+      "src/lib/utils.ts",
+      "src/components/ui/"
+    ]
+  },
+  "keywords": [
+    "shadcn",
+    "shadcn/ui",
+    "shadcn-ui",
+    "radix ui",
+    "radix primitives",
+    "cn utility",
+    "component library"
+  ],
+  "capabilityRequires": [
+    "tailwind"
+  ]
 }

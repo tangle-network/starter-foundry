@@ -1,7 +1,12 @@
 {
   "id": "move-contracts",
   "description": "Move package starter with structural validation for Aptos and Sui style flows.",
-  "tags": ["move", "aptos", "sui", "crypto"],
+  "tags": [
+    "move",
+    "aptos",
+    "sui",
+    "crypto"
+  ],
   "taxonomy": {
     "language": "move",
     "runtime": "move",
@@ -28,14 +33,33 @@
     },
     {
       "type": "command-success",
-      "command": ["node", "validate-move.mjs"],
+      "command": [
+        "node",
+        "validate-move.mjs"
+      ],
       "expect": "move starter ok"
     }
   ],
   "contextHints": {
-    "commands": ["aptos move test", "sui move test"],
-    "entrypoints": ["Move.toml", "sources/{{moduleName}}.move", "tests/{{moduleName}}Tests.move"],
+    "commands": [
+      "aptos move test",
+      "sui move test"
+    ],
+    "entrypoints": [
+      "Move.toml",
+      "sources/{{moduleName}}.move",
+      "tests/{{moduleName}}Tests.move"
+    ],
     "preview": null,
-    "extensionPoints": ["tests/{{moduleName}}Tests.move"]
-  }
+    "extensionPoints": [
+      "tests/{{moduleName}}Tests.move"
+    ]
+  },
+  "keywords": [
+    "move contract",
+    "aptos",
+    "sui move",
+    "move module",
+    "sui"
+  ]
 }

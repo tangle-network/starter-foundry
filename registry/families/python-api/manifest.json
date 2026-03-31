@@ -1,7 +1,10 @@
 {
   "id": "python-api",
   "description": "Minimal Python API starter with health endpoint.",
-  "tags": ["python", "api"],
+  "tags": [
+    "python",
+    "api"
+  ],
   "taxonomy": {
     "language": "python",
     "runtime": "python",
@@ -74,17 +77,42 @@
     },
     {
       "type": "http-start",
-      "command": ["python3", "app.py"],
+      "command": [
+        "python3",
+        "app.py"
+      ],
       "path": "/health",
       "expect": "\"{{serviceName}}\""
     }
   ],
   "contextHints": {
-    "commands": ["python3 app.py"],
-    "entrypoints": ["app.py"],
+    "commands": [
+      "python3 app.py"
+    ],
+    "entrypoints": [
+      "app.py"
+    ],
     "preview": {
       "path": "/health"
     },
-    "extensionPoints": ["database-config.json", "auth-config.json", "payments-config.json", "queue-config.json", "sdk-config.json"]
+    "extensionPoints": [
+      "database-config.json",
+      "auth-config.json",
+      "payments-config.json",
+      "queue-config.json",
+      "sdk-config.json"
+    ]
+  },
+  "keywords": [
+    "python",
+    "fastapi",
+    "flask",
+    "django",
+    "api in python"
+  ],
+  "scoring": {
+    "boost": {
+      "python": 2
+    }
   }
 }

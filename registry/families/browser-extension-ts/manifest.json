@@ -1,7 +1,12 @@
 {
   "id": "browser-extension-ts",
   "description": "Manifest v3 browser extension TypeScript starter with popup preview.",
-  "tags": ["browser-extension", "chrome", "manifest-v3", "typescript"],
+  "tags": [
+    "browser-extension",
+    "chrome",
+    "manifest-v3",
+    "typescript"
+  ],
   "taxonomy": {
     "language": "typescript",
     "runtime": "browser-extension",
@@ -58,22 +63,47 @@
     },
     {
       "type": "command-success",
-      "command": ["node", "validate-types.mjs"],
+      "command": [
+        "node",
+        "validate-types.mjs"
+      ],
       "expect": "typescript ok"
     },
     {
       "type": "http-start",
-      "command": ["node", "preview-server.mjs"],
+      "command": [
+        "node",
+        "preview-server.mjs"
+      ],
       "path": "/",
       "expect": "{{headline}}"
     }
   ],
   "contextHints": {
-    "commands": ["npm install", "node preview-server.mjs", "node validate-types.mjs"],
-    "entrypoints": ["manifest.json", "src/background.ts", "src/popup.ts", "popup.html"],
+    "commands": [
+      "npm install",
+      "node preview-server.mjs",
+      "node validate-types.mjs"
+    ],
+    "entrypoints": [
+      "manifest.json",
+      "src/background.ts",
+      "src/popup.ts",
+      "popup.html"
+    ],
     "preview": {
       "path": "/"
     },
-    "extensionPoints": ["auth-config.json", "sdk-config.json"]
-  }
+    "extensionPoints": [
+      "auth-config.json",
+      "sdk-config.json"
+    ]
+  },
+  "keywords": [
+    "browser extension",
+    "chrome extension",
+    "manifest v3",
+    "extension popup",
+    "firefox addon"
+  ]
 }

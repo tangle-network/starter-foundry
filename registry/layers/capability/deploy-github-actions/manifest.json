@@ -2,18 +2,45 @@
   "id": "deploy-github-actions",
   "description": "Adds GitHub Actions CI/CD workflow templates for build, test, and deploy.",
   "appliesTo": [
-    "api-service", "python-api", "rust-service", "go-api",
-    "agent-service-ts", "agent-service-py", "agent-service-rust",
-    "worker-job", "python-worker", "go-worker",
-    "fullstack-ts", "nextjs-ts", "react-vite-ts",
-    "forge-contracts", "hardhat-contracts",
-    "solana-program", "move-contracts",
-    "evm-infra-ts", "mcp-server-ts", "x402-service"
+    "api-service",
+    "python-api",
+    "rust-service",
+    "go-api",
+    "agent-service-ts",
+    "agent-service-py",
+    "agent-service-rust",
+    "worker-job",
+    "python-worker",
+    "go-worker",
+    "fullstack-ts",
+    "nextjs-ts",
+    "react-vite-ts",
+    "forge-contracts",
+    "hardhat-contracts",
+    "solana-program",
+    "move-contracts",
+    "evm-infra-ts",
+    "mcp-server-ts",
+    "x402-service"
   ],
   "files": [
-    { "source": "files/ci-config.json", "target": "ci-config.json" }
+    {
+      "source": "files/ci-config.json",
+      "target": "ci-config.json"
+    }
   ],
   "contextHints": {
-    "extensionPoints": ["ci-config.json", ".github/workflows/ci.yml"]
-  }
+    "extensionPoints": [
+      "ci-config.json",
+      ".github/workflows/ci.yml"
+    ]
+  },
+  "keywords": [
+    "github actions",
+    "ci/cd",
+    "ci cd",
+    "continuous integration",
+    "continuous deployment",
+    "github workflow"
+  ]
 }

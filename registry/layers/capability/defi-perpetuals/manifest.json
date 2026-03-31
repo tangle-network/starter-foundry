@@ -1,8 +1,34 @@
 {
   "id": "defi-perpetuals",
   "description": "Adds EVM perpetual futures protocol patterns with funding rates, margin, and liquidation engine.",
-  "appliesTo": ["forge-contracts", "hardhat-contracts", "api-service", "evm-infra-ts"],
-  "defaults": { "perpOracle": "chainlink", "perpCollateral": "USDC" },
-  "files": [{ "source": "files/perp-config.json", "target": "perp-config.json" }],
-  "contextHints": { "extensionPoints": ["perp-config.json"] }
+  "appliesTo": [
+    "forge-contracts",
+    "hardhat-contracts",
+    "api-service",
+    "evm-infra-ts"
+  ],
+  "defaults": {
+    "perpOracle": "chainlink",
+    "perpCollateral": "USDC"
+  },
+  "files": [
+    {
+      "source": "files/perp-config.json",
+      "target": "perp-config.json"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": [
+      "perp-config.json"
+    ]
+  },
+  "keywords": [
+    "perpetual futures",
+    "perps protocol",
+    "funding rate",
+    "liquidation engine",
+    "margin trading",
+    "gmx",
+    "hyperliquid"
+  ]
 }

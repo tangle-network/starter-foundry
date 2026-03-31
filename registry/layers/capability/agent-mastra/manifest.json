@@ -1,8 +1,27 @@
 {
   "id": "agent-mastra",
   "description": "Adds Mastra agent framework configuration with tools, workflows, and syncs.",
-  "appliesTo": ["agent-service-ts"],
-  "defaults": { "agentFramework": "mastra" },
-  "files": [{ "source": "files/mastra-config.json", "target": "mastra-config.json" }],
-  "contextHints": { "extensionPoints": ["mastra-config.json"] }
+  "appliesTo": [
+    "agent-service-ts"
+  ],
+  "defaults": {
+    "agentFramework": "mastra"
+  },
+  "files": [
+    {
+      "source": "files/mastra-config.json",
+      "target": "mastra-config.json"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": [
+      "mastra-config.json"
+    ]
+  },
+  "keywords": [
+    "mastra",
+    "mastra agent",
+    "mastra tools",
+    "mastra workflows"
+  ]
 }

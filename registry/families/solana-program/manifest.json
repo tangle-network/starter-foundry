@@ -1,7 +1,12 @@
 {
   "id": "solana-program",
   "description": "Native Solana-style Rust program starter with real cargo validation.",
-  "tags": ["solana", "rust", "program", "crypto"],
+  "tags": [
+    "solana",
+    "rust",
+    "program",
+    "crypto"
+  ],
   "taxonomy": {
     "language": "rust",
     "runtime": "solana",
@@ -19,14 +24,37 @@
     },
     {
       "type": "command-success",
-      "command": ["cargo", "test", "--quiet"],
+      "command": [
+        "cargo",
+        "test",
+        "--quiet"
+      ],
       "expect": "ok"
     }
   ],
   "contextHints": {
-    "commands": ["cargo test", "cargo check"],
-    "entrypoints": ["src/lib.rs", "Cargo.toml"],
+    "commands": [
+      "cargo test",
+      "cargo check"
+    ],
+    "entrypoints": [
+      "src/lib.rs",
+      "Cargo.toml"
+    ],
     "preview": null,
-    "extensionPoints": ["client/README.md"]
-  }
+    "extensionPoints": [
+      "client/README.md"
+    ]
+  },
+  "keywords": [
+    "solana",
+    "anchor",
+    "solana program",
+    "program derived address",
+    "pda",
+    "pyth",
+    "switchboard",
+    "jupiter",
+    "openbook"
+  ]
 }

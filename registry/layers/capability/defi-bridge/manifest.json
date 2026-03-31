@@ -1,15 +1,35 @@
 {
   "id": "defi-bridge",
   "description": "Adds cross-chain bridge and messaging patterns with lock/mint, burn/release, and proof verification.",
-  "appliesTo": ["forge-contracts", "hardhat-contracts", "api-service", "evm-infra-ts"],
+  "appliesTo": [
+    "forge-contracts",
+    "hardhat-contracts",
+    "api-service",
+    "evm-infra-ts"
+  ],
   "defaults": {
     "bridgeModel": "lock-and-mint",
     "messagingProtocol": "custom"
   },
   "files": [
-    { "source": "files/bridge-config.json", "target": "bridge-config.json" }
+    {
+      "source": "files/bridge-config.json",
+      "target": "bridge-config.json"
+    }
   ],
   "contextHints": {
-    "extensionPoints": ["bridge-config.json"]
-  }
+    "extensionPoints": [
+      "bridge-config.json"
+    ]
+  },
+  "keywords": [
+    "bridge protocol",
+    "cross-chain bridge",
+    "lock and mint",
+    "burn and release",
+    "cross-chain messaging",
+    "wormhole",
+    "axelar",
+    "connext"
+  ]
 }

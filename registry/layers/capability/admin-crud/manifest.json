@@ -1,12 +1,33 @@
 {
   "id": "admin-crud",
   "description": "Adds admin dashboard patterns with entity definitions, data tables, and bulk actions.",
-  "appliesTo": ["nextjs-ts", "fullstack-ts"],
+  "appliesTo": [
+    "nextjs-ts",
+    "fullstack-ts"
+  ],
   "files": [
-    { "source": "files/admin-config.json", "target": "admin-config.json" },
-    { "source": "files/admin-data.json", "target": "admin-data.json" }
+    {
+      "source": "files/admin-config.json",
+      "target": "admin-config.json"
+    },
+    {
+      "source": "files/admin-data.json",
+      "target": "admin-data.json"
+    }
   ],
   "contextHints": {
-    "extensionPoints": ["admin-config.json", "admin-data.json"]
-  }
+    "extensionPoints": [
+      "admin-config.json",
+      "admin-data.json"
+    ]
+  },
+  "keywords": [
+    "admin dashboard",
+    "admin panel",
+    "crud app",
+    "back office",
+    "internal tool",
+    "data management",
+    "admin console"
+  ]
 }

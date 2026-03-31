@@ -1,15 +1,37 @@
 {
   "id": "saas-billing",
   "description": "Adds SaaS billing with plan tiers, usage metering, and subscription webhook handling.",
-  "appliesTo": ["nextjs-ts", "fullstack-ts", "api-service"],
+  "appliesTo": [
+    "nextjs-ts",
+    "fullstack-ts",
+    "api-service"
+  ],
   "defaults": {
     "billingProvider": "stripe"
   },
   "files": [
-    { "source": "files/billing-config.json", "target": "billing-config.json" },
-    { "source": "files/billing-hooks.mjs", "target": "billing-hooks.mjs" }
+    {
+      "source": "files/billing-config.json",
+      "target": "billing-config.json"
+    },
+    {
+      "source": "files/billing-hooks.mjs",
+      "target": "billing-hooks.mjs"
+    }
   ],
   "contextHints": {
-    "extensionPoints": ["billing-config.json", "billing-hooks.mjs"]
-  }
+    "extensionPoints": [
+      "billing-config.json",
+      "billing-hooks.mjs"
+    ]
+  },
+  "keywords": [
+    "saas billing",
+    "subscription billing",
+    "pricing plans",
+    "usage metering",
+    "plan tiers",
+    "freemium",
+    "saas pricing"
+  ]
 }

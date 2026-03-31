@@ -1,7 +1,11 @@
 {
   "id": "electron-desktop-ts",
   "description": "Electron desktop TypeScript starter with an instant renderer preview.",
-  "tags": ["desktop", "electron", "typescript"],
+  "tags": [
+    "desktop",
+    "electron",
+    "typescript"
+  ],
   "taxonomy": {
     "language": "typescript",
     "runtime": "electron",
@@ -62,22 +66,46 @@
     },
     {
       "type": "command-success",
-      "command": ["node", "validate-types.mjs"],
+      "command": [
+        "node",
+        "validate-types.mjs"
+      ],
       "expect": "typescript ok"
     },
     {
       "type": "http-start",
-      "command": ["node", "preview-server.mjs"],
+      "command": [
+        "node",
+        "preview-server.mjs"
+      ],
       "path": "/",
       "expect": "{{headline}}"
     }
   ],
   "contextHints": {
-    "commands": ["npm install", "node preview-server.mjs", "node validate-types.mjs"],
-    "entrypoints": ["src/main.ts", "src/preload.ts", "renderer/index.html"],
+    "commands": [
+      "npm install",
+      "node preview-server.mjs",
+      "node validate-types.mjs"
+    ],
+    "entrypoints": [
+      "src/main.ts",
+      "src/preload.ts",
+      "renderer/index.html"
+    ],
     "preview": {
       "path": "/"
     },
-    "extensionPoints": ["auth-config.json", "payments-config.json", "sdk-config.json"]
-  }
+    "extensionPoints": [
+      "auth-config.json",
+      "payments-config.json",
+      "sdk-config.json"
+    ]
+  },
+  "keywords": [
+    "electron",
+    "desktop app",
+    "desktop assistant",
+    "tray app"
+  ]
 }

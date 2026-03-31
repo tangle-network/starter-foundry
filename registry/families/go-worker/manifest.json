@@ -1,7 +1,11 @@
 {
   "id": "go-worker",
   "description": "Lean Go worker starter for cron, queues, and background jobs.",
-  "tags": ["go", "worker", "jobs"],
+  "tags": [
+    "go",
+    "worker",
+    "jobs"
+  ],
   "taxonomy": {
     "language": "go",
     "runtime": "go",
@@ -38,14 +42,33 @@
     },
     {
       "type": "command-success",
-      "command": ["node", "validate-go-worker.mjs"],
+      "command": [
+        "node",
+        "validate-go-worker.mjs"
+      ],
       "expect": "go worker ok"
     }
   ],
   "contextHints": {
-    "commands": ["go run ./cmd/worker", "go test ./..."],
-    "entrypoints": ["cmd/worker/main.go", "internal/worker/cycle.go", "go.mod"],
+    "commands": [
+      "go run ./cmd/worker",
+      "go test ./..."
+    ],
+    "entrypoints": [
+      "cmd/worker/main.go",
+      "internal/worker/cycle.go",
+      "go.mod"
+    ],
     "preview": null,
-    "extensionPoints": ["queue-config.json"]
-  }
+    "extensionPoints": [
+      "queue-config.json"
+    ]
+  },
+  "keywords": [
+    "go worker",
+    "golang worker",
+    "go cron",
+    "go queue",
+    "go background job"
+  ]
 }

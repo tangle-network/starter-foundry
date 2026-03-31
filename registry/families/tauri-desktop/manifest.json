@@ -1,7 +1,12 @@
 {
   "id": "tauri-desktop",
   "description": "Tauri desktop starter with a web shell preview and native app structure.",
-  "tags": ["desktop", "tauri", "rust", "typescript"],
+  "tags": [
+    "desktop",
+    "tauri",
+    "rust",
+    "typescript"
+  ],
   "taxonomy": {
     "language": "rust",
     "runtime": "tauri",
@@ -62,22 +67,46 @@
     },
     {
       "type": "command-success",
-      "command": ["node", "validate-types.mjs"],
+      "command": [
+        "node",
+        "validate-types.mjs"
+      ],
       "expect": "tauri starter ok"
     },
     {
       "type": "http-start",
-      "command": ["node", "preview-server.mjs"],
+      "command": [
+        "node",
+        "preview-server.mjs"
+      ],
       "path": "/",
       "expect": "{{headline}}"
     }
   ],
   "contextHints": {
-    "commands": ["npm install", "node preview-server.mjs", "cargo tauri dev"],
-    "entrypoints": ["src-tauri/Cargo.toml", "src-tauri/src/main.rs", "web/index.html"],
+    "commands": [
+      "npm install",
+      "node preview-server.mjs",
+      "cargo tauri dev"
+    ],
+    "entrypoints": [
+      "src-tauri/Cargo.toml",
+      "src-tauri/src/main.rs",
+      "web/index.html"
+    ],
     "preview": {
       "path": "/"
     },
-    "extensionPoints": ["auth-config.json", "payments-config.json", "sdk-config.json"]
-  }
+    "extensionPoints": [
+      "auth-config.json",
+      "payments-config.json",
+      "sdk-config.json"
+    ]
+  },
+  "keywords": [
+    "tauri",
+    "native desktop",
+    "rust desktop",
+    "tauri app"
+  ]
 }

@@ -1,7 +1,12 @@
 {
   "id": "fullstack-ts",
   "description": "Lean fullstack TypeScript starter with live preview and API path.",
-  "tags": ["fullstack", "typescript", "preview", "api"],
+  "tags": [
+    "fullstack",
+    "typescript",
+    "preview",
+    "api"
+  ],
   "taxonomy": {
     "language": "typescript",
     "runtime": "node",
@@ -77,28 +82,75 @@
     },
     {
       "type": "command-success",
-      "command": ["node", "validate-types.mjs"],
+      "command": [
+        "node",
+        "validate-types.mjs"
+      ],
       "expect": "typescript ok"
     },
     {
       "type": "http-start",
-      "command": ["node", "--experimental-strip-types", "src/server.ts"],
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "src/server.ts"
+      ],
       "path": "/api/health",
       "expect": "\"ok\""
     },
     {
       "type": "http-start",
-      "command": ["node", "--experimental-strip-types", "src/server.ts"],
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "src/server.ts"
+      ],
       "path": "/",
       "expect": "{{headline}}"
     }
   ],
   "contextHints": {
-    "commands": ["node --experimental-strip-types src/server.ts", "npm install", "npm run dev"],
-    "entrypoints": ["src/server.ts", "src/client.ts", "web/index.html"],
+    "commands": [
+      "node --experimental-strip-types src/server.ts",
+      "npm install",
+      "npm run dev"
+    ],
+    "entrypoints": [
+      "src/server.ts",
+      "src/client.ts",
+      "web/index.html"
+    ],
     "preview": {
       "path": "/"
     },
-    "extensionPoints": ["database-config.json", "auth-config.json", "payments-config.json", "queue-config.json", "sdk-config.json", "starter-data.json", "starter-brand.json", "hooks.mjs"]
-  }
+    "extensionPoints": [
+      "database-config.json",
+      "auth-config.json",
+      "payments-config.json",
+      "queue-config.json",
+      "sdk-config.json",
+      "starter-data.json",
+      "starter-brand.json",
+      "hooks.mjs"
+    ]
+  },
+  "keywords": [
+    "fullstack",
+    "full stack",
+    "dashboard with api",
+    "app with api",
+    "admin app",
+    "database-backed",
+    "dashboard and api",
+    "saas",
+    "saas app",
+    "saas platform",
+    "internal tool",
+    "admin panel",
+    "back office",
+    "crud app",
+    "agent dashboard",
+    "agent monitoring",
+    "monitoring dashboard"
+  ]
 }

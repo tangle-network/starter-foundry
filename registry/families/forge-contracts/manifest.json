@@ -1,7 +1,11 @@
 {
   "id": "forge-contracts",
   "description": "Foundry-first Solidity starter.",
-  "tags": ["solidity", "forge", "contracts"],
+  "tags": [
+    "solidity",
+    "forge",
+    "contracts"
+  ],
   "taxonomy": {
     "language": "solidity",
     "runtime": "forge",
@@ -17,18 +21,87 @@
     },
     {
       "type": "command-success",
-      "command": ["forge", "build"]
+      "command": [
+        "forge",
+        "build"
+      ]
     },
     {
       "type": "command-success",
-      "command": ["forge", "test"],
+      "command": [
+        "forge",
+        "test"
+      ],
       "expect": "passed"
     }
   ],
   "contextHints": {
-    "commands": ["forge build", "forge test"],
-    "entrypoints": ["src/{{contractName}}.sol", "test/{{contractName}}.t.sol", "script/Deploy.s.sol"],
+    "commands": [
+      "forge build",
+      "forge test"
+    ],
+    "entrypoints": [
+      "src/{{contractName}}.sol",
+      "test/{{contractName}}.t.sol",
+      "script/Deploy.s.sol"
+    ],
     "preview": null,
-    "extensionPoints": ["script/Deploy.s.sol", "test/{{contractName}}.t.sol"]
-  }
+    "extensionPoints": [
+      "script/Deploy.s.sol",
+      "test/{{contractName}}.t.sol"
+    ]
+  },
+  "keywords": [
+    "solidity",
+    "foundry",
+    "forge",
+    "hardhat",
+    "foundry.toml",
+    "deploy script",
+    "deploy task",
+    "contract verification",
+    "verify",
+    "private_key",
+    ".env template",
+    "erc20",
+    "erc-20",
+    "erc721",
+    "erc-721",
+    "erc-4337",
+    "erc4337",
+    "evm contract",
+    "ethereum",
+    "arbitrum",
+    "base network",
+    "x layer",
+    "xlayer",
+    "layerzero",
+    "chainlink",
+    "wallet factory",
+    "auction house",
+    "lendingpool",
+    "lending protocol",
+    "borrowing protocol",
+    "cover manager",
+    "gateway",
+    "viem",
+    "okb",
+    "oklink",
+    "erc-4626",
+    "erc4626",
+    "vault",
+    "dex protocol",
+    "amm",
+    "yield aggregator",
+    "bridge protocol",
+    "cross-chain",
+    "flash loan",
+    "perpetual futures",
+    "perps protocol",
+    "restaking",
+    "funding rate",
+    "margin trading",
+    "gmx",
+    "hyperliquid"
+  ]
 }

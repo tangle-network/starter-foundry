@@ -1,16 +1,38 @@
 {
   "id": "realtime-ws",
   "description": "Adds WebSocket server with rooms, presence tracking, and pub/sub broadcast.",
-  "appliesTo": ["api-service", "fullstack-ts"],
+  "appliesTo": [
+    "api-service",
+    "fullstack-ts"
+  ],
   "defaults": {
     "wsHeartbeatMs": 30000,
     "wsMaxConnections": 1000
   },
   "files": [
-    { "source": "files/realtime-config.json", "target": "realtime-config.json" },
-    { "source": "files/ws-server.mjs", "target": "ws-server.mjs" }
+    {
+      "source": "files/realtime-config.json",
+      "target": "realtime-config.json"
+    },
+    {
+      "source": "files/ws-server.mjs",
+      "target": "ws-server.mjs"
+    }
   ],
   "contextHints": {
-    "extensionPoints": ["realtime-config.json", "ws-server.mjs"]
-  }
+    "extensionPoints": [
+      "realtime-config.json",
+      "ws-server.mjs"
+    ]
+  },
+  "keywords": [
+    "websocket",
+    "websocket server",
+    "real-time updates",
+    "realtime api",
+    "live updates",
+    "pub/sub server",
+    "presence tracking",
+    "websocket api"
+  ]
 }

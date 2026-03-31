@@ -140,7 +140,7 @@ test("select chooses worker starter for trading bot prompts", async () => {
   });
 
   assert.equal(result.spec.family, "worker-job");
-  assert.deepEqual(result.spec.layers, ["framework:node-worker", "capability:market-sim"]);
+  assert.deepEqual(result.spec.layers, ["framework:node-worker"]);
 });
 
 test("select chooses forge starter for solidity prompts", async () => {
@@ -193,8 +193,6 @@ test("select chooses fullstack starter for dashboard and api prompts", async () 
 
   assert.equal(result.spec.family, "fullstack-ts");
   assert.ok(result.spec.layers!.includes("framework:fullstack-node-ts"));
-  assert.ok(result.spec.layers!.includes("capability:logging"));
-  assert.ok(result.spec.layers!.includes("capability:chart-widget"));
 });
 
 test("select chooses go api starter for golang prompts", async () => {

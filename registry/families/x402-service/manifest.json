@@ -1,7 +1,11 @@
 {
   "id": "x402-service",
   "description": "Minimal x402-aware API starter for paid requests and agent flows.",
-  "tags": ["x402", "payments", "api"],
+  "tags": [
+    "x402",
+    "payments",
+    "api"
+  ],
   "taxonomy": {
     "language": "javascript",
     "runtime": "node",
@@ -73,17 +77,33 @@
     },
     {
       "type": "http-start",
-      "command": ["node", "server.mjs"],
+      "command": [
+        "node",
+        "server.mjs"
+      ],
       "path": "/health",
       "expect": "\"x402\""
     }
   ],
   "contextHints": {
-    "commands": ["node server.mjs"],
-    "entrypoints": ["server.mjs", "x402.config.json"],
+    "commands": [
+      "node server.mjs"
+    ],
+    "entrypoints": [
+      "server.mjs",
+      "x402.config.json"
+    ],
     "preview": {
       "path": "/health"
     },
-    "extensionPoints": ["x402.config.json"]
-  }
+    "extensionPoints": [
+      "x402.config.json"
+    ]
+  },
+  "keywords": [
+    "x402",
+    "micropayments",
+    "pay-per-request",
+    "monetized api"
+  ]
 }

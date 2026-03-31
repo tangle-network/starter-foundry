@@ -1,7 +1,36 @@
 {
   "id": "infra-pulumi",
   "description": "Adds Pulumi IaC configuration using TypeScript/Python for cloud infrastructure.",
-  "appliesTo": ["api-service", "python-api", "rust-service", "go-api", "agent-service-ts", "agent-service-py", "agent-service-rust", "fullstack-ts", "nextjs-ts", "worker-job", "python-worker", "go-worker"],
-  "files": [{ "source": "files/pulumi-config.json", "target": "pulumi-config.json" }],
-  "contextHints": { "extensionPoints": ["pulumi-config.json", "infra/index.ts", "Pulumi.yaml"] }
+  "appliesTo": [
+    "api-service",
+    "python-api",
+    "rust-service",
+    "go-api",
+    "agent-service-ts",
+    "agent-service-py",
+    "agent-service-rust",
+    "fullstack-ts",
+    "nextjs-ts",
+    "worker-job",
+    "python-worker",
+    "go-worker"
+  ],
+  "files": [
+    {
+      "source": "files/pulumi-config.json",
+      "target": "pulumi-config.json"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": [
+      "pulumi-config.json",
+      "infra/index.ts",
+      "Pulumi.yaml"
+    ]
+  },
+  "keywords": [
+    "pulumi",
+    "pulumi stack",
+    "pulumi typescript"
+  ]
 }

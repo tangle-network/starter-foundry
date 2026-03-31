@@ -1,7 +1,12 @@
 {
   "id": "evm-infra-ts",
   "description": "Minimal EVM infrastructure service for RPC monitoring, viem scripts, and chain-aware APIs.",
-  "tags": ["evm", "typescript", "infra", "api"],
+  "tags": [
+    "evm",
+    "typescript",
+    "infra",
+    "api"
+  ],
   "taxonomy": {
     "language": "javascript",
     "runtime": "node",
@@ -79,17 +84,46 @@
     },
     {
       "type": "http-start",
-      "command": ["node", "server.mjs"],
+      "command": [
+        "node",
+        "server.mjs"
+      ],
       "path": "/health",
       "expect": "\"evm-infra\""
     }
   ],
   "contextHints": {
-    "commands": ["node server.mjs"],
-    "entrypoints": ["server.mjs", "chain-config.json"],
+    "commands": [
+      "node server.mjs"
+    ],
+    "entrypoints": [
+      "server.mjs",
+      "chain-config.json"
+    ],
     "preview": {
       "path": "/stats"
     },
-    "extensionPoints": ["chain-config.json", "sdk-config.json", "database-config.json", "hooks.mjs"]
-  }
+    "extensionPoints": [
+      "chain-config.json",
+      "sdk-config.json",
+      "database-config.json",
+      "hooks.mjs"
+    ]
+  },
+  "keywords": [
+    "viem",
+    "ethers",
+    "rpc",
+    "block monitor",
+    "gas price",
+    "transaction count",
+    "multicall",
+    "wallet balance",
+    "okb",
+    "oklink",
+    "okx",
+    "x layer",
+    "xlayer",
+    "/stats"
+  ]
 }

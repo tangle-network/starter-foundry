@@ -1,8 +1,33 @@
 {
   "id": "gpu-replicate",
   "description": "Adds Replicate API integration for running and deploying ML models.",
-  "appliesTo": ["agent-service-ts", "agent-service-py", "agent-service-rust", "api-service", "python-api", "worker-job", "python-worker"],
-  "defaults": { "gpuProvider": "replicate" },
-  "files": [{ "source": "files/gpu-config.json", "target": "gpu-config.json" }],
-  "contextHints": { "extensionPoints": ["gpu-config.json"] }
+  "appliesTo": [
+    "agent-service-ts",
+    "agent-service-py",
+    "agent-service-rust",
+    "api-service",
+    "python-api",
+    "worker-job",
+    "python-worker"
+  ],
+  "defaults": {
+    "gpuProvider": "replicate"
+  },
+  "files": [
+    {
+      "source": "files/gpu-config.json",
+      "target": "gpu-config.json"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": [
+      "gpu-config.json"
+    ]
+  },
+  "keywords": [
+    "replicate",
+    "replicate api",
+    "replicate model",
+    "cog model"
+  ]
 }

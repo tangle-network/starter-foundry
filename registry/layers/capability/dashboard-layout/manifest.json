@@ -2,12 +2,34 @@
   "id": "dashboard-layout",
   "description": "Adds sidebar + header + content area layout scaffold for dashboard-style applications.",
   "appliesTo": [
-    "react-vite-ts", "nextjs-ts", "fullstack-ts", "sveltekit-ts", "remix-ts", "vue-ts", "angular-ts"
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "sveltekit-ts",
+    "remix-ts",
+    "vue-ts",
+    "angular-ts"
   ],
   "files": [
-    { "source": "files/layout-config.json", "target": "layout-config.json" }
+    {
+      "source": "files/layout-config.json",
+      "target": "layout-config.json"
+    }
   ],
   "contextHints": {
-    "extensionPoints": ["layout-config.json", "src/components/layout/"]
-  }
+    "extensionPoints": [
+      "layout-config.json",
+      "src/components/layout/"
+    ]
+  },
+  "keywords": [
+    "sidebar layout",
+    "dashboard layout",
+    "admin layout",
+    "collapsible sidebar",
+    "navigation sidebar"
+  ],
+  "capabilityRequires": [
+    "tailwind"
+  ]
 }

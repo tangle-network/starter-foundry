@@ -1,7 +1,12 @@
 {
   "id": "mcp-server-ts",
   "description": "Minimal TypeScript-flavored MCP server starter.",
-  "tags": ["mcp", "server", "typescript", "ai"],
+  "tags": [
+    "mcp",
+    "server",
+    "typescript",
+    "ai"
+  ],
   "taxonomy": {
     "language": "javascript",
     "runtime": "node",
@@ -72,7 +77,10 @@
     },
     {
       "type": "command-success",
-      "command": ["node", "server.mjs"],
+      "command": [
+        "node",
+        "server.mjs"
+      ],
       "env": {
         "RUN_ONCE": "1"
       },
@@ -80,9 +88,23 @@
     }
   ],
   "contextHints": {
-    "commands": ["node server.mjs"],
-    "entrypoints": ["server.mjs", "mcp.config.json"],
+    "commands": [
+      "node server.mjs"
+    ],
+    "entrypoints": [
+      "server.mjs",
+      "mcp.config.json"
+    ],
     "preview": null,
-    "extensionPoints": ["mcp.config.json", "tools"]
-  }
+    "extensionPoints": [
+      "mcp.config.json",
+      "tools"
+    ]
+  },
+  "keywords": [
+    "model context protocol",
+    "mcp server",
+    "mcp tools",
+    "mcp tool server"
+  ]
 }

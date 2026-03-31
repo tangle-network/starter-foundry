@@ -1,7 +1,11 @@
 {
   "id": "cloudflare-worker-ts",
   "description": "Minimal Cloudflare Worker TypeScript starter.",
-  "tags": ["edge", "cloudflare", "typescript"],
+  "tags": [
+    "edge",
+    "cloudflare",
+    "typescript"
+  ],
   "taxonomy": {
     "language": "typescript",
     "runtime": "workerd",
@@ -77,14 +81,38 @@
     },
     {
       "type": "command-success",
-      "command": ["node", "--experimental-strip-types", "validate-worker.mjs"],
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "validate-worker.mjs"
+      ],
       "expect": "worker ok"
     }
   ],
   "contextHints": {
-    "commands": ["node --experimental-strip-types validate-worker.mjs", "wrangler dev"],
-    "entrypoints": ["src/worker.ts", "wrangler.jsonc"],
+    "commands": [
+      "node --experimental-strip-types validate-worker.mjs",
+      "wrangler dev"
+    ],
+    "entrypoints": [
+      "src/worker.ts",
+      "wrangler.jsonc"
+    ],
     "preview": null,
-    "extensionPoints": ["database-config.json", "auth-config.json", "payments-config.json", "queue-config.json", "sdk-config.json"]
-  }
+    "extensionPoints": [
+      "database-config.json",
+      "auth-config.json",
+      "payments-config.json",
+      "queue-config.json",
+      "sdk-config.json"
+    ]
+  },
+  "keywords": [
+    "cloudflare",
+    "durable object",
+    "edge api",
+    "edge function",
+    "hono edge",
+    "workerd"
+  ]
 }

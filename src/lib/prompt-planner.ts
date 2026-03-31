@@ -2,6 +2,7 @@ import { sanitizePackageName } from './fs.js'
 import { loadRegistry } from './registry.js'
 import { selectStarter } from './selection.js'
 import { detectCapabilities, detectLane, hasAny, matchesKeyword } from './keywords.js'
+import type { Registry } from '../types.js'
 import type { ComposeSpec, WorkspaceSpec, PromptPlan, ProjectEntry } from '../types.js'
 
 function buildSlug(prompt: string, fallback: string): string {
@@ -437,7 +438,7 @@ function buildSolanaProgramVariables(text: string): Record<string, string> {
   return { instructionName: 'InitializeTreasury' }
 }
 
-function buildWebProject(prompt: string, partner: string | null, text: string): ProjectEntry {
+function buildWebProject(prompt: string, partner: string | null, text: string, registry?: Registry): ProjectEntry {
   const isNext = hasAny(text, ['next', 'next.js', 'nextjs', 'app router', 'seo'])
   const family = isNext ? 'nextjs-ts' : 'react-vite-ts'
   const frameworkLayer = isNext ? 'framework:nextjs-app-router' : 'framework:react-vite-ts'
@@ -455,7 +456,7 @@ function buildWebProject(prompt: string, partner: string | null, text: string): 
   if (paymentsSlot) slots['payments'] = paymentsSlot
   if (sdkSlot) slots['sdk'] = sdkSlot
 
-  const webCapabilities = detectCapabilities(text, family)
+  const webCapabilities = registry ? detectCapabilities(text, family, registry) : []
   if (webCapabilities.length > 0) layers.push(...webCapabilities)
 
   return {
@@ -533,7 +534,7 @@ function chooseApiFamily(text: string): FamilyChoice {
   return { family: 'api-service', layers: ['framework:node-http', 'capability:logging'], path: 'apps/api' }
 }
 
-function buildApiProject(prompt: string, partner: string | null, text: string): ProjectEntry {
+function buildApiProject(prompt: string, partner: string | null, text: string, registry?: Registry): ProjectEntry {
   const choice = chooseApiFamily(text)
   const layers = [...choice.layers]
   const slots: Record<string, string> = {}
@@ -561,7 +562,7 @@ function buildApiProject(prompt: string, partner: string | null, text: string): 
     }
   }
 
-  const apiCapabilities = detectCapabilities(text, choice.family)
+  const apiCapabilities = registry ? detectCapabilities(text, choice.family, registry) : []
   if (apiCapabilities.length > 0) layers.push(...apiCapabilities)
 
   return {
@@ -611,10 +612,12 @@ function buildWorkspacePromptPlan({
   prompt,
   partner,
   text,
+  registry,
 }: {
   prompt: string
   partner: string | null
   text: string
+  registry: Registry
 }): PromptPlan | null {
   const specialSingleLane = hasAny(text, [
     'expo',
@@ -758,8 +761,8 @@ function buildWorkspacePromptPlan({
   if (!needsWorkspace || fitsFullstackStarter || plainAgentService || plainProtocolProject) return null
 
   const projects: ProjectEntry[] = []
-  if (hasFrontend) projects.push(buildWebProject(prompt, partner, text))
-  if (hasApi || implicitApi) projects.push(buildApiProject(prompt, partner, text))
+  if (hasFrontend) projects.push(buildWebProject(prompt, partner, text, registry))
+  if (hasApi || implicitApi) projects.push(buildApiProject(prompt, partner, text, registry))
   if (hasWorker || implicitWorker) projects.push(buildWorkerProject(prompt, partner, text))
 
   if (hasMcp && !hasApi) {
@@ -793,7 +796,7 @@ function buildWorkspacePromptPlan({
   }
 
   if (hasAgent && !projects.some((project) => project.id === 'agent')) {
-    projects.push(buildApiProject(prompt, partner, text))
+    projects.push(buildApiProject(prompt, partner, text, registry))
   }
 
   if (hasX402 && !hasApi) {
@@ -985,14 +988,14 @@ export async function planPrompt({
 }): Promise<PromptPlan> {
   const text = prompt.toLowerCase()
   const effectivePartner = partner ?? inferPartner(text)
-  const workspacePlan = buildWorkspacePromptPlan({ prompt, partner: effectivePartner, text })
+  const registry = await loadRegistry()
+  const workspacePlan = buildWorkspacePromptPlan({ prompt, partner: effectivePartner, text, registry })
 
   if (workspacePlan) {
     return workspacePlan
   }
 
   const starterSelection = await selectStarter({ prompt, partner: effectivePartner })
-  const registry = await loadRegistry()
   const family = registry.families.get(starterSelection.spec.family)
   const spec: ComposeSpec = {
     ...starterSelection.spec,
@@ -1100,7 +1103,7 @@ export async function planPrompt({
   }
 
   // Detect and attach capability layers based on prompt keywords
-  const capabilities = detectCapabilities(text, spec.family)
+  const capabilities = detectCapabilities(text, spec.family, registry)
   if (capabilities.length > 0) {
     spec.layers = [...new Set([...(spec.layers ?? []), ...capabilities])]
   }

@@ -1,7 +1,12 @@
 {
   "id": "agent-service-rust",
   "description": "Rust AI agent service starter for durable workers and infra-heavy agent runtimes.",
-  "tags": ["ai", "agent", "rust", "service"],
+  "tags": [
+    "ai",
+    "agent",
+    "rust",
+    "service"
+  ],
   "taxonomy": {
     "language": "rust",
     "runtime": "rust",
@@ -66,19 +71,41 @@
     },
     {
       "type": "http-start",
-      "command": ["cargo", "run", "--quiet"],
+      "command": [
+        "cargo",
+        "run",
+        "--quiet"
+      ],
       "port": "{{port}}",
       "path": "/health",
       "expect": "\"agent\""
     }
   ],
   "contextHints": {
-    "commands": ["cargo run", "cargo check"],
-    "entrypoints": ["src/main.rs", "Cargo.toml", "agent.config.json"],
+    "commands": [
+      "cargo run",
+      "cargo check"
+    ],
+    "entrypoints": [
+      "src/main.rs",
+      "Cargo.toml",
+      "agent.config.json"
+    ],
     "preview": {
       "port": "{{port}}",
       "path": "/health"
     },
-    "extensionPoints": ["agent.config.json", "sdk-config.json", "queue-config.json", "database-config.json"]
-  }
+    "extensionPoints": [
+      "agent.config.json",
+      "sdk-config.json",
+      "queue-config.json",
+      "database-config.json"
+    ]
+  },
+  "keywords": [
+    "rust agent",
+    "rig",
+    "cargo agent",
+    "autonomous rust"
+  ]
 }

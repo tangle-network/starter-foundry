@@ -1,7 +1,13 @@
 {
   "id": "react-vite-ts",
   "description": "React and Vite ready TypeScript starter with instant preview shell.",
-  "tags": ["frontend", "typescript", "react", "vite", "preview"],
+  "tags": [
+    "frontend",
+    "typescript",
+    "react",
+    "vite",
+    "preview"
+  ],
   "taxonomy": {
     "language": "typescript",
     "runtime": "node",
@@ -70,22 +76,51 @@
     },
     {
       "type": "command-success",
-      "command": ["node", "validate-types.mjs"],
+      "command": [
+        "node",
+        "validate-types.mjs"
+      ],
       "expect": "typescript ok"
     },
     {
       "type": "http-start",
-      "command": ["node", "preview-server.mjs"],
+      "command": [
+        "node",
+        "preview-server.mjs"
+      ],
       "path": "/",
       "expect": "{{headline}}"
     }
   ],
   "contextHints": {
-    "commands": ["npm install", "npm run dev", "node preview-server.mjs"],
-    "entrypoints": ["index.html", "src/main.ts", "src/App.ts", "vite.config.ts"],
+    "commands": [
+      "npm install",
+      "npm run dev",
+      "node preview-server.mjs"
+    ],
+    "entrypoints": [
+      "index.html",
+      "src/main.ts",
+      "src/App.ts",
+      "vite.config.ts"
+    ],
     "preview": {
       "path": "/"
     },
-    "extensionPoints": ["starter-data.json", "starter-brand.json", "auth-config.json", "payments-config.json", "sdk-config.json"]
-  }
+    "extensionPoints": [
+      "starter-data.json",
+      "starter-brand.json",
+      "auth-config.json",
+      "payments-config.json",
+      "sdk-config.json"
+    ]
+  },
+  "keywords": [
+    "react",
+    "vite",
+    "spa",
+    "component",
+    "single page",
+    "client app"
+  ]
 }

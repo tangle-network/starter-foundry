@@ -1,7 +1,11 @@
 {
   "id": "python-data-app",
   "description": "Python data app starter with an instant dashboard page.",
-  "tags": ["python", "data", "analytics"],
+  "tags": [
+    "python",
+    "data",
+    "analytics"
+  ],
   "taxonomy": {
     "language": "python",
     "runtime": "python",
@@ -30,17 +34,34 @@
     },
     {
       "type": "http-start",
-      "command": ["python3", "app.py"],
+      "command": [
+        "python3",
+        "app.py"
+      ],
       "path": "/",
       "expect": "{{headline}}"
     }
   ],
   "contextHints": {
-    "commands": ["python3 app.py"],
-    "entrypoints": ["app.py"],
+    "commands": [
+      "python3 app.py"
+    ],
+    "entrypoints": [
+      "app.py"
+    ],
     "preview": {
       "path": "/"
     },
-    "extensionPoints": ["starter-data.json"]
-  }
+    "extensionPoints": [
+      "starter-data.json"
+    ]
+  },
+  "keywords": [
+    "streamlit",
+    "gradio",
+    "data app",
+    "csv upload",
+    "analytics app",
+    "ml demo"
+  ]
 }

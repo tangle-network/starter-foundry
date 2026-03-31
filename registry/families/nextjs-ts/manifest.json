@@ -1,7 +1,12 @@
 {
   "id": "nextjs-ts",
   "description": "Next.js ready TypeScript starter with instant preview shell.",
-  "tags": ["frontend", "typescript", "nextjs", "preview"],
+  "tags": [
+    "frontend",
+    "typescript",
+    "nextjs",
+    "preview"
+  ],
   "taxonomy": {
     "language": "typescript",
     "runtime": "node",
@@ -66,22 +71,50 @@
     },
     {
       "type": "command-success",
-      "command": ["node", "validate-types.mjs"],
+      "command": [
+        "node",
+        "validate-types.mjs"
+      ],
       "expect": "typescript ok"
     },
     {
       "type": "http-start",
-      "command": ["node", "preview-server.mjs"],
+      "command": [
+        "node",
+        "preview-server.mjs"
+      ],
       "path": "/",
       "expect": "{{headline}}"
     }
   ],
   "contextHints": {
-    "commands": ["npm install", "npm run dev", "node preview-server.mjs"],
-    "entrypoints": ["app/layout.tsx", "app/page.tsx", "next.config.ts"],
+    "commands": [
+      "npm install",
+      "npm run dev",
+      "node preview-server.mjs"
+    ],
+    "entrypoints": [
+      "app/layout.tsx",
+      "app/page.tsx",
+      "next.config.ts"
+    ],
     "preview": {
       "path": "/"
     },
-    "extensionPoints": ["starter-data.json", "starter-brand.json", "auth-config.json", "payments-config.json", "sdk-config.json"]
-  }
+    "extensionPoints": [
+      "starter-data.json",
+      "starter-brand.json",
+      "auth-config.json",
+      "payments-config.json",
+      "sdk-config.json"
+    ]
+  },
+  "keywords": [
+    "next",
+    "next.js",
+    "nextjs",
+    "app router",
+    "server action",
+    "seo app"
+  ]
 }

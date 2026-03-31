@@ -1,7 +1,12 @@
 {
   "id": "agent-service-py",
   "description": "Python AI agent service starter with a small HTTP control plane.",
-  "tags": ["ai", "agent", "python", "service"],
+  "tags": [
+    "ai",
+    "agent",
+    "python",
+    "service"
+  ],
   "taxonomy": {
     "language": "python",
     "runtime": "python",
@@ -76,19 +81,45 @@
     },
     {
       "type": "http-start",
-      "command": ["python3", "app.py"],
+      "command": [
+        "python3",
+        "app.py"
+      ],
       "port": "{{port}}",
       "path": "/health",
       "expect": "\"agent\""
     }
   ],
   "contextHints": {
-    "commands": ["python3 app.py"],
-    "entrypoints": ["app.py", "agent.config.json"],
+    "commands": [
+      "python3 app.py"
+    ],
+    "entrypoints": [
+      "app.py",
+      "agent.config.json"
+    ],
     "preview": {
       "port": "{{port}}",
       "path": "/health"
     },
-    "extensionPoints": ["agent.config.json", "sdk-config.json", "queue-config.json", "database-config.json"]
-  }
+    "extensionPoints": [
+      "agent.config.json",
+      "sdk-config.json",
+      "queue-config.json",
+      "database-config.json"
+    ]
+  },
+  "keywords": [
+    "python agent",
+    "pydanticai",
+    "crewai",
+    "autogen",
+    "agno",
+    "llamaindex",
+    "agentkit",
+    "python chatbot",
+    "python assistant",
+    "unsloth",
+    "qlora"
+  ]
 }

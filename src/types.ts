@@ -62,6 +62,10 @@ export interface FamilyManifest extends ManifestBase {
   slots?: Record<string, SlotConfig>
   /** Layer IDs that must be present (via layers array or slot selection) for this family to compose correctly. */
   requires?: string[]
+  /** Keywords for prompt routing. The selection router scores prompts against these. */
+  keywords?: string[]
+  /** Scoring boosts: when a boost key (e.g. "go") co-occurs with an API term, add boost value to score. */
+  scoring?: { boost?: Record<string, number> }
 }
 
 export interface LayerManifest extends ManifestBase {
@@ -69,6 +73,10 @@ export interface LayerManifest extends ManifestBase {
   group: string
   slot?: string
   appliesTo?: string[]
+  /** Keywords for capability auto-detection. detectCapabilities scores prompts against these. */
+  keywords?: string[]
+  /** Other capability IDs that must be present when this capability is attached. */
+  capabilityRequires?: string[]
 }
 
 export interface PartnerManifest extends ManifestBase {

@@ -1,7 +1,11 @@
 {
   "id": "cli-ts",
   "description": "TypeScript CLI starter with a runnable usage path.",
-  "tags": ["cli", "typescript", "terminal"],
+  "tags": [
+    "cli",
+    "typescript",
+    "terminal"
+  ],
   "taxonomy": {
     "language": "typescript",
     "runtime": "node",
@@ -38,19 +42,42 @@
     },
     {
       "type": "command-success",
-      "command": ["node", "validate-types.mjs"],
+      "command": [
+        "node",
+        "validate-types.mjs"
+      ],
       "expect": "typescript ok"
     },
     {
       "type": "command-success",
-      "command": ["node", "--experimental-strip-types", "src/index.ts", "--help"],
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "src/index.ts",
+        "--help"
+      ],
       "expect": "Usage:"
     }
   ],
   "contextHints": {
-    "commands": ["node --experimental-strip-types src/index.ts --help", "npm install"],
-    "entrypoints": ["src/index.ts", "tsconfig.json"],
+    "commands": [
+      "node --experimental-strip-types src/index.ts --help",
+      "npm install"
+    ],
+    "entrypoints": [
+      "src/index.ts",
+      "tsconfig.json"
+    ],
     "preview": null,
-    "extensionPoints": ["queue-config.json"]
-  }
+    "extensionPoints": [
+      "queue-config.json"
+    ]
+  },
+  "keywords": [
+    "cli",
+    "command line",
+    "terminal tool",
+    "shell tool",
+    "developer tool"
+  ]
 }

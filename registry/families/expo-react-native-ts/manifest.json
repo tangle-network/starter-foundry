@@ -1,7 +1,12 @@
 {
   "id": "expo-react-native-ts",
   "description": "Expo and React Native TypeScript starter for mobile product surfaces.",
-  "tags": ["mobile", "react-native", "expo", "typescript"],
+  "tags": [
+    "mobile",
+    "react-native",
+    "expo",
+    "typescript"
+  ],
   "taxonomy": {
     "language": "typescript",
     "runtime": "expo",
@@ -61,14 +66,36 @@
     },
     {
       "type": "command-success",
-      "command": ["node", "validate-types.mjs"],
+      "command": [
+        "node",
+        "validate-types.mjs"
+      ],
       "expect": "typescript ok"
     }
   ],
   "contextHints": {
-    "commands": ["npm install", "npx expo start", "node validate-types.mjs"],
-    "entrypoints": ["App.tsx", "app.json", "tsconfig.json"],
+    "commands": [
+      "npm install",
+      "npx expo start",
+      "node validate-types.mjs"
+    ],
+    "entrypoints": [
+      "App.tsx",
+      "app.json",
+      "tsconfig.json"
+    ],
     "preview": null,
-    "extensionPoints": ["auth-config.json", "payments-config.json", "sdk-config.json"]
-  }
+    "extensionPoints": [
+      "auth-config.json",
+      "payments-config.json",
+      "sdk-config.json"
+    ]
+  },
+  "keywords": [
+    "expo",
+    "react native",
+    "mobile app",
+    "ios app",
+    "android app"
+  ]
 }

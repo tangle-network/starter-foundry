@@ -1,10 +1,36 @@
 {
   "id": "ai-agent-dashboard",
   "description": "Adds agent observability dashboard with run traces, tool calls, token usage, and cost tracking.",
-  "appliesTo": ["react-vite-ts", "nextjs-ts", "fullstack-ts", "sveltekit-ts", "remix-ts", "vue-ts"],
-  "files": [
-    { "source": "files/dashboard-config.json", "target": "agent-dashboard-config.json" },
-    { "source": "files/dashboard-data.json", "target": "agent-dashboard-data.json" }
+  "appliesTo": [
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "sveltekit-ts",
+    "remix-ts",
+    "vue-ts"
   ],
-  "contextHints": { "extensionPoints": ["agent-dashboard-config.json", "agent-dashboard-data.json"] }
+  "files": [
+    {
+      "source": "files/dashboard-config.json",
+      "target": "agent-dashboard-config.json"
+    },
+    {
+      "source": "files/dashboard-data.json",
+      "target": "agent-dashboard-data.json"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": [
+      "agent-dashboard-config.json",
+      "agent-dashboard-data.json"
+    ]
+  },
+  "keywords": [
+    "agent dashboard",
+    "agent monitoring",
+    "agent observability",
+    "run traces",
+    "agent traces",
+    "agent analytics"
+  ]
 }

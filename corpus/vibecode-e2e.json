@@ -102,6 +102,36 @@
       }
     },
     {
+      "id": "agent-service-ts",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Build an AI agent service in TypeScript using LangGraph with tool execution, memory, and an HTTP control plane.",
+      "expected": {
+        "kind": "starter",
+        "family": "agent-service-ts"
+      }
+    },
+    {
+      "id": "agent-service-py",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Build a Python agent service using PydanticAI with retries, tools, and a small HTTP control plane.",
+      "expected": {
+        "kind": "starter",
+        "family": "agent-service-py"
+      }
+    },
+    {
+      "id": "hardhat-xlayer",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Create a Hardhat TypeScript project configured for X Layer with contract verification and a deploy task.",
+      "expected": {
+        "kind": "starter",
+        "family": "hardhat-contracts"
+      }
+    },
+    {
       "id": "expo-wallet-mobile",
       "complexity": "simple",
       "partner": "coinbase",
@@ -540,6 +570,173 @@
           "api": "api-service",
           "worker": "worker-job",
           "solana": "solana-program"
+        }
+      }
+    },
+    {
+      "id": "rag-chatbot",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build a RAG chatbot with vector search over my documentation.",
+      "expected": {
+        "kind": "starter",
+        "family": "agent-service-ts"
+      }
+    },
+    {
+      "id": "slack-bot-agent",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build a Slack bot that answers team questions using AI and context from our docs.",
+      "expected": {
+        "kind": "starter",
+        "family": "agent-service-ts"
+      }
+    },
+    {
+      "id": "github-pr-agent",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Build a GitHub agent that reviews pull requests, triages issues, and auto-labels them.",
+      "expected": {
+        "kind": "starter",
+        "family": "agent-service-ts"
+      }
+    },
+    {
+      "id": "multi-agent-orchestration",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Build a multi-agent system with a supervisor that routes tasks to specialized worker agents.",
+      "expected": {
+        "kind": "starter",
+        "family": "agent-service-ts"
+      }
+    },
+    {
+      "id": "trading-agent",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Build an AI trading agent for crypto market analysis with risk limits and paper trading.",
+      "expected": {
+        "kind": "starter",
+        "family": "agent-service-ts"
+      }
+    },
+    {
+      "id": "support-agent",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Build a customer support agent with knowledge base search, intent classification, and escalation to humans.",
+      "expected": {
+        "kind": "starter",
+        "family": "agent-service-ts"
+      }
+    },
+    {
+      "id": "code-review-agent",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Build a code review agent that analyzes PRs for security issues and generates inline comments.",
+      "expected": {
+        "kind": "starter",
+        "family": "agent-service-ts"
+      }
+    },
+    {
+      "id": "data-analyst-agent",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Build a data analysis agent that queries SQL databases and generates visual reports.",
+      "expected": {
+        "kind": "starter",
+        "family": "agent-service-ts"
+      }
+    },
+    {
+      "id": "python-rag-agent",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Build a Python RAG agent using PydanticAI with Postgres vector search and document ingestion.",
+      "expected": {
+        "kind": "starter",
+        "family": "agent-service-py"
+      }
+    },
+    {
+      "id": "nextjs-chat-app",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build a Next.js chat app with streaming AI responses and message history.",
+      "expected": {
+        "kind": "starter",
+        "family": "nextjs-ts"
+      }
+    },
+    {
+      "id": "saas-billing-teams",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Build a SaaS platform with subscription billing, team management, and role-based access.",
+      "expected": {
+        "kind": "starter",
+        "family": "fullstack-ts"
+      }
+    },
+    {
+      "id": "admin-dashboard",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build an admin panel with CRUD operations, data tables, and bulk export.",
+      "expected": {
+        "kind": "starter",
+        "family": "fullstack-ts"
+      }
+    },
+    {
+      "id": "realtime-fullstack",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Build a fullstack collaboration app with real-time WebSocket updates and presence indicators.",
+      "expected": {
+        "kind": "starter",
+        "family": "fullstack-ts"
+      }
+    },
+    {
+      "id": "saas-nextjs-complete",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Build a Next.js SaaS with Stripe subscription billing, team roles, and an admin dashboard.",
+      "expected": {
+        "kind": "starter",
+        "family": "nextjs-ts"
+      }
+    },
+    {
+      "id": "agent-workspace-rag",
+      "complexity": "complex",
+      "partner": null,
+      "prompt": "Build a RAG-powered knowledge base with a React frontend for chat, and a Python agent backend for document retrieval and summarization.",
+      "expected": {
+        "kind": "workspace",
+        "primaryProjectId": "web",
+        "projectFamilies": {
+          "web": "react-vite-ts",
+          "agent": "agent-service-py"
+        }
+      }
+    },
+    {
+      "id": "agent-workspace-support",
+      "complexity": "complex",
+      "partner": "coinbase",
+      "prompt": "Build a customer support platform with a Next.js dashboard for agents, an AI support bot backend, and a webhook processor for Stripe billing events.",
+      "expected": {
+        "kind": "workspace",
+        "primaryProjectId": "web",
+        "projectFamilies": {
+          "web": "nextjs-ts"
         }
       }
     }

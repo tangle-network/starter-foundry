@@ -13,6 +13,9 @@
     "worker-job",
     "go-worker",
     "playwright-worker",
+    "agent-service-ts",
+    "agent-service-py",
+    "agent-service-rust",
     "solana-program"
   ],
   "slotDefaults": {

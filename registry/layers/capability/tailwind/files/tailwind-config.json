@@ -1,0 +1,40 @@
+{
+  "version": 4,
+  "darkMode": "class",
+  "theme": {
+    "extend": {
+      "colors": {
+        "background": "hsl(var(--background))",
+        "foreground": "hsl(var(--foreground))",
+        "card": "hsl(var(--card))",
+        "card-foreground": "hsl(var(--card-foreground))",
+        "popover": "hsl(var(--popover))",
+        "popover-foreground": "hsl(var(--popover-foreground))",
+        "primary": "hsl(var(--primary))",
+        "primary-foreground": "hsl(var(--primary-foreground))",
+        "secondary": "hsl(var(--secondary))",
+        "secondary-foreground": "hsl(var(--secondary-foreground))",
+        "muted": "hsl(var(--muted))",
+        "muted-foreground": "hsl(var(--muted-foreground))",
+        "accent": "hsl(var(--accent))",
+        "accent-foreground": "hsl(var(--accent-foreground))",
+        "destructive": "hsl(var(--destructive))",
+        "border": "hsl(var(--border))",
+        "input": "hsl(var(--input))",
+        "ring": "hsl(var(--ring))"
+      },
+      "borderRadius": {
+        "lg": "var(--radius)",
+        "md": "calc(var(--radius) - 2px)",
+        "sm": "calc(var(--radius) - 4px)"
+      }
+    }
+  },
+  "notes": [
+    "Generate tailwind.config.ts with these theme extensions.",
+    "Generate postcss.config.js with tailwindcss and autoprefixer plugins.",
+    "Add @tailwind base, components, and utilities directives to the global CSS file.",
+    "CSS variables in :root and .dark enable light/dark mode switching.",
+    "These color tokens are shadcn/ui compatible — use with capability:shadcn for full component system."
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "provider": "{{gpuProvider}}",
+  "gpu": "{{gpuType}}",
+  "features": ["serverless-gpu", "auto-scaling", "persistent-volumes", "web-endpoints", "cron-jobs"],
+  "config": { "image": "modal-base", "timeout": 3600, "concurrency": 10 },
+  "references": ["Modal", "modal.com"],
+  "notes": ["Modal provides serverless GPU compute with no infrastructure management.", "Use @modal.function() decorator for GPU-accelerated functions.", "Persistent volumes store model weights across invocations."]
+}

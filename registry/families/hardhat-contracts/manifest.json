@@ -1,0 +1,40 @@
+{
+  "id": "hardhat-contracts",
+  "description": "Hardhat compatibility starter for explicit Hardhat-based EVM prompts.",
+  "tags": ["solidity", "hardhat", "contracts"],
+  "taxonomy": {
+    "language": "solidity",
+    "runtime": "hardhat",
+    "surface": "contracts"
+  },
+  "defaults": {
+    "contractName": "StarterToken"
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/validate-hardhat.mjs",
+      "target": "validate-hardhat.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "hardhat.config.ts"
+    },
+    {
+      "type": "command-success",
+      "command": ["node", "validate-hardhat.mjs"],
+      "expect": "hardhat starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": ["npm run test", "npm run deploy"],
+    "entrypoints": ["hardhat.config.ts", "contracts/{{contractName}}.sol", "scripts/deploy.ts"],
+    "preview": null,
+    "extensionPoints": ["hardhat.config.ts", "scripts/deploy.ts", ".env.example"]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "eventTypes": ["message", "app_mention", "reaction_added"],
+  "threadMode": "{{slackThreadMode}}",
+  "channels": [],
+  "notes": [
+    "Set SLACK_BOT_TOKEN and SLACK_SIGNING_SECRET in your environment.",
+    "Events are verified and routed through slack-handler.mjs.",
+    "Thread mode controls whether replies go in-thread or as new messages."
+  ]
+}

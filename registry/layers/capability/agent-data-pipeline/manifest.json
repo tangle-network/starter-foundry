@@ -1,0 +1,16 @@
+{
+  "id": "agent-data-pipeline",
+  "description": "Adds data analysis pipeline with SQL generation, result formatting, and report output.",
+  "appliesTo": ["agent-service-ts", "agent-service-py", "agent-service-rust"],
+  "defaults": {
+    "dataSourceType": "sqlite",
+    "maxQueryRows": 10000
+  },
+  "files": [
+    { "source": "files/pipeline-config.json", "target": "pipeline-config.json" },
+    { "source": "files/analyst.mjs", "target": "analyst.mjs" }
+  ],
+  "contextHints": {
+    "extensionPoints": ["pipeline-config.json", "analyst.mjs"]
+  }
+}

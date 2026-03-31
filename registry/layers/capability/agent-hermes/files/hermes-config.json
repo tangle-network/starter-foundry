@@ -1,0 +1,15 @@
+{
+  "model": "{{hermesModel}}",
+  "features": ["function-calling", "tool-use", "structured-output", "json-mode", "system-prompts"],
+  "toolFormat": "hermes-function-calling",
+  "inference": {
+    "providers": ["together", "replicate", "local-vllm", "ollama"],
+    "contextLength": 128000
+  },
+  "notes": [
+    "Hermes models are fine-tuned for function calling and tool use.",
+    "Use the Hermes tool-call format for reliable structured output.",
+    "Run locally via Ollama or vLLM, or use Together/Replicate APIs.",
+    "Hermes-3 supports 128K context — good for RAG and long document analysis."
+  ]
+}

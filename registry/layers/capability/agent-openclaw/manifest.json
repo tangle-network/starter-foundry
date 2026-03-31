@@ -1,0 +1,8 @@
+{
+  "id": "agent-openclaw",
+  "description": "Adds OpenClaw agent orchestration with session management, tool routing, and multi-model support.",
+  "appliesTo": ["agent-service-ts", "agent-service-py", "agent-service-rust"],
+  "defaults": { "orchestrator": "openclaw" },
+  "files": [{ "source": "files/openclaw-config.json", "target": "openclaw-config.json" }],
+  "contextHints": { "extensionPoints": ["openclaw-config.json"] }
+}

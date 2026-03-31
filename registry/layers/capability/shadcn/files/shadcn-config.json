@@ -1,0 +1,26 @@
+{
+  "style": "new-york",
+  "rsc": false,
+  "tsx": true,
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "hooks": "@/hooks",
+    "lib": "@/lib"
+  },
+  "registryUrl": "https://ui.shadcn.com",
+  "baseComponents": ["button", "card", "input", "label", "badge", "separator", "skeleton"],
+  "utilities": {
+    "cn": "import { clsx, type ClassValue } from 'clsx'; import { twMerge } from 'tailwind-merge'; export function cn(...inputs: ClassValue[]) { return twMerge(clsx(inputs)); }"
+  },
+  "notes": [
+    "Generate components.json at project root with these settings.",
+    "Create src/lib/utils.ts with the cn() utility function.",
+    "Configure tsconfig.json paths: { '@/*': ['./src/*'] }.",
+    "Install: clsx, tailwind-merge, class-variance-authority, @radix-ui/react-slot.",
+    "Add components via: npx shadcn@latest add <component>.",
+    "For SvelteKit use shadcn-svelte. For Vue use shadcn-vue. Adjust imports accordingly.",
+    "The new-york style uses smaller radius and tighter spacing — preferred for professional apps."
+  ]
+}

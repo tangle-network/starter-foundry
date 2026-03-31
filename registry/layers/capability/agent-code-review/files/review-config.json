@@ -1,0 +1,11 @@
+{
+  "languages": "{{reviewLanguages}}",
+  "rules": "{{reviewRules}}",
+  "outputFormat": "inline-comments",
+  "severity": ["critical", "warning", "suggestion"],
+  "notes": [
+    "review-pipeline.mjs processes diffs and generates inline comments.",
+    "Rules are composable: add custom rules alongside built-in checks.",
+    "Integrate with github-handler.mjs for automated PR reviews."
+  ]
+}

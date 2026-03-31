@@ -1,0 +1,8 @@
+{
+  "id": "python-worker",
+  "description": "Python background worker framework layer with task loop and signal handling.",
+  "appliesTo": ["python-worker"],
+  "files": [
+    { "source": "files/worker.py", "target": "worker.py" }
+  ]
+}

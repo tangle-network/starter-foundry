@@ -1,0 +1,15 @@
+{
+  "id": "defi-yield",
+  "description": "Adds yield aggregator and vault strategy patterns with auto-compounding and reward harvesting.",
+  "appliesTo": ["forge-contracts", "hardhat-contracts", "api-service", "evm-infra-ts", "worker-job"],
+  "defaults": {
+    "vaultStandard": "erc4626",
+    "compoundFrequency": "daily"
+  },
+  "files": [
+    { "source": "files/yield-config.json", "target": "yield-config.json" }
+  ],
+  "contextHints": {
+    "extensionPoints": ["yield-config.json"]
+  }
+}

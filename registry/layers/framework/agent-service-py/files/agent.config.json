@@ -1,0 +1,9 @@
+{
+  "library": "{{agentLibrary}}",
+  "surface": "{{agentSurface}}",
+  "instructions": [
+    "Treat this starter as an agent runtime with explicit tools and memory seams.",
+    "Bias toward orchestration, retries, and safety controls."
+  ],
+  "loop": ["plan", "act", "reflect"]
+}

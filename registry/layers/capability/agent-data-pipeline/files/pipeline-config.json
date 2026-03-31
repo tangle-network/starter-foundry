@@ -1,0 +1,15 @@
+{
+  "dataSources": [
+    { "type": "{{dataSourceType}}", "name": "primary" }
+  ],
+  "queryLimits": {
+    "maxRows": "{{maxQueryRows}}",
+    "timeoutMs": 30000
+  },
+  "outputFormats": ["table", "csv", "chart-spec", "summary"],
+  "notes": [
+    "analyst.mjs converts natural-language questions into SQL queries.",
+    "Query limits prevent runaway scans. Adjust maxRows for large datasets.",
+    "Chart specs follow a Vega-Lite compatible schema for frontend rendering."
+  ]
+}

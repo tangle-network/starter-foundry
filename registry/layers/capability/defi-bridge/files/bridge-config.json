@@ -1,0 +1,15 @@
+{
+  "model": "{{bridgeModel}}",
+  "messagingProtocol": "{{messagingProtocol}}",
+  "chains": [
+    { "id": 1, "name": "Ethereum", "rpc": "" },
+    { "id": 42161, "name": "Arbitrum", "rpc": "" }
+  ],
+  "features": ["lock-and-mint", "burn-and-release", "message-passing", "proof-verification"],
+  "references": ["LayerZero", "Wormhole", "Axelar", "Connext"],
+  "notes": [
+    "Lock-and-mint requires a relayer service to submit proofs on the destination chain.",
+    "Message passing needs finality guarantees — never relay unfinalized messages.",
+    "Use canonical bridges where available; custom bridges require security audits."
+  ]
+}

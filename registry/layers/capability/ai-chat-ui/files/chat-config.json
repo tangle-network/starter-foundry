@@ -1,0 +1,12 @@
+{
+  "model": "{{chatModel}}",
+  "streaming": true,
+  "maxHistoryMessages": 50,
+  "features": ["markdown", "code-blocks", "citations", "file-upload"],
+  "apiEndpoint": "/api/chat",
+  "notes": [
+    "The chat interface streams responses via Server-Sent Events.",
+    "Message history is kept client-side up to maxHistoryMessages.",
+    "Extend with tool-use by adding function definitions to the agent config."
+  ]
+}

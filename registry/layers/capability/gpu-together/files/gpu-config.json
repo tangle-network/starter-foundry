@@ -1,0 +1,5 @@
+{
+  "provider": "{{gpuProvider}}",
+  "features": ["inference-api", "fine-tuning", "dedicated-endpoints", "embedding-api"],
+  "notes": ["Set TOGETHER_API_KEY in your environment.", "Together supports OpenAI-compatible API format.", "Use dedicated endpoints for production workloads with guaranteed capacity."]
+}

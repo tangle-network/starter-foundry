@@ -1,0 +1,9 @@
+{
+  "library": "{{agentLibrary}}",
+  "surface": "{{agentSurface}}",
+  "instructions": [
+    "Treat this starter as an agent control plane, not a plain CRUD service.",
+    "Bias toward tool registration, memory seams, and explicit execution boundaries."
+  ],
+  "loop": ["plan", "act", "reflect"]
+}

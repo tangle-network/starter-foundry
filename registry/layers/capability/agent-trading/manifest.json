@@ -1,0 +1,16 @@
+{
+  "id": "agent-trading",
+  "description": "Adds trading strategy seams with market data, order execution, and risk management.",
+  "appliesTo": ["agent-service-ts", "agent-service-py", "agent-service-rust"],
+  "defaults": {
+    "exchangeMode": "paper",
+    "tradingPairs": "BTC/USDT,ETH/USDT"
+  },
+  "files": [
+    { "source": "files/trading-config.json", "target": "trading-config.json" },
+    { "source": "files/strategy.mjs", "target": "strategy.mjs" }
+  ],
+  "contextHints": {
+    "extensionPoints": ["trading-config.json", "strategy.mjs"]
+  }
+}

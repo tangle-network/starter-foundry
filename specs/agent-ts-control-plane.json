@@ -1,0 +1,13 @@
+{
+  "projectName": "agent-ts-control-plane",
+  "family": "agent-service-ts",
+  "layers": ["framework:agent-service-ts"],
+  "partner": "coinbase",
+  "slots": {
+    "sdk": "sdk:coinbase-cdp",
+    "queue": "queue:trigger-dev"
+  },
+  "variables": {
+    "agentLibrary": "mastra"
+  }
+}

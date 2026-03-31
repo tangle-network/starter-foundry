@@ -1,0 +1,7 @@
+{
+  "tool": "pulumi",
+  "language": "typescript",
+  "provider": "aws",
+  "resources": ["compute", "database", "networking", "storage"],
+  "notes": ["Pulumi uses real programming languages instead of HCL.", "Generate infra/index.ts with resource definitions.", "Use Pulumi.yaml for project config and stack management.", "State is managed by Pulumi Cloud or self-hosted backend."]
+}

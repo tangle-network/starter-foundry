@@ -1,0 +1,11 @@
+{
+  "projectName": "agent-rust-runtime",
+  "family": "agent-service-rust",
+  "layers": ["framework:agent-service-rust"],
+  "slots": {
+    "queue": "queue:trigger-dev"
+  },
+  "variables": {
+    "agentLibrary": "rig"
+  }
+}

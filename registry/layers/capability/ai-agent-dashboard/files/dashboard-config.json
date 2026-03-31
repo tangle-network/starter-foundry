@@ -1,0 +1,6 @@
+{
+  "panels": ["run-traces", "tool-calls", "token-usage", "cost-tracking", "error-rates", "latency-p50-p99"],
+  "dataSource": "agent-api",
+  "refreshInterval": 5000,
+  "notes": ["Render run traces as a timeline with expandable tool call details.", "Token usage and cost panels require the agent to report usage metadata.", "Error rates and latency panels connect to the agent health endpoint."]
+}

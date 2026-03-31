@@ -1,0 +1,322 @@
+{
+  "name": "held-out-validation",
+  "scenarios": [
+    {
+      "id": "ho-rust-agent",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Create a Rust AI agent using rig for autonomous blockchain monitoring.",
+      "expected": { "kind": "starter", "family": "agent-service-rust" }
+    },
+    {
+      "id": "ho-dspy-pipeline",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build an optimized text classification system using DSPy with automated prompt tuning.",
+      "expected": { "kind": "starter", "family": "dspy-pipeline-py" }
+    },
+    {
+      "id": "ho-mcp-server",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Create an MCP server that exposes database tools for Claude.",
+      "expected": { "kind": "starter", "family": "mcp-server-ts" }
+    },
+    {
+      "id": "ho-stylus-contract",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Deploy a liquidity pool contract using Arbitrum Stylus in Rust.",
+      "expected": { "kind": "starter", "family": "stylus-contracts" }
+    },
+    {
+      "id": "ho-x402-api",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Build a pay-per-request API using the x402 protocol for monetized LLM inference.",
+      "expected": { "kind": "starter", "family": "x402-service" }
+    },
+    {
+      "id": "ho-zk-prover",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Build a RISC Zero prover service that generates ZK proofs for on-chain verification.",
+      "expected": { "kind": "starter", "family": "zk-prover-service" }
+    },
+    {
+      "id": "ho-eigenlayer-avs",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Create an EigenLayer AVS for decentralized oracle data feeds.",
+      "expected": { "kind": "starter", "family": "eigenlayer-avs" }
+    },
+    {
+      "id": "ho-chatbot-vague",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "I want to build a chatbot for my company.",
+      "expected": { "kind": "starter", "family": "agent-service-ts" }
+    },
+    {
+      "id": "ho-ai-assistant-generic",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build me an AI assistant that can answer questions about our product.",
+      "expected": { "kind": "starter", "family": "agent-service-ts" }
+    },
+    {
+      "id": "ho-saas-minimal",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "I need a SaaS app.",
+      "expected": { "kind": "starter", "family": "fullstack-ts" }
+    },
+    {
+      "id": "ho-crud-generic",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build a CRUD app for managing inventory.",
+      "expected": { "kind": "starter", "family": "fullstack-ts" }
+    },
+    {
+      "id": "ho-internal-tool",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build an internal tool for our ops team to manage customer accounts.",
+      "expected": { "kind": "starter", "family": "fullstack-ts" }
+    },
+    {
+      "id": "ho-slack-support-bot",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Make a Slack bot that handles customer support tickets using AI.",
+      "expected": { "kind": "starter", "family": "agent-service-ts" }
+    },
+    {
+      "id": "ho-github-ci-agent",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Build a GitHub bot that reviews code, labels issues, and posts comments on PRs.",
+      "expected": { "kind": "starter", "family": "agent-service-ts" }
+    },
+    {
+      "id": "ho-rag-docs",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "I need an AI that can search our documentation and answer developer questions.",
+      "expected": { "kind": "starter", "family": "agent-service-ts" }
+    },
+    {
+      "id": "ho-trading-bot-ambiguous",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Build a trading bot.",
+      "expected": { "kind": "starter", "family": "worker-job" }
+    },
+    {
+      "id": "ho-trading-agent-explicit",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Build an AI trading agent that analyzes market sentiment and executes paper trades.",
+      "expected": { "kind": "starter", "family": "agent-service-ts" }
+    },
+    {
+      "id": "ho-python-crewai",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Build a CrewAI multi-agent system in Python for content research and writing.",
+      "expected": { "kind": "starter", "family": "agent-service-py" }
+    },
+    {
+      "id": "ho-nextjs-dashboard-coinbase",
+      "complexity": "medium",
+      "partner": "coinbase",
+      "prompt": "Build a portfolio tracker dashboard with Next.js showing crypto balances and charts.",
+      "expected": { "kind": "starter", "family": "nextjs-ts" }
+    },
+    {
+      "id": "ho-react-simple",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build a simple React app with Vite.",
+      "expected": { "kind": "starter", "family": "react-vite-ts" }
+    },
+    {
+      "id": "ho-go-api-postgres",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Create a Go REST API with Postgres for a task management backend.",
+      "expected": { "kind": "starter", "family": "go-api", "slots": { "database": "database:postgres" } }
+    },
+    {
+      "id": "ho-python-fastapi",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build a FastAPI backend for user authentication and file uploads.",
+      "expected": { "kind": "starter", "family": "python-api" }
+    },
+    {
+      "id": "ho-browser-extension-ai",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Create a Chrome extension that summarizes web pages using AI.",
+      "expected": { "kind": "starter", "family": "browser-extension-ts" }
+    },
+    {
+      "id": "ho-mobile-wallet",
+      "complexity": "medium",
+      "partner": "coinbase",
+      "prompt": "Build a mobile wallet app with Expo for tracking NFT collections.",
+      "expected": { "kind": "starter", "family": "expo-react-native-ts" }
+    },
+    {
+      "id": "ho-electron-app",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build a desktop note-taking app with Electron.",
+      "expected": { "kind": "starter", "family": "electron-desktop-ts" }
+    },
+    {
+      "id": "ho-tauri-tool",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build a Tauri app for local file encryption and decryption.",
+      "expected": { "kind": "starter", "family": "tauri-desktop" }
+    },
+    {
+      "id": "ho-cli-deploy",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build a CLI tool for deploying Docker containers to multiple servers.",
+      "expected": { "kind": "starter", "family": "cli-ts" }
+    },
+    {
+      "id": "ho-cloudflare-edge",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build a Cloudflare Worker that proxies API requests with rate limiting.",
+      "expected": { "kind": "starter", "family": "cloudflare-worker-ts" }
+    },
+    {
+      "id": "ho-solana-nft",
+      "complexity": "medium",
+      "partner": "solana",
+      "prompt": "Build a Solana NFT marketplace with compressed NFTs and royalty enforcement.",
+      "expected": { "kind": "starter", "family": "solana-program" }
+    },
+    {
+      "id": "ho-forge-erc721",
+      "complexity": "medium",
+      "partner": null,
+      "prompt": "Create an ERC721 NFT collection with Foundry and deploy scripts.",
+      "expected": { "kind": "starter", "family": "forge-contracts" }
+    },
+    {
+      "id": "ho-hardhat-explicit",
+      "complexity": "medium",
+      "partner": "xlayer",
+      "prompt": "Set up a Hardhat project with TypeScript for X Layer contract development.",
+      "expected": { "kind": "starter", "family": "hardhat-contracts" }
+    },
+    {
+      "id": "ho-move-aptos",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Write an Aptos Move module for a token vesting contract.",
+      "expected": { "kind": "starter", "family": "move-contracts" }
+    },
+    {
+      "id": "ho-workspace-saas-agent",
+      "complexity": "complex",
+      "partner": null,
+      "prompt": "Build a SaaS helpdesk with a Next.js frontend for ticket management and an AI support bot backend that searches the knowledge base.",
+      "expected": {
+        "kind": "workspace",
+        "primaryProjectId": "web",
+        "projectFamilies": { "web": "nextjs-ts" }
+      }
+    },
+    {
+      "id": "ho-workspace-ecommerce",
+      "complexity": "complex",
+      "partner": "coinbase",
+      "prompt": "Build an e-commerce platform with a React storefront, a Node.js order API with Stripe billing, and Foundry smart contracts for loyalty tokens.",
+      "expected": {
+        "kind": "workspace",
+        "primaryProjectId": "web",
+        "projectFamilies": { "web": "react-vite-ts", "evm": "forge-contracts" }
+      }
+    },
+    {
+      "id": "ho-workspace-data-platform",
+      "complexity": "complex",
+      "partner": null,
+      "prompt": "Build a data platform with a React dashboard for visualizations and a Python API for data processing and report generation.",
+      "expected": {
+        "kind": "workspace",
+        "primaryProjectId": "web",
+        "projectFamilies": { "web": "react-vite-ts", "api": "python-api" }
+      }
+    },
+    {
+      "id": "ho-workspace-go-react",
+      "complexity": "complex",
+      "partner": null,
+      "prompt": "Build a monitoring dashboard with a React frontend and a Go backend for metrics aggregation.",
+      "expected": {
+        "kind": "workspace",
+        "primaryProjectId": "web",
+        "projectFamilies": { "web": "react-vite-ts", "api": "go-api" }
+      }
+    },
+    {
+      "id": "ho-ambiguous-website",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build me a website.",
+      "expected": { "kind": "starter", "family": "frontend-static" }
+    },
+    {
+      "id": "ho-ambiguous-api",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build me an API.",
+      "expected": { "kind": "starter", "family": "api-service" }
+    },
+    {
+      "id": "ho-ambiguous-app",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build me an app.",
+      "expected": { "kind": "starter", "family": "frontend-static" }
+    },
+    {
+      "id": "ho-tangle-blueprint",
+      "complexity": "medium",
+      "partner": "tangle",
+      "prompt": "Build a Tangle Blueprint for decentralized storage with FROST threshold signing.",
+      "expected": { "kind": "starter", "family": "tangle-blueprint" }
+    },
+    {
+      "id": "ho-rust-backend",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build a Rust HTTP backend with Axum for a high-throughput API.",
+      "expected": { "kind": "starter", "family": "rust-service" }
+    },
+    {
+      "id": "ho-playwright-scraper",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build a web scraper with Playwright that monitors competitor pricing.",
+      "expected": { "kind": "starter", "family": "playwright-worker" }
+    },
+    {
+      "id": "ho-streamlit-data",
+      "complexity": "simple",
+      "partner": null,
+      "prompt": "Build a Streamlit dashboard for analyzing CSV sales data.",
+      "expected": { "kind": "starter", "family": "python-data-app" }
+    }
+  ]
+}

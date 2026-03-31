@@ -1,0 +1,1 @@
+{ "name": "{{packageName}}", "private": true, "type": "module", "scripts": { "dev": "remix vite:dev", "build": "remix vite:build" } }

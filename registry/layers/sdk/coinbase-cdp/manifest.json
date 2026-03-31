@@ -17,6 +17,9 @@
     "tauri-desktop",
     "mcp-server-ts",
     "dspy-pipeline-py",
+    "agent-service-ts",
+    "agent-service-py",
+    "agent-service-rust",
     "x402-service",
     "zk-prover-service",
     "evm-infra-ts"

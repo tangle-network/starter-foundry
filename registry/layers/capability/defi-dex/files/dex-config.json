@@ -1,0 +1,15 @@
+{
+  "model": "{{dexModel}}",
+  "feeModel": "{{feeModel}}",
+  "features": ["create-pool", "add-liquidity", "remove-liquidity", "swap", "multi-hop-routing"],
+  "feeConfig": {
+    "swapFeeBps": 30,
+    "protocolFeeBps": 5
+  },
+  "references": ["Uniswap V3/V4", "Curve", "Balancer V2"],
+  "notes": [
+    "Constant-product (x*y=k) is simplest; concentrated liquidity requires tick math.",
+    "Multi-hop routing needs a graph-based path finder.",
+    "Fee tiers should be configurable per pool for competitive pricing."
+  ]
+}

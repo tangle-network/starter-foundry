@@ -1,0 +1,15 @@
+{
+  "id": "agent-service-ts",
+  "description": "Node-based TypeScript-style agent service framework layer.",
+  "appliesTo": ["agent-service-ts"],
+  "files": [
+    {
+      "source": "files/agent.mjs",
+      "target": "agent.mjs"
+    },
+    {
+      "source": "files/agent.config.json",
+      "target": "agent.config.json"
+    }
+  ]
+}

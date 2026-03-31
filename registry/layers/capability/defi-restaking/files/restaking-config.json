@@ -1,0 +1,6 @@
+{
+  "protocol": "{{restakingProtocol}}",
+  "features": ["operator-registration", "delegation", "slashing", "withdrawal-queue", "strategy-management"],
+  "references": ["EigenLayer", "Symbiotic", "Karak"],
+  "notes": ["Operators register and opt-in to AVS services.", "Delegators stake through strategies (LST, native ETH).", "Slashing conditions are AVS-specific — define them in the AVS contract.", "Withdrawal queue enforces unbonding periods for security."]
+}

@@ -1,0 +1,15 @@
+{
+  "id": "exchange-binance",
+  "description": "Adds Binance API integration with spot/futures endpoints, WebSocket market data, and order management.",
+  "appliesTo": ["agent-service-ts", "agent-service-py", "agent-service-rust", "worker-job", "go-worker"],
+  "defaults": {
+    "exchangeName": "binance",
+    "tradingMode": "spot"
+  },
+  "files": [
+    { "source": "files/exchange-config.json", "target": "exchange-config.json" }
+  ],
+  "contextHints": {
+    "extensionPoints": ["exchange-config.json", "strategy.mjs"]
+  }
+}

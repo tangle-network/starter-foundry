@@ -1,0 +1,15 @@
+{
+  "id": "defi-lending",
+  "description": "Adds DeFi lending/borrowing protocol patterns with pool management, collateral tracking, and liquidation logic.",
+  "appliesTo": ["forge-contracts", "hardhat-contracts", "api-service", "evm-infra-ts"],
+  "defaults": {
+    "lendingProtocol": "custom",
+    "lendingOracle": "chainlink"
+  },
+  "files": [
+    { "source": "files/lending-config.json", "target": "lending-config.json" }
+  ],
+  "contextHints": {
+    "extensionPoints": ["lending-config.json"]
+  }
+}

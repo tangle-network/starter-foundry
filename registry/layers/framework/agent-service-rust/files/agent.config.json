@@ -1,0 +1,8 @@
+{
+  "library": "{{agentLibrary}}",
+  "surface": "{{agentSurface}}",
+  "instructions": [
+    "Treat this starter as an agent runtime with strong boundaries and explicit orchestration."
+  ],
+  "loop": ["plan", "act", "reflect"]
+}

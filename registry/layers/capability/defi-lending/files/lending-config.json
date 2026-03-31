@@ -1,0 +1,15 @@
+{
+  "protocol": "{{lendingProtocol}}",
+  "oracle": "{{lendingOracle}}",
+  "pools": [
+    { "asset": "WETH", "collateralFactor": 0.80, "liquidationThreshold": 0.85 },
+    { "asset": "USDC", "collateralFactor": 0.90, "liquidationThreshold": 0.95 }
+  ],
+  "features": ["supply", "borrow", "repay", "liquidate", "flash-loans"],
+  "references": ["Aave V3", "Compound V3", "Morpho"],
+  "notes": [
+    "Pool parameters follow Aave-style collateral factor and liquidation threshold model.",
+    "Flash loans require atomic transaction composition.",
+    "Oracle integration is mandatory — never use spot price for liquidation decisions."
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "agent-rag",
+  "description": "Adds RAG pipeline seams with vector DB config, embedding strategy, and retrieval hooks.",
+  "appliesTo": ["agent-service-ts", "agent-service-py", "agent-service-rust"],
+  "defaults": {
+    "vectorDb": "chromadb",
+    "embeddingModel": "text-embedding-3-small",
+    "chunkSize": 512
+  },
+  "files": [
+    { "source": "files/rag-config.json", "target": "rag-config.json" },
+    { "source": "files/retrieval-pipeline.mjs", "target": "retrieval-pipeline.mjs" }
+  ],
+  "contextHints": {
+    "extensionPoints": ["rag-config.json", "retrieval-pipeline.mjs"]
+  }
+}

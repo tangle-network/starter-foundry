@@ -1,0 +1,14 @@
+{
+  "id": "icons",
+  "description": "Adds Lucide icon library configuration for consistent iconography across components.",
+  "appliesTo": [
+    "react-vite-ts", "nextjs-ts", "fullstack-ts", "sveltekit-ts", "remix-ts", "vue-ts",
+    "electron-desktop-ts", "tauri-desktop", "expo-react-native-ts"
+  ],
+  "files": [
+    { "source": "files/icons-config.json", "target": "icons-config.json" }
+  ],
+  "contextHints": {
+    "extensionPoints": ["icons-config.json"]
+  }
+}

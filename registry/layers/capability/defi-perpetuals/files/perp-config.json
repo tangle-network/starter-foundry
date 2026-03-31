@@ -1,0 +1,11 @@
+{
+  "oracle": "{{perpOracle}}",
+  "collateral": "{{perpCollateral}}",
+  "markets": [
+    { "pair": "ETH-USD", "maxLeverage": 50, "maintenanceMargin": 0.005 },
+    { "pair": "BTC-USD", "maxLeverage": 100, "maintenanceMargin": 0.004 }
+  ],
+  "features": ["open-position", "close-position", "liquidation", "funding-rate", "cross-margin", "auto-deleverage"],
+  "references": ["GMX V2", "dYdX V4", "Hyperliquid"],
+  "notes": ["Funding rates settle every 8 hours based on mark vs index price.", "Liquidation engine must be MEV-resistant — use keeper network.", "Cross-margin shares collateral across positions in the same account."]
+}

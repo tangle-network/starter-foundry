@@ -1,0 +1,9 @@
+{
+  "name": "{{packageName}}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "echo hardhat tests placeholder",
+    "deploy": "echo hardhat deploy placeholder"
+  }
+}

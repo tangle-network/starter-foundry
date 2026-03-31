@@ -1,0 +1,18 @@
+{
+  "library": "lucide",
+  "packages": {
+    "react": "lucide-react",
+    "svelte": "lucide-svelte",
+    "vue": "lucide-vue-next",
+    "react-native": "lucide-react-native"
+  },
+  "defaultSize": 16,
+  "defaultStrokeWidth": 2,
+  "commonIcons": ["Home", "Settings", "User", "Search", "Menu", "X", "ChevronDown", "ChevronRight", "Plus", "Trash2", "Edit", "Eye", "Download", "Upload", "Moon", "Sun", "LogOut", "Bell"],
+  "notes": [
+    "Install the package matching your framework from the packages map.",
+    "Import icons individually for tree-shaking: import { Home } from 'lucide-react'.",
+    "Use size and strokeWidth props for consistent sizing.",
+    "shadcn/ui components expect Lucide icons by default."
+  ]
+}

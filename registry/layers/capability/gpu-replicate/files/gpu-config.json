@@ -1,0 +1,5 @@
+{
+  "provider": "{{gpuProvider}}",
+  "features": ["model-hosting", "prediction-api", "webhooks", "streaming", "fine-tuning"],
+  "notes": ["Set REPLICATE_API_TOKEN in your environment.", "Use replicate.run() for synchronous predictions.", "Use webhooks for long-running jobs."]
+}

@@ -1,0 +1,12 @@
+{
+  "heartbeatMs": "{{wsHeartbeatMs}}",
+  "maxConnections": "{{wsMaxConnections}}",
+  "rooms": true,
+  "presence": true,
+  "channels": ["default"],
+  "notes": [
+    "ws-server.mjs handles upgrade, room join/leave, and broadcast.",
+    "Presence tracks connected users per room.",
+    "Heartbeat keeps connections alive and detects stale clients."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "sveltekit-ts",
+  "description": "SvelteKit framework layer with file-based routing and SSR.",
+  "appliesTo": ["sveltekit-ts"],
+  "files": [
+    { "source": "files/svelte.config.js", "target": "svelte.config.js" },
+    { "source": "files/page.svelte", "target": "src/routes/+page.svelte" },
+    { "source": "files/layout.svelte", "target": "src/routes/+layout.svelte" },
+    { "source": "files/app.html", "target": "src/app.html" }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "vaultStandard": "{{vaultStandard}}",
+  "compoundFrequency": "{{compoundFrequency}}",
+  "strategies": [
+    { "name": "single-asset-staking", "risk": "low" },
+    { "name": "lp-farming", "risk": "medium" },
+    { "name": "leveraged-yield", "risk": "high" }
+  ],
+  "features": ["deposit", "withdraw", "harvest", "auto-compound", "emergency-withdraw"],
+  "references": ["Yearn V3", "Beefy", "ERC-4626 Tokenized Vaults"],
+  "notes": [
+    "ERC-4626 is the standard vault interface — use it for composability.",
+    "Auto-compound requires a keeper or cron worker to trigger harvests.",
+    "Emergency withdraw bypasses strategy and returns underlying directly."
+  ]
+}

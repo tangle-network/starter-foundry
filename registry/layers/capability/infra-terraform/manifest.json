@@ -1,0 +1,7 @@
+{
+  "id": "infra-terraform",
+  "description": "Adds Terraform IaC configuration for cloud resource provisioning.",
+  "appliesTo": ["api-service", "python-api", "rust-service", "go-api", "agent-service-ts", "agent-service-py", "agent-service-rust", "fullstack-ts", "nextjs-ts", "worker-job", "python-worker", "go-worker"],
+  "files": [{ "source": "files/terraform-config.json", "target": "terraform-config.json" }],
+  "contextHints": { "extensionPoints": ["terraform-config.json", "infra/main.tf", "infra/variables.tf"] }
+}

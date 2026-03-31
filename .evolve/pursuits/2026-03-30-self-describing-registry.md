@@ -1,7 +1,24 @@
 # Pursuit: Self-Describing Registry
 Generation: 1
 Date: 2026-03-30
-Status: designing
+Status: evaluated
+
+## Generation 1 Results
+
+### Adversarial Testing (34 attacks)
+| Category | Correct | Failed |
+|---|---|---|
+| Product references | 1/6 | BROKEN |
+| Typos | 1/4 | BROKEN |
+| Ambiguous domain | 5/6 | OK |
+| Multi-signal | 2/3 | OK |
+| Minimal/lazy | 5/5 | SOLID |
+| Keyword stuffing | 3/3 | SOLID |
+| Negation | 3/3 | SOLID |
+| Non-English | 2/2 | SOLID |
+
+### Verdict: ADVANCE with known gaps
+Generation 1 shipped successfully (registry-driven routing). Two structural weaknesses exposed that can't be fixed with more keywords — need Generation 2.
 
 ## System Audit
 

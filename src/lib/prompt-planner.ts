@@ -979,6 +979,148 @@ function buildWorkspacePromptPlan({
   }
 }
 
+// Product archetype table — maps known product names and patterns to project
+// configurations. When a user says "build me a Twitter clone", this resolves
+// to the right family + capabilities without needing framework keywords.
+interface ProductArchetype {
+  patterns: string[]
+  family: string
+  capabilities: string[]
+  surface: 'starter' | 'workspace-hint'
+}
+
+const PRODUCT_ARCHETYPES: ProductArchetype[] = [
+  // Social / content platforms
+  { patterns: ['twitter', 'x clone', 'social network', 'social media', 'mastodon', 'threads clone', 'social app'], family: 'fullstack-ts', capabilities: ['capability:realtime-ws', 'capability:saas-teams'], surface: 'workspace-hint' },
+  { patterns: ['reddit', 'forum', 'community platform', 'discussion board', 'hacker news'], family: 'fullstack-ts', capabilities: ['capability:saas-teams'], surface: 'workspace-hint' },
+  { patterns: ['instagram', 'pinterest', 'photo sharing', 'image sharing'], family: 'nextjs-ts', capabilities: ['capability:saas-teams'], surface: 'workspace-hint' },
+  { patterns: ['youtube', 'video platform', 'streaming platform', 'twitch'], family: 'nextjs-ts', capabilities: ['capability:realtime-ws'], surface: 'workspace-hint' },
+  { patterns: ['tiktok', 'short video', 'reels'], family: 'nextjs-ts', capabilities: [], surface: 'workspace-hint' },
+
+  // Productivity / SaaS
+  { patterns: ['notion', 'note taking', 'knowledge management', 'wiki', 'docs platform'], family: 'nextjs-ts', capabilities: ['capability:realtime-ws', 'capability:saas-teams'], surface: 'workspace-hint' },
+  { patterns: ['linear', 'jira', 'project management', 'issue tracker', 'task manager', 'kanban'], family: 'fullstack-ts', capabilities: ['capability:saas-teams', 'capability:saas-billing'], surface: 'workspace-hint' },
+  { patterns: ['slack clone', 'discord clone', 'chat platform', 'messaging app', 'team chat'], family: 'fullstack-ts', capabilities: ['capability:realtime-ws', 'capability:saas-teams'], surface: 'workspace-hint' },
+  { patterns: ['figma', 'design tool', 'collaborative editor', 'whiteboard'], family: 'react-vite-ts', capabilities: ['capability:realtime-ws'], surface: 'workspace-hint' },
+  { patterns: ['google docs', 'collaborative document', 'rich text editor'], family: 'nextjs-ts', capabilities: ['capability:realtime-ws', 'capability:saas-teams'], surface: 'workspace-hint' },
+  { patterns: ['calendly', 'scheduling app', 'booking system', 'appointment'], family: 'fullstack-ts', capabilities: ['capability:saas-billing'], surface: 'starter' },
+  { patterns: ['typeform', 'survey tool', 'form builder'], family: 'fullstack-ts', capabilities: [], surface: 'starter' },
+
+  // Commerce / fintech
+  { patterns: ['stripe competitor', 'payment platform', 'payment processor'], family: 'fullstack-ts', capabilities: ['capability:saas-billing', 'capability:webhook-processor'], surface: 'workspace-hint' },
+  { patterns: ['shopify', 'ecommerce', 'e-commerce', 'online store', 'marketplace'], family: 'nextjs-ts', capabilities: ['capability:saas-billing'], surface: 'workspace-hint' },
+  { patterns: ['uber', 'lyft', 'ride sharing', 'delivery app', 'gig platform'], family: 'fullstack-ts', capabilities: ['capability:realtime-ws', 'capability:saas-billing'], surface: 'workspace-hint' },
+  { patterns: ['airbnb', 'booking platform', 'rental platform'], family: 'nextjs-ts', capabilities: ['capability:saas-billing', 'capability:saas-teams'], surface: 'workspace-hint' },
+  { patterns: ['venmo', 'cash app', 'p2p payments', 'money transfer'], family: 'fullstack-ts', capabilities: ['capability:saas-billing'], surface: 'workspace-hint' },
+
+  // Dev tools
+  { patterns: ['github clone', 'gitlab', 'code hosting', 'git platform'], family: 'fullstack-ts', capabilities: ['capability:saas-teams'], surface: 'workspace-hint' },
+  { patterns: ['vercel', 'netlify', 'deployment platform', 'hosting platform'], family: 'fullstack-ts', capabilities: ['capability:saas-billing', 'capability:saas-teams', 'capability:deploy-docker'], surface: 'workspace-hint' },
+  { patterns: ['postman', 'api testing', 'api client'], family: 'fullstack-ts', capabilities: [], surface: 'starter' },
+
+  // Analytics / monitoring
+  { patterns: ['datadog', 'grafana', 'monitoring tool', 'observability platform'], family: 'fullstack-ts', capabilities: ['capability:realtime-ws', 'capability:ai-agent-dashboard'], surface: 'workspace-hint' },
+  { patterns: ['mixpanel', 'amplitude', 'analytics platform', 'product analytics'], family: 'fullstack-ts', capabilities: ['capability:saas-billing'], surface: 'workspace-hint' },
+
+  // AI products
+  { patterns: ['chatgpt', 'claude clone', 'ai assistant app', 'llm frontend'], family: 'nextjs-ts', capabilities: ['capability:ai-chat-ui'], surface: 'workspace-hint' },
+  { patterns: ['midjourney', 'dall-e', 'ai image generator', 'image generation app'], family: 'nextjs-ts', capabilities: ['capability:gpu-replicate'], surface: 'workspace-hint' },
+  { patterns: ['cursor clone', 'ai code editor', 'coding assistant'], family: 'fullstack-ts', capabilities: ['capability:ai-chat-ui'], surface: 'workspace-hint' },
+
+  // CRM / business
+  { patterns: ['salesforce', 'crm', 'customer relationship', 'lead management'], family: 'fullstack-ts', capabilities: ['capability:saas-billing', 'capability:saas-teams', 'capability:admin-crud'], surface: 'workspace-hint' },
+  { patterns: ['hubspot', 'marketing platform', 'email marketing'], family: 'fullstack-ts', capabilities: ['capability:saas-billing', 'capability:saas-teams'], surface: 'workspace-hint' },
+  { patterns: ['zendesk', 'intercom', 'help desk', 'ticketing system', 'support platform'], family: 'fullstack-ts', capabilities: ['capability:saas-billing', 'capability:saas-teams', 'capability:agent-customer-support'], surface: 'workspace-hint' },
+
+  // CMS / content
+  { patterns: ['wordpress', 'cms', 'content management', 'blog platform', 'headless cms'], family: 'nextjs-ts', capabilities: ['capability:saas-teams', 'capability:admin-crud'], surface: 'workspace-hint' },
+  { patterns: ['medium', 'substack', 'blog', 'publishing platform', 'newsletter'], family: 'nextjs-ts', capabilities: ['capability:saas-billing'], surface: 'starter' },
+  { patterns: ['contentful', 'strapi', 'sanity'], family: 'fullstack-ts', capabilities: ['capability:saas-teams', 'capability:admin-crud'], surface: 'workspace-hint' },
+
+  // Maps / geospatial
+  { patterns: ['maps app', 'google maps', 'mapbox', 'geospatial', 'location tracking', 'fleet tracking', 'delivery tracking'], family: 'nextjs-ts', capabilities: ['capability:realtime-ws'], surface: 'workspace-hint' },
+  { patterns: ['waze', 'navigation app', 'route planner'], family: 'nextjs-ts', capabilities: ['capability:realtime-ws'], surface: 'workspace-hint' },
+
+  // Voice / audio
+  { patterns: ['voice agent', 'voice assistant', 'voice bot', 'speech to text', 'voice ai', 'call center ai'], family: 'agent-service-ts', capabilities: ['capability:realtime-ws'], surface: 'workspace-hint' },
+  { patterns: ['spotify', 'music app', 'audio player', 'podcast app', 'music streaming'], family: 'nextjs-ts', capabilities: [], surface: 'workspace-hint' },
+  { patterns: ['clubhouse', 'twitter spaces', 'audio rooms', 'voice chat'], family: 'fullstack-ts', capabilities: ['capability:realtime-ws'], surface: 'workspace-hint' },
+
+  // Video
+  { patterns: ['video editor', 'video platform', 'loom clone', 'screen recorder', 'video conferencing'], family: 'nextjs-ts', capabilities: ['capability:realtime-ws'], surface: 'workspace-hint' },
+  { patterns: ['zoom clone', 'video call', 'webrtc', 'live streaming'], family: 'fullstack-ts', capabilities: ['capability:realtime-ws'], surface: 'workspace-hint' },
+  { patterns: ['video agent', 'video analysis', 'video ai'], family: 'agent-service-ts', capabilities: ['capability:gpu-replicate'], surface: 'workspace-hint' },
+
+  // Data visualization / charts
+  { patterns: ['d3 dashboard', 'd3.js', 'data visualization', 'chart app', 'visualization tool', 'interactive charts'], family: 'react-vite-ts', capabilities: ['capability:chart-widget'], surface: 'starter' },
+  { patterns: ['tableau', 'metabase', 'business intelligence', 'bi tool', 'reporting tool'], family: 'fullstack-ts', capabilities: ['capability:chart-widget', 'capability:admin-crud'], surface: 'workspace-hint' },
+
+  // Education / learning
+  { patterns: ['udemy', 'coursera', 'learning platform', 'lms', 'course platform', 'online school'], family: 'nextjs-ts', capabilities: ['capability:saas-billing', 'capability:saas-teams'], surface: 'workspace-hint' },
+  { patterns: ['duolingo', 'quiz app', 'flashcard app', 'study app'], family: 'nextjs-ts', capabilities: [], surface: 'starter' },
+
+  // Health / fitness
+  { patterns: ['health app', 'fitness app', 'workout tracker', 'calorie counter', 'meal planner'], family: 'nextjs-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['telemedicine', 'telehealth', 'doctor appointment', 'patient portal'], family: 'fullstack-ts', capabilities: ['capability:saas-billing', 'capability:saas-teams', 'capability:realtime-ws'], surface: 'workspace-hint' },
+
+  // Real estate / property
+  { patterns: ['zillow', 'real estate', 'property listing', 'rental platform', 'property management'], family: 'nextjs-ts', capabilities: ['capability:saas-billing'], surface: 'workspace-hint' },
+
+  // HR / recruitment
+  { patterns: ['greenhouse', 'lever', 'ats', 'applicant tracking', 'recruitment platform', 'hiring tool'], family: 'fullstack-ts', capabilities: ['capability:saas-teams', 'capability:admin-crud'], surface: 'workspace-hint' },
+  { patterns: ['gusto', 'rippling', 'hr platform', 'payroll', 'employee management'], family: 'fullstack-ts', capabilities: ['capability:saas-billing', 'capability:saas-teams', 'capability:admin-crud'], surface: 'workspace-hint' },
+
+  // Infrastructure / devops
+  { patterns: ['pagerduty', 'incident management', 'on-call platform', 'alert management'], family: 'fullstack-ts', capabilities: ['capability:realtime-ws', 'capability:webhook-processor'], surface: 'workspace-hint' },
+  { patterns: ['sentry', 'error tracking', 'bug tracking', 'crash reporting'], family: 'fullstack-ts', capabilities: ['capability:webhook-processor', 'capability:admin-crud'], surface: 'workspace-hint' },
+  { patterns: ['statuspage', 'status page', 'uptime monitor', 'health check dashboard'], family: 'fullstack-ts', capabilities: ['capability:realtime-ws'], surface: 'starter' },
+
+  // Finance / accounting
+  { patterns: ['quickbooks', 'accounting software', 'invoicing', 'expense tracker', 'financial dashboard'], family: 'fullstack-ts', capabilities: ['capability:saas-billing', 'capability:admin-crud'], surface: 'workspace-hint' },
+  { patterns: ['plaid', 'banking api', 'open banking', 'financial aggregator'], family: 'fullstack-ts', capabilities: ['capability:webhook-processor'], surface: 'workspace-hint' },
+  { patterns: ['robinhood', 'trading platform', 'stock trading', 'investment app'], family: 'fullstack-ts', capabilities: ['capability:realtime-ws', 'capability:chart-widget'], surface: 'workspace-hint' },
+
+  // Automation / workflow
+  { patterns: ['zapier', 'n8n', 'workflow automation', 'integration platform', 'automation tool'], family: 'fullstack-ts', capabilities: ['capability:webhook-processor', 'capability:saas-billing'], surface: 'workspace-hint' },
+  { patterns: ['retool', 'internal tool builder', 'low-code platform', 'app builder'], family: 'fullstack-ts', capabilities: ['capability:admin-crud', 'capability:saas-teams'], surface: 'workspace-hint' },
+
+  // AI inference / ML
+  { patterns: ['inference api', 'model serving', 'ml api', 'prediction api'], family: 'python-api', capabilities: ['capability:gpu-replicate'], surface: 'starter' },
+  { patterns: ['hugging face', 'huggingface', 'model hub', 'model registry'], family: 'python-api', capabilities: ['capability:ai-fine-tuning'], surface: 'starter' },
+  { patterns: ['stable diffusion', 'image generation', 'text to image', 'ai art'], family: 'nextjs-ts', capabilities: ['capability:gpu-replicate', 'capability:ai-chat-ui'], surface: 'workspace-hint' },
+  { patterns: ['whisper', 'speech recognition', 'transcription', 'audio transcription'], family: 'python-api', capabilities: ['capability:gpu-replicate'], surface: 'starter' },
+
+  // Games / entertainment
+  { patterns: ['game', 'game app', 'multiplayer game', 'browser game'], family: 'react-vite-ts', capabilities: ['capability:realtime-ws'], surface: 'starter' },
+  { patterns: ['trivia app', 'quiz game', 'word game', 'puzzle game'], family: 'react-vite-ts', capabilities: [], surface: 'starter' },
+
+  // IoT / hardware
+  { patterns: ['iot dashboard', 'device management', 'sensor data', 'smart home', 'connected devices'], family: 'fullstack-ts', capabilities: ['capability:realtime-ws', 'capability:chart-widget'], surface: 'workspace-hint' },
+
+  // Email / communication
+  { patterns: ['email client', 'email app', 'gmail clone', 'webmail'], family: 'fullstack-ts', capabilities: ['capability:saas-teams'], surface: 'workspace-hint' },
+  { patterns: ['sendgrid', 'mailgun', 'email service', 'transactional email'], family: 'api-service', capabilities: ['capability:webhook-processor'], surface: 'starter' },
+
+  // Security
+  { patterns: ['password manager', '1password', 'vault app', 'secret manager'], family: 'fullstack-ts', capabilities: ['capability:saas-billing'], surface: 'starter' },
+  { patterns: ['auth0', 'okta', 'identity provider', 'sso platform'], family: 'fullstack-ts', capabilities: ['capability:saas-billing', 'capability:saas-teams'], surface: 'workspace-hint' },
+
+  // Search
+  { patterns: ['search engine', 'elasticsearch', 'algolia', 'search platform', 'semantic search app'], family: 'fullstack-ts', capabilities: ['capability:agent-rag'], surface: 'workspace-hint' },
+
+  // Collaboration
+  { patterns: ['miro', 'mural', 'collaborative whiteboard', 'brainstorming tool'], family: 'react-vite-ts', capabilities: ['capability:realtime-ws'], surface: 'workspace-hint' },
+  { patterns: ['airtable', 'spreadsheet app', 'database ui', 'no-code database'], family: 'fullstack-ts', capabilities: ['capability:admin-crud', 'capability:saas-teams'], surface: 'workspace-hint' },
+  { patterns: ['loom', 'screen recording', 'async video'], family: 'nextjs-ts', capabilities: [], surface: 'workspace-hint' },
+]
+
+function resolveProductArchetype(text: string): ProductArchetype | null {
+  for (const archetype of PRODUCT_ARCHETYPES) {
+    if (hasAny(text, archetype.patterns)) return archetype
+  }
+  return null
+}
+
 export async function planPrompt({
   prompt,
   partner = null,
@@ -996,6 +1138,31 @@ export async function planPrompt({
   }
 
   const starterSelection = await selectStarter({ prompt, partner: effectivePartner })
+
+  // Product archetype override — when the prompt references a known product/app type
+  // and the keyword scorer didn't find a strong match, use the archetype's family
+  const archetype = resolveProductArchetype(text)
+  // Archetype overrides generic families (frontend-static, api-service) but not
+  // domain-specific families that the keyword scorer already identified correctly
+  const genericFamilies = new Set(['frontend-static', 'api-service', 'worker-job'])
+  const archetypeApplies = archetype && (
+    starterSelection.fallbackUsed ||
+    (starterSelection.confidence !== 'high' && genericFamilies.has(starterSelection.spec.family))
+  )
+  if (archetypeApplies) {
+    const fwLayers: string[] = []
+    for (const [key, layer] of registry.layers) {
+      if (layer.group === 'framework' && layer.appliesTo?.includes(archetype.family)) {
+        fwLayers.push(key)
+      }
+    }
+    starterSelection.spec.family = archetype.family
+    starterSelection.spec.layers = [...fwLayers, ...archetype.capabilities]
+    starterSelection.confidence = 'medium'
+    starterSelection.fallbackUsed = false
+    starterSelection.reasons = [`product archetype matched: ${archetype.patterns[0]}`]
+  }
+
   const family = registry.families.get(starterSelection.spec.family)
   const spec: ComposeSpec = {
     ...starterSelection.spec,

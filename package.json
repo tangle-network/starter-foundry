@@ -3,11 +3,29 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "exports": {
+    ".": "./dist/lib/index.js",
+    "./planner": "./dist/lib/prompt-planner.js",
+    "./compose": "./dist/lib/compose.js",
+    "./registry": "./dist/lib/registry.js",
+    "./context": "./dist/lib/context-pack.js",
+    "./build-plan": "./dist/lib/build-plan.js",
+    "./workspace": "./dist/lib/workspace.js",
+    "./keywords": "./dist/lib/keywords.js",
+    "./types": "./dist/types.js"
+  },
+  "files": [
+    "dist/",
+    "registry/",
+    "corpus/",
+    "specs/"
+  ],
   "bin": {
     "starter-foundry": "./dist/cli.js"
   },
   "scripts": {
     "build": "tsc",
+    "prepublishOnly": "tsc",
     "test": "tsc && tsc -p tsconfig.test.json && node --test dist-tests/*.test.js",
     "catalog": "node dist/cli.js catalog",
     "select": "node dist/cli.js select",

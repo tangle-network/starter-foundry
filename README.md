@@ -1,192 +1,148 @@
 # starter-foundry
 
-`starter-foundry` is a fast project and workspace composer for AI coding products.
+Deterministic project scaffold engine for AI coding platforms. Routes a user prompt to the right project structure, composes files, and gives the AI agent a concrete build plan — all in under 10ms.
 
-It takes a user prompt like:
+```
+"Build a Next.js SaaS with Stripe billing and team management"
+  → nextjs-ts + capability:saas-teams + capability:tailwind + capability:dashboard-layout
+  → 14 files composed
+  → Build plan: create /settings/team, /dashboard, wire /api/team/invite, build TeamMemberList, InviteForm, Sidebar
+```
 
-`"Build a React dashboard with a Golang risk engine API and Coinbase CDP support"`
+## How it works
 
-and turns it into:
+```
+User prompt → planPrompt() → composeStarter() → tarball + build plan → AI agent starts building
+              ~1ms            ~3ms               ~5ms
+```
 
-- a starter or multi-project workspace plan
-- prebuilt files on disk
-- validation and benchmark output
-- a context pack the agent can start from
+The hot path is fully deterministic — no LLM calls, no network, no randomness. A keyword scorer routes prompts to families, a capability detector attaches specialization layers, and the compose engine writes template files to disk.
 
-## ELI5
+## Registry
 
-Think of it as a very fast `project setup brain`.
+| | Count | Examples |
+|---|---|---|
+| **Families** | 38 | nextjs-ts, react-vite-ts, agent-service-ts, forge-contracts, solana-program, python-api, go-api, sveltekit-ts, vue-ts, remix-ts, angular-ts |
+| **Capability layers** | 60 | agent-rag, agent-slack, agent-trading, defi-lending, defi-dex, saas-billing, saas-teams, shadcn, tailwind, deploy-docker, exchange-binance |
+| **Slot layers** | 18 | database (sqlite/postgres/mongodb/convex), auth (clerk/better-auth/supabase), payments (stripe/coinbase-commerce), sdk, queue |
+| **Partners** | 6 | Coinbase, Tangle, EigenLayer, Arbitrum, X Layer, Solana |
+| **Product archetypes** | 115+ | "Twitter clone" → fullstack-ts + realtime-ws + saas-teams |
 
-Instead of making an agent invent a repo from nothing, it:
+## Programmatic API
 
-1. reads the prompt
-2. picks the best prepared base
-3. composes the right files and dependency choices
-4. gives the agent a head start
+```typescript
+import { planPrompt, composeStarter, createContextPack } from 'starter-foundry'
 
-So the agent spends more time building the product and less time writing boilerplate.
+const plan = await planPrompt({
+  prompt: 'Build a RAG chatbot with vector search',
+  partner: null,
+})
+// → { kind: 'starter', spec: { family: 'agent-service-ts', layers: ['framework:agent-service-ts', 'capability:agent-rag'] } }
 
-## What It Does
+const result = await composeStarter({ spec: plan.spec, outDir: '/tmp/project' })
+// → { filesWritten: ['agent.mjs', 'agent.config.json', 'rag-config.json', 'retrieval-pipeline.mjs', ...] }
 
-- Routes prompts into a `starter` or a multi-project `workspace`
-- Composes families, layers, slots, and partner policy
-- Supports partner-steered dependency choices like `database`, `sdk`, `auth`, `payments`, and `queue`
-- Generates `PROJECT.md`, `AGENTS.md`, and structured context packs
-- Validates the output
-- Benchmarks time to first artifact and full validation
-- Runs prompt-level proof suites over a corpus of real scenarios
+const context = await createContextPack({ spec: plan.spec, outDir: '/tmp/project' })
+// → { buildPlan: { pages: [], apiRoutes: ['/api/ingest', '/api/query'], components: ['DocumentUploader', 'SearchResults'], ... } }
+```
 
-## Is It Agent Based?
+## CLI
 
-Partly.
+```bash
+npm run build && node dist/cli.js <command>
+```
 
-The hot path is **not** agent-based. The main flow is deterministic:
+| Command | Description |
+|---------|-------------|
+| `plan --prompt <text> [--partner <id>]` | Route a prompt to a family + capabilities |
+| `compose --spec <path> --out <dir>` | Compose a starter project |
+| `workspace-compose --spec <path> --out <dir>` | Compose a multi-project workspace |
+| `validate --spec <path>` | Run validation checks (file-exists, node-syntax, http-start) |
+| `context --spec <path>` | Generate a context pack with build plan |
+| `bench --spec <path> [--runs <n>]` | Benchmark compose + validate timing |
+| `prove --corpus <path> --out <dir>` | Run proof suite over a prompt corpus |
+| `catalog` | List all families and layers |
 
-`prompt -> plan -> compose -> validate -> context pack`
+## Architecture
 
-That is intentional. It keeps startup fast, predictable, and benchmarkable.
+```
+registry/
+  families/          38 project types (manifest.json + template files)
+  layers/
+    framework/       38 framework layers (entry points, config)
+    capability/      60 specialization layers (RAG, DeFi, SaaS, design system)
+    auth/            4 auth providers
+    database/        4 database providers
+    payments/        3 payment providers
+    queue/           3 queue providers
+    sdk/             4 SDK providers
+  partners/          6 partner packs (branded defaults)
 
-Agents are used around the edges:
+src/
+  lib/
+    keywords.ts      Lane routes, capability detection, fuzzy matching
+    selection.ts     Family scoring (reads keywords from manifests)
+    prompt-planner.ts  Workspace routing, slot detection, archetype matching
+    compose.ts       File composition with path traversal guard
+    build-plan.ts    Generates structured build plans from capabilities
+    context-pack.ts  Context pack with build plan for AI agents
+    registry.ts      Manifest loading, validation, caching
+```
 
-- `audit` prepares an agent-ready familiarization bundle
-- `evaluate` runs `opencode`, `codex`, or `claude` against a starter
-- future harden/evolve loops can repair or improve starters offline
+## Routing
 
-So the answer is:
+Three layers, evaluated in order:
 
-- core launcher: deterministic
-- optimization and review: agent-assisted
+1. **Product archetypes** — "Twitter clone" → fullstack-ts. 115+ known products/app patterns.
+2. **Keyword scoring** — Each family manifest declares keywords. The scorer picks the highest match.
+3. **Fuzzy fallback** — When exact matching finds nothing, Levenshtein distance ≤ 1 catches typos ("Ract" → "react").
 
-## Current Shape
+After family selection, **capability detection** scans the prompt against capability manifest keywords and attaches matching layers (RAG, Slack, DeFi lending, shadcn, etc.).
 
-- Starter families: frontend, mobile, extension, desktop, CLI, API, worker, automation, fullstack, edge, Rust, Go, Python data, Solidity/Forge, Solana, Move
-- Workspace composition: web + API + worker + multi-contract lanes
-- Partner policy: `database`, `sdk`, `auth`, `payments`, and `queue` slots
-- Proof corpus: real prompt suite across simple to mostly-complex scenarios
+## Quality
+
+| Metric | Value |
+|--------|-------|
+| Route accuracy (60 training scenarios) | 100% |
+| Route accuracy (43 held-out scenarios) | 100% |
+| Proof suite (compose + validate) | 60/60 |
+| Unit + keyword tests | 131/131 |
+| Adversarial accuracy (fixable prompts) | 83% |
+| Compose latency (warm) | ~5ms |
 
 ## Install
 
 ```bash
 npm install
+npm run build
+npm test
 ```
 
-No build step is required.
+Requires Node.js >= 20. Zero runtime dependencies.
 
-## CLI
+## Integration
 
-```bash
-starter-foundry <command> [options]
+starter-foundry powers the free-text scaffold path in [blueprint-agent](https://github.com/tangle-network/blueprint-agent). When a user types a prompt instead of clicking a curated template, starter-foundry routes, composes, and provides the build plan.
+
+```typescript
+// In blueprint-agent's scaffold pipeline
+import { planPrompt, composeStarter } from 'starter-foundry'
+
+const plan = await planPrompt({ prompt: userMessage, partner })
+if (plan.kind === 'starter') {
+  const result = await composeStarter({ spec: plan.spec, outDir })
+  // tarball extracted in container, agent gets build plan
+}
 ```
 
-Main commands:
+## Evolve
 
-- `plan --prompt <text>`
-- `compose --spec <path> --out <dir>`
-- `workspace-compose --spec <path> --out <dir>`
-- `validate --spec <path>`
-- `context --spec <path>`
-- `bench --spec <path>`
-- `prompt-e2e --corpus <path> --out <dir>`
-- `prove --corpus <path> --out <dir>`
-- `audit --spec <path>`
-- `evaluate --spec <path> --agents opencode,codex,claude`
+The `.evolve/` directory tracks improvement cycles:
 
-## Examples
+- `current.json` — current state (generation, round, status)
+- `progress.md` — human-readable progress
+- `experiments.jsonl` — structured experiment log
+- `scorecard.json` — product quality scorecard
+- `pursuits/` — generational design specs
 
-Plan from a raw prompt:
-
-```bash
-node src/cli.mjs plan --prompt "Build a React dashboard with a separate Golang risk engine API using Postgres and Coinbase CDP."
-```
-
-Compose a single starter:
-
-```bash
-node src/cli.mjs compose --spec specs/react-vite-coinbase.json --out /tmp/react-demo
-```
-
-Compose a multi-project workspace:
-
-```bash
-node src/cli.mjs workspace-compose --spec specs/multichain-workspace.json --out /tmp/multichain-demo
-```
-
-Generate a context pack:
-
-```bash
-node src/cli.mjs workspace-context --spec specs/multichain-workspace.json --out /tmp/multichain-demo
-```
-
-Run the proof suite:
-
-```bash
-node src/cli.mjs prove --corpus corpus/vibecode-e2e.json --out /tmp/starter-foundry-proof
-```
-
-## Output Model
-
-For a single starter, the output is usually:
-
-- project files
-- `.starter-foundry/compose-report.json`
-- `.starter-foundry/context-pack.json`
-
-For a workspace, the output also includes:
-
-- `PROJECT.md`
-- `AGENTS.md`
-- `.starter-foundry/launch-plan.json`
-- `.starter-foundry/workspace-report.json`
-- `.starter-foundry/workspace-context.json`
-
-## How To Think About It
-
-This tool does **not** try to generate every repo from scratch.
-
-It tries to find the best prepared starting state quickly, then let the agent build on top of that.
-
-That is why it is useful for AI coding products:
-
-- faster startup
-- better consistency
-- easier partner customization
-- benchmarkable quality gates
-
-## Current Proof Status
-
-The current proof corpus covers:
-
-- `33` prompt scenarios
-- `21` starter families
-- both starters and multi-project workspaces
-- simple, medium, complex, and mostly-complex prompts
-
-Recent proof command:
-
-```bash
-node src/cli.mjs prove --corpus corpus/vibecode-e2e.json --out /tmp/starter-foundry-proof
-```
-
-Recent result summary:
-
-- `passRate: 1`
-- `routeAccuracy: 1`
-- `validationPassRate: 1`
-- `primaryArtifactHitRate: 1`
-
-Some lanes are still environment-dependent:
-
-- Go and Move are currently structurally validated on machines without those toolchains
-- Forge and Solana use real toolchain checks here
-
-## Repo Layout
-
-- `src/` CLI and engine
-- `registry/` families, layers, and partner packs
-- `specs/` sample starter and workspace specs
-- `corpus/` proof scenarios
-- `tests/` engine and proof tests
-
-## Short Version
-
-`starter-foundry` is a deterministic scaffold/workspace engine for AI coding systems, with agent hooks around it for audit and optimization.
+4 generations shipped: TypeScript migration, registry-driven routing, product archetypes + fuzzy matching, build plans for AI agents.

@@ -1137,6 +1137,10 @@ const PRODUCT_ARCHETYPES: ProductArchetype[] = [
   { patterns: ['t3 stack', 't3 app'], family: 'nextjs-ts', capabilities: ['capability:tailwind'], surface: 'starter' },
   { patterns: ['mern stack', 'mern app'], family: 'fullstack-ts', capabilities: [], surface: 'starter' },
   { patterns: ['mean stack', 'mean app'], family: 'fullstack-ts', capabilities: [], surface: 'starter' },
+
+  // Crypto slang
+  { patterns: ['pump.fun', 'memecoin launcher', 'meme coin launcher', 'token launcher'], family: 'forge-contracts', capabilities: ['capability:defi-dex'], surface: 'workspace-hint' },
+  { patterns: ['telegram bot', 'telegram trading bot', 'tg bot'], family: 'worker-job', capabilities: ['capability:market-sim'], surface: 'starter' },
 ]
 
 function resolveProductArchetype(text: string): ProductArchetype | null {

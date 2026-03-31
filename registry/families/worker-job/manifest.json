@@ -72,6 +72,8 @@
     "trading",
     "queue",
     "cron",
-    "stream"
+    "stream",
+    "telegram bot",
+    "telegram trading"
   ]
 }

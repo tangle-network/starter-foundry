@@ -319,6 +319,10 @@ export const LANE_ROUTES: LaneRoute[] = [
       'deploy a token',
       'create a token',
       'token on base',
+      'memecoin',
+      'meme coin',
+      'pump.fun',
+      'token launcher',
     ],
   },
 ]

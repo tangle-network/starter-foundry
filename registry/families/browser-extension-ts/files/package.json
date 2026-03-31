@@ -5,5 +5,8 @@
   "scripts": {
     "dev": "node preview-server.mjs",
     "validate": "node validate-types.mjs"
+  },
+  "devDependencies": {
+    "vite": "^6.2.0"
   }
 }

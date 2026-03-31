@@ -5,5 +5,9 @@
   "scripts": {
     "test": "echo hardhat tests placeholder",
     "deploy": "echo hardhat deploy placeholder"
+  },
+  "devDependencies": {
+    "hardhat": "^2.22.0",
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0"
   }
 }

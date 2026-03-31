@@ -4,5 +4,8 @@
   "type": "module",
   "scripts": {
     "validate": "node --experimental-strip-types validate-worker.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
   }
 }

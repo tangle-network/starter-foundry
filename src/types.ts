@@ -77,6 +77,8 @@ export interface LayerManifest extends ManifestBase {
   keywords?: string[]
   /** Other capability IDs that must be present when this capability is attached. */
   capabilityRequires?: string[]
+  /** Concrete build suggestions for the AI agent when this capability is active. */
+  buildHints?: BuildHints
 }
 
 export interface PartnerManifest extends ManifestBase {
@@ -108,6 +110,28 @@ export interface ComposeSpec {
   slots?: Record<string, string>
   variables?: Record<string, unknown>
   primaryArtifactTargetMs?: number
+  /** Original user prompt that generated this spec. Passed through to the AI agent context. */
+  userPrompt?: string
+}
+
+export interface BuildPlan {
+  goal: string
+  architecture: string[]
+  pages: string[]
+  apiRoutes: string[]
+  components: string[]
+  dataModels: string[]
+  integrations: string[]
+  firstMoves: string[]
+}
+
+export interface BuildHints {
+  pages?: string[]
+  apiRoutes?: string[]
+  components?: string[]
+  dataModels?: string[]
+  integrations?: string[]
+  architectureNotes?: string[]
 }
 
 export interface ProjectEntry {
@@ -283,6 +307,8 @@ export interface ContextPack {
     summary: string
     firstMoves: string[]
   }
+  buildPlan?: BuildPlan
+  userPrompt?: string | null
 }
 
 export interface ComposeReport {

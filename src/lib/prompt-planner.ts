@@ -1197,6 +1197,7 @@ export async function planPrompt({
     ...starterSelection.spec,
     projectName: buildSlug(prompt, starterSelection.spec.projectName),
     primaryArtifactTargetMs: 2500,
+    userPrompt: prompt,
   }
 
   const databaseSlot = detectDatabaseSlot(text)

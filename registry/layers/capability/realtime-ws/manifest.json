@@ -34,5 +34,24 @@
     "pub/sub server",
     "presence tracking",
     "websocket api"
-  ]
+  ],
+  "buildHints": {
+    "apiRoutes": [
+      "/api/ws"
+    ],
+    "components": [
+      "PresenceIndicator",
+      "OnlineUsers",
+      "LiveUpdates"
+    ],
+    "dataModels": [
+      "Room",
+      "Presence",
+      "Message"
+    ],
+    "integrations": [
+      "WebSocket upgrade handler",
+      "Room-based pub/sub"
+    ]
+  }
 }

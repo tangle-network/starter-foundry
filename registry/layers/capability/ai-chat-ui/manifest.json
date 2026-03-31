@@ -34,5 +34,31 @@
     "conversation ui",
     "chat app",
     "chatgpt clone"
-  ]
+  ],
+  "buildHints": {
+    "pages": [
+      "/chat",
+      "/chat/[id]"
+    ],
+    "apiRoutes": [
+      "/api/chat",
+      "/api/chat/history"
+    ],
+    "components": [
+      "ChatMessage",
+      "ChatInput",
+      "MessageList",
+      "StreamingIndicator",
+      "CodeBlock"
+    ],
+    "dataModels": [
+      "Message",
+      "Conversation",
+      "ToolCallResult"
+    ],
+    "integrations": [
+      "Server-Sent Events for streaming",
+      "Markdown rendering"
+    ]
+  }
 }

@@ -29,5 +29,30 @@
     "internal tool",
     "data management",
     "admin console"
-  ]
+  ],
+  "buildHints": {
+    "pages": [
+      "/admin",
+      "/admin/users",
+      "/admin/orders"
+    ],
+    "apiRoutes": [
+      "/api/admin/entities",
+      "/api/admin/bulk"
+    ],
+    "components": [
+      "DataTable",
+      "EntityForm",
+      "BulkActionBar",
+      "SearchFilter",
+      "ExportButton"
+    ],
+    "dataModels": [
+      "Entity schema from admin-config.json"
+    ],
+    "integrations": [
+      "CSV export",
+      "Bulk operations"
+    ]
+  }
 }

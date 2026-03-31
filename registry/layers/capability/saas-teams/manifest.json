@@ -33,5 +33,33 @@
     "invitation system",
     "rbac",
     "workspace management"
-  ]
+  ],
+  "buildHints": {
+    "pages": [
+      "/settings/team",
+      "/settings/members",
+      "/invite"
+    ],
+    "apiRoutes": [
+      "/api/team/invite",
+      "/api/team/members",
+      "/api/team/roles"
+    ],
+    "components": [
+      "TeamMemberList",
+      "InviteForm",
+      "RoleSelector",
+      "TeamSwitcher"
+    ],
+    "dataModels": [
+      "Team",
+      "TeamMember",
+      "Invitation",
+      "Role"
+    ],
+    "integrations": [
+      "Email invitations",
+      "Role-based access control"
+    ]
+  }
 }

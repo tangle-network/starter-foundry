@@ -33,5 +33,32 @@
     "plan tiers",
     "freemium",
     "saas pricing"
-  ]
+  ],
+  "buildHints": {
+    "pages": [
+      "/pricing",
+      "/settings/billing",
+      "/checkout"
+    ],
+    "apiRoutes": [
+      "/api/webhooks/stripe",
+      "/api/billing/portal"
+    ],
+    "components": [
+      "PricingCard",
+      "BillingPortalButton",
+      "UsageMeter",
+      "PlanBadge"
+    ],
+    "dataModels": [
+      "Subscription",
+      "Plan",
+      "UsageRecord"
+    ],
+    "integrations": [
+      "Stripe Checkout",
+      "Stripe Customer Portal",
+      "Stripe Webhooks"
+    ]
+  }
 }

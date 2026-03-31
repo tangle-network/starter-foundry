@@ -36,5 +36,13 @@
   ],
   "capabilityRequires": [
     "tailwind"
-  ]
+  ],
+  "buildHints": {
+    "architectureNotes": [
+      "Generate components.json at project root",
+      "Create src/lib/utils.ts with cn() utility",
+      "Set up tsconfig paths: @/* -> ./src/*",
+      "Install base components: npx shadcn@latest add button card input"
+    ]
+  }
 }

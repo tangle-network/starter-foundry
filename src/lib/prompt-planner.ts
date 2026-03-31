@@ -1112,6 +1112,31 @@ const PRODUCT_ARCHETYPES: ProductArchetype[] = [
   { patterns: ['miro', 'mural', 'collaborative whiteboard', 'brainstorming tool'], family: 'react-vite-ts', capabilities: ['capability:realtime-ws'], surface: 'workspace-hint' },
   { patterns: ['airtable', 'spreadsheet app', 'database ui', 'no-code database'], family: 'fullstack-ts', capabilities: ['capability:admin-crud', 'capability:saas-teams'], surface: 'workspace-hint' },
   { patterns: ['loom', 'screen recording', 'async video'], family: 'nextjs-ts', capabilities: [], surface: 'workspace-hint' },
+
+  // Feature-based patterns (no product name, just what the app does)
+  { patterns: ['sign up', 'user accounts', 'user registration', 'login system'], family: 'fullstack-ts', capabilities: ['capability:saas-teams'], surface: 'starter' },
+  { patterns: ['file sharing', 'file upload', 'document sharing', 'upload files'], family: 'fullstack-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['kanban board', 'drag and drop', 'task board'], family: 'fullstack-ts', capabilities: ['capability:realtime-ws'], surface: 'starter' },
+  { patterns: ['chat rooms', 'typing indicators', 'group chat', 'messaging system'], family: 'fullstack-ts', capabilities: ['capability:realtime-ws'], surface: 'workspace-hint' },
+
+  // Crypto-specific products
+  { patterns: ['sniper bot', 'frontrun bot', 'mev bot', 'sandwich bot'], family: 'worker-job', capabilities: ['capability:market-sim'], surface: 'starter' },
+  { patterns: ['nft marketplace', 'nft platform', 'nft minting', 'nft collection'], family: 'forge-contracts', capabilities: [], surface: 'workspace-hint' },
+  { patterns: ['dao platform', 'governance platform', 'voting platform'], family: 'forge-contracts', capabilities: [], surface: 'workspace-hint' },
+  { patterns: ['dex aggregator', 'swap aggregator', '1inch'], family: 'forge-contracts', capabilities: ['capability:defi-dex'], surface: 'workspace-hint' },
+  { patterns: ['multisig wallet', 'multi-sig', 'gnosis safe', 'safe wallet'], family: 'forge-contracts', capabilities: [], surface: 'starter' },
+
+  // AI-specific products
+  { patterns: ['autogpt', 'auto-gpt', 'autonomous agent', 'self-improving agent'], family: 'agent-service-ts', capabilities: ['capability:agent-multi-agent'], surface: 'starter' },
+  { patterns: ['langchain app', 'langchain'], family: 'agent-service-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['ai writer', 'content generator', 'blog writer', 'ai copywriter'], family: 'agent-service-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['ai phone', 'ai receptionist', 'ai call center', 'voice ai agent'], family: 'agent-service-ts', capabilities: ['capability:realtime-ws'], surface: 'starter' },
+  { patterns: ['custom gpt', 'train a gpt', 'fine-tune gpt'], family: 'agent-service-py', capabilities: ['capability:ai-fine-tuning'], surface: 'starter' },
+
+  // Stack abbreviations
+  { patterns: ['t3 stack', 't3 app'], family: 'nextjs-ts', capabilities: ['capability:tailwind'], surface: 'starter' },
+  { patterns: ['mern stack', 'mern app'], family: 'fullstack-ts', capabilities: [], surface: 'starter' },
+  { patterns: ['mean stack', 'mean app'], family: 'fullstack-ts', capabilities: [], surface: 'starter' },
 ]
 
 function resolveProductArchetype(text: string): ProductArchetype | null {

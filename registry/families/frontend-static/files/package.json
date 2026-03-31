@@ -4,6 +4,11 @@
   "type": "module",
   "scripts": {
     "start": "node serve.mjs",
-    "validate": "node --check serve.mjs && node --check app.js"
+    "validate": "node --check serve.mjs && node --check app.js",
+    "dev": "serve -l 3000",
+    "preview": "serve -l 3000"
+  },
+  "devDependencies": {
+    "serve": "^14.2.0"
   }
 }

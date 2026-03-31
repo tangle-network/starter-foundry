@@ -1,1 +1,19 @@
-{ "name": "{{packageName}}", "private": true, "type": "module", "scripts": { "dev": "remix vite:dev", "build": "remix vite:build" } }
+{
+  "name": "{{packageName}}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "remix vite:dev",
+    "build": "remix vite:build"
+  },
+  "dependencies": {
+    "@remix-run/node": "^2.0.0",
+    "@remix-run/react": "^2.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "vite": "^6.2.0",
+    "@remix-run/dev": "^2.0.0"
+  }
+}

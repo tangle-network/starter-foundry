@@ -1,7 +1,10 @@
 {
   "id": "evm-protocol-api",
   "description": "Adds protocol-service seams for EVM relayers, indexers, paymasters, and analytics APIs.",
-  "appliesTo": ["api-service", "evm-infra-ts"],
+  "appliesTo": [
+    "api-service",
+    "evm-infra-ts"
+  ],
   "defaults": {
     "protocolRole": "indexer",
     "protocolScope": "evm"
@@ -17,6 +20,17 @@
     }
   ],
   "contextHints": {
-    "extensionPoints": ["protocol-config.json", "hooks.mjs"]
-  }
+    "extensionPoints": [
+      "protocol-config.json",
+      "hooks.mjs"
+    ]
+  },
+  "keywords": [
+    "indexer",
+    "subgraph",
+    "protocol api",
+    "evm indexer",
+    "event indexer",
+    "relayer api"
+  ]
 }

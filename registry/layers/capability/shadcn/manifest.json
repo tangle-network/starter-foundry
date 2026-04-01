@@ -10,15 +10,122 @@
     "tauri-desktop"
   ],
   "files": [
-    { "source": "files/shadcn-config.json", "target": "shadcn-config.json" },
-    { "source": "files/utils.ts", "target": "src/lib/utils.ts" },
-    { "source": "files/button.tsx", "target": "src/components/ui/button.tsx" },
-    { "source": "files/card.tsx", "target": "src/components/ui/card.tsx" },
-    { "source": "files/input.tsx", "target": "src/components/ui/input.tsx" },
-    { "source": "files/label.tsx", "target": "src/components/ui/label.tsx" },
-    { "source": "files/badge.tsx", "target": "src/components/ui/badge.tsx" },
-    { "source": "files/separator.tsx", "target": "src/components/ui/separator.tsx" },
-    { "source": "files/skeleton.tsx", "target": "src/components/ui/skeleton.tsx" }
+    {
+      "source": "files/shadcn-config.json",
+      "target": "shadcn-config.json"
+    },
+    {
+      "source": "files/utils.ts",
+      "target": "src/lib/utils.ts"
+    },
+    {
+      "source": "files/alert.tsx",
+      "target": "src/components/ui/alert.tsx"
+    },
+    {
+      "source": "files/avatar.tsx",
+      "target": "src/components/ui/avatar.tsx"
+    },
+    {
+      "source": "files/badge.tsx",
+      "target": "src/components/ui/badge.tsx"
+    },
+    {
+      "source": "files/breadcrumb.tsx",
+      "target": "src/components/ui/breadcrumb.tsx"
+    },
+    {
+      "source": "files/button.tsx",
+      "target": "src/components/ui/button.tsx"
+    },
+    {
+      "source": "files/card.tsx",
+      "target": "src/components/ui/card.tsx"
+    },
+    {
+      "source": "files/checkbox.tsx",
+      "target": "src/components/ui/checkbox.tsx"
+    },
+    {
+      "source": "files/command.tsx",
+      "target": "src/components/ui/command.tsx"
+    },
+    {
+      "source": "files/dialog.tsx",
+      "target": "src/components/ui/dialog.tsx"
+    },
+    {
+      "source": "files/dropdown-menu.tsx",
+      "target": "src/components/ui/dropdown-menu.tsx"
+    },
+    {
+      "source": "files/form.tsx",
+      "target": "src/components/ui/form.tsx"
+    },
+    {
+      "source": "files/input.tsx",
+      "target": "src/components/ui/input.tsx"
+    },
+    {
+      "source": "files/label.tsx",
+      "target": "src/components/ui/label.tsx"
+    },
+    {
+      "source": "files/progress.tsx",
+      "target": "src/components/ui/progress.tsx"
+    },
+    {
+      "source": "files/scroll-area.tsx",
+      "target": "src/components/ui/scroll-area.tsx"
+    },
+    {
+      "source": "files/select.tsx",
+      "target": "src/components/ui/select.tsx"
+    },
+    {
+      "source": "files/separator.tsx",
+      "target": "src/components/ui/separator.tsx"
+    },
+    {
+      "source": "files/sheet.tsx",
+      "target": "src/components/ui/sheet.tsx"
+    },
+    {
+      "source": "files/sidebar.tsx",
+      "target": "src/components/ui/sidebar.tsx"
+    },
+    {
+      "source": "files/skeleton.tsx",
+      "target": "src/components/ui/skeleton.tsx"
+    },
+    {
+      "source": "files/switch.tsx",
+      "target": "src/components/ui/switch.tsx"
+    },
+    {
+      "source": "files/table.tsx",
+      "target": "src/components/ui/table.tsx"
+    },
+    {
+      "source": "files/tabs.tsx",
+      "target": "src/components/ui/tabs.tsx"
+    },
+    {
+      "source": "files/textarea.tsx",
+      "target": "src/components/ui/textarea.tsx"
+    },
+    {
+      "source": "files/toast.tsx",
+      "target": "src/components/ui/toast.tsx"
+    },
+    {
+      "source": "files/toggle.tsx",
+      "target": "src/components/ui/toggle.tsx"
+    },
+    {
+      "source": "files/tooltip.tsx",
+      "target": "src/components/ui/tooltip.tsx"
+    }
   ],
   "contextHints": {
     "extensionPoints": [

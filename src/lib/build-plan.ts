@@ -149,10 +149,11 @@ function generateDesignDirective(
     rules.push(
       '',
       'shadcn/ui:',
-      '- Components are pre-installed in src/components/ui/. Import them directly.',
-      '- Use the cn() utility from @/lib/utils for merging classes.',
-      '- Never ship unstyled native HTML elements when a shadcn component exists (Button, Input, Card, Badge, etc.).',
-      '- Add more components with: npx shadcn@latest add [component]',
+      '- 27 components pre-installed in src/components/ui/: Alert, Avatar, Badge, Breadcrumb, Button, Card, Checkbox, Command, Dialog, DropdownMenu, Form, Input, Label, Progress, ScrollArea, Select, Separator, Sheet, Sidebar, Skeleton, Switch, Table, Tabs, Textarea, Toast, Toggle, Tooltip.',
+      '- Import directly: import { Button } from "@/components/ui/button"',
+      '- Use the cn() utility from @/lib/utils for merging Tailwind classes.',
+      '- Never ship unstyled native HTML when a shadcn component exists.',
+      '- For Radix-powered versions, install @radix-ui/* and update the component.',
       '- Follow the new-york style: tighter spacing, smaller radius, more refined.',
     )
   }

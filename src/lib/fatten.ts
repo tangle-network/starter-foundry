@@ -12,6 +12,12 @@ interface FattenResult {
   durationMs: number
 }
 
+interface FattenWorkspaceResult {
+  outDir: string
+  projects: Array<{ path: string; result: FattenResult }>
+  durationMs: number
+}
+
 function run(command: string, cwd: string, timeoutMs = 120000): Promise<{ ok: boolean; stdout: string; stderr: string }> {
   return new Promise((resolve) => {
     const child = spawn('sh', ['-c', command], { cwd, stdio: ['ignore', 'pipe', 'pipe'] })
@@ -96,4 +102,34 @@ export async function fattenStarter(outDir: string): Promise<FattenResult> {
 
   result.durationMs = Math.round(performance.now() - start)
   return result
+}
+
+/**
+ * Fatten a composed workspace directory. Finds all sub-projects with
+ * package.json and fattens each one independently.
+ */
+export async function fattenWorkspace(outDir: string): Promise<FattenWorkspaceResult> {
+  const start = performance.now()
+  const projects: FattenWorkspaceResult['projects'] = []
+
+  // Check for workspace report to find project paths
+  const reportPath = path.join(outDir, '.starter-foundry', 'workspace-report.json')
+  try {
+    const report = await readJson<{ projects: Array<{ path: string }> }>(reportPath)
+    for (const project of report.projects) {
+      const projectDir = path.join(outDir, project.path)
+      const result = await fattenStarter(projectDir)
+      projects.push({ path: project.path, result })
+    }
+  } catch {
+    // No workspace report — try fattening the root directory
+    const result = await fattenStarter(outDir)
+    projects.push({ path: '.', result })
+  }
+
+  return {
+    outDir,
+    projects,
+    durationMs: Math.round(performance.now() - start),
+  }
 }

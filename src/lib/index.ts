@@ -8,7 +8,7 @@ export { selectStarter } from './selection.js'
 export { validateStarter } from './validate.js'
 export { benchmarkStarter } from './benchmark.js'
 export { composeWorkspace, createWorkspaceContextPack, benchmarkWorkspace } from './workspace.js'
-export { fattenStarter } from './fatten.js'
+export { fattenStarter, fattenWorkspace } from './fatten.js'
 export { matchesKeyword, hasAny, detectLane, detectCapabilities } from './keywords.js'
 export type {
   ComposeSpec,

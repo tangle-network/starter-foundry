@@ -288,7 +288,7 @@
       "complexity": "simple",
       "partner": null,
       "prompt": "Build me an app.",
-      "expected": { "kind": "starter", "family": "frontend-static" }
+      "expected": { "kind": "starter", "family": "fullstack-ts" }
     },
     {
       "id": "ho-tangle-blueprint",

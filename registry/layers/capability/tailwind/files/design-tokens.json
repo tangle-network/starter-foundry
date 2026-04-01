@@ -45,6 +45,7 @@
     "These are the default shadcn/ui design tokens in HSL format.",
     "Apply light tokens to :root and dark tokens to .dark class.",
     "Override individual tokens to match brand colors.",
-    "All components reference these tokens via Tailwind utility classes."
+    "All components reference these tokens via Tailwind utility classes.",
+    "Include a prefers-reduced-motion media query in globals.css to disable animations and transitions for accessibility."
   ]
 }

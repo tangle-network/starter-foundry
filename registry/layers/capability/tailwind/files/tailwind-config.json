@@ -35,6 +35,7 @@
     "Generate postcss.config.js with tailwindcss and autoprefixer plugins.",
     "Add @tailwind base, components, and utilities directives to the global CSS file.",
     "CSS variables in :root and .dark enable light/dark mode switching.",
-    "These color tokens are shadcn/ui compatible — use with capability:shadcn for full component system."
+    "These color tokens are shadcn/ui compatible — use with capability:shadcn for full component system.",
+    "Add @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } } to globals.css for accessibility."
   ]
 }

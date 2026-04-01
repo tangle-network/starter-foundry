@@ -129,12 +129,43 @@ export async function composeStarter({ spec, outDir }: { spec: ComposeSpec; outD
   const agentsMd = buildAgentsMd(spec, components, composeReport.contextHints)
   await fs.writeFile(path.join(outDir, 'AGENTS.md'), `${agentsMd}\n`, 'utf8')
 
+  // Generate llms.txt — machine-readable project description for AI agents
+  const llmsTxt = buildLlmsTxt(spec, components, composeReport.contextHints)
+  await fs.writeFile(path.join(outDir, 'llms.txt'), `${llmsTxt}\n`, 'utf8')
+
   return {
     outDir,
-    filesWritten: [...new Set([...filesWritten, 'AGENTS.md'])].sort(),
+    filesWritten: [...new Set([...filesWritten, 'AGENTS.md', 'llms.txt'])].sort(),
     composeReportPath: path.join(outDir, '.starter-foundry', 'compose-report.json'),
     components: composeReport.components,
   }
+}
+
+function buildLlmsTxt(
+  spec: ComposeSpec,
+  components: ResolvedComponents,
+  contextHints: ReturnType<typeof collectContextHints>,
+): string {
+  const lines = [
+    `# ${spec.projectName}`,
+    '',
+    `> ${components.family.description}`,
+    '',
+    `## Stack`,
+    `- Family: ${spec.family}`,
+    `- Layers: ${components.layers.map(l => `${l.group}:${l.id}`).join(', ')}`,
+    components.partner ? `- Partner: ${components.partner.id}` : null,
+    '',
+    `## Entry Points`,
+    ...contextHints.entrypoints.map(e => `- ${e}`),
+    '',
+    `## Commands`,
+    ...contextHints.commands.map(c => `- ${c}`),
+    '',
+    `## Extension Points`,
+    ...contextHints.extensionPoints.map(e => `- ${e}`),
+  ].filter(line => line !== null)
+  return lines.join('\n')
 }
 
 function buildAgentsMd(

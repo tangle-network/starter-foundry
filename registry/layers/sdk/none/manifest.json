@@ -22,7 +22,11 @@
     "agent-service-rust",
     "x402-service",
     "zk-prover-service",
-    "evm-infra-ts"
+    "evm-infra-ts",
+    "angular-ts",
+    "remix-ts",
+    "sveltekit-ts",
+    "vue-ts"
   ],
   "defaults": {
     "sdkProvider": "none"

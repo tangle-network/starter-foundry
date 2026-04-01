@@ -1,5 +1,6 @@
 import { fuzzyKeywordScore, keywordScore, matchesKeyword } from './keywords.js'
 import { loadRegistry } from './registry.js'
+import { semanticMatch, isSemanticRouterReady } from './semantic-router.js'
 import type { SelectionResult, Confidence, ComposeSpec, FamilyManifest } from '../types.js'
 
 const TIER_WEIGHTS = { tier1: 4, tier2: 2, tier3: 1, archetypes: 3 } as const
@@ -79,6 +80,24 @@ export async function selectStarter({
       }
     }
     candidates.sort((left, right) => right.score - left.score)
+  }
+
+  // Semantic fallback: when keyword score is low, use embedding similarity
+  // to find the best family match based on description understanding.
+  // Only fires when the semantic router has been initialized (optional).
+  // Semantic fallback only fires when keywords found NOTHING (score 0).
+  // This prevents the embedding from overriding confident keyword matches.
+  if (candidates[0]!.score === 0 && isSemanticRouterReady()) {
+    const match = await semanticMatch(prompt)
+    if (match && match.score > 0.55) {
+      const semanticCandidate = candidates.find((c) => c.family === match.familyId)
+      if (semanticCandidate) {
+        // Boost the semantically-matched candidate so it wins
+        semanticCandidate.score = Math.max(semanticCandidate.score, 8)
+        semanticCandidate.reasons = [`semantic match: ${match.familyId} (${Math.round(match.score * 100)}% similarity)`]
+        candidates.sort((left, right) => right.score - left.score)
+      }
+    }
   }
 
   const winner = candidates[0]!

@@ -158,6 +158,17 @@ export async function loadRegistry(): Promise<Registry> {
   return registryPromise
 }
 
+/**
+ * Initialize the semantic router (embedding-based fallback).
+ * Call once at server startup for ~15ms embedding inference on low-confidence prompts.
+ * Optional — if not called, the keyword scorer handles everything alone.
+ */
+export async function initSemanticRouting(): Promise<void> {
+  const registry = await loadRegistry()
+  const { initSemanticRouter } = await import('./semantic-router.js')
+  await initSemanticRouter(registry)
+}
+
 /** Clears the in-process registry cache. Primarily useful in tests. */
 export function clearRegistryCache(): void {
   registryPromise = null

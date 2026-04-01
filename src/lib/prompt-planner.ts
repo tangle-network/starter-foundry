@@ -1051,6 +1051,10 @@ export async function planPrompt({
   if (paymentsSlot && family?.slots?.['payments']) spec.slots['payments'] = paymentsSlot
   if (queueSlot && family?.slots?.['queue']) spec.slots['queue'] = queueSlot
 
+  // Lane overrides — only apply when family was NOT hinted by the caller.
+  // When familyHint is set, the caller knows the family. Don't override it.
+  if (!familyHint) {
+
   if (detectLane(text, 'tangle')) {
     spec.family = 'tangle-blueprint'
     spec.layers = ['framework:tangle-blueprint']
@@ -1136,6 +1140,8 @@ export async function planPrompt({
     spec.family = 'rust-service'
     spec.layers = ['framework:rust-http']
   }
+
+  } // end !familyHint guard
 
   // Detect and attach capability layers based on prompt keywords
   const capabilities = detectCapabilities(text, spec.family, registry)

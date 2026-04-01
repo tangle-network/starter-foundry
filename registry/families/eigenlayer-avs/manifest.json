@@ -63,5 +63,17 @@
     "keeper avs",
     "sequencer avs",
     "coprocessor avs"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "eigenlayer"
+    ],
+    "tier2": [
+      "avs",
+      "oracle avs",
+      "keeper avs",
+      "sequencer avs",
+      "coprocessor avs"
+    ]
+  }
 }

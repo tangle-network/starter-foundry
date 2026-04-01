@@ -100,5 +100,16 @@
     "summarization system",
     "text classification system",
     "prompt engineering"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "dspy"
+    ],
+    "tier2": [
+      "rag system",
+      "summarization system",
+      "text classification system",
+      "prompt engineering"
+    ]
+  }
 }

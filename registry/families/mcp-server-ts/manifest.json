@@ -106,5 +106,15 @@
     "mcp server",
     "mcp tools",
     "mcp tool server"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "model context protocol",
+      "mcp server"
+    ],
+    "tier2": [
+      "mcp tools",
+      "mcp tool server"
+    ]
+  }
 }

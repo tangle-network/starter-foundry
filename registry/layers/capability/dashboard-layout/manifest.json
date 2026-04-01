@@ -27,7 +27,11 @@
     "dashboard layout",
     "admin layout",
     "collapsible sidebar",
-    "navigation sidebar"
+    "navigation sidebar",
+    "dashboard",
+    "admin",
+    "sidebar",
+    "navigation"
   ],
   "capabilityRequires": [
     "tailwind"

@@ -114,5 +114,17 @@
     "edge function",
     "hono edge",
     "workerd"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "cloudflare",
+      "hono edge"
+    ],
+    "tier2": [
+      "durable object",
+      "edge api",
+      "edge function",
+      "workerd"
+    ]
+  }
 }

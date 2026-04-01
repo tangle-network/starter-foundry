@@ -79,5 +79,21 @@
     "terminal tool",
     "shell tool",
     "developer tool"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier2": [
+      "shell tool",
+      "developer tool"
+    ],
+    "tier3": [
+      "cli",
+      "command line",
+      "terminal tool"
+    ],
+    "archetypes": [
+      "database migration",
+      "migration tool",
+      "schema migration"
+    ]
+  }
 }

@@ -107,5 +107,15 @@
     "rig",
     "cargo agent",
     "autonomous rust"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "rust agent",
+      "cargo agent",
+      "autonomous rust"
+    ],
+    "tier2": [
+      "rig"
+    ]
+  }
 }

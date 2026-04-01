@@ -114,5 +114,28 @@
     "boost": {
       "python": 2
     }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "python",
+      "fastapi",
+      "flask",
+      "django",
+      "api in python"
+    ],
+    "archetypes": [
+      "inference api",
+      "model serving",
+      "ml api",
+      "prediction api",
+      "hugging face",
+      "huggingface",
+      "model hub",
+      "model registry",
+      "whisper",
+      "speech recognition",
+      "transcription",
+      "audio transcription"
+    ]
   }
 }

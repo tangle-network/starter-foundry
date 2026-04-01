@@ -63,5 +63,21 @@
     "csv upload",
     "analytics app",
     "ml demo"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "streamlit",
+      "gradio",
+      "data app",
+      "csv upload",
+      "kpi charts",
+      "analytics app"
+    ],
+    "tier2": [
+      "data app",
+      "csv upload",
+      "analytics app",
+      "ml demo"
+    ]
+  }
 }

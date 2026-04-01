@@ -93,5 +93,13 @@
     "sveltekit",
     "svelte kit",
     "svelte app"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "svelte",
+      "sveltekit",
+      "svelte kit",
+      "svelte app"
+    ]
+  }
 }

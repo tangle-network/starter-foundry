@@ -105,5 +105,14 @@
     "manifest v3",
     "extension popup",
     "firefox addon"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier2": [
+      "browser extension",
+      "chrome extension",
+      "manifest v3",
+      "extension popup",
+      "firefox addon"
+    ]
+  }
 }

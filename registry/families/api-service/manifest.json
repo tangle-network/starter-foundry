@@ -116,5 +116,34 @@
     "express",
     "express.js",
     "expressjs"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "express",
+      "express.js",
+      "expressjs"
+    ],
+    "tier3": [
+      "api",
+      "server",
+      "endpoint",
+      "backend",
+      "service",
+      "webhook"
+    ],
+    "archetypes": [
+      "sendgrid",
+      "mailgun",
+      "email service",
+      "transactional email",
+      "token gating",
+      "token gate",
+      "nft gating",
+      "gated content",
+      "webhook tester",
+      "requestbin",
+      "webhook debugger",
+      "webhook inspector"
+    ]
+  }
 }

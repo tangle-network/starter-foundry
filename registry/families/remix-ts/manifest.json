@@ -87,5 +87,16 @@
     "remix app",
     "loader",
     "action"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "remix",
+      "remix run",
+      "remix app"
+    ],
+    "tier2": [
+      "loader",
+      "action"
+    ]
+  }
 }

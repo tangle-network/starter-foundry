@@ -90,5 +90,17 @@
     "nuxt",
     "composition api",
     "vue app"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "vue",
+      "vue.js",
+      "vuejs",
+      "nuxt",
+      "vue app"
+    ],
+    "tier2": [
+      "composition api"
+    ]
+  }
 }

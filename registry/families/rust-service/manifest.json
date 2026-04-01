@@ -108,5 +108,15 @@
     "boost": {
       "rust": 2
     }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "rust",
+      "rust service",
+      "axum",
+      "rust api",
+      "rust backend",
+      "cargo"
+    ]
   }
 }

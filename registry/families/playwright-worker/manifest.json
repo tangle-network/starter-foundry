@@ -71,5 +71,16 @@
     "web scraping",
     "scraper",
     "crawler"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "playwright"
+    ],
+    "tier2": [
+      "browser automation",
+      "web scraping",
+      "scraper",
+      "crawler"
+    ]
+  }
 }

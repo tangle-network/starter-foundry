@@ -100,5 +100,19 @@
     "iphone app",
     "iphone",
     "cross-platform mobile"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "expo",
+      "react native"
+    ],
+    "tier2": [
+      "mobile app",
+      "ios app",
+      "android app",
+      "iphone app",
+      "iphone",
+      "cross-platform mobile"
+    ]
+  }
 }

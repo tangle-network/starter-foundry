@@ -121,5 +121,39 @@
     "python assistant",
     "unsloth",
     "qlora"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "python agent",
+      "pydanticai",
+      "crewai",
+      "autogen",
+      "agno",
+      "llamaindex",
+      "python chatbot",
+      "python assistant",
+      "unsloth"
+    ],
+    "tier2": [
+      "agentkit",
+      "qlora"
+    ],
+    "archetypes": [
+      "custom gpt",
+      "train a gpt",
+      "fine-tune gpt",
+      "document ocr",
+      "ocr pipeline",
+      "text extraction",
+      "pdf parser",
+      "document parser",
+      "image upscaler",
+      "super resolution",
+      "image enhancer",
+      "upscale image",
+      "sentiment analysis",
+      "sentiment analyzer",
+      "opinion mining"
+    ]
+  }
 }

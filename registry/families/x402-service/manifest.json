@@ -105,5 +105,15 @@
     "micropayments",
     "pay-per-request",
     "monetized api"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "x402"
+    ],
+    "tier2": [
+      "micropayments",
+      "pay-per-request",
+      "monetized api"
+    ]
+  }
 }

@@ -1,0 +1,15 @@
+{
+  "provider": "{{aiSdkProvider}}",
+  "features": ["stream-text", "generate-text", "tool-calling", "multi-provider", "structured-output"],
+  "providers": {
+    "anthropic": { "model": "claude-sonnet-4-20250514", "package": "@ai-sdk/anthropic" },
+    "openai": { "model": "gpt-4o", "package": "@ai-sdk/openai" },
+    "google": { "model": "gemini-2.0-flash", "package": "@ai-sdk/google" }
+  },
+  "notes": [
+    "Set the provider API key in environment: ANTHROPIC_API_KEY, OPENAI_API_KEY, or GOOGLE_API_KEY.",
+    "Use streamText() for streaming, generateText() for single-shot.",
+    "Tool definitions use zod schemas: z.object({ query: z.string() }).",
+    "Switch providers by changing the model import — application code stays the same."
+  ]
+}

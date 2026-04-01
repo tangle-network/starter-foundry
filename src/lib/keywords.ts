@@ -122,7 +122,6 @@ export const LANE_ROUTES: LaneRoute[] = [
       'sp1',
       'circom',
       'snarkjs',
-      'fhenix',
       'zk prover',
       'verifiable ml',
       'private voting',
@@ -217,7 +216,21 @@ export const LANE_ROUTES: LaneRoute[] = [
       'agentkit',
       'tool-calling agent',
       'tool calling agent',
+      // voice agent patterns
+      'voice agent',
+      'voice bot',
+      'phone agent',
+      'call center ai',
+      // browser agent patterns
+      'browser agent',
+      'browser use',
+      'computer use',
+      'web agent',
     ],
+  },
+  {
+    id: 'fhenix',
+    keywords: ['fhenix', 'fhe', 'fully homomorphic', 'fhevm', 'inco', 'encrypted computation', 'euint'],
   },
   {
     id: 'x402',

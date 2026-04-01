@@ -1,0 +1,18 @@
+{
+  "id": "agent-ai-sdk",
+  "description": "Adds Vercel AI SDK patterns with streamText, tool definitions, and multi-provider support.",
+  "appliesTo": ["agent-service-ts", "nextjs-ts", "fullstack-ts", "api-service"],
+  "defaults": { "aiSdkProvider": "anthropic" },
+  "files": [
+    { "source": "files/ai-sdk-config.json", "target": "ai-sdk-config.json" }
+  ],
+  "contextHints": { "extensionPoints": ["ai-sdk-config.json"] },
+  "keywords": ["ai sdk", "vercel ai", "vercel ai sdk", "streamtext", "generatetext", "ai sdk tools", "ai core"],
+  "buildHints": {
+    "apiRoutes": ["/api/chat"],
+    "components": ["ChatStream", "ToolCallRenderer"],
+    "dataModels": ["Message", "ToolDefinition", "StreamChunk"],
+    "integrations": ["Vercel AI SDK", "Anthropic provider", "OpenAI provider"],
+    "architectureNotes": ["Use streamText() for streaming responses in API routes.", "Define tools with zod schemas for type-safe function calling.", "Multi-provider: swap providers without changing application code.", "Use useChat() hook on the client for streaming UI integration."]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "id": "move-oracle",
+  "description": "Adds oracle data feed patterns for Move/Aptos with multi-source aggregation.",
+  "appliesTo": ["move-contracts"],
+  "defaults": { "oracleType": "price-feed" },
+  "files": [{ "source": "files/oracle-config.json", "target": "oracle-config.json" }],
+  "contextHints": { "extensionPoints": ["oracle-config.json", "sources/"] },
+  "keywords": ["move oracle", "aptos oracle", "price feed", "pyth aptos", "switchboard aptos"],
+  "buildHints": { "components": ["PriceFeed", "OracleAggregator"], "dataModels": ["PriceData", "FeedSource"], "integrations": ["Pyth Network", "Switchboard"] }
+}

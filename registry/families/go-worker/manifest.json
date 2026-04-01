@@ -70,5 +70,23 @@
     "go cron",
     "go queue",
     "go background job"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "golang worker",
+      "go worker",
+      "go cron",
+      "go background job"
+    ],
+    "tier2": [
+      "go worker",
+      "go cron",
+      "go queue",
+      "go background job",
+      "cron",
+      "reconciliation",
+      "background job",
+      "queue processor"
+    ]
+  }
 }

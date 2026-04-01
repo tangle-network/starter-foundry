@@ -75,5 +75,17 @@
     "static site",
     "static page",
     "simple page"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier2": [
+      "landing page",
+      "static site",
+      "static page",
+      "simple page"
+    ],
+    "tier3": [
+      "website",
+      "landing"
+    ]
+  }
 }

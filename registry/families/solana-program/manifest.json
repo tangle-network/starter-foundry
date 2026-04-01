@@ -56,5 +56,20 @@
     "switchboard",
     "jupiter",
     "openbook"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "solana",
+      "anchor",
+      "solana program"
+    ],
+    "tier2": [
+      "program derived address",
+      "pda",
+      "pyth",
+      "switchboard",
+      "jupiter",
+      "openbook"
+    ]
+  }
 }

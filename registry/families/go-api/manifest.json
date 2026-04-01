@@ -120,5 +120,17 @@
     "boost": {
       "go": 2
     }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "golang",
+      "go api",
+      "go backend",
+      "go rest"
+    ],
+    "tier2": [
+      "go service",
+      "net/http"
+    ]
   }
 }

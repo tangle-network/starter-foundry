@@ -107,5 +107,15 @@
     "desktop app",
     "desktop assistant",
     "tray app"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "electron"
+    ],
+    "tier2": [
+      "desktop app",
+      "desktop assistant",
+      "tray app"
+    ]
+  }
 }

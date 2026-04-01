@@ -116,5 +116,21 @@
     "private voting",
     "dark pool",
     "mixer"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "risc zero",
+      "sp1",
+      "circom"
+    ],
+    "tier2": [
+      "snarkjs",
+      "fhenix",
+      "zk prover",
+      "verifiable ml",
+      "private voting",
+      "dark pool",
+      "mixer"
+    ]
+  }
 }

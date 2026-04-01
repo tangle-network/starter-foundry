@@ -48,5 +48,11 @@
   "keywords": [
     "stylus",
     "arbitrum stylus"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "stylus",
+      "arbitrum stylus"
+    ]
+  }
 }

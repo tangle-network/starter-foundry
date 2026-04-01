@@ -75,5 +75,34 @@
     "stream",
     "telegram bot",
     "telegram trading"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier2": [
+      "telegram bot",
+      "telegram trading"
+    ],
+    "tier3": [
+      "bot",
+      "worker",
+      "trading",
+      "queue",
+      "cron",
+      "stream"
+    ],
+    "archetypes": [
+      "sniper bot",
+      "frontrun bot",
+      "mev bot",
+      "sandwich bot",
+      "telegram trading bot",
+      "tg bot",
+      "whale watcher",
+      "whale alert",
+      "large transfer",
+      "whale tracker",
+      "copy trading",
+      "copy trade",
+      "mirror trading"
+    ]
+  }
 }

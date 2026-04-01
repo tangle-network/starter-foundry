@@ -63,5 +63,21 @@
     "tangle oracle",
     "tangle custody",
     "frost blueprint"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "tangle blueprint",
+      "cargo tangle"
+    ],
+    "tier2": [
+      "blueprint sdk",
+      "oracle blueprint",
+      "storage blueprint",
+      "tangle network",
+      "tangle native",
+      "tangle oracle",
+      "tangle custody",
+      "frost blueprint"
+    ]
+  }
 }

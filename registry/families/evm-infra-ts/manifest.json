@@ -125,5 +125,27 @@
     "x layer",
     "xlayer",
     "/stats"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier2": [
+      "viem",
+      "ethers",
+      "rpc",
+      "block monitor",
+      "gas price",
+      "transaction count",
+      "multicall",
+      "wallet balance",
+      "okb",
+      "oklink",
+      "okx",
+      "x layer",
+      "xlayer",
+      "/stats"
+    ],
+    "archetypes": [
+      "gas tracker",
+      "gas estimator"
+    ]
+  }
 }

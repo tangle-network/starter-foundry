@@ -82,5 +82,16 @@
     "celery",
     "python task",
     "python async worker"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "python worker",
+      "python cron",
+      "python queue",
+      "python background job",
+      "celery",
+      "python task",
+      "python async worker"
+    ]
+  }
 }

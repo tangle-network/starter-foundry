@@ -108,5 +108,15 @@
     "native desktop",
     "rust desktop",
     "tauri app"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "tauri",
+      "rust desktop",
+      "tauri app"
+    ],
+    "tier2": [
+      "native desktop"
+    ]
+  }
 }

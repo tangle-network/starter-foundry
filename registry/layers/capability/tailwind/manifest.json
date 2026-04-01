@@ -37,7 +37,13 @@
     "tailwind",
     "tailwindcss",
     "utility css",
-    "postcss"
+    "postcss",
+    "professional",
+    "production-ready",
+    "polished",
+    "styled",
+    "dark mode",
+    "responsive design"
   ],
   "buildHints": {
     "architectureNotes": [

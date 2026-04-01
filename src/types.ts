@@ -62,8 +62,15 @@ export interface FamilyManifest extends ManifestBase {
   slots?: Record<string, SlotConfig>
   /** Layer IDs that must be present (via layers array or slot selection) for this family to compose correctly. */
   requires?: string[]
-  /** Keywords for prompt routing. The selection router scores prompts against these. */
+  /** Flat keywords for prompt routing (legacy — prefer tieredKeywords). */
   keywords?: string[]
+  /** Tiered keywords for weighted scoring. tier1 (4pts): framework names. tier2 (2pts): domain terms. tier3 (1pt): generic. archetypes (3pts): product patterns. */
+  tieredKeywords?: {
+    tier1?: string[]
+    tier2?: string[]
+    tier3?: string[]
+    archetypes?: string[]
+  }
   /** Scoring boosts: when a boost key (e.g. "go") co-occurs with an API term, add boost value to score. */
   scoring?: { boost?: Record<string, number> }
 }

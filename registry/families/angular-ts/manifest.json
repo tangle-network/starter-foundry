@@ -86,5 +86,15 @@
     "angular app",
     "ng serve",
     "standalone component"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "angular",
+      "angular app"
+    ],
+    "tier2": [
+      "ng serve",
+      "standalone component"
+    ]
+  }
 }

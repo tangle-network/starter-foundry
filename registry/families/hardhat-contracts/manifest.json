@@ -62,5 +62,18 @@
     "npx hardhat",
     "hardhat config",
     "deploy task"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "hardhat",
+      "hardhat typeScript",
+      "hardhat typescript",
+      "npx hardhat",
+      "hardhat config",
+      "hardhat project"
+    ],
+    "tier2": [
+      "deploy task"
+    ]
+  }
 }

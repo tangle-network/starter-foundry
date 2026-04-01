@@ -122,5 +122,58 @@
     "component",
     "single page",
     "client app"
-  ]
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "react",
+      "vite"
+    ],
+    "tier2": [
+      "spa",
+      "component",
+      "single page",
+      "client app"
+    ],
+    "archetypes": [
+      "figma",
+      "design tool",
+      "collaborative editor",
+      "whiteboard",
+      "d3 dashboard",
+      "d3.js",
+      "data visualization",
+      "chart app",
+      "visualization tool",
+      "interactive charts",
+      "game",
+      "game app",
+      "multiplayer game",
+      "browser game",
+      "trivia app",
+      "quiz game",
+      "word game",
+      "puzzle game",
+      "miro",
+      "mural",
+      "collaborative whiteboard",
+      "brainstorming tool",
+      "calculator",
+      "converter",
+      "unit converter",
+      "timer",
+      "countdown",
+      "stopwatch",
+      "pomodoro",
+      "weather app",
+      "weather dashboard",
+      "todo",
+      "to-do",
+      "task list",
+      "checklist",
+      "staking calculator",
+      "rewards calculator",
+      "yield calculator",
+      "apy calculator"
+    ]
+  }
 }

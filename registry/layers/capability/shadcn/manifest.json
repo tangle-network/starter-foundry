@@ -32,7 +32,10 @@
     "radix ui",
     "radix primitives",
     "cn utility",
-    "component library"
+    "component library",
+    "professional",
+    "production-ready",
+    "design system"
   ],
   "capabilityRequires": [
     "tailwind"

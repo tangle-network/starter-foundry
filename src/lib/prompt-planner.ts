@@ -983,20 +983,53 @@ function buildWorkspacePromptPlan({
 export async function planPrompt({
   prompt,
   partner = null,
+  forceKind = null,
+  familyHint = null,
 }: {
   prompt: string
   partner?: string | null
+  /** Force the result to be 'starter' or 'workspace'. Used by scaffold-builder for curated templates. */
+  forceKind?: 'starter' | 'workspace' | null
+  /** Hint the family directly. Skips family scoring, only detects capabilities + slots. */
+  familyHint?: string | null
 }): Promise<PromptPlan> {
   const text = prompt.toLowerCase()
   const effectivePartner = partner ?? inferPartner(text)
   const registry = await loadRegistry()
-  const workspacePlan = buildWorkspacePromptPlan({ prompt, partner: effectivePartner, text, registry })
 
-  if (workspacePlan) {
-    return workspacePlan
+  // Skip workspace detection when caller knows this is a single project
+  if (forceKind !== 'starter') {
+    const workspacePlan = buildWorkspacePromptPlan({ prompt, partner: effectivePartner, text, registry })
+    if (workspacePlan) {
+      return workspacePlan
+    }
   }
 
-  const starterSelection = await selectStarter({ prompt, partner: effectivePartner })
+  // Use family hint if provided (scaffold-builder knows the family)
+  let starterSelection: Awaited<ReturnType<typeof selectStarter>>
+  if (familyHint && registry.families.has(familyHint)) {
+    const fwLayers: string[] = []
+    for (const [key, layer] of registry.layers) {
+      if (layer.group === 'framework' && layer.appliesTo?.includes(familyHint)) {
+        fwLayers.push(key)
+      }
+    }
+    starterSelection = {
+      confidence: 'high',
+      spec: {
+        projectName: partner ? `${partner}-starter` : 'generated-starter',
+        family: familyHint,
+        layers: fwLayers,
+        partner: effectivePartner,
+        slots: {},
+        variables: {},
+      },
+      fallbackUsed: false,
+      reasons: [`family hint: ${familyHint}`],
+    }
+  } else {
+    starterSelection = await selectStarter({ prompt, partner: effectivePartner })
+  }
   const family = registry.families.get(starterSelection.spec.family)
   const spec: ComposeSpec = {
     ...starterSelection.spec,

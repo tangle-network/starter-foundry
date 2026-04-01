@@ -1,9 +1,9 @@
 {
   "mode": "pursue",
-  "goal": "production readiness assessment",
+  "goal": "research-informed improvements from 20+ top repos",
   "status": "evaluated",
-  "round": 6,
-  "generation": 5,
-  "activePursuit": ".evolve/pursuits/2026-03-30-whats-next.md",
-  "updatedAt": "2026-03-30T11:00:00Z"
+  "round": 7,
+  "generation": 6,
+  "activePursuit": ".evolve/pursuits/2026-03-30-research-informed.md",
+  "updatedAt": "2026-03-31T00:00:00Z"
 }

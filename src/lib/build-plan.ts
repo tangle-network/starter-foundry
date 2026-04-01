@@ -94,6 +94,9 @@ export function generateBuildPlan(
     firstMoves.push('Run the validated commands to verify the scaffold works before editing.')
   }
 
+  // Generate design directive for frontend families
+  const designDirective = generateDesignDirective(spec, components)
+
   return {
     goal: prompt || `Build a ${spec.family} project`,
     architecture,
@@ -103,5 +106,86 @@ export function generateBuildPlan(
     dataModels,
     integrations,
     firstMoves,
+    designDirective,
   }
+}
+
+const FRONTEND_FAMILIES = new Set([
+  'react-vite-ts', 'nextjs-ts', 'fullstack-ts', 'sveltekit-ts',
+  'remix-ts', 'vue-ts', 'angular-ts', 'frontend-static',
+  'electron-desktop-ts', 'tauri-desktop', 'expo-react-native-ts',
+  'browser-extension-ts',
+])
+
+/**
+ * Generate prompt-based design directives for the AI agent.
+ * These are English rules about aesthetics, not CSS — the LLM follows them
+ * when generating Tailwind classes and component markup.
+ */
+function generateDesignDirective(
+  spec: ComposeSpec,
+  components: ResolvedComponents,
+): string | null {
+  if (!FRONTEND_FAMILIES.has(spec.family)) return null
+
+  const layerIds = new Set(components.layers.map((l) => `${l.group}:${l.id}`))
+  const hasShadcn = layerIds.has('capability:shadcn')
+  const hasTailwind = layerIds.has('capability:tailwind')
+  const hasDashboard = layerIds.has('capability:dashboard-layout')
+
+  const rules: string[] = [
+    'DESIGN RULES (follow these when generating UI code):',
+    '',
+    'General:',
+    '- Build polished, production-quality interfaces — not prototypes.',
+    '- Use consistent spacing (p-4, p-6, gap-4, gap-6). Avoid arbitrary values.',
+    '- Every interactive element needs hover and focus states.',
+    '- Support dark mode via the .dark class and CSS custom properties.',
+    '- Use subtle transitions (transition-colors, duration-150) on interactive elements.',
+    '- Prefer rounded-lg for cards and rounded-md for buttons and inputs.',
+  ]
+
+  if (hasShadcn) {
+    rules.push(
+      '',
+      'shadcn/ui:',
+      '- Components are pre-installed in src/components/ui/. Import them directly.',
+      '- Use the cn() utility from @/lib/utils for merging classes.',
+      '- Never ship unstyled native HTML elements when a shadcn component exists (Button, Input, Card, Badge, etc.).',
+      '- Add more components with: npx shadcn@latest add [component]',
+      '- Follow the new-york style: tighter spacing, smaller radius, more refined.',
+    )
+  }
+
+  if (hasTailwind) {
+    rules.push(
+      '',
+      'Tailwind:',
+      '- Use the design token colors (bg-background, text-foreground, bg-card, etc.) — never hardcode hex values.',
+      '- Use the color scale for emphasis: text-muted-foreground for secondary text, bg-muted for subtle backgrounds.',
+      '- Responsive: mobile-first. Use sm:, md:, lg: breakpoints.',
+    )
+  }
+
+  if (hasDashboard) {
+    rules.push(
+      '',
+      'Layout:',
+      '- Sidebar: 16rem default, collapsible to 4rem with icon-only mode.',
+      '- Header: sticky, contains breadcrumb trail, search/command palette trigger, theme toggle, user menu.',
+      '- Content: max-w-7xl mx-auto, p-6 padding.',
+      '- Mobile: sidebar collapses to a Sheet/Drawer triggered by hamburger.',
+    )
+  }
+
+  rules.push(
+    '',
+    'Quality bar:',
+    '- Every page should look intentionally designed, not like a code demo.',
+    '- Use proper empty states with illustrations or icons.',
+    '- Loading states: use Skeleton components, not spinners.',
+    '- Error states: use destructive variant Badge or Alert, not raw text.',
+  )
+
+  return rules.join('\n')
 }

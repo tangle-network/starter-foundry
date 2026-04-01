@@ -3,6 +3,7 @@
   "description": "Remix framework layer with nested routing, loaders, and actions.",
   "appliesTo": ["remix-ts"],
   "files": [
+    { "source": "files/vite.config.ts", "target": "vite.config.ts" },
     { "source": "files/root.tsx", "target": "app/root.tsx" },
     { "source": "files/index.tsx", "target": "app/routes/_index.tsx" }
   ]

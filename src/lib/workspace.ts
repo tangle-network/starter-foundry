@@ -122,8 +122,50 @@ async function writeWorkspaceScaffolding(
 ): Promise<void> {
   await fs.writeFile(path.join(outDir, 'PROJECT.md'), `${buildProjectMd(spec, workspaceReport)}\n`, 'utf8')
   await fs.writeFile(path.join(outDir, 'AGENTS.md'), `${buildAgentsMd(workspaceReport)}\n`, 'utf8')
+  const sharedDepsMd = buildSharedDependenciesMd(workspaceReport)
+  await fs.writeFile(path.join(outDir, 'shared_dependencies.md'), `${sharedDepsMd}\n`, 'utf8')
   await writeJson(path.join(outDir, '.starter-foundry', 'launch-plan.json'), workspaceReport.launchPlan)
   await writeJson(path.join(outDir, '.starter-foundry', 'workspace-report.json'), workspaceReport)
+}
+
+function buildSharedDependenciesMd(workspaceReport: WorkspaceReport): string {
+  const lines = [
+    '# Shared Dependencies',
+    '',
+    'Cross-project contracts. All projects in this workspace must agree on these.',
+    '',
+    '## Projects',
+    '',
+  ]
+
+  for (const project of workspaceReport.projects) {
+    lines.push(`### ${project.id} (\`${project.path}\`)`)
+    lines.push(`- Family: \`${project.components.family}\``)
+    if (project.entrypoints.length > 0) {
+      lines.push(`- Entrypoints: ${project.entrypoints.map(e => `\`${e}\``).join(', ')}`)
+    }
+    if (project.commands.length > 0) {
+      lines.push(`- Commands: ${project.commands.map(c => `\`${c}\``).join(', ')}`)
+    }
+    lines.push('')
+  }
+
+  lines.push(
+    '## Shared Contracts',
+    '',
+    '- All API projects expose `/health` for readiness checks.',
+    '- Frontend projects consume APIs via the paths defined in each API project.',
+    '- Environment variables are project-scoped. Do not assume cross-project env access.',
+    '- Data models shared between projects should be defined in the primary project and imported by others.',
+    '',
+    '## Communication',
+    '',
+    `- Primary project: \`${workspaceReport.launchPlan.primaryProjectId}\``,
+    `- Primary artifact: \`${workspaceReport.launchPlan.primaryArtifact.kind}\` at \`${workspaceReport.launchPlan.primaryArtifact.path}\``,
+    '- Build the primary project first. Other projects support it.',
+  )
+
+  return lines.join('\n')
 }
 
 function normalizeProject(project: WorkspaceSpec['projects'][number], index: number): NormalizedProjectEntry {

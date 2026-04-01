@@ -1,9 +1,46 @@
 {
   "id": "move-amm",
   "description": "Adds AMM/DEX patterns for Move/Aptos with pool math and routing.",
-  "appliesTo": ["move-contracts"],
-  "files": [{ "source": "files/amm-config.json", "target": "amm-config.json" }],
-  "contextHints": { "extensionPoints": ["amm-config.json"] },
-  "keywords": ["move amm", "aptos dex", "move swap", "liquidity pool aptos", "move defi"],
-  "buildHints": { "components": ["PoolModule", "SwapRouter", "LPToken"], "dataModels": ["Pool", "Position", "SwapRoute"], "integrations": ["Constant product AMM", "Multi-hop routing"] }
+  "appliesTo": [
+    "move-contracts"
+  ],
+  "files": [
+    {
+      "source": "files/amm-config.json",
+      "target": "amm-config.json"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": [
+      "amm-config.json"
+    ]
+  },
+  "keywords": [
+    "move amm",
+    "aptos dex",
+    "move swap",
+    "liquidity pool aptos",
+    "move defi",
+    "dex",
+    "swap",
+    "amm",
+    "move dex",
+    "aptos swap"
+  ],
+  "buildHints": {
+    "components": [
+      "PoolModule",
+      "SwapRouter",
+      "LPToken"
+    ],
+    "dataModels": [
+      "Pool",
+      "Position",
+      "SwapRoute"
+    ],
+    "integrations": [
+      "Constant product AMM",
+      "Multi-hop routing"
+    ]
+  }
 }

@@ -1,11 +1,21 @@
 {
   "id": "logging",
   "description": "Adds request and cycle hooks for backend-style starters.",
-  "appliesTo": ["api-service", "worker-job", "fullstack-ts"],
+  "appliesTo": [
+    "api-service",
+    "worker-job",
+    "fullstack-ts"
+  ],
   "files": [
     {
       "source": "files/hooks.mjs",
       "target": "hooks.mjs"
     }
+  ],
+  "keywords": [
+    "request logging",
+    "access logs",
+    "structured logging",
+    "log middleware"
   ]
 }

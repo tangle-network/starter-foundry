@@ -1,9 +1,45 @@
 {
   "id": "move-launchpad",
   "description": "Adds token launchpad patterns for Move/Aptos with sale types and vesting.",
-  "appliesTo": ["move-contracts"],
-  "files": [{ "source": "files/launchpad-config.json", "target": "launchpad-config.json" }],
-  "contextHints": { "extensionPoints": ["launchpad-config.json"] },
-  "keywords": ["move launchpad", "aptos launchpad", "token sale aptos", "fair launch aptos", "ido aptos"],
-  "buildHints": { "components": ["SaleModule", "VestingModule", "WhitelistModule"], "dataModels": ["Sale", "Allocation", "VestingSchedule"], "integrations": ["Fixed-price sale", "Dutch auction", "Linear vesting"] }
+  "appliesTo": [
+    "move-contracts"
+  ],
+  "files": [
+    {
+      "source": "files/launchpad-config.json",
+      "target": "launchpad-config.json"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": [
+      "launchpad-config.json"
+    ]
+  },
+  "keywords": [
+    "move launchpad",
+    "aptos launchpad",
+    "token sale aptos",
+    "fair launch aptos",
+    "ido aptos",
+    "launchpad",
+    "token sale",
+    "fair launch"
+  ],
+  "buildHints": {
+    "components": [
+      "SaleModule",
+      "VestingModule",
+      "WhitelistModule"
+    ],
+    "dataModels": [
+      "Sale",
+      "Allocation",
+      "VestingSchedule"
+    ],
+    "integrations": [
+      "Fixed-price sale",
+      "Dutch auction",
+      "Linear vesting"
+    ]
+  }
 }

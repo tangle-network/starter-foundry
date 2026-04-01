@@ -91,7 +91,9 @@
       "python background job",
       "celery",
       "python task",
-      "python async worker"
+      "python async worker",
+      "python celery",
+      "celery worker"
     ]
   }
 }

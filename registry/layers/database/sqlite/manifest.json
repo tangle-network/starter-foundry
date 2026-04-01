@@ -2,7 +2,23 @@
   "id": "sqlite",
   "slot": "database",
   "description": "Database profile for SQLite-backed starters.",
-  "appliesTo": ["api-service", "python-api", "rust-service", "cloudflare-worker-ts", "fullstack-ts", "go-api", "mcp-server-ts", "dspy-pipeline-py", "agent-service-ts", "agent-service-py", "agent-service-rust", "x402-service", "zk-prover-service", "evm-infra-ts"],
+  "appliesTo": [
+    "api-service",
+    "python-api",
+    "rust-service",
+    "cloudflare-worker-ts",
+    "fullstack-ts",
+    "go-api",
+    "mcp-server-ts",
+    "dspy-pipeline-py",
+    "agent-service-ts",
+    "agent-service-py",
+    "agent-service-rust",
+    "x402-service",
+    "zk-prover-service",
+    "evm-infra-ts",
+    "python-worker"
+  ],
   "defaults": {
     "databaseProvider": "sqlite"
   },

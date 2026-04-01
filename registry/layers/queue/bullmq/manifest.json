@@ -2,7 +2,27 @@
   "id": "bullmq",
   "slot": "queue",
   "description": "BullMQ queue profile for worker-backed flows.",
-  "appliesTo": ["fullstack-ts", "api-service", "cloudflare-worker-ts", "python-api", "rust-service", "go-api", "worker-job", "cli-ts", "go-worker", "playwright-worker", "mcp-server-ts", "dspy-pipeline-py", "agent-service-ts", "agent-service-py", "agent-service-rust", "x402-service", "zk-prover-service", "evm-infra-ts"],
+  "appliesTo": [
+    "fullstack-ts",
+    "api-service",
+    "cloudflare-worker-ts",
+    "python-api",
+    "rust-service",
+    "go-api",
+    "worker-job",
+    "cli-ts",
+    "go-worker",
+    "playwright-worker",
+    "mcp-server-ts",
+    "dspy-pipeline-py",
+    "agent-service-ts",
+    "agent-service-py",
+    "agent-service-rust",
+    "x402-service",
+    "zk-prover-service",
+    "evm-infra-ts",
+    "python-worker"
+  ],
   "defaults": {
     "queueProvider": "bullmq"
   },

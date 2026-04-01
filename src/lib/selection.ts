@@ -69,11 +69,10 @@ export async function selectStarter({
     for (const candidate of candidates) {
       const familyManifest = registry.families.get(candidate.family)
       if (!familyManifest) continue
-      // Fuzzy against all tiers combined
+      // Fuzzy only against tier1 (framework names) — fuzzy on generic words
+      // causes false positives like "lending" → "landing"
       const allKeywords = [
         ...(familyManifest.tieredKeywords?.tier1 ?? []),
-        ...(familyManifest.tieredKeywords?.tier2 ?? []),
-        ...(familyManifest.keywords ?? []),
       ]
       if (allKeywords.length) {
         candidate.score = fuzzyKeywordScore(prompt, allKeywords)
@@ -92,7 +91,7 @@ export async function selectStarter({
   if (winner.score === 0) {
     const lower = prompt.toLowerCase()
     const describesProduct = /\b(build|create|make|ship|launch)\b/.test(lower) &&
-      /\b(app|tool|platform|system|tracker|manager|dashboard|portal|service|bot|agent|clone|saas|mvp|product|store|marketplace|builder|generator|assistant|analyzer|monitor|finder|scheduler|planner|viewer|editor|player|reader|browser|client|studio|hub|suite|kit|board|library|checker|gallery|frontend|engine|workflow|inbox|scorer|splitter|compiler|canvas|sequencer|tester|formatter|validator|log|logger)\b/.test(lower)
+      /\b(app|tool|platform|system|tracker|manager|dashboard|portal|service|bot|agent|clone|saas|mvp|product|store|storefront|shop|marketplace|builder|generator|assistant|analyzer|monitor|finder|scheduler|planner|viewer|editor|player|reader|browser|client|studio|hub|suite|kit|board|library|checker|gallery|frontend|engine|workflow|inbox|scorer|splitter|compiler|canvas|sequencer|tester|formatter|validator|log|logger|maker|community|list|test|quiz|scanner|scorecard|analytics|knowledge base)\b/.test(lower)
     const isStaticContent = /\b(landing page|portfolio|resume|cv site|personal site|restaurant website|conference website)\b/.test(lower)
     if (describesProduct && !isStaticContent) {
       defaultFamily = 'fullstack-ts'

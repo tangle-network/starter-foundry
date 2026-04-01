@@ -1,26 +1,28 @@
 {
   "id": "shadcn",
-  "description": "Adds shadcn/ui component system with cn() utility, path aliases, and component registry config.",
+  "description": "Adds shadcn/ui component system with cn() utility, path aliases, and base UI components ready to use.",
   "appliesTo": [
     "react-vite-ts",
     "nextjs-ts",
     "fullstack-ts",
     "remix-ts",
-    "sveltekit-ts",
-    "vue-ts",
     "electron-desktop-ts",
     "tauri-desktop"
   ],
   "files": [
-    {
-      "source": "files/shadcn-config.json",
-      "target": "shadcn-config.json"
-    }
+    { "source": "files/shadcn-config.json", "target": "shadcn-config.json" },
+    { "source": "files/utils.ts", "target": "src/lib/utils.ts" },
+    { "source": "files/button.tsx", "target": "src/components/ui/button.tsx" },
+    { "source": "files/card.tsx", "target": "src/components/ui/card.tsx" },
+    { "source": "files/input.tsx", "target": "src/components/ui/input.tsx" },
+    { "source": "files/label.tsx", "target": "src/components/ui/label.tsx" },
+    { "source": "files/badge.tsx", "target": "src/components/ui/badge.tsx" },
+    { "source": "files/separator.tsx", "target": "src/components/ui/separator.tsx" },
+    { "source": "files/skeleton.tsx", "target": "src/components/ui/skeleton.tsx" }
   ],
   "contextHints": {
     "extensionPoints": [
       "shadcn-config.json",
-      "components.json",
       "src/lib/utils.ts",
       "src/components/ui/"
     ]
@@ -42,10 +44,10 @@
   ],
   "buildHints": {
     "architectureNotes": [
-      "Generate components.json at project root",
-      "Create src/lib/utils.ts with cn() utility",
-      "Set up tsconfig paths: @/* -> ./src/*",
-      "Install base components: npx shadcn@latest add button card input"
+      "shadcn/ui components are pre-installed in src/components/ui/. Import directly: import { Button } from '@/components/ui/button'",
+      "Add more components via: npx shadcn@latest add dialog sheet dropdown-menu",
+      "The cn() utility in src/lib/utils.ts merges Tailwind classes. Use it in all custom components.",
+      "Configure tsconfig.json paths: { '@/*': ['./src/*'] }"
     ]
   }
 }

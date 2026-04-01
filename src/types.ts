@@ -130,6 +130,8 @@ export interface BuildPlan {
   dataModels: string[]
   integrations: string[]
   firstMoves: string[]
+  /** Natural-language design directives for the AI agent. Not CSS — English rules about aesthetics. */
+  designDirective: string | null
 }
 
 export interface BuildHints {

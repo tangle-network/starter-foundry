@@ -1,8 +1,9 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import { generateBuildPlan } from './build-plan.js'
 import { ensureDir, sanitizePackageName, writeJson } from './fs.js'
 import { buildVariables, resolveComponents, resolveTemplateObject } from './registry.js'
-import type { FamilyManifest, LayerManifest, PartnerManifest, ComposeSpec, ComposeResult, ValidationCheck, ContextHints } from '../types.js'
+import type { FamilyManifest, LayerManifest, PartnerManifest, ComposeSpec, ComposeResult, ResolvedComponents, ValidationCheck, ContextHints } from '../types.js'
 
 type AnyManifest = FamilyManifest | LayerManifest | PartnerManifest
 
@@ -124,10 +125,84 @@ export async function composeStarter({ spec, outDir }: { spec: ComposeSpec; outD
   await ensureDir(path.join(outDir, '.starter-foundry'))
   await writeJson(path.join(outDir, '.starter-foundry', 'compose-report.json'), composeReport)
 
+  // Generate AGENTS.md — per-project agent instructions
+  const agentsMd = buildAgentsMd(spec, components, composeReport.contextHints)
+  await fs.writeFile(path.join(outDir, 'AGENTS.md'), `${agentsMd}\n`, 'utf8')
+
   return {
     outDir,
-    filesWritten: [...new Set(filesWritten)].sort(),
+    filesWritten: [...new Set([...filesWritten, 'AGENTS.md'])].sort(),
     composeReportPath: path.join(outDir, '.starter-foundry', 'compose-report.json'),
     components: composeReport.components,
   }
+}
+
+function buildAgentsMd(
+  spec: ComposeSpec,
+  components: ResolvedComponents,
+  contextHints: ReturnType<typeof collectContextHints>,
+): string {
+  const buildPlan = generateBuildPlan(spec, components)
+  const lines: string[] = [
+    '# AGENTS.md',
+    '',
+  ]
+
+  if (buildPlan.goal) {
+    lines.push(`## Goal`, '', buildPlan.goal, '')
+  }
+
+  lines.push(
+    '## Stack',
+    '',
+    `- Family: \`${spec.family}\``,
+    `- Layers: ${components.layers.map((l) => `\`${l.group}:${l.id}\``).join(', ')}`,
+  )
+  if (components.partner) {
+    lines.push(`- Partner: \`${components.partner.id}\``)
+  }
+  lines.push('')
+
+  if (buildPlan.architecture.length > 0) {
+    lines.push('## Architecture', '')
+    buildPlan.architecture.forEach((a) => lines.push(`- ${a}`))
+    lines.push('')
+  }
+
+  if (contextHints.entrypoints.length > 0) {
+    lines.push('## Entry Points', '')
+    contextHints.entrypoints.forEach((e) => lines.push(`- \`${e}\``))
+    lines.push('')
+  }
+
+  if (contextHints.commands.length > 0) {
+    lines.push('## Commands', '')
+    contextHints.commands.forEach((c) => lines.push(`- \`${c}\``))
+    lines.push('')
+  }
+
+  if (buildPlan.pages.length > 0 || buildPlan.apiRoutes.length > 0 || buildPlan.components.length > 0) {
+    lines.push('## Build Plan', '')
+    if (buildPlan.pages.length > 0) lines.push(`Pages: ${buildPlan.pages.join(', ')}`)
+    if (buildPlan.apiRoutes.length > 0) lines.push(`API routes: ${buildPlan.apiRoutes.join(', ')}`)
+    if (buildPlan.components.length > 0) lines.push(`Components: ${buildPlan.components.join(', ')}`)
+    if (buildPlan.dataModels.length > 0) lines.push(`Data models: ${buildPlan.dataModels.join(', ')}`)
+    if (buildPlan.integrations.length > 0) lines.push(`Integrations: ${buildPlan.integrations.join(', ')}`)
+    lines.push('')
+  }
+
+  if (buildPlan.designDirective) {
+    lines.push('## Design', '', buildPlan.designDirective, '')
+  }
+
+  lines.push(
+    '## Rules',
+    '',
+    '- Build on top of the prepared scaffold. Do not replace the architecture.',
+    '- Use the entry points and validated commands before exploring broadly.',
+    '- Extend owned files. Check file ownership in `.starter-foundry/compose-report.json`.',
+    '- Run the dev server to verify changes hot-reload correctly.',
+  )
+
+  return lines.join('\n')
 }

@@ -2,6 +2,7 @@
 
 import process from 'node:process'
 import { createAuditBundle } from './lib/audit.js'
+import { fattenStarter } from './lib/fatten.js'
 import { evaluateAgents } from './lib/agent-runners.js'
 import { benchmarkStarter } from './lib/benchmark.js'
 import { buildCatalog } from './lib/catalog.js'
@@ -82,6 +83,7 @@ function usage(): string {
     '  audit --spec <path> [--out <dir>]',
     '  evaluate --spec <path> [--agents <list>] [--out <dir>]',
     '  release --spec <path> [--out <dir>] [--runs <n>]',
+    '  fatten --spec <path> --out <dir>',
     '',
     'Flags:',
     '  --json    Print structured JSON',
@@ -290,6 +292,22 @@ async function main(): Promise<void> {
               .filter(Boolean)
           : null,
       })
+
+      print(result, true)
+      break
+    }
+
+    case 'fatten': {
+      if (!options['spec'] || !options['out']) throw new Error('fatten requires --spec and --out')
+
+      const spec = await loadProjectSpec(String(options['spec']))
+      const outDir = String(options['out'])
+
+      // Compose first
+      await composeStarter({ spec, outDir })
+
+      // Then fatten with deps + pre-bundle + build
+      const result = await fattenStarter(outDir)
 
       print(result, true)
       break

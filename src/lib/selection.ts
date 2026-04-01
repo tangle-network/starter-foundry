@@ -83,8 +83,26 @@ export async function selectStarter({
   }
 
   const winner = candidates[0]!
-  const family = winner.score > 0 ? winner.family : 'frontend-static'
-  const layers = winner.score > 0 ? winner.layers : ['framework:web-static']
+
+  // Smart default: when no family scores, infer from prompt shape.
+  // Product descriptions ("build a X with Y") → fullstack-ts (needs backend).
+  // Static content requests → frontend-static.
+  let defaultFamily = 'frontend-static'
+  let defaultLayers = ['framework:web-static']
+  if (winner.score === 0) {
+    const lower = prompt.toLowerCase()
+    const describesProduct = /\b(build|create|make|ship|launch)\b/.test(lower) &&
+      /\b(app|tool|platform|system|tracker|manager|dashboard|portal|service|bot|agent|clone|saas|mvp|product|store|marketplace|builder|generator|assistant|analyzer|monitor|finder|scheduler|planner|viewer|editor|player|reader|browser|client|studio|hub|suite|kit|board|library|checker|gallery|frontend|engine|workflow|inbox|scorer|splitter|compiler|canvas|sequencer|tester|formatter|validator|log|logger)\b/.test(lower)
+    const isStaticContent = /\b(landing page|portfolio|resume|cv site|personal site|restaurant website|conference website)\b/.test(lower)
+    if (describesProduct && !isStaticContent) {
+      defaultFamily = 'fullstack-ts'
+      const fwLayers = frameworkLayersForFamily('fullstack-ts', registry.layers)
+      defaultLayers = fwLayers.length > 0 ? fwLayers : ['framework:fullstack-node-ts']
+    }
+  }
+
+  const family = winner.score > 0 ? winner.family : defaultFamily
+  const layers = winner.score > 0 ? winner.layers : defaultLayers
   const confidence: Confidence = winner.score > 6 ? 'high' : winner.score > 0 ? 'medium' : 'low'
   const spec: ComposeSpec = {
     projectName: partner ? `${partner}-starter` : 'generated-starter',

@@ -1,0 +1,1 @@
+{ "standard": "aptos-token-v2", "features": ["create-collection", "mint", "list", "buy", "auction", "royalty-enforcement"], "notes": ["Use Aptos Token V2 standard for composable digital assets.", "Royalty enforcement is on-chain via the token standard.", "Auction module supports English and Dutch auction types."] }

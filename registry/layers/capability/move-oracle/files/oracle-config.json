@@ -1,0 +1,1 @@
+{ "oracleType": "{{oracleType}}", "sources": ["pyth", "switchboard"], "aggregation": "weighted-median", "updateFrequency": "1s", "notes": ["Implement oracle module in sources/ with multi-source aggregation.", "Use weighted median for tamper resistance.", "Pyth and Switchboard both have Aptos SDKs."] }

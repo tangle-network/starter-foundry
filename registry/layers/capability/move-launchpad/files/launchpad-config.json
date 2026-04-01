@@ -1,0 +1,1 @@
+{ "saleTypes": ["fixed-price", "dutch-auction", "overflow"], "features": ["whitelist", "vesting", "anti-snipe", "refund"], "vestingSchedule": { "cliff": "30d", "duration": "180d", "linear": true }, "notes": ["Support multiple sale types per launchpad.", "Anti-snipe mechanism delays final allocation.", "Vesting uses Move's timestamp module for on-chain enforcement."] }

@@ -1,0 +1,17 @@
+{
+  "framework": "{{agentFramework}}",
+  "features": ["graph-builder", "conditional-edges", "checkpointing", "human-in-the-loop", "streaming"],
+  "checkpointing": { "backend": "sqlite", "path": "./checkpoints.db" },
+  "nodes": [
+    { "name": "planner", "description": "Decomposes task into steps" },
+    { "name": "executor", "description": "Executes individual steps with tools" },
+    { "name": "reviewer", "description": "Validates output quality" }
+  ],
+  "notes": [
+    "LangGraph models agent workflows as directed graphs with typed state.",
+    "Each node is a function: (state) → state update.",
+    "Conditional edges route to different nodes based on state values.",
+    "Checkpointing persists state to SQLite/Postgres for durability.",
+    "Human-in-the-loop uses interrupt_before to pause for approval."
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "agent-langgraph",
+  "description": "Adds LangGraph workflow patterns with graph nodes, edges, checkpointing, and human-in-the-loop.",
+  "appliesTo": ["agent-service-ts", "agent-service-py"],
+  "defaults": { "agentFramework": "langgraph" },
+  "files": [
+    { "source": "files/langgraph-config.json", "target": "langgraph-config.json" }
+  ],
+  "contextHints": { "extensionPoints": ["langgraph-config.json"] },
+  "keywords": ["langgraph", "langchain graph", "graph workflow", "langgraph agent", "langgraph checkpoint", "langchain agents"],
+  "buildHints": {
+    "components": ["GraphBuilder", "NodeFunction", "CheckpointStore"],
+    "dataModels": ["GraphState", "NodeResult", "Checkpoint"],
+    "integrations": ["LangGraph", "LangChain", "Checkpointing (SQLite/Postgres)"],
+    "architectureNotes": ["Define graph nodes as functions that transform GraphState.", "Use conditional edges for branching logic (route to different nodes based on state).", "Enable checkpointing for durable workflows that survive restarts.", "Human-in-the-loop: add interrupt_before on nodes that need approval."]
+  }
+}

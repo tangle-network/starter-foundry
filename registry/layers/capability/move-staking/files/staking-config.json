@@ -1,0 +1,1 @@
+{ "features": ["stake", "unstake", "claim-rewards", "boost", "delegation"], "rewardModel": "proportional", "unstakingPeriod": "7d", "notes": ["Reward distribution is proportional to stake weight.", "Boost multipliers incentivize longer lock periods.", "Unstaking period enforced on-chain via timestamp module."] }

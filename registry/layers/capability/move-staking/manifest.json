@@ -1,0 +1,9 @@
+{
+  "id": "move-staking",
+  "description": "Adds staking and rewards distribution patterns for Move/Aptos.",
+  "appliesTo": ["move-contracts"],
+  "files": [{ "source": "files/staking-config.json", "target": "staking-config.json" }],
+  "contextHints": { "extensionPoints": ["staking-config.json"] },
+  "keywords": ["move staking", "aptos staking", "staking rewards aptos", "validator delegation aptos"],
+  "buildHints": { "components": ["StakePool", "RewardDistributor", "BoostModule"], "dataModels": ["Stake", "Reward", "BoostMultiplier"], "integrations": ["Reward distribution", "Delegation", "Boost multipliers"] }
+}

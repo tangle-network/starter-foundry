@@ -1,0 +1,13 @@
+{
+  "engine": "{{browserEngine}}",
+  "headless": true,
+  "viewport": { "width": 1280, "height": 720 },
+  "features": ["navigate", "click", "type", "screenshot", "dom-snapshot", "scroll", "wait"],
+  "limits": { "maxSteps": 50, "pageLoadTimeout": 30000, "actionTimeout": 5000 },
+  "notes": [
+    "Use simplified DOM snapshots (key elements + attributes) rather than full HTML — reduces token usage.",
+    "Screenshots provide visual context for the LLM to reason about page state.",
+    "Action recording enables replay for debugging failed automation runs.",
+    "Set headless=false for local debugging to see what the agent sees."
+  ]
+}

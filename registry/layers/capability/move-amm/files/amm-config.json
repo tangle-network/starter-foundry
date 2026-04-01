@@ -1,0 +1,1 @@
+{ "model": "constant-product", "features": ["create-pool", "add-liquidity", "remove-liquidity", "swap", "multi-hop-routing"], "feeConfig": { "swapFeeBps": 30, "protocolFeeBps": 5 }, "notes": ["Pool math uses x*y=k constant product formula.", "LP tokens represent proportional pool ownership.", "Multi-hop routing finds the best path across multiple pools."] }

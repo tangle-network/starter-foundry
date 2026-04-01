@@ -1,0 +1,18 @@
+{
+  "provider": "{{voiceProvider}}",
+  "stt": { "model": "{{sttModel}}", "language": "en", "interim": true },
+  "tts": { "model": "{{ttsModel}}", "voice": "default", "speed": 1.0 },
+  "session": {
+    "maxDuration": 3600,
+    "silenceTimeout": 10,
+    "interruptible": true,
+    "vadSensitivity": 0.5
+  },
+  "notes": [
+    "Set LIVEKIT_URL and LIVEKIT_API_KEY/SECRET in your environment.",
+    "LiveKit Agents SDK handles room creation, participant management, and audio routing.",
+    "Deepgram provides real-time STT with interim results for low-latency transcription.",
+    "ElevenLabs provides natural TTS. Switch to OpenAI TTS for lower cost.",
+    "VAD (Voice Activity Detection) sensitivity controls when the agent starts listening."
+  ]
+}

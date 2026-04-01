@@ -1,0 +1,17 @@
+{
+  "id": "agent-browser",
+  "description": "Adds browser automation agent patterns with DOM interaction, screenshots, and action replay.",
+  "appliesTo": ["agent-service-ts", "agent-service-py", "playwright-worker"],
+  "defaults": { "browserEngine": "chromium" },
+  "files": [
+    { "source": "files/browser-agent-config.json", "target": "browser-agent-config.json" }
+  ],
+  "contextHints": { "extensionPoints": ["browser-agent-config.json"] },
+  "keywords": ["browser use", "browser agent", "browser automation agent", "web agent", "dom agent", "computer use", "screen agent", "browser-use", "stagehand"],
+  "buildHints": {
+    "components": ["BrowserSession", "ActionRecorder", "DOMSnapshot"],
+    "dataModels": ["BrowserAction", "PageState", "Screenshot"],
+    "integrations": ["Playwright", "CDP (Chrome DevTools Protocol)", "Vision model for screenshots"],
+    "architectureNotes": ["Use Playwright for reliable cross-browser automation.", "Capture DOM snapshots (simplified HTML) for the LLM context, not raw HTML.", "Record actions for replay and debugging.", "Take screenshots at key decision points for vision model feedback."]
+  }
+}

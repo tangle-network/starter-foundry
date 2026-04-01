@@ -1,0 +1,17 @@
+{
+  "id": "agent-voice",
+  "description": "Adds voice agent patterns with real-time audio streaming, speech-to-text, and text-to-speech.",
+  "appliesTo": ["agent-service-ts", "agent-service-py", "agent-service-rust"],
+  "defaults": { "voiceProvider": "livekit", "sttModel": "deepgram", "ttsModel": "elevenlabs" },
+  "files": [
+    { "source": "files/voice-config.json", "target": "voice-config.json" }
+  ],
+  "contextHints": { "extensionPoints": ["voice-config.json"] },
+  "keywords": ["voice agent", "voice bot", "livekit", "livekit agents", "realtime voice", "speech to text", "text to speech", "phone agent", "call center", "voice ai", "audio streaming", "webrtc agent", "deepgram", "elevenlabs"],
+  "buildHints": {
+    "components": ["VoiceSession", "TranscriptTimeline", "InterruptionHandler"],
+    "dataModels": ["AudioFrame", "Transcript", "VoiceSession"],
+    "integrations": ["LiveKit Agents SDK", "Deepgram STT", "ElevenLabs TTS", "WebRTC"],
+    "architectureNotes": ["Use LiveKit Agents SDK for room management and audio routing.", "Implement interruption handling — user can cut off the agent mid-sentence.", "Stream transcript in real-time alongside audio for accessibility.", "Keep turn-taking logic server-side to minimize latency."]
+  }
+}

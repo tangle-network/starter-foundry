@@ -1,0 +1,10 @@
+{
+  "id": "fhenix-contracts",
+  "description": "Fhenix FHE contracts framework layer with Hardhat + fhenixjs.",
+  "appliesTo": ["fhenix-contracts"],
+  "files": [
+    { "source": "files/FHECounter.sol", "target": "contracts/FHECounter.sol" },
+    { "source": "files/hardhat.config.ts", "target": "hardhat.config.ts" },
+    { "source": "files/deploy.ts", "target": "deploy/deploy.ts" }
+  ]
+}

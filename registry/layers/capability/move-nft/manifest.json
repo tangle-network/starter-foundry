@@ -1,0 +1,9 @@
+{
+  "id": "move-nft",
+  "description": "Adds NFT collection and marketplace patterns for Move/Aptos.",
+  "appliesTo": ["move-contracts"],
+  "files": [{ "source": "files/nft-config.json", "target": "nft-config.json" }],
+  "contextHints": { "extensionPoints": ["nft-config.json"] },
+  "keywords": ["move nft", "aptos nft", "nft marketplace", "nft collection", "digital asset"],
+  "buildHints": { "components": ["CollectionManager", "ListingModule", "AuctionModule"], "dataModels": ["Collection", "Token", "Listing", "Bid"], "integrations": ["Aptos Token V2 standard"] }
+}

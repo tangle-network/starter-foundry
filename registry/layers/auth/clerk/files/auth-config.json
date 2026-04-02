@@ -1,5 +1,31 @@
 {
   "provider": "clerk",
   "mode": "hosted",
-  "notes": "Attach Clerk publishable and secret key wiring here."
+  "features": [
+    "sign-in",
+    "sign-up",
+    "user-profile",
+    "organization",
+    "middleware-protection",
+    "webhook-sync"
+  ],
+  "env": [
+    "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+    "CLERK_SECRET_KEY",
+    "CLERK_WEBHOOK_SECRET"
+  ],
+  "packages": {
+    "nextjs": "@clerk/nextjs",
+    "react": "@clerk/clerk-react",
+    "remix": "@clerk/remix",
+    "express": "@clerk/express"
+  },
+  "notes": [
+    "Set NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY and CLERK_SECRET_KEY in .env.",
+    "Wrap the root layout with <ClerkProvider>.",
+    "Use <SignInButton>, <SignUpButton>, <UserButton> components.",
+    "Protect API routes with clerkMiddleware() in middleware.ts.",
+    "For Next.js: add matcher config to middleware.ts for protected routes.",
+    "Sync user data via Clerk webhooks → /api/webhooks/clerk endpoint."
+  ]
 }

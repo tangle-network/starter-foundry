@@ -1,7 +1,7 @@
 {
   "id": "supabase-auth",
   "slot": "auth",
-  "description": "Supabase auth profile.",
+  "description": "Supabase Auth with email, social login, and row-level security.",
   "appliesTo": [
     "react-vite-ts",
     "nextjs-ts",
@@ -36,5 +36,32 @@
       "source": "files/auth-config.json",
       "target": "auth-config.json"
     }
-  ]
+  ],
+  "buildHints": {
+    "pages": [
+      "/login",
+      "/signup",
+      "/auth/callback"
+    ],
+    "apiRoutes": [
+      "/auth/callback"
+    ],
+    "components": [
+      "LoginForm",
+      "SignupForm",
+      "AuthProvider"
+    ],
+    "integrations": [
+      "Supabase Auth",
+      "Supabase RLS policies"
+    ],
+    "architectureNotes": [
+      "Create lib/supabase/server.ts with createServerClient() using cookies.",
+      "Create lib/supabase/client.ts with createBrowserClient().",
+      "Add middleware.ts that calls supabase.auth.getUser() to refresh session.",
+      "Auth callback route handles OAuth redirects from Supabase.",
+      "All database queries go through the authenticated Supabase client — RLS enforces permissions."
+    ]
+  },
+  "keywords": []
 }

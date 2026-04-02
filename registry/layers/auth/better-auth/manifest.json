@@ -1,7 +1,7 @@
 {
   "id": "better-auth",
   "slot": "auth",
-  "description": "Better Auth profile for app and API starters.",
+  "description": "Better Auth with email/password, social login, and session management.",
   "appliesTo": [
     "react-vite-ts",
     "nextjs-ts",
@@ -36,5 +36,30 @@
       "source": "files/auth-config.json",
       "target": "auth-config.json"
     }
-  ]
+  ],
+  "buildHints": {
+    "pages": [
+      "/sign-in",
+      "/sign-up"
+    ],
+    "apiRoutes": [
+      "/api/auth/[...all]"
+    ],
+    "components": [
+      "SignInForm",
+      "SignUpForm",
+      "AuthProvider"
+    ],
+    "integrations": [
+      "Better Auth",
+      "Database adapter (Drizzle/Prisma)"
+    ],
+    "architectureNotes": [
+      "Create lib/auth.ts with betterAuth() configuration.",
+      "Create lib/auth-client.ts with createAuthClient().",
+      "Mount catch-all API route at /api/auth/* that calls auth.handler.",
+      "Protect pages by checking session in server loaders or middleware."
+    ]
+  },
+  "keywords": []
 }

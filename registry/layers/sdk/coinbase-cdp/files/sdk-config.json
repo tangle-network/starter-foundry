@@ -1,5 +1,30 @@
 {
   "provider": "coinbase-cdp",
-  "package": "@coinbase/cdp-sdk",
-  "guidance": "Bias the agent toward Coinbase CDP primitives and hosted wallet flows."
+  "packages": {
+    "onchainkit": [
+      "@coinbase/onchainkit"
+    ],
+    "cdpSdk": [
+      "@coinbase/cdp-sdk"
+    ],
+    "walletSdk": [
+      "@coinbase/wallet-sdk"
+    ]
+  },
+  "env": [
+    "NEXT_PUBLIC_ONCHAINKIT_API_KEY",
+    "CDP_API_KEY_ID",
+    "CDP_API_KEY_SECRET"
+  ],
+  "chains": [
+    "base",
+    "base-sepolia"
+  ],
+  "notes": [
+    "OnchainKit: pnpm add @coinbase/onchainkit — highest-level Coinbase integration.",
+    "Provides: <Identity>, <Wallet>, <Transaction>, <Swap>, <Checkout> components.",
+    "CDP SDK: pnpm add @coinbase/cdp-sdk — server-side wallet creation and signing.",
+    "Set NEXT_PUBLIC_ONCHAINKIT_API_KEY from portal.cdp.coinbase.com.",
+    "OnchainKit works best with Base chain. Set chain to base in wagmi config."
+  ]
 }

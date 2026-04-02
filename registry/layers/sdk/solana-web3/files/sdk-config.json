@@ -1,5 +1,31 @@
 {
   "provider": "solana-web3",
-  "package": "@solana/web3.js",
-  "guidance": "Bias the agent toward Solana account, instruction, and transaction primitives."
+  "packages": {
+    "core": [
+      "@solana/web3.js"
+    ],
+    "walletAdapter": [
+      "@solana/wallet-adapter-react",
+      "@solana/wallet-adapter-react-ui",
+      "@solana/wallet-adapter-wallets"
+    ],
+    "anchor": [
+      "@coral-xyz/anchor"
+    ]
+  },
+  "env": [
+    "NEXT_PUBLIC_SOLANA_RPC_URL"
+  ],
+  "clusters": [
+    "mainnet-beta",
+    "devnet",
+    "testnet"
+  ],
+  "notes": [
+    "Install wallet adapter: pnpm add @solana/wallet-adapter-react @solana/wallet-adapter-react-ui @solana/wallet-adapter-wallets",
+    "Wrap app with ConnectionProvider → WalletProvider → WalletModalProvider.",
+    "Use useWallet(), useConnection() hooks for wallet interactions.",
+    "For Anchor programs: pnpm add @coral-xyz/anchor — provides Program class.",
+    "Set NEXT_PUBLIC_SOLANA_RPC_URL (Helius, Alchemy, or public RPC)."
+  ]
 }

@@ -36,5 +36,24 @@
       "source": "files/sdk-config.json",
       "target": "sdk-config.json"
     }
-  ]
+  ],
+  "buildHints": {
+    "components": [
+      "WalletMultiButton",
+      "ConnectionProvider",
+      "WalletProvider"
+    ],
+    "integrations": [
+      "Solana Wallet Adapter",
+      "Phantom",
+      "Solflare",
+      "Anchor"
+    ],
+    "architectureNotes": [
+      "Create lib/solana.ts with Connection and wallet adapter config.",
+      "Wrap root: ConnectionProvider → WalletProvider → WalletModalProvider.",
+      "Use useWallet() for connect/disconnect, useConnection() for RPC calls.",
+      "For program interaction: new Program(idl, programId, provider)."
+    ]
+  }
 }

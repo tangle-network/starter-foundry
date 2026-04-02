@@ -36,5 +36,26 @@
       "source": "files/sdk-config.json",
       "target": "sdk-config.json"
     }
-  ]
+  ],
+  "buildHints": {
+    "components": [
+      "OnchainKitProvider",
+      "Identity",
+      "WalletDefault",
+      "TransactionDefault",
+      "SwapDefault"
+    ],
+    "integrations": [
+      "Coinbase OnchainKit",
+      "CDP Server Wallet",
+      "Base chain"
+    ],
+    "architectureNotes": [
+      "Wrap root layout with <OnchainKitProvider chain={base} apiKey={...}>.",
+      "Use <WalletDefault /> for instant connect button (Smart Wallet enabled).",
+      "Use <TransactionDefault /> for one-click transactions.",
+      "<Identity> resolves ENS/Basenames and shows avatar + name.",
+      "Server-side: use CDP SDK for wallet creation, signing, and faucet."
+    ]
+  }
 }

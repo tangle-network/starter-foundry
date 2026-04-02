@@ -1,0 +1,45 @@
+{
+  "id": "layout-settings",
+  "description": "Pre-built settings page with tabbed navigation for profile, billing, and team management.",
+  "appliesTo": [
+    "nextjs-ts",
+    "react-vite-ts",
+    "fullstack-ts",
+    "remix-ts"
+  ],
+  "files": [
+    {
+      "source": "files/settings-page.tsx",
+      "target": "src/app/settings/page.tsx"
+    }
+  ],
+  "keywords": [
+    "settings page",
+    "profile settings",
+    "account settings",
+    "preferences",
+    "settings",
+    "billing settings",
+    "team settings",
+    "preferences page"
+  ],
+  "buildHints": {
+    "pages": [
+      "/settings",
+      "/settings/billing",
+      "/settings/team"
+    ],
+    "components": [
+      "SettingsPage",
+      "ProfileForm",
+      "BillingSection",
+      "TeamSection"
+    ],
+    "architectureNotes": [
+      "Settings page is pre-built with tabs for Profile, Billing, and Team.",
+      "Connect form submissions to your API or auth provider.",
+      "Billing tab shows plan info — connect to Stripe or your billing provider.",
+      "Team tab has member list and invite form — connect to your team management API."
+    ]
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "id": "layout-auth",
+  "description": "Pre-built sign-in and sign-up pages with social login buttons, email/password form, and responsive two-column layout.",
+  "appliesTo": [
+    "nextjs-ts",
+    "react-vite-ts",
+    "fullstack-ts",
+    "remix-ts"
+  ],
+  "files": [
+    {
+      "source": "files/sign-in-page.tsx",
+      "target": "src/app/sign-in/page.tsx"
+    },
+    {
+      "source": "files/sign-up-page.tsx",
+      "target": "src/app/sign-up/page.tsx"
+    }
+  ],
+  "keywords": [
+    "sign in",
+    "sign up",
+    "login",
+    "register",
+    "auth pages",
+    "authentication pages",
+    "sign-in",
+    "sign-up",
+    "login page",
+    "register page",
+    "authentication"
+  ],
+  "buildHints": {
+    "pages": [
+      "/sign-in",
+      "/sign-up"
+    ],
+    "components": [
+      "SignInForm",
+      "SignUpForm",
+      "SocialButtons",
+      "AuthLayout"
+    ],
+    "architectureNotes": [
+      "Auth pages are pre-built with email/password + social login buttons.",
+      "Connect to your auth provider (Clerk, Better Auth, Supabase) by updating the form handlers.",
+      "The two-column layout shows a branded panel on desktop, form-only on mobile.",
+      "Add middleware.ts to protect routes and redirect unauthenticated users."
+    ]
+  }
+}

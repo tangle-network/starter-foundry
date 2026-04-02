@@ -1,5 +1,24 @@
 {
   "provider": "better-auth",
-  "mode": "session",
-  "notes": "Wire Better Auth server and client flows here."
+  "features": [
+    "email-password",
+    "social-login",
+    "magic-link",
+    "session-management",
+    "two-factor"
+  ],
+  "env": [
+    "BETTER_AUTH_SECRET",
+    "BETTER_AUTH_URL"
+  ],
+  "packages": {
+    "all": "better-auth"
+  },
+  "notes": [
+    "Set BETTER_AUTH_SECRET (32+ chars) and BETTER_AUTH_URL in .env.",
+    "Create auth.ts with betterAuth({ database, socialProviders, emailAndPassword }).",
+    "Mount auth handler at /api/auth/* (catch-all route).",
+    "Use authClient on the frontend for signIn, signUp, signOut.",
+    "Session tokens are httpOnly cookies — no manual token management."
+  ]
 }

@@ -1,5 +1,27 @@
 {
   "provider": "supabase-auth",
-  "mode": "jwt",
-  "notes": "Connect Supabase auth and row-level security flows here."
+  "features": [
+    "email-password",
+    "magic-link",
+    "social-login",
+    "phone-otp",
+    "row-level-security"
+  ],
+  "env": [
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY"
+  ],
+  "packages": {
+    "nextjs": "@supabase/ssr @supabase/supabase-js",
+    "react": "@supabase/supabase-js"
+  },
+  "notes": [
+    "Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.",
+    "Create lib/supabase/server.ts and lib/supabase/client.ts helpers.",
+    "Use createServerClient() in server components and API routes.",
+    "Use createBrowserClient() in client components.",
+    "Row-Level Security policies in Supabase dashboard protect data per user.",
+    "Auth state syncs via middleware.ts that refreshes the session cookie."
+  ]
 }

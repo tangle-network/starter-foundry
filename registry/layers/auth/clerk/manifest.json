@@ -1,7 +1,7 @@
 {
   "id": "clerk",
   "slot": "auth",
-  "description": "Clerk auth profile.",
+  "description": "Clerk auth with sign-in, sign-up, user management, and middleware protection.",
   "appliesTo": [
     "react-vite-ts",
     "nextjs-ts",
@@ -36,5 +36,32 @@
       "source": "files/auth-config.json",
       "target": "auth-config.json"
     }
-  ]
+  ],
+  "buildHints": {
+    "pages": [
+      "/sign-in",
+      "/sign-up",
+      "/profile"
+    ],
+    "apiRoutes": [
+      "/api/webhooks/clerk"
+    ],
+    "components": [
+      "SignInButton",
+      "SignUpButton",
+      "UserButton",
+      "ClerkProvider"
+    ],
+    "integrations": [
+      "Clerk hosted auth",
+      "Clerk webhooks for user sync"
+    ],
+    "architectureNotes": [
+      "Wrap root layout with <ClerkProvider publishableKey={...}>.",
+      "Add middleware.ts with clerkMiddleware() and route matcher.",
+      "Protected pages check auth() server-side or useAuth() client-side.",
+      "Webhook endpoint verifies Clerk signature and syncs user data to DB."
+    ]
+  },
+  "keywords": []
 }

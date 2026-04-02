@@ -118,7 +118,29 @@ npm run build
 npm test
 ```
 
-Requires Node.js >= 20. Zero runtime dependencies.
+Requires Node.js >= 20. One runtime dependency (`@huggingface/transformers` for optional semantic routing).
+
+## Adding Families or Capabilities
+
+When you add a new family or update a family's `package.json`:
+
+1. **Add the family** — create `registry/families/{id}/manifest.json` with `tieredKeywords`
+2. **Add the framework layer** — create `registry/layers/framework/{id}/manifest.json` + template files
+3. **Update slot compatibility** — add the family ID to `appliesTo` in relevant slot layers (`registry/layers/auth/*/manifest.json`, etc.)
+4. **Sync the cache warm list** — ensures the container has all npm deps pre-cached:
+
+```bash
+npm run sync:warm-list        # check what's missing
+npm run sync:warm-list:write  # auto-update agent-dev-container warm list
+```
+
+This script scans all family `package.json` files, collects every dependency, and writes any missing ones to `agent-dev-container/apps/host-agent/cache-warm-list.json`. The host agent periodically downloads these into a shared pnpm/npm store so `pnpm install` in containers hits the cache instead of the network.
+
+5. **Run tests** — verify the new family routes and composes:
+
+```bash
+npm run build && npm test
+```
 
 ## Integration
 
@@ -145,4 +167,4 @@ The `.evolve/` directory tracks improvement cycles:
 - `scorecard.json` — product quality scorecard
 - `pursuits/` — generational design specs
 
-4 generations shipped: TypeScript migration, registry-driven routing, product archetypes + fuzzy matching, build plans for AI agents.
+8 generations shipped: TypeScript migration → registry-driven routing → product archetypes + fuzzy matching → build plans → unified tiered scoring → real-world corpus validation → semantic embedding fallback → full capability/family coverage testing.

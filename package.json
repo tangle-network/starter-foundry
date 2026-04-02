@@ -40,7 +40,9 @@
     "prove": "node dist/cli.js prove",
     "audit": "node dist/cli.js audit",
     "evaluate": "node dist/cli.js evaluate",
-    "release": "node dist/cli.js release"
+    "release": "node dist/cli.js release",
+    "sync:warm-list": "node scripts/sync-warm-list.mjs",
+    "sync:warm-list:write": "node scripts/sync-warm-list.mjs --write"
   },
   "engines": {
     "node": ">=20"

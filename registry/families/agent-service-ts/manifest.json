@@ -172,7 +172,10 @@
       "openai agents",
       "openai agents sdk",
       "typescript agent",
-      "langchain"
+      "langchain",
+      "multi-agent",
+      "multi agent",
+      "supervisor agent"
     ],
     "tier2": [
       "ai agent",

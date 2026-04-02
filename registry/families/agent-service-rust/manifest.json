@@ -112,7 +112,9 @@
     "tier1": [
       "rust agent",
       "cargo agent",
-      "autonomous rust"
+      "autonomous rust",
+      "rig",
+      "rust ai agent"
     ],
     "tier2": [
       "rig"

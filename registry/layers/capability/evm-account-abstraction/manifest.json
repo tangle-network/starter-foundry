@@ -1,7 +1,9 @@
 {
   "id": "evm-account-abstraction",
   "description": "Specializes a Foundry lane for ERC-4337, gasless minting, and permissionless bundler flows.",
-  "appliesTo": ["forge-contracts"],
+  "appliesTo": [
+    "forge-contracts"
+  ],
   "files": [
     {
       "source": "files/GaslessCollectible.sol",
@@ -25,6 +27,20 @@
     }
   ],
   "contextHints": {
-    "extensionPoints": ["src/{{contractName}}.sol", "script/MintWithBundler.s.sol", "bundler-config.json"]
-  }
+    "extensionPoints": [
+      "src/{{contractName}}.sol",
+      "script/MintWithBundler.s.sol",
+      "bundler-config.json"
+    ]
+  },
+  "keywords": [
+    "erc-4337",
+    "erc4337",
+    "account abstraction",
+    "bundler",
+    "permissionless.js",
+    "gasless mint",
+    "paymaster",
+    "smart account"
+  ]
 }

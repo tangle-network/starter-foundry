@@ -641,7 +641,7 @@ function buildWorkspacePromptPlan({
 
   if (specialSingleLane) return null
 
-  const hasFrontend = hasAny(text, ['frontend', 'ui', 'website', 'landing', 'dashboard', 'web app', 'app', 'preview', 'next', 'react'])
+  const hasFrontend = hasAny(text, ['frontend', 'ui', 'website', 'landing', 'dashboard', 'web app', 'app', 'preview', 'next', 'react', 'platform', 'dapp', 'interface', 'portal'])
   const hasApiRaw = hasAny(text, [
     'api', 'backend', 'server', 'endpoint', 'service', 'webhook', 'health check', 'cloudflare',
     'durable object', 'edge api', 'edge function', 'payment webhook', 'server wallet', 'rest api', 'graphql api',

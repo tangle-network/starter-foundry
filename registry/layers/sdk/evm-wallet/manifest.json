@@ -36,5 +36,29 @@
       "source": "files/sdk-config.json",
       "target": "sdk-config.json"
     }
-  ]
+  ],
+  "buildHints": {
+    "components": [
+      "WalletProvider",
+      "ConnectButton",
+      "AccountDisplay",
+      "ChainSwitcher"
+    ],
+    "dataModels": [
+      "ConnectedWallet",
+      "Chain",
+      "Transaction"
+    ],
+    "integrations": [
+      "WalletConnect v2",
+      "Coinbase Wallet SDK",
+      "SIWE auth"
+    ],
+    "architectureNotes": [
+      "Create lib/wagmi.ts with wagmi config (chains, transports, connectors).",
+      "Wrap root layout: WagmiProvider → QueryClientProvider → RainbowKit/ConnectKit provider.",
+      "Use useAccount(), useBalance(), useSendTransaction() hooks in components.",
+      "For SIWE: generate nonce server-side, sign client-side, verify server-side."
+    ]
+  }
 }

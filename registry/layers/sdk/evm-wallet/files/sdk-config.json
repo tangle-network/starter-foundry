@@ -1,5 +1,49 @@
 {
   "provider": "evm-wallet",
-  "packages": ["viem", "ethers", "@walletconnect/ethereum-provider"],
-  "guidance": "Bias the agent toward portable EVM wallet, RPC, and chain-client flows instead of partner-specific SDKs."
+  "packages": {
+    "core": [
+      "viem",
+      "wagmi",
+      "@wagmi/core",
+      "@wagmi/connectors",
+      "@tanstack/react-query"
+    ],
+    "rainbowkit": [
+      "@rainbow-me/rainbowkit"
+    ],
+    "connectkit": [
+      "connectkit"
+    ],
+    "coinbase": [
+      "@coinbase/wallet-sdk"
+    ],
+    "walletconnect": [
+      "@walletconnect/ethereum-provider"
+    ]
+  },
+  "auth": {
+    "siwe": {
+      "package": "siwe",
+      "description": "Sign-In With Ethereum — verify wallet ownership server-side"
+    }
+  },
+  "chains": [
+    "mainnet",
+    "base",
+    "arbitrum",
+    "optimism",
+    "polygon"
+  ],
+  "env": [
+    "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID"
+  ],
+  "notes": [
+    "Install core packages: pnpm add viem wagmi @wagmi/core @tanstack/react-query",
+    "Pick ONE wallet UI kit: RainbowKit, ConnectKit, or build custom with wagmi hooks.",
+    "RainbowKit: pnpm add @rainbow-me/rainbowkit — prettiest out of the box.",
+    "ConnectKit: pnpm add connectkit — most customizable, best for branded UIs.",
+    "Wrap your app with WagmiProvider + QueryClientProvider + wallet UI provider.",
+    "For SIWE (Sign-In With Ethereum): pnpm add siwe — generates a server-verifiable signature.",
+    "Set NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID from cloud.walletconnect.com."
+  ]
 }

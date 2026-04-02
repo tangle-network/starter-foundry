@@ -68,7 +68,12 @@
       "aptos",
       "sui move",
       "move module",
-      "sui"
+      "sui",
+      "move staking",
+      "move nft",
+      "move dex",
+      "move defi",
+      "move token"
     ]
   }
 }

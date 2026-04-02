@@ -173,7 +173,11 @@
       "staking calculator",
       "rewards calculator",
       "yield calculator",
-      "apy calculator"
+      "apy calculator",
+      "portfolio tracker",
+      "multichain",
+      "multichain portfolio",
+      "token tracker"
     ]
   }
 }

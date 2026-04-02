@@ -1,7 +1,9 @@
 {
   "id": "solana-launchpad",
   "description": "Specializes a Solana program lane for token sale and vesting flows.",
-  "appliesTo": ["solana-program"],
+  "appliesTo": [
+    "solana-program"
+  ],
   "files": [
     {
       "source": "files/lib.rs",
@@ -17,6 +19,17 @@
     }
   ],
   "contextHints": {
-    "extensionPoints": ["src/lib.rs", "sale-config.json", "client/README.md"]
-  }
+    "extensionPoints": [
+      "src/lib.rs",
+      "sale-config.json",
+      "client/README.md"
+    ]
+  },
+  "keywords": [
+    "launchpad",
+    "fair launch",
+    "token launchpad",
+    "bonding curve",
+    "claim portal"
+  ]
 }

@@ -1,7 +1,9 @@
 {
   "id": "solana-nft",
   "description": "Specializes a Solana program lane for marketplace and collection flows.",
-  "appliesTo": ["solana-program"],
+  "appliesTo": [
+    "solana-program"
+  ],
   "files": [
     {
       "source": "files/lib.rs",
@@ -17,6 +19,16 @@
     }
   ],
   "contextHints": {
-    "extensionPoints": ["src/lib.rs", "marketplace-config.json", "client/README.md"]
-  }
+    "extensionPoints": [
+      "src/lib.rs",
+      "marketplace-config.json",
+      "client/README.md"
+    ]
+  },
+  "keywords": [
+    "nft marketplace",
+    "compressed nfts",
+    "royalty enforcement",
+    "bundle sales"
+  ]
 }

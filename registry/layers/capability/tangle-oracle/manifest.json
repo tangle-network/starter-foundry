@@ -1,7 +1,9 @@
 {
   "id": "tangle-oracle",
   "description": "Specializes a Tangle blueprint for oracle and attestation workloads.",
-  "appliesTo": ["tangle-blueprint"],
+  "appliesTo": [
+    "tangle-blueprint"
+  ],
   "files": [
     {
       "source": "files/blueprint.json",
@@ -13,6 +15,15 @@
     }
   ],
   "contextHints": {
-    "extensionPoints": ["blueprint.json", "src/lib.rs"]
-  }
+    "extensionPoints": [
+      "blueprint.json",
+      "src/lib.rs"
+    ]
+  },
+  "keywords": [
+    "oracle",
+    "price feed",
+    "attestation",
+    "data source"
+  ]
 }

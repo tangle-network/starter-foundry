@@ -1,7 +1,9 @@
 {
   "id": "tangle-custody",
   "description": "Specializes a Tangle blueprint for MPC custody and threshold signing flows.",
-  "appliesTo": ["tangle-blueprint"],
+  "appliesTo": [
+    "tangle-blueprint"
+  ],
   "files": [
     {
       "source": "files/blueprint.json",
@@ -13,6 +15,16 @@
     }
   ],
   "contextHints": {
-    "extensionPoints": ["blueprint.json", "src/lib.rs"]
-  }
+    "extensionPoints": [
+      "blueprint.json",
+      "src/lib.rs"
+    ]
+  },
+  "keywords": [
+    "custody",
+    "mpc",
+    "threshold signing",
+    "key resharing",
+    "signing ceremony"
+  ]
 }

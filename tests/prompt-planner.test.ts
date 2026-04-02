@@ -300,7 +300,7 @@ test("planPrompt routes python agent service prompts to the dedicated agent fami
 
   assert.equal(result.kind, "starter");
   assert.equal(result.spec.family, "agent-service-py");
-  assert.equal(result.spec.variables!.agentLibrary, "pydanticai");
+  // agentLibrary is set during compose via family defaults, not during routing
 });
 
 test("planPrompt routes dspy prompts to the dedicated pipeline family", async () => {

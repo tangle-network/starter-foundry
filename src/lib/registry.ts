@@ -10,8 +10,15 @@ import type {
   ComposeSpec,
 } from '../types.js'
 
-const repoRoot = resolveRepoRoot()
-const registryRoot = path.join(repoRoot, 'registry')
+let registryRoot: string | null = null
+
+async function getRegistryRoot(): Promise<string> {
+  if (!registryRoot) {
+    const repoRoot = await resolveRepoRoot()
+    registryRoot = path.join(repoRoot, 'registry')
+  }
+  return registryRoot
+}
 
 function interpolateString(value: string, variables: Record<string, unknown>): string {
   return value.replace(/\{\{(\w+)\}\}/g, (_match, key: string) => {
@@ -76,7 +83,7 @@ function validatePartnerManifest(raw: RawManifest, manifestPath: string): void {
 }
 
 async function loadFamilies(): Promise<Map<string, FamilyManifest>> {
-  const familiesDir = path.join(registryRoot, 'families')
+  const familiesDir = path.join(await getRegistryRoot(), 'families')
   const ids = await fs.readdir(familiesDir)
   const manifests = await Promise.all(
     ids.map(async (id) => {
@@ -96,7 +103,7 @@ async function loadFamilies(): Promise<Map<string, FamilyManifest>> {
 }
 
 async function loadLayerGroups(): Promise<Map<string, LayerManifest>> {
-  const layersDir = path.join(registryRoot, 'layers')
+  const layersDir = path.join(await getRegistryRoot(), 'layers')
   const groups = await fs.readdir(layersDir)
   const groupDirs = await Promise.all(
     groups.map(async (group) => {
@@ -127,7 +134,7 @@ async function loadLayerGroups(): Promise<Map<string, LayerManifest>> {
 }
 
 async function loadPartners(): Promise<Map<string, PartnerManifest>> {
-  const partnersDir = path.join(registryRoot, 'partners')
+  const partnersDir = path.join(await getRegistryRoot(), 'partners')
   const ids = await fs.readdir(partnersDir)
   const manifests = await Promise.all(
     ids.map(async (id) => {
@@ -172,6 +179,7 @@ export async function initSemanticRouting(): Promise<void> {
 /** Clears the in-process registry cache. Primarily useful in tests. */
 export function clearRegistryCache(): void {
   registryPromise = null
+  registryRoot = null
 }
 
 export async function listRegistry(): Promise<{

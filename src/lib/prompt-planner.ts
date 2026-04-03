@@ -608,6 +608,232 @@ function buildWorkerProject(prompt: string, partner: string | null, text: string
   }
 }
 
+// Single-surface families that never become workspaces
+const SINGLE_LANE_SIGNALS = [
+  'expo', 'react native', 'mobile app', 'ios app', 'android app',
+  'browser extension', 'chrome extension', 'manifest v3',
+  'electron', 'desktop app', 'desktop assistant',
+  'command line', 'terminal tool',
+  'streamlit', 'gradio', 'data app', 'tauri',
+]
+
+const FRONTEND_SIGNALS = [
+  'frontend', 'ui', 'website', 'landing', 'dashboard', 'web app', 'app',
+  'preview', 'next', 'react', 'platform', 'dapp', 'interface', 'portal',
+]
+
+const API_SIGNALS = [
+  'api', 'backend', 'server', 'endpoint', 'service', 'webhook', 'health check',
+  'cloudflare', 'durable object', 'edge api', 'edge function', 'payment webhook',
+  'server wallet', 'rest api', 'graphql api',
+]
+
+const FRAMEWORK_API_TERMS = ['composition api', 'options api', 'signals api', 'context api', 'hooks api']
+const STRONG_API_TERMS = ['backend', 'server', 'endpoint', 'webhook', 'rest api', 'graphql api', 'api service', 'api endpoint', 'health check']
+
+const WORKER_SIGNALS = [
+  'trading bot', 'background job', 'background worker', 'worker for', 'playwright worker',
+  'automation worker', 'go worker', 'golang worker', 'queue', 'cron', 'market stream', 'bot',
+]
+
+const EXPLICIT_WORKER_SIGNALS = [
+  'trading bot', 'background job', 'background worker', 'worker for', 'playwright worker',
+  'automation worker', 'go worker', 'golang worker', 'queue', 'cron', 'market stream',
+]
+
+const FULLSTACK_SIGNALS = [
+  'fullstack', 'full stack', 'dashboard with api', 'app with api', 'admin app', 'admin panel',
+  'database-backed', 'dashboard and api', 'admin flows', 'saas', 'saas app', 'saas platform',
+  'internal tool', 'back office', 'crud app',
+]
+
+const WORKSPACE_SIGNALS = [
+  'workspace', 'monorepo', 'separate backend', 'separate api',
+  'background worker', 'contract lane', 'contract lanes',
+]
+
+interface LaneDetection {
+  frontend: boolean
+  api: boolean
+  worker: boolean
+  evm: boolean
+  solana: boolean
+  move: boolean
+  tangle: boolean
+  avs: boolean
+  stylus: boolean
+  zk: boolean
+  mcp: boolean
+  dspy: boolean
+  agent: boolean
+  x402: boolean
+  evmInfra: boolean
+  implicitApi: boolean
+  implicitWorker: boolean
+}
+
+function detectLanes(text: string, partner: string | null): LaneDetection {
+  const hasApiRaw = hasAny(text, API_SIGNALS)
+  const apiIsFalsePositive = hasApiRaw && !hasAny(text, STRONG_API_TERMS) && hasAny(text, FRAMEWORK_API_TERMS)
+  const api = hasApiRaw && !apiIsFalsePositive
+
+  const hasWorkerRaw = hasAny(text, WORKER_SIGNALS)
+  const agentLane = detectLane(text, 'agent')
+  const worker = hasWorkerRaw && (!agentLane || hasAny(text, EXPLICIT_WORKER_SIGNALS))
+
+  const frontend = hasAny(text, FRONTEND_SIGNALS)
+  const evm = detectLane(text, 'evm')
+  const solana = hasAny(text, ['solana', 'anchor', 'pda'])
+  const move = hasAny(text, ['move', 'aptos', 'sui'])
+  const tangle = detectLane(text, 'tangle')
+  const avs = detectLane(text, 'avs')
+  const stylus = detectLane(text, 'stylus')
+  const zk = detectLane(text, 'zk')
+  const mcp = detectLane(text, 'mcp')
+  const dspy = detectLane(text, 'dspy')
+  const x402 = detectLane(text, 'x402')
+  const evmInfra = detectLane(text, 'evm-infra')
+
+  const hasProtocol = evm || solana || tangle || avs || stylus || evmInfra
+  const commerceSupportApi =
+    !api && frontend && needsSupportApiLane(text) &&
+    (partner === 'coinbase' || detectPaymentsSlot(text) !== null || detectSdkSlot(text, partner) !== null) &&
+    hasAny(text, ['api', 'backend', 'server', 'endpoint', 'webhook', 'order management', 'order history', 'payment webhook', 'indexer', 'transaction history'])
+  const implicitApi =
+    !api &&
+    ((hasProtocol && (needsSupportApiLane(text) || detectEvmSupportApiPattern(text) || (solana && detectSolanaProductApiPattern(text)))) ||
+      commerceSupportApi)
+  const implicitWorker =
+    !worker &&
+    ((solana && detectSolanaWorkerPattern(text)) ||
+      (evm && hasAny(text, ['keeper', 'bundler'])) ||
+      (x402 && agentLane))
+
+  return {
+    frontend, api, worker, evm, solana, move, tangle, avs, stylus,
+    zk, mcp, dspy, agent: agentLane, x402, evmInfra, implicitApi, implicitWorker,
+  }
+}
+
+function shouldBeWorkspace(lanes: LaneDetection, text: string, partner: string | null): boolean {
+  if (hasAny(text, SINGLE_LANE_SIGNALS)) return false
+
+  const { frontend, api, worker, evm, solana, move, tangle, avs, stylus, zk, mcp, dspy, agent, x402, evmInfra, implicitApi, implicitWorker } = lanes
+  const runtimeCount = [evm, solana, move].filter(Boolean).length
+  const protocolLanes = [tangle, avs, stylus, zk, mcp, dspy, x402]
+
+  // Plain agent/protocol without other surfaces → single starter
+  const onlyAgent = agent && !frontend && !worker && !evm && !solana && !move && !protocolLanes.some(Boolean) && !evmInfra
+  const onlyProtocol = !frontend && !api && !worker && !agent && protocolLanes.some(Boolean)
+  if (onlyAgent || onlyProtocol) return false
+
+  // Fullstack (frontend + api, no other lanes) → single fullstack-ts starter
+  const noSpecialLanes = !worker && !evm && !solana && !move && !tangle && !avs && !stylus && !zk && !mcp && !dspy && !agent && !x402 && !evmInfra
+  if (noSpecialLanes && frontend && api && !hasAny(text, WORKSPACE_SIGNALS) && hasAny(text, FULLSTACK_SIGNALS)) return false
+
+  const laneCount = [frontend, api, worker, evm, solana, move, tangle, avs, stylus, zk, mcp, dspy, agent, x402, evmInfra, implicitApi].filter(Boolean).length
+  const apiChoice = api ? chooseApiFamily(text) : null
+
+  return (
+    runtimeCount > 1 ||
+    (frontend && runtimeCount > 0) ||
+    (frontend && api) ||
+    (worker && laneCount > 1) ||
+    (frontend && protocolLanes.some(Boolean)) ||
+    (frontend && agent) ||
+    (frontend && api && apiChoice !== null && apiChoice.family !== 'api-service') ||
+    (frontend && implicitApi) ||
+    (implicitApi && (evm || solana || move || tangle || avs || stylus)) ||
+    implicitWorker ||
+    (hasAny(text, WORKSPACE_SIGNALS) && laneCount > 1)
+  )
+}
+
+function buildProtocolProject(
+  id: string, path: string, family: string, layers: string[],
+  prompt: string, partner: string | null, variables: Record<string, string>,
+): ProjectEntry {
+  return {
+    id, path,
+    spec: {
+      projectName: `${buildSlug(prompt, 'workspace')}-${id}`,
+      family, layers,
+      partner: resolvePartnerForFamily(partner, family),
+      slots: {},
+      variables,
+    },
+  }
+}
+
+function collectProtocolProjects(lanes: LaneDetection, prompt: string, partner: string | null, text: string): ProjectEntry[] {
+  const projects: ProjectEntry[] = []
+
+  if (lanes.tangle) {
+    const tangleLayers = ['framework:tangle-blueprint']
+    if (detectTangleCustodyPattern(text)) tangleLayers.push('capability:tangle-custody')
+    else if (detectTangleOraclePattern(text)) tangleLayers.push('capability:tangle-oracle')
+    const profile = text.includes('custody')
+      ? { blueprintName: 'custody-blueprint', jobName: 'ApproveTransaction' }
+      : text.includes('oracle')
+        ? { blueprintName: 'oracle-blueprint', jobName: 'UpdatePriceFeed' }
+        : text.includes('zk')
+          ? { blueprintName: 'zk-prover-blueprint', jobName: 'GenerateProof' }
+          : { blueprintName: 'storage-blueprint', jobName: 'StoreObject' }
+    projects.push(buildProtocolProject('tangle', 'protocols/tangle', 'tangle-blueprint', tangleLayers, prompt, partner, profile))
+  }
+
+  if (lanes.avs) {
+    const avsName = text.includes('oracle') ? 'oracle-avs'
+      : text.includes('keeper') ? 'keeper-avs'
+      : text.includes('sequencer') ? 'sequencer-avs'
+      : text.includes('bridge') ? 'bridge-avs'
+      : 'data-availability-avs'
+    projects.push(buildProtocolProject('avs', 'protocols/avs', 'eigenlayer-avs', ['framework:eigenlayer-avs'], prompt, partner, { avsName }))
+  }
+
+  if (lanes.stylus) {
+    projects.push(buildProtocolProject('stylus', 'contracts/stylus', 'stylus-contracts', ['framework:stylus-contracts'], prompt, partner, { contractName: 'StylusPool' }))
+  }
+
+  if (lanes.evm) {
+    const family = detectHardhatExplicit(text) ? 'hardhat-contracts' : 'forge-contracts'
+    projects.push(buildProtocolProject('evm', 'contracts/evm', family, buildEvmContractLayers(text), prompt, partner, buildEvmContractVariables(text)))
+  }
+
+  if (lanes.solana) {
+    projects.push(buildProtocolProject('solana', 'contracts/solana', 'solana-program', buildSolanaProgramLayers(text), prompt, partner, buildSolanaProgramVariables(text)))
+  }
+
+  if (lanes.move) {
+    projects.push({ id: 'move', path: 'contracts/move', spec: { projectName: 'move_treasury', family: 'move-contracts', layers: ['framework:move-package'], partner: null, slots: {}, variables: { moduleName: 'TreasuryVault' } } })
+  }
+
+  return projects
+}
+
+function collectServiceProjects(lanes: LaneDetection, prompt: string, partner: string | null, text: string, registry: Registry): ProjectEntry[] {
+  const projects: ProjectEntry[] = []
+
+  if (lanes.mcp && !lanes.api) {
+    projects.push(buildProtocolProject('mcp', 'apps/mcp', 'mcp-server-ts', ['framework:mcp-server-ts'], prompt, null, {}))
+  }
+  if (lanes.dspy && !lanes.api) {
+    projects.push(buildProtocolProject('ai', 'apps/ai', 'dspy-pipeline-py', ['framework:dspy-pipeline-py'], prompt, null, {}))
+  }
+  if (lanes.x402 && !lanes.api) {
+    projects.push({ id: 'api', path: 'apps/api', spec: { projectName: `${buildSlug(prompt, 'workspace')}-api`, family: 'x402-service', layers: ['framework:x402-service'], partner: resolvePartnerForFamily(partner, 'x402-service'), slots: {}, variables: {}, primaryArtifactTargetMs: 2500 } })
+  }
+  if (lanes.zk && !lanes.api) {
+    const proofSystem = text.includes('circom') ? 'circom' : text.includes('fhenix') ? 'fhenix' : text.includes('risc zero') ? 'risc-zero' : 'sp1'
+    projects.push(buildProtocolProject('zk', 'apps/prover', 'zk-prover-service', ['framework:zk-prover-service'], prompt, null, { proofSystem }))
+  }
+  if (lanes.agent && !projects.some((p) => p.id === 'agent')) {
+    projects.push(buildApiProject(prompt, partner, text, registry))
+  }
+
+  return projects
+}
+
 function buildWorkspacePromptPlan({
   prompt,
   partner,
@@ -619,363 +845,39 @@ function buildWorkspacePromptPlan({
   text: string
   registry: Registry
 }): PromptPlan | null {
-  const specialSingleLane = hasAny(text, [
-    'expo',
-    'react native',
-    'mobile app',
-    'ios app',
-    'android app',
-    'browser extension',
-    'chrome extension',
-    'manifest v3',
-    'electron',
-    'desktop app',
-    'desktop assistant',
-    'command line',
-    'terminal tool',
-    'streamlit',
-    'gradio',
-    'data app',
-    'tauri',
-  ])
-
-  if (specialSingleLane) return null
-
-  const hasFrontend = hasAny(text, ['frontend', 'ui', 'website', 'landing', 'dashboard', 'web app', 'app', 'preview', 'next', 'react', 'platform', 'dapp', 'interface', 'portal'])
-  const hasApiRaw = hasAny(text, [
-    'api', 'backend', 'server', 'endpoint', 'service', 'webhook', 'health check', 'cloudflare',
-    'durable object', 'edge api', 'edge function', 'payment webhook', 'server wallet', 'rest api', 'graphql api',
-  ])
-  // "Composition API", "Options API" etc. are framework terms, not backend API signals
-  const apiIsFalsePositive =
-    hasApiRaw &&
-    !hasAny(text, ['backend', 'server', 'endpoint', 'webhook', 'rest api', 'graphql api', 'api service', 'api endpoint', 'health check']) &&
-    hasAny(text, ['composition api', 'options api', 'signals api', 'context api', 'hooks api'])
-  const hasApi = hasApiRaw && !apiIsFalsePositive
-  const hasWorkerRaw = hasAny(text, [
-    'trading bot', 'background job', 'background worker', 'worker for', 'playwright worker',
-    'automation worker', 'go worker', 'golang worker', 'queue', 'cron', 'market stream', 'bot',
-  ])
-  // When agent lane also fires, "bot" alone shouldn't force a worker project.
-  // Only explicit worker-specific terms (background job, cron, worker for) create a worker lane alongside an agent.
-  const hasWorker = hasWorkerRaw && (!detectLane(text, 'agent') || hasAny(text, [
-    'trading bot', 'background job', 'background worker', 'worker for', 'playwright worker',
-    'automation worker', 'go worker', 'golang worker', 'queue', 'cron', 'market stream',
-  ]))
-  const hasEvm = detectLane(text, 'evm')
-  const hasSolana = hasAny(text, ['solana', 'anchor', 'pda'])
-  const hasMove = hasAny(text, ['move', 'aptos', 'sui'])
-  const hasTangle = detectLane(text, 'tangle')
-  const hasAvs = detectLane(text, 'avs')
-  const hasStylus = detectLane(text, 'stylus')
-  const hasZk = detectLane(text, 'zk')
-  const hasMcp = detectLane(text, 'mcp')
-  const hasDspy = detectLane(text, 'dspy')
-  const hasAgent = detectLane(text, 'agent')
-  const hasX402 = detectLane(text, 'x402')
-  const hasEvmInfra = detectLane(text, 'evm-infra')
-  const plainAgentService =
-    hasAgent &&
-    !hasFrontend &&
-    !hasWorker &&
-    !hasEvm &&
-    !hasSolana &&
-    !hasMove &&
-    !hasTangle &&
-    !hasAvs &&
-    !hasStylus &&
-    !hasZk &&
-    !hasMcp &&
-    !hasDspy &&
-    !hasX402 &&
-    !hasEvmInfra
-  const runtimeCount = [hasEvm, hasSolana, hasMove].filter(Boolean).length
-  const apiChoice = hasApi ? chooseApiFamily(text) : null
-  // Only trigger implicit API for commerce when strong API keywords are present,
-  // not just because a dashboard mentions "portfolio" or "analytics"
-  const commerceSupportApi =
-    !hasApi &&
-    hasFrontend &&
-    needsSupportApiLane(text) &&
-    (partner === 'coinbase' || detectPaymentsSlot(text) !== null || detectSdkSlot(text, partner) !== null) &&
-    hasAny(text, ['api', 'backend', 'server', 'endpoint', 'webhook', 'order management', 'order history', 'payment webhook', 'indexer', 'transaction history'])
-  const implicitApi =
-    !hasApi &&
-    (((hasEvm || hasSolana || hasTangle || hasAvs || hasStylus || hasEvmInfra) &&
-      (needsSupportApiLane(text) ||
-        detectEvmSupportApiPattern(text) ||
-        (hasSolana && detectSolanaProductApiPattern(text)))) ||
-      commerceSupportApi)
-  const implicitWorker =
-    !hasWorker &&
-    ((hasSolana && detectSolanaWorkerPattern(text)) ||
-      (hasEvm && hasAny(text, ['keeper', 'bundler'])) ||
-      (hasX402 && hasAgent))
-  const workspaceSignals = hasAny(text, [
-    'workspace', 'monorepo', 'separate backend', 'separate api',
-    'background worker', 'contract lane', 'contract lanes',
-  ])
-  const fitsFullstackStarter =
-    !workspaceSignals &&
-    !hasWorker &&
-    !hasEvm &&
-    !hasSolana &&
-    !hasMove &&
-    !hasTangle &&
-    !hasAvs &&
-    !hasStylus &&
-    !hasZk &&
-    !hasMcp &&
-    !hasDspy &&
-    !hasAgent &&
-    !hasX402 &&
-    !hasEvmInfra &&
-    hasFrontend &&
-    hasApi &&
-    hasAny(text, ['fullstack', 'full stack', 'dashboard with api', 'app with api', 'admin app', 'admin panel', 'database-backed', 'dashboard and api', 'admin flows', 'saas', 'saas app', 'saas platform', 'internal tool', 'back office', 'crud app'])
-  const laneCount = [
-    hasFrontend, hasApi, hasWorker, hasEvm, hasSolana, hasMove, hasTangle, hasAvs,
-    hasStylus, hasZk, hasMcp, hasDspy, hasAgent, hasX402, hasEvmInfra, implicitApi,
-  ].filter(Boolean).length
-  const needsWorkspace =
-    runtimeCount > 1 ||
-    (hasFrontend && runtimeCount > 0) ||
-    (hasFrontend && hasApi) ||
-    (hasWorker && laneCount > 1) ||
-    (hasFrontend && (hasTangle || hasAvs || hasStylus || hasZk || hasMcp || hasDspy || hasX402)) ||
-    (hasFrontend && hasAgent) ||
-    (hasFrontend && hasApi && apiChoice && apiChoice.family !== 'api-service') ||
-    (hasFrontend && implicitApi) ||
-    (implicitApi && (hasEvm || hasSolana || hasMove || hasTangle || hasAvs || hasStylus)) ||
-    implicitWorker ||
-    (workspaceSignals && laneCount > 1)
-  // Protocol-specific families (AVS, tangle, stylus, zk, mcp, dspy, x402) stay as
-  // single-project starters unless explicitly combined with a frontend or worker.
-  const plainProtocolProject =
-    !hasFrontend &&
-    !hasApi &&
-    !hasWorkerRaw &&
-    !hasAgent &&
-    (hasAvs || hasTangle || hasStylus || hasZk || hasMcp || hasDspy || hasX402)
-
-  if (!needsWorkspace || fitsFullstackStarter || plainAgentService || plainProtocolProject) return null
+  const lanes = detectLanes(text, partner)
+  if (!shouldBeWorkspace(lanes, text, partner)) return null
 
   const projects: ProjectEntry[] = []
-  if (hasFrontend) projects.push(buildWebProject(prompt, partner, text, registry))
-  if (hasApi || implicitApi) projects.push(buildApiProject(prompt, partner, text, registry))
-  if (hasWorker || implicitWorker) projects.push(buildWorkerProject(prompt, partner, text))
+  if (lanes.frontend) projects.push(buildWebProject(prompt, partner, text, registry))
+  if (lanes.api || lanes.implicitApi) projects.push(buildApiProject(prompt, partner, text, registry))
+  if (lanes.worker || lanes.implicitWorker) projects.push(buildWorkerProject(prompt, partner, text))
 
-  if (hasMcp && !hasApi) {
-    projects.push({
-      id: 'mcp',
-      path: 'apps/mcp',
-      spec: {
-        projectName: `${buildSlug(prompt, 'workspace')}-mcp`,
-        family: 'mcp-server-ts',
-        layers: ['framework:mcp-server-ts'],
-        partner: null,
-        slots: {},
-        variables: {},
-      },
-    })
-  }
+  projects.push(...collectServiceProjects(lanes, prompt, partner, text, registry))
+  projects.push(...collectProtocolProjects(lanes, prompt, partner, text))
 
-  if (hasDspy && !hasApi) {
-    projects.push({
-      id: 'ai',
-      path: 'apps/ai',
-      spec: {
-        projectName: `${buildSlug(prompt, 'workspace')}-ai`,
-        family: 'dspy-pipeline-py',
-        layers: ['framework:dspy-pipeline-py'],
-        partner: null,
-        slots: {},
-        variables: {},
-      },
-    })
-  }
-
-  if (hasAgent && !projects.some((project) => project.id === 'agent')) {
-    projects.push(buildApiProject(prompt, partner, text, registry))
-  }
-
-  if (hasX402 && !hasApi) {
-    projects.push({
-      id: 'api',
-      path: 'apps/api',
-      spec: {
-        projectName: `${buildSlug(prompt, 'workspace')}-api`,
-        family: 'x402-service',
-        layers: ['framework:x402-service'],
-        partner: resolvePartnerForFamily(partner, 'x402-service'),
-        slots: {},
-        variables: {},
-        primaryArtifactTargetMs: 2500,
-      },
-    })
-  }
-
-  if (hasTangle) {
-    const tangleLayers = ['framework:tangle-blueprint']
-    if (detectTangleCustodyPattern(text)) tangleLayers.push('capability:tangle-custody')
-    else if (detectTangleOraclePattern(text)) tangleLayers.push('capability:tangle-oracle')
-
-    const blueprintProfile = text.includes('custody')
-      ? { blueprintName: 'custody-blueprint', jobName: 'ApproveTransaction' }
-      : text.includes('oracle')
-        ? { blueprintName: 'oracle-blueprint', jobName: 'UpdatePriceFeed' }
-        : text.includes('zk')
-          ? { blueprintName: 'zk-prover-blueprint', jobName: 'GenerateProof' }
-          : { blueprintName: 'storage-blueprint', jobName: 'StoreObject' }
-
-    projects.push({
-      id: 'tangle',
-      path: 'protocols/tangle',
-      spec: {
-        projectName: `${buildSlug(prompt, 'workspace')}-tangle`,
-        family: 'tangle-blueprint',
-        layers: tangleLayers,
-        partner: resolvePartnerForFamily(partner, 'tangle-blueprint'),
-        slots: {},
-        variables: blueprintProfile,
-      },
-    })
-  }
-
-  if (hasAvs) {
-    const avsName = text.includes('oracle')
-      ? 'oracle-avs'
-      : text.includes('keeper')
-        ? 'keeper-avs'
-        : text.includes('sequencer')
-          ? 'sequencer-avs'
-          : text.includes('bridge')
-            ? 'bridge-avs'
-            : 'data-availability-avs'
-
-    projects.push({
-      id: 'avs',
-      path: 'protocols/avs',
-      spec: {
-        projectName: `${buildSlug(prompt, 'workspace')}-avs`,
-        family: 'eigenlayer-avs',
-        layers: ['framework:eigenlayer-avs'],
-        partner: resolvePartnerForFamily(partner, 'eigenlayer-avs'),
-        slots: {},
-        variables: { avsName },
-      },
-    })
-  }
-
-  if (hasStylus) {
-    projects.push({
-      id: 'stylus',
-      path: 'contracts/stylus',
-      spec: {
-        projectName: `${buildSlug(prompt, 'workspace')}-stylus`,
-        family: 'stylus-contracts',
-        layers: ['framework:stylus-contracts'],
-        partner: resolvePartnerForFamily(partner, 'stylus-contracts'),
-        slots: {},
-        variables: { contractName: 'StylusPool' },
-      },
-    })
-  }
-
-  if (hasZk && !hasApi) {
-    projects.push({
-      id: 'zk',
-      path: 'apps/prover',
-      spec: {
-        projectName: `${buildSlug(prompt, 'workspace')}-zk`,
-        family: 'zk-prover-service',
-        layers: ['framework:zk-prover-service'],
-        partner: null,
-        slots: {},
-        variables: {
-          proofSystem: text.includes('circom')
-            ? 'circom'
-            : text.includes('fhenix')
-              ? 'fhenix'
-              : text.includes('risc zero')
-                ? 'risc-zero'
-                : 'sp1',
-        },
-      },
-    })
-  }
-
-  if (hasEvm) {
-    projects.push({
-      id: 'evm',
-      path: 'contracts/evm',
-      spec: {
-        projectName: `${buildSlug(prompt, 'workspace')}-evm`,
-        family: detectHardhatExplicit(text) ? 'hardhat-contracts' : 'forge-contracts',
-        layers: buildEvmContractLayers(text),
-        partner: resolvePartnerForFamily(
-          partner,
-          detectHardhatExplicit(text) ? 'hardhat-contracts' : 'forge-contracts',
-        ),
-        slots: {},
-        variables: buildEvmContractVariables(text),
-      },
-    })
-  }
-
-  if (hasSolana) {
-    projects.push({
-      id: 'solana',
-      path: 'contracts/solana',
-      spec: {
-        projectName: `${buildSlug(prompt, 'workspace')}-solana`,
-        family: 'solana-program',
-        layers: buildSolanaProgramLayers(text),
-        partner: resolvePartnerForFamily(partner, 'solana-program'),
-        slots: {},
-        variables: buildSolanaProgramVariables(text),
-      },
-    })
-  }
-
-  if (hasMove) {
-    projects.push({
-      id: 'move',
-      path: 'contracts/move',
-      spec: {
-        projectName: 'move_treasury',
-        family: 'move-contracts',
-        layers: ['framework:move-package'],
-        partner: null,
-        slots: {},
-        variables: { moduleName: 'TreasuryVault' },
-      },
-    })
-  }
-
-  const primaryProjectId = projects.find((project) => project.id === 'web')?.id ?? projects[0]?.id ?? 'web'
-
-  const spec: WorkspaceSpec = {
-    workspaceName: `${buildSlug(prompt, 'workspace')}-workspace`,
-    userPrompt: prompt,
-    launchPlan: {
-      primaryProjectId,
-      primaryArtifact: {
-        kind: primaryProjectId === 'web' ? 'preview' : 'service',
-        path: primaryProjectId === 'web' ? '/' : '/health',
-        targetMs: 2500,
-      },
-      initialAgentMission:
-        "Build the user's prompt on top of this prepared workspace. Start with the primary product surface, then extend the surrounding lanes.",
-    },
-    projects,
-  }
+  const runtimeCount = [lanes.evm, lanes.solana, lanes.move].filter(Boolean).length
+  const primaryProjectId = projects.find((p) => p.id === 'web')?.id ?? projects[0]?.id ?? 'web'
 
   return {
     kind: 'workspace',
     confidence: runtimeCount > 1 ? 'high' : 'medium',
     reasons: ['multi-lane workspace prompt detected'],
-    spec,
+    spec: {
+      workspaceName: `${buildSlug(prompt, 'workspace')}-workspace`,
+      userPrompt: prompt,
+      launchPlan: {
+        primaryProjectId,
+        primaryArtifact: {
+          kind: primaryProjectId === 'web' ? 'preview' : 'service',
+          path: primaryProjectId === 'web' ? '/' : '/health',
+          targetMs: 2500,
+        },
+        initialAgentMission:
+          "Build the user's prompt on top of this prepared workspace. Start with the primary product surface, then extend the surrounding lanes.",
+      },
+      projects,
+    },
   }
 }
 

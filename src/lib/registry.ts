@@ -329,9 +329,11 @@ export function buildVariables(
   spec: ComposeSpec & { packageName?: string },
   components: ResolvedComponents,
 ): Record<string, unknown> {
+  const packageName = spec.packageName ?? spec.projectName.toLowerCase().replace(/[^a-z0-9]+/g, '-')
   const variables: Record<string, unknown> = {
     projectName: spec.projectName,
-    packageName: spec.packageName ?? spec.projectName.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+    packageName,
+    crateName: packageName.replace(/-/g, '_'),
     ...components.family.defaults,
   }
 

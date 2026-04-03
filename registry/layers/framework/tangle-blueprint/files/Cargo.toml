@@ -1,12 +1,10 @@
-[package]
-name = "{{packageName}}"
-version = "0.1.0"
-edition = "2021"
+[workspace]
+resolver = "3"
+members = [
+    "{{packageName}}-lib",
+    "{{packageName}}-bin",
+]
 
-[lib]
-name = "blueprint"
-path = "src/lib.rs"
-
-[[bin]]
-name = "{{packageName}}"
-path = "src/main.rs"
+[workspace.package]
+edition = "2024"
+license = "MIT OR Apache-2.0"

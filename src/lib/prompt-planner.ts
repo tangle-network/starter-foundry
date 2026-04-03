@@ -1,4 +1,5 @@
 import { sanitizePackageName } from './fs.js'
+import { emit, traced } from './telemetry.js'
 import { loadRegistry } from './registry.js'
 import { selectStarter } from './selection.js'
 import { detectCapabilities, detectLane, hasAny, matchesKeyword } from './keywords.js'
@@ -895,81 +896,92 @@ export async function planPrompt({
   /** Hint the family directly. Skips family scoring, only detects capabilities + slots. */
   familyHint?: string | null
 }): Promise<PromptPlan> {
-  const text = prompt.toLowerCase()
-  const effectivePartner = partner ?? inferPartner(text)
-  const registry = await loadRegistry()
+  const { result: plan, durationMs } = await traced('planPrompt', async () => {
+    const text = prompt.toLowerCase()
+    const effectivePartner = partner ?? inferPartner(text)
+    const registry = await loadRegistry()
 
-  // Skip workspace detection when caller knows this is a single project
-  if (forceKind !== 'starter') {
-    const workspacePlan = buildWorkspacePromptPlan({ prompt, partner: effectivePartner, text, registry })
-    if (workspacePlan) {
-      return workspacePlan
-    }
-  }
-
-  // Use family hint if provided (scaffold-builder knows the family)
-  let starterSelection: Awaited<ReturnType<typeof selectStarter>>
-  if (familyHint && registry.families.has(familyHint)) {
-    const fwLayers: string[] = []
-    for (const [key, layer] of registry.layers) {
-      if (layer.group === 'framework' && layer.appliesTo?.includes(familyHint)) {
-        fwLayers.push(key)
+    // Skip workspace detection when caller knows this is a single project
+    if (forceKind !== 'starter') {
+      const workspacePlan = buildWorkspacePromptPlan({ prompt, partner: effectivePartner, text, registry })
+      if (workspacePlan) {
+        return workspacePlan
       }
     }
-    starterSelection = {
-      confidence: 'high',
-      spec: {
-        projectName: partner ? `${partner}-starter` : 'generated-starter',
-        family: familyHint,
-        layers: fwLayers,
-        partner: effectivePartner,
-        slots: {},
-        variables: {},
-      },
-      fallbackUsed: false,
-      reasons: [`family hint: ${familyHint}`],
+
+    // Use family hint if provided (scaffold-builder knows the family)
+    let starterSelection: Awaited<ReturnType<typeof selectStarter>>
+    if (familyHint && registry.families.has(familyHint)) {
+      const fwLayers: string[] = []
+      for (const [key, layer] of registry.layers) {
+        if (layer.group === 'framework' && layer.appliesTo?.includes(familyHint)) {
+          fwLayers.push(key)
+        }
+      }
+      starterSelection = {
+        confidence: 'high',
+        spec: {
+          projectName: partner ? `${partner}-starter` : 'generated-starter',
+          family: familyHint,
+          layers: fwLayers,
+          partner: effectivePartner,
+          slots: {},
+          variables: {},
+        },
+        fallbackUsed: false,
+        reasons: [`family hint: ${familyHint}`],
+      }
+    } else {
+      starterSelection = await selectStarter({ prompt, partner: effectivePartner })
     }
-  } else {
-    starterSelection = await selectStarter({ prompt, partner: effectivePartner })
-  }
-  const family = registry.families.get(starterSelection.spec.family)
-  const spec: ComposeSpec = {
-    ...starterSelection.spec,
-    projectName: buildSlug(prompt, starterSelection.spec.projectName),
-    primaryArtifactTargetMs: 2500,
-    userPrompt: prompt,
-  }
+    const family = registry.families.get(starterSelection.spec.family)
+    const spec: ComposeSpec = {
+      ...starterSelection.spec,
+      projectName: buildSlug(prompt, starterSelection.spec.projectName),
+      primaryArtifactTargetMs: 2500,
+      userPrompt: prompt,
+    }
 
-  const databaseSlot = detectDatabaseSlot(text)
-  const sdkSlot = detectSdkSlot(text, effectivePartner)
-  const authSlot = detectAuthSlot(text)
-  const paymentsSlot = detectPaymentsSlot(text)
-  const queueSlot = detectQueueSlot(text)
-  spec.slots = { ...(spec.slots ?? {}) }
+    const databaseSlot = detectDatabaseSlot(text)
+    const sdkSlot = detectSdkSlot(text, effectivePartner)
+    const authSlot = detectAuthSlot(text)
+    const paymentsSlot = detectPaymentsSlot(text)
+    const queueSlot = detectQueueSlot(text)
+    spec.slots = { ...(spec.slots ?? {}) }
 
-  if (databaseSlot && family?.slots?.['database']) spec.slots['database'] = databaseSlot
-  if (sdkSlot && family?.slots?.['sdk']) spec.slots['sdk'] = sdkSlot
-  if (authSlot && family?.slots?.['auth']) spec.slots['auth'] = authSlot
-  if (paymentsSlot && family?.slots?.['payments']) spec.slots['payments'] = paymentsSlot
-  if (queueSlot && family?.slots?.['queue']) spec.slots['queue'] = queueSlot
+    if (databaseSlot && family?.slots?.['database']) spec.slots['database'] = databaseSlot
+    if (sdkSlot && family?.slots?.['sdk']) spec.slots['sdk'] = sdkSlot
+    if (authSlot && family?.slots?.['auth']) spec.slots['auth'] = authSlot
+    if (paymentsSlot && family?.slots?.['payments']) spec.slots['payments'] = paymentsSlot
+    if (queueSlot && family?.slots?.['queue']) spec.slots['queue'] = queueSlot
 
-  // Lane overrides DELETED (Gen 9). The tiered keyword scorer in selection.ts
-  // handles all family selection. Capability detection from manifests handles
-  // layer specialization. No more bypassing the scorer.
+    const capabilities = detectCapabilities(text, spec.family, registry)
+    if (capabilities.length > 0) {
+      spec.layers = [...new Set([...(spec.layers ?? []), ...capabilities])]
+    }
 
-  // Detect and attach capability layers based on prompt keywords
-  const capabilities = detectCapabilities(text, spec.family, registry)
-  if (capabilities.length > 0) {
-    spec.layers = [...new Set([...(spec.layers ?? []), ...capabilities])]
-  }
+    return {
+      kind: 'starter' as const,
+      confidence: starterSelection.confidence,
+      reasons: starterSelection.reasons,
+      spec,
+    }
+  })
 
-  // Design system capabilities (tailwind, shadcn, dashboard-layout) are now detected
-  // via capability manifest keywords in detectCapabilities — no special-case logic needed.
+  const family = plan.kind === 'starter' ? plan.spec.family : plan.spec.projects?.[0]?.spec.family ?? 'unknown'
+  const capabilities = plan.kind === 'starter'
+    ? (plan.spec.layers ?? []).filter((l: string) => l.startsWith('capability:'))
+    : plan.spec.projects?.flatMap((p: { spec: { layers?: string[] } }) => (p.spec.layers ?? []).filter((l: string) => l.startsWith('capability:'))) ?? []
 
-  return {
-    kind: 'starter',
-    confidence: starterSelection.confidence,
-    reasons: starterSelection.reasons,
-    spec,
-  }
+  emit('route', {
+    prompt,
+    kind: plan.kind,
+    family,
+    confidence: plan.confidence,
+    capabilities,
+    fallbackUsed: false,
+    durationMs,
+  })
+
+  return plan
 }

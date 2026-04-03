@@ -5,6 +5,7 @@
   "files": [
     { "source": "files/FHECounter.sol", "target": "contracts/FHECounter.sol" },
     { "source": "files/hardhat.config.ts", "target": "hardhat.config.ts" },
-    { "source": "files/deploy.ts", "target": "deploy/deploy.ts" }
+    { "source": "files/deploy.ts", "target": "deploy/deploy.ts" },
+    { "source": "files/FHECounter.test.ts", "target": "test/FHECounter.test.ts" }
   ]
 }

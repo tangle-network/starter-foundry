@@ -1,6 +1,6 @@
 {
   "id": "tangle-blueprint",
-  "description": "Tangle Blueprint framework layer.",
+  "description": "Tangle Blueprint framework layer — workspace with lib, bin, and contracts.",
   "appliesTo": ["tangle-blueprint"],
   "files": [
     {
@@ -8,16 +8,40 @@
       "target": "Cargo.toml"
     },
     {
+      "source": "files/lib-Cargo.toml",
+      "target": "{{packageName}}-lib/Cargo.toml"
+    },
+    {
+      "source": "files/bin-Cargo.toml",
+      "target": "{{packageName}}-bin/Cargo.toml"
+    },
+    {
       "source": "files/lib.rs",
-      "target": "src/lib.rs"
+      "target": "{{packageName}}-lib/src/lib.rs"
     },
     {
       "source": "files/main.rs",
-      "target": "src/main.rs"
+      "target": "{{packageName}}-bin/src/main.rs"
     },
     {
       "source": "files/blueprint.json",
       "target": "blueprint.json"
+    },
+    {
+      "source": "files/rust-toolchain.toml",
+      "target": "rust-toolchain.toml"
+    },
+    {
+      "source": "files/cargo-config.toml",
+      "target": ".cargo/config.toml"
+    },
+    {
+      "source": "files/HelloBlueprint.sol",
+      "target": "contracts/src/HelloBlueprint.sol"
+    },
+    {
+      "source": "files/foundry.toml",
+      "target": "foundry.toml"
     }
   ]
 }

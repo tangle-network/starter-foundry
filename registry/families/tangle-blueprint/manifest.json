@@ -1,6 +1,6 @@
 {
   "id": "tangle-blueprint",
-  "description": "Lean Tangle Blueprint starter with Rust job handler and manifest.",
+  "description": "Tangle Blueprint workspace with lib, bin, and Solidity service manager.",
   "tags": [
     "tangle",
     "blueprint",
@@ -26,30 +26,35 @@
       "path": "blueprint.json"
     },
     {
-      "type": "command-success",
-      "command": [
-        "cargo",
-        "test",
-        "--quiet"
-      ],
-      "expect": "test result: ok"
+      "type": "file-exists",
+      "path": "rust-toolchain.toml"
+    },
+    {
+      "type": "file-exists",
+      "path": "contracts/src/HelloBlueprint.sol"
+    },
+    {
+      "type": "file-exists",
+      "path": "foundry.toml"
     }
   ],
   "contextHints": {
     "commands": [
-      "cargo test",
-      "cargo run -- --once"
+      "cargo test -p {{packageName}}-lib",
+      "cargo build --release"
     ],
     "entrypoints": [
-      "src/main.rs",
-      "src/lib.rs",
+      "{{packageName}}-bin/src/main.rs",
+      "{{packageName}}-lib/src/lib.rs",
       "blueprint.json",
+      "contracts/src/HelloBlueprint.sol",
       "Cargo.toml"
     ],
     "preview": null,
     "extensionPoints": [
       "blueprint.json",
-      "src/lib.rs"
+      "{{packageName}}-lib/src/lib.rs",
+      "contracts/src/HelloBlueprint.sol"
     ]
   },
   "keywords": [

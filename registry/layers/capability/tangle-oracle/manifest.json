@@ -11,13 +11,13 @@
     },
     {
       "source": "files/lib.rs",
-      "target": "src/lib.rs"
+      "target": "{{packageName}}-lib/src/lib.rs"
     }
   ],
   "contextHints": {
     "extensionPoints": [
       "blueprint.json",
-      "src/lib.rs"
+      "{{packageName}}-lib/src/lib.rs"
     ]
   },
   "keywords": [

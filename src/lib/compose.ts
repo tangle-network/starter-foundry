@@ -3,6 +3,7 @@ import path from 'node:path'
 import { generateBuildPlan } from './build-plan.js'
 import { ensureDir, sanitizePackageName, writeJson } from './fs.js'
 import { buildVariables, resolveComponents, resolveTemplateObject } from './registry.js'
+import { emit, traced } from './telemetry.js'
 import type { FamilyManifest, LayerManifest, PartnerManifest, ComposeSpec, ComposeResult, ResolvedComponents, ValidationCheck, ContextHints } from '../types.js'
 
 type AnyManifest = FamilyManifest | LayerManifest | PartnerManifest
@@ -76,6 +77,21 @@ function collectContextHints(
 }
 
 export async function composeStarter({ spec, outDir }: { spec: ComposeSpec; outDir: string }): Promise<ComposeResult> {
+  const { result, durationMs } = await traced('composeStarter', async () => {
+    return composeStarterInner(spec, outDir)
+  })
+  const layers = result.components.layers
+  emit('compose', {
+    family: spec.family,
+    layers,
+    filesWritten: result.filesWritten,
+    partner: spec.partner ?? null,
+    durationMs,
+  })
+  return result
+}
+
+async function composeStarterInner(spec: ComposeSpec, outDir: string): Promise<ComposeResult> {
   const components = await resolveComponents(spec)
   const variables = buildVariables(
     {

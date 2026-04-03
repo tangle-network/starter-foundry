@@ -12,6 +12,8 @@ export { composeWorkspace, createWorkspaceContextPack, benchmarkWorkspace } from
 export { augmentWithLayer } from './augment.js'
 export { fattenStarter, fattenWorkspace } from './fatten.js'
 export { matchesKeyword, hasAny, detectLane, detectCapabilities } from './keywords.js'
+export { on, off, emit, traced } from './telemetry.js'
+export type { RouteEvent, ComposeEvent, CapabilityEvent } from './telemetry.js'
 export type {
   ComposeSpec,
   WorkspaceSpec,

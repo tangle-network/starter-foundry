@@ -1,0 +1,30 @@
+{
+  "id": "fhevm-contracts",
+  "description": "Zama fhEVM encrypted Solidity contracts with up to euint256 support.",
+  "tags": ["zama", "fhevm", "fhe", "solidity", "privacy", "contracts"],
+  "taxonomy": { "language": "solidity", "runtime": "fhevm", "surface": "contracts" },
+  "slots": {},
+  "defaults": {
+    "projectType": "contracts",
+    "encryptionScheme": "TFHE"
+  },
+  "files": [
+    { "source": "files/package.json", "target": "package.json" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "contracts/EncryptedCounter.sol" },
+    { "type": "file-exists", "path": "hardhat.config.ts" },
+    { "type": "file-exists", "path": "test/EncryptedCounter.test.ts" },
+    { "type": "file-exists", "path": "deploy/deploy.ts" }
+  ],
+  "contextHints": {
+    "commands": ["npx hardhat compile", "npx hardhat test"],
+    "entrypoints": ["contracts/EncryptedCounter.sol", "hardhat.config.ts", "test/EncryptedCounter.test.ts"],
+    "extensionPoints": ["contracts/", "test/", "deploy/"]
+  },
+  "keywords": ["zama", "fhevm", "tfhe", "zama fhe", "fhevm contract"],
+  "tieredKeywords": {
+    "tier1": ["zama", "fhevm", "zama fhe"],
+    "tier2": ["tfhe contract", "confidential erc20", "confidential defi", "encrypted evm"]
+  }
+}

@@ -1,7 +1,7 @@
 {
   "id": "fhe-sealed-auction",
   "description": "Sealed-bid auction using FHE — bids stay encrypted, winner determined homomorphically.",
-  "appliesTo": ["fhenix-contracts"],
+  "appliesTo": ["fhenix-contracts", "fhevm-contracts"],
   "files": [
     { "source": "files/SealedAuction.sol", "target": "contracts/SealedAuction.sol" }
   ],

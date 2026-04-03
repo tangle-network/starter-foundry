@@ -1,7 +1,7 @@
 {
   "id": "fhe-private-voting",
   "description": "Private on-chain voting using FHE — individual votes stay encrypted, tally computed homomorphically.",
-  "appliesTo": ["fhenix-contracts"],
+  "appliesTo": ["fhenix-contracts", "fhevm-contracts"],
   "files": [
     { "source": "files/PrivateVoting.sol", "target": "contracts/PrivateVoting.sol" }
   ],

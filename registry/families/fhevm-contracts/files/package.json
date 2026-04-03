@@ -9,8 +9,8 @@
   "devDependencies": {
     "hardhat": "^2.22.0",
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "@cofhe/hardhat-plugin": "latest",
-    "@fhenixprotocol/cofhe-contracts": "latest",
-    "cofhejs": "^0.4.1"
+    "@fhevm/solidity": "^0.6.2",
+    "@fhevm/hardhat-plugin": "latest",
+    "@fhevm-sdk/core": "^0.1.6"
   }
 }

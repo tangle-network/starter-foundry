@@ -1,7 +1,7 @@
 {
   "id": "fhe-private-token",
   "description": "ERC20-like token with encrypted balances using FHE — transfer amounts and balances stay private.",
-  "appliesTo": ["fhenix-contracts"],
+  "appliesTo": ["fhenix-contracts", "fhevm-contracts"],
   "files": [
     { "source": "files/PrivateToken.sol", "target": "contracts/PrivateToken.sol" }
   ],

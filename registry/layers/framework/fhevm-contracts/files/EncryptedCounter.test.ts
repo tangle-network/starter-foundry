@@ -1,23 +1,23 @@
 import { expect } from "chai";
 import hre from "hardhat";
-import { CofheClient } from "cofhejs";
+import { FhevmClient } from "@fhevm-sdk/core";
 
-describe("FHECounter", function () {
+describe("EncryptedCounter", function () {
   let counter: any;
-  let client: CofheClient;
+  let client: FhevmClient;
   let owner: any;
 
   beforeEach(async function () {
     [owner] = await hre.ethers.getSigners();
-    client = await CofheClient.create({ provider: hre.ethers.provider });
+    client = await FhevmClient.create({ provider: hre.ethers.provider });
 
-    const Counter = await hre.ethers.getContractFactory("FHECounter");
+    const Counter = await hre.ethers.getContractFactory("EncryptedCounter");
     counter = await Counter.deploy();
     await counter.waitForDeployment();
   });
 
   it("should increment with encrypted amount", async function () {
-    const encrypted = await client.encrypt_uint32(5);
+    const encrypted = await client.encrypt64(5);
     await counter.increment(encrypted);
   });
 });

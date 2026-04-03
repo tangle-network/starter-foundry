@@ -6,8 +6,8 @@
   "slots": {},
   "defaults": {
     "projectType": "contracts",
-    "encryptionScheme": "TFHE",
-    "fhenixNetwork": "helium"
+    "encryptionScheme": "CoFHE",
+    "fhenixNetwork": "nitrogen"
   },
   "files": [
     { "source": "files/package.json", "target": "package.json" }

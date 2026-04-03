@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@fhenixprotocol/contracts/FHE.sol";
+import {FHE, euint32, InEuint32, ebool} from "@fhenixprotocol/cofhe-contracts/FHE.sol";
 
-/// @title SealedAuction — sealed-bid auction using FHE
+/// @title SealedAuction — sealed-bid auction using CoFHE
 /// @dev Bids are encrypted; highest bidder determined homomorphically.
 contract SealedAuction {
     address public owner;
@@ -11,8 +11,6 @@ contract SealedAuction {
     uint256 public endTime;
 
     euint32 private _highestBid;
-    address private _highestBidder;
-
     mapping(address => euint32) private _bids;
     mapping(address => bool) public hasBid;
 
@@ -20,9 +18,10 @@ contract SealedAuction {
         owner = msg.sender;
         endTime = block.timestamp + durationSeconds;
         _highestBid = FHE.asEuint32(0);
+        FHE.allowThis(_highestBid);
     }
 
-    function bid(inEuint32 calldata encryptedBid) external {
+    function bid(InEuint32 calldata encryptedBid) external {
         require(block.timestamp < endTime, "Auction ended");
         require(!hasBid[msg.sender], "Already bid");
 
@@ -30,24 +29,15 @@ contract SealedAuction {
         _bids[msg.sender] = bidAmount;
         hasBid[msg.sender] = true;
 
-        // Homomorphic comparison: update highest if this bid is greater
         ebool isHigher = FHE.gt(bidAmount, _highestBid);
         _highestBid = FHE.select(isHigher, bidAmount, _highestBid);
+        FHE.allowThis(_highestBid);
+        FHE.allowSender(bidAmount);
     }
 
     function endAuction() external {
         require(msg.sender == owner, "Only owner");
         require(block.timestamp >= endTime, "Not ended yet");
         ended = true;
-    }
-
-    function getHighestBid(bytes32 publicKey) external view returns (bytes memory) {
-        require(ended, "Auction not ended");
-        return FHE.sealoutput(_highestBid, publicKey);
-    }
-
-    function getMyBid(bytes32 publicKey) external view returns (bytes memory) {
-        require(hasBid[msg.sender], "No bid");
-        return FHE.sealoutput(_bids[msg.sender], publicKey);
     }
 }

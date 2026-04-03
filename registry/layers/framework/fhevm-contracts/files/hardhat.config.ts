@@ -1,13 +1,18 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
-import "@cofhe/hardhat-plugin";
+import "@fhevm/hardhat-plugin";
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.20",
+  solidity: {
+    version: "0.8.24",
+    settings: {
+      evmVersion: "cancun",
+    },
+  },
   networks: {
-    fhenix: {
-      url: "https://api.nitrogen.fhenix.zone",
-      chainId: 8008148,
+    sepolia: {
+      url: process.env.RPC_URL ?? "https://rpc.sepolia.org",
+      chainId: 11155111,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
     },
   },

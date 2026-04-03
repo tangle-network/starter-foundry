@@ -1,0 +1,11 @@
+{
+  "id": "fhevm-contracts",
+  "description": "Zama fhEVM framework layer with Hardhat + @fhevm/solidity.",
+  "appliesTo": ["fhevm-contracts"],
+  "files": [
+    { "source": "files/EncryptedCounter.sol", "target": "contracts/EncryptedCounter.sol" },
+    { "source": "files/hardhat.config.ts", "target": "hardhat.config.ts" },
+    { "source": "files/deploy.ts", "target": "deploy/deploy.ts" },
+    { "source": "files/EncryptedCounter.test.ts", "target": "test/EncryptedCounter.test.ts" }
+  ]
+}

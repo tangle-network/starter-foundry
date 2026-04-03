@@ -1,0 +1,12 @@
+{
+  "id": "fhe-sealed-auction",
+  "description": "Sealed-bid auction using FHE — bids stay encrypted, winner determined homomorphically.",
+  "appliesTo": ["fhenix-contracts"],
+  "files": [
+    { "source": "files/SealedAuction.sol", "target": "contracts/SealedAuction.sol" }
+  ],
+  "contextHints": {
+    "extensionPoints": ["contracts/SealedAuction.sol"]
+  },
+  "keywords": ["sealed bid", "blind auction", "encrypted auction", "sealed auction", "fhe auction"]
+}

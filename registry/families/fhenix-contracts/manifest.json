@@ -14,7 +14,9 @@
   ],
   "validationChecks": [
     { "type": "file-exists", "path": "contracts/FHECounter.sol" },
-    { "type": "file-exists", "path": "hardhat.config.ts" }
+    { "type": "file-exists", "path": "hardhat.config.ts" },
+    { "type": "file-exists", "path": "test/FHECounter.test.ts" },
+    { "type": "file-exists", "path": "deploy/deploy.ts" }
   ],
   "contextHints": {
     "commands": ["npx hardhat compile", "npx hardhat test"],

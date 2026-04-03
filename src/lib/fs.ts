@@ -16,7 +16,7 @@ export async function readJson<T = unknown>(filePath: string): Promise<T> {
   return JSON.parse(raw) as T
 }
 
-export function resolveRepoRoot(): string {
+export async function resolveRepoRoot(): Promise<string> {
   // Resolve from import.meta.url, handling Vite's /@fs/ prefix and URL mangling
   let modulePath: string
   try {
@@ -35,8 +35,7 @@ export function resolveRepoRoot(): string {
   for (let i = 0; i < 10; i++) {
     try {
       const registryPath = path.join(dir, 'registry')
-      // Use accessSync to check if registry/ exists (sync because this runs at module init)
-      const stat = require('node:fs').statSync(registryPath)
+      const stat = await fs.stat(registryPath)
       if (stat.isDirectory()) return dir
     } catch { /* continue walking up */ }
     const parent = path.dirname(dir)

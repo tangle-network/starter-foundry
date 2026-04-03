@@ -1,9 +1,10 @@
 {
   "mode": "pursue",
-  "goal": "research-informed improvements from 20+ top repos",
-  "status": "evaluated",
-  "round": 7,
-  "generation": 6,
-  "activePursuit": ".evolve/pursuits/2026-03-30-research-informed.md",
-  "updatedAt": "2026-03-31T00:00:00Z"
+  "goal": "real tangle templates + crate publishing",
+  "status": "partial",
+  "round": 10,
+  "generation": 10,
+  "activePursuit": ".evolve/pursuits/2026-04-02-tangle-real-templates.md",
+  "updatedAt": "2026-04-03T00:00:00Z",
+  "blocked": "crate publishing — CARGO_REGISTRY_TOKEN needs owner access (shekohex or Tjemmmic)"
 }

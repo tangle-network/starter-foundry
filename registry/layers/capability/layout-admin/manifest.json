@@ -8,7 +8,7 @@
   "files": [
     { "source": "files/data-table.tsx", "target": "src/components/admin/data-table.tsx" },
     { "source": "files/entity-form.tsx", "target": "src/components/admin/entity-form.tsx" },
-    { "source": "files/admin-page.tsx", "target": "src/app/admin/page.tsx" },
+    { "source": "files/admin-page.tsx", "target": "app/admin/page.tsx" },
     { "source": "files/column-header.tsx", "target": "src/components/admin/column-header.tsx" }
   ],
   "buildHints": {

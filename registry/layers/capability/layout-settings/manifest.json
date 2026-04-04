@@ -10,7 +10,7 @@
   "files": [
     {
       "source": "files/settings-page.tsx",
-      "target": "src/app/settings/page.tsx"
+      "target": "app/settings/page.tsx"
     }
   ],
   "keywords": [

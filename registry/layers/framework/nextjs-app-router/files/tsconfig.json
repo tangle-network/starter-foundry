@@ -5,7 +5,11 @@
     "moduleResolution": "Bundler",
     "strict": true,
     "jsx": "preserve",
-    "allowJs": false
+    "allowJs": false,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
-  "include": ["app", "next.config.ts"]
+  "include": ["app", "src", "next.config.ts"]
 }

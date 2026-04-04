@@ -130,7 +130,7 @@ test("layers without variants still use files/ directory", async () => {
   const outDir = await createTempDir("sf-no-variant");
   try {
     const result = await composeStarter({ spec, outDir });
-    assert.ok(result.filesWritten.includes("src/app/sign-in/page.tsx"), "layout-auth should compose from files/ without variants");
+    assert.ok(result.filesWritten.includes("app/sign-in/page.tsx"), "layout-auth should compose from files/ without variants");
   } finally {
     await removeDir(outDir);
   }

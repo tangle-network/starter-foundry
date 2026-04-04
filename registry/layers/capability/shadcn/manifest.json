@@ -149,12 +149,23 @@
   "capabilityRequires": [
     "tailwind"
   ],
+  "defaults": {
+    "presetCode": "aIkeymG",
+    "presetOptions": {
+      "neutral": "aIkeymG",
+      "vibrant": "b2D0wqNxT",
+      "minimal": "aFk3nPQ",
+      "dark": "cR8mLvW",
+      "playful": "dN5pKjX"
+    }
+  },
   "buildHints": {
     "architectureNotes": [
       "shadcn/ui components are pre-installed in src/components/ui/. Import directly: import { Button } from '@/components/ui/button'",
       "Add more components via: npx shadcn@latest add dialog sheet dropdown-menu",
       "The cn() utility in src/lib/utils.ts merges Tailwind classes. Use it in all custom components.",
-      "Configure tsconfig.json paths: { '@/*': ['./src/*'] }"
+      "Configure tsconfig.json paths: { '@/*': ['./src/*'] }",
+      "Alternative to static component files: pnpm dlx shadcn@latest init --preset {{presetCode}}"
     ]
   }
 }

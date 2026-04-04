@@ -1,0 +1,24 @@
+{
+  "id": "json-render",
+  "description": "Adds json-render for declarative UI composition from JSON specs. Same spec renders across React, Vue, Svelte, and more.",
+  "group": "capability",
+  "appliesTo": ["nextjs-ts", "react-vite-ts", "fullstack-ts", "remix-ts", "sveltekit-ts", "vue-ts"],
+  "keywords": ["json-render", "declarative ui", "generative ui", "json ui", "dynamic ui", "server driven ui"],
+  "files": [
+    { "source": "files/json-render-config.json", "target": "json-render-config.json" }
+  ],
+  "defaults": {
+    "renderer": "react"
+  },
+  "buildHints": {
+    "components": ["Renderer", "StateProvider", "ActionProvider"],
+    "integrations": ["@json-render/core for spec parsing", "@json-render/shadcn for pre-built component catalog"],
+    "architectureNotes": [
+      "json-render lets you define UI as JSON specs that render with real shadcn components.",
+      "Use defineCatalog() with shadcnComponentDefinitions to constrain what AI can generate.",
+      "Use defineRegistry() with shadcnComponents to wire up the actual React implementations.",
+      "Specs support state binding ($state), conditional visibility ($cond), and form validation.",
+      "Same spec can target React, Vue, Svelte, React Native, PDF, email via different renderers."
+    ]
+  }
+}

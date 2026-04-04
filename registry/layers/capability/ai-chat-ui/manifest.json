@@ -25,6 +25,7 @@
       "chat-data.json"
     ]
   },
+  "capabilityRequires": ["layout-chat"],
   "keywords": [
     "chat interface",
     "chat ui",

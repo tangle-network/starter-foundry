@@ -1,0 +1,26 @@
+{
+  "id": "ai-chat-sessions",
+  "description": "ChatGPT/Claude-style session management with conversation history, folders, search, and per-chat settings.",
+  "group": "capability",
+  "appliesTo": ["nextjs-ts", "react-vite-ts", "fullstack-ts"],
+  "keywords": ["chat sessions", "conversation history", "chat history", "chat folders", "chat search", "session management"],
+  "capabilityRequires": ["layout-chat"],
+  "files": [
+    { "source": "files/session-list.tsx", "target": "src/components/chat/session-list.tsx" },
+    { "source": "files/session-folders.tsx", "target": "src/components/chat/session-folders.tsx" },
+    { "source": "files/chat-header.tsx", "target": "src/components/chat/chat-header.tsx" }
+  ],
+  "buildHints": {
+    "pages": ["/chat", "/chat/[id]"],
+    "apiRoutes": ["/api/chat/sessions", "/api/chat/sessions/[id]", "/api/chat/folders"],
+    "components": ["SessionList", "SessionFolders", "ChatHeader"],
+    "integrations": ["Session CRUD via /api/chat/sessions", "Folder management via /api/chat/folders"],
+    "architectureNotes": [
+      "SessionList replaces or wraps ChatSidebar with grouped conversation history (Today, Yesterday, etc.).",
+      "SessionFolders provides a collapsible folder tree for organizing conversations.",
+      "ChatHeader adds inline title editing, model selection, temperature/system-prompt config, and share/export.",
+      "Wire session CRUD to your database — each session stores title, messages, folder assignment, pinned/archived state.",
+      "Search filters across session titles and message content server-side."
+    ]
+  }
+}

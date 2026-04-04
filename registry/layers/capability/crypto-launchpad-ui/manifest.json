@@ -1,0 +1,24 @@
+{
+  "id": "crypto-launchpad-ui",
+  "description": "Token launchpad with sale cards, progress tracking, vesting schedules, and participation interface.",
+  "group": "capability",
+  "appliesTo": ["nextjs-ts", "react-vite-ts", "fullstack-ts"],
+  "keywords": ["launchpad", "ido", "ico", "token sale", "fair launch", "whitelist", "vesting", "presale"],
+  "capabilityRequires": ["shadcn"],
+  "files": [
+    { "source": "files/sale-card.tsx", "target": "src/components/crypto/sale-card.tsx" },
+    { "source": "files/vesting-schedule.tsx", "target": "src/components/crypto/vesting-schedule.tsx" }
+  ],
+  "buildHints": {
+    "pages": ["/launchpad", "/launchpad/[id]", "/launchpad/[id]/vesting"],
+    "apiRoutes": ["/api/launchpad/sales", "/api/launchpad/participate"],
+    "components": ["SaleCard", "VestingSchedule"],
+    "integrations": ["Launchpad contract ABI for participation and claiming", "Whitelist/merkle proof verification"],
+    "architectureNotes": [
+      "SaleCard displays sale progress with countdown and participation action.",
+      "VestingSchedule renders timeline with claimable token amounts.",
+      "Wire participation to your launchpad contract.",
+      "Whitelist verification and vesting claims are contract interactions — implement via SDK."
+    ]
+  }
+}

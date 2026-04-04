@@ -1,21 +1,31 @@
 {
   "id": "layout-dashboard",
   "description": "Pre-built dashboard layout with collapsible sidebar, sticky header, chart cards, and activity feed.",
-  "appliesTo": ["nextjs-ts", "react-vite-ts", "fullstack-ts", "remix-ts"],
+  "appliesTo": ["nextjs-ts", "react-vite-ts", "fullstack-ts", "remix-ts", "sveltekit-ts", "vue-ts", "angular-ts"],
   "files": [
     { "source": "files/sidebar-layout.tsx", "target": "src/components/layout/sidebar-layout.tsx" },
     { "source": "files/dashboard-page.tsx", "target": "src/app/dashboard/page.tsx" },
     { "source": "files/nav-config.ts", "target": "src/config/nav.ts" }
   ],
-  "keywords": ["dashboard", "analytics", "metrics", "admin panel", "control panel", "overview", "stats"],
+  "contextHints": {
+    "extensionPoints": [
+      "src/config/nav.ts",
+      "src/components/layout/"
+    ]
+  },
+  "variants": ["sidebar", "topnav"],
+  "keywords": ["dashboard", "analytics", "metrics", "admin panel", "control panel", "overview", "stats", "sidebar layout", "dashboard layout", "admin layout", "collapsible sidebar", "navigation sidebar", "admin", "sidebar", "navigation"],
+  "capabilityRequires": ["tailwind"],
   "buildHints": {
     "pages": ["/dashboard", "/dashboard/analytics", "/dashboard/settings"],
-    "components": ["SidebarLayout", "ChartCard", "KPICard", "RecentActivity", "NavConfig"],
+    "components": ["SidebarLayout", "ChartCard", "KPICard", "RecentActivity", "NavConfig", "Sidebar", "SidebarNav", "Header", "BreadcrumbTrail", "ThemeToggle", "UserMenu", "CommandPalette"],
     "architectureNotes": [
       "Dashboard layout is pre-built. Customize nav items in src/config/nav.ts.",
       "Replace chart card placeholder data with real data sources.",
       "Sidebar collapses to icon-only on mobile (Sheet/Drawer pattern).",
-      "Add new dashboard sections by extending the grid in dashboard-page.tsx."
+      "Add new dashboard sections by extending the grid in dashboard-page.tsx.",
+      "Collapsible sidebar with mobile sheet drawer",
+      "Sticky header with breadcrumbs"
     ]
   }
 }

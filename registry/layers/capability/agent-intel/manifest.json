@@ -1,0 +1,32 @@
+{
+  "id": "agent-intel",
+  "description": "AI-powered data intelligence layer: web scraping, entity extraction, and structured data display with tables and charts.",
+  "group": "capability",
+  "appliesTo": ["nextjs-ts", "react-vite-ts", "fullstack-ts", "agent-service-ts"],
+  "keywords": ["scrape", "scraper", "scraping", "web scraping", "data extraction", "intelligence", "research agent", "market research", "icp", "ideal customer", "lead generation", "lead gen", "competitive analysis", "data collection", "crawl", "enrichment", "prospect"],
+  "files": [
+    { "source": "files/intel-config.json", "target": "intel-config.json" },
+    { "source": "files/intel-dashboard.tsx", "target": "src/components/intel/intel-dashboard.tsx" },
+    { "source": "files/entity-card.tsx", "target": "src/components/intel/entity-card.tsx" },
+    { "source": "files/scrape-status.tsx", "target": "src/components/intel/scrape-status.tsx" }
+  ],
+  "defaults": {
+    "maxConcurrentScrapes": 5,
+    "refreshIntervalMs": 60000
+  },
+  "buildHints": {
+    "pages": ["/intel", "/intel/entities", "/intel/sources", "/intel/runs"],
+    "apiRoutes": ["/api/intel/scrape", "/api/intel/entities", "/api/intel/sources"],
+    "components": ["IntelDashboard", "EntityCard", "ScrapeStatus", "SourceManager", "EntityTable"],
+    "dataModels": ["Entity { id, type, name, data, source, scrapedAt }", "Source { id, url, selector, schedule }", "ScrapeRun { id, sourceId, status, entitiesFound, duration }"],
+    "integrations": ["Playwright or Puppeteer for scraping", "LLM for entity extraction", "Cron or BullMQ for scheduled scrapes"],
+    "architectureNotes": [
+      "IntelDashboard shows scrape run history, entity counts by type, and source health.",
+      "EntityCard displays a single extracted entity with structured fields and source attribution.",
+      "ScrapeStatus shows real-time progress of active scrape jobs with entity count and errors.",
+      "Wire /api/intel/scrape to a background worker that runs Playwright + LLM extraction.",
+      "Entities are typed by category (person, company, product, etc.) with flexible JSON data field.",
+      "Sources define URL patterns + CSS selectors or natural language extraction instructions."
+    ]
+  }
+}

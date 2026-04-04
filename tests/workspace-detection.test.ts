@@ -148,8 +148,10 @@ test("workspace primary project defaults to web when frontend exists", async () 
     partner: null,
   });
   assert.equal(result.kind, "workspace");
-  assert.equal(result.spec.launchPlan!.primaryProjectId, "web");
-  assert.equal(result.spec.launchPlan!.primaryArtifact.kind, "preview");
+  const lp1 = result.spec.launchPlan;
+  assert.ok(lp1, "launchPlan should exist");
+  assert.equal(lp1.primaryProjectId, "web");
+  assert.equal(lp1.primaryArtifact?.kind, "preview");
 });
 
 test("workspace without frontend uses first project as primary", async () => {
@@ -158,7 +160,9 @@ test("workspace without frontend uses first project as primary", async () => {
     partner: null,
   });
   assert.equal(result.kind, "workspace");
-  assert.notEqual(result.spec.launchPlan!.primaryArtifact.kind, "preview");
+  const lp2 = result.spec.launchPlan;
+  assert.ok(lp2, "launchPlan should exist");
+  assert.notEqual(lp2.primaryArtifact?.kind, "preview");
 });
 
 // --- Partner resolution in workspaces ---

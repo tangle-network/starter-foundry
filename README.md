@@ -4,7 +4,7 @@ Deterministic project scaffold engine for AI coding platforms. Routes a user pro
 
 ```
 "Build a Next.js SaaS with Stripe billing and team management"
-  → nextjs-ts + capability:saas-teams + capability:tailwind + capability:dashboard-layout
+  → nextjs-ts + capability:saas-teams + capability:tailwind + capability:layout-dashboard
   → 14 files composed
   → Build plan: create /settings/team, /dashboard, wire /api/team/invite, build TeamMemberList, InviteForm, Sidebar
 ```
@@ -12,21 +12,49 @@ Deterministic project scaffold engine for AI coding platforms. Routes a user pro
 ## How it works
 
 ```
-User prompt → planPrompt() → composeStarter() → tarball + build plan → AI agent starts building
+User prompt → planPrompt() → composeStarter() → scaffold + build plan → AI agent starts building
               ~1ms            ~3ms               ~5ms
 ```
 
-The hot path is fully deterministic — no LLM calls, no network, no randomness. A keyword scorer routes prompts to families, a capability detector attaches specialization layers, and the compose engine writes template files to disk.
+The hot path is fully deterministic — no LLM calls, no network. A keyword scorer routes prompts to families, a capability detector attaches specialization layers, and the compose engine writes template files to disk.
 
 ## Registry
 
 | | Count | Examples |
 |---|---|---|
-| **Families** | 38 | nextjs-ts, react-vite-ts, agent-service-ts, forge-contracts, solana-program, python-api, go-api, sveltekit-ts, vue-ts, remix-ts, angular-ts |
-| **Capability layers** | 60 | agent-rag, agent-slack, agent-trading, defi-lending, defi-dex, saas-billing, saas-teams, shadcn, tailwind, deploy-docker, exchange-binance |
-| **Slot layers** | 18 | database (sqlite/postgres/mongodb/convex), auth (clerk/better-auth/supabase), payments (stripe/coinbase-commerce), sdk, queue |
+| **Families** | 40 | nextjs-ts, react-vite-ts, agent-service-ts, forge-contracts, solana-program, python-api, go-api, sveltekit-ts |
+| **Capability layers** | 91 | See categories below |
+| **Slot layers** | 18 | database (sqlite/postgres/mongodb/convex), auth (clerk/better-auth/supabase), payments, sdk, queue |
 | **Partners** | 6 | Coinbase, Tangle, EigenLayer, Arbitrum, X Layer, Solana |
 | **Product archetypes** | 115+ | "Twitter clone" → fullstack-ts + realtime-ws + saas-teams |
+
+### Capability layers by category
+
+**Layout (rich UI — production-ready React components):**
+layout-dashboard (sidebar + KPIs + activity feed), layout-landing (hero + features + pricing), layout-chat (message list + streaming input + sidebar), layout-admin (TanStack data table + entity form), layout-auth (sign-in/sign-up pages), layout-settings (profile/billing/team tabs)
+
+**Crypto frontend UI:**
+crypto-swap-ui (DEX swap card + token selector + pool card), crypto-staking-ui (staking dashboard + validator card), crypto-bridge-ui (bridge card + tx history), crypto-portfolio-ui (portfolio overview + token rows), crypto-governance-ui (proposal cards + voting), crypto-launchpad-ui (sale card + vesting schedule)
+
+**AI/Agent UI:**
+ai-chat-sessions (ChatGPT-style session list + folders + header), ai-agent-orchestrator (multi-agent timeline + tool call traces), ai-rag-chat (source citations + knowledge base manager), ai-voice-chat (voice orb + transcript + call controls)
+
+**Agent frameworks:** agent-rag, agent-langgraph, agent-mastra, agent-multi-agent, agent-trading, agent-voice, agent-slack, agent-github, agent-browser, agent-code-review, agent-customer-support, agent-data-pipeline, agent-intel, agent-openclaw, agent-hermes, agent-ai-sdk
+
+**DeFi/Crypto config:** defi-lending, defi-dex, defi-perpetuals, defi-yield, defi-restaking, defi-bridge, solana-amm, solana-perps, solana-staking, solana-nft, solana-prediction, solana-launchpad, solana-keeper, move-amm, move-staking, move-nft, move-oracle, move-launchpad, fhe-private-token, fhe-private-voting, fhe-sealed-auction
+
+**EVM infra:** evm-account-abstraction, evm-chain-monitor, evm-deploy-foundry, evm-layerzero-oft, evm-protocol-api, evm-wallet-dashboard
+
+**Other:** marketplace, webrtc, shadcn, tailwind, chart-widget, json-render, saas-billing, saas-teams, realtime-ws, deploy-docker, deploy-github-actions, infra-k8s, infra-terraform, infra-pulumi, exchange-binance, exchange-coinbase, exchange-okx, gpu-modal, gpu-replicate, gpu-together, effect-ts, logging, webhook-processor, market-sim, icons, typography, tangle-custody, tangle-oracle, ai-chat-ui, ai-agent-dashboard, ai-fine-tuning, admin-crud
+
+### Variants
+
+Layout layers support **visual variants** — different design treatments of the same component structure. The compose engine picks a variant deterministically from the project name, so every scaffold looks distinct but the result is reproducible.
+
+| Layer | Variants |
+|---|---|
+| layout-landing | gradient-hero, minimal-clean, dark-product |
+| layout-dashboard | sidebar, topnav |
 
 ## Programmatic API
 
@@ -37,13 +65,9 @@ const plan = await planPrompt({
   prompt: 'Build a RAG chatbot with vector search',
   partner: null,
 })
-// → { kind: 'starter', spec: { family: 'agent-service-ts', layers: ['framework:agent-service-ts', 'capability:agent-rag'] } }
 
 const result = await composeStarter({ spec: plan.spec, outDir: '/tmp/project' })
-// → { filesWritten: ['agent.mjs', 'agent.config.json', 'rag-config.json', 'retrieval-pipeline.mjs', ...] }
-
 const context = await createContextPack({ spec: plan.spec, outDir: '/tmp/project' })
-// → { buildPlan: { pages: [], apiRoutes: ['/api/ingest', '/api/query'], components: ['DocumentUploader', 'SearchResults'], ... } }
 ```
 
 ## CLI
@@ -57,57 +81,30 @@ npm run build && node dist/cli.js <command>
 | `plan --prompt <text> [--partner <id>]` | Route a prompt to a family + capabilities |
 | `compose --spec <path> --out <dir>` | Compose a starter project |
 | `workspace-compose --spec <path> --out <dir>` | Compose a multi-project workspace |
-| `validate --spec <path>` | Run validation checks (file-exists, node-syntax, http-start) |
+| `validate --spec <path>` | Run validation checks |
 | `context --spec <path>` | Generate a context pack with build plan |
 | `bench --spec <path> [--runs <n>]` | Benchmark compose + validate timing |
 | `prove --corpus <path> --out <dir>` | Run proof suite over a prompt corpus |
 | `catalog` | List all families and layers |
 
-## Architecture
-
-```
-registry/
-  families/          38 project types (manifest.json + template files)
-  layers/
-    framework/       38 framework layers (entry points, config)
-    capability/      60 specialization layers (RAG, DeFi, SaaS, design system)
-    auth/            4 auth providers
-    database/        4 database providers
-    payments/        3 payment providers
-    queue/           3 queue providers
-    sdk/             4 SDK providers
-  partners/          6 partner packs (branded defaults)
-
-src/
-  lib/
-    keywords.ts      Lane routes, capability detection, fuzzy matching
-    selection.ts     Family scoring (reads keywords from manifests)
-    prompt-planner.ts  Workspace routing, slot detection, archetype matching
-    compose.ts       File composition with path traversal guard
-    build-plan.ts    Generates structured build plans from capabilities
-    context-pack.ts  Context pack with build plan for AI agents
-    registry.ts      Manifest loading, validation, caching
-```
-
 ## Routing
 
 Three layers, evaluated in order:
 
-1. **Product archetypes** — "Twitter clone" → fullstack-ts. 115+ known products/app patterns.
-2. **Keyword scoring** — Each family manifest declares keywords. The scorer picks the highest match.
-3. **Fuzzy fallback** — When exact matching finds nothing, Levenshtein distance ≤ 1 catches typos ("Ract" → "react").
+1. **Product archetypes** — "Twitter clone" → fullstack-ts. 115+ known product patterns.
+2. **Keyword scoring** — Each family manifest declares tiered keywords. Highest match wins.
+3. **Fuzzy fallback** — Levenshtein distance ≤ 1 catches typos ("Ract" → "react").
 
-After family selection, **capability detection** scans the prompt against capability manifest keywords and attaches matching layers (RAG, Slack, DeFi lending, shadcn, etc.).
+After family selection, **capability detection** scans the prompt against capability keywords and attaches matching layers.
 
 ## Quality
 
 | Metric | Value |
 |--------|-------|
-| Route accuracy (60 training scenarios) | 100% |
-| Route accuracy (43 held-out scenarios) | 100% |
-| Proof suite (compose + validate) | 60/60 |
-| Unit + keyword tests | 131/131 |
-| Adversarial accuracy (fixable prompts) | 83% |
+| Route accuracy (training corpus, 60 scenarios) | 100% |
+| Route accuracy (held-out corpus, 43 scenarios) | 100% |
+| Route accuracy (IdeasAI corpus, 60 scenarios) | 100% |
+| Unit + integration tests | 343/343 |
 | Compose latency (warm) | ~5ms |
 
 ## Install
@@ -118,53 +115,26 @@ npm run build
 npm test
 ```
 
-Requires Node.js >= 20. One runtime dependency (`@huggingface/transformers` for optional semantic routing).
+Requires Node.js >= 20.
 
-## Adding Families or Capabilities
+## Adding families or capabilities
 
-When you add a new family or update a family's `package.json`:
-
-1. **Add the family** — create `registry/families/{id}/manifest.json` with `tieredKeywords`
-2. **Add the framework layer** — create `registry/layers/framework/{id}/manifest.json` + template files
-3. **Update slot compatibility** — add the family ID to `appliesTo` in relevant slot layers (`registry/layers/auth/*/manifest.json`, etc.)
-4. **Sync the cache warm list** — ensures the container has all npm deps pre-cached:
-
-```bash
-npm run sync:warm-list        # check what's missing
-npm run sync:warm-list:write  # auto-update agent-dev-container warm list
-```
-
-This script scans all family `package.json` files, collects every dependency, and writes any missing ones to `agent-dev-container/apps/host-agent/cache-warm-list.json`. The host agent periodically downloads these into a shared pnpm/npm store so `pnpm install` in containers hits the cache instead of the network.
-
-5. **Run tests** — verify the new family routes and composes:
-
-```bash
-npm run build && npm test
-```
+1. Create `registry/families/{id}/manifest.json` or `registry/layers/capability/{id}/manifest.json`
+2. Add template files in `files/` subdirectory
+3. For rich UI layers: provide real `.tsx` components (not config stubs)
+4. For variants: add `variants/` subdirectory with alternative file sets + `"variants": [...]` in manifest
+5. Run `npm run sync:warm-list` to update the container warm cache
+6. Run `npm test` — the meta test enforces every capability has a coverage test
 
 ## Integration
 
-starter-foundry powers the free-text scaffold path in [blueprint-agent](https://github.com/tangle-network/blueprint-agent). When a user types a prompt instead of clicking a curated template, starter-foundry routes, composes, and provides the build plan.
+starter-foundry powers the free-text scaffold path in blueprint-agent. When a user types a prompt, starter-foundry routes, composes, and provides the build plan.
 
 ```typescript
-// In blueprint-agent's scaffold pipeline
 import { planPrompt, composeStarter } from 'starter-foundry'
 
 const plan = await planPrompt({ prompt: userMessage, partner })
 if (plan.kind === 'starter') {
   const result = await composeStarter({ spec: plan.spec, outDir })
-  // tarball extracted in container, agent gets build plan
 }
 ```
-
-## Evolve
-
-The `.evolve/` directory tracks improvement cycles:
-
-- `current.json` — current state (generation, round, status)
-- `progress.md` — human-readable progress
-- `experiments.jsonl` — structured experiment log
-- `scorecard.json` — product quality scorecard
-- `pursuits/` — generational design specs
-
-8 generations shipped: TypeScript migration → registry-driven routing → product archetypes + fuzzy matching → build plans → unified tiered scoring → real-world corpus validation → semantic embedding fallback → full capability/family coverage testing.

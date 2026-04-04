@@ -1,0 +1,26 @@
+{
+  "id": "ai-voice-chat",
+  "description": "Voice-first AI chat interface with waveform visualization, live transcript, and call controls.",
+  "group": "capability",
+  "appliesTo": ["nextjs-ts", "react-vite-ts", "fullstack-ts"],
+  "keywords": ["voice agent", "voice chat", "speech", "call", "voice assistant", "voice ai", "talk to ai", "conversation ai voice"],
+  "capabilityRequires": ["layout-chat"],
+  "files": [
+    { "source": "files/voice-chat-page.tsx", "target": "src/app/voice/page.tsx" },
+    { "source": "files/voice-transcript.tsx", "target": "src/components/voice/voice-transcript.tsx" },
+    { "source": "files/voice-controls.tsx", "target": "src/components/voice/voice-controls.tsx" }
+  ],
+  "buildHints": {
+    "pages": ["/voice"],
+    "apiRoutes": ["/api/voice/stream", "/api/voice/tts"],
+    "components": ["VoiceChatPage", "VoiceTranscript", "VoiceControls"],
+    "integrations": ["Web Audio API for microphone capture", "Speech-to-text (Whisper, Deepgram, AssemblyAI)", "Text-to-speech (ElevenLabs, OpenAI TTS)", "WebSocket for real-time audio streaming"],
+    "architectureNotes": [
+      "VoiceChatPage provides the full-page voice interface with orb visualization, transcript, and controls.",
+      "VoiceTranscript renders a real-time scrolling transcript with speaker labels and confidence scores.",
+      "VoiceControls provides mic, mute, and end-call controls with audio level indicators.",
+      "Wire /api/voice/stream to a WebSocket that accepts audio chunks and returns transcription + LLM response.",
+      "TTS audio should be played back through the Web Audio API — use an AudioContext for volume control."
+    ]
+  }
+}

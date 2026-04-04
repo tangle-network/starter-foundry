@@ -1,0 +1,14 @@
+{
+  "entityTypes": ["person", "company", "product", "event", "location"],
+  "maxConcurrentScrapes": "{{maxConcurrentScrapes}}",
+  "refreshIntervalMs": "{{refreshIntervalMs}}",
+  "extraction": {
+    "model": "gpt-4o-mini",
+    "prompt": "Extract structured entities from the following content. Return JSON array of {type, name, data}."
+  },
+  "display": {
+    "defaultView": "table",
+    "views": ["table", "cards", "chart"],
+    "groupBy": ["type", "source", "date"]
+  }
+}

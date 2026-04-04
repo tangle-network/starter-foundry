@@ -109,9 +109,9 @@ export async function selectStarter({
   let defaultLayers = ['framework:web-static']
   if (winner.score === 0) {
     const lower = prompt.toLowerCase()
-    const describesProduct = /\b(build|create|make|ship|launch)\b/.test(lower) &&
-      /\b(app|tool|platform|system|tracker|manager|dashboard|portal|service|bot|agent|clone|saas|mvp|product|store|storefront|shop|marketplace|builder|generator|assistant|analyzer|monitor|finder|scheduler|planner|viewer|editor|player|reader|browser|client|studio|hub|suite|kit|board|library|checker|gallery|frontend|engine|workflow|inbox|scorer|splitter|compiler|canvas|sequencer|tester|formatter|validator|log|logger|maker|community|list|test|quiz|scanner|scorecard|analytics|knowledge base)\b/.test(lower)
-    const isStaticContent = /\b(landing page|portfolio|resume|cv site|personal site|restaurant website|conference website)\b/.test(lower)
+    const describesProduct = /\b(build|create|make|ship|launch|want|need|develop)\b/.test(lower) &&
+      /\b(app|tool|platform|system|tracker|manager|dashboard|portal|service|bot|agent|clone|saas|mvp|product|store|storefront|shop|marketplace|builder|generator|assistant|analyzer|monitor|finder|scheduler|planner|viewer|editor|player|reader|browser|client|studio|hub|suite|kit|board|library|checker|gallery|frontend|engine|workflow|inbox|scorer|splitter|compiler|canvas|sequencer|tester|formatter|validator|log|logger|maker|community|list|test|quiz|scanner|scorecard|analytics|knowledge base|companion|advisor|tutor|optimizer|space|network|aggregator|launchpad|exchange)\b/.test(lower)
+    const isStaticContent = /\b(landing page|portfolio|cv site|personal site|restaurant website|conference website)\b/.test(lower) && !/\b(ai|builder|generator|dynamic)\b/.test(lower)
     if (describesProduct && !isStaticContent) {
       defaultFamily = 'fullstack-ts'
       const fwLayers = frameworkLayersForFamily('fullstack-ts', registry.layers)

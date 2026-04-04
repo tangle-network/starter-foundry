@@ -1,0 +1,26 @@
+{
+  "id": "ai-agent-orchestrator",
+  "description": "Multi-agent orchestration interface with agent cards, tool-call timeline, and run management.",
+  "group": "capability",
+  "appliesTo": ["nextjs-ts", "react-vite-ts", "fullstack-ts"],
+  "keywords": ["agent orchestrator", "multi-agent", "crew", "conductor", "agent workflow", "tool calls", "agent trace", "agent run"],
+  "capabilityRequires": ["shadcn"],
+  "files": [
+    { "source": "files/agent-run-view.tsx", "target": "src/components/agents/agent-run-view.tsx" },
+    { "source": "files/agent-card.tsx", "target": "src/components/agents/agent-card.tsx" },
+    { "source": "files/orchestrator-page.tsx", "target": "src/app/agents/page.tsx" }
+  ],
+  "buildHints": {
+    "pages": ["/agents", "/agents/[runId]"],
+    "apiRoutes": ["/api/agents/run", "/api/agents/runs/[id]"],
+    "components": ["AgentRunView", "AgentCard", "OrchestratorPage"],
+    "integrations": ["Agent runtime (CrewAI, LangGraph, custom)", "Server-Sent Events for live step streaming"],
+    "architectureNotes": [
+      "OrchestratorPage provides a two-column layout: agent cards on left, run timeline in center.",
+      "AgentRunView renders a vertical timeline of steps with collapsible tool call details.",
+      "AgentCard displays individual agent identity, status, tools, and activity.",
+      "Wire /api/agents/run to your agent framework — stream steps as SSE events.",
+      "Each step should include: agentId, action, toolCall (optional), output, duration, status."
+    ]
+  }
+}

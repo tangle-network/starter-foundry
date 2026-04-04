@@ -5,7 +5,7 @@ import test from "node:test";
 import { composeStarter } from "../dist/lib/compose.js";
 import { createTempDir, readJson, removeDir } from "../dist/lib/fs.js";
 import { loadProjectSpec } from "../dist/lib/registry.js";
-import type { ComposeReport } from "../dist/types.js";
+import type { ComposeReport, ComposeSpec } from "../dist/types.js";
 
 test("compose writes files and ownership report", async () => {
   const spec = await loadProjectSpec(path.resolve("specs/coinbase-landing.json"));
@@ -72,6 +72,65 @@ test("compose carries slot overrides and partner files into fullstack starters",
     assert.match(paymentsConfig, /stripe/);
     assert.match(queueConfig, /bullmq/);
     assert.match(brandConfig, /Coinbase/);
+  } finally {
+    await removeDir(outDir);
+  }
+});
+
+// --- Variant system tests ---
+
+test("variant selection is deterministic — same projectName produces same files", async () => {
+  const spec: ComposeSpec = {
+    projectName: "variant-test-alpha",
+    family: "nextjs-ts",
+    layers: ["framework:nextjs-app-router", "capability:tailwind", "capability:shadcn", "capability:layout-landing"],
+  };
+  const outDir1 = await createTempDir("sf-variant-1");
+  const outDir2 = await createTempDir("sf-variant-2");
+  try {
+    const r1 = await composeStarter({ spec, outDir: outDir1 });
+    const r2 = await composeStarter({ spec, outDir: outDir2 });
+    const hero1 = await fs.readFile(path.join(outDir1, "src/components/landing/hero-section.tsx"), "utf8");
+    const hero2 = await fs.readFile(path.join(outDir2, "src/components/landing/hero-section.tsx"), "utf8");
+    assert.equal(hero1, hero2, "Same projectName should produce identical variant files");
+    assert.deepEqual(r1.filesWritten, r2.filesWritten);
+  } finally {
+    await removeDir(outDir1);
+    await removeDir(outDir2);
+  }
+});
+
+test("variant selection differs for different projectNames", async () => {
+  const names = ["alpha-project", "beta-project", "gamma-project", "delta-project", "epsilon-project"];
+  const heroContents = new Set<string>();
+  for (const name of names) {
+    const spec: ComposeSpec = {
+      projectName: name,
+      family: "nextjs-ts",
+      layers: ["framework:nextjs-app-router", "capability:tailwind", "capability:shadcn", "capability:layout-landing"],
+    };
+    const outDir = await createTempDir(`sf-variant-${name}`);
+    try {
+      await composeStarter({ spec, outDir });
+      const hero = await fs.readFile(path.join(outDir, "src/components/landing/hero-section.tsx"), "utf8");
+      heroContents.add(hero);
+    } finally {
+      await removeDir(outDir);
+    }
+  }
+  assert.ok(heroContents.size > 1, `Expected variant diversity across ${names.length} project names, got ${heroContents.size} unique outputs`);
+});
+
+test("layers without variants still use files/ directory", async () => {
+  const spec: ComposeSpec = {
+    projectName: "no-variant-test",
+    family: "nextjs-ts",
+    layers: ["framework:nextjs-app-router", "capability:tailwind", "capability:shadcn", "capability:layout-auth"],
+  };
+  const outDir = await createTempDir("sf-no-variant");
+  try {
+    const result = await composeStarter({ spec, outDir });
+    assert.ok(result.filesWritten.includes("src/app/sign-in/page.tsx"), "layout-auth should compose from files/ without variants");
   } finally {
     await removeDir(outDir);
   }

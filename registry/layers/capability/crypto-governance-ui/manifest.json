@@ -1,0 +1,24 @@
+{
+  "id": "crypto-governance-ui",
+  "description": "DAO governance dashboard with proposal cards, voting interface, and participation tracking.",
+  "group": "capability",
+  "appliesTo": ["nextjs-ts", "react-vite-ts", "fullstack-ts"],
+  "keywords": ["governance", "dao", "voting", "proposal", "quorum", "delegate", "governance token", "snapshot"],
+  "capabilityRequires": ["shadcn"],
+  "files": [
+    { "source": "files/proposal-card.tsx", "target": "src/components/crypto/proposal-card.tsx" },
+    { "source": "files/governance-page.tsx", "target": "src/components/crypto/governance-page.tsx" }
+  ],
+  "buildHints": {
+    "pages": ["/governance", "/governance/proposals/[id]", "/governance/create"],
+    "apiRoutes": ["/api/governance/proposals", "/api/governance/vote"],
+    "components": ["ProposalCard", "GovernancePage"],
+    "integrations": ["Governor contract ABI or Snapshot API", "Token balance query for voting power"],
+    "architectureNotes": [
+      "GovernancePage provides filtered proposal list with creation action.",
+      "ProposalCard displays vote distribution bars and quorum progress.",
+      "Wire voting actions to your Governor contract or Snapshot off-chain voting.",
+      "Voting power is display-only — fetch from token contract or delegation registry."
+    ]
+  }
+}

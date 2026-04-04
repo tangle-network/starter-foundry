@@ -84,6 +84,8 @@ export interface LayerManifest extends ManifestBase {
   keywords?: string[]
   /** Other capability IDs that must be present when this capability is attached. */
   capabilityRequires?: string[]
+  /** Available variant directory names under variants/. When present, compose picks one deterministically. */
+  variants?: string[]
   /** Concrete build suggestions for the AI agent when this capability is active. */
   buildHints?: BuildHints
 }
@@ -132,6 +134,8 @@ export interface BuildPlan {
   firstMoves: string[]
   /** Natural-language design directives for the AI agent. Not CSS — English rules about aesthetics. */
   designDirective: string | null
+  /** shadcn preset code for `pnpm dlx shadcn@latest init --preset <code>` */
+  presetCode?: string | null
 }
 
 export interface BuildHints {

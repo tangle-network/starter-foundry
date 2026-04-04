@@ -1,0 +1,24 @@
+{
+  "id": "crypto-portfolio-ui",
+  "description": "Wallet portfolio tracker with holdings table, asset allocation, and multi-chain balance overview.",
+  "group": "capability",
+  "appliesTo": ["nextjs-ts", "react-vite-ts", "fullstack-ts"],
+  "keywords": ["portfolio", "wallet tracker", "balance", "holdings", "token balance", "net worth", "pnl"],
+  "capabilityRequires": ["shadcn"],
+  "files": [
+    { "source": "files/portfolio-overview.tsx", "target": "src/components/crypto/portfolio-overview.tsx" },
+    { "source": "files/token-row.tsx", "target": "src/components/crypto/token-row.tsx" }
+  ],
+  "buildHints": {
+    "pages": ["/portfolio", "/portfolio/[chain]"],
+    "apiRoutes": ["/api/portfolio/holdings", "/api/portfolio/history"],
+    "components": ["PortfolioOverview", "TokenRow"],
+    "integrations": ["Token price API (CoinGecko, DeFiLlama)", "Multi-chain balance indexer or RPC"],
+    "architectureNotes": [
+      "PortfolioOverview displays total value with chain-filtered holdings table.",
+      "TokenRow renders individual token holding with expandable details.",
+      "Chart area is a placeholder — use chart-widget layer for actual charts.",
+      "Wire balance fetching to your indexer or multi-chain RPC aggregator."
+    ]
+  }
+}

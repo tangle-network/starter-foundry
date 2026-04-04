@@ -25,6 +25,7 @@
       "agent-dashboard-data.json"
     ]
   },
+  "capabilityRequires": ["chart-widget"],
   "keywords": [
     "agent dashboard",
     "agent monitoring",

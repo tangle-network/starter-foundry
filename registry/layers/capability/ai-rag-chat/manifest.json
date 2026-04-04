@@ -1,0 +1,26 @@
+{
+  "id": "ai-rag-chat",
+  "description": "RAG-optimized chat interface with inline source citations, source panel, and knowledge base management.",
+  "group": "capability",
+  "appliesTo": ["nextjs-ts", "react-vite-ts", "fullstack-ts"],
+  "keywords": ["rag", "retrieval", "sources", "citations", "knowledge base", "document chat", "ask documents", "context window"],
+  "capabilityRequires": ["layout-chat"],
+  "files": [
+    { "source": "files/rag-message.tsx", "target": "src/components/chat/rag-message.tsx" },
+    { "source": "files/source-panel.tsx", "target": "src/components/chat/source-panel.tsx" },
+    { "source": "files/knowledge-base-manager.tsx", "target": "src/components/chat/knowledge-base-manager.tsx" }
+  ],
+  "buildHints": {
+    "pages": ["/chat", "/knowledge-base"],
+    "apiRoutes": ["/api/chat", "/api/knowledge-base", "/api/knowledge-base/upload", "/api/knowledge-base/index"],
+    "components": ["RagMessage", "SourcePanel", "KnowledgeBaseManager"],
+    "integrations": ["Vector database (Pinecone, Weaviate, pgvector)", "Document parser (PDF, HTML, text)", "Embedding model for chunking"],
+    "architectureNotes": [
+      "RagMessage extends ChatMessage with a collapsible sources section showing citations per response.",
+      "SourcePanel is a right sidebar that displays full source content with highlighted retrieved passages.",
+      "KnowledgeBaseManager handles document upload, URL ingestion, indexing status, and source management.",
+      "Wire /api/knowledge-base/upload to parse documents, chunk them, generate embeddings, and store in your vector DB.",
+      "Chat responses should include a sources array with document title, chunk text, relevance score, and page reference."
+    ]
+  }
+}

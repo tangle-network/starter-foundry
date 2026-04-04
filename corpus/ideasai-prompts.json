@@ -1,0 +1,820 @@
+[
+  {
+    "id": "ai-bedtime-stories",
+    "prompt": "Build an AI app that generates personalized bedtime stories for kids based on their age and favorite characters",
+    "votes": 275,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:ai-chat-ui",
+      "capability:layout-chat",
+      "capability:tailwind"
+    ],
+    "category": "ai-saas",
+    "actualLayers": []
+  },
+  {
+    "id": "ai-elderly-voice-companion",
+    "prompt": "Build me an AI voice companion for elderly people that checks in daily, remembers conversations, and can alert family members",
+    "votes": 312,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:ai-chat-ui",
+      "capability:layout-chat",
+      "capability:tailwind"
+    ],
+    "category": "ai-saas",
+    "actualLayers": [
+      "capability:webrtc"
+    ]
+  },
+  {
+    "id": "ai-restaurant-menu",
+    "prompt": "I need a platform where small restaurants can upload their paper menus and AI turns them into beautiful digital menus with photos and descriptions",
+    "votes": 189,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:ai-chat-ui",
+      "capability:layout-dashboard",
+      "capability:tailwind"
+    ],
+    "category": "ai-saas",
+    "actualLayers": []
+  },
+  {
+    "id": "ai-podcast-to-shorts",
+    "prompt": "Build something that takes a long podcast episode and automatically cuts it into viral short-form video clips with captions",
+    "votes": 445,
+    "expectedFamily": "nextjs-ts",
+    "expectedCapabilities": [
+      "capability:ai-chat-ui",
+      "capability:layout-dashboard"
+    ],
+    "category": "ai-saas",
+    "actualLayers": []
+  },
+  {
+    "id": "ai-voice-analytics",
+    "prompt": "Build me an AI tool that analyzes customer service call recordings and identifies sentiment patterns, escalation triggers, and coaching opportunities",
+    "votes": 203,
+    "expectedFamily": "api-service",
+    "expectedCapabilities": [
+      "capability:ai-chat-ui",
+      "capability:layout-dashboard",
+      "capability:chart-widget"
+    ],
+    "category": "ai-saas",
+    "actualLayers": []
+  },
+  {
+    "id": "ai-recipe-optimizer",
+    "prompt": "Make an AI cooking assistant that takes my existing recipes and optimizes them for nutrition, cost, or cooking time while keeping the taste",
+    "votes": 167,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:ai-chat-ui",
+      "capability:layout-chat",
+      "capability:tailwind"
+    ],
+    "category": "ai-saas",
+    "actualLayers": []
+  },
+  {
+    "id": "ai-workout-from-video",
+    "prompt": "Build an app where I record a 30-second video of myself and AI generates a personalized workout plan based on my body type and movement patterns",
+    "votes": 389,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:ai-chat-ui",
+      "capability:layout-dashboard",
+      "capability:tailwind"
+    ],
+    "category": "ai-saas",
+    "actualLayers": []
+  },
+  {
+    "id": "ai-sustainability-reports",
+    "prompt": "Build me a tool that auto-generates ESG and sustainability reports for small businesses by pulling data from their existing tools",
+    "votes": 142,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:layout-dashboard",
+      "capability:chart-widget",
+      "capability:shadcn"
+    ],
+    "category": "ai-saas",
+    "actualLayers": []
+  },
+  {
+    "id": "ai-restaurant-phone-agent",
+    "prompt": "I want an AI voice agent that answers the phone for small restaurants, takes orders, handles reservations, and texts confirmations",
+    "votes": 521,
+    "expectedFamily": "agent-service-ts",
+    "expectedCapabilities": [
+      "capability:ai-chat-ui",
+      "capability:layout-dashboard"
+    ],
+    "category": "ai-saas",
+    "actualLayers": [
+      "capability:agent-voice"
+    ]
+  },
+  {
+    "id": "ai-ecommerce-support-bot",
+    "prompt": "Build a customer support chatbot for my Shopify store that knows my products, handles returns, and escalates to humans when needed",
+    "votes": 334,
+    "expectedFamily": "nextjs-ts",
+    "expectedCapabilities": [
+      "capability:ai-chat-ui",
+      "capability:layout-chat",
+      "capability:tailwind"
+    ],
+    "category": "ai-saas",
+    "actualLayers": [
+      "capability:layout-chat"
+    ]
+  },
+  {
+    "id": "ai-resume-builder",
+    "prompt": "Build me an AI resume builder — I paste a job description and it tailors my resume, suggests keywords, and formats it professionally",
+    "votes": 478,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:ai-chat-ui",
+      "capability:layout-dashboard",
+      "capability:tailwind"
+    ],
+    "category": "ai-saas",
+    "actualLayers": []
+  },
+  {
+    "id": "ai-legal-doc-analyzer",
+    "prompt": "Build a tool where I upload contracts and leases and AI highlights risky clauses, missing terms, and suggests edits in plain English",
+    "votes": 267,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:ai-chat-ui",
+      "capability:layout-dashboard",
+      "capability:shadcn"
+    ],
+    "category": "ai-saas",
+    "actualLayers": []
+  },
+  {
+    "id": "ai-personal-finance",
+    "prompt": "Build me an AI personal finance advisor that connects to my bank, categorizes spending, and gives me actionable savings tips every week",
+    "votes": 356,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:ai-chat-ui",
+      "capability:layout-dashboard",
+      "capability:chart-widget"
+    ],
+    "category": "ai-saas",
+    "actualLayers": []
+  },
+  {
+    "id": "ai-property-valuation",
+    "prompt": "Make an AI property valuation tool — I enter an address and it estimates the value using comparable sales, neighborhood trends, and market data",
+    "votes": 198,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:ai-chat-ui",
+      "capability:layout-dashboard",
+      "capability:chart-widget"
+    ],
+    "category": "ai-saas",
+    "actualLayers": []
+  },
+  {
+    "id": "ai-social-scheduler",
+    "prompt": "Build an AI social media manager that generates posts for Twitter, LinkedIn, and Instagram, schedules them, and tracks what performs best",
+    "votes": 412,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:ai-chat-ui",
+      "capability:layout-dashboard",
+      "capability:chart-widget",
+      "capability:shadcn"
+    ],
+    "category": "ai-saas",
+    "actualLayers": []
+  },
+  {
+    "id": "ai-recruiting-screener",
+    "prompt": "Build me an AI recruiting tool that screens incoming resumes against job requirements, ranks candidates, and generates interview questions",
+    "votes": 223,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:ai-chat-ui",
+      "capability:layout-dashboard",
+      "capability:shadcn"
+    ],
+    "category": "ai-saas",
+    "actualLayers": []
+  },
+  {
+    "id": "ai-meal-planner",
+    "prompt": "I want an AI meal planning app that creates weekly meal plans based on my diet, generates grocery lists, and connects to Instacart for delivery",
+    "votes": 367,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:ai-chat-ui",
+      "capability:layout-dashboard",
+      "capability:tailwind"
+    ],
+    "category": "ai-saas",
+    "actualLayers": []
+  },
+  {
+    "id": "ai-language-tutor",
+    "prompt": "Build me an AI language tutor that has conversations with me, corrects my grammar in real-time, and adapts lessons to my skill level",
+    "votes": 445,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:ai-chat-ui",
+      "capability:layout-chat",
+      "capability:tailwind"
+    ],
+    "category": "ai-saas",
+    "actualLayers": []
+  },
+  {
+    "id": "ai-symptom-checker",
+    "prompt": "Build a medical symptom checker where I describe what I'm feeling and AI suggests possible conditions and whether I should see a doctor",
+    "votes": 289,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:ai-chat-ui",
+      "capability:layout-chat",
+      "capability:tailwind"
+    ],
+    "category": "ai-saas",
+    "actualLayers": []
+  },
+  {
+    "id": "ai-interior-design",
+    "prompt": "Build me an AI interior design app — I upload a photo of my room and it suggests furniture layouts, color schemes, and links to buy items",
+    "votes": 378,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:ai-chat-ui",
+      "capability:layout-dashboard",
+      "capability:tailwind"
+    ],
+    "category": "ai-saas",
+    "actualLayers": []
+  },
+  {
+    "id": "ai-code-reviewer",
+    "prompt": "Build an AI code review tool that analyzes pull requests, finds bugs and security issues, and leaves inline suggestions",
+    "votes": 534,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:ai-chat-ui",
+      "capability:layout-dashboard"
+    ],
+    "category": "ai-saas",
+    "actualLayers": []
+  },
+  {
+    "id": "ai-newsletter-writer",
+    "prompt": "Build me an AI-powered email newsletter tool — I give it topics and it writes engaging copy, suggests subject lines, and schedules sends",
+    "votes": 245,
+    "expectedFamily": "nextjs-ts",
+    "expectedCapabilities": [
+      "capability:ai-chat-ui",
+      "capability:layout-dashboard",
+      "capability:shadcn"
+    ],
+    "category": "ai-saas",
+    "actualLayers": []
+  },
+  {
+    "id": "ai-meeting-summarizer",
+    "prompt": "I need a tool that records my Zoom meetings, transcribes them, and gives me a summary with action items and who's responsible for what",
+    "votes": 467,
+    "expectedFamily": "remix-ts",
+    "expectedCapabilities": [
+      "capability:ai-chat-ui",
+      "capability:layout-dashboard",
+      "capability:shadcn"
+    ],
+    "category": "ai-saas",
+    "actualLayers": []
+  },
+  {
+    "id": "ai-homework-helper",
+    "prompt": "Build an AI homework helper for students that explains concepts step by step, doesn't just give answers, and works for math, science, and history",
+    "votes": 512,
+    "expectedFamily": "agent-service-ts",
+    "expectedCapabilities": [
+      "capability:ai-chat-ui",
+      "capability:layout-chat",
+      "capability:tailwind"
+    ],
+    "category": "ai-saas",
+    "actualLayers": []
+  },
+  {
+    "id": "ai-travel-planner",
+    "prompt": "Build me an AI travel planner — I tell it my budget, dates, and interests and it creates a full day-by-day itinerary with bookings and maps",
+    "votes": 398,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:ai-chat-ui",
+      "capability:layout-chat",
+      "capability:tailwind"
+    ],
+    "category": "ai-saas",
+    "actualLayers": []
+  },
+  {
+    "id": "musician-gig-marketplace",
+    "prompt": "Build a marketplace where freelance musicians can list their services and event organizers can browse, book, and pay them directly",
+    "votes": 178,
+    "expectedFamily": "nextjs-ts",
+    "expectedCapabilities": [
+      "capability:marketplace",
+      "capability:layout-dashboard",
+      "capability:shadcn"
+    ],
+    "category": "marketplace",
+    "actualLayers": [
+      "capability:marketplace"
+    ]
+  },
+  {
+    "id": "tool-lending-marketplace",
+    "prompt": "I want a peer-to-peer tool lending platform — neighbors can list power tools, ladders, etc. and others can rent them by the day",
+    "votes": 234,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:marketplace",
+      "capability:layout-dashboard",
+      "capability:tailwind"
+    ],
+    "category": "marketplace",
+    "actualLayers": []
+  },
+  {
+    "id": "farm-produce-marketplace",
+    "prompt": "Build a local farm-to-table marketplace where small farms list their produce and people in the area can order for pickup or delivery",
+    "votes": 312,
+    "expectedFamily": "nextjs-ts",
+    "expectedCapabilities": [
+      "capability:marketplace",
+      "capability:layout-dashboard",
+      "capability:shadcn"
+    ],
+    "category": "marketplace",
+    "actualLayers": [
+      "capability:marketplace"
+    ]
+  },
+  {
+    "id": "consultant-booking-platform",
+    "prompt": "Build me a platform where freelance consultants create profiles with their expertise and hourly rates and clients can book and pay for sessions",
+    "votes": 189,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:marketplace",
+      "capability:layout-dashboard",
+      "capability:shadcn"
+    ],
+    "category": "marketplace",
+    "actualLayers": [
+      "capability:marketplace"
+    ]
+  },
+  {
+    "id": "handmade-crafts-marketplace",
+    "prompt": "I want an Etsy-like marketplace for handmade crafts with seller storefronts, reviews, and built-in shipping label generation",
+    "votes": 267,
+    "expectedFamily": "nextjs-ts",
+    "expectedCapabilities": [
+      "capability:marketplace",
+      "capability:layout-dashboard",
+      "capability:tailwind"
+    ],
+    "category": "marketplace",
+    "actualLayers": [
+      "capability:marketplace"
+    ]
+  },
+  {
+    "id": "pet-sitting-marketplace",
+    "prompt": "Build a Rover clone — a marketplace for pet sitting and dog walking where pet owners can find verified sitters nearby with reviews and booking",
+    "votes": 345,
+    "expectedFamily": "nextjs-ts",
+    "expectedCapabilities": [
+      "capability:marketplace",
+      "capability:layout-dashboard",
+      "capability:shadcn"
+    ],
+    "category": "marketplace",
+    "actualLayers": [
+      "capability:marketplace"
+    ]
+  },
+  {
+    "id": "tutoring-marketplace",
+    "prompt": "Build a tutoring marketplace for college students where upperclassmen can offer tutoring in specific courses and students can book sessions",
+    "votes": 198,
+    "expectedFamily": "nextjs-ts",
+    "expectedCapabilities": [
+      "capability:marketplace",
+      "capability:layout-dashboard",
+      "capability:tailwind"
+    ],
+    "category": "marketplace",
+    "actualLayers": [
+      "capability:marketplace"
+    ]
+  },
+  {
+    "id": "textbook-marketplace",
+    "prompt": "Make a used textbook marketplace for my university — students list books they're done with and buyers can search by course number",
+    "votes": 223,
+    "expectedFamily": "nextjs-ts",
+    "expectedCapabilities": [
+      "capability:marketplace",
+      "capability:layout-dashboard",
+      "capability:tailwind"
+    ],
+    "category": "marketplace",
+    "actualLayers": [
+      "capability:marketplace"
+    ]
+  },
+  {
+    "id": "home-services-marketplace",
+    "prompt": "Build a home service marketplace like Thumbtack where plumbers, electricians, and cleaners list services and homeowners can request quotes",
+    "votes": 289,
+    "expectedFamily": "nextjs-ts",
+    "expectedCapabilities": [
+      "capability:marketplace",
+      "capability:layout-dashboard",
+      "capability:shadcn"
+    ],
+    "category": "marketplace",
+    "actualLayers": [
+      "capability:marketplace"
+    ]
+  },
+  {
+    "id": "vintage-clothing-marketplace",
+    "prompt": "I want a Depop-style vintage clothing marketplace with seller profiles, photo galleries, and offer/counteroffer negotiation",
+    "votes": 356,
+    "expectedFamily": "nextjs-ts",
+    "expectedCapabilities": [
+      "capability:marketplace",
+      "capability:layout-dashboard",
+      "capability:tailwind"
+    ],
+    "category": "marketplace",
+    "actualLayers": [
+      "capability:marketplace"
+    ]
+  },
+  {
+    "id": "hoa-management-saas",
+    "prompt": "Build a SaaS for neighborhood associations — dues collection, maintenance requests, community announcements, and document storage",
+    "votes": 156,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:layout-dashboard",
+      "capability:layout-admin",
+      "capability:shadcn"
+    ],
+    "category": "saas-tools",
+    "actualLayers": [
+      "capability:layout-landing"
+    ]
+  },
+  {
+    "id": "small-biz-inventory",
+    "prompt": "Build me an inventory management system for my small retail shop with barcode scanning, low-stock alerts, and sales reporting",
+    "votes": 234,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:layout-dashboard",
+      "capability:chart-widget",
+      "capability:shadcn"
+    ],
+    "category": "saas-tools",
+    "actualLayers": [
+      "capability:layout-admin"
+    ]
+  },
+  {
+    "id": "event-planning-rsvp",
+    "prompt": "Build an event planning platform with RSVP tracking, guest lists, seating charts, and automated reminder emails",
+    "votes": 189,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:layout-dashboard",
+      "capability:shadcn",
+      "capability:tailwind"
+    ],
+    "category": "saas-tools",
+    "actualLayers": []
+  },
+  {
+    "id": "subscription-box-dashboard",
+    "prompt": "I run a subscription box business and need a dashboard to manage subscribers, track shipments, handle cancellations, and see churn metrics",
+    "votes": 167,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:layout-dashboard",
+      "capability:chart-widget",
+      "capability:shadcn"
+    ],
+    "category": "saas-tools",
+    "actualLayers": [
+      "capability:layout-dashboard"
+    ]
+  },
+  {
+    "id": "accountant-client-portal",
+    "prompt": "Build a client portal for my accounting firm where clients upload documents, I share tax returns, and we track deadlines together",
+    "votes": 145,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:layout-dashboard",
+      "capability:layout-auth",
+      "capability:shadcn"
+    ],
+    "category": "saas-tools",
+    "actualLayers": []
+  },
+  {
+    "id": "construction-project-mgmt",
+    "prompt": "Build project management software for construction teams with Gantt charts, daily logs, photo documentation, and subcontractor tracking",
+    "votes": 178,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:layout-dashboard",
+      "capability:chart-widget",
+      "capability:shadcn"
+    ],
+    "category": "saas-tools",
+    "actualLayers": [
+      "capability:layout-admin",
+      "capability:webrtc"
+    ]
+  },
+  {
+    "id": "employee-onboarding",
+    "prompt": "Make an employee onboarding tool that automatically assigns tasks, collects documents, schedules orientation, and tracks completion for HR",
+    "votes": 201,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:layout-dashboard",
+      "capability:layout-admin",
+      "capability:shadcn"
+    ],
+    "category": "saas-tools",
+    "actualLayers": []
+  },
+  {
+    "id": "customer-feedback-platform",
+    "prompt": "Build a customer feedback tool with embeddable survey widgets, NPS tracking, sentiment analysis, and a dashboard to see trends",
+    "votes": 212,
+    "expectedFamily": "agent-service-py",
+    "expectedCapabilities": [
+      "capability:layout-dashboard",
+      "capability:chart-widget",
+      "capability:shadcn"
+    ],
+    "category": "saas-tools",
+    "actualLayers": []
+  },
+  {
+    "id": "salon-scheduling",
+    "prompt": "Build an appointment scheduling app for hair salons with online booking, stylist availability, SMS reminders, and a simple POS",
+    "votes": 267,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:layout-dashboard",
+      "capability:shadcn",
+      "capability:tailwind"
+    ],
+    "category": "saas-tools",
+    "actualLayers": [
+      "capability:marketplace"
+    ]
+  },
+  {
+    "id": "freelancer-invoicing",
+    "prompt": "Build me an invoicing and payment tracking app for freelancers — create invoices, track what's paid and overdue, and send payment reminders",
+    "votes": 334,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:layout-dashboard",
+      "capability:chart-widget",
+      "capability:shadcn"
+    ],
+    "category": "saas-tools",
+    "actualLayers": []
+  },
+  {
+    "id": "video-tutoring-platform",
+    "prompt": "Build a video tutoring platform with screen sharing, a shared whiteboard, session recording, and built-in scheduling and payments",
+    "votes": 245,
+    "expectedFamily": "react-vite-ts",
+    "expectedCapabilities": [
+      "capability:webrtc",
+      "capability:layout-dashboard",
+      "capability:tailwind"
+    ],
+    "category": "webrtc",
+    "actualLayers": [
+      "capability:webrtc"
+    ]
+  },
+  {
+    "id": "telehealth-video-app",
+    "prompt": "Build a telehealth app where doctors can do video consultations with patients, write prescriptions, and share medical documents securely",
+    "votes": 389,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:webrtc",
+      "capability:layout-dashboard",
+      "capability:layout-auth"
+    ],
+    "category": "webrtc",
+    "actualLayers": []
+  },
+  {
+    "id": "virtual-coworking-space",
+    "prompt": "I want a virtual co-working space with persistent video rooms, status indicators, and the ability to tap someone on the shoulder for a quick chat",
+    "votes": 312,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:webrtc",
+      "capability:layout-dashboard",
+      "capability:tailwind"
+    ],
+    "category": "webrtc",
+    "actualLayers": [
+      "capability:layout-chat"
+    ]
+  },
+  {
+    "id": "music-jam-session",
+    "prompt": "Build an online music jam session platform with low-latency audio, a shared metronome, and the ability to layer tracks from different musicians",
+    "votes": 198,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:webrtc",
+      "capability:layout-dashboard",
+      "capability:tailwind"
+    ],
+    "category": "webrtc",
+    "actualLayers": []
+  },
+  {
+    "id": "remote-standup-video",
+    "prompt": "Build a remote team standup app with quick async video updates, automatic summaries, and a timeline view of what everyone's working on",
+    "votes": 223,
+    "expectedFamily": "nextjs-ts",
+    "expectedCapabilities": [
+      "capability:webrtc",
+      "capability:layout-dashboard",
+      "capability:shadcn"
+    ],
+    "category": "webrtc",
+    "actualLayers": []
+  },
+  {
+    "id": "competitive-pricing-intel",
+    "prompt": "Build me a competitive pricing intelligence tool that monitors competitor websites daily, tracks price changes, and alerts me when they drop prices",
+    "votes": 278,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:agent-intel",
+      "capability:layout-dashboard",
+      "capability:chart-widget"
+    ],
+    "category": "data-intel",
+    "actualLayers": [
+      "capability:agent-intel",
+      "capability:layout-landing",
+      "capability:webrtc"
+    ]
+  },
+  {
+    "id": "real-estate-aggregator",
+    "prompt": "Build a real estate listing aggregator that pulls from Zillow, Redfin, and Realtor.com, dedupes listings, and shows me deals below market value",
+    "votes": 345,
+    "expectedFamily": "nextjs-ts",
+    "expectedCapabilities": [
+      "capability:agent-intel",
+      "capability:layout-dashboard",
+      "capability:chart-widget"
+    ],
+    "category": "data-intel",
+    "actualLayers": [
+      "capability:marketplace"
+    ]
+  },
+  {
+    "id": "job-salary-scraper",
+    "prompt": "Build a job posting scraper that pulls listings from LinkedIn, Indeed, and Glassdoor, extracts salary ranges, and shows me compensation trends by role",
+    "votes": 412,
+    "expectedFamily": "playwright-worker",
+    "expectedCapabilities": [
+      "capability:agent-intel",
+      "capability:layout-dashboard",
+      "capability:chart-widget"
+    ],
+    "category": "data-intel",
+    "actualLayers": []
+  },
+  {
+    "id": "brand-monitoring-dashboard",
+    "prompt": "I need a social media brand monitoring tool that tracks mentions of my company across Twitter, Reddit, and news sites and shows sentiment over time",
+    "votes": 256,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:agent-intel",
+      "capability:layout-dashboard",
+      "capability:chart-widget"
+    ],
+    "category": "data-intel",
+    "actualLayers": []
+  },
+  {
+    "id": "b2b-lead-gen-tool",
+    "prompt": "Build a B2B lead generation tool that scrapes company websites, finds decision-maker contacts, enriches data with LinkedIn, and exports to my CRM",
+    "votes": 367,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:agent-intel",
+      "capability:layout-dashboard"
+    ],
+    "category": "data-intel",
+    "actualLayers": [
+      "capability:agent-intel"
+    ]
+  },
+  {
+    "id": "nft-portfolio-tracker",
+    "prompt": "Build an NFT gallery and portfolio tracker that shows my NFTs across chains, tracks floor prices, and estimates total portfolio value",
+    "votes": 189,
+    "expectedFamily": "react-vite-ts",
+    "expectedCapabilities": [
+      "capability:layout-dashboard",
+      "capability:chart-widget",
+      "capability:tailwind"
+    ],
+    "category": "crypto",
+    "actualLayers": []
+  },
+  {
+    "id": "dao-governance-dashboard",
+    "prompt": "Build a DAO voting and governance dashboard where token holders can create proposals, vote, delegate, and see voting history",
+    "votes": 234,
+    "expectedFamily": "workspace",
+    "expectedCapabilities": [
+      "capability:layout-dashboard",
+      "capability:shadcn"
+    ],
+    "category": "crypto"
+  },
+  {
+    "id": "token-launchpad",
+    "prompt": "Build a token launchpad with configurable vesting schedules, cliff periods, and a claiming interface for investors",
+    "votes": 312,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:layout-dashboard",
+      "capability:shadcn"
+    ],
+    "category": "crypto",
+    "actualLayers": []
+  },
+  {
+    "id": "defi-yield-optimizer",
+    "prompt": "Build a DeFi yield farming optimizer that shows APYs across protocols, auto-compounds rewards, and suggests the best strategies for my risk level",
+    "votes": 278,
+    "expectedFamily": "fullstack-ts",
+    "expectedCapabilities": [
+      "capability:layout-dashboard",
+      "capability:chart-widget"
+    ],
+    "category": "crypto",
+    "actualLayers": []
+  },
+  {
+    "id": "cross-chain-bridge-ui",
+    "prompt": "Build a cross-chain bridge interface where users can transfer tokens between Ethereum, Polygon, and Arbitrum with a simple swap-like UI",
+    "votes": 245,
+    "expectedFamily": "workspace",
+    "expectedCapabilities": [
+      "capability:layout-dashboard",
+      "capability:tailwind"
+    ],
+    "category": "crypto"
+  }
+]

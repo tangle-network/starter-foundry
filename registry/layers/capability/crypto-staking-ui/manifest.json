@@ -1,0 +1,24 @@
+{
+  "id": "crypto-staking-ui",
+  "description": "Staking dashboard with stake/unstake interface, validator selection, and reward tracking.",
+  "group": "capability",
+  "appliesTo": ["nextjs-ts", "react-vite-ts", "fullstack-ts"],
+  "keywords": ["staking", "stake", "unstake", "delegate", "validator", "rewards", "apr", "apy", "compound"],
+  "capabilityRequires": ["shadcn"],
+  "files": [
+    { "source": "files/staking-dashboard.tsx", "target": "src/components/crypto/staking-dashboard.tsx" },
+    { "source": "files/validator-card.tsx", "target": "src/components/crypto/validator-card.tsx" }
+  ],
+  "buildHints": {
+    "pages": ["/staking", "/staking/validators", "/staking/validators/[address]"],
+    "apiRoutes": ["/api/staking/positions", "/api/staking/validators"],
+    "components": ["StakingDashboard", "ValidatorCard"],
+    "integrations": ["Staking contract ABI for stake/unstake/claim", "Validator API for uptime and commission data"],
+    "architectureNotes": [
+      "StakingDashboard provides tabbed stake/unstake interface with position tracking.",
+      "ValidatorCard displays validator info with delegation action.",
+      "Wire staking actions to your staking contract or protocol SDK.",
+      "Reward calculations are display-only — fetch APR from on-chain or API."
+    ]
+  }
+}

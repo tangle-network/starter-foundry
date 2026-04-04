@@ -97,6 +97,12 @@ export function generateBuildPlan(
   // Generate design directive for frontend families
   const designDirective = generateDesignDirective(spec, components)
 
+  // Extract shadcn preset code from layer defaults
+  const shadcnLayer = components.layers.find(
+    (l) => l.group === 'capability' && l.id === 'shadcn',
+  )
+  const presetCode = shadcnLayer?.defaults?.presetCode as string | undefined ?? null
+
   return {
     goal: prompt || `Build a ${spec.family} project`,
     architecture,
@@ -107,6 +113,7 @@ export function generateBuildPlan(
     integrations,
     firstMoves,
     designDirective,
+    presetCode,
   }
 }
 

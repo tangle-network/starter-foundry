@@ -1,0 +1,18 @@
+{
+  "provider": "livekit",
+  "signalingUrl": "{{signalingUrl}}",
+  "iceServers": [
+    { "urls": "stun:stun.l.google.com:19302" }
+  ],
+  "maxParticipants": "{{maxParticipants}}",
+  "features": {
+    "screenShare": true,
+    "recording": false,
+    "chat": true,
+    "handRaise": true
+  },
+  "layout": {
+    "mode": "grid",
+    "spotlightThreshold": 4
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "renderer": "{{renderer}}",
+  "catalog": "@json-render/shadcn",
+  "features": {
+    "stateBinding": true,
+    "conditionalVisibility": true,
+    "formValidation": true,
+    "actions": true
+  },
+  "packages": {
+    "react": ["@json-render/core", "@json-render/react", "@json-render/shadcn"],
+    "vue": ["@json-render/core", "@json-render/vue"],
+    "svelte": ["@json-render/core", "@json-render/svelte"],
+    "next": ["@json-render/core", "@json-render/react", "@json-render/shadcn", "@json-render/next"]
+  }
+}

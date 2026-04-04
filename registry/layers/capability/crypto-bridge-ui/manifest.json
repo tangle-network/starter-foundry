@@ -1,0 +1,24 @@
+{
+  "id": "crypto-bridge-ui",
+  "description": "Cross-chain bridge interface with chain selection, fee estimation, and transaction history.",
+  "group": "capability",
+  "appliesTo": ["nextjs-ts", "react-vite-ts", "fullstack-ts"],
+  "keywords": ["bridge", "cross-chain", "transfer", "multichain", "layerzero", "wormhole", "chain transfer"],
+  "capabilityRequires": ["shadcn"],
+  "files": [
+    { "source": "files/bridge-card.tsx", "target": "src/components/crypto/bridge-card.tsx" },
+    { "source": "files/bridge-history.tsx", "target": "src/components/crypto/bridge-history.tsx" }
+  ],
+  "buildHints": {
+    "pages": ["/bridge", "/bridge/history"],
+    "apiRoutes": ["/api/bridge/quote", "/api/bridge/status"],
+    "components": ["BridgeCard", "BridgeHistory"],
+    "integrations": ["Bridge protocol SDK (LayerZero, Wormhole, Axelar)", "Chain RPC for transaction confirmation tracking"],
+    "architectureNotes": [
+      "BridgeCard handles source/destination chain selection with fee summary and route display.",
+      "BridgeHistory tracks cross-chain transaction status with confirmation progress.",
+      "Wire bridge execution to your bridge protocol SDK.",
+      "Transaction status polling is display-only — implement via API or websocket."
+    ]
+  }
+}

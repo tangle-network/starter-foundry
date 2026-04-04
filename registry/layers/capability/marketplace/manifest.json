@@ -1,0 +1,29 @@
+{
+  "id": "marketplace",
+  "description": "Two-sided marketplace with listings, search, user roles (buyer/seller), reviews, and payment integration.",
+  "group": "capability",
+  "appliesTo": ["nextjs-ts", "react-vite-ts", "fullstack-ts"],
+  "keywords": ["marketplace", "listings", "buyer", "seller", "two-sided", "peer to peer", "p2p", "gig", "freelance", "rental", "booking", "auction", "classified"],
+  "files": [
+    { "source": "files/marketplace-config.json", "target": "marketplace-config.json" },
+    { "source": "files/listing-card.tsx", "target": "src/components/marketplace/listing-card.tsx" },
+    { "source": "files/listing-grid.tsx", "target": "src/components/marketplace/listing-grid.tsx" },
+    { "source": "files/search-filters.tsx", "target": "src/components/marketplace/search-filters.tsx" },
+    { "source": "files/review-card.tsx", "target": "src/components/marketplace/review-card.tsx" }
+  ],
+  "buildHints": {
+    "pages": ["/", "/listings", "/listings/[id]", "/dashboard/seller", "/dashboard/buyer"],
+    "apiRoutes": ["/api/listings", "/api/listings/[id]", "/api/reviews", "/api/search"],
+    "components": ["ListingCard", "ListingGrid", "SearchFilters", "ReviewCard", "SellerDashboard", "BuyerDashboard"],
+    "dataModels": ["Listing { id, title, description, price, images, sellerId, category, status }", "Review { id, listingId, buyerId, rating, comment }", "Order { id, listingId, buyerId, status, total }"],
+    "integrations": ["Stripe Connect for marketplace payments", "Full-text search (Algolia, Meilisearch, or pg_trgm)", "Image upload (S3, Cloudflare R2, or Uploadthing)"],
+    "architectureNotes": [
+      "ListingGrid renders a responsive grid of ListingCards with search and category filters.",
+      "SearchFilters provides category dropdown, price range slider, sort order, and text search.",
+      "ReviewCard displays star rating, reviewer info, and comment with timestamp.",
+      "Seller dashboard shows active listings, orders, and revenue metrics.",
+      "Buyer dashboard shows purchase history, saved listings, and pending reviews.",
+      "Wire Stripe Connect for split payments between platform and sellers."
+    ]
+  }
+}

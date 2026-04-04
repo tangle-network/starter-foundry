@@ -1,0 +1,25 @@
+{
+  "id": "crypto-swap-ui",
+  "description": "DEX swap interface with token pair selection, slippage settings, and liquidity pool cards.",
+  "group": "capability",
+  "appliesTo": ["nextjs-ts", "react-vite-ts", "fullstack-ts"],
+  "keywords": ["swap", "dex", "exchange", "token swap", "amm", "liquidity", "uniswap", "raydium", "jupiter"],
+  "capabilityRequires": ["shadcn"],
+  "files": [
+    { "source": "files/swap-card.tsx", "target": "src/components/crypto/swap-card.tsx" },
+    { "source": "files/token-select-dialog.tsx", "target": "src/components/crypto/token-select-dialog.tsx" },
+    { "source": "files/pool-card.tsx", "target": "src/components/crypto/pool-card.tsx" }
+  ],
+  "buildHints": {
+    "pages": ["/swap", "/pools", "/pools/[id]"],
+    "apiRoutes": ["/api/swap/quote", "/api/pools"],
+    "components": ["SwapCard", "TokenSelectDialog", "PoolCard"],
+    "integrations": ["DEX aggregator API for quotes and routing", "Wallet adapter for transaction signing"],
+    "architectureNotes": [
+      "SwapCard handles token pair input with direction toggle and slippage configuration.",
+      "TokenSelectDialog provides searchable token list with popular token shortcuts.",
+      "PoolCard displays liquidity position details with add/remove actions.",
+      "Wire swap execution to your DEX router contract or aggregator API."
+    ]
+  }
+}

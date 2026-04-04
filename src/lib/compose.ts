@@ -20,10 +20,27 @@ async function renderFile(sourcePath: string, targetPath: string, variables: Rec
   await fs.writeFile(targetPath, rendered, 'utf8')
 }
 
-function collectComponentFiles(component: AnyManifest): Array<{ source: string; target: string; owner: string }> {
+function simpleHash(str: string): number {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0
+  }
+  return Math.abs(hash)
+}
+
+function resolveVariantSource(component: AnyManifest, filePath: string, variantSeed: string): string {
+  const layer = component as LayerManifest
+  const variants = layer.variants as string[] | undefined
+  if (!variants?.length || !filePath.startsWith('files/')) return path.join(component.baseDir, filePath)
+  const idx = simpleHash(variantSeed + layer.id) % variants.length
+  const variantDir = `variants/${variants[idx]}`
+  return path.join(component.baseDir, filePath.replace(/^files\//, `${variantDir}/`))
+}
+
+function collectComponentFiles(component: AnyManifest, variantSeed: string): Array<{ source: string; target: string; owner: string }> {
   return (component.files ?? []).map((file) => ({
     ...file,
-    source: path.join(component.baseDir, file.source),
+    source: resolveVariantSource(component, file.source, variantSeed),
     owner:
       component.kind === 'layer'
         ? `${(component as LayerManifest).group}:${component.id}`
@@ -107,8 +124,9 @@ async function composeStarterInner(spec: ComposeSpec, outDir: string): Promise<C
 
   await ensureDir(outDir)
 
+  const variantSeed = spec.projectName
   for (const component of componentOrder) {
-    const files = collectComponentFiles(component)
+    const files = collectComponentFiles(component, variantSeed)
     for (const file of files) {
       const resolvedTarget = resolveTemplateObject(file.target, variables) as string
       const targetPath = path.join(outDir, resolvedTarget)

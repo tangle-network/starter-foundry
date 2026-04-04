@@ -1,0 +1,26 @@
+{
+  "categories": [
+    "Electronics",
+    "Home & Garden",
+    "Services",
+    "Vehicles",
+    "Fashion",
+    "Sports & Outdoors",
+    "Collectibles",
+    "Other"
+  ],
+  "sortOptions": ["newest", "price-low", "price-high", "rating"],
+  "listingStatuses": ["draft", "active", "sold", "archived"],
+  "pricing": {
+    "currency": "USD",
+    "minPrice": 0,
+    "maxPrice": 100000,
+    "platformFeePercent": 10
+  },
+  "features": {
+    "reviews": true,
+    "messaging": true,
+    "savedListings": true,
+    "sellerVerification": true
+  }
+}

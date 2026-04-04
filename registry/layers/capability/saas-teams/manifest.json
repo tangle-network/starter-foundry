@@ -15,14 +15,23 @@
       "target": "teams-config.json"
     },
     {
-      "source": "files/teams-middleware.mjs",
-      "target": "teams-middleware.mjs"
+      "source": "files/teams-api.ts",
+      "target": "lib/teams-api.ts"
+    },
+    {
+      "source": "files/teams-guard.ts",
+      "target": "lib/teams-guard.ts"
+    },
+    {
+      "source": "files/teams-ui.tsx",
+      "target": "components/team-members.tsx"
     }
   ],
   "contextHints": {
     "extensionPoints": [
       "teams-config.json",
-      "teams-middleware.mjs"
+      "lib/teams-api.ts",
+      "lib/teams-guard.ts"
     ]
   },
   "keywords": [

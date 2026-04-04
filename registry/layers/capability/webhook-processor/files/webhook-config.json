@@ -1,16 +1,26 @@
 {
   "providers": [
-    { "id": "stripe", "signatureHeader": "stripe-signature", "algorithm": "hmac-sha256" },
-    { "id": "github", "signatureHeader": "x-hub-signature-256", "algorithm": "hmac-sha256" },
-    { "id": "slack", "signatureHeader": "x-slack-signature", "algorithm": "hmac-sha256" }
+    {
+      "id": "stripe",
+      "signatureHeader": "stripe-signature",
+      "secretEnvVar": "STRIPE_WEBHOOK_SECRET",
+      "events": ["checkout.session.completed", "invoice.paid", "customer.subscription.updated"]
+    },
+    {
+      "id": "github",
+      "signatureHeader": "x-hub-signature-256",
+      "secretEnvVar": "GITHUB_WEBHOOK_SECRET",
+      "events": ["push", "pull_request", "issues"]
+    },
+    {
+      "id": "generic",
+      "signatureHeader": "x-webhook-signature",
+      "secretEnvVar": "WEBHOOK_SECRET",
+      "events": ["*"]
+    }
   ],
-  "retryPolicy": {
+  "queue": {
     "maxRetries": 3,
-    "backoffMs": [1000, 5000, 15000]
-  },
-  "notes": [
-    "webhook-router.mjs verifies signatures and routes to the correct handler.",
-    "Add new providers by extending the providers array.",
-    "Failed deliveries are retried with exponential backoff."
-  ]
+    "baseDelayMs": 1000
+  }
 }

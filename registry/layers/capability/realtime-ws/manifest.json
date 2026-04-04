@@ -15,14 +15,23 @@
       "target": "realtime-config.json"
     },
     {
-      "source": "files/ws-server.mjs",
-      "target": "ws-server.mjs"
+      "source": "files/ws-types.ts",
+      "target": "lib/ws-types.ts"
+    },
+    {
+      "source": "files/ws-server.ts",
+      "target": "lib/ws-server.ts"
+    },
+    {
+      "source": "files/ws-client.ts",
+      "target": "hooks/use-websocket.ts"
     }
   ],
   "contextHints": {
     "extensionPoints": [
       "realtime-config.json",
-      "ws-server.mjs"
+      "lib/ws-server.ts",
+      "hooks/use-websocket.ts"
     ]
   },
   "keywords": [

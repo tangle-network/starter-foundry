@@ -15,14 +15,23 @@
       "target": "billing-config.json"
     },
     {
-      "source": "files/billing-hooks.mjs",
-      "target": "billing-hooks.mjs"
+      "source": "files/billing-api.ts",
+      "target": "lib/billing-api.ts"
+    },
+    {
+      "source": "files/billing-guard.ts",
+      "target": "lib/billing-guard.ts"
+    },
+    {
+      "source": "files/billing-ui.tsx",
+      "target": "components/pricing-table.tsx"
     }
   ],
   "contextHints": {
     "extensionPoints": [
       "billing-config.json",
-      "billing-hooks.mjs"
+      "lib/billing-api.ts",
+      "lib/billing-guard.ts"
     ]
   },
   "keywords": [

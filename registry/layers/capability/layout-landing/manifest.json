@@ -7,7 +7,8 @@
     { "source": "files/hero-section.tsx", "target": "src/components/landing/hero-section.tsx" },
     { "source": "files/features-section.tsx", "target": "src/components/landing/features-section.tsx" },
     { "source": "files/pricing-section.tsx", "target": "src/components/landing/pricing-section.tsx" },
-    { "source": "files/landing-page.tsx", "target": "src/app/page.tsx" }
+    { "source": "files/landing-page.tsx", "target": "app/page.tsx" },
+    { "source": "files/landing-page.tsx", "target": "src/App.tsx" }
   ],
   "variants": ["gradient-hero", "minimal-clean", "dark-product"],
   "keywords": ["landing", "homepage", "marketing", "hero", "pricing", "features", "saas", "startup"],

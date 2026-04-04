@@ -1,6 +1,6 @@
 {
   "id": "react-vite-ts",
-  "description": "React and Vite framework layer with an instant shell preview.",
+  "description": "React and Vite framework layer with Tailwind CSS and shadcn/ui support.",
   "appliesTo": ["react-vite-ts"],
   "defaults": {
     "headline": "Starter Foundry React Surface",
@@ -13,7 +13,7 @@
     },
     {
       "source": "files/styles.css",
-      "target": "styles.css"
+      "target": "src/styles.css"
     },
     {
       "source": "files/preview-client.js",
@@ -28,12 +28,20 @@
       "target": "tsconfig.json"
     },
     {
+      "source": "files/tailwind.config.ts",
+      "target": "tailwind.config.ts"
+    },
+    {
+      "source": "files/postcss.config.js",
+      "target": "postcss.config.js"
+    },
+    {
       "source": "files/main.ts",
       "target": "src/main.ts"
     },
     {
-      "source": "files/App.ts",
-      "target": "src/App.ts"
+      "source": "files/App.tsx",
+      "target": "src/App.tsx"
     }
   ]
 }

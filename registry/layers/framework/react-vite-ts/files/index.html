@@ -4,21 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{headline}}</title>
-    <link rel="stylesheet" href="/styles.css">
   </head>
   <body>
-    <main class="shell">
-      <section class="hero">
-        <p class="eyebrow">{{projectName}}</p>
-        <h1>{{headline}}</h1>
-        <p class="subheadline">{{subheadline}}</p>
-      </section>
-      <section id="brand"></section>
-      <section id="metrics" class="metrics"></section>
-      <section class="notes">
-        <p>Preview shell is instant. The React/Vite source is already laid out in <code>src/</code>.</p>
-      </section>
-    </main>
-    <script type="module" src="/preview-client.js"></script>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

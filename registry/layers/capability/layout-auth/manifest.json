@@ -10,11 +10,11 @@
   "files": [
     {
       "source": "files/sign-in-page.tsx",
-      "target": "src/app/sign-in/page.tsx"
+      "target": "app/sign-in/page.tsx"
     },
     {
       "source": "files/sign-up-page.tsx",
-      "target": "src/app/sign-up/page.tsx"
+      "target": "app/sign-up/page.tsx"
     }
   ],
   "keywords": [

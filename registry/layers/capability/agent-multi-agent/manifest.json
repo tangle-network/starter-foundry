@@ -16,14 +16,14 @@
       "target": "orchestration-config.json"
     },
     {
-      "source": "files/supervisor.mjs",
-      "target": "supervisor.mjs"
+      "source": "files/supervisor.ts",
+      "target": "supervisor.ts"
     }
   ],
   "contextHints": {
     "extensionPoints": [
       "orchestration-config.json",
-      "supervisor.mjs"
+      "supervisor.ts"
     ]
   },
   "keywords": [

@@ -17,14 +17,14 @@
       "target": "rag-config.json"
     },
     {
-      "source": "files/retrieval-pipeline.mjs",
-      "target": "retrieval-pipeline.mjs"
+      "source": "files/retrieval-pipeline.ts",
+      "target": "retrieval-pipeline.ts"
     }
   ],
   "contextHints": {
     "extensionPoints": [
       "rag-config.json",
-      "retrieval-pipeline.mjs"
+      "retrieval-pipeline.ts"
     ]
   },
   "keywords": [

@@ -16,14 +16,14 @@
       "target": "review-config.json"
     },
     {
-      "source": "files/review-pipeline.mjs",
-      "target": "review-pipeline.mjs"
+      "source": "files/review-pipeline.ts",
+      "target": "review-pipeline.ts"
     }
   ],
   "contextHints": {
     "extensionPoints": [
       "review-config.json",
-      "review-pipeline.mjs"
+      "review-pipeline.ts"
     ]
   },
   "keywords": [

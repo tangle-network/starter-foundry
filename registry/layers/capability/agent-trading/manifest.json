@@ -16,14 +16,14 @@
       "target": "trading-config.json"
     },
     {
-      "source": "files/strategy.mjs",
-      "target": "strategy.mjs"
+      "source": "files/strategy.ts",
+      "target": "strategy.ts"
     }
   ],
   "contextHints": {
     "extensionPoints": [
       "trading-config.json",
-      "strategy.mjs"
+      "strategy.ts"
     ]
   },
   "keywords": [

@@ -15,14 +15,14 @@
       "target": "slack-config.json"
     },
     {
-      "source": "files/slack-handler.mjs",
-      "target": "slack-handler.mjs"
+      "source": "files/slack-handler.ts",
+      "target": "slack-handler.ts"
     }
   ],
   "contextHints": {
     "extensionPoints": [
       "slack-config.json",
-      "slack-handler.mjs"
+      "slack-handler.ts"
     ]
   },
   "keywords": [

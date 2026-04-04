@@ -16,14 +16,14 @@
       "target": "pipeline-config.json"
     },
     {
-      "source": "files/analyst.mjs",
-      "target": "analyst.mjs"
+      "source": "files/analyst.ts",
+      "target": "analyst.ts"
     }
   ],
   "contextHints": {
     "extensionPoints": [
       "pipeline-config.json",
-      "analyst.mjs"
+      "analyst.ts"
     ]
   },
   "keywords": [

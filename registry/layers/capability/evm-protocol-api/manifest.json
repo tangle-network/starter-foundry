@@ -15,14 +15,14 @@
       "target": "protocol-config.json"
     },
     {
-      "source": "files/hooks.mjs",
-      "target": "hooks.mjs"
+      "source": "files/protocol-hooks.ts",
+      "target": "protocol-hooks.ts"
     }
   ],
   "contextHints": {
     "extensionPoints": [
       "protocol-config.json",
-      "hooks.mjs"
+      "protocol-hooks.ts"
     ]
   },
   "keywords": [

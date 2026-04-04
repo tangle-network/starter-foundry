@@ -4,8 +4,8 @@
   "appliesTo": ["worker-job"],
   "files": [
     {
-      "source": "files/hooks.mjs",
-      "target": "hooks.mjs"
+      "source": "files/keeper-hooks.ts",
+      "target": "keeper-hooks.ts"
     },
     {
       "source": "files/market-feed.json",
@@ -13,6 +13,6 @@
     }
   ],
   "contextHints": {
-    "extensionPoints": ["hooks.mjs", "market-feed.json"]
+    "extensionPoints": ["keeper-hooks.ts", "market-feed.json"]
   }
 }

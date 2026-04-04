@@ -15,14 +15,14 @@
       "target": "github-config.json"
     },
     {
-      "source": "files/github-handler.mjs",
-      "target": "github-handler.mjs"
+      "source": "files/github-handler.ts",
+      "target": "github-handler.ts"
     }
   ],
   "contextHints": {
     "extensionPoints": [
       "github-config.json",
-      "github-handler.mjs"
+      "github-handler.ts"
     ]
   },
   "keywords": [

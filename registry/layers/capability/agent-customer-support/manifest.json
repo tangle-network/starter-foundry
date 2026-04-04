@@ -16,14 +16,14 @@
       "target": "support-config.json"
     },
     {
-      "source": "files/support-pipeline.mjs",
-      "target": "support-pipeline.mjs"
+      "source": "files/support-pipeline.ts",
+      "target": "support-pipeline.ts"
     }
   ],
   "contextHints": {
     "extensionPoints": [
       "support-config.json",
-      "support-pipeline.mjs"
+      "support-pipeline.ts"
     ]
   },
   "keywords": [

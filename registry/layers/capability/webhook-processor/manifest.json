@@ -1,6 +1,6 @@
 {
   "id": "webhook-processor",
-  "description": "Adds webhook ingestion with signature verification, provider routing, and retry handling.",
+  "description": "Webhook ingestion with HMAC signature verification, provider routing, and idempotent retry queue.",
   "appliesTo": [
     "api-service",
     "agent-service-ts",
@@ -12,14 +12,22 @@
       "target": "webhook-config.json"
     },
     {
-      "source": "files/webhook-router.mjs",
-      "target": "webhook-router.mjs"
+      "source": "files/webhook-handler.ts",
+      "target": "lib/webhook-handler.ts"
+    },
+    {
+      "source": "files/webhook-router.ts",
+      "target": "lib/webhook-router.ts"
+    },
+    {
+      "source": "files/webhook-queue.ts",
+      "target": "lib/webhook-queue.ts"
     }
   ],
   "contextHints": {
     "extensionPoints": [
       "webhook-config.json",
-      "webhook-router.mjs"
+      "lib/webhook-router.ts"
     ]
   },
   "keywords": [
@@ -27,24 +35,33 @@
     "webhook processor",
     "inbound webhook",
     "webhook ingestion",
-    "webhook endpoint"
+    "webhook endpoint",
+    "signature verification",
+    "hmac"
   ],
   "buildHints": {
     "apiRoutes": [
       "/api/webhooks",
       "/api/webhooks/[provider]"
     ],
-    "components": [
-      "WebhookLog",
-      "RetryQueue"
+    "architecture": [
+      "webhook-handler.ts → verifySignature(provider, payload, signature, secret) with timing-safe HMAC comparison",
+      "webhook-router.ts → createWebhookRouter({ providers }) returns async (req) => response, matches provider by signature header presence",
+      "webhook-queue.ts → createWebhookQueue() for idempotent dedup + retry with exponential backoff"
+    ],
+    "supportedProviders": [
+      "Stripe (t=/v1= timestamp+signature format)",
+      "GitHub (sha256= prefixed HMAC)",
+      "Generic (raw hex HMAC-SHA256)"
     ],
     "dataModels": [
-      "WebhookEvent",
-      "DeliveryAttempt"
+      "WebhookEvent { id, provider, type, payload, receivedAt }",
+      "QueuedEvent { id, payload, state, attempts, lastError }"
     ],
-    "integrations": [
-      "Signature verification per provider",
-      "Retry queue with backoff"
+    "productionNotes": [
+      "webhook-queue uses in-memory Map — replace with Redis/BullMQ for durable processing",
+      "Add persistent event log (Postgres/DynamoDB) for audit trail",
+      "webhook-config.json secrets should come from environment variables, not the config file"
     ]
   }
 }

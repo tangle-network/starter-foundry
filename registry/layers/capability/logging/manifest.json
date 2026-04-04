@@ -1,6 +1,6 @@
 {
   "id": "logging",
-  "description": "Adds request and cycle hooks for backend-style starters.",
+  "description": "Structured JSON logging with request middleware and error handling for backend services.",
   "appliesTo": [
     "api-service",
     "worker-job",
@@ -8,14 +8,40 @@
   ],
   "files": [
     {
-      "source": "files/hooks.mjs",
-      "target": "hooks.mjs"
+      "source": "files/logger.ts",
+      "target": "lib/logger.ts"
+    },
+    {
+      "source": "files/request-logger.ts",
+      "target": "middleware/request-logger.ts"
+    },
+    {
+      "source": "files/error-handler.ts",
+      "target": "middleware/error-handler.ts"
     }
   ],
   "keywords": [
     "request logging",
     "access logs",
     "structured logging",
-    "log middleware"
-  ]
+    "log middleware",
+    "error handling",
+    "json logging"
+  ],
+  "buildHints": {
+    "architecture": [
+      "createLogger(service) → tagged Logger instance with .withRequestId() for child loggers",
+      "requestLogger middleware → attaches logger + requestId to request context, logs method/path/status/duration on response end",
+      "errorHandler middleware → catches errors, logs stack at error level, returns sanitized JSON response in production"
+    ],
+    "middlewareChain": [
+      "requestLogger (first — sets up context)",
+      "...route handlers...",
+      "errorHandler (last — catches thrown errors)"
+    ],
+    "environmentBehavior": {
+      "development": "Human-readable log lines to stdout",
+      "production": "JSON lines to stdout/stderr, debug level suppressed, error messages sanitized"
+    }
+  }
 }

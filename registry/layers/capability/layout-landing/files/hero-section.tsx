@@ -4,10 +4,10 @@ import { ArrowRight, Play } from 'lucide-react'
 export function HeroSection() {
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-background via-primary/5 to-background">
-      <div className="mx-auto max-w-7xl px-6 py-28 sm:py-36 lg:px-8 lg:py-44">
+      <div className="mx-auto max-w-6xl px-6 py-28 sm:py-36 lg:px-8 lg:py-44">
         <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-          <div className="rounded-full border border-border/50 bg-muted px-4 py-1.5 text-xs font-medium text-muted-foreground">
-            Now in beta — get early access
+          <div className="rounded-full border border-border/50 bg-muted px-4 py-1.5 text-xs font-medium tracking-wider text-muted-foreground">
+            NOW IN BETA — GET EARLY ACCESS
           </div>
 
           <h1 className="mt-8 text-5xl font-semibold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
@@ -22,7 +22,7 @@ export function HeroSection() {
           <div className="mt-10 flex items-center gap-4">
             <Button
               size="lg"
-              className="h-12 gap-2 rounded-lg px-8 font-medium transition-all hover:brightness-110 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              className="h-12 gap-2 rounded-lg px-8 font-medium shadow-lg shadow-primary/25 transition-all hover:brightness-110 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
               Get Started
               <ArrowRight className="h-4 w-4" />
@@ -30,14 +30,23 @@ export function HeroSection() {
             <Button
               size="lg"
               variant="outline"
-              className="h-12 gap-2 rounded-lg px-8 font-medium transition-all hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              className="h-12 gap-2 rounded-lg border-2 px-8 font-medium transition-all hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
               <Play className="h-4 w-4" />
               See a Demo
             </Button>
           </div>
 
-          <div className="mt-12 flex items-center gap-3">
+          <div className="mt-14 flex items-center justify-center gap-8">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-6 w-16 rounded bg-muted-foreground/15"
+              />
+            ))}
+          </div>
+
+          <div className="mt-8 flex items-center gap-3">
             <div className="flex -space-x-2">
               {['bg-primary', 'bg-chart-1', 'bg-chart-2', 'bg-chart-3', 'bg-chart-4'].map((color, i) => (
                 <div

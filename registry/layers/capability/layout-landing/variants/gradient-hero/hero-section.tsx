@@ -13,9 +13,9 @@ export function HeroSection() {
         <div className="absolute left-1/2 top-1/2 h-64 w-64 animate-pulse rounded-full bg-cyan-300/20 blur-3xl [animation-delay:2s]" />
       </div>
 
-      <div className="relative z-10 mx-auto flex max-w-7xl flex-col items-center justify-center px-6 py-32 sm:py-40 lg:px-8 lg:py-48">
-        <div className="rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-medium text-white/80">
-          Now in beta — get early access
+      <div className="relative z-10 mx-auto flex max-w-6xl flex-col items-center justify-center px-6 py-32 sm:py-40 lg:px-8 lg:py-48">
+        <div className="rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-medium tracking-wider text-white/80">
+          NOW IN BETA — GET EARLY ACCESS
         </div>
 
         <h1 className="mt-8 max-w-3xl text-center text-5xl font-extrabold tracking-tight text-white sm:text-6xl lg:text-7xl">
@@ -30,7 +30,7 @@ export function HeroSection() {
         <div className="mt-10 flex items-center gap-4">
           <Button
             size="lg"
-            className="h-12 gap-2 rounded-lg bg-white px-8 font-medium text-violet-700 shadow-xl transition-all hover:bg-white/90 hover:brightness-110 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-violet-600 dark:bg-white dark:text-violet-700"
+            className="h-12 gap-2 rounded-lg bg-white px-8 font-medium text-violet-700 shadow-lg shadow-white/25 transition-all hover:bg-white/90 hover:brightness-110 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-violet-600 dark:bg-white dark:text-violet-700"
           >
             Get Started
             <ArrowRight className="h-4 w-4" />
@@ -38,14 +38,23 @@ export function HeroSection() {
           <Button
             size="lg"
             variant="outline"
-            className="h-12 gap-2 rounded-lg border-white/30 px-8 font-medium text-white transition-all hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-violet-600"
+            className="h-12 gap-2 rounded-lg border-2 border-white/30 px-8 font-medium text-white transition-all hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-violet-600"
           >
             <Play className="h-4 w-4" />
             See a Demo
           </Button>
         </div>
 
-        <div className="mt-12 flex items-center gap-3">
+        <div className="mt-14 flex items-center justify-center gap-8">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-6 w-16 rounded bg-white/15"
+            />
+          ))}
+        </div>
+
+        <div className="mt-8 flex items-center gap-3">
           <div className="flex -space-x-2">
             {['bg-white', 'bg-cyan-300', 'bg-violet-300', 'bg-blue-300', 'bg-emerald-300'].map((color, i) => (
               <div

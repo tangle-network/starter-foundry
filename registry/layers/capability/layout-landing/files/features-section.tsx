@@ -29,8 +29,8 @@ const secondaryFeatures = [
 
 export function FeaturesSection() {
   return (
-    <section className="bg-muted/30 py-24 dark:bg-muted/10 lg:py-32">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+    <section className="bg-muted/30 py-24 dark:bg-muted/10 sm:py-32">
+      <div className="mx-auto max-w-6xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
             Everything you need to ship
@@ -44,10 +44,10 @@ export function FeaturesSection() {
           {primaryFeatures.map((feature) => (
             <div
               key={feature.title}
-              className="rounded-xl border bg-card p-8 shadow-sm transition-shadow hover:shadow-md"
+              className="rounded-xl border border-border/50 bg-card p-8 transition-all duration-200 hover:border-border hover:shadow-md"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                <feature.icon className="h-6 w-6" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <feature.icon className="h-5 w-5" />
               </div>
               <h3 className="mt-5 text-lg font-semibold text-foreground">
                 {feature.title}

@@ -16,7 +16,9 @@
     "next": "^15.2.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "tailwind-merge": "^2.6.0"
+    "tailwind-merge": "^2.6.0",
+    "@tanstack/react-table": "latest",
+    "recharts": "latest"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "latest",

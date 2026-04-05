@@ -2,23 +2,67 @@
   "id": "layout-landing",
   "description": "Production-ready landing page with hero section, features grid, pricing cards, and CTA footer.",
   "group": "capability",
-  "appliesTo": ["nextjs-ts", "react-vite-ts", "fullstack-ts", "remix-ts", "sveltekit-ts", "vue-ts", "frontend-static"],
-  "files": [
-    { "source": "files/hero-section.tsx", "target": "src/components/landing/hero-section.tsx" },
-    { "source": "files/features-section.tsx", "target": "src/components/landing/features-section.tsx" },
-    { "source": "files/pricing-section.tsx", "target": "src/components/landing/pricing-section.tsx" },
-    { "source": "files/landing-page.tsx", "target": "app/page.tsx" },
-    { "source": "files/landing-page.tsx", "target": "src/App.tsx" }
+  "appliesTo": [
+    "nextjs-ts",
+    "react-vite-ts",
+    "fullstack-ts",
+    "remix-ts",
+    "sveltekit-ts",
+    "vue-ts",
+    "frontend-static"
   ],
-  "variants": ["gradient-hero", "minimal-clean", "dark-product"],
-  "keywords": ["landing", "homepage", "marketing", "hero", "pricing", "features", "saas", "startup"],
+  "files": [
+    {
+      "source": "files/hero-section.tsx",
+      "target": "src/components/landing/hero-section.tsx"
+    },
+    {
+      "source": "files/features-section.tsx",
+      "target": "src/components/landing/features-section.tsx"
+    },
+    {
+      "source": "files/pricing-section.tsx",
+      "target": "src/components/landing/pricing-section.tsx"
+    },
+    {
+      "source": "files/landing-page.tsx",
+      "target": "app/page.tsx"
+    },
+    {
+      "source": "files/landing-page.tsx",
+      "target": "src/App.tsx"
+    }
+  ],
+  "variants": [
+    "default",
+    "gradient-hero",
+    "minimal-clean",
+    "dark-product"
+  ],
+  "keywords": [
+    "landing",
+    "homepage",
+    "marketing",
+    "hero",
+    "pricing",
+    "features",
+    "saas",
+    "startup"
+  ],
   "buildHints": {
-    "pages": ["/"],
-    "components": ["HeroSection", "FeaturesSection", "PricingSection", "LandingPage"],
+    "pages": [
+      "/"
+    ],
+    "components": [
+      "HeroSection",
+      "FeaturesSection",
+      "PricingSection",
+      "LandingPage"
+    ],
     "architectureNotes": [
       "Landing page composes HeroSection, FeaturesSection, and PricingSection.",
       "Customize the hero headline via the {{headline}} template variable.",
-      "Pricing tiers are static — wire up billing logic as needed.",
+      "Pricing tiers are static \u2014 wire up billing logic as needed.",
       "All sections are responsive with dark mode support."
     ]
   }

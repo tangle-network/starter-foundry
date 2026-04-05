@@ -29,9 +29,18 @@ const footerLinks = {
   ],
 }
 
+const trustLogos = [
+  'Acme Corp',
+  'TechFlow',
+  'Quantum',
+  'NovaSoft',
+  'BuildStack',
+  'DataPipe',
+]
+
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen scroll-smooth bg-background text-foreground">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground focus:outline-none"
@@ -39,7 +48,7 @@ export default function LandingPage() {
         Skip to content
       </a>
 
-      <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-sm">
+      <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6 lg:px-8">
           <span className="text-lg font-semibold tracking-tight">
             {'{{headline}}'}
@@ -65,7 +74,7 @@ export default function LandingPage() {
             </a>
             <Button
               size="sm"
-              className="rounded-lg font-medium transition-all hover:brightness-110 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              className="rounded-lg font-medium transition-transform hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               asChild
             >
               <a href="/sign-up">Get Started</a>
@@ -80,25 +89,35 @@ export default function LandingPage() {
       <main id="main">
         <HeroSection />
 
-        <section className="border-y bg-muted/20 py-12 dark:bg-muted/5">
+        {/* Trust section */}
+        <section className="border-y border-border/50 bg-muted/20 py-12 dark:bg-muted/5">
           <div className="mx-auto max-w-6xl px-6 lg:px-8">
             <p className="mb-8 text-center text-xs font-medium uppercase tracking-widest text-muted-foreground">
               Trusted by teams at
             </p>
-            <div className="flex items-center justify-center gap-10 lg:gap-16">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="h-7 w-20 rounded bg-muted-foreground/10 opacity-40 grayscale"
-                />
+            <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 lg:gap-x-16">
+              {trustLogos.map((name) => (
+                <span
+                  key={name}
+                  className="text-lg font-semibold tracking-tight text-muted-foreground/30 select-none"
+                >
+                  {name}
+                </span>
               ))}
             </div>
           </div>
         </section>
 
+        {/* Gradient divider */}
+        <div aria-hidden="true" className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+
         <section id="features">
           <FeaturesSection />
         </section>
+
+        {/* Gradient divider */}
+        <div aria-hidden="true" className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+
         <section id="pricing">
           <PricingSection />
         </section>

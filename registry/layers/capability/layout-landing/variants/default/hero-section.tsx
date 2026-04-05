@@ -90,16 +90,16 @@ export function HeroSection() {
                 </div>
               </div>
               {/* Content area */}
-              <div className="relative aspect-[4/3] bg-gradient-to-br from-primary/5 via-background to-chart-2/5">
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-8">
-                  <div className="h-3 w-3/4 rounded bg-muted-foreground/10" />
-                  <div className="h-3 w-1/2 rounded bg-muted-foreground/10" />
-                  <div className="mt-4 grid w-full grid-cols-3 gap-3">
-                    <div className="aspect-square rounded-lg bg-primary/10" />
-                    <div className="aspect-square rounded-lg bg-chart-1/10" />
-                    <div className="aspect-square rounded-lg bg-chart-2/10" />
-                  </div>
-                  <div className="mt-4 h-8 w-1/3 rounded-md bg-primary/20" />
+              <div className="relative aspect-[4/3]">
+                <img
+                  src="/images/hero-product.png"
+                  alt="Product screenshot"
+                  className="h-full w-full object-cover"
+                  onError={(e) => { e.currentTarget.style.display = 'none' }}
+                />
+                {/* Gradient fallback shown when image hasn't been generated yet */}
+                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10">
+                  <span className="text-sm text-muted-foreground">Generate with: media-manifest.json</span>
                 </div>
               </div>
             </div>

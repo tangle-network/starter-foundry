@@ -1,0 +1,34 @@
+{
+  "slots": [
+    {
+      "id": "user-avatar",
+      "path": "public/images/avatar-placeholder.png",
+      "width": 96,
+      "height": 96,
+      "purpose": "Default user avatar in sidebar and header",
+      "prompt": "Neutral gray avatar silhouette on transparent background",
+      "fallback": "initials",
+      "usedIn": "src/components/layout/sidebar-layout.tsx"
+    },
+    {
+      "id": "logo-icon",
+      "path": "public/images/logo-icon.svg",
+      "width": 32,
+      "height": 32,
+      "purpose": "Small logo icon for collapsed sidebar",
+      "prompt": "Simple geometric icon in primary brand color, works at 32x32",
+      "fallback": "text",
+      "usedIn": "src/components/layout/sidebar-layout.tsx"
+    },
+    {
+      "id": "empty-state",
+      "path": "public/images/empty-state.svg",
+      "width": 240,
+      "height": 200,
+      "purpose": "Illustration shown when dashboard has no data",
+      "prompt": "Minimal line illustration of empty charts and graphs, muted colors",
+      "fallback": "icon",
+      "usedIn": "src/app/dashboard/page.tsx"
+    }
+  ]
+}

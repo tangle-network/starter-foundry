@@ -50,8 +50,14 @@ export default function LandingPage() {
 
       <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6 lg:px-8">
-          <span className="text-lg font-semibold tracking-tight">
-            {'{{headline}}'}
+          <span className="flex items-center gap-2 text-lg font-semibold tracking-tight">
+            <img
+              src="/images/logo.svg"
+              alt="{{headline}}"
+              className="h-8 w-auto"
+              onError={(e) => { e.currentTarget.style.display = 'none' }}
+            />
+            <span>{'{{headline}}'}</span>
           </span>
           <nav className="hidden items-center gap-8 text-sm md:flex">
             <a

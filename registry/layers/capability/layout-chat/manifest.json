@@ -11,7 +11,8 @@
     { "source": "files/chat-page.tsx", "target": "src/App.tsx" },
     { "source": "files/chat-message.tsx", "target": "src/components/chat/chat-message.tsx" },
     { "source": "files/chat-input.tsx", "target": "src/components/chat/chat-input.tsx" },
-    { "source": "files/chat-sidebar.tsx", "target": "src/components/chat/chat-sidebar.tsx" }
+    { "source": "files/chat-sidebar.tsx", "target": "src/components/chat/chat-sidebar.tsx" },
+    { "source": "files/media-manifest.json", "target": "media-manifest.json" }
   ],
   "buildHints": {
     "pages": ["/chat", "/chat/[id]"],

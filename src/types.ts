@@ -3,6 +3,21 @@ export interface FileEntry {
   target: string
 }
 
+export interface MediaSlot {
+  id: string
+  path: string
+  width: number
+  height: number
+  purpose: string
+  prompt: string
+  fallback: 'gradient' | 'icon' | 'initials' | 'text' | 'none'
+  usedIn: string
+}
+
+export interface MediaManifest {
+  slots: MediaSlot[]
+}
+
 export type ValidationCheckType =
   | 'file-exists'
   | 'node-syntax'

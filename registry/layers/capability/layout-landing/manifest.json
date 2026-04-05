@@ -31,6 +31,10 @@
     {
       "source": "files/landing-page.tsx",
       "target": "src/App.tsx"
+    },
+    {
+      "source": "files/media-manifest.json",
+      "target": "media-manifest.json"
     }
   ],
   "variants": [

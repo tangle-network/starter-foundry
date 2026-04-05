@@ -42,7 +42,8 @@
     "evaluate": "node dist/cli.js evaluate",
     "release": "node dist/cli.js release",
     "sync:warm-list": "node scripts/sync-warm-list.mjs",
-    "sync:warm-list:write": "node scripts/sync-warm-list.mjs --write"
+    "sync:warm-list:write": "node scripts/sync-warm-list.mjs --write",
+    "audit:visual": "node scripts/visual-audit.mjs"
   },
   "engines": {
     "node": ">=20"

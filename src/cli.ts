@@ -2,6 +2,7 @@
 
 import process from 'node:process'
 import { createAuditBundle } from './lib/audit.js'
+import { batchExport } from './lib/batch-export.js'
 import { fattenStarter } from './lib/fatten.js'
 import { evaluateAgents } from './lib/agent-runners.js'
 import { benchmarkStarter } from './lib/benchmark.js'
@@ -83,6 +84,7 @@ function usage(): string {
     '  audit --spec <path> [--out <dir>]',
     '  evaluate --spec <path> [--agents <list>] [--out <dir>]',
     '  release --spec <path> [--out <dir>] [--runs <n>]',
+    '  batch-export --out <dir> [--mapping <path>] [--filter <names>] [--fatten] [--skip-validate] [--concurrency <n>]',
     '  fatten --spec <path> --out <dir>',
     '',
     'Flags:',
@@ -291,6 +293,28 @@ async function main(): Promise<void> {
               .map((value) => value.trim())
               .filter(Boolean)
           : null,
+      })
+
+      print(result, true)
+      break
+    }
+
+    case 'batch-export': {
+      if (!options['mapping'] || !options['out']) throw new Error('batch-export requires --mapping and --out')
+
+      const mappingPath = String(options['mapping'])
+      const filter = options['filter']
+        ? String(options['filter']).split(',').map((v) => v.trim()).filter(Boolean)
+        : null
+      const concurrency = options['concurrency'] ? Number.parseInt(String(options['concurrency']), 10) : 4
+
+      const result = await batchExport({
+        mappingPath,
+        outDir: String(options['out']),
+        filter,
+        fatten: Boolean(options['fatten']),
+        validate: !options['skip-validate'],
+        concurrency,
       })
 
       print(result, true)

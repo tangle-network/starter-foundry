@@ -18,10 +18,9 @@
     "tailwind-merge": "latest"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
-    "autoprefixer": "latest",
-    "postcss": "latest",
     "tailwindcss": "latest",
     "vite": "^6.2.0",
     "@remix-run/dev": "^2.0.0"

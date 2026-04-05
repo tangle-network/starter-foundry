@@ -28,8 +28,6 @@
     "extensionPoints": [
       "tailwind-config.json",
       "design-tokens.json",
-      "tailwind.config.ts",
-      "postcss.config.js",
       "src/globals.css"
     ]
   },
@@ -47,8 +45,8 @@
   ],
   "buildHints": {
     "architectureNotes": [
-      "Generate tailwind.config.ts from tailwind-config.json",
-      "Add CSS variables from design-tokens.json to globals.css",
+      "Tailwind v4: define colors in @theme block in globals.css, no tailwind.config.ts needed",
+      "Add CSS variables from design-tokens.json to @theme block in globals.css",
       "Use class-based dark mode with .dark class toggle"
     ]
   }

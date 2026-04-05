@@ -40,7 +40,7 @@ export default function LandingPage() {
       </a>
 
       <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-sm">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-8">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6 lg:px-8">
           <span className="text-lg font-semibold tracking-tight">
             {'{{headline}}'}
           </span>
@@ -79,6 +79,23 @@ export default function LandingPage() {
 
       <main id="main">
         <HeroSection />
+
+        <section className="border-y bg-muted/20 py-12 dark:bg-muted/5">
+          <div className="mx-auto max-w-6xl px-6 lg:px-8">
+            <p className="mb-8 text-center text-xs font-medium uppercase tracking-widest text-muted-foreground">
+              Trusted by teams at
+            </p>
+            <div className="flex items-center justify-center gap-10 lg:gap-16">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="h-7 w-20 rounded bg-muted-foreground/10 opacity-40 grayscale"
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section id="features">
           <FeaturesSection />
         </section>
@@ -88,8 +105,8 @@ export default function LandingPage() {
       </main>
 
       <footer className="border-t bg-muted/30 dark:bg-muted/10">
-        <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mx-auto max-w-6xl px-6 py-16 lg:px-8">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-12">
             {Object.entries(footerLinks).map(([category, links]) => (
               <div key={category}>
                 <h4 className="text-sm font-semibold text-foreground">

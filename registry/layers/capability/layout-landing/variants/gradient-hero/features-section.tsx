@@ -29,8 +29,8 @@ const secondaryFeatures = [
 
 export function FeaturesSection() {
   return (
-    <section className="py-24 lg:py-32">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+    <section className="py-24 sm:py-32">
+      <div className="mx-auto max-w-6xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
             Everything you need to ship
@@ -46,7 +46,7 @@ export function FeaturesSection() {
               key={feature.title}
               className={`flex flex-col items-center gap-8 md:flex-row ${i % 2 === 1 ? 'md:flex-row-reverse' : ''}`}
             >
-              <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-blue-500 text-white shadow-lg">
+              <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-blue-500 text-white shadow-lg shadow-violet-500/25">
                 <feature.icon className="h-10 w-10" />
               </div>
               <div className={`text-center ${i % 2 === 1 ? 'md:text-right' : 'md:text-left'}`}>

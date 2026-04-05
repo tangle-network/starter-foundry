@@ -18,7 +18,6 @@ const tiers = [
     ],
     cta: 'Get Started',
     highlighted: false,
-    note: 'No credit card required',
   },
   {
     name: 'Pro',
@@ -34,7 +33,6 @@ const tiers = [
     ],
     cta: 'Start Free Trial',
     highlighted: true,
-    note: null,
   },
   {
     name: 'Enterprise',
@@ -50,7 +48,6 @@ const tiers = [
     ],
     cta: 'Contact Sales',
     highlighted: false,
-    note: null,
   },
 ]
 
@@ -58,8 +55,8 @@ export function PricingSection() {
   const [yearly, setYearly] = React.useState(false)
 
   return (
-    <section className="bg-zinc-900/50 py-24 lg:py-32">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+    <section className="bg-zinc-900/50 py-24 sm:py-32">
+      <div className="mx-auto max-w-6xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-semibold tracking-tight text-zinc-50 sm:text-4xl">
             Simple, transparent pricing
@@ -75,7 +72,7 @@ export function PricingSection() {
               className={cn(
                 'rounded-full px-5 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-900',
                 !yearly
-                  ? 'bg-zinc-700 text-zinc-50 shadow-sm'
+                  ? 'bg-emerald-500 text-zinc-950 shadow-sm'
                   : 'text-zinc-400 hover:text-zinc-200'
               )}
             >
@@ -87,12 +84,12 @@ export function PricingSection() {
               className={cn(
                 'inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-900',
                 yearly
-                  ? 'bg-zinc-700 text-zinc-50 shadow-sm'
+                  ? 'bg-emerald-500 text-zinc-950 shadow-sm'
                   : 'text-zinc-400 hover:text-zinc-200'
               )}
             >
               Yearly
-              <span className="text-xs font-medium text-emerald-400">Save 20%</span>
+              {!yearly && <span className="text-xs font-medium text-emerald-400">Save 20%</span>}
             </button>
           </div>
         </div>
@@ -102,18 +99,18 @@ export function PricingSection() {
             <div
               key={tier.name}
               className={cn(
-                'flex flex-col rounded-xl border border-zinc-800 bg-zinc-900/80 p-8',
+                'flex flex-col rounded-xl border border-zinc-800/50 bg-zinc-900/80 p-8',
                 tier.highlighted &&
-                  'relative z-10 border-emerald-500/40 shadow-[0_0_32px_-8px_rgba(16,185,129,0.2)] lg:scale-105'
+                  'relative z-10 border-2 border-emerald-500/40 shadow-xl shadow-emerald-500/10 ring-1 ring-emerald-500/20 lg:scale-105'
               )}
             >
               {tier.highlighted && (
-                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-emerald-500 px-4 py-1 text-xs font-medium text-zinc-950">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-emerald-500 px-4 py-1 text-xs font-medium text-zinc-950">
                   Most Popular
                 </div>
               )}
 
-              <div className="space-y-6">
+              <div className="space-y-8">
                 <div>
                   <h3 className="text-lg font-semibold text-zinc-50">
                     {tier.name}
@@ -132,7 +129,7 @@ export function PricingSection() {
                   )}
                 </div>
 
-                <ul className="space-y-3">
+                <ul className="space-y-4">
                   {tier.features.map((feature) => (
                     <li key={feature} className="flex items-start gap-2.5 text-sm">
                       <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
@@ -147,15 +144,15 @@ export function PricingSection() {
                     className={cn(
                       'h-12 w-full rounded-lg font-medium transition-all focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-900',
                       tier.highlighted
-                        ? 'bg-emerald-500 text-zinc-950 hover:bg-emerald-400'
+                        ? 'bg-emerald-500 text-zinc-950 shadow-lg shadow-emerald-500/25 hover:bg-emerald-400'
                         : 'border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-50'
                     )}
                   >
                     {tier.cta}
                   </Button>
-                  {tier.note && (
+                  {tier.name === 'Free' && (
                     <p className="mt-3 text-center text-xs text-zinc-500">
-                      {tier.note}
+                      No credit card required
                     </p>
                   )}
                 </div>

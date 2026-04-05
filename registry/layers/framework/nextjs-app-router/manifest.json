@@ -16,10 +16,6 @@
       "target": "tsconfig.json"
     },
     {
-      "source": "files/tailwind.config.ts",
-      "target": "tailwind.config.ts"
-    },
-    {
       "source": "files/postcss.config.js",
       "target": "postcss.config.js"
     },

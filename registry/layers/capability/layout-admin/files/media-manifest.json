@@ -1,0 +1,14 @@
+{
+  "slots": [
+    {
+      "id": "admin-empty-state",
+      "path": "public/images/admin-empty.svg",
+      "width": 240,
+      "height": 200,
+      "purpose": "Illustration for empty table state when no entities exist",
+      "prompt": "Minimal line illustration of an empty data table with a plus icon, muted colors",
+      "fallback": "icon",
+      "usedIn": "src/components/admin/admin-page.tsx"
+    }
+  ]
+}

@@ -4,7 +4,7 @@ import { generateBuildPlan } from './build-plan.js'
 import { ensureDir, sanitizePackageName, writeJson } from './fs.js'
 import { buildVariables, resolveComponents, resolveTemplateObject } from './registry.js'
 import { emit, traced } from './telemetry.js'
-import type { FamilyManifest, LayerManifest, PartnerManifest, ComposeSpec, ComposeResult, ResolvedComponents, ValidationCheck, ContextHints } from '../types.js'
+import type { FamilyManifest, LayerManifest, PartnerManifest, ComposeSpec, ComposeResult, ResolvedComponents, ValidationCheck, ContextHints, MediaManifest, MediaSlot } from '../types.js'
 
 type AnyManifest = FamilyManifest | LayerManifest | PartnerManifest
 
@@ -108,6 +108,28 @@ export async function composeStarter({ spec, outDir }: { spec: ComposeSpec; outD
   return result
 }
 
+async function mergeMediaManifests(outDir: string): Promise<MediaSlot[]> {
+  const manifestPath = path.join(outDir, 'media-manifest.json')
+  let existing: MediaManifest | null = null
+  try {
+    const raw = await fs.readFile(manifestPath, 'utf8')
+    existing = JSON.parse(raw) as MediaManifest
+  } catch {
+    // no existing manifest
+  }
+
+  if (!existing || !existing.slots?.length) return []
+
+  // Deduplicate by slot id, last write wins
+  const seen = new Map<string, MediaSlot>()
+  for (const slot of existing.slots) {
+    seen.set(slot.id, slot)
+  }
+  const merged: MediaManifest = { slots: [...seen.values()] }
+  await fs.writeFile(manifestPath, `${JSON.stringify(merged, null, 2)}\n`, 'utf8')
+  return merged.slots
+}
+
 async function composeStarterInner(spec: ComposeSpec, outDir: string): Promise<ComposeResult> {
   const components = await resolveComponents(spec)
   const variables = buildVariables(
@@ -159,8 +181,11 @@ async function composeStarterInner(spec: ComposeSpec, outDir: string): Promise<C
   await ensureDir(path.join(outDir, '.starter-foundry'))
   await writeJson(path.join(outDir, '.starter-foundry', 'compose-report.json'), composeReport)
 
+  // Merge media manifests from all layers into a single root manifest
+  const mediaSlots = await mergeMediaManifests(outDir)
+
   // Generate AGENTS.md — per-project agent instructions
-  const agentsMd = buildAgentsMd(spec, components, composeReport.contextHints)
+  const agentsMd = buildAgentsMd(spec, components, composeReport.contextHints, mediaSlots)
   await fs.writeFile(path.join(outDir, 'AGENTS.md'), `${agentsMd}\n`, 'utf8')
 
   // Generate llms.txt — machine-readable project description for AI agents
@@ -206,6 +231,7 @@ function buildAgentsMd(
   spec: ComposeSpec,
   components: ResolvedComponents,
   contextHints: ReturnType<typeof collectContextHints>,
+  mediaSlots: MediaSlot[] = [],
 ): string {
   const buildPlan = generateBuildPlan(spec, components)
   const lines: string[] = [
@@ -258,6 +284,25 @@ function buildAgentsMd(
 
   if (buildPlan.designDirective) {
     lines.push('## Design', '', buildPlan.designDirective, '')
+  }
+
+  if (mediaSlots.length > 0) {
+    lines.push(
+      '## Media',
+      '',
+      'The following images need to be generated or provided:',
+      '',
+      '| Slot | Size | Location | Purpose |',
+      '|------|------|----------|---------|',
+    )
+    for (const slot of mediaSlots) {
+      lines.push(`| ${slot.id} | ${slot.width}\u00d7${slot.height} | ${slot.path} | ${slot.purpose} |`)
+    }
+    lines.push(
+      '',
+      'Generation prompts are in `media-manifest.json`. Use DALL-E or similar to generate from the prompts, then save to the specified paths.',
+      '',
+    )
   }
 
   lines.push(

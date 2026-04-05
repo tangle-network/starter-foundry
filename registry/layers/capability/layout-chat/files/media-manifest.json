@@ -1,0 +1,24 @@
+{
+  "slots": [
+    {
+      "id": "ai-avatar",
+      "path": "public/images/ai-avatar.png",
+      "width": 64,
+      "height": 64,
+      "purpose": "AI assistant avatar shown next to assistant messages",
+      "prompt": "Friendly AI assistant avatar icon, abstract geometric face with primary brand color, circular",
+      "fallback": "icon",
+      "usedIn": "src/components/chat/chat-message.tsx"
+    },
+    {
+      "id": "chat-empty-state",
+      "path": "public/images/chat-empty.svg",
+      "width": 200,
+      "height": 160,
+      "purpose": "Illustration for empty chat state when no conversation is selected",
+      "prompt": "Minimal illustration of chat bubbles floating, muted pastel colors",
+      "fallback": "icon",
+      "usedIn": "src/components/chat/chat-page.tsx"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "slots": [
+    {
+      "id": "hero-product",
+      "path": "public/images/hero-product.png",
+      "width": 1200,
+      "height": 800,
+      "purpose": "Product screenshot shown in the hero section browser mockup frame",
+      "prompt": "Clean SaaS dashboard screenshot showing analytics charts, user activity feed, and sidebar navigation on white background",
+      "fallback": "gradient",
+      "usedIn": "src/components/landing/hero-section.tsx"
+    },
+    {
+      "id": "og-image",
+      "path": "public/og-image.png",
+      "width": 1200,
+      "height": 630,
+      "purpose": "Open Graph social sharing image",
+      "prompt": "Marketing banner with product name, tagline, and abstract gradient background",
+      "fallback": "none",
+      "usedIn": "app/layout.tsx"
+    },
+    {
+      "id": "favicon",
+      "path": "public/favicon.svg",
+      "width": 32,
+      "height": 32,
+      "purpose": "Browser tab icon",
+      "prompt": "Simple geometric logo mark in primary brand color on transparent background",
+      "fallback": "none",
+      "usedIn": "index.html"
+    },
+    {
+      "id": "logo-wordmark",
+      "path": "public/images/logo.svg",
+      "width": 120,
+      "height": 32,
+      "purpose": "Logo wordmark in the navigation header",
+      "prompt": "Clean sans-serif wordmark logo for a SaaS product",
+      "fallback": "text",
+      "usedIn": "src/components/landing/landing-page.tsx"
+    }
+  ]
+}

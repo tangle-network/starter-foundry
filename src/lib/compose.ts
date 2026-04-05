@@ -240,45 +240,53 @@ function buildAgentsMd(
   ]
 
   if (buildPlan.goal) {
-    lines.push(`## Goal`, '', buildPlan.goal, '')
+    lines.push(buildPlan.goal, '')
   }
 
   lines.push(
-    '## Stack',
+    '## What\'s here',
     '',
-    `- Family: \`${spec.family}\``,
-    `- Layers: ${components.layers.map((l) => `\`${l.group}:${l.id}\``).join(', ')}`,
+    `This project was scaffolded by starter-foundry. The user\'s prompt drove the choices below — read their prompt first, it takes priority over everything in this file.`,
+    '',
+    `- **Family:** \`${spec.family}\``,
+    `- **Layers:** ${components.layers.map((l) => `\`${l.group}:${l.id}\``).join(', ')}`,
   )
   if (components.partner) {
-    lines.push(`- Partner: \`${components.partner.id}\``)
+    lines.push(`- **Partner:** \`${components.partner.id}\``)
   }
   lines.push('')
 
   if (buildPlan.architecture.length > 0) {
-    lines.push('## Architecture', '')
+    lines.push('### Architecture notes')
     buildPlan.architecture.forEach((a) => lines.push(`- ${a}`))
     lines.push('')
   }
 
-  if (contextHints.entrypoints.length > 0) {
-    lines.push('## Entry Points', '')
-    contextHints.entrypoints.forEach((e) => lines.push(`- \`${e}\``))
-    lines.push('')
-  }
-
+  lines.push(
+    '## Getting started',
+    '',
+  )
   if (contextHints.commands.length > 0) {
-    lines.push('## Commands', '')
-    contextHints.commands.forEach((c) => lines.push(`- \`${c}\``))
-    lines.push('')
+    lines.push('```bash')
+    contextHints.commands.forEach((c) => lines.push(c))
+    lines.push('```', '')
+  }
+  if (contextHints.entrypoints.length > 0) {
+    lines.push(`Key files: ${contextHints.entrypoints.map((e) => `\`${e}\``).join(', ')}`, '')
   }
 
   if (buildPlan.pages.length > 0 || buildPlan.apiRoutes.length > 0 || buildPlan.components.length > 0) {
-    lines.push('## Build Plan', '')
-    if (buildPlan.pages.length > 0) lines.push(`Pages: ${buildPlan.pages.join(', ')}`)
-    if (buildPlan.apiRoutes.length > 0) lines.push(`API routes: ${buildPlan.apiRoutes.join(', ')}`)
-    if (buildPlan.components.length > 0) lines.push(`Components: ${buildPlan.components.join(', ')}`)
-    if (buildPlan.dataModels.length > 0) lines.push(`Data models: ${buildPlan.dataModels.join(', ')}`)
-    if (buildPlan.integrations.length > 0) lines.push(`Integrations: ${buildPlan.integrations.join(', ')}`)
+    lines.push(
+      '## Suggested build plan',
+      '',
+      'These are starting points — adapt them to the user\'s actual needs.',
+      '',
+    )
+    if (buildPlan.pages.length > 0) lines.push(`- **Pages:** ${buildPlan.pages.join(', ')}`)
+    if (buildPlan.apiRoutes.length > 0) lines.push(`- **API routes:** ${buildPlan.apiRoutes.join(', ')}`)
+    if (buildPlan.components.length > 0) lines.push(`- **Components:** ${buildPlan.components.join(', ')}`)
+    if (buildPlan.dataModels.length > 0) lines.push(`- **Data models:** ${buildPlan.dataModels.join(', ')}`)
+    if (buildPlan.integrations.length > 0) lines.push(`- **Integrations:** ${buildPlan.integrations.join(', ')}`)
     lines.push('')
   }
 
@@ -290,28 +298,31 @@ function buildAgentsMd(
     lines.push(
       '## Media',
       '',
-      'The following images need to be generated or provided:',
+      'Image slots are declared in `media-manifest.json` with generation prompts.',
+      'Adapt the prompts to match the user\'s product before generating.',
       '',
-      '| Slot | Size | Location | Purpose |',
-      '|------|------|----------|---------|',
+      '| Slot | Size | Path | Purpose |',
+      '|------|------|------|---------|',
     )
     for (const slot of mediaSlots) {
-      lines.push(`| ${slot.id} | ${slot.width}\u00d7${slot.height} | ${slot.path} | ${slot.purpose} |`)
+      lines.push(`| ${slot.id} | ${slot.width}\u00d7${slot.height} | \`${slot.path}\` | ${slot.purpose} |`)
     }
     lines.push(
       '',
-      'Generation prompts are in `media-manifest.json`. Use DALL-E or similar to generate from the prompts, then save to the specified paths.',
+      'Skip any slots that don\'t apply. Add new ones if the product needs them.',
       '',
     )
   }
 
   lines.push(
-    '## Rules',
+    '## How to use this scaffold',
     '',
-    '- Build on top of the prepared scaffold. Do not replace the architecture.',
-    '- Use the entry points and validated commands before exploring broadly.',
-    '- Extend owned files. Check file ownership in `.starter-foundry/compose-report.json`.',
-    '- Run the dev server to verify changes hot-reload correctly.',
+    'This is a starting point, not a contract. You own every file.',
+    '',
+    '- **Customize freely.** Replace components, change the layout, swap the color scheme — whatever fits the user\'s product.',
+    '- **The scaffold saves you setup time** — Tailwind, shadcn/ui, path aliases, and framework config are ready. Don\'t redo them.',
+    '- **Check `.starter-foundry/compose-report.json`** if you want to see which layer wrote which file.',
+    '- **Update this file** as the project evolves. Delete sections that no longer apply.',
   )
 
   return lines.join('\n')

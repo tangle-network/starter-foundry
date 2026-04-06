@@ -102,7 +102,7 @@ test("variant selection is deterministic — same projectName produces same file
 
 test("variant selection differs for different projectNames", async () => {
   const names = ["alpha-project", "beta-project", "gamma-project", "delta-project", "epsilon-project"];
-  const heroContents = new Set<string>();
+  const personalizeContents = new Set<string>();
   for (const name of names) {
     const spec: ComposeSpec = {
       projectName: name,
@@ -112,13 +112,13 @@ test("variant selection differs for different projectNames", async () => {
     const outDir = await createTempDir(`sf-variant-${name}`);
     try {
       await composeStarter({ spec, outDir });
-      const hero = await fs.readFile(path.join(outDir, "src/components/landing/hero-section.tsx"), "utf8");
-      heroContents.add(hero);
+      const json = await fs.readFile(path.join(outDir, "src/personalize.json"), "utf8");
+      personalizeContents.add(json);
     } finally {
       await removeDir(outDir);
     }
   }
-  assert.ok(heroContents.size > 1, `Expected variant diversity across ${names.length} project names, got ${heroContents.size} unique outputs`);
+  assert.ok(personalizeContents.size > 1, `Expected variant diversity across ${names.length} project names, got ${personalizeContents.size} unique personalize.json outputs`);
 });
 
 test("layers without variants still use files/ directory", async () => {

@@ -1,0 +1,53 @@
+{
+  "_meta": { "variant": "dark-product", "doc": "Dark product-focused variant" },
+  "brand": { "name": "Vault", "tagline": "Infrastructure that scales" },
+  "hero": {
+    "badge": "AVAILABLE NOW",
+    "headline": "Built for serious workloads.",
+    "subheadline": "The infrastructure layer for teams running production systems at scale. Battle-tested, observable, fast.",
+    "ctaPrimary": "Deploy in 60s",
+    "ctaSecondary": "View Architecture"
+  },
+  "trust": {
+    "label": "Powering 500+ production systems",
+    "logoNames": ["Anthropic", "OpenAI", "Cloudflare", "Vercel", "Railway", "Fly"]
+  },
+  "features": {
+    "eyebrow": "Capabilities",
+    "headline": "Engineered for production",
+    "subheadline": "What you need to run real systems, nothing else.",
+    "primary": [
+      { "icon": "Server", "title": "Sub-millisecond latency", "description": "Edge-deployed globally. p99 response times under 50ms across all regions." },
+      { "icon": "ShieldCheck", "title": "Zero-trust by default", "description": "End-to-end encryption, mTLS between services, audit logs for everything." },
+      { "icon": "Activity", "title": "Real-time observability", "description": "Distributed tracing, structured logs, and metrics — all wired in by default." }
+    ],
+    "secondary": [
+      { "icon": "Cpu", "title": "Multi-region", "description": "Active-active across continents." },
+      { "icon": "Database", "title": "Strong consistency", "description": "Linearizable reads when you need them." },
+      { "icon": "GitBranch", "title": "Rollback safe", "description": "Atomic deploys with instant rollback." }
+    ]
+  },
+  "pricing": {
+    "eyebrow": "Pricing",
+    "headline": "Pay for what you use",
+    "subheadline": "No per-seat fees. No surprise bills. Just compute.",
+    "toggleMonthly": "Pay as you go",
+    "toggleYearly": "Reserved",
+    "yearlyDiscount": "Save 40%",
+    "tiers": [
+      { "name": "Hobby", "price": "$0", "period": "/mo", "description": "For experimentation", "features": ["1M requests/mo", "1 region", "Community support"], "cta": "Deploy for free", "highlighted": false, "note": "No card needed" },
+      { "name": "Production", "price": "$50", "period": "/mo", "description": "For real applications", "features": ["50M requests/mo", "All regions", "99.99% SLA", "Email support", "Custom domains", "DDoS protection"], "cta": "Start trial", "highlighted": true },
+      { "name": "Scale", "price": "Custom", "period": "", "description": "For high-volume systems", "features": ["Everything in Production", "Unlimited requests", "Dedicated infrastructure", "24/7 phone support", "Custom contracts", "On-prem options"], "cta": "Talk to sales", "highlighted": false }
+    ]
+  },
+  "footer": {
+    "tagline": "The infrastructure your roadmap deserves.",
+    "sections": {
+      "Product": [{ "label": "Features", "href": "#features" }, { "label": "Pricing", "href": "#pricing" }, { "label": "Status", "href": "/status" }, { "label": "Roadmap", "href": "/roadmap" }],
+      "Company": [{ "label": "About", "href": "/about" }, { "label": "Blog", "href": "/blog" }, { "label": "Careers", "href": "/careers" }, { "label": "Customers", "href": "/customers" }],
+      "Resources": [{ "label": "Docs", "href": "/docs" }, { "label": "API Reference", "href": "/api" }, { "label": "Tutorials", "href": "/tutorials" }, { "label": "Examples", "href": "/examples" }],
+      "Legal": [{ "label": "Privacy", "href": "/privacy" }, { "label": "Terms", "href": "/terms" }, { "label": "Security", "href": "/security" }, { "label": "Compliance", "href": "/compliance" }]
+    },
+    "copyright": "© 2026 Vault Systems."
+  }
+}

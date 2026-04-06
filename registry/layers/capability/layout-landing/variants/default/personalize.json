@@ -1,0 +1,146 @@
+{
+  "_meta": {
+    "doc": "Edit this file to customize ALL copy, branding, and content on the landing page. Components read from this at build time. Agents personalizing scaffolds should rewrite this file based on the user's actual product.",
+    "version": 1
+  },
+  "brand": {
+    "name": "Acme",
+    "tagline": "The platform for shipping fast"
+  },
+  "hero": {
+    "badge": "NOW IN BETA — GET EARLY ACCESS",
+    "headline": "Build something people want.",
+    "subheadline": "The modern platform that gives your team everything it needs to go from idea to production.",
+    "ctaPrimary": "Get Started",
+    "ctaSecondary": "See a Demo"
+  },
+  "trust": {
+    "label": "Trusted by 1,000+ teams worldwide",
+    "logoNames": ["Acme Corp", "TechFlow", "Quantum", "NovaSoft", "BuildStack", "DataPipe"]
+  },
+  "features": {
+    "eyebrow": "Features",
+    "headline": "Everything you need, nothing you don't",
+    "subheadline": "Built for teams who care about craft and ship fast.",
+    "primary": [
+      {
+        "icon": "Zap",
+        "title": "Lightning fast",
+        "description": "Optimized for speed at every layer. Sub-second cold starts, instant hot reload."
+      },
+      {
+        "icon": "Shield",
+        "title": "Secure by default",
+        "description": "Authentication, authorization, and encryption built in. SOC 2 ready out of the box."
+      },
+      {
+        "icon": "BarChart3",
+        "title": "Built-in analytics",
+        "description": "Real-time metrics, custom dashboards, and automatic alerting on what matters."
+      }
+    ],
+    "secondary": [
+      {
+        "icon": "Layers",
+        "title": "Composable architecture",
+        "description": "Mix and match the pieces you need."
+      },
+      {
+        "icon": "Globe",
+        "title": "Global by default",
+        "description": "Edge-deployed across 200+ regions."
+      },
+      {
+        "icon": "Lock",
+        "title": "Privacy-first",
+        "description": "Your data stays yours. No tracking, no telemetry."
+      }
+    ]
+  },
+  "pricing": {
+    "eyebrow": "Pricing",
+    "headline": "Simple, transparent pricing",
+    "subheadline": "Start free. Upgrade when you're ready. Cancel anytime.",
+    "toggleMonthly": "Monthly",
+    "toggleYearly": "Yearly",
+    "yearlyDiscount": "Save 20%",
+    "tiers": [
+      {
+        "name": "Free",
+        "price": "$0",
+        "period": "/mo",
+        "description": "For side projects and exploration",
+        "features": [
+          "Up to 3 projects",
+          "Community support",
+          "Basic analytics",
+          "1 team member"
+        ],
+        "cta": "Start for free",
+        "highlighted": false,
+        "note": "No credit card required"
+      },
+      {
+        "name": "Pro",
+        "price": "$29",
+        "period": "/mo",
+        "description": "For growing teams shipping in production",
+        "features": [
+          "Unlimited projects",
+          "Priority support",
+          "Advanced analytics",
+          "Up to 10 team members",
+          "Custom integrations",
+          "API access"
+        ],
+        "cta": "Start free trial",
+        "highlighted": true
+      },
+      {
+        "name": "Enterprise",
+        "price": "Custom",
+        "period": "",
+        "description": "For organizations with custom needs",
+        "features": [
+          "Everything in Pro",
+          "Unlimited team members",
+          "Dedicated support",
+          "Custom SLAs",
+          "SSO and SAML",
+          "On-premise deployment"
+        ],
+        "cta": "Contact sales",
+        "highlighted": false
+      }
+    ]
+  },
+  "footer": {
+    "tagline": "Built with care by people who give a damn.",
+    "sections": {
+      "Product": [
+        { "label": "Features", "href": "#features" },
+        { "label": "Pricing", "href": "#pricing" },
+        { "label": "Changelog", "href": "/changelog" },
+        { "label": "Docs", "href": "/docs" }
+      ],
+      "Company": [
+        { "label": "About", "href": "/about" },
+        { "label": "Blog", "href": "/blog" },
+        { "label": "Careers", "href": "/careers" },
+        { "label": "Contact", "href": "/contact" }
+      ],
+      "Resources": [
+        { "label": "Documentation", "href": "/docs" },
+        { "label": "API Reference", "href": "/docs/api" },
+        { "label": "Status", "href": "/status" },
+        { "label": "Support", "href": "/support" }
+      ],
+      "Legal": [
+        { "label": "Privacy", "href": "/privacy" },
+        { "label": "Terms", "href": "/terms" },
+        { "label": "Security", "href": "/security" }
+      ]
+    },
+    "copyright": "© 2026 Acme. All rights reserved."
+  }
+}

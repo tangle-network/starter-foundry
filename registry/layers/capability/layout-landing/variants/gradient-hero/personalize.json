@@ -1,0 +1,53 @@
+{
+  "_meta": { "variant": "gradient-hero", "doc": "Bold gradient hero variant" },
+  "brand": { "name": "Aurora", "tagline": "Bold by design" },
+  "hero": {
+    "badge": "JUST LAUNCHED",
+    "headline": "Make something bold.",
+    "subheadline": "A vibrant, gradient-first design system for products that refuse to blend in.",
+    "ctaPrimary": "Start Building",
+    "ctaSecondary": "Watch the Demo"
+  },
+  "trust": {
+    "label": "Loved by 2,500+ creators",
+    "logoNames": ["Vivid", "Spectrum", "Prism", "Aurora", "Radiance", "Glow"]
+  },
+  "features": {
+    "eyebrow": "Why Aurora",
+    "headline": "Designed to stand out",
+    "subheadline": "Every detail crafted for impact and conversion.",
+    "primary": [
+      { "icon": "Sparkles", "title": "Distinctive design", "description": "Eye-catching gradients and animations that grab attention immediately." },
+      { "icon": "Rocket", "title": "Built for growth", "description": "Conversion-optimized components proven across thousands of launches." },
+      { "icon": "Wand", "title": "Customize everything", "description": "Drop-in components that adapt to your brand without fighting you." }
+    ],
+    "secondary": [
+      { "icon": "Palette", "title": "Theme system", "description": "8 base palettes, infinite custom." },
+      { "icon": "Layers", "title": "Composable", "description": "Mix any sections you need." },
+      { "icon": "Heart", "title": "Crafted with love", "description": "Every pixel intentional." }
+    ]
+  },
+  "pricing": {
+    "eyebrow": "Pricing",
+    "headline": "Fair pricing for builders",
+    "subheadline": "Free to start. Upgrade when you ship.",
+    "toggleMonthly": "Monthly",
+    "toggleYearly": "Yearly",
+    "yearlyDiscount": "Save 25%",
+    "tiers": [
+      { "name": "Starter", "price": "$0", "period": "/mo", "description": "For solo builders", "features": ["3 projects", "Community support", "Aurora basics"], "cta": "Start free", "highlighted": false, "note": "Free forever" },
+      { "name": "Creator", "price": "$24", "period": "/mo", "description": "For active builders", "features": ["Unlimited projects", "Priority support", "All Aurora themes", "Custom branding", "Export to React"], "cta": "Start trial", "highlighted": true },
+      { "name": "Studio", "price": "$99", "period": "/mo", "description": "For teams and agencies", "features": ["Everything in Creator", "Unlimited team seats", "White-label rights", "Premium support", "Source files"], "cta": "Contact sales", "highlighted": false }
+    ]
+  },
+  "footer": {
+    "tagline": "Design systems for the bold.",
+    "sections": {
+      "Product": [{ "label": "Features", "href": "#features" }, { "label": "Pricing", "href": "#pricing" }, { "label": "Showcase", "href": "/showcase" }, { "label": "Templates", "href": "/templates" }],
+      "Company": [{ "label": "About", "href": "/about" }, { "label": "Blog", "href": "/blog" }, { "label": "Careers", "href": "/careers" }, { "label": "Press", "href": "/press" }],
+      "Resources": [{ "label": "Docs", "href": "/docs" }, { "label": "Changelog", "href": "/changelog" }, { "label": "Community", "href": "/community" }, { "label": "Support", "href": "/support" }],
+      "Legal": [{ "label": "Privacy", "href": "/privacy" }, { "label": "Terms", "href": "/terms" }, { "label": "License", "href": "/license" }]
+    },
+    "copyright": "© 2026 Aurora Studio."
+  }
+}

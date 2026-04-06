@@ -965,6 +965,23 @@ export async function planPrompt({
       spec.layers = [...new Set([...(spec.layers ?? []), industry])]
     }
 
+    // Frontend families default to tailwind + shadcn so the layout layers and
+    // any UI components composed downstream actually render with styles.
+    // Without these, components ship Tailwind class names against an unconfigured
+    // Tailwind install — the visual result is unstyled HTML. Force-attaching here
+    // means callers don't need to know which families are React-flavored or what
+    // their UI deps are.
+    const REACT_FAMILIES = new Set(['react-vite-ts', 'nextjs-ts', 'fullstack-ts', 'remix-ts'])
+    if (REACT_FAMILIES.has(spec.family)) {
+      const layerSet = new Set(spec.layers ?? [])
+      if (!layerSet.has('capability:tailwind')) {
+        spec.layers = [...(spec.layers ?? []), 'capability:tailwind']
+      }
+      if (!layerSet.has('capability:shadcn')) {
+        spec.layers = [...(spec.layers ?? []), 'capability:shadcn']
+      }
+    }
+
     return {
       kind: 'starter' as const,
       confidence: starterSelection.confidence,

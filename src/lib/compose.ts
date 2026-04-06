@@ -98,11 +98,13 @@ export async function composeStarter({ spec, outDir }: { spec: ComposeSpec; outD
     return composeStarterInner(spec, outDir)
   })
   const layers = result.components.layers
+  const industry = layers.find((l) => l.startsWith('industry:')) ?? null
   emit('compose', {
     family: spec.family,
     layers,
     filesWritten: result.filesWritten,
     partner: spec.partner ?? null,
+    industry,
     durationMs,
   })
   return result

@@ -386,3 +386,22 @@ export function detectCapabilities(text: string, family: string, registry: Regis
   }
   return results
 }
+
+/**
+ * Detect the best-matching industry layer from a prompt. Returns at most one
+ * since a project has a single industry identity. Score = keyword match count;
+ * highest wins, ties broken by registry order.
+ */
+export function detectIndustry(text: string, family: string, registry: Registry): string | null {
+  let best: { id: string; score: number } | null = null
+  for (const [key, layer] of registry.layers) {
+    if (layer.group !== 'industry') continue
+    if (!layer.keywords?.length) continue
+    if (layer.appliesTo && !layer.appliesTo.includes(family)) continue
+    const score = countMatches(text, layer.keywords)
+    if (score > 0 && (!best || score > best.score)) {
+      best = { id: key, score }
+    }
+  }
+  return best?.id ?? null
+}

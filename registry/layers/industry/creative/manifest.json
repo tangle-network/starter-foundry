@@ -1,0 +1,39 @@
+{
+  "id": "creative",
+  "description": "Photography, design, art, portfolio, creative work",
+  "group": "industry",
+  "appliesTo": [
+    "nextjs-ts",
+    "react-vite-ts",
+    "fullstack-ts",
+    "remix-ts",
+    "sveltekit-ts",
+    "vue-ts",
+    "frontend-static"
+  ],
+  "keywords": [
+    "portfolio",
+    "photographer",
+    "photography",
+    "designer",
+    "artist",
+    "illustrator",
+    "creative",
+    "gallery",
+    "studio",
+    "agency"
+  ],
+  "files": [
+    {
+      "source": "files/personalize.css",
+      "target": "src/personalize.css"
+    },
+    {
+      "source": "files/personalize.css",
+      "target": "app/personalize.css"
+    }
+  ],
+  "defaults": {
+    "industryTone": "distinctive, refined, expressive"
+  }
+}

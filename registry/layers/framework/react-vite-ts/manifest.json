@@ -16,6 +16,10 @@
       "target": "src/styles.css"
     },
     {
+      "source": "files/personalize.css",
+      "target": "src/personalize.css"
+    },
+    {
       "source": "files/preview-client.js",
       "target": "preview-client.js"
     },

@@ -1,0 +1,11 @@
+/* Industry: ecommerce — overrides Tailwind v4 @theme defaults at runtime */
+:root {
+  --color-primary: hsl(340 82% 52%);
+  --color-accent: hsl(24 95% 53%);
+  --color-ring: hsl(340 82% 52%);
+}
+.dark {
+  --color-primary: hsl(340 82% 52%);
+  --color-accent: hsl(24 95% 53%);
+  --color-ring: hsl(340 82% 52%);
+}

@@ -32,6 +32,10 @@
       "target": "app/globals.css"
     },
     {
+      "source": "files/personalize.css",
+      "target": "app/personalize.css"
+    },
+    {
       "source": "files/preview-index.html",
       "target": "preview/index.html"
     },

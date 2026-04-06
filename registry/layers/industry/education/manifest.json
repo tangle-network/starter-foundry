@@ -1,0 +1,39 @@
+{
+  "id": "education",
+  "description": "Learning, courses, tutoring, educational platforms",
+  "group": "industry",
+  "appliesTo": [
+    "nextjs-ts",
+    "react-vite-ts",
+    "fullstack-ts",
+    "remix-ts",
+    "sveltekit-ts",
+    "vue-ts",
+    "frontend-static"
+  ],
+  "keywords": [
+    "education",
+    "learning",
+    "course",
+    "tutoring",
+    "student",
+    "teacher",
+    "school",
+    "university",
+    "lesson",
+    "curriculum"
+  ],
+  "files": [
+    {
+      "source": "files/personalize.css",
+      "target": "src/personalize.css"
+    },
+    {
+      "source": "files/personalize.css",
+      "target": "app/personalize.css"
+    }
+  ],
+  "defaults": {
+    "industryTone": "encouraging, clear, accessible"
+  }
+}

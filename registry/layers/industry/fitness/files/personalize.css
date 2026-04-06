@@ -1,0 +1,11 @@
+/* Industry: fitness — overrides Tailwind v4 @theme defaults at runtime */
+:root {
+  --color-primary: hsl(14 90% 53%);
+  --color-accent: hsl(45 96% 56%);
+  --color-ring: hsl(14 90% 53%);
+}
+.dark {
+  --color-primary: hsl(14 90% 53%);
+  --color-accent: hsl(45 96% 56%);
+  --color-ring: hsl(14 90% 53%);
+}

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { detectLane, getLaneKeywords, hasAny, matchesKeyword, countMatches, LANE_ROUTES } from "../dist/lib/keywords.js";
+import { detectLane, detectIndustry, getLaneKeywords, hasAny, matchesKeyword, countMatches, LANE_ROUTES } from "../dist/lib/keywords.js";
+import { loadRegistry } from "../dist/lib/registry.js";
 
 // matchesKeyword
 
@@ -114,4 +115,26 @@ test("detectLane: evm", () => {
 
 test("detectLane: unknown lane returns false", () => {
   assert.ok(!detectLane("build anything", "nonexistent-lane"));
+});
+
+// detectIndustry
+
+test("detectIndustry: fitness prompt", async () => {
+  const r = await loadRegistry();
+  assert.equal(detectIndustry("Build a marathon training app for runners", "react-vite-ts", r), "industry:fitness");
+});
+
+test("detectIndustry: crypto prompt", async () => {
+  const r = await loadRegistry();
+  assert.equal(detectIndustry("Build a defi staking dashboard with token rewards", "react-vite-ts", r), "industry:crypto");
+});
+
+test("detectIndustry: restaurant prompt", async () => {
+  const r = await loadRegistry();
+  assert.equal(detectIndustry("Build a restaurant menu and reservations site", "react-vite-ts", r), "industry:restaurant");
+});
+
+test("detectIndustry: returns null when no industry matches", async () => {
+  const r = await loadRegistry();
+  assert.equal(detectIndustry("Build something", "react-vite-ts", r), null);
 });

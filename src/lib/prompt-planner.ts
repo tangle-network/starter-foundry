@@ -2,7 +2,7 @@ import { sanitizePackageName } from './fs.js'
 import { emit, traced } from './telemetry.js'
 import { loadRegistry } from './registry.js'
 import { selectStarter } from './selection.js'
-import { detectCapabilities, detectLane, hasAny, matchesKeyword } from './keywords.js'
+import { detectCapabilities, detectIndustry, detectLane, hasAny, matchesKeyword } from './keywords.js'
 import type { Registry } from '../types.js'
 import type { ComposeSpec, WorkspaceSpec, PromptPlan, ProjectEntry } from '../types.js'
 
@@ -958,6 +958,11 @@ export async function planPrompt({
     const capabilities = detectCapabilities(text, spec.family, registry)
     if (capabilities.length > 0) {
       spec.layers = [...new Set([...(spec.layers ?? []), ...capabilities])]
+    }
+
+    const industry = detectIndustry(text, spec.family, registry)
+    if (industry) {
+      spec.layers = [...new Set([...(spec.layers ?? []), industry])]
     }
 
     return {

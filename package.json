@@ -1,5 +1,5 @@
 {
-  "name": "starter-foundry",
+  "name": "@tangle-network/starter-foundry",
   "version": "0.1.0",
   "description": "Deterministic project scaffold engine for AI coding platforms",
   "type": "module",

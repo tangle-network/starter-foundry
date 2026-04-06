@@ -1,0 +1,11 @@
+/* Industry: health — overrides Tailwind v4 @theme defaults at runtime */
+:root {
+  --color-primary: hsl(173 80% 40%);
+  --color-accent: hsl(160 60% 45%);
+  --color-ring: hsl(173 80% 40%);
+}
+.dark {
+  --color-primary: hsl(173 80% 40%);
+  --color-accent: hsl(160 60% 45%);
+  --color-ring: hsl(173 80% 40%);
+}

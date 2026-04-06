@@ -1,0 +1,39 @@
+{
+  "id": "gaming",
+  "description": "Games, gaming platforms, esports, leaderboards",
+  "group": "industry",
+  "appliesTo": [
+    "nextjs-ts",
+    "react-vite-ts",
+    "fullstack-ts",
+    "remix-ts",
+    "sveltekit-ts",
+    "vue-ts",
+    "frontend-static"
+  ],
+  "keywords": [
+    "game",
+    "gaming",
+    "esports",
+    "leaderboard",
+    "multiplayer",
+    "tournament",
+    "arcade",
+    "console",
+    "rpg",
+    "fps"
+  ],
+  "files": [
+    {
+      "source": "files/personalize.css",
+      "target": "src/personalize.css"
+    },
+    {
+      "source": "files/personalize.css",
+      "target": "app/personalize.css"
+    }
+  ],
+  "defaults": {
+    "industryTone": "bold, energetic, competitive"
+  }
+}

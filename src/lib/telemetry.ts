@@ -32,6 +32,7 @@ export interface ComposeEvent {
   layers: string[]
   filesWritten: string[]
   partner: string | null
+  industry: string | null
   durationMs: number
 }
 

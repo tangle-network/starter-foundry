@@ -1,0 +1,53 @@
+{
+  "_meta": { "variant": "minimal-clean", "doc": "Minimal whitespace variant" },
+  "brand": { "name": "Linear", "tagline": "The system for product teams" },
+  "hero": {
+    "badge": "ESSAYS BY THE TEAM",
+    "headline": "Less, but better.",
+    "subheadline": "A minimal, opinionated framework that gets out of your way so you can focus on the work.",
+    "ctaPrimary": "Get Started",
+    "ctaSecondary": "Read the Manifesto"
+  },
+  "trust": {
+    "label": "Used by 10,000+ thoughtful teams",
+    "logoNames": ["Ramp", "Vercel", "Linear", "Notion", "Stripe", "Figma"]
+  },
+  "features": {
+    "eyebrow": "Principles",
+    "headline": "Built on clear principles",
+    "subheadline": "Each decision considered. Every detail intentional.",
+    "primary": [
+      { "icon": "Minimize", "title": "Restraint", "description": "We say no to features that don't earn their place. Less surface, more depth." },
+      { "icon": "Focus", "title": "Focus", "description": "One thing at a time. The interface fades away so the work stays in front." },
+      { "icon": "Compass", "title": "Direction", "description": "Strong opinions about what good looks like, so you don't have to decide everything." }
+    ],
+    "secondary": [
+      { "icon": "Type", "title": "Typography", "description": "Set with care, leading and tracking refined for reading." },
+      { "icon": "Square", "title": "Geometry", "description": "Spacing follows a strict 4px grid throughout." },
+      { "icon": "Eye", "title": "Contrast", "description": "AAA-compliant color pairs across light and dark." }
+    ]
+  },
+  "pricing": {
+    "eyebrow": "Pricing",
+    "headline": "Honest pricing",
+    "subheadline": "No tiers we don't believe in. No tricks.",
+    "toggleMonthly": "Monthly",
+    "toggleYearly": "Yearly",
+    "yearlyDiscount": "Save 20%",
+    "tiers": [
+      { "name": "Free", "price": "$0", "period": "/mo", "description": "For thinking through ideas", "features": ["Unlimited drafts", "Markdown export", "Local-first"], "cta": "Get started", "highlighted": false, "note": "No account required" },
+      { "name": "Pro", "price": "$8", "period": "/mo", "description": "For people who care", "features": ["Sync across devices", "Themes and fonts", "Custom shortcuts", "Vim mode", "Priority support"], "cta": "Try Pro free", "highlighted": true },
+      { "name": "Team", "price": "$18", "period": "/seat/mo", "description": "For small teams", "features": ["Everything in Pro", "Shared workspaces", "Role-based access", "Audit log", "SAML SSO"], "cta": "Start team trial", "highlighted": false }
+    ]
+  },
+  "footer": {
+    "tagline": "Crafted with care in California.",
+    "sections": {
+      "Product": [{ "label": "Features", "href": "#features" }, { "label": "Pricing", "href": "#pricing" }, { "label": "Download", "href": "/download" }, { "label": "Changelog", "href": "/changelog" }],
+      "Company": [{ "label": "Manifesto", "href": "/manifesto" }, { "label": "Essays", "href": "/essays" }, { "label": "About", "href": "/about" }, { "label": "Contact", "href": "/contact" }],
+      "Resources": [{ "label": "Documentation", "href": "/docs" }, { "label": "Shortcuts", "href": "/shortcuts" }, { "label": "Themes", "href": "/themes" }, { "label": "Community", "href": "/community" }],
+      "Legal": [{ "label": "Privacy", "href": "/privacy" }, { "label": "Terms", "href": "/terms" }]
+    },
+    "copyright": "© 2026 Linear."
+  }
+}

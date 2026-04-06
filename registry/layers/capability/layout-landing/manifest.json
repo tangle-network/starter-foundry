@@ -35,6 +35,10 @@
     {
       "source": "files/media-manifest.json",
       "target": "media-manifest.json"
+    },
+    {
+      "source": "files/personalize.json",
+      "target": "src/personalize.json"
     }
   ],
   "variants": [

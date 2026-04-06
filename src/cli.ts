@@ -8,6 +8,7 @@ import { evaluateAgents } from './lib/agent-runners.js'
 import { benchmarkStarter } from './lib/benchmark.js'
 import { buildCatalog } from './lib/catalog.js'
 import { composeStarter } from './lib/compose.js'
+import { composeFromPrompt } from './lib/compose-prompt.js'
 import { createContextPack } from './lib/context-pack.js'
 import { readJson } from './lib/fs.js'
 import { runPromptCorpus } from './lib/prompt-e2e.js'
@@ -140,6 +141,37 @@ async function main(): Promise<void> {
       const result = await composeStarter({ spec, outDir: String(options['out']) })
 
       print(result, jsonMode)
+      break
+    }
+
+    case 'compose-prompt': {
+      if (!options['prompt'] || !options['out']) {
+        throw new Error('compose-prompt requires --prompt and --out')
+      }
+
+      const result = await composeFromPrompt({
+        prompt: String(options['prompt']),
+        outDir: String(options['out']),
+        partner: options['partner'] ? String(options['partner']) : null,
+        projectName: options['name'] ? String(options['name']) : undefined,
+      })
+
+      if (result.kind === 'error') {
+        console.error(result.error)
+        process.exit(1)
+      }
+      if (result.kind === 'workspace') {
+        console.error(result.reason)
+        process.exit(2)
+      }
+      if (jsonMode) {
+        print(result, true)
+      } else {
+        console.log(`Composed ${result.spec.family} (${(result.spec.layers ?? []).length} layers, ${result.result.filesWritten.length} files)`)
+        console.log(`Family: ${result.spec.family}`)
+        console.log(`Layers: ${(result.spec.layers ?? []).join(', ')}`)
+        console.log(`Out: ${result.result.outDir}`)
+      }
       break
     }
 

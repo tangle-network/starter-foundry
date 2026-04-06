@@ -1,6 +1,6 @@
 {
   "name": "@tangle-network/starter-foundry",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Deterministic project scaffold engine for AI coding platforms",
   "type": "module",
   "license": "MIT",
@@ -12,6 +12,9 @@
     ".": "./dist/lib/index.js",
     "./planner": "./dist/lib/prompt-planner.js",
     "./compose": "./dist/lib/compose.js",
+    "./compose-prompt": "./dist/lib/compose-prompt.js",
+    "./agent-context": "./dist/lib/agent-context.js",
+    "./industries": "./dist/lib/industries.js",
     "./registry": "./dist/lib/registry.js",
     "./context": "./dist/lib/context-pack.js",
     "./build-plan": "./dist/lib/build-plan.js",

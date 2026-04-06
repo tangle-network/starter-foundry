@@ -1,6 +1,15 @@
 // Public API — import from 'starter-foundry'
 export { planPrompt } from './prompt-planner.js'
 export { composeStarter } from './compose.js'
+export { composeFromPrompt } from './compose-prompt.js'
+export type { ComposeFromPromptOptions, ComposeFromPromptResult } from './compose-prompt.js'
+export {
+  PERSONALIZATION_INSTRUCTION,
+  PERSONALIZATION_CSS_INSTRUCTION,
+  PERSONALIZATION_JSON_INSTRUCTION,
+  getComposedScaffoldContext,
+  getCuratedScaffoldContext,
+} from './agent-context.js'
 export { createContextPack } from './context-pack.js'
 export { generateBuildPlan } from './build-plan.js'
 export { loadRegistry, resolveComponents, clearRegistryCache, initSemanticRouting } from './registry.js'

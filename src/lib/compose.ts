@@ -186,9 +186,12 @@ async function composeStarterInner(spec: ComposeSpec, outDir: string): Promise<C
   // Merge media manifests from all layers into a single root manifest
   const mediaSlots = await mergeMediaManifests(outDir)
 
-  // Generate AGENTS.md — per-project agent instructions
+  // Generate AGENTS.md — per-project agent instructions (OpenCode, Codex, etc.)
   const agentsMd = buildAgentsMd(spec, components, composeReport.contextHints, mediaSlots)
   await fs.writeFile(path.join(outDir, 'AGENTS.md'), `${agentsMd}\n`, 'utf8')
+
+  // Generate CLAUDE.md — Claude Code specific instructions (same content, different filename)
+  await fs.writeFile(path.join(outDir, 'CLAUDE.md'), `${agentsMd}\n`, 'utf8')
 
   // Generate llms.txt — machine-readable project description for AI agents
   const llmsTxt = buildLlmsTxt(spec, components, composeReport.contextHints)
@@ -196,7 +199,7 @@ async function composeStarterInner(spec: ComposeSpec, outDir: string): Promise<C
 
   return {
     outDir,
-    filesWritten: [...new Set([...filesWritten, 'AGENTS.md', 'llms.txt'])].sort(),
+    filesWritten: [...new Set([...filesWritten, 'AGENTS.md', 'CLAUDE.md', 'llms.txt'])].sort(),
     composeReportPath: path.join(outDir, '.starter-foundry', 'compose-report.json'),
     components: composeReport.components,
   }

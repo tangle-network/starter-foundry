@@ -1,0 +1,39 @@
+{
+  "id": "finance",
+  "description": "Personal finance, banking, budgeting, investing",
+  "group": "industry",
+  "appliesTo": [
+    "nextjs-ts",
+    "react-vite-ts",
+    "fullstack-ts",
+    "remix-ts",
+    "sveltekit-ts",
+    "vue-ts",
+    "frontend-static"
+  ],
+  "keywords": [
+    "finance",
+    "banking",
+    "budget",
+    "investing",
+    "stocks",
+    "savings",
+    "wealth",
+    "fintech",
+    "expense",
+    "accounting"
+  ],
+  "files": [
+    {
+      "source": "files/personalize.css",
+      "target": "src/personalize.css"
+    },
+    {
+      "source": "files/personalize.css",
+      "target": "app/personalize.css"
+    }
+  ],
+  "defaults": {
+    "industryTone": "trustworthy, precise, professional"
+  }
+}

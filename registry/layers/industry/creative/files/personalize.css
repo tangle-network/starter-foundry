@@ -1,0 +1,11 @@
+/* Industry: creative — overrides Tailwind v4 @theme defaults at runtime */
+:root {
+  --color-primary: hsl(280 65% 50%);
+  --color-accent: hsl(320 75% 55%);
+  --color-ring: hsl(280 65% 50%);
+}
+.dark {
+  --color-primary: hsl(280 65% 50%);
+  --color-accent: hsl(320 75% 55%);
+  --color-ring: hsl(280 65% 50%);
+}

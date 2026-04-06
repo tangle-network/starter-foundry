@@ -1,0 +1,39 @@
+{
+  "id": "health",
+  "description": "Healthcare, wellness, meditation, mental health",
+  "group": "industry",
+  "appliesTo": [
+    "nextjs-ts",
+    "react-vite-ts",
+    "fullstack-ts",
+    "remix-ts",
+    "sveltekit-ts",
+    "vue-ts",
+    "frontend-static"
+  ],
+  "keywords": [
+    "health",
+    "wellness",
+    "meditation",
+    "mental health",
+    "therapy",
+    "medical",
+    "clinic",
+    "doctor",
+    "patient",
+    "mindfulness"
+  ],
+  "files": [
+    {
+      "source": "files/personalize.css",
+      "target": "src/personalize.css"
+    },
+    {
+      "source": "files/personalize.css",
+      "target": "app/personalize.css"
+    }
+  ],
+  "defaults": {
+    "industryTone": "calm, trustworthy, caring"
+  }
+}

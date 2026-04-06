@@ -1,0 +1,39 @@
+{
+  "id": "saas",
+  "description": "SaaS, B2B tools, dashboards, productivity software",
+  "group": "industry",
+  "appliesTo": [
+    "nextjs-ts",
+    "react-vite-ts",
+    "fullstack-ts",
+    "remix-ts",
+    "sveltekit-ts",
+    "vue-ts",
+    "frontend-static"
+  ],
+  "keywords": [
+    "saas",
+    "b2b",
+    "dashboard",
+    "analytics",
+    "productivity",
+    "workflow",
+    "enterprise",
+    "crm",
+    "erp",
+    "admin panel"
+  ],
+  "files": [
+    {
+      "source": "files/personalize.css",
+      "target": "src/personalize.css"
+    },
+    {
+      "source": "files/personalize.css",
+      "target": "app/personalize.css"
+    }
+  ],
+  "defaults": {
+    "industryTone": "professional, confident, clear"
+  }
+}

@@ -1,0 +1,11 @@
+/* Industry: restaurant — overrides Tailwind v4 @theme defaults at runtime */
+:root {
+  --color-primary: hsl(24 95% 53%);
+  --color-accent: hsl(0 84% 60%);
+  --color-ring: hsl(24 95% 53%);
+}
+.dark {
+  --color-primary: hsl(24 95% 53%);
+  --color-accent: hsl(0 84% 60%);
+  --color-ring: hsl(24 95% 53%);
+}

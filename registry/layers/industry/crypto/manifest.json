@@ -1,0 +1,41 @@
+{
+  "id": "crypto",
+  "description": "Crypto, web3, defi, blockchain, NFT applications",
+  "group": "industry",
+  "appliesTo": [
+    "nextjs-ts",
+    "react-vite-ts",
+    "fullstack-ts",
+    "remix-ts",
+    "sveltekit-ts",
+    "vue-ts",
+    "frontend-static"
+  ],
+  "keywords": [
+    "crypto",
+    "web3",
+    "defi",
+    "blockchain",
+    "nft",
+    "token",
+    "wallet",
+    "staking",
+    "dao",
+    "evm",
+    "solana",
+    "ethereum"
+  ],
+  "files": [
+    {
+      "source": "files/personalize.css",
+      "target": "src/personalize.css"
+    },
+    {
+      "source": "files/personalize.css",
+      "target": "app/personalize.css"
+    }
+  ],
+  "defaults": {
+    "industryTone": "bold, technical, future-forward"
+  }
+}

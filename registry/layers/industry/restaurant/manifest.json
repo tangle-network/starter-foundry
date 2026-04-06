@@ -1,0 +1,41 @@
+{
+  "id": "restaurant",
+  "description": "Restaurants, food delivery, menus, reservations",
+  "group": "industry",
+  "appliesTo": [
+    "nextjs-ts",
+    "react-vite-ts",
+    "fullstack-ts",
+    "remix-ts",
+    "sveltekit-ts",
+    "vue-ts",
+    "frontend-static"
+  ],
+  "keywords": [
+    "restaurant",
+    "food",
+    "menu",
+    "cafe",
+    "bistro",
+    "pizza",
+    "delivery",
+    "reservations",
+    "catering",
+    "dining",
+    "kitchen",
+    "chef"
+  ],
+  "files": [
+    {
+      "source": "files/personalize.css",
+      "target": "src/personalize.css"
+    },
+    {
+      "source": "files/personalize.css",
+      "target": "app/personalize.css"
+    }
+  ],
+  "defaults": {
+    "industryTone": "warm, inviting, appetizing"
+  }
+}

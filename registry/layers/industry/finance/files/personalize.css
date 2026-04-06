@@ -1,0 +1,11 @@
+/* Industry: finance — overrides Tailwind v4 @theme defaults at runtime */
+:root {
+  --color-primary: hsl(142 71% 45%);
+  --color-accent: hsl(220 90% 56%);
+  --color-ring: hsl(142 71% 45%);
+}
+.dark {
+  --color-primary: hsl(142 71% 45%);
+  --color-accent: hsl(220 90% 56%);
+  --color-ring: hsl(142 71% 45%);
+}

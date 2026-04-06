@@ -1,4 +1,5 @@
 import './globals.css'
+import './personalize.css'
 
 export const metadata = {
   title: '{{headline}}',

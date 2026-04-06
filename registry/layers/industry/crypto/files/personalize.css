@@ -1,0 +1,11 @@
+/* Industry: crypto — overrides Tailwind v4 @theme defaults at runtime */
+:root {
+  --color-primary: hsl(160 84% 39%);
+  --color-accent: hsl(142 76% 36%);
+  --color-ring: hsl(160 84% 39%);
+}
+.dark {
+  --color-primary: hsl(160 84% 39%);
+  --color-accent: hsl(142 76% 36%);
+  --color-ring: hsl(160 84% 39%);
+}

@@ -1,0 +1,11 @@
+/* Industry: gaming — overrides Tailwind v4 @theme defaults at runtime */
+:root {
+  --color-primary: hsl(262 83% 58%);
+  --color-accent: hsl(320 75% 55%);
+  --color-ring: hsl(262 83% 58%);
+}
+.dark {
+  --color-primary: hsl(262 83% 58%);
+  --color-accent: hsl(320 75% 55%);
+  --color-ring: hsl(262 83% 58%);
+}

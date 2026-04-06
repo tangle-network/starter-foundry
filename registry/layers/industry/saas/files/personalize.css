@@ -1,0 +1,11 @@
+/* Industry: saas — overrides Tailwind v4 @theme defaults at runtime */
+:root {
+  --color-primary: hsl(220 90% 56%);
+  --color-accent: hsl(262 83% 58%);
+  --color-ring: hsl(220 90% 56%);
+}
+.dark {
+  --color-primary: hsl(220 90% 56%);
+  --color-accent: hsl(262 83% 58%);
+  --color-ring: hsl(220 90% 56%);
+}

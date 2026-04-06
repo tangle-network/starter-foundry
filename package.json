@@ -1,8 +1,13 @@
 {
   "name": "starter-foundry",
   "version": "0.1.0",
-  "private": true,
+  "description": "Deterministic project scaffold engine for AI coding platforms",
   "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tangle-network/starter-foundry.git"
+  },
   "exports": {
     ".": "./dist/lib/index.js",
     "./planner": "./dist/lib/prompt-planner.js",

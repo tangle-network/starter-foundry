@@ -8,11 +8,20 @@ import type { FamilyManifest, LayerManifest, PartnerManifest, ComposeSpec, Compo
 
 type AnyManifest = FamilyManifest | LayerManifest | PartnerManifest
 
+const HTML_LIKE_EXTS = new Set(['.tsx', '.jsx', '.html'])
+
+function escapeHtmlChars(value: string): string {
+  return value.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
 async function renderFile(sourcePath: string, targetPath: string, variables: Record<string, unknown>): Promise<void> {
   const raw = await fs.readFile(sourcePath, 'utf8')
+  const ext = path.extname(targetPath).toLowerCase()
+  const needsEscape = HTML_LIKE_EXTS.has(ext)
   const rendered = raw.replace(/\{\{(\w+)\}\}/g, (_match, key: string) => {
     if (key in variables) {
-      return String(variables[key])
+      const val = String(variables[key])
+      return needsEscape ? escapeHtmlChars(val) : val
     }
     return ''
   })

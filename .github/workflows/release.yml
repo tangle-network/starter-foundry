@@ -1,0 +1,91 @@
+name: Release
+
+# Publishes @tangle-network/starter-foundry to npm on git tag push.
+#
+# WHY: starter-foundry stopped being published at 0.4.0 because we
+# were iterating fast and didn't want to flood the registry with
+# version bumps for every prompt tweak. blueprint-agent vendored each
+# version as a tarball under apps/web/vendor/. That's brittle (the
+# vendored tarball gets stale, the BP package.json + .dev.vars need
+# manual sync, every consumer needs to re-vendor) and the user has
+# now asked for it to be published normally.
+#
+# This workflow fires on `git tag v*` push (e.g. `v0.5.0`). It builds
+# the package, runs `npm publish --provenance` for build attestation,
+# and creates a Github release with the changelog.
+#
+# Required secret: NPM_TOKEN  (create on npmjs.org, add via repo Settings → Secrets)
+#
+# To cut a release manually:
+#   1. Bump version in package.json
+#   2. git commit -am "chore: release v0.5.0"
+#   3. git tag v0.5.0
+#   4. git push origin main --tags
+# The workflow handles the rest.
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Version tag to publish (e.g. v0.5.0)'
+        required: true
+
+permissions:
+  contents: write   # for creating the github release
+  id-token: write   # for npm provenance attestation
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - name: Install
+        run: npm install
+
+      - name: Verify version matches tag
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG_VERSION="${{ github.event.inputs.tag }}"
+            TAG_VERSION="${TAG_VERSION#v}"
+          fi
+          echo "package.json version: $PKG_VERSION"
+          echo "tag version:          $TAG_VERSION"
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::package.json version ($PKG_VERSION) does not match tag ($TAG_VERSION)"
+            exit 1
+          fi
+
+      - name: Build
+        run: npm run build
+
+      - name: Pack (verify the tarball is sane before publishing)
+        run: |
+          npm pack
+          ls -la *.tgz
+
+      - name: Publish to npm
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create Github release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
+          files: '*.tgz'

@@ -61,6 +61,7 @@ on:
 permissions:
   contents: write   # for creating the github release
   id-token: write   # for npm provenance attestation
+  packages: write   # for publishing to GitHub Packages
 
 jobs:
   publish:
@@ -124,7 +125,18 @@ jobs:
         # Then add `--provenance` back to the command below. The
         # `id-token: write` permission and OIDC trusted publisher
         # entry already in place support both modes.
-        run: npm publish --access public
+        #
+        # Idempotent on retry: if the version already exists on the
+        # registry (the gh-packages publish failed mid-workflow on a
+        # prior tag, say), skip the publish instead of 409'ing the
+        # whole job. The follow-up gh-packages step still runs.
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if npm view "@tangle-network/starter-foundry@$PKG_VERSION" version --registry=https://registry.npmjs.org/ >/dev/null 2>&1; then
+            echo "@tangle-network/starter-foundry@$PKG_VERSION already on npmjs.org — skipping"
+          else
+            npm publish --access public --registry=https://registry.npmjs.org/
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -145,7 +157,16 @@ jobs:
           scope: '@tangle-network'
 
       - name: Publish to GitHub Packages
-        run: npm publish --access public
+        # Idempotent on retry: skip if the version is already on gh
+        # packages (e.g. a partial earlier run that succeeded here but
+        # failed elsewhere).
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if npm view "@tangle-network/starter-foundry@$PKG_VERSION" version --registry=https://npm.pkg.github.com/ >/dev/null 2>&1; then
+            echo "@tangle-network/starter-foundry@$PKG_VERSION already on gh packages — skipping"
+          else
+            npm publish --access public --registry=https://npm.pkg.github.com/
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

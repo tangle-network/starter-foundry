@@ -124,6 +124,8 @@
       "path": "/"
     },
     "extensionPoints": [
+      "personalize.json",
+      "personalize.css",
       "database-config.json",
       "auth-config.json",
       "payments-config.json",

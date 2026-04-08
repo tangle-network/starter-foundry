@@ -3,15 +3,16 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{headline}}</title>
+    <title>{{brand.name}} — {{hero.headline}}</title>
+    <link rel="stylesheet" href="/personalize.css">
     <link rel="stylesheet" href="/styles.css">
   </head>
   <body>
     <main class="shell">
       <section class="hero">
-        <p class="eyebrow">{{projectName}}</p>
-        <h1>{{headline}}</h1>
-        <p class="subheadline">{{subheadline}}</p>
+        <p class="eyebrow">{{hero.eyebrow}}</p>
+        <h1>{{hero.headline}}</h1>
+        <p class="subheadline">{{hero.subheadline}}</p>
       </section>
       <section class="api-panel">
         <h2>Live API Probe</h2>

@@ -1,0 +1,22 @@
+{
+  "_meta": {
+    "doc": "Edit this file to customize all branding and hero copy on the served page. The dev server reads this file fresh on every request to /, substitutes the values into web/index.html, and returns the rendered HTML. No restart needed — your edits are visible on the next browser refresh. Agents personalizing the scaffold should rewrite this file based on the user's actual product.",
+    "version": 1
+  },
+  "brand": {
+    "name": "Starter Foundry",
+    "tagline": "A fullstack starter you can personalize."
+  },
+  "hero": {
+    "eyebrow": "scaffold",
+    "headline": "Starter Foundry Fullstack App",
+    "subheadline": "A live web shell plus a typed API seam for the agent to extend."
+  },
+  "theme": {
+    "_doc": "Optional accent color for the page. Read by personalize.css via CSS custom properties. Use HSL space-separated values for compatibility with hsl() consumers.",
+    "primary": "210 90% 56%",
+    "primaryForeground": "0 0% 100%",
+    "background": "0 0% 100%",
+    "foreground": "222 47% 11%"
+  }
+}

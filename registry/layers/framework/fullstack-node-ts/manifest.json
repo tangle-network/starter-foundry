@@ -31,6 +31,14 @@
     {
       "source": "files/styles.css",
       "target": "web/styles.css"
+    },
+    {
+      "source": "files/personalize.json",
+      "target": "personalize.json"
+    },
+    {
+      "source": "files/personalize.css",
+      "target": "personalize.css"
     }
   ]
 }

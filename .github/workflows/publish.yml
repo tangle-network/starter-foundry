@@ -1,0 +1,131 @@
+name: Release
+
+# Publishes @tangle-network/starter-foundry to npm on git tag push.
+#
+# WHY: starter-foundry stopped being published at 0.4.0 because we
+# were iterating fast and didn't want to flood the registry with
+# version bumps for every prompt tweak. blueprint-agent vendored each
+# version as a tarball under apps/web/vendor/. That's brittle (the
+# vendored tarball gets stale, the BP package.json + .dev.vars need
+# manual sync, every consumer needs to re-vendor) and the user has
+# now asked for it to be published normally.
+#
+# This workflow fires on `git tag v*` push (e.g. `v0.5.0`). It builds
+# the package, runs `npm publish --provenance --access public`, and
+# creates a Github release with the changelog.
+#
+# AUTHENTICATION (two paths, in priority order)
+#
+#   1. OIDC trusted publishing (preferred)
+#      Configured on npmjs.org under the package's "Access" tab →
+#      "Trusted publishers" → "Add trusted publisher". Choose
+#      "GitHub Actions" and set:
+#        - Organization or user:  tangle-network
+#        - Repository:            starter-foundry
+#        - Workflow filename:     publish.yml
+#        - Environment name:      (leave blank)
+#      The npm CLI then exchanges the GitHub OIDC ID token for a
+#      short-lived publish token automatically. No long-lived secret,
+#      no rotation, no compromise blast radius. This is the only
+#      mode you should ship to production.
+#
+#      Setup steps documented in PUBLISHING.md.
+#
+#   2. NPM_TOKEN (legacy fallback)
+#      A long-lived granular access token in repo Settings →
+#      Secrets → Actions → NPM_TOKEN. Used only if OIDC trusted
+#      publishing isn't configured yet (e.g. the very first publish
+#      from CI before the trusted publisher entry is added).
+#      Rotate or remove once OIDC is live.
+#
+# Both paths require `id-token: write` and `contents: write` permissions
+# on the job, set below.
+#
+# To cut a release:
+#   1. Bump version in package.json
+#   2. git commit -am "chore: release v0.5.0"
+#   3. git tag v0.5.0
+#   4. git push origin main --tags
+# The workflow handles the rest.
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Version tag to publish (e.g. v0.5.0)'
+        required: true
+
+permissions:
+  contents: write   # for creating the github release
+  id-token: write   # for npm provenance attestation
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - name: Install
+        run: npm install
+
+      - name: Verify version matches tag
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG_VERSION="${{ github.event.inputs.tag }}"
+            TAG_VERSION="${TAG_VERSION#v}"
+          fi
+          echo "package.json version: $PKG_VERSION"
+          echo "tag version:          $TAG_VERSION"
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::package.json version ($PKG_VERSION) does not match tag ($TAG_VERSION)"
+            exit 1
+          fi
+
+      - name: Build
+        run: npm run build
+
+      - name: Pack (verify the tarball is sane before publishing)
+        run: |
+          npm pack
+          ls -la *.tgz
+
+      - name: Publish to npm
+        # OIDC-first authentication. When trusted publishing is
+        # configured for this package on npmjs.org, the npm CLI
+        # exchanges the GitHub Actions OIDC token for a short-lived
+        # publish token automatically — no NODE_AUTH_TOKEN needed.
+        # NODE_AUTH_TOKEN is set ONLY as a fallback for the case
+        # where the trusted publisher entry hasn't been created yet
+        # (e.g. the very first publish from CI). Once OIDC is live
+        # in production, the secret can be removed and this env
+        # block deleted entirely.
+        #
+        # The `--provenance` flag attaches a sigstore attestation to
+        # the published tarball — npm will reject it if `id-token:
+        # write` permission isn't granted on the job, which catches
+        # workflow misconfiguration loudly instead of silently
+        # falling back to unattested publishes.
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create Github release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
+          files: '*.tgz'

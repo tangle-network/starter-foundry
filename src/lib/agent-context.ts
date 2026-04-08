@@ -35,6 +35,28 @@ export const PERSONALIZATION_INSTRUCTION =
   `${PERSONALIZATION_JSON_INSTRUCTION} ${PERSONALIZATION_CSS_INSTRUCTION}`
 
 /**
+ * Tells the agent to start the dev server via the runtime's
+ * `ensure_dev_server` route as STEP 0 — before reading anything else, before
+ * making any edits, before polishing. The runtime exposes an idempotent
+ * route that auto-installs and starts the dev server in one call; the
+ * agent's only job is to fire the route immediately.
+ *
+ * This instruction has to land in the context message itself (not just in
+ * AGENTS.md) and has to be FRONT-LOADED (first instruction, not buried)
+ * because:
+ *   1. The agent's default tool-use prompt tells it to run package-manager
+ *      commands directly, which races the runtime and skips the typed error
+ *      path. The framing has to be loud enough to override that default.
+ *   2. Reasoning models (e.g. zai/glm-5.1) tend to over-deliberate. If the
+ *      instruction is buried, they polish files for many turns before
+ *      starting the server, and the user sees nothing.
+ *   3. Without runtime tracking the user's preview pane never wires up,
+ *      regardless of whether the dev server is technically running.
+ */
+export const ENSURE_DEV_SERVER_INSTRUCTION =
+  'STEP 0 (do this BEFORE anything else, BEFORE reading other files, BEFORE editing): start the dev server. Run this exact command in `bash` immediately: `curl -fsS -X POST "http://localhost:${SIDECAR_PORT:-9000}/process/ensure-dev-server" -H "Content-Type: application/json" -H "Authorization: Bearer ${SIDECAR_AUTH_TOKEN}" -d \'{}\'`. It is idempotent (safe to call multiple times — returns the same pid), auto-installs dependencies on first call, and surfaces typed error codes (`WORKSPACE_NOT_FOUND`, `NO_RUNNABLE_PROJECT`, `INSTALL_FAILED`, `DEV_COMMAND_NOT_FOUND`, `DEV_PROCESS_EXITED`, `PORT_BIND_FAILED`) you can react to. The `SIDECAR_PORT` and `SIDECAR_AUTH_TOKEN` environment variables are pre-set in your bash environment — you do NOT need to look them up or set them. CRITICAL: Do NOT run `pnpm install`, `pnpm dev`, `npm install`, `npm run dev`, `next dev`, `vite`, `cargo run`, or any other dev/install command via `bash` directly — those bypass the runtime tracking and the user\'s preview pane will not wire up. After Step 0 returns success, then you can read files and start editing. Subsequent edits hot-reload via HMR; do NOT call this again to restart unless the response says you should.'
+
+/**
  * Returns a canonical agent-context message for a freshly composed scaffold.
  * Consumers (blueprint-agent etc.) inject this into the agent's first system
  * message so the agent reads AGENTS.md, applies personalization, then extends.
@@ -45,7 +67,11 @@ export function getComposedScaffoldContext(result: ComposeResult): string {
   const family = result.components.family
   return [
     `A working project scaffold has been composed in /home/agent by starter-foundry (family: ${family}).`,
-    'Read /home/agent/AGENTS.md first — it contains the architecture notes, build commands, suggested pages and components, design rules, and personalization instructions.',
+    // Step 0: dev server. Front-loaded BEFORE any other instruction so the
+    // agent's first action is "make the user see a preview ASAP", not
+    // "polish files for 5 minutes then forget to start the server".
+    ENSURE_DEV_SERVER_INSTRUCTION,
+    'After Step 0, read /home/agent/AGENTS.md — it contains the architecture notes, suggested pages and components, design rules, and personalization instructions.',
     PERSONALIZATION_INSTRUCTION,
     'If shadcn/ui components are present in src/components/ui/, use them instead of raw HTML.',
     'Make targeted edits to extend the scaffold for the user request — do NOT recreate files that already exist.',
@@ -62,7 +88,10 @@ export function getComposedScaffoldContext(result: ComposeResult): string {
 export function getCuratedScaffoldContext(): string {
   return [
     'A working project scaffold is set up in /home/agent.',
-    'Read /home/agent/AGENTS.md first if present — it contains the build plan and personalization instructions.',
+    // Step 0: dev server. Front-loaded BEFORE any other instruction so the
+    // agent's first action is "make the user see a preview ASAP".
+    ENSURE_DEV_SERVER_INSTRUCTION,
+    'After Step 0, read /home/agent/AGENTS.md if present — it contains the build plan and personalization instructions.',
     PERSONALIZATION_INSTRUCTION,
     'Make the minimum set of file edits needed to satisfy the user request.',
     'Do not spend time on broad repo exploration.',

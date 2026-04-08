@@ -11,12 +11,37 @@ name: Release
 # now asked for it to be published normally.
 #
 # This workflow fires on `git tag v*` push (e.g. `v0.5.0`). It builds
-# the package, runs `npm publish --provenance` for build attestation,
-# and creates a Github release with the changelog.
+# the package, runs `npm publish --provenance --access public`, and
+# creates a Github release with the changelog.
 #
-# Required secret: NPM_TOKEN  (create on npmjs.org, add via repo Settings → Secrets)
+# AUTHENTICATION (two paths, in priority order)
 #
-# To cut a release manually:
+#   1. OIDC trusted publishing (preferred)
+#      Configured on npmjs.org under the package's "Access" tab →
+#      "Trusted publishers" → "Add trusted publisher". Choose
+#      "GitHub Actions" and set:
+#        - Organization or user:  tangle-network
+#        - Repository:            starter-foundry
+#        - Workflow filename:     publish.yml
+#        - Environment name:      (leave blank)
+#      The npm CLI then exchanges the GitHub OIDC ID token for a
+#      short-lived publish token automatically. No long-lived secret,
+#      no rotation, no compromise blast radius. This is the only
+#      mode you should ship to production.
+#
+#      Setup steps documented in PUBLISHING.md.
+#
+#   2. NPM_TOKEN (legacy fallback)
+#      A long-lived granular access token in repo Settings →
+#      Secrets → Actions → NPM_TOKEN. Used only if OIDC trusted
+#      publishing isn't configured yet (e.g. the very first publish
+#      from CI before the trusted publisher entry is added).
+#      Rotate or remove once OIDC is live.
+#
+# Both paths require `id-token: write` and `contents: write` permissions
+# on the job, set below.
+#
+# To cut a release:
 #   1. Bump version in package.json
 #   2. git commit -am "chore: release v0.5.0"
 #   3. git tag v0.5.0
@@ -79,6 +104,21 @@ jobs:
           ls -la *.tgz
 
       - name: Publish to npm
+        # OIDC-first authentication. When trusted publishing is
+        # configured for this package on npmjs.org, the npm CLI
+        # exchanges the GitHub Actions OIDC token for a short-lived
+        # publish token automatically — no NODE_AUTH_TOKEN needed.
+        # NODE_AUTH_TOKEN is set ONLY as a fallback for the case
+        # where the trusted publisher entry hasn't been created yet
+        # (e.g. the very first publish from CI). Once OIDC is live
+        # in production, the secret can be removed and this env
+        # block deleted entirely.
+        #
+        # The `--provenance` flag attaches a sigstore attestation to
+        # the published tarball — npm will reject it if `id-token:
+        # write` permission isn't granted on the job, which catches
+        # workflow misconfiguration loudly instead of silently
+        # falling back to unattested publishes.
         run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

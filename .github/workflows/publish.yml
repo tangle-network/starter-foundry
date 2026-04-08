@@ -103,7 +103,7 @@ jobs:
           npm pack
           ls -la *.tgz
 
-      - name: Publish to npm
+      - name: Publish to npmjs.org
         # OIDC-first authentication. When trusted publishing is
         # configured for this package on npmjs.org, the npm CLI
         # exchanges the GitHub Actions OIDC token for a short-lived
@@ -127,6 +127,27 @@ jobs:
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Also publish to GitHub Packages so consumers whose .npmrc routes
+      # the @tangle-network scope to npm.pkg.github.com (e.g.
+      # blueprint-agent, which already has 8 other @tangle-network/*
+      # packages on gh packages) can fetch this package without
+      # rerouting their entire scope. The package metadata is identical;
+      # only the registry URL differs.
+      #
+      # GH Packages auth uses the workflow's GITHUB_TOKEN automatically
+      # via the registry-url override below; no extra secret needed.
+      - name: Configure Node for GitHub Packages
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://npm.pkg.github.com
+          scope: '@tangle-network'
+
+      - name: Publish to GitHub Packages
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Github release
         uses: softprops/action-gh-release@v2

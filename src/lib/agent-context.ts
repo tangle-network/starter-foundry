@@ -22,10 +22,18 @@ export const PERSONALIZATION_CSS_INSTRUCTION =
  * Tells an agent how to use the personalize.json mechanism — single source of
  * truth for brand, hero copy, feature names/descriptions, pricing tiers, and
  * footer content. Inject into agent system prompts when the scaffold contains
- * layout layers that ship a personalize.json (currently layout-landing).
+ * layout layers that ship a personalize.json (layout-landing) OR a framework
+ * layer that ships one (fullstack-node-ts as of 0.4.6).
+ *
+ * The instruction is intentionally MANDATORY — "REQUIRED FIRST EDIT", not
+ * "if it exists, rewrite it" — because this is the single highest-leverage
+ * edit the agent can make. Without it the served preview is the scaffold
+ * default and the user sees nothing of their request. Path is intentionally
+ * vague ("personalize.json in the workspace") to cover both `personalize.json`
+ * at the workspace root (fullstack-ts) and `src/personalize.json` (vite-react).
  */
 export const PERSONALIZATION_JSON_INSTRUCTION =
-  'If src/personalize.json exists, rewrite it before adding features. It is the single source of truth for brand name, hero copy, feature names and descriptions, pricing tiers, and footer content — every user-visible string on the landing page reads from this file. Replace the placeholder content (Acme, "Build something people want", "Lightning fast", etc.) with copy specific to the user\'s product. Keep the schema shape unchanged.'
+  'REQUIRED FIRST EDIT after Step 0: locate and rewrite personalize.json (in the workspace root or under src/, depending on family). It is the SINGLE SOURCE OF TRUTH for brand name, brand tagline, hero eyebrow, hero headline, hero subheadline, and (where present) feature names, pricing tiers, and footer content. The dev server templates the served HTML from this file at request time, so editing it makes the user\'s preview update on the next browser refresh — no restart, no build step. Replace the placeholder content ("Starter Foundry", "Acme", "Build something people want", "Lightning fast", etc.) with copy specific to the user\'s actual product. Keep the schema shape unchanged. This is the single highest-leverage edit you can make in turn 1; do it before writing any new files or features.'
 
 /**
  * Combined personalization instruction. Use this when injecting scaffold

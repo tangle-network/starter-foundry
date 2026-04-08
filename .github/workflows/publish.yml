@@ -109,17 +109,22 @@ jobs:
         # exchanges the GitHub Actions OIDC token for a short-lived
         # publish token automatically — no NODE_AUTH_TOKEN needed.
         # NODE_AUTH_TOKEN is set ONLY as a fallback for the case
-        # where the trusted publisher entry hasn't been created yet
-        # (e.g. the very first publish from CI). Once OIDC is live
-        # in production, the secret can be removed and this env
-        # block deleted entirely.
+        # where the trusted publisher entry hasn't been created yet.
+        # Once OIDC is live in production the secret can be removed
+        # and this env block deleted entirely.
         #
-        # The `--provenance` flag attaches a sigstore attestation to
-        # the published tarball — npm will reject it if `id-token:
-        # write` permission isn't granted on the job, which catches
-        # workflow misconfiguration loudly instead of silently
-        # falling back to unattested publishes.
-        run: npm publish --provenance --access public
+        # NOTE: --provenance is intentionally OMITTED.
+        # npm sigstore provenance attestation requires the source
+        # repository to be PUBLIC (npm error 422: "Unsupported
+        # GitHub Actions source repository visibility: private").
+        # tangle-network/starter-foundry is private, so we publish
+        # without provenance for now. To re-enable:
+        #   1. Make the repo public, OR
+        #   2. Wait for npm to support private-repo provenance
+        # Then add `--provenance` back to the command below. The
+        # `id-token: write` permission and OIDC trusted publisher
+        # entry already in place support both modes.
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 

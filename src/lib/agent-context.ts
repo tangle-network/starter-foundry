@@ -64,6 +64,39 @@ export const PERSONALIZATION_INSTRUCTION =
 export const ENSURE_DEV_SERVER_INSTRUCTION =
   'STEP 0 (do this BEFORE anything else, BEFORE reading other files, BEFORE editing): start the dev server. Run this exact command in `bash` immediately: `curl -fsS -X POST "http://localhost:${SIDECAR_PORT:-9000}/process/ensure-dev-server" -H "Content-Type: application/json" -H "Authorization: Bearer ${SIDECAR_AUTH_TOKEN}" -d \'{}\'`. It is idempotent (safe to call multiple times — returns the same pid), auto-installs dependencies on first call, and surfaces typed error codes (`WORKSPACE_NOT_FOUND`, `NO_RUNNABLE_PROJECT`, `INSTALL_FAILED`, `DEV_COMMAND_NOT_FOUND`, `DEV_PROCESS_EXITED`, `PORT_BIND_FAILED`) you can react to. The `SIDECAR_PORT` and `SIDECAR_AUTH_TOKEN` environment variables are pre-set in your bash environment — you do NOT need to look them up or set them. CRITICAL: Do NOT run `pnpm install`, `pnpm dev`, `npm install`, `npm run dev`, `next dev`, `vite`, `cargo run`, or any other dev/install command via `bash` directly — those bypass the runtime tracking and the user\'s preview pane will not wire up. After Step 0 returns success, then you can read files and start editing. Subsequent edits hot-reload via HMR; do NOT call this again to restart unless the response says you should.'
 
+// ── Structured context builders ──────────────────────────────────────────
+//
+// These replace the old .join(' ') wall-of-text format with numbered steps.
+// LLMs follow numbered instructions more reliably than prose paragraphs,
+// and the structured format cuts ~40% of tokens by removing redundancy
+// between the context message and AGENTS.md.
+
+const DEV_SERVER_STEP =
+  '1. **Start the dev server** (do this FIRST, before reading files or editing):\n' +
+  '   ```bash\n' +
+  '   curl -fsS -X POST "http://localhost:${SIDECAR_PORT:-9000}/process/ensure-dev-server" \\\n' +
+  '     -H "Content-Type: application/json" \\\n' +
+  '     -H "Authorization: Bearer ${SIDECAR_AUTH_TOKEN}" -d \'{}\'\n' +
+  '   ```\n' +
+  '   Env vars are pre-set. Do NOT run pnpm/npm install or dev commands directly — they bypass runtime tracking.'
+
+const PERSONALIZE_STEP =
+  '2. **Personalize for the user\'s product:**\n' +
+  '   - Rewrite `personalize.json` (workspace root or `src/`) — brand name, tagline, hero copy, features. This is the single highest-leverage edit.\n' +
+  '   - Rewrite `personalize.css` (`src/` or `app/`) — HSL color palette on `:root` and `.dark` that fits the product.'
+
+const BUILD_STEP_COMPOSED = (family: string) =>
+  `3. **Read AGENTS.md**, then implement the user's request.\n` +
+  `   The scaffold is a ${family} project. Edit existing files — don't recreate them.\n` +
+  '   Use shadcn/ui components from `src/components/ui/` instead of raw HTML.'
+
+const BUILD_STEP_CURATED =
+  '3. **Read AGENTS.md** if present, then implement the user\'s request.\n' +
+  '   Edit existing files — don\'t recreate them. Use shadcn/ui components if available.'
+
+const VERIFY_STEP =
+  '4. **Screenshot the preview.** Fix anything broken or unstyled before responding.'
+
 /**
  * Returns a canonical agent-context message for a freshly composed scaffold.
  * Consumers (blueprint-agent etc.) inject this into the agent's first system
@@ -74,17 +107,12 @@ export const ENSURE_DEV_SERVER_INSTRUCTION =
 export function getComposedScaffoldContext(result: ComposeResult): string {
   const family = result.components.family
   return [
-    `A working project scaffold has been composed in /home/agent by starter-foundry (family: ${family}).`,
-    // Step 0: dev server. Front-loaded BEFORE any other instruction so the
-    // agent's first action is "make the user see a preview ASAP", not
-    // "polish files for 5 minutes then forget to start the server".
-    ENSURE_DEV_SERVER_INSTRUCTION,
-    'After Step 0, read /home/agent/AGENTS.md — it contains the architecture notes, suggested pages and components, design rules, and personalization instructions.',
-    PERSONALIZATION_INSTRUCTION,
-    'If shadcn/ui components are present in src/components/ui/, use them instead of raw HTML.',
-    'Make targeted edits to extend the scaffold for the user request — do NOT recreate files that already exist.',
-    'After writing UI code, screenshot the preview to verify it renders correctly.',
-  ].join(' ')
+    `A working ${family} scaffold has been composed in /home/agent.\n`,
+    DEV_SERVER_STEP,
+    PERSONALIZE_STEP,
+    BUILD_STEP_COMPOSED(family),
+    VERIFY_STEP,
+  ].join('\n\n')
 }
 
 /**
@@ -95,15 +123,10 @@ export function getComposedScaffoldContext(result: ComposeResult): string {
  */
 export function getCuratedScaffoldContext(): string {
   return [
-    'A working project scaffold is set up in /home/agent.',
-    // Step 0: dev server. Front-loaded BEFORE any other instruction so the
-    // agent's first action is "make the user see a preview ASAP".
-    ENSURE_DEV_SERVER_INSTRUCTION,
-    'After Step 0, read /home/agent/AGENTS.md if present — it contains the build plan and personalization instructions.',
-    PERSONALIZATION_INSTRUCTION,
-    'Make the minimum set of file edits needed to satisfy the user request.',
-    'Do not spend time on broad repo exploration.',
-    'If shadcn/ui components are available (src/components/ui/), use them instead of raw HTML.',
-    'After writing UI code, screenshot the preview to verify it renders correctly. Fix any unstyled elements before responding.',
-  ].join(' ')
+    'A working project scaffold is set up in /home/agent.\n',
+    DEV_SERVER_STEP,
+    PERSONALIZE_STEP,
+    BUILD_STEP_CURATED,
+    VERIFY_STEP,
+  ].join('\n\n')
 }

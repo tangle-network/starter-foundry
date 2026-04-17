@@ -1,0 +1,38 @@
+{
+  "name": "merged_abc_v1",
+  "generation": 1,
+  "lineage": ["fast_keywords", "archetype_caps", "inverted_index_selection"],
+  "targets": ["src/lib/keywords.ts", "src/lib/selection.ts", "src/lib/prompt-planner.ts"],
+  "hypothesis": "A (fast_keywords), B (archetype_caps), C (inverted_index_selection) touch disjoint files and the capability-inference cost of B is offset by A+C's speedup. Compose all three.",
+  "mechanism": {
+    "A": "precompiled keyword cache (per-keyword regex/isPhrase) + LRU lowercase cache in keywords.ts",
+    "B": "archetype classifier + data-viz signal detector inferImplicitCapabilities stage in prompt-planner.ts (web families only)",
+    "C": "inverted-index family scorer with token-Set + 2-char-prefix prefilter in selection.ts"
+  },
+  "scores": {
+    "accuracy": 0.9945,
+    "latencyP50Ms": 0.201,
+    "latencyP95Ms": 0.477,
+    "latencyP99Ms": 1.161,
+    "meanMs": 0.243,
+    "capabilityHitMean": 0.909,
+    "accuracyByCorpus": {"held-out": 1.000, "ideasai": 0.967, "vibecoder": 1.000},
+    "capabilityHitByCorpus": {"held-out": 1.000, "ideasai": 0.452, "vibecoder": 1.000}
+  },
+  "deltaVsBaseline": {
+    "accuracy": 0,
+    "latencyP50Ms": -0.308,
+    "latencyP95Ms": -0.425,
+    "latencyP99Ms": -0.442,
+    "meanMs": -0.303,
+    "capabilityHitMean": 0.126,
+    "ideasaiCapHit": 0.271
+  },
+  "stabilityRuns": 5,
+  "p95Range": [0.438, 0.513],
+  "tests": {"total": 351, "pass": 347, "fail": 4, "preExisting": true},
+  "runFile": ".evolve/meta-harness/runs/merged-final-1.jsonl",
+  "appliedToMain": true,
+  "commitPending": true,
+  "note": "First-generation meta-harness winner. Every variant compiled, tested, and eval'd independently; final composition measured 5× for stability."
+}

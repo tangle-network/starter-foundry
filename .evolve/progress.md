@@ -38,3 +38,47 @@ None on current targets. Next cycle could focus on:
 - Full proof suite on expanded corpus (60 scenarios with compose+validate, not just routing)
 - Performance regression tests (compose latency tracking over time)
 - Real user prompt telemetry when platform launches
+
+## Round 11 — meta-harness bootstrap (2026-04-16)
+
+Shifted to mode=meta-harness. Re-measured baseline across 363 scenarios (held-out + ideasai + vibecoder):
+
+| Dimension | Baseline |
+|---|---|
+| Family accuracy (overall) | 0.9945 (361/363) |
+| Latency p50 / p95 / p99 | 0.506 / 0.855 / 1.632 ms |
+| Capability hit mean (overall) | 0.7827 |
+| Capability hit — ideasai | **0.181** (15 zero-hit, 45 partial, 0 full) |
+
+**Real headroom is capability detection on ideasai.** The planner almost never attaches UI
+capability layers (layout-dashboard, ai-chat-ui, chart-widget) when the prompt implies them
+("dashboard", "analyze", "track"). Family routing is essentially perfect; the two nominal
+ideasai "failures" are corpus inconsistencies (expectedKind=starter + expectedFamily=workspace).
+
+**Secondary headroom: latency outliers.** p99=1.6ms with a 5.6ms max — worth investigating what
+prompt triggers the long tail.
+
+## Round 11 — meta-harness Generation 1 shipped (2026-04-16)
+
+Ran three parallel proposers in isolated worktrees; composed all three into main.
+
+| Metric | Baseline | Merged A+B+C | Δ |
+|---|---|---|---|
+| Family accuracy (363 scenarios) | 0.9945 | 0.9945 | 0 |
+| Held-out accuracy | 1.000 | 1.000 | 0 |
+| Vibecoder accuracy | 1.000 | 1.000 | 0 |
+| Latency p50 | 0.509 ms | 0.201 ms | **-61%** |
+| Latency p95 | 0.902 ms | 0.477 ms | **-47%** |
+| Latency p99 | 1.603 ms | 1.161 ms | -28% |
+| Capability hit mean (overall) | 0.783 | 0.909 | +16 pp |
+| Capability hit — ideasai | **0.181** | **0.452** | **+27 pp** |
+| Tests | 347/351 | 347/351 | 0 (same pre-existing 4 failures) |
+
+**Variants composed (orthogonal files):**
+1. `fast_keywords` (`src/lib/keywords.ts`) — precompiled keyword cache + LRU lowercase cache kills per-call regex compilation. -27% p95 standalone.
+2. `inverted_index_selection` (`src/lib/selection.ts`) — inverted index keyed on keyword + 2-char-prefix prefilter; bit-exact score parity with legacy scorer (14520 comparisons verified). -31% p95 standalone.
+3. `archetype_caps` (`src/lib/prompt-planner.ts`) — new `inferImplicitCapabilities` stage maps product archetypes (chat / video / AI-SaaS) to capability bundles when the family is web-producing. Lifts ideasai capability hit 0.181 → 0.452 without regressing family routing on any corpus.
+
+Variants + per-scenario eval lines at `.evolve/meta-harness/variants/` and `.evolve/meta-harness/runs/`. Frontier in `.evolve/meta-harness/frontier.json`, evolution log in `.evolve/meta-harness/evolution.jsonl`.
+
+**Deferred to Generation 2:** capability hit on non-web families (api-service, agent-service-*) is still low because expected UI capabilities would violate `appliesTo` and throw at compose time. Would require either loosening `appliesTo` or emitting the capabilities into workspace lanes' web projects.

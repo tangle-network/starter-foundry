@@ -1,10 +1,31 @@
 {
-  "mode": "pursue",
-  "goal": "real tangle templates + crate publishing",
-  "status": "partial",
-  "round": 10,
-  "generation": 10,
-  "activePursuit": ".evolve/pursuits/2026-04-02-tangle-real-templates.md",
-  "updatedAt": "2026-04-03T00:00:00Z",
-  "blocked": "crate publishing — CARGO_REGISTRY_TOKEN needs owner access (shekohex or Tjemmmic)"
+  "mode": "meta-harness",
+  "goal": "faster + better planner (accuracy, capability hit, latency)",
+  "status": "converged-generation-1",
+  "round": 11,
+  "generation": 11,
+  "activePursuit": ".evolve/meta-harness/config.json",
+  "updatedAt": "2026-04-16T00:00:00Z",
+  "baseline": {
+    "accuracy": 0.9945,
+    "latencyP95Ms": 0.902,
+    "capabilityHitMean": 0.7827,
+    "ideasaiCapHit": 0.181
+  },
+  "current": {
+    "variant": "merged_abc_v1",
+    "accuracy": 0.9945,
+    "latencyP50Ms": 0.201,
+    "latencyP95Ms": 0.477,
+    "latencyP99Ms": 1.161,
+    "capabilityHitMean": 0.909,
+    "ideasaiCapHit": 0.452,
+    "deltaLatencyP95": -0.425,
+    "deltaIdeasaiCapHit": 0.271
+  },
+  "priorMode": {
+    "mode": "pursue",
+    "goal": "real tangle templates + crate publishing",
+    "blocked": "crate publishing — CARGO_REGISTRY_TOKEN needs owner access (shekohex or Tjemmmic)"
+  }
 }

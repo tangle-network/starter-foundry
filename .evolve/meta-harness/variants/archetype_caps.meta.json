@@ -1,0 +1,60 @@
+{
+  "name": "archetype_caps",
+  "target": "src/lib/prompt-planner.ts",
+  "hypothesis": "Adding an archetype-based capability inference stage (SaaS UI trio vs chat vs video archetypes, derived from prompt shape) lifts ideasai capability hit from 0.181 to >=0.35 without regressing family routing on held-out or vibecoder.",
+  "mechanism": "New exported `inferImplicitCapabilities(text, family, existing)` stage runs AFTER `detectCapabilities` and after the tailwind+shadcn auto-attach, for web-producing families only (react-vite-ts, nextjs-ts, fullstack-ts, remix-ts). Decides archetype from three signal sets: (a) chat archetype (chatbot/assistant/tutor/companion/symptom checker + dialogue-shape phrases like 'I tell it', 'tells me'); (b) video archetype (video consultations, virtual coworking, livekit, low-latency audio) — video wins over chat when both fire; (c) AI-product archetype (AI <noun>, AI <verb>s, transcribes, summarizes, auto-generates). Attaches layout-chat+ai-chat-ui for chat archetype, webrtc for video archetype, layout-dashboard+ai-chat-ui for AI/SaaS products, chart-widget on STRONG data-viz signals (gantt, kpi, churn, sentiment analysis, price tracking, valuation, sustainability reports — avoids single words like 'chart'/'track'/'patterns' which over-fire on seating charts, music tracks, movement patterns). Also adds layout-admin for onboarding/approval/back-office shapes and layout-auth for client-portal shapes. Workspace web projects receive the same inference via buildWebProject. All detection is pure hasAny string matching — zero I/O, deterministic, offline, sub-millisecond p95.",
+  "scores": {
+    "accuracy": 0.9945,
+    "p50Ms": 0.544,
+    "p95Ms": 0.955,
+    "p99Ms": 1.709,
+    "meanMs": 0.588,
+    "capabilityHitMean": 0.9094,
+    "capabilityHitByCorpus": {
+      "held-out": 1.000,
+      "ideasai": 0.4521,
+      "vibecoder": 1.000
+    },
+    "accuracyByCorpus": {
+      "held-out": 1.000,
+      "ideasai": 0.967,
+      "vibecoder": 1.000
+    }
+  },
+  "baseline": {
+    "accuracy": 0.9945,
+    "p50Ms": 0.517,
+    "p95Ms": 0.879,
+    "meanMs": 0.561,
+    "capabilityHitMean": 0.8646,
+    "capabilityHitByCorpus": {
+      "held-out": 1.000,
+      "ideasai": 0.1811,
+      "vibecoder": 1.000
+    },
+    "accuracyByCorpus": {
+      "held-out": 1.000,
+      "ideasai": 0.967,
+      "vibecoder": 1.000
+    }
+  },
+  "deltaVsBaseline": {
+    "accuracy": 0.0,
+    "p95Ms": 0.076,
+    "capabilityHitMean": 0.0448,
+    "capabilityHitByCorpus": {
+      "held-out": 0.0,
+      "ideasai": 0.271,
+      "vibecoder": 0.0
+    },
+    "accuracyByCorpus": {
+      "held-out": 0.0,
+      "ideasai": 0.0,
+      "vibecoder": 0.0
+    }
+  },
+  "filesChanged": ["src/lib/prompt-planner.ts"],
+  "runFile": ".evolve/meta-harness/runs/proposer-b.jsonl",
+  "testsPass": true,
+  "testsNote": "351 tests; 347 pass, 4 fail. All 4 failures are pre-existing on baseline main (runPromptCorpus + runProofSuite trigger npm install of generated projects in the sandbox; validate-context-bench.react-vite + validate-context-bench.fullstack-ts hit the same). Confirmed identical failure set against clean baseline. No new failures introduced by the variant."
+}

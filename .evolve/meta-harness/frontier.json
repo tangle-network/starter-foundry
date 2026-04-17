@@ -1,0 +1,89 @@
+{
+  "updatedAt": "2026-04-16T00:00:00Z",
+  "dimensions": ["accuracy", "latencyP95Ms", "capabilityHitMean"],
+  "entries": [
+    {
+      "name": "baseline",
+      "scores": {
+        "accuracy": 0.9945,
+        "latencyP50Ms": 0.509,
+        "latencyP95Ms": 0.902,
+        "latencyP99Ms": 1.603,
+        "meanMs": 0.546,
+        "capabilityHitMean": 0.7827,
+        "capabilityHitByCorpus": {"held-out": 1.000, "ideasai": 0.181, "vibecoder": 1.000}
+      },
+      "run": ".evolve/meta-harness/runs/baseline.jsonl",
+      "note": "Starting point. Dominated on every dimension by merged_abc_v1.",
+      "dominated": true
+    },
+    {
+      "name": "fast_keywords",
+      "scores": {
+        "accuracy": 0.9945,
+        "latencyP50Ms": 0.351,
+        "latencyP95Ms": 0.650,
+        "latencyP99Ms": 1.548,
+        "meanMs": 0.391,
+        "capabilityHitMean": 0.7827
+      },
+      "file": ".evolve/meta-harness/variants/fast_keywords.ts",
+      "target": "src/lib/keywords.ts",
+      "mechanism": "precompiled keyword cache (Map keyword -> {lower, isPhrase, wordRegex}) + bounded LRU lowercase cache",
+      "run": ".evolve/meta-harness/runs/proposer-a.jsonl",
+      "note": "Proposer A. Dominated by merged_abc_v1 but merged into it.",
+      "dominated": true
+    },
+    {
+      "name": "inverted_index_selection",
+      "scores": {
+        "accuracy": 0.9945,
+        "latencyP50Ms": 0.276,
+        "latencyP95Ms": 0.590,
+        "latencyP99Ms": 1.328,
+        "meanMs": 0.315,
+        "maxMs": 3.807,
+        "capabilityHitMean": 0.7827
+      },
+      "file": ".evolve/meta-harness/variants/inverted_index_selection.ts",
+      "target": "src/lib/selection.ts",
+      "mechanism": "inverted-index scorer: single-word token Set lookup + 2-char-prefix prefilter for multi-word keywords; bit-exact parity with legacy scoreFamilyTiered (14520 comparisons)",
+      "run": ".evolve/meta-harness/runs/proposer-c.jsonl",
+      "note": "Proposer C. Dominated by merged_abc_v1 but merged into it.",
+      "dominated": true
+    },
+    {
+      "name": "archetype_caps",
+      "scores": {
+        "accuracy": 0.9945,
+        "latencyP95Ms": 0.955,
+        "capabilityHitMean": 0.9094,
+        "capabilityHitByCorpus": {"held-out": 1.000, "ideasai": 0.452, "vibecoder": 1.000}
+      },
+      "file": ".evolve/meta-harness/variants/archetype_caps.ts",
+      "target": "src/lib/prompt-planner.ts (added inferImplicitCapabilities stage)",
+      "mechanism": "archetype classifier (chat / video / ai-product) + data-viz signal detector; unions with detectCapabilities for web families only",
+      "run": ".evolve/meta-harness/runs/proposer-b.jsonl",
+      "note": "Proposer B. Latency cost accepted for +27pp ideasai capHit. Merged with A+C.",
+      "dominated": false
+    },
+    {
+      "name": "merged_abc_v1",
+      "scores": {
+        "accuracy": 0.9945,
+        "latencyP50Ms": 0.201,
+        "latencyP95Ms": 0.477,
+        "latencyP99Ms": 1.161,
+        "meanMs": 0.243,
+        "capabilityHitMean": 0.909,
+        "capabilityHitByCorpus": {"held-out": 1.000, "ideasai": 0.452, "vibecoder": 1.000},
+        "accuracyByCorpus": {"held-out": 1.000, "ideasai": 0.967, "vibecoder": 1.000}
+      },
+      "file": "src/lib/{keywords,selection,prompt-planner}.ts",
+      "mechanism": "A (fast_keywords) + B (archetype_caps) + C (inverted_index_selection) composed. A+C touch orthogonal hot-path code (keyword matcher + family scorer); B adds a capability inference stage. A+C speed wins offset B's inference cost, net -47% p95.",
+      "run": ".evolve/meta-harness/runs/merged-final-1.jsonl (confirmed across 5 runs)",
+      "note": "Generation 1 frontier point. Dominates baseline on every dimension. Tests: 347/351 (same 4 pre-existing failures as clean main).",
+      "dominated": false
+    }
+  ]
+}

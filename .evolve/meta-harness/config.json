@@ -1,0 +1,16 @@
+{
+  "harnessPath": "src/lib/prompt-planner.ts",
+  "auxHarness": ["src/lib/keywords.ts", "src/lib/selection.ts", "src/lib/semantic-router.ts"],
+  "buildCommand": "npm run build",
+  "evalCommand": "node scripts/meta-harness-eval.mjs --planner {planner} --out {out}",
+  "validateCommand": "npx tsc --noEmit",
+  "smokeCommand": "node scripts/meta-harness-eval.mjs --planner {planner} --out {out} --smoke",
+  "dimensions": ["accuracy", "latencyP95", "capabilityHitMean"],
+  "targets": {
+    "accuracy": {"op": ">=", "value": 0.9945, "description": "hold current baseline"},
+    "latencyP95": {"op": "<=", "value": 0.855, "description": "hold or improve p95 latency"},
+    "capabilityHitMean": {"op": ">", "value": 0.7827, "description": "current mean capHit across all scenarios; push higher"}
+  },
+  "discoveredAt": "2026-04-16T00:00:00Z",
+  "notes": "Hot path = planPrompt. Composite capability hit is computed weighted by scenarios with expected capabilities. Main headroom: ideasai capability detection (0.18)."
+}

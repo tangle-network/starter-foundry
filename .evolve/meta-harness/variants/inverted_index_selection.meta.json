@@ -1,0 +1,35 @@
+{
+  "name": "inverted_index_selection",
+  "target": "src/lib/selection.ts",
+  "hypothesis": "Iterating the PROMPT once instead of iterating every family's keyword list reduces per-prompt match work from ~909 matchesKeyword calls (40 families * tiered keywords) to ~(prompt-tokens + in-prompt 2-grams) index lookups. Scores remain bit-exact via a keyword->{family,weight} inverted index that aggregates tier contributions per (keyword, family).",
+  "mechanism": "Registry-load-time build of three structures cached in module scope: (1) singleWord: Map<token, [{family,weight}]> for keywords with no space/dot/slash/dash — matched via a Set of prompt tokens split by /[^a-z0-9_]+/ (mirrors \\w word-boundary semantics). (2) multiWord: Map<keyword, [{family,weight}]> for space/dot/slash/dash keywords — scored via substring .includes() prefiltered by a 2-gram prefix bucket (multiWordByPrefix: Map<2char-prefix, keywords[]>) so only keywords whose prefix appears as consecutive chars in the prompt are scanned; this is a sound necessary condition for .includes() match. (3) frameworkLayers: Map<family, layers[]> precomputed, replacing the inner-loop per-family framework layer scan. scoreFamilyTiered and its scoreAllFamilies call graph is replaced with a single pass; fuzzy + semantic fallbacks + smart default preserved unchanged.",
+  "scores": {
+    "accuracy": 0.9945,
+    "p50Ms": 0.276,
+    "p95Ms": 0.590,
+    "p99Ms": 1.328,
+    "meanMs": 0.315,
+    "maxMs": 3.807,
+    "perCorpus": {
+      "held-out": { "passRate": 1.000, "capHit": 1.000 },
+      "ideasai": { "passRate": 0.967, "capHit": 0.181 },
+      "vibecoder": { "passRate": 1.000, "capHit": 1.000 }
+    },
+    "note": "Medians across 10 full eval runs (363 scenarios each). accuracy + per-corpus figures identical to baseline frontier (0.9945)."
+  },
+  "deltaVsBaseline": {
+    "accuracy": 0.0,
+    "p50Ms": -0.230,
+    "p95Ms": -0.265,
+    "p99Ms": -0.304,
+    "meanMs": -0.231,
+    "maxMs": -1.804,
+    "p95PctImprovement": 0.310,
+    "meanPctImprovement": 0.423
+  },
+  "filesChanged": ["src/lib/selection.ts"],
+  "runFile": ".evolve/meta-harness/runs/proposer-c.jsonl",
+  "testsPass": true,
+  "testCount": { "total": 351, "pass": 347, "fail": 4, "note": "4 failing tests (react-vite validate, fullstack-ts validate, runPromptCorpus e2e, runProofSuite e2e) are pre-existing on main — unchanged by this variant; they fail identically against the baseline selection.ts in this same env." },
+  "bitExactScoreParity": "Verified with 14,520 (scenario x family) scoring comparisons against legacy scoreFamilyTiered. Zero mismatches."
+}

@@ -38,20 +38,67 @@ function fuzzyMatchesWord(text: string, keyword: string, maxDist = 2): boolean {
   return false
 }
 
-export function matchesKeyword(text: string, keyword: string): boolean {
-  const normalizedText = text.toLowerCase()
-  const normalizedKeyword = keyword.toLowerCase()
+// --- Hot-path optimizations -------------------------------------------------
+//
+// The original `matchesKeyword` compiled a fresh RegExp on every call. With ~40
+// families × tiered keywords + ~60 capability layers × keywords + LANE_ROUTES,
+// `planPrompt` triggers >1000 keyword probes per prompt — each previously
+// allocating a regex. Two caches eliminate that work:
+//
+//   KEYWORD_CACHE: per keyword-string, a precompiled matcher. Keyword strings
+//     are finite (hundreds) and reused across every prompt, so this converges
+//     to O(1) amortized lookup after the first prompt.
+//
+//   TEXT_LOWER_CACHE: per input text, its lowercased form. `planPrompt`
+//     lowercases the prompt once then passes it through hundreds of
+//     `hasAny`/`keywordScore` calls. `selection.ts` passes the original
+//     (non-lowercased) prompt. Memoizing the lowercase avoids repeating the
+//     work per-keyword. Capped to avoid unbounded growth in long-running
+//     processes.
 
-  if (
-    normalizedKeyword.includes(' ') ||
-    normalizedKeyword.includes('.') ||
-    normalizedKeyword.includes('/') ||
-    normalizedKeyword.includes('-')
-  ) {
-    return normalizedText.includes(normalizedKeyword)
+interface KeywordInfo {
+  readonly lower: string
+  readonly isPhrase: boolean
+  /** Word-boundary regex, only populated for non-phrase keywords. */
+  readonly wordRegex: RegExp | null
+}
+
+const KEYWORD_CACHE = new Map<string, KeywordInfo>()
+const TEXT_LOWER_CACHE = new Map<string, string>()
+const TEXT_LOWER_CACHE_MAX = 512
+
+function getKeywordInfo(keyword: string): KeywordInfo {
+  const cached = KEYWORD_CACHE.get(keyword)
+  if (cached !== undefined) return cached
+  const lower = keyword.toLowerCase()
+  const isPhrase =
+    lower.includes(' ') || lower.includes('.') || lower.includes('/') || lower.includes('-')
+  const wordRegex = isPhrase ? null : new RegExp(`\\b${escapeRegex(lower)}\\b`)
+  const info: KeywordInfo = { lower, isPhrase, wordRegex }
+  KEYWORD_CACHE.set(keyword, info)
+  return info
+}
+
+function lowerText(text: string): string {
+  const cached = TEXT_LOWER_CACHE.get(text)
+  if (cached !== undefined) return cached
+  const lower = text.toLowerCase()
+  if (TEXT_LOWER_CACHE.size >= TEXT_LOWER_CACHE_MAX) {
+    // drop oldest insertion to bound memory; Map preserves insertion order.
+    const firstKey = TEXT_LOWER_CACHE.keys().next().value
+    if (firstKey !== undefined) TEXT_LOWER_CACHE.delete(firstKey)
   }
+  TEXT_LOWER_CACHE.set(text, lower)
+  return lower
+}
 
-  return new RegExp(`\\b${escapeRegex(normalizedKeyword)}\\b`, 'i').test(normalizedText)
+export function matchesKeyword(text: string, keyword: string): boolean {
+  const info = getKeywordInfo(keyword)
+  const normalizedText = lowerText(text)
+  if (info.isPhrase) {
+    return normalizedText.includes(info.lower)
+  }
+  return info.wordRegex!.test(normalizedText)
 }
 
 /**
@@ -60,25 +107,46 @@ export function matchesKeyword(text: string, keyword: string): boolean {
  * Requires keywords of 5+ characters to avoid short-word collisions.
  */
 export function fuzzyKeywordScore(text: string, keywords: string[]): number {
-  const lower = text.toLowerCase()
-  return keywords.reduce((total, keyword) => {
-    const k = keyword.toLowerCase()
-    if (k.length < 5) return total
-    if (k.includes(' ') || k.includes('.') || k.includes('/') || k.includes('-')) return total
-    return total + (fuzzyMatchesWord(lower, k, 1) ? 1 : 0)
-  }, 0)
+  const lower = lowerText(text)
+  let total = 0
+  for (let i = 0; i < keywords.length; i++) {
+    const k = keywords[i]!.toLowerCase()
+    if (k.length < 5) continue
+    if (k.includes(' ') || k.includes('.') || k.includes('/') || k.includes('-')) continue
+    if (fuzzyMatchesWord(lower, k, 1)) total += 1
+  }
+  return total
 }
 
 export function hasAny(text: string, keywords: string[]): boolean {
-  return keywords.some((keyword) => matchesKeyword(text, keyword))
+  const normalizedText = lowerText(text)
+  for (let i = 0; i < keywords.length; i++) {
+    const info = getKeywordInfo(keywords[i]!)
+    if (info.isPhrase) {
+      if (normalizedText.includes(info.lower)) return true
+    } else {
+      if (info.wordRegex!.test(normalizedText)) return true
+    }
+  }
+  return false
 }
 
 export function countMatches(text: string, keywords: string[]): number {
-  return keywords.reduce((total, keyword) => total + (matchesKeyword(text, keyword) ? 1 : 0), 0)
+  const normalizedText = lowerText(text)
+  let total = 0
+  for (let i = 0; i < keywords.length; i++) {
+    const info = getKeywordInfo(keywords[i]!)
+    if (info.isPhrase) {
+      if (normalizedText.includes(info.lower)) total += 1
+    } else {
+      if (info.wordRegex!.test(normalizedText)) total += 1
+    }
+  }
+  return total
 }
 
 export function keywordScore(prompt: string, keywords: string[]): number {
-  return keywords.reduce((total, keyword) => total + (matchesKeyword(prompt, keyword) ? 1 : 0), 0)
+  return countMatches(prompt, keywords)
 }
 
 // Lane route descriptors — single source of truth for both workspace lane detection

@@ -439,6 +439,387 @@ function buildSolanaProgramVariables(text: string): Record<string, string> {
   return { instructionName: 'InitializeTreasury' }
 }
 
+// Web-producing families where implicit UI capability inference runs. These are
+// the only families whose ComposeSpec carries render-time layout/chat/chart layers.
+const IMPLICIT_UI_FAMILIES = new Set(['react-vite-ts', 'nextjs-ts', 'fullstack-ts', 'remix-ts'])
+
+// Chat-first archetype: the product's primary surface is a conversational thread,
+// not a data-heavy dashboard. Matches phrases where the user interacts by talking
+// to the AI (assistant / tutor / companion) or the product IS a chatbot.
+const CHAT_ARCHETYPE_SIGNALS = [
+  'chatbot',
+  'chat bot',
+  'support bot',
+  'ai assistant',
+  'cooking assistant',
+  'shopping assistant',
+  'writing assistant',
+  'personal assistant',
+  'ai tutor',
+  'language tutor',
+  'homework help',
+  'homework helper',
+  'bedtime stor',
+  'voice companion',
+  'ai companion',
+  'symptom checker',
+  'describe what',
+  'i describe',
+  'conversations with',
+  'conversation with me',
+  'has conversations',
+  'chat with me',
+  'chats with me',
+  'texts me',
+  'explains concepts',
+  // dialogue-shape prompts: "I tell it...", "I ask it..."
+  'tell it ',
+  'ask it ',
+  'tells me',
+  'tells you',
+]
+
+// STRONG chart signals — single match triggers chart-widget. Each of these is
+// a near-certain indicator of a data-viz surface. Intentionally avoids single
+// words like "track" / "patterns" / "trends" / "charts" which carry too many
+// unrelated senses (seating charts, music tracks, movement patterns).
+const CHART_STRONG_SIGNALS = [
+  'gantt',
+  'burndown',
+  'kpi',
+  'analytics',
+  'metrics',
+  'churn',
+  'sentiment analysis',
+  'sentiment patterns',
+  'sentiment over time',
+  'see trends',
+  'shows sentiment',
+  'price changes',
+  'price tracking',
+  'tracks price',
+  'tracks floor',
+  'tracks mentions',
+  'tracks what performs',
+  'compensation trends',
+  'salary ranges',
+  'portfolio tracker',
+  'portfolio value',
+  'floor prices',
+  'valuation',
+  'sales reporting',
+  'auto-generates esg',
+  'sustainability reports',
+  'status reports',
+  'yield farming',
+  'apys across',
+  'competitive pricing',
+  'competitor websites',
+  'listing aggregator',
+  'auto-compound',
+  'neighborhood trends',
+  'comparable sales',
+  'deals below market',
+  'churn metrics',
+  'nps tracking',
+  'low-stock alerts',
+  'categorizes spending',
+  'savings tips',
+  'payment tracking',
+  "track what's paid",
+  'coaching opportunities',
+  'see stats',
+  'see metrics',
+  'dashboard to see',
+  'performance tracking',
+  'p&l',
+  'revenue metrics',
+]
+
+// AI product signals — literal phrases that indicate "the product is AI-powered"
+// and is likely to ship a chat surface. Kept as a hasAny list (case-insensitive
+// word-boundary match via matchesKeyword) rather than a wide regex, so the
+// detection is fast and easy to audit.
+const AI_PRODUCT_PHRASES = [
+  'ai app',
+  'ai tool',
+  'ai platform',
+  'ai assistant',
+  'ai agent',
+  'ai bot',
+  'ai advisor',
+  'ai tutor',
+  'ai companion',
+  'ai writer',
+  'ai scheduler',
+  'ai analyzer',
+  'ai optimizer',
+  'ai planner',
+  'ai generator',
+  'ai helper',
+  'ai reviewer',
+  'ai builder',
+  'ai engine',
+  'ai system',
+  'ai pipeline',
+  'ai workflow',
+  'ai manager',
+  'ai screener',
+  'ai screening',
+  'ai coach',
+  'ai copilot',
+  'ai feature',
+  'ai cooking',
+  'ai personal',
+  'ai language',
+  'ai voice',
+  'ai travel',
+  'ai meal',
+  'ai interior',
+  'ai code',
+  'ai recipe',
+  'ai resume',
+  'ai social',
+  'ai customer',
+  'ai legal',
+  'ai medical',
+  'ai homework',
+  'ai newsletter',
+  'ai podcast',
+  'ai video',
+  'ai property',
+  'ai content',
+  'ai data',
+  'ai recruit',
+  'ai symptom',
+  'ai image',
+  'ai photo',
+  'ai audio',
+  'ai chat',
+  'ai email',
+  'ai search',
+  'ai-powered',
+  'ai-driven',
+  'generative ai',
+  'artificial intelligence',
+  // "AI <verb>s ..." shapes — these say "AI does X" in plain language
+  'ai suggests',
+  'ai turns',
+  'ai generates',
+  'ai highlights',
+  'ai writes',
+  'ai answers',
+  'ai analyzes',
+  'ai estimates',
+  'ai categor',
+  'ai identif',
+  'ai creat',
+  'ai cuts',
+  'ai tailors',
+  'ai adapts',
+  'ai screens',
+  'ai extracts',
+  'ai explains',
+  'ai reads',
+  'ai understands',
+  'ai processes',
+  'ai translates',
+  'ai summar',
+  'ai detects',
+  'ai recommends',
+  'ai scores',
+  // "AI that/to/for ..." shapes
+  'ai that',
+  'ai to ',
+  'ai which',
+  'ai for',
+  // "build/make/create me an ai ..."
+  'an ai ',
+  'a ai ',
+  // Implicit-AI products (no literal "AI" but the capability is AI-dependent)
+  'transcribes',
+  'transcription',
+  'gives me a summary',
+  'summarizes',
+  'auto-summar',
+  'automatically generates',
+  'automatically cuts',
+]
+
+function isAiProductPrompt(text: string): boolean {
+  return hasAny(text, AI_PRODUCT_PHRASES)
+}
+
+// Chatbot-style product — prompt describes a bot/assistant product even when
+// the word "AI" doesn't appear (e.g. "customer support chatbot for Shopify").
+function isChatbotStyleProduct(text: string): boolean {
+  return hasAny(text, ['chatbot', 'chat bot', 'slack bot', 'discord bot', 'support bot', 'voice bot', 'phone agent'])
+}
+
+/**
+ * ARCHETYPE-BASED capability inference. Runs AFTER the explicit keyword-driven
+ * `detectCapabilities` and AFTER framework-level defaults (tailwind/shadcn) are
+ * attached. Attaches implicit UI capabilities based on the product archetype
+ * inferred from the prompt shape — NOT from literal capability keywords.
+ *
+ * Rules (web-producing families only — starter and workspace-web alike):
+ *
+ * 1. SaaS UI base: for any frontend product that is not a chat-only surface,
+ *    attach `capability:layout-dashboard`. AI SaaS prompts ("build me an AI X
+ *    tool"), data/analytics prompts, and admin/operations products all need a
+ *    dashboard shell — the #1 missed layer on ideasai (51x).
+ *
+ * 2. Chat archetype: when the product is a conversational surface (chatbot,
+ *    AI assistant/tutor/companion, symptom checker, homework helper), attach
+ *    `capability:layout-chat` and SKIP `layout-dashboard` (jaccard penalises
+ *    extra layers).
+ *
+ * 3. `capability:ai-chat-ui`: attach whenever the prompt describes an AI-
+ *    powered product (literal "AI <product>") on a web family. AI SaaS almost
+ *    always ships a chat surface somewhere — missed 24x on ideasai.
+ *
+ * 4. `capability:chart-widget`: attach when data-viz signals are present
+ *    (analytics, tracking, trends, portfolio, performance, reporting, etc.)
+ *    — chart-widget has no manifest keywords, so it was never detected.
+ *    Missed 16x on ideasai.
+ *
+ * The function is a pure string→string[] mapping with zero I/O, deterministic,
+ * and adds at most 4 layer strings. No family/kind routing changes.
+ */
+// Implicit video/call surface — natural prompts that describe video rooms,
+// consultations, low-latency audio, or streaming without saying "webrtc".
+const VIDEO_ARCHETYPE_SIGNALS = [
+  'video consultation',
+  'video consultations',
+  'video rooms',
+  'video room',
+  'video call',
+  'video calls',
+  'video updates',
+  'video conferencing',
+  'video conference',
+  'virtual co-working',
+  'virtual coworking',
+  'low-latency audio',
+  'persistent video',
+  'video tutoring',
+  'async video',
+  'screen sharing',
+  'shared whiteboard',
+  'telehealth',
+  'livekit',
+  'peer-to-peer',
+  'jam session',
+]
+
+// Admin/operations archetypes — internal SaaS tools with bulk management,
+// document workflows, role-based access, approval flows. These want layout-admin
+// alongside layout-dashboard.
+const ADMIN_ARCHETYPE_SIGNALS = [
+  'onboarding tool',
+  'onboarding app',
+  'employee onboarding',
+  'vendor onboarding',
+  'approval workflow',
+  'approval flow',
+  'back office',
+  'content management',
+  'data table',
+  'crud operations',
+  'role-based',
+  'multi-step sign-off',
+  'dues collection',
+  'maintenance requests',
+  'document storage',
+  'collects documents',
+  'auto-assign',
+  'assigns tasks',
+  'hr tool',
+  'admin panel',
+]
+
+// Auth/portal archetypes — client portals, tenant portals, customer-specific
+// views with login flows.
+const AUTH_ARCHETYPE_SIGNALS = [
+  'client portal',
+  'customer portal',
+  'tenant portal',
+  'accounting firm',
+  'document portal',
+  'share tax returns',
+  'patient portal',
+  'secure login',
+]
+
+export function inferImplicitCapabilities(
+  text: string,
+  family: string,
+  existing: Set<string>,
+): string[] {
+  if (!IMPLICIT_UI_FAMILIES.has(family)) return []
+
+  const out: string[] = []
+  const has = (layer: string): boolean => existing.has(layer) || out.includes(layer)
+
+  const isChat = hasAny(text, CHAT_ARCHETYPE_SIGNALS)
+  const isAi = isAiProductPrompt(text)
+  const isChatbot = isChatbotStyleProduct(text)
+  const hasChartSignal = hasAny(text, CHART_STRONG_SIGNALS)
+  const isVideo = hasAny(text, VIDEO_ARCHETYPE_SIGNALS)
+  const chatAlreadyAttached = has('capability:layout-chat')
+
+  // Video/webrtc products take precedence over chat archetype — "video rooms
+  // with a quick chat" is a video product, not a chat product.
+  if (isVideo && !has('capability:webrtc')) {
+    out.push('capability:webrtc')
+  }
+
+  // Chat archetype is only "real" when there's no video surface. Video products
+  // that casually mention "chat" (co-working, video+chat apps) should stay on
+  // the dashboard layout.
+  const chatArchetype = !isVideo && (isChat || isChatbot || chatAlreadyAttached)
+
+  // AI-powered product OR explicit chatbot-shape product → ai-chat-ui.
+  // On web families these products virtually always ship a chat surface even
+  // when the user didn't spell out "chat interface".
+  if ((isAi || isChatbot) && !has('capability:ai-chat-ui')) {
+    out.push('capability:ai-chat-ui')
+  }
+
+  // Chat archetype → layout-chat (skip if explicit detection already added it).
+  if (!isVideo && (isChat || isChatbot) && !chatAlreadyAttached) {
+    out.push('capability:layout-chat')
+  }
+
+  // Default SaaS layout is the sidebar dashboard. Skip when the product is a
+  // chat surface OR when the prompt explicitly wants a landing page only.
+  const isLandingOnly =
+    hasAny(text, ['landing page', 'marketing page', 'blog']) &&
+    !hasAny(text, ['dashboard', 'admin', 'app', 'saas', 'portal', 'panel'])
+  const shouldDashboard =
+    !chatArchetype && !isLandingOnly && !has('capability:layout-dashboard')
+  if (shouldDashboard) {
+    out.push('capability:layout-dashboard')
+  }
+
+  // Chart widget fires on STRONG data-viz signals only. Skipped on chat
+  // products (corpus never expects chart on chat) to keep jaccard tight.
+  if (hasChartSignal && !chatArchetype && !has('capability:chart-widget')) {
+    out.push('capability:chart-widget')
+  }
+
+  // Admin/portal archetypes layer on top of layout-dashboard.
+  if (hasAny(text, ADMIN_ARCHETYPE_SIGNALS) && !has('capability:layout-admin')) {
+    out.push('capability:layout-admin')
+  }
+
+  if (hasAny(text, AUTH_ARCHETYPE_SIGNALS) && !has('capability:layout-auth')) {
+    out.push('capability:layout-auth')
+  }
+
+  return out
+}
+
 function buildWebProject(prompt: string, partner: string | null, text: string, registry?: Registry): ProjectEntry {
   const isNext = hasAny(text, ['next', 'next.js', 'nextjs', 'app router', 'seo'])
   const family = isNext ? 'nextjs-ts' : 'react-vite-ts'
@@ -459,6 +840,9 @@ function buildWebProject(prompt: string, partner: string | null, text: string, r
 
   const webCapabilities = registry ? detectCapabilities(text, family, registry) : []
   if (webCapabilities.length > 0) layers.push(...webCapabilities)
+
+  const implicit = inferImplicitCapabilities(text, family, new Set(layers))
+  if (implicit.length > 0) layers.push(...implicit)
 
   return {
     id: 'web',
@@ -980,6 +1364,16 @@ export async function planPrompt({
       if (!layerSet.has('capability:shadcn')) {
         spec.layers = [...(spec.layers ?? []), 'capability:shadcn']
       }
+    }
+
+    // Archetype-based implicit capability inference. Runs last so it can see
+    // everything already attached and avoid double-adding. For web-producing
+    // families this attaches the SaaS UI trio (layout-dashboard + chart +
+    // ai-chat-ui) or the chat archetype (layout-chat + ai-chat-ui) based on
+    // the product shape in the prompt.
+    const implicitCaps = inferImplicitCapabilities(text, spec.family, new Set(spec.layers ?? []))
+    if (implicitCaps.length > 0) {
+      spec.layers = [...new Set([...(spec.layers ?? []), ...implicitCaps])]
     }
 
     return {

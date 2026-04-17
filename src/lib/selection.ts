@@ -1,9 +1,10 @@
-import { fuzzyKeywordScore, keywordScore, matchesKeyword } from './keywords.js'
+import { fuzzyKeywordScore } from './keywords.js'
 import { loadRegistry } from './registry.js'
 import { semanticMatch, isSemanticRouterReady } from './semantic-router.js'
-import type { SelectionResult, Confidence, ComposeSpec, FamilyManifest } from '../types.js'
+import type { SelectionResult, Confidence, ComposeSpec, Registry } from '../types.js'
 
 const TIER_WEIGHTS = { tier1: 4, tier2: 2, tier3: 1, archetypes: 3 } as const
+type Tier = keyof typeof TIER_WEIGHTS
 
 interface Candidate {
   family: string
@@ -12,33 +13,211 @@ interface Candidate {
   reasons: string[]
 }
 
-function frameworkLayersForFamily(familyId: string, layers: Map<string, { group: string; id: string; appliesTo?: string[] }>): string[] {
-  const result: string[] = []
-  for (const [key, layer] of layers) {
-    if (layer.group === 'framework' && layer.appliesTo?.includes(familyId)) {
-      result.push(key)
-    }
-  }
-  return result
+interface FamilyWeight {
+  family: string
+  weight: number
+}
+
+interface SelectionIndex {
+  /** Tokenized single-word keyword -> family contributions. */
+  singleWord: Map<string, FamilyWeight[]>
+  /** Multi-word keyword -> family contributions. */
+  multiWord: Map<string, FamilyWeight[]>
+  /**
+   * 2-gram prefilter bucket: first-two-char prefix -> keywords starting with it.
+   * A prompt can only substring-match a keyword if the keyword's prefix
+   * appears as consecutive chars somewhere in the (lowercase) prompt.
+   */
+  multiWordByPrefix: Map<string, string[]>
+  /** Keywords with length < 2 (rare) — scan unconditionally. */
+  multiWordShort: string[]
+  /** Precomputed framework layers per family. */
+  frameworkLayers: Map<string, string[]>
+  /** All family ids, for ordered iteration + default candidate list. */
+  familyIds: string[]
 }
 
 /**
- * Score a prompt against a family's tiered keywords.
- * One pass, deterministic, traceable.
+ * matchesKeyword semantics: multi-word / contains space|dot|slash|dash →
+ * case-insensitive substring. Else word-bounded regex \b<kw>\b.
+ *
+ * For the inverted index we treat the second class as "single-word tokens"
+ * and bucket them into the tokenizer path. Tokenizer mirrors \w semantics
+ * (a–z, 0–9, underscore) so keywords like "private_key" stay intact.
  */
-function scoreFamilyTiered(prompt: string, family: FamilyManifest): number {
-  const tk = family.tieredKeywords
-  if (!tk) {
-    // Fallback to flat keywords if tieredKeywords not present
-    return family.keywords?.length ? keywordScore(prompt, family.keywords) : 0
+function isMultiWord(keyword: string): boolean {
+  return (
+    keyword.includes(' ') ||
+    keyword.includes('.') ||
+    keyword.includes('/') ||
+    keyword.includes('-')
+  )
+}
+
+function buildIndex(registry: Registry): SelectionIndex {
+  const singleWord = new Map<string, FamilyWeight[]>()
+  const multiWord = new Map<string, FamilyWeight[]>()
+  const frameworkLayers = new Map<string, string[]>()
+  const familyIds: string[] = []
+
+  for (const family of registry.families.values()) {
+    familyIds.push(family.id)
+
+    // Precompute framework layers per family
+    const layers: string[] = []
+    for (const [key, layer] of registry.layers) {
+      if (layer.group === 'framework' && layer.appliesTo?.includes(family.id)) {
+        layers.push(key)
+      }
+    }
+    frameworkLayers.set(family.id, layers)
+
+    const tk = family.tieredKeywords
+    if (!tk) {
+      // Fallback: flat keywords scored as weight 1 each (matches keywordScore)
+      if (family.keywords?.length) {
+        for (const raw of family.keywords) {
+          addKeyword(singleWord, multiWord, raw, family.id, 1)
+        }
+      }
+      continue
+    }
+
+    for (const tier of ['tier1', 'tier2', 'tier3', 'archetypes'] as const satisfies readonly Tier[]) {
+      const weight = TIER_WEIGHTS[tier]
+      const list = tk[tier]
+      if (!list?.length) continue
+      for (const raw of list) {
+        addKeyword(singleWord, multiWord, raw, family.id, weight)
+      }
+    }
   }
 
-  let score = 0
-  if (tk.tier1?.length) score += keywordScore(prompt, tk.tier1) * TIER_WEIGHTS.tier1
-  if (tk.tier2?.length) score += keywordScore(prompt, tk.tier2) * TIER_WEIGHTS.tier2
-  if (tk.tier3?.length) score += keywordScore(prompt, tk.tier3) * TIER_WEIGHTS.tier3
-  if (tk.archetypes?.length) score += keywordScore(prompt, tk.archetypes) * TIER_WEIGHTS.archetypes
-  return score
+  // Bucket multi-word keywords by 2-char prefix. A 2-gram derived from the
+  // prompt is the cheapest sound precondition for a substring hit.
+  const multiWordByPrefix = new Map<string, string[]>()
+  const multiWordShort: string[] = []
+  for (const keyword of multiWord.keys()) {
+    if (keyword.length < 2) {
+      multiWordShort.push(keyword)
+      continue
+    }
+    const prefix = keyword.slice(0, 2)
+    const bucket = multiWordByPrefix.get(prefix)
+    if (bucket) bucket.push(keyword)
+    else multiWordByPrefix.set(prefix, [keyword])
+  }
+
+  return { singleWord, multiWord, multiWordByPrefix, multiWordShort, frameworkLayers, familyIds }
+}
+
+function addKeyword(
+  singleWord: Map<string, FamilyWeight[]>,
+  multiWord: Map<string, FamilyWeight[]>,
+  raw: string,
+  family: string,
+  weight: number,
+): void {
+  const kw = raw.toLowerCase()
+  const bucket = isMultiWord(kw) ? multiWord : singleWord
+  appendWeight(bucket, kw, family, weight)
+}
+
+function appendWeight(
+  bucket: Map<string, FamilyWeight[]>,
+  keyword: string,
+  family: string,
+  weight: number,
+): void {
+  const existing = bucket.get(keyword)
+  if (!existing) {
+    bucket.set(keyword, [{ family, weight }])
+    return
+  }
+  // Merge same family into a single entry — avoids double hits at query time
+  // when the same keyword appears in multiple tiers of one family (rare, but
+  // the legacy scorer counted each tier independently).
+  const same = existing.find((e) => e.family === family)
+  if (same) {
+    same.weight += weight
+  } else {
+    existing.push({ family, weight })
+  }
+}
+
+/**
+ * Tokenize the prompt the same way \w word-boundaries behave in JS regex.
+ * \w = [A-Za-z0-9_]. After lowercasing we split on runs of everything else.
+ */
+function tokenize(lower: string): Set<string> {
+  const tokens = new Set<string>()
+  const parts = lower.split(/[^a-z0-9_]+/)
+  for (const part of parts) {
+    if (part) tokens.add(part)
+  }
+  return tokens
+}
+
+let cachedRegistry: Registry | null = null
+let cachedIndex: SelectionIndex | null = null
+
+function getIndex(registry: Registry): SelectionIndex {
+  if (cachedRegistry !== registry || !cachedIndex) {
+    cachedIndex = buildIndex(registry)
+    cachedRegistry = registry
+  }
+  return cachedIndex
+}
+
+/**
+ * Score every family in one prompt-scan pass. Returns per-family totals that
+ * are bit-exact with scoreFamilyTiered summed over all families.
+ */
+function scoreAllFamilies(prompt: string, index: SelectionIndex): Map<string, number> {
+  const scores = new Map<string, number>()
+  const lower = prompt.toLowerCase()
+
+  // Single-word path: tokenize once, look up each token in the index.
+  const tokens = tokenize(lower)
+  for (const token of tokens) {
+    const hits = index.singleWord.get(token)
+    if (!hits) continue
+    for (const hit of hits) {
+      scores.set(hit.family, (scores.get(hit.family) ?? 0) + hit.weight)
+    }
+  }
+
+  // Multi-word path: 2-gram prefilter — only scan keywords whose 2-char
+  // prefix appears in the prompt. A keyword can only be a substring of the
+  // prompt if its first two chars appear as consecutive chars somewhere.
+  const promptLen = lower.length
+  const seenPrefixes = new Set<string>()
+  for (let i = 0; i + 1 < promptLen; i++) {
+    const prefix = lower.slice(i, i + 2)
+    if (seenPrefixes.has(prefix)) continue
+    seenPrefixes.add(prefix)
+    const bucket = index.multiWordByPrefix.get(prefix)
+    if (!bucket) continue
+    for (const keyword of bucket) {
+      if (!lower.includes(keyword)) continue
+      const hits = index.multiWord.get(keyword)
+      if (!hits) continue
+      for (const hit of hits) {
+        scores.set(hit.family, (scores.get(hit.family) ?? 0) + hit.weight)
+      }
+    }
+  }
+  // Any keywords shorter than 2 chars still need a scan.
+  for (const keyword of index.multiWordShort) {
+    if (!lower.includes(keyword)) continue
+    const hits = index.multiWord.get(keyword)
+    if (!hits) continue
+    for (const hit of hits) {
+      scores.set(hit.family, (scores.get(hit.family) ?? 0) + hit.weight)
+    }
+  }
+
+  return scores
 }
 
 export async function selectStarter({
@@ -49,17 +228,19 @@ export async function selectStarter({
   partner?: string | null
 }): Promise<SelectionResult> {
   const registry = await loadRegistry()
+  const index = getIndex(registry)
 
-  // Score all families in one pass
+  const scores = scoreAllFamilies(prompt, index)
+
+  // Build candidates in registry iteration order (stable tie-break downstream)
   const candidates: Candidate[] = []
-  for (const family of registry.families.values()) {
-    const fwLayers = frameworkLayersForFamily(family.id, registry.layers)
-    const score = scoreFamilyTiered(prompt, family)
+  for (const familyId of index.familyIds) {
+    const score = scores.get(familyId) ?? 0
     candidates.push({
-      family: family.id,
-      layers: fwLayers,
+      family: familyId,
+      layers: index.frameworkLayers.get(familyId) ?? [],
       score,
-      reasons: score > 0 ? [`${family.id} matched`] : [],
+      reasons: score > 0 ? [`${familyId} matched`] : [],
     })
   }
 
@@ -72,9 +253,7 @@ export async function selectStarter({
       if (!familyManifest) continue
       // Fuzzy only against tier1 (framework names) — fuzzy on generic words
       // causes false positives like "lending" → "landing"
-      const allKeywords = [
-        ...(familyManifest.tieredKeywords?.tier1 ?? []),
-      ]
+      const allKeywords = familyManifest.tieredKeywords?.tier1 ?? []
       if (allKeywords.length) {
         candidate.score = fuzzyKeywordScore(prompt, allKeywords)
       }
@@ -114,7 +293,7 @@ export async function selectStarter({
     const isStaticContent = /\b(landing page|portfolio|cv site|personal site|restaurant website|conference website)\b/.test(lower) && !/\b(ai|builder|generator|dynamic)\b/.test(lower)
     if (describesProduct && !isStaticContent) {
       defaultFamily = 'fullstack-ts'
-      const fwLayers = frameworkLayersForFamily('fullstack-ts', registry.layers)
+      const fwLayers = index.frameworkLayers.get('fullstack-ts') ?? []
       defaultLayers = fwLayers.length > 0 ? fwLayers : ['framework:fullstack-node-ts']
     }
   }

@@ -2,19 +2,22 @@
   "schemaVersion": 1,
   "baseline": {
     "name": "baseline-drew-rlm-head",
-    "commit": "7513d88",
-    "note": "Median-of-3 baseline pending — single run so far; will be updated when the running matrix completes.",
+    "commit": "372d159",
+    "note": "Median of 3 deterministic runs. capHit identical across runs (deterministic path). p95 jitter is sub-ms noise.",
     "scores": {
       "ideasaiCapHit": 0.452,
       "heldOutCapHit": 1.0,
-      "briefP95Ms": null,
+      "vibecoderCapHit": 1.0,
+      "briefP95Ms": 0.681,
       "judgeAgreement": null,
       "archetypePromotionYield": 0
     },
     "baselineRuns": [
-      { "ideasaiCapHit": 0.452, "heldOutCapHit": 1.0, "source": ".evolve/experiments.jsonl prior run" }
+      { "run": 1, "ideasaiCapHit": 0.4520833, "heldOutCapHit": 1.0, "p95Ms": 0.705 },
+      { "run": 2, "ideasaiCapHit": 0.4520833, "heldOutCapHit": 1.0, "p95Ms": 0.681 },
+      { "run": 3, "ideasaiCapHit": 0.4520833, "heldOutCapHit": 1.0, "p95Ms": 0.546 }
     ],
-    "recordedAt": "2026-04-19T22:30:00Z"
+    "recordedAt": "2026-04-19T22:50:00Z"
   },
   "frontier": []
 }

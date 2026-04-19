@@ -12,7 +12,7 @@ const smoke = process.argv.includes('--smoke')
 
 const configs = [
   { label: 'baseline', flags: [] },
-  { label: 'rewriter', flags: ['--rewriter'] },
+  { label: 'brief', flags: ['--brief'] },
 ]
 
 const experimentsPath = '.evolve/experiments.jsonl'
@@ -48,6 +48,7 @@ for (const cfg of configs) {
     timestamp: new Date().toISOString(),
     config: cfg.label,
     rewriter: cfg.flags.includes('--rewriter'),
+    brief: cfg.flags.includes('--brief'),
     scenarios: aggregate.scenarios,
     passRate: aggregate.passRate,
     meanMs: aggregate.meanMs,

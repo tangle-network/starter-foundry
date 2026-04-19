@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "baseline": {
+    "name": "baseline-drew-rlm-head",
+    "commit": "7513d88",
+    "note": "Median-of-3 baseline pending — single run so far; will be updated when the running matrix completes.",
+    "scores": {
+      "ideasaiCapHit": 0.452,
+      "heldOutCapHit": 1.0,
+      "briefP95Ms": null,
+      "judgeAgreement": null,
+      "archetypePromotionYield": 0
+    },
+    "baselineRuns": [
+      { "ideasaiCapHit": 0.452, "heldOutCapHit": 1.0, "source": ".evolve/experiments.jsonl prior run" }
+    ],
+    "recordedAt": "2026-04-19T22:30:00Z"
+  },
+  "frontier": []
+}

@@ -1,5 +1,6 @@
 import { ax } from '@ax-llm/ax'
 import { createLLM, isLLMAvailable } from './llm.js'
+import type { ProductBrief } from './product-brief.js'
 import type { BuildPlan, ComposeSpec, ResolvedComponents } from '../types.js'
 
 const FAMILY_ARCHITECTURE: Record<string, string[]> = {
@@ -175,6 +176,28 @@ async function enhanceBuildPlanWithLLMImpl({ spec, base, composedFiles }: Enhanc
 
 export function enhanceBuildPlanWithLLM(args: EnhanceArgs): Promise<BuildPlan> {
   return (testEnhancerOverride ?? enhanceBuildPlanWithLLMImpl)(args)
+}
+
+/**
+ * Merge a ProductBrief into a BuildPlan. The brief is generated once (by
+ * planPrompt({ brief: true })) and reused here so context-pack doesn't pay
+ * for a second LLM call. Fields:
+ *   - vision, milestones, testingPlan, e2ePlan, securityConcerns, openQuestions
+ *     attach as new BuildPlan fields
+ *   - taskChecklist prepends to firstMoves (richer "what to do next")
+ */
+export function mergeBriefIntoBuildPlan(base: BuildPlan, brief: ProductBrief): BuildPlan {
+  const merged: BuildPlan = { ...base }
+  if (brief.vision) merged.vision = brief.vision
+  if (brief.milestones.length > 0) merged.milestones = brief.milestones
+  if (brief.testingPlan.length > 0) merged.testingPlan = brief.testingPlan
+  if (brief.e2ePlan.length > 0) merged.e2ePlan = brief.e2ePlan
+  if (brief.securityConcerns.length > 0) merged.securityConcerns = brief.securityConcerns
+  if (brief.openQuestions.length > 0) merged.openQuestions = brief.openQuestions
+  if (brief.taskChecklist.length > 0) {
+    merged.firstMoves = [...brief.taskChecklist, ...base.firstMoves]
+  }
+  return merged
 }
 
 const FRONTEND_FAMILIES = new Set([

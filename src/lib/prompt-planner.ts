@@ -3,7 +3,8 @@ import { emit, traced } from './telemetry.js'
 import { loadRegistry } from './registry.js'
 import { selectStarter } from './selection.js'
 import { detectCapabilities, detectIndustry, detectLane, hasAny, matchesKeyword } from './keywords.js'
-import { rewritePrompt } from './prompt-rewriter.js'
+import { rewritePrompt, rewriteViaBrief } from './prompt-rewriter.js'
+import type { ProductBrief } from './product-brief.js'
 import type { Registry } from '../types.js'
 import type { ComposeSpec, WorkspaceSpec, PromptPlan, ProjectEntry } from '../types.js'
 
@@ -1274,6 +1275,7 @@ export async function planPrompt({
   forceKind = null,
   familyHint = null,
   rewriter = false,
+  brief = false,
 }: {
   prompt: string
   partner?: string | null
@@ -1281,9 +1283,35 @@ export async function planPrompt({
   forceKind?: 'starter' | 'workspace' | null
   /** Hint the family directly. Skips family scoring, only detects capabilities + slots. */
   familyHint?: string | null
-  /** When true, pre-check router confidence; on non-high confidence, rewrite the prompt via LLM and re-plan. */
+  /** Narrow rewriter: LLM produces a short canonical prompt for re-planning. Back-compat flag; prefer `brief`. */
   rewriter?: boolean
+  /** Rich product brief: one LLM call produces canonical prompt + vision + tasks + milestones + tests + e2e + security + openQuestions. Attached to the returned plan via .brief for downstream context-pack use. */
+  brief?: boolean
 }): Promise<PromptPlan> {
+  if (brief) {
+    const preCheck = await selectStarter({ prompt, partner })
+    if (preCheck.confidence !== 'high' || preCheck.fallbackUsed) {
+      const registry = await loadRegistry()
+      const knownFamilies = [...registry.families.keys()]
+      const knownCapabilities: string[] = []
+      for (const [key] of registry.layers) {
+        if (key.startsWith('capability:')) knownCapabilities.push(key)
+      }
+      const briefResult = await rewriteViaBrief({ prompt, partner, knownFamilies, knownCapabilities })
+      if (briefResult) {
+        const plan = await planPrompt({
+          prompt: briefResult.canonicalPrompt,
+          partner,
+          forceKind,
+          familyHint,
+          rewriter: false,
+          brief: false,
+        })
+        return { ...plan, brief: briefResult.brief as ProductBrief }
+      }
+    }
+  }
+
   if (rewriter) {
     const preCheck = await selectStarter({ prompt, partner })
     if (preCheck.confidence !== 'high' || preCheck.fallbackUsed) {

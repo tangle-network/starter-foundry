@@ -4,6 +4,7 @@ import path from 'node:path'
 import { performance } from 'node:perf_hooks'
 import { ax } from '@ax-llm/ax'
 import { createLLM, isLLMAvailable } from './llm.js'
+import { generateProductBrief } from './product-brief.js'
 
 const CACHE_DIR = '.evolve'
 const CACHE_PATH = path.join(CACHE_DIR, 'rewriter-cache.json')
@@ -40,7 +41,7 @@ async function persistDiskCache(): Promise<void> {
 // that the deterministic router can score confidently. It must not invent
 // features the user didn't ask for — only surface implicit intent.
 const rewriterAgent = ax(
-  'userPrompt:string, knownFamilies:string[], knownCapabilities:string[] -> canonicalPrompt:string, confidence:number',
+  '"Expand the userPrompt into a canonical, keyword-rich product spec that names concrete technologies drawn from knownFamilies (e.g. nextjs-ts, fullstack-ts, agent-service-ts) and concrete UI/infra patterns drawn from knownCapabilities (e.g. capability:layout-dashboard, capability:ai-chat-ui, capability:saas-billing). The expansion MUST be longer and more specific than the input. Preserve the user intent exactly — do not invent features. Keep the output to 1-3 sentences of plain English that the user could have written themselves." userPrompt:string, knownFamilies:string[], knownCapabilities:string[] -> canonicalPrompt:string, confidence:number',
 )
 
 export interface RewriteResult {
@@ -123,4 +124,25 @@ async function rewritePromptImpl({
 
 export function rewritePrompt(args: RewriteArgs): Promise<RewriteResult | null> {
   return (testOverride ?? rewritePromptImpl)(args)
+}
+
+// Product-brief path: replaces the narrow rewriter with a rich brief. Returns
+// the canonical prompt (for the router) and the full brief (for the build plan
+// and context pack). Cached and keyed separately from the narrow rewriter.
+export async function rewriteViaBrief(
+  args: RewriteArgs,
+): Promise<{ canonicalPrompt: string; brief: import('./product-brief.js').ProductBrief; cacheHit: boolean; latencyMs: number } | null> {
+  const result = await generateProductBrief({
+    prompt: args.prompt,
+    partner: args.partner ?? null,
+    knownFamilies: args.knownFamilies,
+    knownCapabilities: args.knownCapabilities,
+  })
+  if (!result) return null
+  return {
+    canonicalPrompt: result.brief.canonicalPrompt,
+    brief: result.brief,
+    cacheHit: result.cacheHit,
+    latencyMs: result.latencyMs,
+  }
 }

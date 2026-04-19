@@ -27,10 +27,25 @@ const plannerPath = arg('--planner', 'dist/lib/prompt-planner.js')
 const outPath = arg('--out', '.evolve/meta-harness/runs/current.jsonl')
 const smoke = argv.includes('--smoke')
 const useRewriter = argv.includes('--rewriter')
-const configLabel = arg('--label', useRewriter ? 'rewriter' : 'baseline')
+const useBrief = argv.includes('--brief')
+const configLabel = arg('--label', useBrief ? 'brief' : useRewriter ? 'rewriter' : 'baseline')
 
 const plannerMod = await import(resolve(plannerPath))
 const planPrompt = plannerMod.planPrompt
+
+// Optional brief loader for multi-pursue variants. When provided, the loader
+// module must export `installLoader({ optimizedPath })` which replaces the
+// default brief agent via product-brief's __setTestBrief hook.
+const briefLoaderPath = arg('--brief-loader', null)
+const briefOptimizedPath = process.env.STARTER_FOUNDRY_BRIEF_OPTIMIZED
+if (briefLoaderPath) {
+  const loader = await import(resolve(briefLoaderPath))
+  if (typeof loader.installLoader !== 'function') {
+    console.error(`brief loader ${briefLoaderPath} does not export installLoader`)
+    process.exit(3)
+  }
+  await loader.installLoader({ optimizedPath: briefOptimizedPath })
+}
 if (typeof planPrompt !== 'function') {
   console.error('planner module does not export planPrompt:', plannerPath)
   process.exit(2)
@@ -124,7 +139,7 @@ for (const s of scenarios) {
   let plan = null
   let error = null
   try {
-    plan = await planPrompt({ prompt: s.prompt, partner: s.partner, rewriter: useRewriter })
+    plan = await planPrompt({ prompt: s.prompt, partner: s.partner, rewriter: useRewriter, brief: useBrief })
   } catch (err) {
     error = String(err?.message ?? err)
   }
@@ -186,7 +201,7 @@ for (const [k, v] of Object.entries(perCorpus)) {
 const agg = {
   _aggregate: true,
   planner: plannerPath,
-  config: { label: configLabel, rewriter: useRewriter },
+  config: { label: configLabel, rewriter: useRewriter, brief: useBrief },
   scenarios: lines.length,
   passRate: overall,
   meanMs: mean,

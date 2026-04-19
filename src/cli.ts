@@ -71,7 +71,7 @@ function usage(): string {
     'Commands:',
     '  list',
     '  catalog',
-    '  plan --prompt <text> [--partner <id>] [--rewriter]',
+    '  plan --prompt <text> [--partner <id>] [--brief] [--rewriter]',
     '  select --prompt <text> [--partner <id>]',
     '  compose --spec <path> --out <dir>',
     '  validate --spec <path> [--out <dir>]',
@@ -118,6 +118,7 @@ async function main(): Promise<void> {
         prompt: String(options['prompt']),
         partner: options['partner'] ? String(options['partner']) : null,
         rewriter: Boolean(options['rewriter']),
+        brief: Boolean(options['brief']),
       })
 
       print(result, true)

@@ -1,5 +1,5 @@
 import path from 'node:path'
-import { generateBuildPlan } from './build-plan.js'
+import { enhanceBuildPlanWithLLM, generateBuildPlan } from './build-plan.js'
 import { composeStarter } from './compose.js'
 import { createTempDir, listFilesRecursive, readJson, removeDir, writeJson } from './fs.js'
 import { resolveComponents } from './registry.js'
@@ -14,9 +14,11 @@ export interface ContextPackResult {
 export async function createContextPack({
   spec,
   outDir = null,
+  llmBuildPlan = false,
 }: {
   spec: ComposeSpec
   outDir?: string | null
+  llmBuildPlan?: boolean
 }): Promise<ContextPackResult> {
   const composedDir = outDir ?? (await createTempDir('starter-foundry-context'))
   const cleanup = !outDir
@@ -26,7 +28,10 @@ export async function createContextPack({
     const composeReport = await readJson<ComposeReport>(composeResult.composeReportPath)
     const files = await listFilesRecursive(composedDir)
     const components = await resolveComponents(spec)
-    const buildPlan = generateBuildPlan(spec, components)
+    let buildPlan = generateBuildPlan(spec, components)
+    if (llmBuildPlan) {
+      buildPlan = await enhanceBuildPlanWithLLM({ spec, base: buildPlan, composedFiles: files })
+    }
 
     const contextPack: ContextPack = {
       schemaVersion: 1,

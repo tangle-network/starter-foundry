@@ -26,6 +26,8 @@ function arg(k, fallback) {
 const plannerPath = arg('--planner', 'dist/lib/prompt-planner.js')
 const outPath = arg('--out', '.evolve/meta-harness/runs/current.jsonl')
 const smoke = argv.includes('--smoke')
+const useRewriter = argv.includes('--rewriter')
+const configLabel = arg('--label', useRewriter ? 'rewriter' : 'baseline')
 
 const plannerMod = await import(resolve(plannerPath))
 const planPrompt = plannerMod.planPrompt
@@ -109,7 +111,7 @@ function jaccard(a, b) {
 
 const scenarios = smoke ? loadCorpora().slice(0, 5) : loadCorpora()
 
-// warm-up
+// warm-up — always without rewriter to avoid paying LLM on the warmup
 await planPrompt({ prompt: scenarios[0].prompt, partner: scenarios[0].partner })
 
 mkdirSync(dirname(outPath), { recursive: true })
@@ -122,7 +124,7 @@ for (const s of scenarios) {
   let plan = null
   let error = null
   try {
-    plan = await planPrompt({ prompt: s.prompt, partner: s.partner })
+    plan = await planPrompt({ prompt: s.prompt, partner: s.partner, rewriter: useRewriter })
   } catch (err) {
     error = String(err?.message ?? err)
   }
@@ -184,6 +186,7 @@ for (const [k, v] of Object.entries(perCorpus)) {
 const agg = {
   _aggregate: true,
   planner: plannerPath,
+  config: { label: configLabel, rewriter: useRewriter },
   scenarios: lines.length,
   passRate: overall,
   meanMs: mean,

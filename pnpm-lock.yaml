@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@ax-llm/ax':
+        specifier: ^19.0.45
+        version: 19.0.45
       '@huggingface/transformers':
         specifier: ^4.0.0
         version: 4.1.0
@@ -20,6 +23,15 @@ importers:
         version: 5.9.3
 
 packages:
+
+  '@ax-llm/ax@19.0.45':
+    resolution: {integrity: sha512-zC/OqUutTV0omOuAxBgeCihmxP3e1eUcbA78FCaMF3pPXZ3/FgQDZf0R04LH/lVIxm5BH4/qDdNNYcIVGwii8Q==}
+    hasBin: true
+    peerDependencies:
+      zod: ^3.24.0 || ^4.0.0
+    peerDependenciesMeta:
+      zod:
+        optional: true
 
   '@emnapi/runtime@1.10.0':
     resolution: {integrity: sha512-ewvYlk86xUoGI0zQRNq/mC+16R1QeDlKQy21Ki3oSYXNgLb45GV1P6A0M+/s6nyCuNDqe5VpaY84BzXGwVbwFA==}
@@ -171,6 +183,10 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@opentelemetry/api@1.9.1':
+    resolution: {integrity: sha512-gLyJlPHPZYdAk1JENA9LeHejZe1Ti77/pTeFm/nMXmQH/HFZlcS/O2XJB+L8fkbrNSqhdtlvjBVjxwUYanNH5Q==}
+    engines: {node: '>=8.0.0'}
+
   '@protobufjs/aspromise@1.1.2':
     resolution: {integrity: sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ==}
 
@@ -211,6 +227,9 @@ packages:
   boolean@3.2.0:
     resolution: {integrity: sha512-d0II/GO9uf9lfUHH2BQsjxzRJZBdsjgsBiW4BvhWk/3qoKwQFjIDVN19PfX8F2D/r9PCMTtLWjYVCFrpeYUzsw==}
     deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+
+  dayjs@1.11.20:
+    resolution: {integrity: sha512-YbwwqR/uYpeoP4pu043q+LTDLFBLApUP6VxRihdfNTqu4ubqMlGDLd6ErXhEgsyvY0K6nCs7nggYumAN+9uEuQ==}
 
   define-data-property@1.1.4:
     resolution: {integrity: sha512-rBMvIzlpA8v6E+SJZoo++HAYqsLrkg7MSfIinMPFhmkorw7X+dOXVJQs+QT69zGkzMyfDnIMN2Wid1+NbL3T+A==}
@@ -337,6 +356,11 @@ packages:
 
 snapshots:
 
+  '@ax-llm/ax@19.0.45':
+    dependencies:
+      '@opentelemetry/api': 1.9.1
+      dayjs: 1.11.20
+
   '@emnapi/runtime@1.10.0':
     dependencies:
       tslib: 2.8.1
@@ -450,6 +474,8 @@ snapshots:
   '@img/sharp-win32-x64@0.34.5':
     optional: true
 
+  '@opentelemetry/api@1.9.1': {}
+
   '@protobufjs/aspromise@1.1.2': {}
 
   '@protobufjs/base64@1.1.2': {}
@@ -480,6 +506,8 @@ snapshots:
   adm-zip@0.5.17: {}
 
   boolean@3.2.0: {}
+
+  dayjs@1.11.20: {}
 
   define-data-property@1.1.4:
     dependencies:

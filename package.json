@@ -65,6 +65,7 @@
     "typescript": "^5.7.0"
   },
   "dependencies": {
+    "@ax-llm/ax": "^19.0.45",
     "@huggingface/transformers": "^4.0.0"
   }
 }

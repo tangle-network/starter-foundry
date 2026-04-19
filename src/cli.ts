@@ -71,11 +71,12 @@ function usage(): string {
     'Commands:',
     '  list',
     '  catalog',
-    '  plan --prompt <text> [--partner <id>]',
+    '  plan --prompt <text> [--partner <id>] [--rewriter]',
     '  select --prompt <text> [--partner <id>]',
     '  compose --spec <path> --out <dir>',
     '  validate --spec <path> [--out <dir>]',
-    '  context --spec <path> [--out <dir>]',
+    '  context --spec <path> [--out <dir>] [--llm-build-plan]',
+    '  mine [--corpus <path>] [--out <path>] [--provider <groq|anthropic|openai>]',
     '  bench --spec <path> [--runs <n>] [--out <dir>]',
     '  workspace-compose --spec <path> --out <dir>',
     '  workspace-context --spec <path> [--out <dir>]',
@@ -116,6 +117,7 @@ async function main(): Promise<void> {
       const result = await planPrompt({
         prompt: String(options['prompt']),
         partner: options['partner'] ? String(options['partner']) : null,
+        rewriter: Boolean(options['rewriter']),
       })
 
       print(result, true)
@@ -195,6 +197,7 @@ async function main(): Promise<void> {
       const result = await createContextPack({
         spec,
         outDir: options['out'] ? String(options['out']) : null,
+        llmBuildPlan: Boolean(options['llm-build-plan']),
       })
 
       print(result, jsonMode)
@@ -350,6 +353,24 @@ async function main(): Promise<void> {
       })
 
       print(result, true)
+      break
+    }
+
+    case 'mine': {
+      const { spawn } = await import('node:child_process')
+      const scriptPath = new URL('../scripts/mine-archetypes.mjs', import.meta.url).pathname
+      const argv: string[] = []
+      if (options['corpus']) argv.push('--corpus', String(options['corpus']))
+      if (options['out']) argv.push('--out', String(options['out']))
+      if (options['provider']) argv.push('--provider', String(options['provider']))
+      await new Promise<void>((resolveFn, rejectFn) => {
+        const child = spawn(process.execPath, [scriptPath, ...argv], { stdio: 'inherit' })
+        child.on('exit', (code) => {
+          if (code === 0) resolveFn()
+          else rejectFn(new Error(`mine exited with code ${code}`))
+        })
+        child.on('error', rejectFn)
+      })
       break
     }
 

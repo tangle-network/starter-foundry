@@ -3,6 +3,7 @@ import { emit, traced } from './telemetry.js'
 import { loadRegistry } from './registry.js'
 import { selectStarter } from './selection.js'
 import { detectCapabilities, detectIndustry, detectLane, hasAny, matchesKeyword } from './keywords.js'
+import { rewritePrompt } from './prompt-rewriter.js'
 import type { Registry } from '../types.js'
 import type { ComposeSpec, WorkspaceSpec, PromptPlan, ProjectEntry } from '../types.js'
 
@@ -1272,6 +1273,7 @@ export async function planPrompt({
   partner = null,
   forceKind = null,
   familyHint = null,
+  rewriter = false,
 }: {
   prompt: string
   partner?: string | null
@@ -1279,7 +1281,25 @@ export async function planPrompt({
   forceKind?: 'starter' | 'workspace' | null
   /** Hint the family directly. Skips family scoring, only detects capabilities + slots. */
   familyHint?: string | null
+  /** When true, pre-check router confidence; on non-high confidence, rewrite the prompt via LLM and re-plan. */
+  rewriter?: boolean
 }): Promise<PromptPlan> {
+  if (rewriter) {
+    const preCheck = await selectStarter({ prompt, partner })
+    if (preCheck.confidence !== 'high' || preCheck.fallbackUsed) {
+      const registry = await loadRegistry()
+      const knownFamilies = [...registry.families.keys()]
+      const knownCapabilities: string[] = []
+      for (const [key] of registry.layers) {
+        if (key.startsWith('capability:')) knownCapabilities.push(key)
+      }
+      const rewrite = await rewritePrompt({ prompt, partner, knownFamilies, knownCapabilities })
+      if (rewrite) {
+        return planPrompt({ prompt: rewrite.canonicalPrompt, partner, forceKind, familyHint, rewriter: false })
+      }
+    }
+  }
+
   const { result: plan, durationMs } = await traced('planPrompt', async () => {
     const text = prompt.toLowerCase()
     const effectivePartner = partner ?? inferPartner(text)

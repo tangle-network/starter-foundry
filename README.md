@@ -138,3 +138,50 @@ if (plan.kind === 'starter') {
   const result = await composeStarter({ spec: plan.spec, outDir })
 }
 ```
+
+## Buildout pipeline (agent-behavior → registry signal)
+
+The `scripts/*-buildout*.mjs` pipeline mines Claude Code session transcripts of real agent buildouts on top of starter-foundry scaffolds and produces two ranked reports: **missing capabilities** (packages agents install because our router didn't attach the right layer) and **bad templates** (files agents rewrite within the first few turns).
+
+### Run it
+
+```bash
+pnpm build
+node scripts/run-buildout-pipeline.mjs   # mine → join → analyze
+```
+
+Outputs:
+- `.evolve/buildout-analysis.json` — per-scenario pass rate, top-added packages, top-rewritten files (committed evidence)
+- `.evolve/capability-gaps.json` — ranked (scenario, capability) router misses
+- `.evolve/traces/buildouts.jsonl` — append-only corpus (gitignored, regenerable)
+
+### Stages
+
+| Script | Input | Output |
+|---|---|---|
+| `mine-buildout-sessions.mjs` | `~/.claude/projects/**/factory-local-phase2-*/*.jsonl` | `.evolve/traces/buildouts.jsonl` |
+| `join-buildout-outcomes.mjs` | VB execution traces + buildouts | buildouts.jsonl annotated with outcomes |
+| `analyze-buildouts.mjs` | joined buildouts | `.evolve/buildout-analysis.json` |
+| `infer-capability-gaps.mjs` | joined buildouts + `registry/package-to-capability.json` | `.evolve/capability-gaps.json` |
+
+### Fault tolerance
+
+- **Resumable**: per-session mtime stored in `.evolve/traces/.buildouts-miner-state.json`. Unchanged sessions skip; next run is ~0ms.
+- **Concurrent-safe**: O_EXCL lock file prevents simultaneous miner entry. Stale locks (PID not alive) auto-steal.
+- **Corruption-tolerant**: a malformed state file is logged and reseeded instead of crashing.
+- **Schema-versioned**: bumping `BUILDOUT_SCHEMA_VERSION` auto-rebuilds from source.
+- **Append-only output**: JSONL with per-row schema version; malformed lines are skipped by every consumer.
+
+### Adding a new source (GLM, GPT, etc.)
+
+Write a new miner script (e.g., `mine-glm-sessions.mjs`) that emits rows conforming to `BuildoutEvent` in `src/lib/buildout-traces.ts` — same append-only JSONL, same schema version, different `sourceModel` value. The join + analyze stages consume it unchanged.
+
+### Extending `registry/package-to-capability.json`
+
+When an agent installs package X, we want our router to pre-attach the capability X maps to. Add an entry:
+
+```json
+"package-name": { "capability": "capability:foo", "confidence": 0.9 }
+```
+
+`tests/package-to-capability.test.ts` validates every capability ID against the live registry at build time.

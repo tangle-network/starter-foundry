@@ -64,12 +64,53 @@ test("composeFromPrompt: empty prompt returns error", async () => {
   assert.equal(result.kind, "error");
 });
 
-test("composeFromPrompt: workspace prompt returns workspace verdict", async () => {
-  const result = await composeFromPrompt({
-    prompt: "Build a multichain DeFi platform with frontend, EVM contracts, and a Solana program",
-    outDir: "/tmp/sf-cfp-ws",
-  });
-  // Multi-project prompts may or may not detect as workspace depending on routing —
-  // but if they do, we return a workspace verdict instead of composing.
-  assert.ok(result.kind === "workspace" || result.kind === "starter");
+test("composeFromPrompt: workspace prompt auto-dispatches to composeWorkspace", async () => {
+  // Regression for blueprint-agent bug report #2 (2026-04-20). Previously
+  // returned kind:'workspace' with reason:'not auto-composed', forcing every
+  // caller to write the same dispatch wrapper. Now composes the workspace
+  // on the caller's behalf.
+  const outDir = await createTempDir("sf-cfp-ws");
+  try {
+    const result = await composeFromPrompt({
+      prompt: "Build a multichain DeFi platform with frontend, EVM contracts, and a Solana program",
+      outDir,
+    });
+
+    // Either the planner routes to workspace (auto-composed now) or starter —
+    // both must produce a composed result, never an error.
+    assert.ok(
+      result.kind === "workspace" || result.kind === "starter",
+      `expected starter or workspace, got ${result.kind}`,
+    );
+    if (result.kind === "workspace") {
+      assert.ok(result.result.projectCount >= 2, `workspace should have ≥2 projects, got ${result.result.projectCount}`);
+      assert.ok(result.contextMessage.includes("workspace"));
+      // Launch plan file is written — the caller can read it without a second import.
+      const lpExists = await fs.access(result.result.launchPlanPath).then(() => true).catch(() => false);
+      assert.ok(lpExists, "launch-plan.json should be written");
+    }
+  } finally {
+    await removeDir(outDir);
+  }
 });
+
+test("planPrompt: incompatible partner-family combos scrubbed at plan time", async () => {
+  // Regression for blueprint-agent bug report #3 (2026-04-20). If planPrompt
+  // routes to remix-ts but the caller supplied partner:'tangle' (not in the
+  // tangle partner-family set), composeStarter used to throw at compose time
+  // with 'Partner tangle is not compatible with family remix-ts'. Now
+  // planPrompt scrubs the partner to null so compose never sees the bad pair.
+  const { planPrompt } = await import("../dist/lib/prompt-planner.js");
+  const plan = await planPrompt({
+    prompt: "Build a Remix app for a marketing team",
+    partner: "tangle",
+  });
+  if (plan.kind === "starter") {
+    assert.equal(
+      plan.spec.partner,
+      null,
+      `remix-ts/tangle is incompatible; partner should be scrubbed to null, got ${plan.spec.partner}`,
+    );
+  }
+});
+

@@ -26,9 +26,26 @@ function arg(k, fallback) {
 const plannerPath = arg('--planner', 'dist/lib/prompt-planner.js')
 const outPath = arg('--out', '.evolve/meta-harness/runs/current.jsonl')
 const smoke = argv.includes('--smoke')
+const useRewriter = argv.includes('--rewriter')
+const useBrief = argv.includes('--brief')
+const configLabel = arg('--label', useBrief ? 'brief' : useRewriter ? 'rewriter' : 'baseline')
 
 const plannerMod = await import(resolve(plannerPath))
 const planPrompt = plannerMod.planPrompt
+
+// Optional brief loader for multi-pursue variants. When provided, the loader
+// module must export `installLoader({ optimizedPath })` which replaces the
+// default brief agent via product-brief's __setTestBrief hook.
+const briefLoaderPath = arg('--brief-loader', null)
+const briefOptimizedPath = process.env.STARTER_FOUNDRY_BRIEF_OPTIMIZED
+if (briefLoaderPath) {
+  const loader = await import(resolve(briefLoaderPath))
+  if (typeof loader.installLoader !== 'function') {
+    console.error(`brief loader ${briefLoaderPath} does not export installLoader`)
+    process.exit(3)
+  }
+  await loader.installLoader({ optimizedPath: briefOptimizedPath })
+}
 if (typeof planPrompt !== 'function') {
   console.error('planner module does not export planPrompt:', plannerPath)
   process.exit(2)
@@ -92,7 +109,7 @@ function extractActual(plan) {
     return {
       kind: 'workspace',
       family: 'workspace',
-      capabilities: (plan.spec?.projects ?? []).flatMap((p) => p.layers ?? []),
+      capabilities: (plan.spec?.projects ?? []).flatMap((p) => p.spec?.layers ?? p.layers ?? []),
     }
   }
   return { kind: plan.kind ?? null, family: null, capabilities: [] }
@@ -107,9 +124,22 @@ function jaccard(a, b) {
   return union === 0 ? 1 : inter / union
 }
 
+// Expected ⊆ actual. Measures "did we ship everything the user asked for?"
+// Not penalized for auto-attaching correct-but-unlisted layers like tailwind+
+// shadcn — those are the planner's job and the right answer for any React
+// SaaS. Recall is the primary metric for ranking planner quality; Jaccard
+// kept alongside for back-compat with prior runs.
+function expectedRecall(actual, expected) {
+  if (!expected || expected.length === 0) return 1
+  const A = new Set(actual)
+  let hit = 0
+  for (const e of expected) if (A.has(e)) hit++
+  return hit / expected.length
+}
+
 const scenarios = smoke ? loadCorpora().slice(0, 5) : loadCorpora()
 
-// warm-up
+// warm-up — always without rewriter to avoid paying LLM on the warmup
 await planPrompt({ prompt: scenarios[0].prompt, partner: scenarios[0].partner })
 
 mkdirSync(dirname(outPath), { recursive: true })
@@ -122,7 +152,7 @@ for (const s of scenarios) {
   let plan = null
   let error = null
   try {
-    plan = await planPrompt({ prompt: s.prompt, partner: s.partner })
+    plan = await planPrompt({ prompt: s.prompt, partner: s.partner, rewriter: useRewriter, brief: useBrief })
   } catch (err) {
     error = String(err?.message ?? err)
   }
@@ -135,12 +165,16 @@ for (const s of scenarios) {
   const capabilityHit = s.expectedCapabilities.length
     ? jaccard(actual.capabilities, s.expectedCapabilities)
     : 1
+  const capabilityRecall = s.expectedCapabilities.length
+    ? expectedRecall(actual.capabilities, s.expectedCapabilities)
+    : 1
   const passed = kindMatch && familyMatch && !error
 
-  perCorpus[s.corpus] ??= { total: 0, pass: 0, sumCapHit: 0, sumLatency: 0 }
+  perCorpus[s.corpus] ??= { total: 0, pass: 0, sumCapHit: 0, sumRecall: 0, sumLatency: 0 }
   perCorpus[s.corpus].total++
   if (passed) perCorpus[s.corpus].pass++
   perCorpus[s.corpus].sumCapHit += capabilityHit
+  perCorpus[s.corpus].sumRecall += capabilityRecall
   perCorpus[s.corpus].sumLatency += latencyMs
 
   lines.push(
@@ -157,6 +191,7 @@ for (const s of scenarios) {
       kindMatch,
       familyMatch,
       capabilityHit,
+      capabilityRecall,
       latencyMs,
       passed,
       error,
@@ -176,6 +211,7 @@ for (const [k, v] of Object.entries(perCorpus)) {
   corporaOut[k] = {
     passRate: v.pass / v.total,
     meanCapHit: v.sumCapHit / v.total,
+    meanRecall: v.sumRecall / v.total,
     meanLatencyMs: v.sumLatency / v.total,
     total: v.total,
   }
@@ -184,6 +220,7 @@ for (const [k, v] of Object.entries(perCorpus)) {
 const agg = {
   _aggregate: true,
   planner: plannerPath,
+  config: { label: configLabel, rewriter: useRewriter, brief: useBrief },
   scenarios: lines.length,
   passRate: overall,
   meanMs: mean,
@@ -196,6 +233,8 @@ const agg = {
     latencyP95: p(0.95),
     capabilityHitMean:
       Object.values(perCorpus).reduce((a, v) => a + v.sumCapHit, 0) / lines.length,
+    capabilityRecallMean:
+      Object.values(perCorpus).reduce((a, v) => a + v.sumRecall, 0) / lines.length,
   },
   perCorpus: corporaOut,
   timestamp: new Date().toISOString(),
@@ -211,6 +250,8 @@ console.log(`passRate: ${overall.toFixed(4)}`)
 console.log(`latency p50/p95/p99: ${p(0.5).toFixed(3)} / ${p(0.95).toFixed(3)} / ${p(0.99).toFixed(3)} ms`)
 console.log(`mean: ${mean.toFixed(3)} ms`)
 for (const [k, v] of Object.entries(corporaOut)) {
-  console.log(`  ${k}: pass=${v.passRate.toFixed(3)} capHit=${v.meanCapHit.toFixed(3)} meanMs=${v.meanLatencyMs.toFixed(3)} (n=${v.total})`)
+  console.log(
+    `  ${k}: pass=${v.passRate.toFixed(3)} capHit=${v.meanCapHit.toFixed(3)} recall=${v.meanRecall.toFixed(3)} meanMs=${v.meanLatencyMs.toFixed(3)} (n=${v.total})`,
+  )
 }
 console.log(`wrote: ${outPath}`)

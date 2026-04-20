@@ -68,7 +68,7 @@
     },
     {
       "type": "file-exists",
-      "path": "src/main.tsx"
+      "path": "src/main.ts"
     },
     {
       "type": "file-exists",
@@ -100,7 +100,7 @@
     ],
     "entrypoints": [
       "index.html",
-      "src/main.tsx",
+      "src/main.ts",
       "src/App.tsx",
       "vite.config.ts"
     ],

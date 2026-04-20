@@ -4,13 +4,13 @@
     "version": 1
   },
   "brand": {
-    "name": "Starter Foundry",
-    "tagline": "A fullstack starter you can personalize."
+    "name": "{{projectName}}",
+    "tagline": "{{subheadline}}"
   },
   "hero": {
-    "eyebrow": "scaffold",
-    "headline": "Starter Foundry Fullstack App",
-    "subheadline": "A live web shell plus a typed API seam for the agent to extend."
+    "eyebrow": "{{projectName}}",
+    "headline": "{{headline}}",
+    "subheadline": "{{subheadline}}"
   },
   "theme": {
     "_doc": "Optional accent color for the page. Read by personalize.css via CSS custom properties. Use HSL space-separated values for compatibility with hsl() consumers.",

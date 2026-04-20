@@ -167,3 +167,99 @@ export const VERTICAL_TO_PARTNER: Record<string, string> = {
 export function isBuildoutSlug(slug: string): boolean {
   return slug.startsWith('-private-var-folders-') && slug.includes('factory-local-phase2-')
 }
+
+// ---------------------------------------------------------------------------
+// SDK entrypoint — downstream consumers (blueprint-agent, VB, any bench
+// runner) call this to emit a buildout event into the pipeline. The event is
+// appended (O_APPEND, multi-writer safe) to the same .evolve/traces/
+// buildouts.jsonl the miner writes to, so analyze-buildouts consumes both
+// sources without change.
+
+export interface BuildoutEventInput {
+  /** Unique session id — any opaque stable string from the caller's run. */
+  sessionId: string
+  /** e.g. "blueprint-agent-vb", "claude-code", "glm-5-1". Required for per-model rollups. */
+  sourceModel: string
+  /** Source path (JSONL, run dir, session file) for audit + debugging. */
+  sourcePath?: string
+  scenarioId?: string | null
+  partnerGuess?: string | null
+  replayRound?: number | null
+  firstTs?: string | null
+  lastTs?: string | null
+  initialPrompt?: string | null
+  addedPackages?: BuildoutEvent['addedPackages']
+  addedDirs?: string[]
+  rewrittenFiles?: string[]
+  outcome?: BuildoutOutcome | null
+}
+
+/**
+ * Append a BuildoutEvent to the pipeline. Atomic (O_APPEND) — safe to call
+ * from multiple concurrent processes. Creates the containing directory on
+ * first call.
+ *
+ * Example (blueprint-agent):
+ *
+ * ```ts
+ * import { emitBuildoutEvent } from '@tangle-network/starter-foundry'
+ *
+ * await emitBuildoutEvent({
+ *   sessionId: run.id,
+ *   sourceModel: 'blueprint-agent-vb',
+ *   sourcePath: run.manifestPath,
+ *   scenarioId: run.scenarioId,
+ *   partnerGuess: run.verticalId,
+ *   replayRound: run.round,
+ *   initialPrompt: run.prompt,
+ *   addedPackages: run.packagesInstalled.map((n) => ({ pm: 'pnpm', name: n })),
+ *   addedDirs: run.dirsCreated,
+ *   rewrittenFiles: run.filesEdited,
+ *   outcome: {
+ *     source: 'vb-execution',
+ *     allPass: run.verification.allPass,
+ *     blendedScore: run.verification.blendedScore,
+ *     failingLayers: run.verification.failingLayers,
+ *     shotsRun: run.verification.shotsRun,
+ *     shotsToConvergence: run.verification.shotsToConvergence,
+ *     wallMs: run.wallMs,
+ *     toolCallsTotal: run.toolCallsTotal,
+ *   },
+ * })
+ * ```
+ *
+ * Downstream: our capability-gap detector, template-rewrite analyzer, and
+ * meta-harness training data will pick up these events on the next
+ * `run-buildout-pipeline.mjs` invocation.
+ */
+export async function emitBuildoutEvent(
+  input: BuildoutEventInput,
+  options: { path?: string } = {},
+): Promise<BuildoutEvent> {
+  if (!input.sessionId) throw new Error('emitBuildoutEvent: sessionId is required')
+  if (!input.sourceModel) throw new Error('emitBuildoutEvent: sourceModel is required')
+
+  const event: BuildoutEvent = {
+    schemaVersion: BUILDOUT_SCHEMA_VERSION,
+    sessionId: input.sessionId,
+    sourcePath: input.sourcePath ?? '',
+    sourceModel: input.sourceModel,
+    scenarioId: input.scenarioId ?? null,
+    partnerGuess: input.partnerGuess ?? null,
+    replayRound: input.replayRound ?? null,
+    firstTs: input.firstTs ?? null,
+    lastTs: input.lastTs ?? null,
+    initialPrompt: input.initialPrompt ?? null,
+    addedPackages: input.addedPackages ?? [],
+    addedDirs: input.addedDirs ?? [],
+    rewrittenFiles: input.rewrittenFiles ?? [],
+    outcome: input.outcome ?? null,
+  }
+
+  const { mkdir, appendFile } = await import('node:fs/promises')
+  const { dirname } = await import('node:path')
+  const targetPath = options.path ?? DEFAULT_PATHS.buildoutsJsonl
+  await mkdir(dirname(targetPath), { recursive: true })
+  await appendFile(targetPath, `${JSON.stringify(event)}\n`, 'utf8')
+  return event
+}

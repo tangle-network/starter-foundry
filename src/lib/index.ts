@@ -25,6 +25,8 @@ export { listIndustries, getIndustry, PERSONALIZE_CSS_PATHS } from './industries
 export type { IndustryInfo } from './industries.js'
 export { on, off, emit, traced } from './telemetry.js'
 export type { RouteEvent, ComposeEvent, CapabilityEvent } from './telemetry.js'
+export { emitBuildoutEvent, BUILDOUT_SCHEMA_VERSION, DEFAULT_PATHS } from './buildout-traces.js'
+export type { BuildoutEvent, BuildoutEventInput, BuildoutOutcome } from './buildout-traces.js'
 export type {
   ComposeSpec,
   WorkspaceSpec,

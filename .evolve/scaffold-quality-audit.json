@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-20T04:49:59.537Z",
+  "generatedAt": "2026-04-20T05:00:41.232Z",
   "audits": [
     {
       "layerId": "framework:agent-service-py",
@@ -10,7 +10,7 @@
           "phase": "install",
           "cmd": "python3 -m compileall .",
           "ok": true,
-          "durationMs": 112.21083300000001,
+          "durationMs": 192.94370799999996,
           "stderrTail": ""
         }
       ]
@@ -24,8 +24,8 @@
           "phase": "install",
           "cmd": "cargo check",
           "ok": true,
-          "durationMs": 586.2351659999999,
-          "stderrTail": "    Checking audit-agent-service-rust v0.1.0 (/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/audit-agent-service-rust-1XOMik)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.40s\n"
+          "durationMs": 809.387375,
+          "stderrTail": "    Checking audit-agent-service-rust v0.1.0 (/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/audit-agent-service-rust-Pf5SvX)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.57s\n"
         }
       ]
     },
@@ -38,7 +38,7 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": true,
-          "durationMs": 216.132875,
+          "durationMs": 561.5768329999999,
           "stderrTail": ""
         },
         {
@@ -57,7 +57,7 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": true,
-          "durationMs": 3699.334417,
+          "durationMs": 7350.816708,
           "stderrTail": ""
         },
         {
@@ -76,16 +76,16 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": true,
-          "durationMs": 997.0202919999992,
+          "durationMs": 3517.377792000001,
           "stderrTail": ""
         },
         {
           "phase": "typecheck",
           "cmd": "pnpm exec tsc --noEmit",
-          "ok": false,
-          "durationMs": 727.7515000000012,
+          "ok": true,
+          "durationMs": 5771.648208999999,
           "stderrTail": "",
-          "stdoutTail": "src/background.ts(1,1): error TS2304: Cannot find name 'chrome'.\ntsconfig.json(3,15): error TS6046: Argument for '--target' option must be: 'es3', 'es5', 'es6', 'es2015', 'es2016', 'es2017', 'es2018', 'es2019', 'es2020', 'es2021', 'esnext'.\ntsconfig.json(6,25): error TS6046: Argument for '--moduleResolution' option must be: 'node', 'classic', 'node12', 'nodenext'.\n"
+          "stdoutTail": ""
         }
       ]
     },
@@ -98,14 +98,14 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": true,
-          "durationMs": 843.002292000001,
+          "durationMs": 1441.3863749999982,
           "stderrTail": ""
         },
         {
           "phase": "typecheck",
           "cmd": "pnpm exec tsc --noEmit",
           "ok": true,
-          "durationMs": 1524.8100419999992,
+          "durationMs": 5281.637375000002,
           "stderrTail": "",
           "stdoutTail": ""
         }
@@ -120,7 +120,7 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": true,
-          "durationMs": 3252.551958,
+          "durationMs": 5068.216291000004,
           "stderrTail": ""
         },
         {
@@ -153,14 +153,14 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": true,
-          "durationMs": 4318.492957999999,
+          "durationMs": 3361.504166999999,
           "stderrTail": ""
         },
         {
           "phase": "typecheck",
           "cmd": "pnpm exec tsc --noEmit",
           "ok": true,
-          "durationMs": 2526.9637920000023,
+          "durationMs": 5177.6521250000005,
           "stderrTail": "",
           "stdoutTail": ""
         }
@@ -175,7 +175,7 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": true,
-          "durationMs": 306.60983300000225,
+          "durationMs": 685.5445840000029,
           "stderrTail": ""
         },
         {
@@ -194,14 +194,14 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": true,
-          "durationMs": 5881.198459000003,
+          "durationMs": 13341.907500000001,
           "stderrTail": ""
         },
         {
           "phase": "typecheck",
           "cmd": "pnpm exec tsc --noEmit",
           "ok": false,
-          "durationMs": 1405.3499999999985,
+          "durationMs": 4947.064459000001,
           "stderrTail": "",
           "stdoutTail": " Property 'result' must be of type 'string | ArrayBuffer | null', but here has type 'string | ArrayBuffer'.\nnode_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.dom.d.ts(23,1): error TS6200: Definitions of the following identifiers conflict with those in another file: EndingType, BlobPart, BufferSource, FormData, RequestInfo, XMLHttpRequestResponseType, AbortSignal, AbortController\n"
         }
@@ -216,7 +216,7 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": false,
-          "durationMs": 451.87525000000096,
+          "durationMs": 1056.1100000000006,
           "stderrTail": ""
         }
       ]
@@ -230,7 +230,7 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": false,
-          "durationMs": 893.614207999999,
+          "durationMs": 1769.594333999994,
           "stderrTail": ""
         }
       ]
@@ -244,7 +244,7 @@
           "phase": "install",
           "cmd": "forge build",
           "ok": true,
-          "durationMs": 312.5130410000056,
+          "durationMs": 704.5495410000003,
           "stderrTail": ""
         }
       ]
@@ -258,14 +258,14 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": true,
-          "durationMs": 6065.737375000004,
+          "durationMs": 6369.360834000006,
           "stderrTail": ""
         },
         {
           "phase": "typecheck",
           "cmd": "pnpm exec tsc --noEmit",
           "ok": true,
-          "durationMs": 1468.030832999997,
+          "durationMs": 7923.394042,
           "stderrTail": "",
           "stdoutTail": ""
         }
@@ -280,7 +280,7 @@
           "phase": "install",
           "cmd": "go build ./...",
           "ok": true,
-          "durationMs": 724.8942920000045,
+          "durationMs": 1612.5541659999872,
           "stderrTail": ""
         }
       ]
@@ -294,7 +294,7 @@
           "phase": "install",
           "cmd": "go build ./...",
           "ok": true,
-          "durationMs": 177.0762920000052,
+          "durationMs": 371.2381669999886,
           "stderrTail": ""
         }
       ]
@@ -308,16 +308,16 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": true,
-          "durationMs": 7493.847750000001,
+          "durationMs": 12746.210416000002,
           "stderrTail": ""
         },
         {
           "phase": "typecheck",
           "cmd": "pnpm exec tsc --noEmit",
-          "ok": false,
-          "durationMs": 1037.335500000001,
+          "ok": true,
+          "durationMs": 7453.279624999996,
           "stderrTail": "",
-          "stdoutTail": "test/StarterToken.test.ts(1,34): error TS2591: Cannot find name 'node:assert'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.\n"
+          "stdoutTail": ""
         }
       ]
     },
@@ -330,7 +330,7 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": true,
-          "durationMs": 223.8440000000046,
+          "durationMs": 847.8723749999917,
           "stderrTail": ""
         },
         {
@@ -356,16 +356,16 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": true,
-          "durationMs": 4937.387666999995,
+          "durationMs": 25729.459333000006,
           "stderrTail": ""
         },
         {
           "phase": "typecheck",
           "cmd": "pnpm exec tsc --noEmit",
-          "ok": false,
-          "durationMs": 1001.0944999999992,
+          "ok": true,
+          "durationMs": 14722.447625,
           "stderrTail": "",
-          "stdoutTail": "14/node_modules/@types/react/ts5.0/index.d.ts(442,11): error TS2304: Cannot find name 'Iterable'.\ntsconfig.json(3,15): error TS6046: Argument for '--target' option must be: 'es3', 'es5', 'es6', 'es2015', 'es2016', 'es2017', 'es2018', 'es2019', 'es2020', 'es2021', 'esnext'.\ntsconfig.json(5,25): error TS6046: Argument for '--moduleResolution' option must be: 'node', 'classic', 'node12', 'nodenext'.\n"
+          "stdoutTail": ""
         }
       ]
     },
@@ -378,7 +378,7 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": true,
-          "durationMs": 217.22562499999913,
+          "durationMs": 1170.3422079999873,
           "stderrTail": ""
         },
         {
@@ -397,7 +397,7 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": true,
-          "durationMs": 200.7615420000002,
+          "durationMs": 1106.4935830000031,
           "stderrTail": ""
         },
         {
@@ -416,7 +416,7 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": true,
-          "durationMs": 848.3423750000002,
+          "durationMs": 3116.1413750000065,
           "stderrTail": ""
         },
         {
@@ -435,7 +435,7 @@
           "phase": "install",
           "cmd": "python3 -m compileall .",
           "ok": true,
-          "durationMs": 99.85024999999587,
+          "durationMs": 431.80550000001676,
           "stderrTail": ""
         }
       ]
@@ -449,7 +449,7 @@
           "phase": "install",
           "cmd": "python3 -m compileall .",
           "ok": true,
-          "durationMs": 92.17204199999833,
+          "durationMs": 271.43116700000246,
           "stderrTail": ""
         }
       ]
@@ -463,7 +463,7 @@
           "phase": "install",
           "cmd": "python3 -m compileall .",
           "ok": true,
-          "durationMs": 88.96758400000544,
+          "durationMs": 197.14179100000183,
           "stderrTail": ""
         }
       ]
@@ -477,16 +477,16 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": true,
-          "durationMs": 2663.306792000003,
+          "durationMs": 13554.223041999998,
           "stderrTail": ""
         },
         {
           "phase": "typecheck",
           "cmd": "pnpm exec tsc --noEmit",
           "ok": false,
-          "durationMs": 967.9322909999901,
+          "durationMs": 21044.852542000008,
           "stderrTail": "",
-          "stdoutTail": "g.ts(3,25): error TS2792: Cannot find module '@tailwindcss/vite'. Did you mean to set the 'moduleResolution' option to 'node', or to add aliases to the 'paths' option?\nvite.config.ts(4,18): error TS2792: Cannot find module 'path'. Did you mean to set the 'moduleResolution' option to 'node', or to add aliases to the 'paths' option?\nvite.config.ts(10,25): error TS2304: Cannot find name '__dirname'.\n"
+          "stdoutTail": "src/App.tsx(1,24): error TS2307: Cannot find module '@/components/ui/button' or its corresponding type declarations.\nsrc/App.tsx(2,75): error TS2307: Cannot find module '@/components/ui/card' or its corresponding type declarations.\nsrc/App.tsx(3,23): error TS2307: Cannot find module '@/components/ui/badge' or its corresponding type declarations.\n"
         }
       ]
     },
@@ -499,7 +499,7 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": true,
-          "durationMs": 5943.203958000013,
+          "durationMs": 15679.825458000007,
           "stderrTail": ""
         },
         {
@@ -518,8 +518,8 @@
           "phase": "install",
           "cmd": "cargo check",
           "ok": true,
-          "durationMs": 520.0090410000121,
-          "stderrTail": "    Checking audit-rust-http v0.1.0 (/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/audit-rust-http-48x3JJ)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.34s\n"
+          "durationMs": 1271.0755000000063,
+          "stderrTail": "    Checking audit-rust-http v0.1.0 (/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/audit-rust-http-GBu4aW)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.84s\n"
         }
       ]
     },
@@ -532,8 +532,8 @@
           "phase": "install",
           "cmd": "cargo check",
           "ok": true,
-          "durationMs": 297.41183399999863,
-          "stderrTail": "    Checking audit-solana-native-rust v0.1.0 (/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/audit-solana-native-rust-VCsqcp)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.12s\n"
+          "durationMs": 593.8264999999956,
+          "stderrTail": "    Checking audit-solana-native-rust v0.1.0 (/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/audit-solana-native-rust-wobvUj)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.27s\n"
         }
       ]
     },
@@ -546,8 +546,8 @@
           "phase": "install",
           "cmd": "cargo check",
           "ok": true,
-          "durationMs": 234.7550409999967,
-          "stderrTail": "    Checking audit-stylus-contracts v0.1.0 (/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/audit-stylus-contracts-yzmLmE)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.06s\n"
+          "durationMs": 451.86999999999534,
+          "stderrTail": "    Checking audit-stylus-contracts v0.1.0 (/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/audit-stylus-contracts-5h9oKl)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.13s\n"
         }
       ]
     },
@@ -560,7 +560,7 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": true,
-          "durationMs": 1243.6059999999998,
+          "durationMs": 3641.009166999982,
           "stderrTail": ""
         },
         {
@@ -579,7 +579,7 @@
           "phase": "install",
           "cmd": "cargo check",
           "ok": false,
-          "durationMs": 3219.2224579999893,
+          "durationMs": 8681.537750000018,
           "stderrTail": "r@0.2.0-alpha.2 requires rustc 1.91\n  blueprint-runner@0.2.0-alpha.2 requires rustc 1.91\n  blueprint-sdk@0.2.0-alpha.2 requires rustc 1.91\n  blueprint-tangle-extra@0.2.0-alpha.2 requires rustc 1.91\nEither upgrade rustc or select compatible dependency versions with\n`cargo update <name>@<current-ver> --precise <compatible-ver>`\nwhere `<compatible-ver>` is the latest version supporting rustc 1.88.0\n\n"
         }
       ]
@@ -593,14 +593,14 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": true,
-          "durationMs": 1835.3422500000015,
+          "durationMs": 5474.076000000001,
           "stderrTail": ""
         },
         {
           "phase": "typecheck",
           "cmd": "pnpm exec tsc --noEmit",
           "ok": true,
-          "durationMs": 1799.9481249999953,
+          "durationMs": 7812.206708999991,
           "stderrTail": "",
           "stdoutTail": ""
         }
@@ -615,7 +615,7 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": true,
-          "durationMs": 1347.3798750000133,
+          "durationMs": 7829.2336249999935,
           "stderrTail": ""
         },
         {
@@ -634,7 +634,7 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": true,
-          "durationMs": 1005.9935419999965,
+          "durationMs": 4832.716666000022,
           "stderrTail": ""
         },
         {
@@ -653,7 +653,7 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": true,
-          "durationMs": 226.22999999999593,
+          "durationMs": 652.3784159999923,
           "stderrTail": ""
         },
         {
@@ -672,7 +672,7 @@
           "phase": "install",
           "cmd": "pnpm install --no-frozen-lockfile",
           "ok": true,
-          "durationMs": 201.9229170000035,
+          "durationMs": 659.3096670000232,
           "stderrTail": ""
         },
         {

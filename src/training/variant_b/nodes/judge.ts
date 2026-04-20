@@ -107,17 +107,3 @@ export async function judgeNode(input: JudgeInput): Promise<JudgeOutput> {
 
   return { scored }
 }
-
-export async function scoreCandidateStandalone(
-  candidate: ArchetypeCandidate,
-  llm?: AxAIService,
-): Promise<{ score: CandidateScore; promotable: boolean }> {
-  const out = await judgeNode({
-    candidates: [candidate],
-    judgePath: '.evolve/judge/variant_b.jsonl',
-    llm,
-    useLLM: llm !== undefined,
-  })
-  const first = out.scored[0]!
-  return { score: first.score, promotable: first.score.promotable }
-}

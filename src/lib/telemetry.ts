@@ -118,11 +118,11 @@ function getTracer(): OtelTracer | null {
   return api?.trace.getTracer('starter-foundry', '0.1.0') ?? null
 }
 
-export function startSpan(name: string): OtelSpan | null {
+function startSpan(name: string): OtelSpan | null {
   return getTracer()?.startSpan(name) ?? null
 }
 
-export function endSpan(span: OtelSpan | null, attrs?: Record<string, string | number | boolean>): void {
+function endSpan(span: OtelSpan | null, attrs?: Record<string, string | number | boolean>): void {
   if (!span) return
   if (attrs) {
     for (const [k, v] of Object.entries(attrs)) {
@@ -134,7 +134,7 @@ export function endSpan(span: OtelSpan | null, attrs?: Record<string, string | n
   span.end()
 }
 
-export function failSpan(span: OtelSpan | null, error: string): void {
+function failSpan(span: OtelSpan | null, error: string): void {
   if (!span) return
   const api = getOtel()
   if (api) span.setStatus({ code: api.SpanStatusCode.ERROR, message: error })

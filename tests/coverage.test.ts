@@ -196,6 +196,7 @@ const CAP_PROMPTS: Record<string, { prompt: string; family: string }> = {
   "capability:ai-agent-orchestrator": { prompt: "Build a multi-agent orchestrator UI with tool calls and agent workflow", family: "nextjs-ts" },
   "capability:ai-rag-chat": { prompt: "Build a Next.js RAG chatbot with source citations and retrieval", family: "nextjs-ts" },
   "capability:ai-voice-chat": { prompt: "Build a voice agent chat interface with speech-to-text", family: "nextjs-ts" },
+  "capability:zk-browser": { prompt: "Build a privacy-preserving mixer UI with commitment deposits and nullifier-based withdrawals using zk proofs", family: "react-vite-ts" },
 };
 
 for (const [capId, config] of Object.entries(CAP_PROMPTS)) {

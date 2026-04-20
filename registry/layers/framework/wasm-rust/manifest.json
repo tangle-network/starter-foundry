@@ -1,0 +1,19 @@
+{
+  "id": "wasm-rust",
+  "description": "Rust-to-WASM framework layer: sample #[wasm_bindgen] exports, TS loader, index.html, and a minimal DOM wire-up.",
+  "appliesTo": ["wasm-rust"],
+  "files": [
+    {
+      "source": "files/lib.rs",
+      "target": "src/lib.rs"
+    },
+    {
+      "source": "files/main.ts",
+      "target": "src/main.ts"
+    },
+    {
+      "source": "files/index.html",
+      "target": "index.html"
+    }
+  ]
+}

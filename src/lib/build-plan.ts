@@ -1,3 +1,6 @@
+import { ax } from '@ax-llm/ax'
+import { createLLM, isLLMAvailable } from './llm.js'
+import type { ProductBrief } from './product-brief.js'
 import type { BuildPlan, ComposeSpec, ResolvedComponents } from '../types.js'
 
 const FAMILY_ARCHITECTURE: Record<string, string[]> = {
@@ -115,6 +118,86 @@ export function generateBuildPlan(
     designDirective,
     presetCode,
   }
+}
+
+const enhancerAgent = ax(
+  'userPrompt:string, family:string, layers:string[], composedFiles:string[], templateFirstMoves:string[] -> firstMoves:string[], openQuestions:string[]',
+)
+
+export interface EnhanceArgs {
+  spec: ComposeSpec
+  base: BuildPlan
+  composedFiles: string[]
+}
+
+export type EnhancerFn = (args: EnhanceArgs) => Promise<BuildPlan>
+
+let testEnhancerOverride: EnhancerFn | null = null
+export function __setTestEnhancer(fn: EnhancerFn | null): void {
+  testEnhancerOverride = fn
+}
+
+async function enhanceBuildPlanWithLLMImpl({ spec, base, composedFiles }: EnhanceArgs): Promise<BuildPlan> {
+  if (!isLLMAvailable()) return base
+  const prompt = spec.userPrompt ?? ''
+  if (!prompt) return base
+
+  const llm = createLLM()
+  let raw: { firstMoves?: string[]; openQuestions?: string[] }
+  try {
+    raw = (await enhancerAgent.forward(llm, {
+      userPrompt: prompt,
+      family: spec.family,
+      layers: spec.layers ?? [],
+      composedFiles,
+      templateFirstMoves: base.firstMoves,
+    })) as { firstMoves?: string[]; openQuestions?: string[] }
+  } catch {
+    return base
+  }
+
+  const firstMoves = Array.isArray(raw.firstMoves) && raw.firstMoves.length > 0
+    ? raw.firstMoves.map((m) => String(m)).filter(Boolean)
+    : base.firstMoves
+
+  const openQuestions = Array.isArray(raw.openQuestions)
+    ? raw.openQuestions.map((q) => String(q)).filter(Boolean)
+    : []
+
+  const augmented: BuildPlan = {
+    ...base,
+    firstMoves,
+  }
+  if (openQuestions.length > 0) {
+    augmented.firstMoves = [...firstMoves, ...openQuestions.map((q) => `OPEN: ${q}`)]
+  }
+  return augmented
+}
+
+export function enhanceBuildPlanWithLLM(args: EnhanceArgs): Promise<BuildPlan> {
+  return (testEnhancerOverride ?? enhanceBuildPlanWithLLMImpl)(args)
+}
+
+/**
+ * Merge a ProductBrief into a BuildPlan. The brief is generated once (by
+ * planPrompt({ brief: true })) and reused here so context-pack doesn't pay
+ * for a second LLM call. Fields:
+ *   - vision, milestones, testingPlan, e2ePlan, securityConcerns, openQuestions
+ *     attach as new BuildPlan fields
+ *   - taskChecklist prepends to firstMoves (richer "what to do next")
+ */
+export function mergeBriefIntoBuildPlan(base: BuildPlan, brief: ProductBrief): BuildPlan {
+  const merged: BuildPlan = { ...base }
+  if (brief.vision) merged.vision = brief.vision
+  if (brief.milestones.length > 0) merged.milestones = brief.milestones
+  if (brief.testingPlan.length > 0) merged.testingPlan = brief.testingPlan
+  if (brief.e2ePlan.length > 0) merged.e2ePlan = brief.e2ePlan
+  if (brief.securityConcerns.length > 0) merged.securityConcerns = brief.securityConcerns
+  if (brief.openQuestions.length > 0) merged.openQuestions = brief.openQuestions
+  if (brief.taskChecklist.length > 0) {
+    merged.firstMoves = [...brief.taskChecklist, ...base.firstMoves]
+  }
+  return merged
 }
 
 const FRONTEND_FAMILIES = new Set([

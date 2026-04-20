@@ -151,6 +151,18 @@ export interface BuildPlan {
   designDirective: string | null
   /** shadcn preset code for `pnpm dlx shadcn@latest init --preset <code>` */
   presetCode?: string | null
+  /** Vision statement (2-4 sentences) — only populated when a product brief was generated. */
+  vision?: string
+  /** Ordered major phases with success criteria. Populated from product brief. */
+  milestones?: string[]
+  /** Unit/integration test plan items. Populated from product brief. */
+  testingPlan?: string[]
+  /** End-to-end user-journey coverage items. Populated from product brief. */
+  e2ePlan?: string[]
+  /** Red-team / audit surface concerns. Populated from product brief. */
+  securityConcerns?: string[]
+  /** Things the user should clarify. Populated from product brief. */
+  openQuestions?: string[]
 }
 
 export interface BuildHints {
@@ -235,6 +247,8 @@ export interface StarterPromptPlan {
   confidence: Confidence
   reasons: string[]
   spec: ComposeSpec
+  /** Opaque product brief object attached when planPrompt was called with brief: true. */
+  brief?: unknown
 }
 
 export interface WorkspacePromptPlan {
@@ -242,6 +256,8 @@ export interface WorkspacePromptPlan {
   confidence: Confidence
   reasons: string[]
   spec: WorkspaceSpec
+  /** Opaque product brief object attached when planPrompt was called with brief: true. */
+  brief?: unknown
 }
 
 export type PromptPlan = StarterPromptPlan | WorkspacePromptPlan

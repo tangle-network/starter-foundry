@@ -8,3 +8,27 @@ package-lock.json
 *.log
 .wrangler/
 .claude/
+
+# Multi-pursue / evolve generated artifacts — reproducible from commits + eval runs
+.evolve/product-brief-cache.json
+.evolve/rewriter-cache.json
+.evolve/traces/
+.evolve/optimized/
+.evolve/judge/
+.evolve/ideas/
+.evolve/mining/
+.evolve/multi-pursue/runs/
+.evolve/meta-harness/runs/
+.evolve/critical-audit/
+.evolve/reflections/
+.evolve/pursuits/
+.evolve/experiments.jsonl
+.evolve/visual-audit-baseline.json
+
+# Keep as committed evidence:
+#   .evolve/multi-pursue/config.json
+#   .evolve/multi-pursue/frontier.json
+#   .evolve/multi-pursue/evolution.jsonl
+#   .evolve/current.json
+#   .evolve/scorecard.json
+#   .evolve/progress.md

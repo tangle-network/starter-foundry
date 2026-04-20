@@ -275,6 +275,31 @@ export const ADMIN_ARCHETYPE_SIGNALS = [
   'admin panel',
 ]
 
+// Browser-native ZK: products where proofs are generated client-side
+// (snarkjs + circom) rather than on a Rust prover service. Mixers, private
+// voting, anonymous credentials, commitment-nullifier flows. Triggers
+// capability:zk-browser attachment on web-producing families.
+export const ZK_BROWSER_ARCHETYPE_SIGNALS = [
+  'mixer',
+  'privacy-preserving mixer',
+  'private voting',
+  'anonymous voting',
+  'anonymous credential',
+  'nullifier',
+  'commitment preimage',
+  'merkle root display',
+  'zk proof',
+  'zk-snark',
+  'zero-knowledge proof',
+  'circom',
+  'zk mixer',
+  'verify your note',
+  'downloadable note',
+  'stealth address',
+  'private deposit',
+  'private withdraw',
+]
+
 // Auth/portal archetypes — client portals, tenant portals, customer-specific
 // views with login flows.
 export const AUTH_ARCHETYPE_SIGNALS = [

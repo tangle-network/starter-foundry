@@ -141,6 +141,39 @@ async function mergeMediaManifests(outDir: string): Promise<MediaSlot[]> {
   return merged.slots
 }
 
+// Merge each applied layer's declared packageDeps into the composed
+// package.json. Runs after every file is written so the family's package.json
+// is on disk; we read it, merge, write back. No-op if the family has no
+// package.json (Rust/Go/Python scaffolds).
+async function mergeLayerPackageDeps(outDir: string, layers: LayerManifest[]): Promise<void> {
+  const pkgPath = path.join(outDir, 'package.json')
+  let pkg: Record<string, unknown>
+  try {
+    pkg = JSON.parse(await fs.readFile(pkgPath, 'utf8'))
+  } catch {
+    return
+  }
+
+  let touched = false
+  for (const layer of layers) {
+    const deps = layer.packageDeps
+    if (!deps) continue
+    if (deps.dependencies) {
+      const existing = (pkg.dependencies ?? {}) as Record<string, string>
+      pkg.dependencies = { ...existing, ...deps.dependencies }
+      touched = true
+    }
+    if (deps.devDependencies) {
+      const existing = (pkg.devDependencies ?? {}) as Record<string, string>
+      pkg.devDependencies = { ...existing, ...deps.devDependencies }
+      touched = true
+    }
+  }
+
+  if (!touched) return
+  await fs.writeFile(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`, 'utf8')
+}
+
 async function composeStarterInner(spec: ComposeSpec, outDir: string): Promise<ComposeResult> {
   const components = await resolveComponents(spec)
   const variables = buildVariables(
@@ -174,6 +207,8 @@ async function composeStarterInner(spec: ComposeSpec, outDir: string): Promise<C
       filesWritten.push(resolvedTarget)
     }
   }
+
+  await mergeLayerPackageDeps(outDir, components.layers)
 
   const composeReport = {
     spec,

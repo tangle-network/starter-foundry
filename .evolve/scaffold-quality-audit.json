@@ -1,0 +1,686 @@
+{
+  "generatedAt": "2026-04-20T05:00:41.232Z",
+  "audits": [
+    {
+      "layerId": "framework:agent-service-py",
+      "family": "agent-service-py",
+      "pm": "python3",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "python3 -m compileall .",
+          "ok": true,
+          "durationMs": 192.94370799999996,
+          "stderrTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:agent-service-rust",
+      "family": "agent-service-rust",
+      "pm": "cargo",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "cargo check",
+          "ok": true,
+          "durationMs": 809.387375,
+          "stderrTail": "    Checking audit-agent-service-rust v0.1.0 (/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/audit-agent-service-rust-Pf5SvX)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.57s\n"
+        }
+      ]
+    },
+    {
+      "layerId": "framework:agent-service-ts",
+      "family": "agent-service-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 561.5768329999999,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:angular-ts",
+      "family": "angular-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 7350.816708,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:browser-extension-ts",
+      "family": "browser-extension-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 3517.377792000001,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 5771.648208999999,
+          "stderrTail": "",
+          "stdoutTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:cli-ts",
+      "family": "cli-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 1441.3863749999982,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 5281.637375000002,
+          "stderrTail": "",
+          "stdoutTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:cloudflare-worker-ts",
+      "family": "cloudflare-worker-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 5068.216291000004,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:dspy-pipeline-py",
+      "family": "dspy-pipeline-py",
+      "phase": "detect",
+      "skipped": "no-package-manager",
+      "files": "no recognizable project manifest"
+    },
+    {
+      "layerId": "framework:eigenlayer-avs",
+      "family": "eigenlayer-avs",
+      "phase": "detect",
+      "skipped": "no-package-manager",
+      "files": "no recognizable project manifest"
+    },
+    {
+      "layerId": "framework:electron-desktop-ts",
+      "family": "electron-desktop-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 3361.504166999999,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 5177.6521250000005,
+          "stderrTail": "",
+          "stdoutTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:evm-infra-ts",
+      "family": "evm-infra-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 685.5445840000029,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:expo-react-native-ts",
+      "family": "expo-react-native-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 13341.907500000001,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": false,
+          "durationMs": 4947.064459000001,
+          "stderrTail": "",
+          "stdoutTail": " Property 'result' must be of type 'string | ArrayBuffer | null', but here has type 'string | ArrayBuffer'.\nnode_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.dom.d.ts(23,1): error TS6200: Definitions of the following identifiers conflict with those in another file: EndingType, BlobPart, BufferSource, FormData, RequestInfo, XMLHttpRequestResponseType, AbortSignal, AbortController\n"
+        }
+      ]
+    },
+    {
+      "layerId": "framework:fhenix-contracts",
+      "family": "fhenix-contracts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": false,
+          "durationMs": 1056.1100000000006,
+          "stderrTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:fhevm-contracts",
+      "family": "fhevm-contracts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": false,
+          "durationMs": 1769.594333999994,
+          "stderrTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:forge-foundation",
+      "family": "forge-contracts",
+      "pm": "forge",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "forge build",
+          "ok": true,
+          "durationMs": 704.5495410000003,
+          "stderrTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:fullstack-node-ts",
+      "family": "fullstack-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 6369.360834000006,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 7923.394042,
+          "stderrTail": "",
+          "stdoutTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:go-net-http",
+      "family": "go-api",
+      "pm": "go",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "go build ./...",
+          "ok": true,
+          "durationMs": 1612.5541659999872,
+          "stderrTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:go-worker",
+      "family": "go-worker",
+      "pm": "go",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "go build ./...",
+          "ok": true,
+          "durationMs": 371.2381669999886,
+          "stderrTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:hardhat-ts",
+      "family": "hardhat-contracts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 12746.210416000002,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 7453.279624999996,
+          "stderrTail": "",
+          "stdoutTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:mcp-server-ts",
+      "family": "mcp-server-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 847.8723749999917,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:move-package",
+      "family": "move-contracts",
+      "phase": "detect",
+      "skipped": "no-package-manager",
+      "files": "no recognizable project manifest"
+    },
+    {
+      "layerId": "framework:nextjs-app-router",
+      "family": "nextjs-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 25729.459333000006,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 14722.447625,
+          "stderrTail": "",
+          "stdoutTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:node-http",
+      "family": "api-service",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 1170.3422079999873,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:node-worker",
+      "family": "worker-job",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 1106.4935830000031,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:playwright-worker",
+      "family": "playwright-worker",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 3116.1413750000065,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:python-data-app",
+      "family": "python-data-app",
+      "pm": "python3",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "python3 -m compileall .",
+          "ok": true,
+          "durationMs": 431.80550000001676,
+          "stderrTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:python-http",
+      "family": "python-api",
+      "pm": "python3",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "python3 -m compileall .",
+          "ok": true,
+          "durationMs": 271.43116700000246,
+          "stderrTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:python-worker",
+      "family": "python-worker",
+      "pm": "python3",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "python3 -m compileall .",
+          "ok": true,
+          "durationMs": 197.14179100000183,
+          "stderrTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:react-vite-ts",
+      "family": "react-vite-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 13554.223041999998,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": false,
+          "durationMs": 21044.852542000008,
+          "stderrTail": "",
+          "stdoutTail": "src/App.tsx(1,24): error TS2307: Cannot find module '@/components/ui/button' or its corresponding type declarations.\nsrc/App.tsx(2,75): error TS2307: Cannot find module '@/components/ui/card' or its corresponding type declarations.\nsrc/App.tsx(3,23): error TS2307: Cannot find module '@/components/ui/badge' or its corresponding type declarations.\n"
+        }
+      ]
+    },
+    {
+      "layerId": "framework:remix-ts",
+      "family": "remix-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 15679.825458000007,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:rust-http",
+      "family": "rust-service",
+      "pm": "cargo",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "cargo check",
+          "ok": true,
+          "durationMs": 1271.0755000000063,
+          "stderrTail": "    Checking audit-rust-http v0.1.0 (/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/audit-rust-http-GBu4aW)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.84s\n"
+        }
+      ]
+    },
+    {
+      "layerId": "framework:solana-native-rust",
+      "family": "solana-program",
+      "pm": "cargo",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "cargo check",
+          "ok": true,
+          "durationMs": 593.8264999999956,
+          "stderrTail": "    Checking audit-solana-native-rust v0.1.0 (/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/audit-solana-native-rust-wobvUj)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.27s\n"
+        }
+      ]
+    },
+    {
+      "layerId": "framework:stylus-contracts",
+      "family": "stylus-contracts",
+      "pm": "cargo",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "cargo check",
+          "ok": true,
+          "durationMs": 451.86999999999534,
+          "stderrTail": "    Checking audit-stylus-contracts v0.1.0 (/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/audit-stylus-contracts-5h9oKl)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.13s\n"
+        }
+      ]
+    },
+    {
+      "layerId": "framework:sveltekit-ts",
+      "family": "sveltekit-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 3641.009166999982,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:tangle-blueprint",
+      "family": "tangle-blueprint",
+      "pm": "cargo",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "cargo check",
+          "ok": false,
+          "durationMs": 8681.537750000018,
+          "stderrTail": "r@0.2.0-alpha.2 requires rustc 1.91\n  blueprint-runner@0.2.0-alpha.2 requires rustc 1.91\n  blueprint-sdk@0.2.0-alpha.2 requires rustc 1.91\n  blueprint-tangle-extra@0.2.0-alpha.2 requires rustc 1.91\nEither upgrade rustc or select compatible dependency versions with\n`cargo update <name>@<current-ver> --precise <compatible-ver>`\nwhere `<compatible-ver>` is the latest version supporting rustc 1.88.0\n\n"
+        }
+      ]
+    },
+    {
+      "layerId": "framework:tauri-desktop",
+      "family": "tauri-desktop",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 5474.076000000001,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 7812.206708999991,
+          "stderrTail": "",
+          "stdoutTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:vue-ts",
+      "family": "vue-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 7829.2336249999935,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:web-static",
+      "family": "frontend-static",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 4832.716666000022,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:x402-service",
+      "family": "x402-service",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 652.3784159999923,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:zk-prover-service",
+      "family": "zk-prover-service",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 659.3096670000232,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

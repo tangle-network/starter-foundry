@@ -8,6 +8,8 @@
     "validate": "node validate-types.mjs"
   },
   "devDependencies": {
-    "electron": "^36.0.0"
+    "electron": "^36.0.0",
+    "typescript": "^5.7.0",
+    "@types/node": "^20.0.0"
   }
 }

@@ -22,9 +22,11 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "latest",
+    "@types/node": "^20.0.0",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "postcss": "^8.4.49",
-    "tailwindcss": "latest"
+    "tailwindcss": "latest",
+    "typescript": "^5.7.0"
   }
 }

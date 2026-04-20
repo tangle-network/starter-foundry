@@ -1,83 +1,37 @@
 {
   "schemaVersion": 1,
+  "round": 3,
   "baseline": {
-    "name": "baseline-drew-rlm-head",
-    "commit": "372d159",
-    "note": "Median of 3 deterministic runs. capHit identical across runs (deterministic path). After harness-fix at p.spec.layers, baseline still 0.452 — fix matters only for workspace-routed canonicals, not the baseline.",
+    "name": "baseline-d652883",
+    "commit": "d652883",
+    "note": "Post-R2 seed fixes. 5/37 framework layers still failing local audit (14% broken). Seeded 7 labeled training examples via manual fixes across R1+R2.",
     "scores": {
-      "ideasaiCapHit": 0.452,
-      "heldOutCapHit": 1.0,
-      "vibecoderCapHit": 1.0,
-      "briefP95Ms": 0.681,
-      "judgeAgreement": null,
-      "archetypePromotionYield": 0
+      "coverageRate": 0,
+      "regressionRate": 0,
+      "trainingValueScore": 0,
+      "codeSimplicity": "N/A",
+      "humanOversightCost": "full-manual",
+      "scaffoldAuditPassRate": "32/37 = 0.865",
+      "remainingBroken": [
+        "expo-react-native-ts (RN moduleResolution)",
+        "fhenix-contracts (cargo install)",
+        "fhevm-contracts (cargo install)",
+        "react-vite-ts (@tailwindcss/vite resolution)",
+        "tangle-blueprint (rustc 1.91 bump)"
+      ]
     },
-    "baselineRuns": [
-      { "run": 1, "ideasaiCapHit": 0.4520833, "heldOutCapHit": 1.0, "p95Ms": 0.705 },
-      { "run": 2, "ideasaiCapHit": 0.4520833, "heldOutCapHit": 1.0, "p95Ms": 0.681 },
-      { "run": 3, "ideasaiCapHit": 0.4520833, "heldOutCapHit": 1.0, "p95Ms": 0.546 }
+    "seedFixes": [
+      { "family": "cli-ts", "cause": "missing typescript+@types/node devDep", "commit": "87cd1a5" },
+      { "family": "electron-desktop-ts", "cause": "missing typescript+@types/node devDep", "commit": "87cd1a5" },
+      { "family": "expo-react-native-ts", "cause": "missing typescript+@types/react (still broken — RN issue is deeper)", "commit": "87cd1a5" },
+      { "family": "fullstack-ts", "cause": "missing typescript+@types/node devDep", "commit": "87cd1a5" },
+      { "family": "tauri-desktop", "cause": "missing typescript+@types/node devDep", "commit": "87cd1a5" },
+      { "family": "nextjs-ts", "cause": "missing typescript+@types/node devDep", "commit": "d652883" },
+      { "family": "hardhat-contracts", "cause": "missing typescript+@types/node devDep", "commit": "d652883" },
+      { "family": "browser-extension-ts", "cause": "missing typescript+@types/node+@types/chrome", "commit": "d652883" },
+      { "family": "react-vite-ts", "cause": "added typescript+@types/node (still broken — @tailwindcss/vite resolution is separate)", "commit": "d652883" }
     ],
-    "recordedAt": "2026-04-19T22:50:00Z"
+    "recordedAt": "2026-04-20T04:00:00Z"
   },
-  "frontier": [
-    {
-      "name": "variant_b",
-      "axis": "axflow-pipeline",
-      "scores": {
-        "ideasaiCapHit": 0.470,
-        "heldOutCapHit": 1.0,
-        "briefP95Ms": 0.986,
-        "archetypePromotionYield": 12
-      },
-      "dominates": ["variant_a", "variant_c"],
-      "dominatedOn": ["briefP95Ms vs variant_a (0.986 vs 0.65)"],
-      "commit": "e282579",
-      "worktree": ".claude/worktrees/agent-a1ed8b70",
-      "note": "Top on capHit and archetype yield. Swappable nodes pattern paid off — 3 canonical-emitter swaps during the run without disturbing flow wiring."
-    },
-    {
-      "name": "variant_a",
-      "axis": "monolithic-governor",
-      "scores": {
-        "ideasaiCapHit": 0.457,
-        "heldOutCapHit": 1.0,
-        "briefP95Ms": 0.65,
-        "archetypePromotionYield": 6
-      },
-      "dominates": [],
-      "dominatedOn": ["capHit vs variant_b", "archetypes vs variant_b/c"],
-      "commit": "0192839",
-      "worktree": ".claude/worktrees/agent-af5e5fd8",
-      "note": "Best latency via memoized brief lookup. Simplest code. Not Pareto-dominated — owns the latency frontier."
-    },
-    {
-      "name": "variant_c",
-      "axis": "event-sourced",
-      "scores": {
-        "ideasaiCapHit": 0.452,
-        "heldOutCapHit": 1.0,
-        "briefP95Ms": 0.83,
-        "archetypePromotionYield": 9
-      },
-      "dominates": [],
-      "dominatedOn": ["capHit vs variant_b (parity with baseline)"],
-      "commit": "2f81448",
-      "worktree": ".claude/worktrees/agent-a7616db0",
-      "note": "Audit/replay infra is the win — zero on measured capHit delta, but 13 new tests incl. replay-purity proof + fold-only projections. Owns the observability frontier."
-    }
-  ],
-  "convergedFindings": {
-    "axMiproV2Blocked": "AxMiPRO v2 requires a Python optimizer sidecar (all three variants confirmed). AxBootstrapFewShot also fails via router+Haiku on all three. Fallbacks: corpus-mined rules (B), pure-demos artifact (A), instruction-only program (C).",
-    "oracleCeiling": "~0.46-0.55 on ideasai given the hot-path planner's auto-attached framework/tailwind/shadcn/industry layers. The 3-layer expected sets in corpus/ideasai-prompts.json cannot be matched exactly while those auto-attaches are in place. Moving the ceiling requires either (a) modifying prompt-planner.ts (hot-path change, out of scope for this pursuit), or (b) changing the metric from strict Jaccard to 'expected ⊆ actual' precision-recall.",
-    "harnessBug": "scripts/meta-harness-eval.mjs:112 extractActual read p.layers instead of p.spec.layers for workspace plans — zeroed capability capture for any canonical prompt that expanded into a multi-lane plan. Fixed."
-  },
-  "winner": {
-    "overall": "variant_b",
-    "reasoning": "Top on the primary target metric (ideasaiCapHit) and on archetype yield. p95 of 0.986 ms is well under the 800 ms gate. AxFlow node contracts make the training/judge pipeline swappable, and the 3 canonical-emitter swaps during the run are the concrete proof.",
-    "alsoMerge": ["harness-fix-workspace-layers"]
-  },
-  "nextGeneration": {
-    "note": "Current pursuit converged at the structural ceiling of the hot-path planner. To break 0.65 on ideasai, next generation must either change the planner's auto-attach behavior or change the capHit metric definition. Both are hot-path changes and require their own /pursue round.",
-    "candidateMetricChange": "Replace Jaccard with F1 or expected-as-subset-of-actual. Auto-attached layers are the user's DESIRED state (tailwind/shadcn are correct for any React SaaS) — penalizing them for not appearing in the hand-authored expected list is the metric's fault, not the planner's."
-  }
+  "frontier": []
 }

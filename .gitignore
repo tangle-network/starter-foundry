@@ -20,7 +20,6 @@ package-lock.json
 .evolve/multi-pursue/runs/
 .evolve/meta-harness/runs/
 .evolve/critical-audit/
-.evolve/reflections/
 .evolve/pursuits/
 .evolve/experiments.jsonl
 .evolve/visual-audit-baseline.json
@@ -32,3 +31,4 @@ package-lock.json
 #   .evolve/current.json
 #   .evolve/scorecard.json
 #   .evolve/progress.md
+.evolve/vb-diagnostic.json

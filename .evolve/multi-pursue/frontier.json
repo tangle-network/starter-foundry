@@ -1,83 +1,28 @@
 {
   "schemaVersion": 1,
+  "round": 2,
   "baseline": {
-    "name": "baseline-drew-rlm-head",
-    "commit": "372d159",
-    "note": "Median of 3 deterministic runs. capHit identical across runs (deterministic path). After harness-fix at p.spec.layers, baseline still 0.452 — fix matters only for workspace-routed canonicals, not the baseline.",
+    "name": "baseline-main-post-r1",
+    "commit": "1cea736",
+    "note": "R1 merged to main. Median of 5 deterministic runs post-merge. Hot path unchanged from R1 baseline — recall metric revealed real ceiling.",
     "scores": {
-      "ideasaiCapHit": 0.452,
-      "heldOutCapHit": 1.0,
-      "vibecoderCapHit": 1.0,
-      "briefP95Ms": 0.681,
-      "judgeAgreement": null,
-      "archetypePromotionYield": 0
+      "ideasaiRecall": 0.878,
+      "heldOutRecall": 1.0,
+      "vibecoderRecall": 1.0,
+      "ideasaiJaccard": 0.456,
+      "briefP95Ms": 0.45,
+      "judgeAgreementRate": null,
+      "archetypePromotionYield": 0,
+      "telemetryCoverage": 0
     },
     "baselineRuns": [
-      { "run": 1, "ideasaiCapHit": 0.4520833, "heldOutCapHit": 1.0, "p95Ms": 0.705 },
-      { "run": 2, "ideasaiCapHit": 0.4520833, "heldOutCapHit": 1.0, "p95Ms": 0.681 },
-      { "run": 3, "ideasaiCapHit": 0.4520833, "heldOutCapHit": 1.0, "p95Ms": 0.546 }
+      { "run": 1, "ideasaiRecall": 0.878, "heldOutRecall": 1.0, "p95": 0.436 },
+      { "run": 2, "ideasaiRecall": 0.878, "heldOutRecall": 1.0, "p95": 0.453 },
+      { "run": 3, "ideasaiRecall": 0.878, "heldOutRecall": 1.0, "p95": 0.448 },
+      { "run": 4, "ideasaiRecall": 0.878, "heldOutRecall": 1.0, "p95": 0.455 },
+      { "run": 5, "ideasaiRecall": 0.878, "heldOutRecall": 1.0, "p95": 0.476 }
     ],
-    "recordedAt": "2026-04-19T22:50:00Z"
+    "recordedAt": "2026-04-20T00:00:00Z"
   },
-  "frontier": [
-    {
-      "name": "variant_b",
-      "axis": "axflow-pipeline",
-      "scores": {
-        "ideasaiCapHit": 0.470,
-        "heldOutCapHit": 1.0,
-        "briefP95Ms": 0.986,
-        "archetypePromotionYield": 12
-      },
-      "dominates": ["variant_a", "variant_c"],
-      "dominatedOn": ["briefP95Ms vs variant_a (0.986 vs 0.65)"],
-      "commit": "e282579",
-      "worktree": ".claude/worktrees/agent-a1ed8b70",
-      "note": "Top on capHit and archetype yield. Swappable nodes pattern paid off — 3 canonical-emitter swaps during the run without disturbing flow wiring."
-    },
-    {
-      "name": "variant_a",
-      "axis": "monolithic-governor",
-      "scores": {
-        "ideasaiCapHit": 0.457,
-        "heldOutCapHit": 1.0,
-        "briefP95Ms": 0.65,
-        "archetypePromotionYield": 6
-      },
-      "dominates": [],
-      "dominatedOn": ["capHit vs variant_b", "archetypes vs variant_b/c"],
-      "commit": "0192839",
-      "worktree": ".claude/worktrees/agent-af5e5fd8",
-      "note": "Best latency via memoized brief lookup. Simplest code. Not Pareto-dominated — owns the latency frontier."
-    },
-    {
-      "name": "variant_c",
-      "axis": "event-sourced",
-      "scores": {
-        "ideasaiCapHit": 0.452,
-        "heldOutCapHit": 1.0,
-        "briefP95Ms": 0.83,
-        "archetypePromotionYield": 9
-      },
-      "dominates": [],
-      "dominatedOn": ["capHit vs variant_b (parity with baseline)"],
-      "commit": "2f81448",
-      "worktree": ".claude/worktrees/agent-a7616db0",
-      "note": "Audit/replay infra is the win — zero on measured capHit delta, but 13 new tests incl. replay-purity proof + fold-only projections. Owns the observability frontier."
-    }
-  ],
-  "convergedFindings": {
-    "axMiproV2Blocked": "AxMiPRO v2 requires a Python optimizer sidecar (all three variants confirmed). AxBootstrapFewShot also fails via router+Haiku on all three. Fallbacks: corpus-mined rules (B), pure-demos artifact (A), instruction-only program (C).",
-    "oracleCeiling": "~0.46-0.55 on ideasai given the hot-path planner's auto-attached framework/tailwind/shadcn/industry layers. The 3-layer expected sets in corpus/ideasai-prompts.json cannot be matched exactly while those auto-attaches are in place. Moving the ceiling requires either (a) modifying prompt-planner.ts (hot-path change, out of scope for this pursuit), or (b) changing the metric from strict Jaccard to 'expected ⊆ actual' precision-recall.",
-    "harnessBug": "scripts/meta-harness-eval.mjs:112 extractActual read p.layers instead of p.spec.layers for workspace plans — zeroed capability capture for any canonical prompt that expanded into a multi-lane plan. Fixed."
-  },
-  "winner": {
-    "overall": "variant_b",
-    "reasoning": "Top on the primary target metric (ideasaiCapHit) and on archetype yield. p95 of 0.986 ms is well under the 800 ms gate. AxFlow node contracts make the training/judge pipeline swappable, and the 3 canonical-emitter swaps during the run are the concrete proof.",
-    "alsoMerge": ["harness-fix-workspace-layers"]
-  },
-  "nextGeneration": {
-    "note": "Current pursuit converged at the structural ceiling of the hot-path planner. To break 0.65 on ideasai, next generation must either change the planner's auto-attach behavior or change the capHit metric definition. Both are hot-path changes and require their own /pursue round.",
-    "candidateMetricChange": "Replace Jaccard with F1 or expected-as-subset-of-actual. Auto-attached layers are the user's DESIRED state (tailwind/shadcn are correct for any React SaaS) — penalizing them for not appearing in the hand-authored expected list is the metric's fault, not the planner's."
-  }
+  "frontier": []
 }

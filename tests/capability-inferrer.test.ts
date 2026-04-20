@@ -92,6 +92,47 @@ test('inferCapabilities: package beats dir for same capability — no dup', () =
   assert.equal(caps.filter((c) => c.capability === 'capability:saas-billing').length, 1)
 })
 
+test('inferCapabilities: generic EVM RPC clients alone do not imply wallet-dashboard', () => {
+  // Regression: ethers/viem are generic EVM clients used for contract calls,
+  // event streams, signing, gas estimation — not specifically wallet UIs.
+  // Mapping them to evm-wallet-dashboard produced false positives on
+  // zk-mixer-ui (ethers installed for ZK contract submission, not for a
+  // wallet dashboard) in .evolve/capability-gaps.json.
+  const map = loadCapabilityMap()
+  for (const pkg of ['ethers', 'viem']) {
+    const caps = inferCapabilities(
+      {
+        sessionId: 't',
+        initialPrompt: null,
+        scenarioId: null,
+        addedPackages: [{ pm: 'pnpm', name: pkg }],
+        addedDirs: [],
+      },
+      map,
+    )
+    assert.equal(caps.length, 0, `${pkg} alone should not infer any capability`)
+  }
+})
+
+test('inferCapabilities: explicit wallet-kit packages still imply wallet-dashboard', () => {
+  // The flip side — we trim generic clients but keep signals that ARE
+  // wallet-UI-specific (rainbowkit, wagmi's hook ecosystem).
+  const map = loadCapabilityMap()
+  for (const pkg of ['@rainbow-me/rainbowkit', 'wagmi']) {
+    const caps = inferCapabilities(
+      {
+        sessionId: 't',
+        initialPrompt: null,
+        scenarioId: null,
+        addedPackages: [{ pm: 'pnpm', name: pkg }],
+        addedDirs: [],
+      },
+      map,
+    )
+    assert.equal(caps[0]?.capability, 'capability:evm-wallet-dashboard', `${pkg} should still infer evm-wallet-dashboard`)
+  }
+})
+
 test('summarizeMap: produces count stats', () => {
   const map = loadCapabilityMap()
   const s = summarizeMap(map)

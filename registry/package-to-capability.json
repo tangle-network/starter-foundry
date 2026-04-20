@@ -30,9 +30,9 @@
     "@ai-sdk/openai":              { "capability": "capability:ai-agent-dashboard", "confidence": 0.6 },
 
     "@openzeppelin/contracts":     { "capability": "capability:evm-deploy-foundry", "confidence": 0.85 },
-    "viem":                        { "capability": "capability:evm-wallet-dashboard", "confidence": 0.7 },
+    "viem":                        { "capability": null, "confidence": 0, "note": "generic EVM RPC client — used for contracts, events, signing, wallet UIs, everything. Signal alone is not enough to pick a capability." },
     "wagmi":                       { "capability": "capability:evm-wallet-dashboard", "confidence": 0.85 },
-    "ethers":                      { "capability": "capability:evm-wallet-dashboard", "confidence": 0.65 },
+    "ethers":                      { "capability": null, "confidence": 0, "note": "generic EVM RPC client — same reasoning as viem. Mapping it to evm-wallet-dashboard produced false positives (zk-mixer-ui etc.) because ethers is installed for any EVM interaction." },
     "@rainbow-me/rainbowkit":      { "capability": "capability:evm-wallet-dashboard", "confidence": 0.9 },
 
     "snarkjs":                     { "capability": null, "confidence": 0, "note": "JS-based zk tooling, low priority. Real zk path is Rust (sp1/risc0). If an agent reaches for snarkjs, route them to framework:zk-prover-service instead." },
@@ -41,12 +41,12 @@
     "risc0":                       { "capability": null, "confidence": 0, "note": "Rust crate, not npm. Framework-level signal for framework:zk-prover-service." },
     "risc0-zkvm":                  { "capability": null, "confidence": 0, "note": "Rust crate; same." },
 
-    "@solana/web3.js":             { "capability": "capability:solana-amm", "confidence": 0.4 },
-    "@solana/wallet-adapter-react": { "capability": "capability:solana-amm", "confidence": 0.5 },
+    "@solana/web3.js":             { "capability": null, "confidence": 0, "note": "generic Solana SDK — used across AMM/NFT/perps/staking/launchpad. Presence alone does not pick a capability." },
+    "@solana/wallet-adapter-react": { "capability": null, "confidence": 0, "note": "wallet connect UI — not specific to AMM. Any Solana frontend uses it." },
 
-    "@codemirror/view":            { "capability": "capability:ai-agent-dashboard", "confidence": 0.5 },
-    "@codemirror/state":           { "capability": "capability:ai-agent-dashboard", "confidence": 0.5 },
-    "@codemirror/lang-javascript": { "capability": "capability:ai-agent-dashboard", "confidence": 0.5 },
+    "@codemirror/view":            { "capability": null, "confidence": 0, "note": "code editor — used for AI code assistants, markdown editors, configuration UIs, playgrounds. Not agent-dashboard-specific." },
+    "@codemirror/state":           { "capability": null, "confidence": 0, "note": "same as @codemirror/view" },
+    "@codemirror/lang-javascript": { "capability": null, "confidence": 0, "note": "same as @codemirror/view" },
 
     "date-fns":                    { "capability": null, "confidence": 0, "note": "utility, no capability mapping" },
     "zod":                         { "capability": null, "confidence": 0, "note": "schema library, used everywhere" },

@@ -64,6 +64,7 @@ const FAMILY_PROMPTS: Record<string, string> = {
   "tangle-blueprint": "Build a Tangle Blueprint for oracle data",
   "tauri-desktop": "Build a Tauri desktop app",
   "vue-ts": "Build a Vue 3 app with Composition API",
+  "wasm-rust": "Build a Rust + WASM browser image processor using wasm-bindgen",
   "worker-job": "Build a trading bot worker",
   "x402-service": "Build an x402 pay-per-request API",
   "zk-prover-service": "Build a RISC Zero ZK prover service",

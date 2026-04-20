@@ -1,0 +1,126 @@
+{
+  "id": "wasm-rust",
+  "description": "Rust-compiled-to-WASM starter with wasm-bindgen bindings and a Vite frontend that loads + calls the module. For compute-heavy browser work (crypto primitives, image/video processing, physics, geometry, simulation) where JS throughput isn't enough.",
+  "tags": [
+    "wasm",
+    "rust",
+    "webassembly",
+    "frontend"
+  ],
+  "taxonomy": {
+    "language": "rust",
+    "runtime": "wasm",
+    "surface": "frontend"
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "crateName": "starter_foundry_wasm",
+    "port": 4179,
+    "headline": "Rust + WASM in your browser",
+    "subheadline": "Native-speed compute shipped as a 20-line call from React."
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/Cargo.toml",
+      "target": "Cargo.toml"
+    },
+    {
+      "source": "files/build-wasm.mjs",
+      "target": "build-wasm.mjs"
+    },
+    {
+      "source": "files/validate-wasm.mjs",
+      "target": "validate-wasm.mjs"
+    },
+    {
+      "source": "files/vite.config.ts",
+      "target": "vite.config.ts"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "Cargo.toml"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib.rs"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/main.ts"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-wasm.mjs"
+      ],
+      "expect": "wasm-rust starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "pnpm run build:wasm",
+      "pnpm run dev"
+    ],
+    "entrypoints": [
+      "src/lib.rs",
+      "src/main.ts",
+      "Cargo.toml",
+      "vite.config.ts"
+    ],
+    "preview": {
+      "path": "/"
+    },
+    "extensionPoints": [
+      "src/lib.rs",
+      "pkg/"
+    ]
+  },
+  "keywords": [
+    "wasm",
+    "webassembly",
+    "rust wasm",
+    "wasm-bindgen",
+    "wasm-pack",
+    "rust in browser",
+    "browser wasm"
+  ],
+  "scoring": {
+    "boost": {
+      "wasm": 3,
+      "webassembly": 3
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "wasm",
+      "webassembly",
+      "wasm-bindgen",
+      "wasm-pack"
+    ],
+    "tier2": [
+      "rust wasm",
+      "rust in browser",
+      "browser wasm"
+    ],
+    "archetypes": [
+      "image processing in browser",
+      "browser crypto",
+      "client-side video encoder",
+      "physics simulation",
+      "geometry engine",
+      "scientific computing web"
+    ]
+  }
+}

@@ -1,57 +1,9 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-04-20T17:56:20.276Z",
+  "generatedAt": "2026-04-20T19:38:57.311Z",
   "processedEvents": 20,
-  "distinctGaps": 2,
-  "totalMissedInferences": 5,
-  "topMissedCapabilities": [
-    {
-      "capability": "capability:ai-agent-dashboard",
-      "totalMissed": 3,
-      "distinctScenarios": 1,
-      "scenarios": [
-        "agent-trading"
-      ]
-    },
-    {
-      "capability": "capability:evm-wallet-dashboard",
-      "totalMissed": 2,
-      "distinctScenarios": 1,
-      "scenarios": [
-        "zk-mixer-ui"
-      ]
-    }
-  ],
-  "perScenarioGap": [
-    {
-      "scenarioId": "agent-trading",
-      "capability": "capability:ai-agent-dashboard",
-      "missedIn": 3,
-      "totalBuildouts": 3,
-      "totalPassing": 3,
-      "missRate": 1,
-      "sampleAgentPackages": [
-        "pnpm:@codemirror/view"
-      ],
-      "samplePrompts": [
-        "You are in a development environment with full file system access at /home/agent. Use your tools (read, write, edit, bash) to extend a prepared scaffold for the user's request.\n\nA working project scaffold is set up in /home/agent. STEP 0 (d",
-        "You are in a development environment with full file system access at /home/agent. Use your tools (read, write, edit, bash) to extend a prepared scaffold for the user's request.\n\nA working project scaffold is set up in /home/agent. STEP 0 (d"
-      ]
-    },
-    {
-      "scenarioId": "zk-mixer-ui",
-      "capability": "capability:evm-wallet-dashboard",
-      "missedIn": 2,
-      "totalBuildouts": 2,
-      "totalPassing": 0,
-      "missRate": 1,
-      "sampleAgentPackages": [
-        "pnpm:ethers"
-      ],
-      "samplePrompts": [
-        "You are in a development environment with full file system access at /home/agent. Use your tools (read, write, edit, bash) to extend a prepared scaffold for the user's request.\n\nA working project scaffold is set up in /home/agent. STEP 0 (d",
-        "You are in a development environment with full file system access at /home/agent. Use your tools (read, write, edit, bash) to extend a prepared scaffold for the user's request.\n\nA working project scaffold is set up in /home/agent. STEP 0 (d"
-      ]
-    }
-  ]
+  "distinctGaps": 0,
+  "totalMissedInferences": 0,
+  "topMissedCapabilities": [],
+  "perScenarioGap": []
 }

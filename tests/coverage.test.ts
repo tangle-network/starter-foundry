@@ -33,6 +33,7 @@ const FAMILY_PROMPTS: Record<string, string> = {
   "angular-ts": "Build an Angular app with standalone components",
   "api-service": "Build a Node.js API with health endpoint",
   "browser-extension-ts": "Build a Chrome extension with popup",
+  "bun-http": "Build a Bun HTTP API using Bun.serve",
   "cli-ts": "Build a TypeScript CLI tool",
   "cloudflare-worker-ts": "Build a Cloudflare Worker edge API",
   "dspy-pipeline-py": "Build a DSPy text classification pipeline",

@@ -8,12 +8,12 @@
   },
   "dependencies": {
     "expo": "^53.0.0",
-    "react": "^19.1.0",
+    "react": "^19.2.0",
     "react-native": "^0.79.0"
   },
   "devDependencies": {
-    "typescript": "^5.7.0",
-    "@types/react": "^19.0.0"
+    "typescript": "^5.9.0",
+    "@types/react": "^19.2.0"
   },
   "overrides": {
     "vite": "^6.4.2"

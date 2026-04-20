@@ -21,6 +21,10 @@ importers:
       typescript:
         specifier: ^5.7.0
         version: 5.9.3
+    optionalDependencies:
+      '@opentelemetry/api':
+        specifier: ^1.9.0
+        version: 1.9.1
 
 packages:
 

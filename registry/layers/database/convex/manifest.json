@@ -3,21 +3,22 @@
   "slot": "database",
   "description": "Database profile for Convex-backed starters.",
   "appliesTo": [
+    "agent-service-py",
+    "agent-service-rust",
+    "agent-service-ts",
     "api-service",
-    "python-api",
-    "rust-service",
+    "bun-http",
     "cloudflare-worker-ts",
+    "dspy-pipeline-py",
+    "evm-infra-ts",
     "fullstack-ts",
     "go-api",
     "mcp-server-ts",
-    "dspy-pipeline-py",
-    "agent-service-ts",
-    "agent-service-py",
-    "agent-service-rust",
+    "python-api",
+    "python-worker",
+    "rust-service",
     "x402-service",
-    "zk-prover-service",
-    "evm-infra-ts",
-    "python-worker"
+    "zk-prover-service"
   ],
   "defaults": {
     "databaseProvider": "convex"

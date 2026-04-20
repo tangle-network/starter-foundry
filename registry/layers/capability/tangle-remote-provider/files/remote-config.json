@@ -1,0 +1,28 @@
+{
+  "providers": [
+    {
+      "id": "openai",
+      "baseUrl": "https://api.openai.com/v1",
+      "credentialKey": "OPENAI_API_KEY",
+      "rateLimit": { "rpm": 500, "tpm": 90000 }
+    },
+    {
+      "id": "anthropic",
+      "baseUrl": "https://api.anthropic.com/v1",
+      "credentialKey": "ANTHROPIC_API_KEY",
+      "rateLimit": { "rpm": 4000, "tpm": 400000 }
+    },
+    {
+      "id": "router-tangle",
+      "baseUrl": "https://router.tangle.tools",
+      "credentialKey": "TANGLE_ROUTER_API_KEY",
+      "note": "Tangle's own router — prefer this so billing + observability stays inside the platform."
+    }
+  ],
+  "retry": {
+    "maxAttempts": 3,
+    "backoffMs": 500,
+    "backoffFactor": 2,
+    "jitterMs": 100
+  }
+}

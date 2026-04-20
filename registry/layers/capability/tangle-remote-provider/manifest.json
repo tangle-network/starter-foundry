@@ -1,0 +1,29 @@
+{
+  "id": "tangle-remote-provider",
+  "description": "Remote provider blueprint capability — the blueprint calls out to external services (LLM providers, RPC endpoints, SaaS APIs) with credential injection + rate-limit handling. Apply when the operator's job is effectively a thin wrapper around a third-party API.",
+  "appliesTo": ["tangle-blueprint"],
+  "files": [
+    {
+      "source": "files/remote-config.json",
+      "target": "remote-config.json"
+    }
+  ],
+  "keywords": [
+    "remote provider",
+    "external api blueprint",
+    "llm provider",
+    "saas blueprint",
+    "third-party api job",
+    "api proxy blueprint",
+    "openai blueprint",
+    "anthropic blueprint"
+  ],
+  "buildHints": {
+    "whenToUse": "Attach when the job's body is a single outbound HTTP request. Operators inject their own credentials and rate-limit state; Tangle handles scheduling + billing.",
+    "firstSteps": [
+      "Declare the endpoint + method in remote-config.json",
+      "Secrets pulled from the operator's keystore at dispatch (never in the blueprint source)",
+      "Wrap the call in a retry/backoff helper — network errors are the dominant failure mode"
+    ]
+  }
+}

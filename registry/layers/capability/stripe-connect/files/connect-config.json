@@ -1,0 +1,8 @@
+{
+  "mode": "express",
+  "platformFeeBps": 1000,
+  "payoutSchedule": "daily",
+  "onboardingReturnUrl": "/connect/return",
+  "onboardingRefreshUrl": "/connect/refresh",
+  "docs": "https://docs.stripe.com/connect"
+}

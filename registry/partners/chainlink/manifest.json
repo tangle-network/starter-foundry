@@ -1,0 +1,28 @@
+{
+  "id": "chainlink",
+  "description": "Partner pack for Chainlink — price feeds, VRF, Automation, CCIP cross-chain messaging. Biases frontend + contract scaffolds toward the Chainlink SDK and Data Feeds addresses.",
+  "appliesTo": [
+    "frontend-static",
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "api-service",
+    "evm-infra-ts",
+    "agent-service-ts",
+    "forge-contracts",
+    "hardhat-contracts"
+  ],
+  "slotDefaults": {
+    "sdk": "sdk:evm-wallet"
+  },
+  "defaults": {
+    "headline": "Build on reliable oracle data + cross-chain messaging",
+    "subheadline": "Chainlink Price Feeds, VRF, Automation, CCIP — production oracles for DeFi, insurance, gaming."
+  },
+  "files": [
+    {
+      "source": "files/chainlink-config.json",
+      "target": "chainlink-config.json"
+    }
+  ]
+}

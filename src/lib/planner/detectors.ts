@@ -44,6 +44,7 @@ export function detectPaymentsSlot(text: string): string | null {
   return null
 }
 
+
 export function detectQueueSlot(text: string): string | null {
   if (text.includes('trigger.dev') || text.includes('trigger dev')) return 'queue:trigger-dev'
   if (text.includes('bullmq') || text.includes('queue') || text.includes('background job')) return 'queue:bullmq'
@@ -119,6 +120,9 @@ export function inferPartner(text: string): string | null {
   if (hasAny(text, ['x layer', 'xlayer', 'okb', 'oklink', 'okx'])) return 'xlayer'
   if (hasAny(text, ['arbitrum', 'stylus'])) return 'arbitrum'
   if (hasAny(text, ['solana', 'anchor', 'pda', 'wallet adapter'])) return 'solana'
+  if (hasAny(text, ['chainlink', 'price feed', 'vrf', 'ccip', 'data feeds'])) return 'chainlink'
+  if (hasAny(text, ['sui', 'mysten', 'zklogin', 'sponsored transaction'])) return 'sui'
+  if (hasAny(text, ['tempo', 'tempo l1', 'tempo chain', 'tempo payments'])) return 'tempo'
   return null
 }
 

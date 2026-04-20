@@ -1,0 +1,26 @@
+{
+  "partner": "tempo",
+  "focus": "payments + stablecoin settlement + x402 / MPP agent flows",
+  "networks": {
+    "mainnet": {
+      "chainId": "see tempo.xyz/docs",
+      "rpc": "https://rpc.tempo.xyz",
+      "explorer": "https://explorer.tempo.xyz"
+    }
+  },
+  "stablecoins": {
+    "USDC": "primary settlement asset",
+    "USDT": "widely supported"
+  },
+  "archetypes": [
+    "x402 pay-per-request APIs",
+    "agent-to-agent MPP payments",
+    "stablecoin invoicing",
+    "micropayment streaming",
+    "high-frequency settlement dApps"
+  ],
+  "sdk": {
+    "evm": "viem + wagmi — Tempo is EVM-compatible, standard EVM tooling works"
+  },
+  "docs": "https://tempo.xyz/docs"
+}

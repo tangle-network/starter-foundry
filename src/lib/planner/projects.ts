@@ -133,6 +133,14 @@ export function chooseApiFamily(text: string): FamilyChoice {
   if (detectLane(text, 'x402')) return { family: 'x402-service', layers: ['framework:x402-service'], path: 'apps/api' }
   if (detectLane(text, 'mcp')) return { family: 'mcp-server-ts', layers: ['framework:mcp-server-ts'], path: 'apps/mcp' }
   if (detectLane(text, 'dspy')) return { family: 'dspy-pipeline-py', layers: ['framework:dspy-pipeline-py'], path: 'apps/ai' }
+  // Multi-agent swarm — supervisor/worker orchestration. Must come BEFORE the
+  // generic agent lane check. Tight signals: 'multi-agent', 'agent swarm',
+  // 'supervisor agent', explicit handoff/team language, or the CrewAI framework
+  // (which is only for crews). 'langgraph' alone is NOT enough — LangGraph is
+  // widely used for single-agent state machines too.
+  if (hasAny(text, ['multi-agent', 'agent swarm', 'supervisor agent', 'agent orchestration', 'crewai', 'agent handoff', 'specialist agents', 'agent team', 'role-based agents'])) {
+    return { family: 'agent-swarm-ts', layers: ['framework:agent-swarm-ts'], path: 'apps/swarm' }
+  }
   if (detectLane(text, 'agent')) return chooseAgentFamily(text)
   if (detectLane(text, 'zk')) return { family: 'zk-prover-service', layers: ['framework:zk-prover-service'], path: 'apps/prover' }
   if (detectLane(text, 'evm-infra')) return { family: 'evm-infra-ts', layers: ['framework:evm-infra-ts'], path: 'apps/api' }

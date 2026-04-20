@@ -16,7 +16,7 @@
 //   node scripts/mine-buildout-sessions.mjs --rebuild            # start fresh
 //   node scripts/mine-buildout-sessions.mjs --force-all          # retry poisoned
 
-import { readdirSync, readFileSync, statSync, existsSync, mkdirSync, writeFileSync, appendFileSync, rmSync } from 'node:fs'
+import { readdirSync, readFileSync, statSync, existsSync, mkdirSync, writeFileSync, appendFileSync, rmSync, openSync, closeSync } from 'node:fs'
 import { join } from 'node:path'
 import { homedir } from 'node:os'
 import { performance } from 'node:perf_hooks'
@@ -27,6 +27,49 @@ import {
   parseSlug,
   isBuildoutSlug,
 } from '../dist/lib/buildout-traces.js'
+
+// Lock against concurrent miner runs. Two miners on the same source would
+// both observe the same mtimes (check-then-update race) and append the same
+// event twice. The lock is an O_EXCL sentinel file; second process fast-fails.
+const LOCK_PATH = `${DEFAULT_PATHS.minerState}.lock`
+
+function acquireLock() {
+  try {
+    const fd = openSync(LOCK_PATH, 'wx')
+    closeSync(fd)
+    writeFileSync(LOCK_PATH, String(process.pid))
+    return true
+  } catch (err) {
+    if (err?.code === 'EEXIST') {
+      // Check staleness — a crashed miner might leave a stale lock. If the
+      // lock's PID isn't running, steal it.
+      try {
+        const lockedPid = Number.parseInt(readFileSync(LOCK_PATH, 'utf8').trim(), 10)
+        if (lockedPid && !isPidAlive(lockedPid)) {
+          rmSync(LOCK_PATH, { force: true })
+          return acquireLock()
+        }
+      } catch {
+        // unreadable lock — treat as locked
+      }
+      return false
+    }
+    throw err
+  }
+}
+
+function releaseLock() {
+  try { rmSync(LOCK_PATH, { force: true }) } catch { /* best-effort */ }
+}
+
+function isPidAlive(pid) {
+  try {
+    process.kill(pid, 0)
+    return true
+  } catch (err) {
+    return err?.code === 'EPERM' // exists but not ours; treat as alive
+  }
+}
 
 const SOURCE_MODEL = 'claude-code'
 
@@ -42,6 +85,14 @@ const forceSession = arg('--force-retry', null)
 
 mkdirSync('.evolve/traces', { recursive: true })
 
+if (!acquireLock()) {
+  console.error(`another miner is running (lock at ${LOCK_PATH}). Exiting.`)
+  process.exit(75) // EX_TEMPFAIL
+}
+process.on('exit', releaseLock)
+process.on('SIGINT', () => { releaseLock(); process.exit(130) })
+process.on('SIGTERM', () => { releaseLock(); process.exit(143) })
+
 if (rebuild) {
   rmSync(DEFAULT_PATHS.buildoutsJsonl, { force: true })
   rmSync(DEFAULT_PATHS.minerState, { force: true })
@@ -49,9 +100,20 @@ if (rebuild) {
   console.log(`rebuild: cleared output + state`)
 }
 
-const state = existsSync(DEFAULT_PATHS.minerState)
-  ? JSON.parse(readFileSync(DEFAULT_PATHS.minerState, 'utf8'))
-  : emptyMinerState()
+// Load state with corruption recovery. A truncated/corrupted state file
+// would otherwise crash the miner permanently. Instead we log + reseed.
+let state
+if (existsSync(DEFAULT_PATHS.minerState)) {
+  try {
+    state = JSON.parse(readFileSync(DEFAULT_PATHS.minerState, 'utf8'))
+    if (!state || typeof state !== 'object' || !state.schemaVersion) throw new Error('state missing schemaVersion')
+  } catch (err) {
+    console.warn(`state file corrupt (${err?.message}); reseeding empty state`)
+    state = emptyMinerState()
+  }
+} else {
+  state = emptyMinerState()
+}
 
 if (state.schemaVersion !== BUILDOUT_SCHEMA_VERSION) {
   console.log(`schema bump (${state.schemaVersion} → ${BUILDOUT_SCHEMA_VERSION}) — rebuilding`)

@@ -1,0 +1,686 @@
+{
+  "generatedAt": "2026-04-20T04:49:59.537Z",
+  "audits": [
+    {
+      "layerId": "framework:agent-service-py",
+      "family": "agent-service-py",
+      "pm": "python3",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "python3 -m compileall .",
+          "ok": true,
+          "durationMs": 112.21083300000001,
+          "stderrTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:agent-service-rust",
+      "family": "agent-service-rust",
+      "pm": "cargo",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "cargo check",
+          "ok": true,
+          "durationMs": 586.2351659999999,
+          "stderrTail": "    Checking audit-agent-service-rust v0.1.0 (/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/audit-agent-service-rust-1XOMik)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.40s\n"
+        }
+      ]
+    },
+    {
+      "layerId": "framework:agent-service-ts",
+      "family": "agent-service-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 216.132875,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:angular-ts",
+      "family": "angular-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 3699.334417,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:browser-extension-ts",
+      "family": "browser-extension-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 997.0202919999992,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": false,
+          "durationMs": 727.7515000000012,
+          "stderrTail": "",
+          "stdoutTail": "src/background.ts(1,1): error TS2304: Cannot find name 'chrome'.\ntsconfig.json(3,15): error TS6046: Argument for '--target' option must be: 'es3', 'es5', 'es6', 'es2015', 'es2016', 'es2017', 'es2018', 'es2019', 'es2020', 'es2021', 'esnext'.\ntsconfig.json(6,25): error TS6046: Argument for '--moduleResolution' option must be: 'node', 'classic', 'node12', 'nodenext'.\n"
+        }
+      ]
+    },
+    {
+      "layerId": "framework:cli-ts",
+      "family": "cli-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 843.002292000001,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 1524.8100419999992,
+          "stderrTail": "",
+          "stdoutTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:cloudflare-worker-ts",
+      "family": "cloudflare-worker-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 3252.551958,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:dspy-pipeline-py",
+      "family": "dspy-pipeline-py",
+      "phase": "detect",
+      "skipped": "no-package-manager",
+      "files": "no recognizable project manifest"
+    },
+    {
+      "layerId": "framework:eigenlayer-avs",
+      "family": "eigenlayer-avs",
+      "phase": "detect",
+      "skipped": "no-package-manager",
+      "files": "no recognizable project manifest"
+    },
+    {
+      "layerId": "framework:electron-desktop-ts",
+      "family": "electron-desktop-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 4318.492957999999,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 2526.9637920000023,
+          "stderrTail": "",
+          "stdoutTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:evm-infra-ts",
+      "family": "evm-infra-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 306.60983300000225,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:expo-react-native-ts",
+      "family": "expo-react-native-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 5881.198459000003,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": false,
+          "durationMs": 1405.3499999999985,
+          "stderrTail": "",
+          "stdoutTail": " Property 'result' must be of type 'string | ArrayBuffer | null', but here has type 'string | ArrayBuffer'.\nnode_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.dom.d.ts(23,1): error TS6200: Definitions of the following identifiers conflict with those in another file: EndingType, BlobPart, BufferSource, FormData, RequestInfo, XMLHttpRequestResponseType, AbortSignal, AbortController\n"
+        }
+      ]
+    },
+    {
+      "layerId": "framework:fhenix-contracts",
+      "family": "fhenix-contracts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": false,
+          "durationMs": 451.87525000000096,
+          "stderrTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:fhevm-contracts",
+      "family": "fhevm-contracts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": false,
+          "durationMs": 893.614207999999,
+          "stderrTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:forge-foundation",
+      "family": "forge-contracts",
+      "pm": "forge",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "forge build",
+          "ok": true,
+          "durationMs": 312.5130410000056,
+          "stderrTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:fullstack-node-ts",
+      "family": "fullstack-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 6065.737375000004,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 1468.030832999997,
+          "stderrTail": "",
+          "stdoutTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:go-net-http",
+      "family": "go-api",
+      "pm": "go",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "go build ./...",
+          "ok": true,
+          "durationMs": 724.8942920000045,
+          "stderrTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:go-worker",
+      "family": "go-worker",
+      "pm": "go",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "go build ./...",
+          "ok": true,
+          "durationMs": 177.0762920000052,
+          "stderrTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:hardhat-ts",
+      "family": "hardhat-contracts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 7493.847750000001,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": false,
+          "durationMs": 1037.335500000001,
+          "stderrTail": "",
+          "stdoutTail": "test/StarterToken.test.ts(1,34): error TS2591: Cannot find name 'node:assert'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.\n"
+        }
+      ]
+    },
+    {
+      "layerId": "framework:mcp-server-ts",
+      "family": "mcp-server-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 223.8440000000046,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:move-package",
+      "family": "move-contracts",
+      "phase": "detect",
+      "skipped": "no-package-manager",
+      "files": "no recognizable project manifest"
+    },
+    {
+      "layerId": "framework:nextjs-app-router",
+      "family": "nextjs-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 4937.387666999995,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": false,
+          "durationMs": 1001.0944999999992,
+          "stderrTail": "",
+          "stdoutTail": "14/node_modules/@types/react/ts5.0/index.d.ts(442,11): error TS2304: Cannot find name 'Iterable'.\ntsconfig.json(3,15): error TS6046: Argument for '--target' option must be: 'es3', 'es5', 'es6', 'es2015', 'es2016', 'es2017', 'es2018', 'es2019', 'es2020', 'es2021', 'esnext'.\ntsconfig.json(5,25): error TS6046: Argument for '--moduleResolution' option must be: 'node', 'classic', 'node12', 'nodenext'.\n"
+        }
+      ]
+    },
+    {
+      "layerId": "framework:node-http",
+      "family": "api-service",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 217.22562499999913,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:node-worker",
+      "family": "worker-job",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 200.7615420000002,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:playwright-worker",
+      "family": "playwright-worker",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 848.3423750000002,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:python-data-app",
+      "family": "python-data-app",
+      "pm": "python3",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "python3 -m compileall .",
+          "ok": true,
+          "durationMs": 99.85024999999587,
+          "stderrTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:python-http",
+      "family": "python-api",
+      "pm": "python3",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "python3 -m compileall .",
+          "ok": true,
+          "durationMs": 92.17204199999833,
+          "stderrTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:python-worker",
+      "family": "python-worker",
+      "pm": "python3",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "python3 -m compileall .",
+          "ok": true,
+          "durationMs": 88.96758400000544,
+          "stderrTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:react-vite-ts",
+      "family": "react-vite-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 2663.306792000003,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": false,
+          "durationMs": 967.9322909999901,
+          "stderrTail": "",
+          "stdoutTail": "g.ts(3,25): error TS2792: Cannot find module '@tailwindcss/vite'. Did you mean to set the 'moduleResolution' option to 'node', or to add aliases to the 'paths' option?\nvite.config.ts(4,18): error TS2792: Cannot find module 'path'. Did you mean to set the 'moduleResolution' option to 'node', or to add aliases to the 'paths' option?\nvite.config.ts(10,25): error TS2304: Cannot find name '__dirname'.\n"
+        }
+      ]
+    },
+    {
+      "layerId": "framework:remix-ts",
+      "family": "remix-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 5943.203958000013,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:rust-http",
+      "family": "rust-service",
+      "pm": "cargo",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "cargo check",
+          "ok": true,
+          "durationMs": 520.0090410000121,
+          "stderrTail": "    Checking audit-rust-http v0.1.0 (/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/audit-rust-http-48x3JJ)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.34s\n"
+        }
+      ]
+    },
+    {
+      "layerId": "framework:solana-native-rust",
+      "family": "solana-program",
+      "pm": "cargo",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "cargo check",
+          "ok": true,
+          "durationMs": 297.41183399999863,
+          "stderrTail": "    Checking audit-solana-native-rust v0.1.0 (/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/audit-solana-native-rust-VCsqcp)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.12s\n"
+        }
+      ]
+    },
+    {
+      "layerId": "framework:stylus-contracts",
+      "family": "stylus-contracts",
+      "pm": "cargo",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "cargo check",
+          "ok": true,
+          "durationMs": 234.7550409999967,
+          "stderrTail": "    Checking audit-stylus-contracts v0.1.0 (/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/audit-stylus-contracts-yzmLmE)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.06s\n"
+        }
+      ]
+    },
+    {
+      "layerId": "framework:sveltekit-ts",
+      "family": "sveltekit-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 1243.6059999999998,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:tangle-blueprint",
+      "family": "tangle-blueprint",
+      "pm": "cargo",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "cargo check",
+          "ok": false,
+          "durationMs": 3219.2224579999893,
+          "stderrTail": "r@0.2.0-alpha.2 requires rustc 1.91\n  blueprint-runner@0.2.0-alpha.2 requires rustc 1.91\n  blueprint-sdk@0.2.0-alpha.2 requires rustc 1.91\n  blueprint-tangle-extra@0.2.0-alpha.2 requires rustc 1.91\nEither upgrade rustc or select compatible dependency versions with\n`cargo update <name>@<current-ver> --precise <compatible-ver>`\nwhere `<compatible-ver>` is the latest version supporting rustc 1.88.0\n\n"
+        }
+      ]
+    },
+    {
+      "layerId": "framework:tauri-desktop",
+      "family": "tauri-desktop",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 1835.3422500000015,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 1799.9481249999953,
+          "stderrTail": "",
+          "stdoutTail": ""
+        }
+      ]
+    },
+    {
+      "layerId": "framework:vue-ts",
+      "family": "vue-ts",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 1347.3798750000133,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:web-static",
+      "family": "frontend-static",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 1005.9935419999965,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:x402-service",
+      "family": "x402-service",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 226.22999999999593,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "layerId": "framework:zk-prover-service",
+      "family": "zk-prover-service",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 201.9229170000035,
+          "stderrTail": ""
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

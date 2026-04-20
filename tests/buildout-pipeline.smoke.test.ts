@@ -163,8 +163,11 @@ test('smoke: infer-capability-gaps imports cleanly and runs on the fixture', () 
     assert.ok(existsSync(join(dir, '.evolve/capability-gaps.json')), 'expected capability-gaps.json output')
 
     const gaps = JSON.parse(readFileSync(join(dir, '.evolve/capability-gaps.json'), 'utf8'))
-    assert.equal(gaps.schemaVersion, 1)
+    assert.equal(gaps.schemaVersion, 2)
     assert.ok(typeof gaps.processedEvents === 'number')
+    assert.ok(typeof gaps.totalAgentInstalls === 'number')
+    assert.ok('scaffoldGap' in gaps.breakdown)
+    assert.ok('orchestration' in gaps.breakdown)
   } finally {
     rmSync(dir, { recursive: true, force: true })
   }

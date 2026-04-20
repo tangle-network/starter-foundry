@@ -139,6 +139,8 @@ if (plan.kind === 'starter') {
 }
 ```
 
+**Integrating into a downstream agent runtime?** See **[docs/INTEGRATION.md](./docs/INTEGRATION.md)** — programmatic API, multi-family workspaces, the 4 telemetry events to emit, scrubbing rules, and how to consume the pipeline's rankings.
+
 ## Buildout pipeline (agent-behavior → registry signal)
 
 The `scripts/*-buildout*.mjs` pipeline mines Claude Code session transcripts of real agent buildouts on top of starter-foundry scaffolds and produces two ranked reports: **missing capabilities** (packages agents install because our router didn't attach the right layer) and **bad templates** (files agents rewrite within the first few turns).

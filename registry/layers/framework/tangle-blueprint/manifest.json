@@ -42,6 +42,10 @@
     {
       "source": "files/foundry.toml",
       "target": "foundry.toml"
+    },
+    {
+      "source": "files/TOOLCHAIN.md",
+      "target": "TOOLCHAIN.md"
     }
   ]
 }

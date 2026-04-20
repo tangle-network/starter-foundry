@@ -442,3 +442,27 @@ test("runProofSuite summarizes coverage for a tiny corpus", async () => {
     await fs.rm(outDir, { recursive: true, force: true });
   }
 });
+
+test("planPrompt: UI-on-contract prompts ('X page') route to workspace with tailwind+shadcn", async () => {
+  // Regression: the buildout corpus showed prompts like "DEX swap page",
+  // "NFT mint page" routing to forge-contracts only — agents then installed
+  // lucide-react, tailwindcss, clsx manually. capability-gaps.json ranked
+  // capability:shadcn missed 20× and capability:tailwind missed 14× across 5
+  // scenarios. This test pins the fix: "page" is a frontend signal, and
+  // workspace web projects force-attach tailwind + shadcn on React families.
+  const result = await planPrompt({
+    prompt: "Build a DEX swap page for Ethereum with liquidity pools",
+    partner: null,
+  });
+
+  assert.equal(result.kind, "workspace");
+  const web = result.spec.projects.find((p) => p.id === "web");
+  assert.ok(web, "expected a web project in the workspace");
+  assert.equal(web.spec.family, "react-vite-ts");
+  const layers = new Set(web.spec.layers ?? []);
+  assert.ok(layers.has("capability:tailwind"), "web must ship capability:tailwind");
+  assert.ok(layers.has("capability:shadcn"), "web must ship capability:shadcn");
+
+  const evm = result.spec.projects.find((p) => p.id === "evm");
+  assert.ok(evm, "expected an evm contract project alongside the web surface");
+});

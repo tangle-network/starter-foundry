@@ -158,6 +158,45 @@ Three committed output files — each is your actionable input:
 6. For each rewritten file in `.evolve/buildout-analysis.json` with `timesRewritten >= 5`: improve the template.
 7. Ship the PR, audit re-runs, delta is visible.
 
+### Programmatic ingestion — `emitBuildoutEvent`
+
+For consumers that want to push events directly rather than write their own miner script, starter-foundry exposes a programmatic entrypoint that appends to the same `.evolve/traces/buildouts.jsonl` the local miner fills:
+
+```typescript
+import { emitBuildoutEvent } from '@tangle-network/starter-foundry'
+
+await emitBuildoutEvent({
+  sessionId: run.id,
+  sourceModel: 'blueprint-agent-vb',  // or your runtime name
+  sourcePath: run.manifestPath,
+  scenarioId: run.scenarioId,
+  partnerGuess: run.verticalId,
+  replayRound: run.round,
+  initialPrompt: run.prompt,
+  addedPackages: run.packagesInstalled.map((n) => ({ pm: 'pnpm', name: n })),
+  addedDirs: run.dirsCreated,
+  rewrittenFiles: run.filesEdited,
+  outcome: {
+    source: 'vb-execution',
+    allPass: run.verification.allPass,
+    blendedScore: run.verification.blendedScore,
+    failingLayers: run.verification.failingLayers,
+    shotsRun: run.verification.shotsRun,
+    shotsToConvergence: run.verification.shotsToConvergence,
+    wallMs: run.wallMs,
+    toolCallsTotal: run.toolCallsTotal,
+  },
+})
+```
+
+`emitBuildoutEvent`:
+- writes atomically via `O_APPEND` (multi-writer safe across concurrent runs)
+- creates `.evolve/traces/` on first call
+- rejects empty `sessionId` or `sourceModel` (fail-loud instead of silently dropping)
+- returns the fully-populated event so callers can log/inspect it
+
+Downstream analysis (capability-gap detector, buildout-analysis aggregator, meta-harness training data) picks up these events on the next `run-buildout-pipeline.mjs` invocation without code change.
+
 ## Version + compatibility
 
 - Package version lives in `package.json`.

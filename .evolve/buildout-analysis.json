@@ -1,0 +1,908 @@
+{
+  "schemaVersion": 1,
+  "summary": {
+    "generatedAt": "2026-04-20T08:19:14.646Z",
+    "totalBuildouts": 198,
+    "withOutcome": 121,
+    "passRate": 0.8181818181818182,
+    "meanBlendedScore": 0.9284132231404949,
+    "totalPassing": 99,
+    "totalFailing": 22,
+    "distinctScenarios": 31,
+    "distinctPartners": [
+      "arbitrum-stylus",
+      "base-defi",
+      "bnb-chain",
+      "coinbase-smart-wallet",
+      "ethereum-l1",
+      "fhenix-fhe",
+      "hyperliquid-perps",
+      "kalshi-event-contracts",
+      "okx-xlayer",
+      "polymarket-prediction",
+      "tangle-blueprints-mpc"
+    ]
+  },
+  "perScenario": [
+    {
+      "partner": "arbitrum-stylus",
+      "scenarioId": "stylus-gas-profiler",
+      "total": 8,
+      "withOutcome": 8,
+      "pass": 8,
+      "meanScore": 0.96,
+      "meanWallMs": 1292064,
+      "meanTurns": 54,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": 1
+    },
+    {
+      "partner": "ethereum-l1",
+      "scenarioId": "nft-mint-page",
+      "total": 16,
+      "withOutcome": 16,
+      "pass": 16,
+      "meanScore": 0.9439999999999995,
+      "meanWallMs": 553306,
+      "meanTurns": 35,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": 1
+    },
+    {
+      "partner": "ethereum-l1",
+      "scenarioId": "staking-dashboard",
+      "total": 7,
+      "withOutcome": 7,
+      "pass": 7,
+      "meanScore": 0.9559999999999997,
+      "meanWallMs": 203527,
+      "meanTurns": 21,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": 1
+    },
+    {
+      "partner": "ethereum-l1",
+      "scenarioId": "dao-proposals",
+      "total": 11,
+      "withOutcome": 11,
+      "pass": 11,
+      "meanScore": 0.9640000000000003,
+      "meanWallMs": 393548,
+      "meanTurns": 33,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": 1
+    },
+    {
+      "partner": "ethereum-l1",
+      "scenarioId": "agent-trading",
+      "total": 10,
+      "withOutcome": 10,
+      "pass": 10,
+      "meanScore": 0.967,
+      "meanWallMs": 380282,
+      "meanTurns": 42,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": 1
+    },
+    {
+      "partner": "ethereum-l1",
+      "scenarioId": "cross-chain-bridge",
+      "total": 47,
+      "withOutcome": 47,
+      "pass": 47,
+      "meanScore": 0.9399999999999997,
+      "meanWallMs": 1597995,
+      "meanTurns": 165,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": 1
+    },
+    {
+      "partner": "ethereum-l1",
+      "scenarioId": "dex-swap",
+      "total": 14,
+      "withOutcome": 14,
+      "pass": 0,
+      "meanScore": 0.8680000000000002,
+      "meanWallMs": 750351,
+      "meanTurns": 46,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": 0
+    },
+    {
+      "partner": "ethereum-l1",
+      "scenarioId": "zk-mixer-ui",
+      "total": 8,
+      "withOutcome": 8,
+      "pass": 0,
+      "meanScore": 0.782,
+      "meanWallMs": 2225928,
+      "meanTurns": 138,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": 0
+    },
+    {
+      "partner": "base-defi",
+      "scenarioId": "base-dex-aggregator",
+      "total": 7,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "base-defi",
+      "scenarioId": "base-perp-trading",
+      "total": 6,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "bnb-chain",
+      "scenarioId": "bnb-greenfield-object-store",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "bnb-chain",
+      "scenarioId": "bnb-launchpad-ido",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "coinbase-smart-wallet",
+      "scenarioId": "smart-wallet-passkey-onboarding",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "coinbase-smart-wallet",
+      "scenarioId": "smart-wallet-gasless-checkout",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "coinbase-smart-wallet",
+      "scenarioId": "smart-wallet-subscription-manager",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "ethereum-l1",
+      "scenarioId": "wallet-dashboard",
+      "total": 4,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "fhenix-fhe",
+      "scenarioId": "fhenix-sealed-bid-auction",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "fhenix-fhe",
+      "scenarioId": "fhenix-private-dao-vote",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "fhenix-fhe",
+      "scenarioId": "fhenix-confidential-dex",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "hyperliquid-perps",
+      "scenarioId": "hl-vault-depositor",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "hyperliquid-perps",
+      "scenarioId": "hl-builder-code-dashboard",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "kalshi-event-contracts",
+      "scenarioId": "kalshi-consumer-app",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "kalshi-event-contracts",
+      "scenarioId": "kalshi-institutional-api-console",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "kalshi-event-contracts",
+      "scenarioId": "kalshi-market-maker-dashboard",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "okx-xlayer",
+      "scenarioId": "xlayer-okb-bridge",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "okx-xlayer",
+      "scenarioId": "xlayer-institutional-defi",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "okx-xlayer",
+      "scenarioId": "xlayer-zk-voucher-campaign",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "polymarket-prediction",
+      "scenarioId": "polymarket-portfolio-hedging",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "tangle-blueprints-mpc",
+      "scenarioId": "tangle-mpc-keygen-ceremony",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "tangle-blueprints-mpc",
+      "scenarioId": "tangle-mpc-signing-ceremony",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "tangle-blueprints-mpc",
+      "scenarioId": "tangle-mpc-operator-console",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    }
+  ],
+  "topAddedPackages": [
+    {
+      "key": "pnpm:lucide-react",
+      "timesAdded": 17,
+      "addedOnPass": 12,
+      "addedOnFail": 5
+    },
+    {
+      "key": "pnpm:tailwindcss",
+      "timesAdded": 14,
+      "addedOnPass": 9,
+      "addedOnFail": 5
+    },
+    {
+      "key": "pnpm:@tailwindcss/vite",
+      "timesAdded": 14,
+      "addedOnPass": 9,
+      "addedOnFail": 5
+    },
+    {
+      "key": "pnpm:clsx",
+      "timesAdded": 9,
+      "addedOnPass": 6,
+      "addedOnFail": 3
+    },
+    {
+      "key": "pnpm:snarkjs",
+      "timesAdded": 4,
+      "addedOnPass": 0,
+      "addedOnFail": 4
+    },
+    {
+      "key": "pnpm:circomlibjs",
+      "timesAdded": 4,
+      "addedOnPass": 0,
+      "addedOnFail": 4
+    },
+    {
+      "key": "pnpm:date-fns",
+      "timesAdded": 3,
+      "addedOnPass": 3,
+      "addedOnFail": 0
+    },
+    {
+      "key": "pnpm:@codemirror/view",
+      "timesAdded": 3,
+      "addedOnPass": 3,
+      "addedOnFail": 0
+    },
+    {
+      "key": "pnpm:@codemirror/state",
+      "timesAdded": 3,
+      "addedOnPass": 3,
+      "addedOnFail": 0
+    },
+    {
+      "key": "pnpm:@codemirror/lang-javascript",
+      "timesAdded": 3,
+      "addedOnPass": 3,
+      "addedOnFail": 0
+    },
+    {
+      "key": "pnpm:@codemirror/theme-one-dark",
+      "timesAdded": 3,
+      "addedOnPass": 3,
+      "addedOnFail": 0
+    },
+    {
+      "key": "pnpm:codemirror",
+      "timesAdded": 3,
+      "addedOnPass": 3,
+      "addedOnFail": 0
+    },
+    {
+      "key": "pnpm:react-router-dom",
+      "timesAdded": 3,
+      "addedOnPass": 3,
+      "addedOnFail": 0
+    },
+    {
+      "key": "pnpm:vite",
+      "timesAdded": 3,
+      "addedOnPass": 1,
+      "addedOnFail": 2
+    },
+    {
+      "key": "pnpm:@zk-kit/incremental-merkle-tree",
+      "timesAdded": 2,
+      "addedOnPass": 0,
+      "addedOnFail": 2
+    },
+    {
+      "key": "pnpm:ethers",
+      "timesAdded": 2,
+      "addedOnPass": 0,
+      "addedOnFail": 2
+    },
+    {
+      "key": "pnpm:@types/node",
+      "timesAdded": 2,
+      "addedOnPass": 0,
+      "addedOnFail": 2
+    },
+    {
+      "key": "pnpm:vite-plugin-node-polyfills",
+      "timesAdded": 2,
+      "addedOnPass": 0,
+      "addedOnFail": 2
+    },
+    {
+      "key": "pnpm:circomlib",
+      "timesAdded": 2,
+      "addedOnPass": 0,
+      "addedOnFail": 2
+    },
+    {
+      "key": "pnpm:axios",
+      "timesAdded": 1,
+      "addedOnPass": 1,
+      "addedOnFail": 0
+    },
+    {
+      "key": "pnpm:next",
+      "timesAdded": 1,
+      "addedOnPass": 1,
+      "addedOnFail": 0
+    },
+    {
+      "key": "npm:circomlib",
+      "timesAdded": 1,
+      "addedOnPass": 0,
+      "addedOnFail": 1
+    },
+    {
+      "key": "pnpm:@vitejs/plugin-react",
+      "timesAdded": 1,
+      "addedOnPass": 0,
+      "addedOnFail": 1
+    },
+    {
+      "key": "pnpm:pnpm",
+      "timesAdded": 1,
+      "addedOnPass": 0,
+      "addedOnFail": 1
+    },
+    {
+      "key": "pnpm:add",
+      "timesAdded": 1,
+      "addedOnPass": 0,
+      "addedOnFail": 1
+    }
+  ],
+  "topAddedDirs": [
+    {
+      "dir": "&&",
+      "timesAdded": 5
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-arbitrum-stylus-mo6kqj5u-stylus-gas-profiler-r3/stylus-gas-profiler-IQNfcV/static",
+      "timesAdded": 3
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo698at6-dex-swap-r1/dex-swap-JlVn7j/src",
+      "timesAdded": 3
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo69wk1b-agent-trading-r1/agent-trading-7r8sjq/src/components",
+      "timesAdded": 3
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo6bolwe-nft-mint-page-r2/nft-mint-page-bY9G4a/frontend",
+      "timesAdded": 3
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo6hvz4a-cross-chain-bridge-r3/cross-chain-bridge-9BgHMI/src/components",
+      "timesAdded": 3
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo6hvz4a-cross-chain-bridge-r3/cross-chain-bridge-9BgHMI/src/lib",
+      "timesAdded": 3
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo6hvz4a-cross-chain-bridge-r3/cross-chain-bridge-9BgHMI/public",
+      "timesAdded": 3
+    },
+    {
+      "dir": "echo",
+      "timesAdded": 3
+    },
+    {
+      "dir": "\"dirs",
+      "timesAdded": 3
+    },
+    {
+      "dir": "created\"",
+      "timesAdded": 3
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo66lt85-nft-mint-page-r1/nft-mint-page-lDU8vu/web",
+      "timesAdded": 2
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo6aac6h-zk-mixer-ui-r1/zk-mixer-ui-J0gLqo/src/{lib,components,hooks,types}",
+      "timesAdded": 2
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo6beihz-cross-chain-bridge-r1/cross-chain-bridge-GPudFX/src/components",
+      "timesAdded": 2
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo6beihz-cross-chain-bridge-r1/cross-chain-bridge-GPudFX/src/lib",
+      "timesAdded": 2
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo6dat2y-agent-trading-r2/agent-trading-5xjOU9/src/app",
+      "timesAdded": 2
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo6dat2y-agent-trading-r2/agent-trading-5xjOU9/src/components",
+      "timesAdded": 2
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo6dat2y-agent-trading-r2/agent-trading-5xjOU9/src/lib",
+      "timesAdded": 2
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo6gk9kx-zk-mixer-ui-r3/zk-mixer-ui-MGU9Pq/src/{lib,components,hooks}",
+      "timesAdded": 2
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-arbitrum-stylus-mo6jyu5i-stylus-gas-profiler-r2/stylus-gas-profiler-dSA5xw/baselines",
+      "timesAdded": 1
+    }
+  ],
+  "topRewrittenFiles": [
+    {
+      "file": "stylus-gas-profiler-lgozkN/src/main.rs",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "stylus-gas-profiler-lgozkN/src/optimizer.rs",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "stylus-gas-profiler-IQNfcV/src/profiler.rs",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "nft-mint-page-5CnSiH/src/StarterCounter.sol",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "nft-mint-page-5CnSiH/foundry.toml",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "dex-swap-JlVn7j/package.json",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 0,
+      "rewrittenOnFail": 3
+    },
+    {
+      "file": "dao-proposals-UHUR7e/index.html",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "dao-proposals-UHUR7e/src/components/CreateProposal.tsx",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "agent-trading-7r8sjq/src/agentEngine.ts",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "agent-trading-7r8sjq/src/components/KillSwitch.tsx",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "agent-trading-7r8sjq/src/App.tsx",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "nft-mint-page-bY9G4a/foundry.toml",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "nft-mint-page-bY9G4a/src/NFTCollection.sol",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "dex-swap-IR9xGW/src/components/SwapCard.tsx",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 0,
+      "rewrittenOnFail": 3
+    },
+    {
+      "file": "dao-proposals-7il86H/src/pages/ProposalList.tsx",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "dao-proposals-7il86H/src/pages/ProposalDetail.tsx",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "dao-proposals-7il86H/src/components/Nav.tsx",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "dao-proposals-7il86H/src/store.ts",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "cross-chain-bridge-mN29UR/index.html",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "cross-chain-bridge-mN29UR/src/components/StatusPipeline.tsx",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "dex-swap-bQvOJV/src/index.css",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 0,
+      "rewrittenOnFail": 3
+    },
+    {
+      "file": "dex-swap-bQvOJV/index.html",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 0,
+      "rewrittenOnFail": 3
+    },
+    {
+      "file": "cross-chain-bridge-9BgHMI/src/App.tsx",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "cross-chain-bridge-9BgHMI/tailwind.config.js",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "cross-chain-bridge-9BgHMI/src/index.css",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    }
+  ]
+}

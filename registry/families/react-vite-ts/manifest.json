@@ -191,5 +191,36 @@
       "multichain portfolio",
       "token tracker"
     ]
+  },
+  "buildHints": {
+    "whenToUse": "React single-page app with Vite. Use for client-rich apps without a server surface \u2014 dashboards, tools, games, interactive demos.",
+    "firstSteps": [
+      "Install: `pnpm install` then `pnpm dev` (Vite dev server with HMR).",
+      "Brand strings + copy: `src/personalize.json`. Palette: `src/personalize.css`. Both render-time templated; preview updates on next refresh.",
+      "shadcn/ui components under `src/components/ui/`. Import via `@/components/ui/button`. Path alias `@/` \u2192 `src/` is configured.",
+      "Build: `pnpm build` outputs to `dist/` \u2014 static assets ready for any CDN."
+    ],
+    "gotchas": [
+      "No SSR \u2014 SEO content must live in `index.html` <head> or be injected post-hydration. Use `nextjs-ts` if SEO is a hard requirement.",
+      "Vite dev server is separate from prod build. Some imports (e.g. CSS-in-JS) work in dev but need explicit config for prod."
+    ],
+    "placeholders": [
+      {
+        "path": "src/App.tsx",
+        "description": "Minimal skeleton shell (header + empty main). Replace the main content with the product's primary view \u2014 shadcn components + path alias are ready."
+      },
+      {
+        "path": "index.html",
+        "description": "Root HTML with `<div id=\"app\">` and title templated from personalize. Title + meta tags live here; favicon and fonts too if the product needs them."
+      },
+      {
+        "path": "src/personalize.json",
+        "description": "Brand strings \u2014 edit for the product but also rewrite src/App.tsx main content."
+      },
+      {
+        "path": "src/personalize.css",
+        "description": "HSL design tokens on :root + .dark. Edit the palette to match the product; Tailwind v4 @theme defaults already compose in."
+      }
+    ]
   }
 }

@@ -353,6 +353,15 @@ export interface ComposeResult {
   filesWritten: string[]
   composeReportPath: string
   components: ComposeComponents
+  /**
+   * Per-family prompt fragment — a concatenated string of any
+   * `registry/families/<id>/prompt-fragment.md` (family) +
+   * `registry/partners/<id>/prompt-fragment.md` (partner). Consumers
+   * (blueprint-agent etc.) can splice this into their own system prompt
+   * without reading the registry directly. Empty string when no family/
+   * partner ships a fragment.
+   */
+  promptFragment: string
 }
 
 export interface ValidationCheckResult {

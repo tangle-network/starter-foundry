@@ -59,6 +59,18 @@
     {
       "source": "files/validate-types.mjs",
       "target": "validate-types.mjs"
+    },
+    {
+      "source": "files/src/components/ui/button.tsx",
+      "target": "src/components/ui/button.tsx"
+    },
+    {
+      "source": "files/src/components/ui/card.tsx",
+      "target": "src/components/ui/card.tsx"
+    },
+    {
+      "source": "files/src/components/ui/badge.tsx",
+      "target": "src/components/ui/badge.tsx"
     }
   ],
   "validationChecks": [

@@ -11,6 +11,6 @@
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "@cofhe/hardhat-plugin": "latest",
     "@fhenixprotocol/cofhe-contracts": "latest",
-    "cofhejs": "^0.4.1"
+    "cofhejs": "^0.3.1"
   }
 }

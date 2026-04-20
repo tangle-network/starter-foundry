@@ -13,21 +13,21 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.468.0",
-    "next": "^15.2.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "next": "^15.5.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "tailwind-merge": "^2.6.0",
     "@tanstack/react-table": "latest",
     "recharts": "latest"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "latest",
-    "@types/node": "^20.0.0",
-    "@types/react": "latest",
-    "@types/react-dom": "latest",
+    "@types/node": "^20.17.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
     "postcss": "^8.4.49",
     "tailwindcss": "latest",
-    "typescript": "^5.7.0"
+    "typescript": "^5.9.0"
   },
   "overrides": {
     "vite": "^6.4.2"

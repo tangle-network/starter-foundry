@@ -17,8 +17,8 @@
     "@tailwindcss/postcss": "latest",
     "postcss": "latest",
     "tailwindcss": "latest",
-    "typescript": "^5.7.0",
-    "@types/node": "^20.0.0"
+    "typescript": "^5.9.0",
+    "@types/node": "^20.17.0"
   },
   "overrides": {
     "vite": "^6.4.2"

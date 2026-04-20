@@ -163,12 +163,14 @@ async function main(): Promise<void> {
         console.error(result.error)
         process.exit(1)
       }
-      if (result.kind === 'workspace') {
-        console.error(result.reason)
-        process.exit(2)
-      }
       if (jsonMode) {
         print(result, true)
+      } else if (result.kind === 'workspace') {
+        console.log(`Composed workspace with ${result.result.projectCount} project(s) at ${result.result.outDir}`)
+        for (const project of result.result.projects) {
+          console.log(`  - ${project.id} (${project.components.family}) → ${project.path}`)
+        }
+        console.log(`Launch plan: ${result.result.launchPlanPath}`)
       } else {
         console.log(`Composed ${result.spec.family} (${(result.spec.layers ?? []).length} layers, ${result.result.filesWritten.length} files)`)
         console.log(`Family: ${result.spec.family}`)

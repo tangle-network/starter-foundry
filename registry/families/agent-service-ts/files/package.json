@@ -4,5 +4,13 @@
   "type": "module",
   "scripts": {
     "start": "node agent.mjs"
+  },
+  "overrides": {
+    "vite": "^6.4.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite": "^6.4.2"
+    }
   }
 }

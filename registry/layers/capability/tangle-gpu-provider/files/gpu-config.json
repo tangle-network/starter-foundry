@@ -1,0 +1,14 @@
+{
+  "required": {
+    "minVramGb": 16,
+    "minComputeCapability": "7.5",
+    "minGpuCount": 1,
+    "preferred": ["A100", "H100", "L40S", "A10"],
+    "fallbackAllowed": true
+  },
+  "notes": [
+    "Compute capability 7.5 = Turing (T4, RTX 20). 8.0+ = Ampere+ (A100, A10).",
+    "For bfloat16 models, require compute capability >= 8.0.",
+    "For fp8 training/inference, require H100/H200 (9.0+)."
+  ]
+}

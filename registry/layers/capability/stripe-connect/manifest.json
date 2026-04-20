@@ -1,0 +1,40 @@
+{
+  "id": "stripe-connect",
+  "description": "Stripe Connect — multi-party / marketplace payments. Onboard connected accounts (Express or Custom), route charges to sellers, handle platform fees and payouts. For marketplaces, gig platforms, creator economies, and multi-vendor stores.",
+  "appliesTo": [
+    "nextjs-ts",
+    "fullstack-ts",
+    "api-service",
+    "bun-http",
+    "deno-edge"
+  ],
+  "files": [
+    {
+      "source": "files/connect-config.json",
+      "target": "connect-config.json"
+    },
+    {
+      "source": "files/connect-api.ts",
+      "target": "lib/stripe-connect.ts"
+    }
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "stripe": "^17.0.0"
+    }
+  },
+  "keywords": [
+    "stripe connect",
+    "marketplace payments",
+    "multi-party payments",
+    "platform fees",
+    "seller onboarding",
+    "split payments",
+    "connected accounts",
+    "payouts to sellers",
+    "creator economy payments"
+  ],
+  "buildHints": {
+    "whenToUse": "Attach for marketplace / platform products that take a cut of transactions. Use Express onboarding unless you specifically need Custom (you don't — Custom adds PCI/KYC obligation to you, not Stripe)."
+  }
+}

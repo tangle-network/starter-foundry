@@ -1,0 +1,31 @@
+{
+  "name": "{{packageName}}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "test": "vitest run",
+    "validate": "node validate-swarm.mjs"
+  },
+  "dependencies": {
+    "@langchain/core": "^0.3.0",
+    "@langchain/langgraph": "^0.2.0",
+    "@langchain/openai": "^0.3.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.9.0",
+    "vitest": "^2.1.0"
+  },
+  "overrides": {
+    "vite": "^6.4.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite": "^6.4.2"
+    }
+  }
+}

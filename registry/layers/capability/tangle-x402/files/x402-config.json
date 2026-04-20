@@ -1,0 +1,11 @@
+{
+  "pricing": {
+    "perCallUsdCents": 5,
+    "currency": "USDC",
+    "settlementChain": "base"
+  },
+  "acceptedStablecoins": ["USDC", "USDT"],
+  "discoveryHeader": "X-Payment-Accepted",
+  "paymentHeader": "X-Payment",
+  "docs": "https://x402.org/"
+}

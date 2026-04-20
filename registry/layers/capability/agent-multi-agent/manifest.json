@@ -1,6 +1,6 @@
 {
   "id": "agent-multi-agent",
-  "description": "Adds supervisor/worker multi-agent orchestration with routing and handoff protocols.",
+  "description": "In-process sub-agent tool-routing for single agent-service starters — the main agent delegates to specialist sub-agents exposed as tools. For full graph-based swarm orchestration, use family:agent-swarm-ts instead.",
   "appliesTo": [
     "agent-service-ts",
     "agent-service-py",
@@ -27,13 +27,13 @@
     ]
   },
   "keywords": [
-    "multi-agent",
-    "multi agent",
-    "supervisor agent",
-    "agent orchestration",
-    "agent team",
-    "crew",
-    "swarm",
-    "agent hierarchy"
+    "sub-agent tool",
+    "sub-agent delegation",
+    "parallel tool use",
+    "agent-as-tool",
+    "agent hierarchy",
+    "nested agent",
+    "tool-routing agent",
+    "agent with sub-agents"
   ]
 }

@@ -1,0 +1,34 @@
+{
+  "id": "tangle-gpu-provider",
+  "description": "GPU blueprint capability — operators declare GPU resource requirements (CUDA compute capability, VRAM, count). Jobs run on GPU-enabled operators; non-GPU operators skip the job. Apply to tangle-blueprint for ML-inference, 3D rendering, video encoding, and scientific-compute blueprints.",
+  "appliesTo": ["tangle-blueprint"],
+  "files": [
+    {
+      "source": "files/gpu-config.json",
+      "target": "gpu-config.json"
+    }
+  ],
+  "keywords": [
+    "gpu blueprint",
+    "gpu operator",
+    "gpu-accelerated",
+    "gpu accelerated",
+    "cuda",
+    "h100",
+    "a100",
+    "l40s",
+    "ml inference",
+    "gpu job",
+    "hardware-accelerated",
+    "video encoding",
+    "rendering blueprint"
+  ],
+  "buildHints": {
+    "whenToUse": "Attach when the job requires GPU acceleration — inference serving, video encoding, rendering, physics simulation, scientific workloads.",
+    "firstSteps": [
+      "Declare required compute capability + VRAM in gpu-config.json",
+      "Operators advertise GPU capacity via their operator registration",
+      "Your job's execution matches on capacity at dispatch time"
+    ]
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "partner": "chainlink",
+  "priceFeeds": {
+    "ethereumMainnet": {
+      "ETH/USD": "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
+      "BTC/USD": "0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c",
+      "USDC/USD": "0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6"
+    },
+    "base": {
+      "ETH/USD": "0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70",
+      "USDC/USD": "0x7e860098F58bBFC8648a4311b374B1D669a2bc6B"
+    },
+    "docs": "https://docs.chain.link/data-feeds/price-feeds/addresses"
+  },
+  "vrf": {
+    "docs": "https://docs.chain.link/vrf",
+    "version": "v2.5"
+  },
+  "automation": {
+    "docs": "https://docs.chain.link/chainlink-automation"
+  },
+  "ccip": {
+    "docs": "https://docs.chain.link/ccip",
+    "routers": {
+      "ethereumMainnet": "0x80226fc0Ee2b096224EeAc085Bb9a8cba1146f7D",
+      "base": "0x881e3A65B4d4a04dD529061dd0071cf975F58bCD"
+    }
+  }
+}

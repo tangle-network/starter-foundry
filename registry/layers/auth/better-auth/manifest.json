@@ -6,6 +6,7 @@
     "agent-service-py",
     "agent-service-rust",
     "agent-service-ts",
+    "agent-swarm-ts",
     "angular-ts",
     "api-service",
     "browser-extension-ts",

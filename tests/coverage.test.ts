@@ -30,6 +30,7 @@ const FAMILY_PROMPTS: Record<string, string> = {
   "agent-service-py": "Build a Python agent service using PydanticAI",
   "agent-service-rust": "Build a Rust AI agent using rig",
   "agent-service-ts": "Build an AI agent service in TypeScript",
+  "agent-swarm-ts": "Build a LangGraph-js typescript multi-agent swarm with supervisor and specialist worker agents",
   "angular-ts": "Build an Angular app with standalone components",
   "api-service": "Build a Node.js API with health endpoint",
   "browser-extension-ts": "Build a Chrome extension with popup",
@@ -117,7 +118,7 @@ const CAP_PROMPTS: Record<string, { prompt: string; family: string }> = {
   "capability:agent-hermes": { prompt: "Build a Hermes function-calling agent", family: "agent-service-ts" },
   "capability:agent-langgraph": { prompt: "Build a LangGraph agent with checkpointing", family: "agent-service-ts" },
   "capability:agent-mastra": { prompt: "Build an AI agent using Mastra with tool workflows", family: "agent-service-ts" },
-  "capability:agent-multi-agent": { prompt: "Build a multi-agent system with supervisor and workers", family: "agent-service-ts" },
+  "capability:agent-multi-agent": { prompt: "Build a langchain AI agent with sub-agent delegation and agent-as-tool patterns", family: "agent-service-ts" },
   "capability:agent-openclaw": { prompt: "Build an OpenClaw agent with multi-model orchestration", family: "agent-service-ts" },
   "capability:agent-rag": { prompt: "Build a RAG chatbot with vector search", family: "agent-service-ts" },
   "capability:agent-slack": { prompt: "Build a Slack bot that answers questions using AI", family: "agent-service-ts" },
@@ -201,6 +202,15 @@ const CAP_PROMPTS: Record<string, { prompt: string; family: string }> = {
   "capability:zk-browser": { prompt: "Build a privacy-preserving mixer UI with commitment deposits and nullifier-based withdrawals using zk proofs", family: "react-vite-ts" },
   "capability:code-editor": { prompt: "Build a prompt playground with a syntax highlighting code editor for JavaScript", family: "react-vite-ts" },
   "capability:date-utils": { prompt: "Build a scheduling app with appointment booking and a calendar view with recurring events", family: "react-vite-ts" },
+  "capability:stripe-connect": { prompt: "Build a marketplace platform using Stripe Connect for split payments between buyers and sellers with platform fees", family: "fullstack-ts" },
+  "capability:stripe-checkout-onetime": { prompt: "Build a digital course platform with one-time purchase checkout for individual courses", family: "fullstack-ts" },
+  "capability:stripe-metered": { prompt: "Build an API product with pay-as-you-go usage-based billing and per-request billing meters", family: "fullstack-ts" },
+  "capability:banking-baas": { prompt: "Build a neobank app using Unit banking to open accounts and send ACH transfers", family: "fullstack-ts" },
+  "capability:tangle-tee": { prompt: "Build a Tangle blueprint that runs confidential compute inside an Intel TDX enclave with remote attestation", family: "tangle-blueprint" },
+  "capability:tangle-gpu-provider": { prompt: "Build a Tangle blueprint for GPU-accelerated ML inference that requires H100 operators", family: "tangle-blueprint" },
+  "capability:tangle-remote-provider": { prompt: "Build a Tangle blueprint that wraps the OpenAI API as a remote provider with credential injection", family: "tangle-blueprint" },
+  "capability:tangle-x402": { prompt: "Build a Tangle blueprint with x402 per-call payment gating in USDC", family: "tangle-blueprint" },
+  "capability:tangle-mpp": { prompt: "Build a Tangle blueprint with MPP machine payments protocol for agent-to-agent delegation and budget caps", family: "tangle-blueprint" },
 };
 
 for (const [capId, config] of Object.entries(CAP_PROMPTS)) {

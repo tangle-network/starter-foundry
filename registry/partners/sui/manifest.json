@@ -1,0 +1,26 @@
+{
+  "id": "sui",
+  "description": "Partner pack for Sui — Move-based L1 with object-centric model, parallel execution, zkLogin. Biases toward Sui Move contracts + the @mysten/sui TypeScript SDK.",
+  "appliesTo": [
+    "frontend-static",
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "api-service",
+    "agent-service-ts",
+    "move-contracts"
+  ],
+  "slotDefaults": {
+    "database": "database:sqlite"
+  },
+  "defaults": {
+    "headline": "Build on Sui — object-centric Move with parallel execution",
+    "subheadline": "zkLogin-backed auth, sub-second finality, gas-less UX via sponsored transactions."
+  },
+  "files": [
+    {
+      "source": "files/sui-config.json",
+      "target": "sui-config.json"
+    }
+  ]
+}

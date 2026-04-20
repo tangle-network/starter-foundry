@@ -1,0 +1,18 @@
+{
+  "budget": {
+    "principalAddressEnv": "MPP_PRINCIPAL_ADDRESS",
+    "maxPerCallUsdCents": 25,
+    "maxPerDelegationUsdCents": 1000,
+    "delegationTtlSeconds": 3600
+  },
+  "delegation": {
+    "tokenScheme": "signed-jwt",
+    "publicKeyEnv": "MPP_PRINCIPAL_PUBLIC_KEY"
+  },
+  "attestation": {
+    "includeInResponse": true,
+    "fields": ["principal", "delegate", "amountUsdCents", "timestamp", "signature"]
+  },
+  "settlementChain": "base",
+  "stablecoin": "USDC"
+}

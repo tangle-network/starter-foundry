@@ -1,0 +1,24 @@
+{
+  "id": "tangle-x402",
+  "description": "x402 payments capability for tangle-blueprint — each job dispatch carries an x402 payment, operators verify signature + amount before executing. For pay-per-execution blueprints where the caller (agent or human) pays per job.",
+  "appliesTo": ["tangle-blueprint", "x402-service"],
+  "files": [
+    {
+      "source": "files/x402-config.json",
+      "target": "x402-config.json"
+    }
+  ],
+  "keywords": [
+    "x402",
+    "x402 payment",
+    "pay per execution",
+    "paid blueprint",
+    "per-call payment blueprint",
+    "agent payment",
+    "402 payment required",
+    "micropayment blueprint"
+  ],
+  "buildHints": {
+    "whenToUse": "Attach when the blueprint's service is directly priced per-call. Caller signs an x402 payment; the operator verifies before entering the job body."
+  }
+}

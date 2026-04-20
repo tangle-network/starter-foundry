@@ -1,0 +1,25 @@
+{
+  "provider": "{{bankingProvider}}",
+  "providers": {
+    "unit": {
+      "baseUrl": "https://api.unit.co",
+      "sandboxUrl": "https://api.s.unit.sh",
+      "apiKeyEnv": "UNIT_API_KEY",
+      "docs": "https://docs.unit.co",
+      "supports": ["account_opening", "ach", "card_issuance", "fbo", "business_accounts"]
+    },
+    "column": {
+      "baseUrl": "https://api.column.com",
+      "apiKeyEnv": "COLUMN_API_KEY",
+      "docs": "https://column.com/docs",
+      "supports": ["account_opening", "ach", "wire", "fbo", "program_banking"]
+    },
+    "mercury": {
+      "baseUrl": "https://api.mercury.com/api/v1",
+      "apiKeyEnv": "MERCURY_API_TOKEN",
+      "docs": "https://api.mercury.com/api/v1/docs",
+      "supports": ["read_accounts", "read_transactions", "send_ach"],
+      "note": "Mercury's API automates YOUR Mercury accounts — it's not a BaaS for issuing accounts to your users."
+    }
+  }
+}

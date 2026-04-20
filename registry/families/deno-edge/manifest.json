@@ -1,0 +1,128 @@
+{
+  "id": "deno-edge",
+  "description": "Deno runtime HTTP API starter using Deno.serve — zero-transpile TS, secure-by-default permissions, Deno Deploy-compatible.",
+  "tags": [
+    "deno",
+    "api",
+    "backend",
+    "typescript",
+    "edge"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "deno",
+    "surface": "api"
+  },
+  "slots": {
+    "database": {
+      "options": [
+        "database:sqlite",
+        "database:postgres",
+        "database:mongodb",
+        "database:convex"
+      ],
+      "default": "database:sqlite"
+    },
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk"
+      ],
+      "default": "auth:none"
+    },
+    "payments": {
+      "options": [
+        "payments:none",
+        "payments:stripe"
+      ],
+      "default": "payments:none"
+    },
+    "queue": {
+      "options": [
+        "queue:none",
+        "queue:bullmq",
+        "queue:trigger-dev"
+      ],
+      "default": "queue:none"
+    }
+  },
+  "defaults": {
+    "projectType": "api",
+    "serviceName": "starter-foundry-deno",
+    "port": 8096,
+    "databaseProvider": "sqlite"
+  },
+  "files": [
+    {
+      "source": "files/deno.json",
+      "target": "deno.json"
+    },
+    {
+      "source": "files/validate-deno.mjs",
+      "target": "validate-deno.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "src/server.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "deno.json"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-deno.mjs"
+      ],
+      "expect": "deno starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "deno task dev",
+      "deno task test"
+    ],
+    "entrypoints": [
+      "src/server.ts",
+      "src/handlers.ts",
+      "deno.json"
+    ],
+    "preview": {
+      "path": "/health"
+    },
+    "extensionPoints": [
+      "database-config.json",
+      "auth-config.json",
+      "payments-config.json",
+      "queue-config.json"
+    ]
+  },
+  "keywords": [
+    "deno",
+    "deno runtime",
+    "deno.serve",
+    "deno deploy",
+    "deno edge"
+  ],
+  "scoring": {
+    "boost": {
+      "deno": 3
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "deno",
+      "deno.serve",
+      "deno runtime",
+      "deno deploy"
+    ],
+    "tier2": [
+      "deno edge",
+      "deno api"
+    ]
+  }
+}

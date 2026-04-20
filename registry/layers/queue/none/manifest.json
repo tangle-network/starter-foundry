@@ -10,6 +10,7 @@
     "bun-http",
     "cli-ts",
     "cloudflare-worker-ts",
+    "deno-edge",
     "dspy-pipeline-py",
     "evm-infra-ts",
     "fullstack-ts",

@@ -2,29 +2,83 @@
   "id": "layout-admin",
   "description": "Pre-built admin panel with data table (TanStack), entity forms, filters, and bulk actions.",
   "group": "capability",
-  "appliesTo": ["nextjs-ts", "react-vite-ts", "fullstack-ts"],
-  "keywords": ["admin", "admin panel", "crud", "data table", "back office", "management", "content management"],
-  "capabilityRequires": ["shadcn"],
+  "appliesTo": [
+    "nextjs-ts",
+    "react-vite-ts",
+    "fullstack-ts"
+  ],
+  "keywords": [
+    "admin",
+    "admin panel",
+    "crud",
+    "data table",
+    "back office",
+    "management",
+    "content management"
+  ],
+  "capabilityRequires": [
+    "shadcn"
+  ],
   "files": [
-    { "source": "files/data-table.tsx", "target": "src/components/admin/data-table.tsx" },
-    { "source": "files/entity-form.tsx", "target": "src/components/admin/entity-form.tsx" },
-    { "source": "files/admin-page.tsx", "target": "app/admin/page.tsx" },
-    { "source": "files/admin-page.tsx", "target": "app/page.tsx" },
-    { "source": "files/admin-page.tsx", "target": "src/App.tsx" },
-    { "source": "files/column-header.tsx", "target": "src/components/admin/column-header.tsx" },
-    { "source": "files/media-manifest.json", "target": "media-manifest.json" }
+    {
+      "source": "files/data-table.tsx",
+      "target": "src/components/admin/data-table.tsx"
+    },
+    {
+      "source": "files/entity-form.tsx",
+      "target": "src/components/admin/entity-form.tsx"
+    },
+    {
+      "source": "files/admin-page.tsx",
+      "target": "app/admin/page.tsx"
+    },
+    {
+      "source": "files/admin-page.tsx",
+      "target": "app/page.tsx"
+    },
+    {
+      "source": "files/admin-page.tsx",
+      "target": "src/App.tsx"
+    },
+    {
+      "source": "files/column-header.tsx",
+      "target": "src/components/admin/column-header.tsx"
+    },
+    {
+      "source": "files/media-manifest.json",
+      "target": "media-manifest.json"
+    }
   ],
   "buildHints": {
-    "pages": ["/admin", "/admin/[entity]", "/admin/[entity]/[id]"],
-    "apiRoutes": ["/api/admin/[entity]"],
-    "components": ["DataTable", "EntityForm", "ColumnHeader", "BulkActionBar", "FilterBar"],
-    "integrations": ["@tanstack/react-table for headless table logic"],
+    "pages": [
+      "/admin",
+      "/admin/[entity]",
+      "/admin/[entity]/[id]"
+    ],
+    "apiRoutes": [
+      "/api/admin/[entity]"
+    ],
+    "components": [
+      "DataTable",
+      "EntityForm",
+      "ColumnHeader",
+      "BulkActionBar",
+      "FilterBar"
+    ],
+    "integrations": [
+      "@tanstack/react-table for headless table logic"
+    ],
     "architectureNotes": [
       "DataTable is powered by @tanstack/react-table with sorting, filtering, and pagination.",
-      "Column definitions are typed — add your entity columns in the page file.",
+      "Column definitions are typed \u2014 add your entity columns in the page file.",
       "EntityForm renders a create/edit dialog with shadcn form components.",
       "Bulk actions bar appears when rows are selected (delete, export, etc.).",
       "Wire API routes to your database (Drizzle, Prisma, etc.)."
     ]
+  },
+  "packageDeps": {
+    "dependencies": {
+      "@tanstack/react-table": "^8.21.0"
+    }
   }
 }

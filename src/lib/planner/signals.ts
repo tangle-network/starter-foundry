@@ -275,6 +275,47 @@ export const ADMIN_ARCHETYPE_SIGNALS = [
   'admin panel',
 ]
 
+// Code-editor surface: AI code assistants, prompt playgrounds, markdown
+// editors with code blocks, SQL query builders, config UIs. Triggers
+// capability:code-editor attachment on web-producing families.
+export const CODE_EDITOR_ARCHETYPE_SIGNALS = [
+  'code editor',
+  'query editor',
+  'sql editor',
+  'prompt playground',
+  'code playground',
+  'syntax highlight',
+  'syntax highlighting',
+  'markdown editor',
+  'config editor',
+  'schema editor',
+  'json editor',
+  'javascript editor',
+  'typescript editor',
+  'codemirror',
+]
+
+// Date-heavy products — scheduling, calendar, timeline, booking, deadline
+// tracking. Triggers capability:date-utils attachment on web-producing
+// families. Kept narrow: "dashboard" isn't date-heavy, but "scheduling
+// dashboard" is.
+export const DATE_HEAVY_ARCHETYPE_SIGNALS = [
+  'calendar',
+  'scheduling',
+  'booking',
+  'appointment',
+  'timeline',
+  'deadline',
+  'date range',
+  'date picker',
+  'recurring event',
+  'relative time',
+  'event scheduler',
+  'reminders',
+  'due date',
+  'time tracking',
+]
+
 // Browser-native ZK: products where proofs are generated client-side
 // (snarkjs + circom) rather than on a Rust prover service. Mixers, private
 // voting, anonymous credentials, commitment-nullifier flows. Triggers

@@ -1,0 +1,26 @@
+# vLLM serving config. Edit to switch model + runtime parameters.
+# See https://docs.vllm.ai/en/latest/models/supported_models.html for model ids.
+
+model:
+  id: "{{modelId}}"
+  max_model_len: {{maxModelLen}}
+  # Enable quantization for models larger than single-GPU VRAM. Options:
+  # awq (weight-only), gptq (weight-only), fp8 (weight + activation).
+  quantization: null
+  # tensor_parallel_size > 1 sharded across GPUs. Only relevant for multi-GPU hosts.
+  tensor_parallel_size: 1
+
+server:
+  host: "0.0.0.0"
+  port: {{port}}
+  # Enable OpenAI-compatible chat + completions endpoints.
+  enable_openai_api: true
+  # API key required to call /v1/* endpoints. Set via VLLM_API_KEY env var.
+  api_key_env: "VLLM_API_KEY"
+
+# Per-request defaults. Override per-call via the OpenAI payload.
+generation_defaults:
+  max_tokens: 512
+  temperature: 0.7
+  top_p: 0.95
+  top_k: 50

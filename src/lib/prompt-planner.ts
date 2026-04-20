@@ -846,6 +846,13 @@ function buildWebProject(prompt: string, partner: string | null, text: string, r
   const implicit = inferImplicitCapabilities(text, family, new Set(layers))
   if (implicit.length > 0) layers.push(...implicit)
 
+  // Force-attach tailwind + shadcn on every React family web project, same as
+  // the starter path does. Without this, workspace scaffolds (UI + contracts)
+  // lose the UI capability attachments agents then install manually —
+  // visible in .evolve/capability-gaps.json as shadcn missed 20× / tailwind 14×.
+  if (!layers.includes('capability:tailwind')) layers.push('capability:tailwind')
+  if (!layers.includes('capability:shadcn')) layers.push('capability:shadcn')
+
   return {
     id: 'web',
     path: 'apps/web',
@@ -1007,6 +1014,11 @@ const SINGLE_LANE_SIGNALS = [
 const FRONTEND_SIGNALS = [
   'frontend', 'ui', 'website', 'landing', 'dashboard', 'web app', 'app',
   'preview', 'next', 'react', 'platform', 'dapp', 'interface', 'portal',
+  // "X page" / "Y screen" — UI nouns. Buildout corpus showed prompts like
+  // "DEX swap page" / "NFT mint page" routing to forge-contracts only
+  // because no frontend signal matched.
+  'page', 'screen', 'mint page', 'swap page', 'bridge page',
+  'staking page', 'claim page',
 ]
 
 const API_SIGNALS = [

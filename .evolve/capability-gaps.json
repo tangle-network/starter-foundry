@@ -1,33 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-04-20T08:32:53.809Z",
+  "generatedAt": "2026-04-20T17:56:20.276Z",
   "processedEvents": 20,
-  "distinctGaps": 11,
-  "totalMissedInferences": 39,
+  "distinctGaps": 2,
+  "totalMissedInferences": 5,
   "topMissedCapabilities": [
-    {
-      "capability": "capability:shadcn",
-      "totalMissed": 20,
-      "distinctScenarios": 5,
-      "scenarios": [
-        "agent-trading",
-        "cross-chain-bridge",
-        "dao-proposals",
-        "dex-swap",
-        "zk-mixer-ui"
-      ]
-    },
-    {
-      "capability": "capability:tailwind",
-      "totalMissed": 14,
-      "distinctScenarios": 4,
-      "scenarios": [
-        "agent-trading",
-        "dao-proposals",
-        "dex-swap",
-        "zk-mixer-ui"
-      ]
-    },
     {
       "capability": "capability:ai-agent-dashboard",
       "totalMissed": 3,
@@ -47,82 +24,6 @@
   ],
   "perScenarioGap": [
     {
-      "scenarioId": "dao-proposals",
-      "capability": "capability:tailwind",
-      "missedIn": 6,
-      "totalBuildouts": 6,
-      "totalPassing": 6,
-      "missRate": 1,
-      "sampleAgentPackages": [
-        "pnpm:tailwindcss"
-      ],
-      "samplePrompts": [
-        "You are in a development environment with full file system access at /home/agent. Use your tools (read, write, edit, bash) to extend a prepared scaffold for the user's request.\n\nA working project scaffold is set up in /home/agent. STEP 0 (d",
-        "You are in a development environment with full file system access at /home/agent. Use your tools (read, write, edit, bash) to extend a prepared scaffold for the user's request.\n\nA working project scaffold is set up in /home/agent. STEP 0 (d"
-      ]
-    },
-    {
-      "scenarioId": "dao-proposals",
-      "capability": "capability:shadcn",
-      "missedIn": 6,
-      "totalBuildouts": 6,
-      "totalPassing": 6,
-      "missRate": 1,
-      "sampleAgentPackages": [
-        "pnpm:lucide-react"
-      ],
-      "samplePrompts": [
-        "You are in a development environment with full file system access at /home/agent. Use your tools (read, write, edit, bash) to extend a prepared scaffold for the user's request.\n\nA working project scaffold is set up in /home/agent. STEP 0 (d",
-        "You are in a development environment with full file system access at /home/agent. Use your tools (read, write, edit, bash) to extend a prepared scaffold for the user's request.\n\nA working project scaffold is set up in /home/agent. STEP 0 (d"
-      ]
-    },
-    {
-      "scenarioId": "dex-swap",
-      "capability": "capability:shadcn",
-      "missedIn": 6,
-      "totalBuildouts": 6,
-      "totalPassing": 0,
-      "missRate": 1,
-      "sampleAgentPackages": [
-        "pnpm:clsx",
-        "pnpm:lucide-react"
-      ],
-      "samplePrompts": [
-        "You are in a development environment with full file system access at /home/agent. Use your tools (read, write, edit, bash) to extend a prepared scaffold for the user's request.\n\nA working project scaffold is set up in /home/agent. STEP 0 (d",
-        "You are in a development environment with full file system access at /home/agent. Use your tools (read, write, edit, bash) to extend a prepared scaffold for the user's request.\n\nA working project scaffold is set up in /home/agent. STEP 0 (d"
-      ]
-    },
-    {
-      "scenarioId": "agent-trading",
-      "capability": "capability:tailwind",
-      "missedIn": 3,
-      "totalBuildouts": 3,
-      "totalPassing": 3,
-      "missRate": 1,
-      "sampleAgentPackages": [
-        "pnpm:tailwindcss"
-      ],
-      "samplePrompts": [
-        "You are in a development environment with full file system access at /home/agent. Use your tools (read, write, edit, bash) to extend a prepared scaffold for the user's request.\n\nA working project scaffold is set up in /home/agent. STEP 0 (d",
-        "You are in a development environment with full file system access at /home/agent. Use your tools (read, write, edit, bash) to extend a prepared scaffold for the user's request.\n\nA working project scaffold is set up in /home/agent. STEP 0 (d"
-      ]
-    },
-    {
-      "scenarioId": "agent-trading",
-      "capability": "capability:shadcn",
-      "missedIn": 3,
-      "totalBuildouts": 3,
-      "totalPassing": 3,
-      "missRate": 1,
-      "sampleAgentPackages": [
-        "pnpm:lucide-react"
-      ],
-      "samplePrompts": [
-        "You are in a development environment with full file system access at /home/agent. Use your tools (read, write, edit, bash) to extend a prepared scaffold for the user's request.\n\nA working project scaffold is set up in /home/agent. STEP 0 (d",
-        "You are in a development environment with full file system access at /home/agent. Use your tools (read, write, edit, bash) to extend a prepared scaffold for the user's request.\n\nA working project scaffold is set up in /home/agent. STEP 0 (d"
-      ]
-    },
-    {
       "scenarioId": "agent-trading",
       "capability": "capability:ai-agent-dashboard",
       "missedIn": 3,
@@ -138,36 +39,6 @@
       ]
     },
     {
-      "scenarioId": "dex-swap",
-      "capability": "capability:tailwind",
-      "missedIn": 3,
-      "totalBuildouts": 3,
-      "totalPassing": 0,
-      "missRate": 1,
-      "sampleAgentPackages": [
-        "pnpm:tailwindcss"
-      ],
-      "samplePrompts": [
-        "You are in a development environment with full file system access at /home/agent. Use your tools (read, write, edit, bash) to extend a prepared scaffold for the user's request.\n\nA working project scaffold is set up in /home/agent. STEP 0 (d",
-        "You are in a development environment with full file system access at /home/agent. Use your tools (read, write, edit, bash) to extend a prepared scaffold for the user's request.\n\nA working project scaffold is set up in /home/agent. STEP 0 (d"
-      ]
-    },
-    {
-      "scenarioId": "cross-chain-bridge",
-      "capability": "capability:shadcn",
-      "missedIn": 3,
-      "totalBuildouts": 3,
-      "totalPassing": 3,
-      "missRate": 1,
-      "sampleAgentPackages": [
-        "pnpm:lucide-react"
-      ],
-      "samplePrompts": [
-        "You are in a development environment with full file system access at /home/agent. Use your tools (read, write, edit, bash) to extend a prepared scaffold for the user's request.\n\nA working project scaffold is set up in /home/agent. STEP 0 (d",
-        "You are in a development environment with full file system access at /home/agent. Use your tools (read, write, edit, bash) to extend a prepared scaffold for the user's request.\n\nA working project scaffold is set up in /home/agent. STEP 0 (d"
-      ]
-    },
-    {
       "scenarioId": "zk-mixer-ui",
       "capability": "capability:evm-wallet-dashboard",
       "missedIn": 2,
@@ -176,36 +47,6 @@
       "missRate": 1,
       "sampleAgentPackages": [
         "pnpm:ethers"
-      ],
-      "samplePrompts": [
-        "You are in a development environment with full file system access at /home/agent. Use your tools (read, write, edit, bash) to extend a prepared scaffold for the user's request.\n\nA working project scaffold is set up in /home/agent. STEP 0 (d",
-        "You are in a development environment with full file system access at /home/agent. Use your tools (read, write, edit, bash) to extend a prepared scaffold for the user's request.\n\nA working project scaffold is set up in /home/agent. STEP 0 (d"
-      ]
-    },
-    {
-      "scenarioId": "zk-mixer-ui",
-      "capability": "capability:tailwind",
-      "missedIn": 2,
-      "totalBuildouts": 2,
-      "totalPassing": 0,
-      "missRate": 1,
-      "sampleAgentPackages": [
-        "pnpm:@tailwindcss/vite"
-      ],
-      "samplePrompts": [
-        "You are in a development environment with full file system access at /home/agent. Use your tools (read, write, edit, bash) to extend a prepared scaffold for the user's request.\n\nA working project scaffold is set up in /home/agent. STEP 0 (d",
-        "You are in a development environment with full file system access at /home/agent. Use your tools (read, write, edit, bash) to extend a prepared scaffold for the user's request.\n\nA working project scaffold is set up in /home/agent. STEP 0 (d"
-      ]
-    },
-    {
-      "scenarioId": "zk-mixer-ui",
-      "capability": "capability:shadcn",
-      "missedIn": 2,
-      "totalBuildouts": 2,
-      "totalPassing": 0,
-      "missRate": 1,
-      "sampleAgentPackages": [
-        "pnpm:lucide-react"
       ],
       "samplePrompts": [
         "You are in a development environment with full file system access at /home/agent. Use your tools (read, write, edit, bash) to extend a prepared scaffold for the user's request.\n\nA working project scaffold is set up in /home/agent. STEP 0 (d",

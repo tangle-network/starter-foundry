@@ -55,7 +55,6 @@ test('VERTICAL_TO_PARTNER: maps slug verticals to VB partner names', () => {
 test('emptyMinerState: initializes with current schema', () => {
   const s = emptyMinerState()
   assert.equal(s.schemaVersion, BUILDOUT_SCHEMA_VERSION)
-  assert.deepEqual(s.cursors, {})
   assert.deepEqual(s.mtimes, {})
   assert.deepEqual(s.poisoned, {})
   assert.equal(s.lastRun, null)

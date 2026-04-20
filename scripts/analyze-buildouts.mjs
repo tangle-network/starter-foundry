@@ -105,17 +105,14 @@ const topDirs = [...dirCounts.entries()]
   .slice(0, 20)
   .map(([dir, n]) => ({ dir, timesAdded: n }))
 
-// Top rewritten scaffold files (normalize absolute temp paths down to
-// scaffold-relative paths so patterns cluster)
+// Top rewritten scaffold files — strip the scenario-nonce prefix so paths
+// cluster. Agent sessions happen in /private/var/folders/.../<scenario>-<nonce>/,
+// so we drop everything up through <scenario>-<nonce>/ and keep the relative
+// path inside the scaffold.
 function normalizePath(p) {
   if (typeof p !== 'string') return p
-  // Strip anything up through the last /factory-local-phase2-.../<scenario>/<nonce>/ segment
-  const m = p.match(/factory-local-phase2-[^/]+\/([^/]+)(?:\/|$)/)
-  if (m) {
-    const tail = p.slice(p.indexOf(m[0]) + m[0].length - m[1].length - 1)
-    return tail.replace(/^\/+/, '')
-  }
-  return p
+  const m = p.match(/\/[^/]+-[A-Za-z0-9]{4,8}\/(.+)$/)
+  return m ? m[1] : p
 }
 const fileCounts = new Map()
 const fileFailCounts = new Map()

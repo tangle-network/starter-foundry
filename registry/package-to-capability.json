@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "note": "Hand-curated map from npm/cargo/pip packages to starter-foundry capability IDs. Consumed by scripts/analyze-buildouts.mjs and the capability-inferrer. When an agent installs package X mid-buildout, it's signal we should have attached the mapped capability. Confidence values: 1.0 = unique identifier (e.g. @stripe/stripe-js → saas-billing). 0.5 = strong hint but context-dependent. 0.3 = weak, probably just an incidental dep.",
+  "mapping": {
+    "lucide-react":               { "capability": "capability:shadcn", "confidence": 0.8 },
+    "clsx":                        { "capability": "capability:shadcn", "confidence": 0.7 },
+    "class-variance-authority":    { "capability": "capability:shadcn", "confidence": 0.95 },
+    "tailwind-merge":              { "capability": "capability:shadcn", "confidence": 0.9 },
+    "@radix-ui/react-slot":        { "capability": "capability:shadcn", "confidence": 0.95 },
+    "@radix-ui/react-dialog":      { "capability": "capability:shadcn", "confidence": 0.9 },
+    "@radix-ui/react-dropdown-menu": { "capability": "capability:shadcn", "confidence": 0.9 },
+
+    "tailwindcss":                 { "capability": "capability:tailwind", "confidence": 0.98 },
+    "@tailwindcss/vite":           { "capability": "capability:tailwind", "confidence": 0.98 },
+    "@tailwindcss/postcss":        { "capability": "capability:tailwind", "confidence": 0.98 },
+    "postcss":                     { "capability": "capability:tailwind", "confidence": 0.4 },
+
+    "recharts":                    { "capability": "capability:chart-widget", "confidence": 0.95 },
+    "@tanstack/react-table":       { "capability": "capability:layout-admin", "confidence": 0.85 },
+
+    "stripe":                      { "capability": "capability:saas-billing", "confidence": 0.95 },
+    "@stripe/stripe-js":           { "capability": "capability:saas-billing", "confidence": 0.98 },
+    "@stripe/react-stripe-js":     { "capability": "capability:saas-billing", "confidence": 0.98 },
+
+    "@clerk/nextjs":               { "capability": "capability:layout-auth", "confidence": 0.95 },
+    "@clerk/clerk-react":          { "capability": "capability:layout-auth", "confidence": 0.95 },
+
+    "ai":                          { "capability": "capability:ai-chat-ui", "confidence": 0.7 },
+    "@ai-sdk/react":               { "capability": "capability:ai-chat-ui", "confidence": 0.9 },
+    "@ai-sdk/openai":              { "capability": "capability:ai-agent-dashboard", "confidence": 0.6 },
+
+    "@openzeppelin/contracts":     { "capability": "capability:evm-deploy-foundry", "confidence": 0.85 },
+    "viem":                        { "capability": "capability:evm-wallet-dashboard", "confidence": 0.7 },
+    "wagmi":                       { "capability": "capability:evm-wallet-dashboard", "confidence": 0.85 },
+    "ethers":                      { "capability": "capability:evm-wallet-dashboard", "confidence": 0.65 },
+    "@rainbow-me/rainbowkit":      { "capability": "capability:evm-wallet-dashboard", "confidence": 0.9 },
+
+    "snarkjs":                     { "capability": null, "confidence": 0, "note": "JS-based zk tooling, low priority. Real zk path is Rust (sp1/risc0). If an agent reaches for snarkjs, route them to framework:zk-prover-service instead." },
+    "circomlibjs":                 { "capability": null, "confidence": 0, "note": "same as snarkjs" },
+    "sp1":                         { "capability": null, "confidence": 0, "note": "Rust crate, not npm. Framework-level signal for framework:zk-prover-service." },
+    "risc0":                       { "capability": null, "confidence": 0, "note": "Rust crate, not npm. Framework-level signal for framework:zk-prover-service." },
+    "risc0-zkvm":                  { "capability": null, "confidence": 0, "note": "Rust crate; same." },
+
+    "@solana/web3.js":             { "capability": "capability:solana-amm", "confidence": 0.4 },
+    "@solana/wallet-adapter-react": { "capability": "capability:solana-amm", "confidence": 0.5 },
+
+    "@codemirror/view":            { "capability": "capability:ai-agent-dashboard", "confidence": 0.5 },
+    "@codemirror/state":           { "capability": "capability:ai-agent-dashboard", "confidence": 0.5 },
+    "@codemirror/lang-javascript": { "capability": "capability:ai-agent-dashboard", "confidence": 0.5 },
+
+    "date-fns":                    { "capability": null, "confidence": 0, "note": "utility, no capability mapping" },
+    "zod":                         { "capability": null, "confidence": 0, "note": "schema library, used everywhere" },
+
+    "axios":                       { "capability": null, "confidence": 0, "note": "http client, used everywhere" },
+    "dotenv":                      { "capability": null, "confidence": 0, "note": "env loader, infra-level" }
+  }
+}

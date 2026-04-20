@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "summary": {
-    "generatedAt": "2026-04-20T08:19:14.646Z",
+    "generatedAt": "2026-04-20T08:35:52.729Z",
     "totalBuildouts": 198,
     "withOutcome": 121,
     "passRate": 0.8181818181818182,
@@ -755,154 +755,154 @@
   ],
   "topRewrittenFiles": [
     {
-      "file": "stylus-gas-profiler-lgozkN/src/main.rs",
+      "file": "index.html",
+      "timesRewritten": 13,
+      "rewrittenOnPass": 8,
+      "rewrittenOnFail": 5
+    },
+    {
+      "file": "src/App.tsx",
+      "timesRewritten": 12,
+      "rewrittenOnPass": 7,
+      "rewrittenOnFail": 4
+    },
+    {
+      "file": "src/index.css",
+      "timesRewritten": 8,
+      "rewrittenOnPass": 4,
+      "rewrittenOnFail": 3
+    },
+    {
+      "file": "foundry.toml",
+      "timesRewritten": 8,
+      "rewrittenOnPass": 8,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/components/StatusPipeline.tsx",
+      "timesRewritten": 8,
+      "rewrittenOnPass": 8,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "package.json",
+      "timesRewritten": 6,
+      "rewrittenOnPass": 2,
+      "rewrittenOnFail": 4
+    },
+    {
+      "file": "src/profiler.rs",
+      "timesRewritten": 5,
+      "rewrittenOnPass": 5,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/components/SwapCard.tsx",
+      "timesRewritten": 5,
+      "rewrittenOnPass": 0,
+      "rewrittenOnFail": 3
+    },
+    {
+      "file": "src/main.rs",
+      "timesRewritten": 4,
+      "rewrittenOnPass": 4,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/optimizer.rs",
+      "timesRewritten": 4,
+      "rewrittenOnPass": 4,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/lib/contract.ts",
+      "timesRewritten": 4,
+      "rewrittenOnPass": 0,
+      "rewrittenOnFail": 4
+    },
+    {
+      "file": "src/components/WithdrawPanel.tsx",
+      "timesRewritten": 4,
+      "rewrittenOnPass": 0,
+      "rewrittenOnFail": 4
+    },
+    {
+      "file": "src/StarterCounter.sol",
       "timesRewritten": 3,
       "rewrittenOnPass": 3,
       "rewrittenOnFail": 0
     },
     {
-      "file": "stylus-gas-profiler-lgozkN/src/optimizer.rs",
+      "file": "src/components/CreateProposal.tsx",
       "timesRewritten": 3,
       "rewrittenOnPass": 3,
       "rewrittenOnFail": 0
     },
     {
-      "file": "stylus-gas-profiler-IQNfcV/src/profiler.rs",
+      "file": "src/agentEngine.ts",
       "timesRewritten": 3,
       "rewrittenOnPass": 3,
       "rewrittenOnFail": 0
     },
     {
-      "file": "nft-mint-page-5CnSiH/src/StarterCounter.sol",
+      "file": "src/components/KillSwitch.tsx",
       "timesRewritten": 3,
       "rewrittenOnPass": 3,
       "rewrittenOnFail": 0
     },
     {
-      "file": "nft-mint-page-5CnSiH/foundry.toml",
-      "timesRewritten": 3,
-      "rewrittenOnPass": 3,
-      "rewrittenOnFail": 0
-    },
-    {
-      "file": "dex-swap-JlVn7j/package.json",
+      "file": "src/lib/crypto.ts",
       "timesRewritten": 3,
       "rewrittenOnPass": 0,
       "rewrittenOnFail": 3
     },
     {
-      "file": "dao-proposals-UHUR7e/index.html",
+      "file": "src/NFTCollection.sol",
       "timesRewritten": 3,
       "rewrittenOnPass": 3,
       "rewrittenOnFail": 0
     },
     {
-      "file": "dao-proposals-UHUR7e/src/components/CreateProposal.tsx",
+      "file": "src/pages/ProposalList.tsx",
       "timesRewritten": 3,
       "rewrittenOnPass": 3,
       "rewrittenOnFail": 0
     },
     {
-      "file": "agent-trading-7r8sjq/src/agentEngine.ts",
+      "file": "src/pages/ProposalDetail.tsx",
       "timesRewritten": 3,
       "rewrittenOnPass": 3,
       "rewrittenOnFail": 0
     },
     {
-      "file": "agent-trading-7r8sjq/src/components/KillSwitch.tsx",
+      "file": "src/components/Nav.tsx",
       "timesRewritten": 3,
       "rewrittenOnPass": 3,
       "rewrittenOnFail": 0
     },
     {
-      "file": "agent-trading-7r8sjq/src/App.tsx",
+      "file": "src/store.ts",
       "timesRewritten": 3,
       "rewrittenOnPass": 3,
       "rewrittenOnFail": 0
     },
     {
-      "file": "nft-mint-page-bY9G4a/foundry.toml",
+      "file": "tailwind.config.js",
       "timesRewritten": 3,
       "rewrittenOnPass": 3,
       "rewrittenOnFail": 0
     },
     {
-      "file": "nft-mint-page-bY9G4a/src/NFTCollection.sol",
-      "timesRewritten": 3,
-      "rewrittenOnPass": 3,
+      "file": "src/components/StrategyEditor.tsx",
+      "timesRewritten": 2,
+      "rewrittenOnPass": 2,
       "rewrittenOnFail": 0
     },
     {
-      "file": "dex-swap-IR9xGW/src/components/SwapCard.tsx",
-      "timesRewritten": 3,
+      "file": "src/lib/zkproof.ts",
+      "timesRewritten": 2,
       "rewrittenOnPass": 0,
-      "rewrittenOnFail": 3
-    },
-    {
-      "file": "dao-proposals-7il86H/src/pages/ProposalList.tsx",
-      "timesRewritten": 3,
-      "rewrittenOnPass": 3,
-      "rewrittenOnFail": 0
-    },
-    {
-      "file": "dao-proposals-7il86H/src/pages/ProposalDetail.tsx",
-      "timesRewritten": 3,
-      "rewrittenOnPass": 3,
-      "rewrittenOnFail": 0
-    },
-    {
-      "file": "dao-proposals-7il86H/src/components/Nav.tsx",
-      "timesRewritten": 3,
-      "rewrittenOnPass": 3,
-      "rewrittenOnFail": 0
-    },
-    {
-      "file": "dao-proposals-7il86H/src/store.ts",
-      "timesRewritten": 3,
-      "rewrittenOnPass": 3,
-      "rewrittenOnFail": 0
-    },
-    {
-      "file": "cross-chain-bridge-mN29UR/index.html",
-      "timesRewritten": 3,
-      "rewrittenOnPass": 3,
-      "rewrittenOnFail": 0
-    },
-    {
-      "file": "cross-chain-bridge-mN29UR/src/components/StatusPipeline.tsx",
-      "timesRewritten": 3,
-      "rewrittenOnPass": 3,
-      "rewrittenOnFail": 0
-    },
-    {
-      "file": "dex-swap-bQvOJV/src/index.css",
-      "timesRewritten": 3,
-      "rewrittenOnPass": 0,
-      "rewrittenOnFail": 3
-    },
-    {
-      "file": "dex-swap-bQvOJV/index.html",
-      "timesRewritten": 3,
-      "rewrittenOnPass": 0,
-      "rewrittenOnFail": 3
-    },
-    {
-      "file": "cross-chain-bridge-9BgHMI/src/App.tsx",
-      "timesRewritten": 3,
-      "rewrittenOnPass": 3,
-      "rewrittenOnFail": 0
-    },
-    {
-      "file": "cross-chain-bridge-9BgHMI/tailwind.config.js",
-      "timesRewritten": 3,
-      "rewrittenOnPass": 3,
-      "rewrittenOnFail": 0
-    },
-    {
-      "file": "cross-chain-bridge-9BgHMI/src/index.css",
-      "timesRewritten": 3,
-      "rewrittenOnPass": 3,
-      "rewrittenOnFail": 0
+      "rewrittenOnFail": 2
     }
   ]
 }

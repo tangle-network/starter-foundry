@@ -16,10 +16,19 @@
 //      └→ scripts/analyze-buildouts.mjs
 //           writes .evolve/buildout-analysis.json (committed evidence)
 //
-// Every stage honors a resume file so re-running is cheap when nothing
-// new arrived and idempotent when sessions are appended mid-run.
+// Adding a new session source (GLM 5.1, OpenAI, etc.):
+//   1. Write a new script that emits rows conforming to BuildoutEvent.
+//      The schema is model-agnostic — the fields below describe what the
+//      agent DID (packages, dirs, rewritten files), not how the session
+//      was produced.
+//   2. Append to the same .evolve/traces/buildouts.jsonl.
+//   3. Existing join/analyze stages consume it unchanged.
+//
+// The source script needs: per-session cursor tracking for idempotency,
+// error isolation per session, schema-version pinning. The Claude Code
+// miner is the reference implementation.
 
-export const BUILDOUT_SCHEMA_VERSION = 2
+export const BUILDOUT_SCHEMA_VERSION = 3
 
 export interface BuildoutEvent {
   schemaVersion: typeof BUILDOUT_SCHEMA_VERSION
@@ -27,10 +36,10 @@ export interface BuildoutEvent {
   /** Filesystem path of the source jsonl (for audit + debugging). */
   sourcePath: string
   /**
-   * Claude Code project slug — "-private-var-folders-...-factory-local-phase2-...".
-   * Used to identify that this is a scaffold-buildout session, not a general one.
+   * Agent model family — "claude-code", "glm-5-1", "gpt-5" — for per-model
+   * roll-ups. Set by the miner, not derived.
    */
-  projectSlug: string
+  sourceModel: string
   /** Extracted scenarioId parsed out of the slug (e.g. "nft-mint-page"). */
   scenarioId: string | null
   /**
@@ -44,40 +53,31 @@ export interface BuildoutEvent {
   firstTs: string | null
   /** ISO 8601 of the last entry. */
   lastTs: string | null
-  /** Total entries in the source JSONL. */
-  totalEntries: number
   /**
    * First substantive user prompt — the task description the agent was given.
-   * Max 4000 chars, trimmed. Null if no user message was found.
+   * Max 4000 chars. Null if no user message was found.
    */
   initialPrompt: string | null
   /**
    * Packages the agent explicitly installed during the session.
-   * Deduped. Captures signal like "agent had to add stripe because we didn't attach saas-billing."
+   * Deduped. Captures signal like "agent had to add stripe because we didn't
+   * attach saas-billing."
    */
   addedPackages: Array<{ pm: 'npm' | 'pnpm' | 'yarn' | 'cargo' | 'go' | 'pip'; name: string }>
   /**
-   * Directories created with mkdir. Normalized paths (./src/foo/bar).
+   * Directories created with `mkdir`. Normalized paths (`src/foo/bar`).
    * Signal: "agent had to scaffold its own payments/ directory."
    */
   addedDirs: string[]
   /**
-   * Files from the scaffold that got rewritten (Edit / Write operations).
-   * Signal: "90% of agents rewrite src/App.tsx in the first 3 turns — the template is wrong."
-   * Sourced from Claude Code's Edit/Write tool_use targets, not validated against a spec diff.
+   * Files from the scaffold that got rewritten (Edit operations).
+   * Signal: "90% of agents rewrite src/App.tsx in the first 3 turns —
+   * the template is wrong."
    */
   rewrittenFiles: string[]
-  /** New files the agent created beyond the scaffold. */
-  addedFiles: string[]
-  /** Count of Bash tool_use invocations. */
-  bashCalls: number
-  /** Count of `pnpm|npm|yarn|cargo|go run|python -m` build/test calls. */
-  buildCalls: number
-  /** Exit codes observed for build/test calls. [] if none. */
-  buildExitCodes: number[]
   /**
-   * Outcome annotated later by scripts/join-buildout-outcomes.mjs from VB traces.
-   * `null` means no VB trace matched (session may be mid-run, or not a VB scenario).
+   * Outcome annotated by scripts/join-buildout-outcomes.mjs from VB traces.
+   * `null` means no VB trace matched yet.
    */
   outcome: BuildoutOutcome | null
 }
@@ -95,13 +95,10 @@ export interface BuildoutOutcome {
 
 export interface MinerState {
   schemaVersion: typeof BUILDOUT_SCHEMA_VERSION
-  /** Per-source-path cursor: last successfully processed line index (0-based, inclusive). */
-  cursors: Record<string, number>
-  /** Per-source-path last mtime observed (for detecting rewrites). */
+  /** Per-source-path last mtime observed. Unchanged mtime → skip. */
   mtimes: Record<string, number>
-  /** Sessions that errored out; skip on subsequent runs unless --force. */
+  /** Sessions that errored; skip on subsequent runs unless --force-*. */
   poisoned: Record<string, { ts: string; error: string }>
-  /** Totals updated on each run for quick status. */
   lastRun: {
     ts: string
     sessionsScanned: number
@@ -123,7 +120,6 @@ export const DEFAULT_PATHS = {
 export function emptyMinerState(): MinerState {
   return {
     schemaVersion: BUILDOUT_SCHEMA_VERSION,
-    cursors: {},
     mtimes: {},
     poisoned: {},
     lastRun: null,
@@ -134,15 +130,14 @@ export function emptyMinerState(): MinerState {
  * Parse a factory-local project slug into `{ partnerGuess, scenarioId, replayRound }`.
  *
  * Slug shape:
- *   -private-var-folders-wk-....-T-factory-local-phase2-<partner>-<run-id>-<scenario-id>-r<N>-<same-scenario>-<nonce>
+ *   -private-var-folders-wk-...-T-factory-local-phase2-<partner>-<run-id>-<scenario-id>-r<N>-<same-scenario>-<nonce>
  *
  * Example:
  *   -private-var-folders-...-factory-local-phase2-ethereum-l1-mo66lt85-nft-mint-page-r1-nft-mint-page-lDU8vu
- *     → partnerGuess: "ethereum-foundation" (mapped), scenarioId: "nft-mint-page", replayRound: 1
+ *     → partnerGuess: "ethereum-l1", scenarioId: "nft-mint-page", replayRound: 1
  *
- * We return `partnerGuess` not `partner` because the slug uses VB's verticalId
- * (e.g. "ethereum-l1"), not VB's partner field (e.g. "ethereum-foundation").
- * The join script handles the mapping.
+ * `partnerGuess` is VB's verticalId (e.g. "ethereum-l1"), not VB's partner
+ * field (e.g. "ethereum-foundation"). The join script handles the mapping.
  */
 export function parseSlug(slug: string): {
   partnerGuess: string | null

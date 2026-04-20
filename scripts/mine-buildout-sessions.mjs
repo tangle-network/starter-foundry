@@ -3,20 +3,18 @@
 // transcripts.
 //
 // Fault tolerance:
-//   - Per-session cursor stored in .evolve/traces/.buildouts-miner-state.json.
-//     Re-running after a new session appears only processes the new one.
-//   - A session that errors out is added to `poisoned` and skipped next run
+//   - Per-source mtime stored in .evolve/traces/.buildouts-miner-state.json.
+//     Unchanged mtime → skip.
+//   - A session that errors goes to `poisoned` and skips next run
 //     (override with --force-retry <sessionId> or --force-all).
-//   - Every failure writes to .buildouts-errors.jsonl with context so we can
-//     diagnose later without re-reading the full transcript.
-//   - Output JSONL is append-only. Schema version is embedded in each row so
-//     downstream consumers can detect breaks.
+//   - Per-error log at .buildouts-errors.jsonl.
+//   - Output JSONL is append-only. Schema version is embedded in each row.
 //
 // Usage:
-//   node scripts/mine-buildout-sessions.mjs                         # incremental
-//   node scripts/mine-buildout-sessions.mjs --projects-dir PATH     # custom source
-//   node scripts/mine-buildout-sessions.mjs --rebuild               # start fresh
-//   node scripts/mine-buildout-sessions.mjs --force-all             # retry poisoned
+//   node scripts/mine-buildout-sessions.mjs                      # incremental
+//   node scripts/mine-buildout-sessions.mjs --projects-dir PATH  # custom source
+//   node scripts/mine-buildout-sessions.mjs --rebuild            # start fresh
+//   node scripts/mine-buildout-sessions.mjs --force-all          # retry poisoned
 
 import { readdirSync, readFileSync, statSync, existsSync, mkdirSync, writeFileSync, appendFileSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
@@ -30,6 +28,8 @@ import {
   isBuildoutSlug,
 } from '../dist/lib/buildout-traces.js'
 
+const SOURCE_MODEL = 'claude-code'
+
 const argv = process.argv.slice(2)
 function arg(k, fallback) {
   const i = argv.indexOf(k)
@@ -40,23 +40,21 @@ const rebuild = argv.includes('--rebuild')
 const forceAll = argv.includes('--force-all')
 const forceSession = arg('--force-retry', null)
 
-// Safety: ensure dist/ is compiled (loader import above) — fail loudly if not.
 mkdirSync('.evolve/traces', { recursive: true })
 
 if (rebuild) {
   rmSync(DEFAULT_PATHS.buildoutsJsonl, { force: true })
   rmSync(DEFAULT_PATHS.minerState, { force: true })
   rmSync(DEFAULT_PATHS.errorsJsonl, { force: true })
-  console.log(`rebuild: cleared ${DEFAULT_PATHS.buildoutsJsonl} + state`)
+  console.log(`rebuild: cleared output + state`)
 }
 
 const state = existsSync(DEFAULT_PATHS.minerState)
   ? JSON.parse(readFileSync(DEFAULT_PATHS.minerState, 'utf8'))
   : emptyMinerState()
 
-// Schema bump → full rebuild.
 if (state.schemaVersion !== BUILDOUT_SCHEMA_VERSION) {
-  console.log(`schema version changed (${state.schemaVersion} → ${BUILDOUT_SCHEMA_VERSION}) — forcing rebuild`)
+  console.log(`schema bump (${state.schemaVersion} → ${BUILDOUT_SCHEMA_VERSION}) — rebuilding`)
   rmSync(DEFAULT_PATHS.buildoutsJsonl, { force: true })
   rmSync(DEFAULT_PATHS.errorsJsonl, { force: true })
   Object.assign(state, emptyMinerState())
@@ -67,8 +65,6 @@ let scanned = 0
 let newEvents = 0
 let poisonedAdded = 0
 
-// ---- helpers ----
-
 function tryParseJson(line) {
   try {
     return JSON.parse(line)
@@ -77,7 +73,7 @@ function tryParseJson(line) {
   }
 }
 
-/** Extract first substantive user prompt. Skip tool_result wrappers, /-commands, hooks. */
+/** First substantive user message — skip tool_result wrappers, /-commands, hooks. */
 function findInitialPrompt(entries) {
   for (const e of entries) {
     if (e?.type !== 'user') continue
@@ -107,9 +103,7 @@ const PM_REGEX_LIST = [
   { pm: 'pip', re: /\bpip\s+install\s+([^\n|;]+?)(?:\n|$|;|\|)/g },
 ]
 
-// Valid npm/cargo/etc. package names: start with letter/@, contain letters,
-// digits, dashes, underscores, dots, slashes (for scopes). Rejects shell
-// operators like 2>&1, |, &&, pipe artifacts, quotes.
+// Valid package name: letter/@ start, no shell operators.
 const VALID_PKG_NAME = /^(?:@[a-z0-9][\w.-]*\/)?[a-z][\w.-]*(?:\/[\w.-]+)*$/i
 
 function parsePackagesFromCmd(cmd) {
@@ -121,16 +115,11 @@ function parsePackagesFromCmd(cmd) {
       if (!raw) continue
       for (const token of raw.split(/\s+/)) {
         if (!token || token.startsWith('-')) continue
-        // Strip version specifiers. Keep leading @scope.
         const clean = token.startsWith('@')
           ? token.split('@').slice(0, 2).join('@')
           : token.split('@')[0]
-        if (!clean || clean.startsWith('.')) continue
-        // Reject shell redirect / pipe artifacts and anything that doesn't
-        // look like a real package name.
+        if (!clean || clean.startsWith('.') || clean.length < 2) continue
         if (!VALID_PKG_NAME.test(clean)) continue
-        // Reject single-char and obvious non-names.
-        if (clean.length < 2) continue
         out.push({ pm, name: clean })
       }
     }
@@ -139,14 +128,12 @@ function parsePackagesFromCmd(cmd) {
 }
 
 const MKDIR_RE = /\bmkdir\s+(?:-\w+\s+)*([^\n|;]+?)(?:\n|$|;|\|)/g
-const TOUCH_RE = /\btouch\s+([^\n|;]+?)(?:\n|$|;|\|)/g
 
 function parseDirsFromCmd(cmd) {
   const out = []
   MKDIR_RE.lastIndex = 0
   for (const m of cmd.matchAll(MKDIR_RE)) {
-    const targets = (m[1] ?? '').trim().split(/\s+/)
-    for (const t of targets) {
+    for (const t of (m[1] ?? '').trim().split(/\s+/)) {
       if (!t || t.startsWith('-')) continue
       out.push(t.replace(/^\.\//, ''))
     }
@@ -154,34 +141,14 @@ function parseDirsFromCmd(cmd) {
   return out
 }
 
-function parseTouchedFromCmd(cmd) {
-  const out = []
-  TOUCH_RE.lastIndex = 0
-  for (const m of cmd.matchAll(TOUCH_RE)) {
-    const targets = (m[1] ?? '').trim().split(/\s+/)
-    for (const t of targets) {
-      if (!t) continue
-      out.push(t.replace(/^\.\//, ''))
-    }
-  }
-  return out
-}
-
-const BUILD_CMD_RE = /\b(pnpm|npm|yarn|cargo|go|python|pytest|jest|vitest|tsc|forge|anchor)\b/
-function isBuildCall(cmd) {
-  return BUILD_CMD_RE.test(cmd)
-}
-
-function extractSessionEvents(entries, sessionId, sourcePath, projectSlug) {
+function extractEvent(entries, sessionId, sourcePath, projectSlug) {
   const slugParts = parseSlug(projectSlug)
   const addedPackages = []
   const addedDirs = []
-  const addedFiles = []
   const rewrittenFiles = []
-  let bashCalls = 0
-  let buildCalls = 0
-  const buildExitCodes = []
-  const fileTargetsSeen = new Set()
+  const seenPkg = new Set()
+  const seenDir = new Set()
+  const seenFile = new Set()
 
   for (const e of entries) {
     if (e?.type !== 'assistant') continue
@@ -189,59 +156,27 @@ function extractSessionEvents(entries, sessionId, sourcePath, projectSlug) {
     if (!Array.isArray(content)) continue
     for (const part of content) {
       if (part?.type !== 'tool_use') continue
-      const name = part?.name
       const input = part?.input ?? {}
-      if (name === 'Bash') {
-        bashCalls++
+      if (part.name === 'Bash') {
         const cmd = typeof input.command === 'string' ? input.command : ''
         if (!cmd) continue
-        if (isBuildCall(cmd)) buildCalls++
         for (const pkg of parsePackagesFromCmd(cmd)) {
-          if (!addedPackages.some((x) => x.pm === pkg.pm && x.name === pkg.name)) {
-            addedPackages.push(pkg)
-          }
+          const key = `${pkg.pm}:${pkg.name}`
+          if (seenPkg.has(key)) continue
+          seenPkg.add(key)
+          addedPackages.push(pkg)
         }
         for (const dir of parseDirsFromCmd(cmd)) {
-          if (!addedDirs.includes(dir)) addedDirs.push(dir)
+          if (seenDir.has(dir)) continue
+          seenDir.add(dir)
+          addedDirs.push(dir)
         }
-        for (const f of parseTouchedFromCmd(cmd)) {
-          if (!fileTargetsSeen.has(f)) {
-            fileTargetsSeen.add(f)
-            addedFiles.push(f)
-          }
-        }
-      } else if (name === 'Write') {
+      } else if (part.name === 'Edit') {
         const p = typeof input.file_path === 'string' ? input.file_path : null
-        if (!p) continue
-        if (!fileTargetsSeen.has(p)) {
-          fileTargetsSeen.add(p)
-          addedFiles.push(p)
-        }
-      } else if (name === 'Edit') {
-        const p = typeof input.file_path === 'string' ? input.file_path : null
-        if (!p) continue
-        if (!rewrittenFiles.includes(p)) rewrittenFiles.push(p)
+        if (!p || seenFile.has(p)) continue
+        seenFile.add(p)
+        rewrittenFiles.push(p)
       }
-    }
-  }
-
-  // Capture build exit codes (best-effort): scan tool_result messages for
-  // typical "exit N" patterns. Not exhaustive — good enough to detect failure
-  // clusters. Bounded for cost.
-  for (let i = 0; i < entries.length && buildExitCodes.length < 40; i++) {
-    const e = entries[i]
-    if (e?.type !== 'user') continue
-    const content = e?.message?.content
-    if (!Array.isArray(content)) continue
-    for (const part of content) {
-      if (part?.type !== 'tool_result') continue
-      const body = typeof part.content === 'string'
-        ? part.content
-        : Array.isArray(part.content)
-        ? part.content.map((x) => x?.text ?? '').join('')
-        : ''
-      const m = body.match(/exit code[:\s]+(\d+)/i) || body.match(/Error: .*?\(exit (\d+)\)/)
-      if (m) buildExitCodes.push(Number.parseInt(m[1], 10) || 0)
     }
   }
 
@@ -249,52 +184,46 @@ function extractSessionEvents(entries, sessionId, sourcePath, projectSlug) {
     schemaVersion: BUILDOUT_SCHEMA_VERSION,
     sessionId,
     sourcePath,
-    projectSlug,
+    sourceModel: SOURCE_MODEL,
     scenarioId: slugParts.scenarioId,
     partnerGuess: slugParts.partnerGuess,
     replayRound: slugParts.replayRound,
     firstTs: entries[0]?.timestamp ?? null,
     lastTs: entries[entries.length - 1]?.timestamp ?? null,
-    totalEntries: entries.length,
     initialPrompt: findInitialPrompt(entries),
     addedPackages,
     addedDirs,
-    addedFiles: addedFiles.slice(0, 200),
     rewrittenFiles: rewrittenFiles.slice(0, 200),
-    bashCalls,
-    buildCalls,
-    buildExitCodes,
     outcome: null,
   }
 }
 
 function logError(sessionId, sourcePath, error) {
-  const line =
+  appendFileSync(
+    DEFAULT_PATHS.errorsJsonl,
     JSON.stringify({
       ts: new Date().toISOString(),
       sessionId,
       sourcePath,
       error: (error?.stack ?? String(error)).slice(0, 2000),
-    }) + '\n'
-  appendFileSync(DEFAULT_PATHS.errorsJsonl, line)
+    }) + '\n',
+  )
 }
-
-// ---- scan ----
 
 const projectDirs = existsSync(projectsDir) ? readdirSync(projectsDir) : []
 
 for (const projectSlug of projectDirs) {
   if (!isBuildoutSlug(projectSlug)) continue
   const projDir = join(projectsDir, projectSlug)
-  let projStat
+  let stat
   try {
-    projStat = statSync(projDir)
+    stat = statSync(projDir)
   } catch {
     continue
   }
-  if (!projStat.isDirectory()) continue
+  if (!stat.isDirectory()) continue
 
-  let sessionFiles = []
+  let sessionFiles
   try {
     sessionFiles = readdirSync(projDir).filter((n) => n.endsWith('.jsonl'))
   } catch (err) {
@@ -318,35 +247,23 @@ for (const projectSlug of projectDirs) {
     }
 
     const prevMtime = state.mtimes[sessionId] ?? 0
-    const prevCursor = state.cursors[sessionId] ?? -1
-    // If the file hasn't changed since last scan AND we've processed all lines
-    // we saw, skip. (We recount lines below; skip is based on mtime alone here.)
     if (!rebuild && !forceAll && forceSession !== sessionId && fileStat.mtimeMs <= prevMtime) continue
 
     try {
       const raw = readFileSync(sourcePath, 'utf8')
-      const lines = raw.split('\n').filter((l) => l.length > 0)
-      // We mine the full session (stateless extraction). The cursor is simply
-      // "we fully processed up to line N" — so if totalLines > cursor we re-process.
-      if (lines.length <= prevCursor + 1 && !forceAll && forceSession !== sessionId) {
-        state.mtimes[sessionId] = fileStat.mtimeMs
-        continue
-      }
-      const entries = []
-      for (const line of lines) {
-        const obj = tryParseJson(line)
-        if (obj) entries.push(obj)
-      }
+      const entries = raw
+        .split('\n')
+        .filter((l) => l.length > 0)
+        .map(tryParseJson)
+        .filter(Boolean)
       if (entries.length === 0) {
         state.mtimes[sessionId] = fileStat.mtimeMs
-        state.cursors[sessionId] = lines.length - 1
         continue
       }
-      const event = extractSessionEvents(entries, sessionId, sourcePath, projectSlug)
+      const event = extractEvent(entries, sessionId, sourcePath, projectSlug)
       appendFileSync(DEFAULT_PATHS.buildoutsJsonl, JSON.stringify(event) + '\n')
       newEvents++
       state.mtimes[sessionId] = fileStat.mtimeMs
-      state.cursors[sessionId] = lines.length - 1
       delete state.poisoned[sessionId]
     } catch (err) {
       logError(sessionId, sourcePath, err)

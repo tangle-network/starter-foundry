@@ -1,28 +1,37 @@
 {
   "schemaVersion": 1,
-  "round": 2,
+  "round": 3,
   "baseline": {
-    "name": "baseline-main-post-r1",
-    "commit": "1cea736",
-    "note": "R1 merged to main. Median of 5 deterministic runs post-merge. Hot path unchanged from R1 baseline — recall metric revealed real ceiling.",
+    "name": "baseline-d652883",
+    "commit": "d652883",
+    "note": "Post-R2 seed fixes. 5/37 framework layers still failing local audit (14% broken). Seeded 7 labeled training examples via manual fixes across R1+R2.",
     "scores": {
-      "ideasaiRecall": 0.878,
-      "heldOutRecall": 1.0,
-      "vibecoderRecall": 1.0,
-      "ideasaiJaccard": 0.456,
-      "briefP95Ms": 0.45,
-      "judgeAgreementRate": null,
-      "archetypePromotionYield": 0,
-      "telemetryCoverage": 0
+      "coverageRate": 0,
+      "regressionRate": 0,
+      "trainingValueScore": 0,
+      "codeSimplicity": "N/A",
+      "humanOversightCost": "full-manual",
+      "scaffoldAuditPassRate": "32/37 = 0.865",
+      "remainingBroken": [
+        "expo-react-native-ts (RN moduleResolution)",
+        "fhenix-contracts (cargo install)",
+        "fhevm-contracts (cargo install)",
+        "react-vite-ts (@tailwindcss/vite resolution)",
+        "tangle-blueprint (rustc 1.91 bump)"
+      ]
     },
-    "baselineRuns": [
-      { "run": 1, "ideasaiRecall": 0.878, "heldOutRecall": 1.0, "p95": 0.436 },
-      { "run": 2, "ideasaiRecall": 0.878, "heldOutRecall": 1.0, "p95": 0.453 },
-      { "run": 3, "ideasaiRecall": 0.878, "heldOutRecall": 1.0, "p95": 0.448 },
-      { "run": 4, "ideasaiRecall": 0.878, "heldOutRecall": 1.0, "p95": 0.455 },
-      { "run": 5, "ideasaiRecall": 0.878, "heldOutRecall": 1.0, "p95": 0.476 }
+    "seedFixes": [
+      { "family": "cli-ts", "cause": "missing typescript+@types/node devDep", "commit": "87cd1a5" },
+      { "family": "electron-desktop-ts", "cause": "missing typescript+@types/node devDep", "commit": "87cd1a5" },
+      { "family": "expo-react-native-ts", "cause": "missing typescript+@types/react (still broken — RN issue is deeper)", "commit": "87cd1a5" },
+      { "family": "fullstack-ts", "cause": "missing typescript+@types/node devDep", "commit": "87cd1a5" },
+      { "family": "tauri-desktop", "cause": "missing typescript+@types/node devDep", "commit": "87cd1a5" },
+      { "family": "nextjs-ts", "cause": "missing typescript+@types/node devDep", "commit": "d652883" },
+      { "family": "hardhat-contracts", "cause": "missing typescript+@types/node devDep", "commit": "d652883" },
+      { "family": "browser-extension-ts", "cause": "missing typescript+@types/node+@types/chrome", "commit": "d652883" },
+      { "family": "react-vite-ts", "cause": "added typescript+@types/node (still broken — @tailwindcss/vite resolution is separate)", "commit": "d652883" }
     ],
-    "recordedAt": "2026-04-20T00:00:00Z"
+    "recordedAt": "2026-04-20T04:00:00Z"
   },
   "frontier": []
 }

@@ -1,49 +1,42 @@
 {
   "mode": "multi-pursue",
-  "round": 2,
-  "pursuit": "End-to-end feedback architecture: real traces + AxGEPA (not MIPRO) + judge + archetype promotion + telemetry",
+  "round": 3,
+  "pursuit": "Self-healing scaffold quality: automated audit → fix-propose → judge → apply pipeline",
   "base": {
-    "commit": "1cea736",
-    "branch": "main",
-    "note": "R1 (drew/rlm PR #5) merged. Infrastructure shipped: product-brief generator, AxFlow variant_b nodes, router.tangle.tools integration, recall metric, CI, 367 tests. Hot path stable at recall 0.878 ideasai / 1.000 held-out / 1.000 vibecoder with p95 <0.5ms."
+    "commit": "d652883",
+    "branch": "drew/multi-pursue-r2",
+    "note": "R2 converged at architectural ceiling on corpus-side metrics. R3 shifts domain: instead of training the router against corpus labels, train a FIX AGENT against real scaffold-quality failures. The 7 seed fixes committed in R2 seed/* commits are the first labeled training examples for this agent."
   },
-  "harnessPath": "R2 is a multi-subsystem pursuit: src/training/**, scripts/**, src/lib/telemetry.ts, registry/layers/capability/**",
-  "note": "R1 taught us: (a) AxMiPRO needs a Python sidecar we don't run. (b) The metric (Jaccard) was the ceiling, not the planner. (c) variant_b brief-loader regresses held-out by over-expanding into workspace lanes. (d) 12 judged-promotable archetypes sit unpromoted. (e) The richest signal source is uninstrumented: Claude Code session transcripts + every compose+validate run are labeled traces today, captured by nothing.",
+  "harnessPath": "src/training/variant_{g,h,i}/, scripts/**, registry/families/**/files/package.json (fix targets)",
+  "trigger": "Operator flagged that prior /evolve rounds had the human doing the harness work. Escalated per reflection 2026-04-20-self-healing-shift.md.",
   "evalCommand": "node scripts/multi-pursue-eval.mjs --variant <name>",
-  "validateCommand": "pnpm build && pnpm test",
+  "validateCommand": "pnpm build && pnpm test && node scripts/audit-scaffold-quality.mjs",
   "dimensions": [
-    "ideasaiRecall",
-    "heldOutRecall",
-    "briefP95Ms",
-    "judgeAgreementRate",
-    "archetypePromotionYield",
-    "telemetryCoverage"
+    "coverageRate",
+    "regressionRate",
+    "trainingValueScore",
+    "codeSimplicity",
+    "humanOversightCost"
   ],
   "dimensionClaims": {
-    "ideasaiRecall": "Expected-⊆-actual recall on corpus/ideasai-prompts.json. Baseline 0.878. The metric that reveals whether GEPA training actually improves routing vs just memorizing. Target: >0.92.",
-    "heldOutRecall": "Same metric on held-out. Baseline 1.000. Claim: any variant that trains on ideasai traces MUST NOT regress held-out — that's the overfitting gate. Hard floor: 1.0, zero tolerance.",
-    "briefP95Ms": "End-to-end p95 when the brief-loader IS active (variant-provided). R1 variant_b hit 0.986ms but regressed held-out passRate 7pp. Target: p95 <500ms AND held-out passRate 1.0 — both must hold.",
-    "judgeAgreementRate": "Pearson correlation between the variant's judge and a human-scored set. We will use two human-label sources: (a) Drew's mid-session corrections in the Claude Code transcript as negative/positive pairs, (b) the 12 existing archetype judgements in .evolve/ideas/variant_b.json. Target: r ≥ 0.7.",
-    "archetypePromotionYield": "Count of archetypes the variant generates + judges promotable AND that are merged into registry/layers/capability/ AND that improve held-out recall. R1 produced 12 candidates, 0 merged. Target for R2: ≥3 actually merged with measured improvement.",
-    "telemetryCoverage": "Boolean dimensions summed: brief-latency emitted? cache-hit-rate emitted? router-cost emitted? optimizer-iteration emitted? judge-score distribution emitted? archetype-promotion emitted? Target: 6/6."
+    "coverageRate": "Of the 5 remaining broken framework layers (expo-react-native-ts, fhenix-contracts, fhevm-contracts, react-vite-ts, tangle-blueprint), how many does the variant's auto-fixer patch without human intervention? Target: ≥3.",
+    "regressionRate": "Count of previously-passing layers that the variant breaks. Hard floor: 0. Any regression = auto-reject the variant's patches.",
+    "trainingValueScore": "Does the variant emit training-grade data (fix attempt → outcome pairs) for future AxGEPA rounds? Boolean sum: does it log attempts? does it log outcomes? does it structure both as AxExample-compatible JSON? Target: 3/3.",
+    "codeSimplicity": "LOC + cyclomatic complexity + new dep count. A deterministic rules engine scores HIGH here; an LLM pipeline scores LOWER. Track so we can honestly compare architectural shapes.",
+    "humanOversightCost": "Does the variant apply patches automatically (0 cost, max risk), open PRs for review (low cost, low risk), or only propose in a file without applying (high cost, zero risk)? Tracked as a categorical so the operator can weight it."
   },
   "constraints": [
-    "All LLM calls MUST go through router.tangle.tools. Use createLLM() from src/lib/llm.ts only.",
-    "Use AxGEPA (@ax-llm/ax) — NOT AxMiPRO. AxGEPA is pure TS, no Python sidecar. AxBootstrapFewShot OK as a bootstrap seed for GEPA.",
-    "Reuse src/lib/llm.ts, src/lib/product-brief.ts, src/training/variant_b/* from R1. Extend — don't fork.",
-    "Extend scripts/meta-harness-eval.mjs + scripts/multi-pursue-eval.mjs. New eval metrics plug into the existing harness.",
-    "Trace storage: .evolve/traces/ append-only JSONL. Each event has kind + ts + payload.",
-    "Training output: .evolve/optimized/<variant>-<epoch>.json.",
-    "Judge output: .evolve/judge/<variant>.jsonl.",
-    "Hot path (planPrompt default) stays deterministic. All LLM code behind flags or offline.",
-    "MUST add telemetry emission. Extend src/lib/telemetry.ts (existing)."
+    "All LLM calls MUST go through router.tangle.tools via createLLM() from src/lib/llm.ts.",
+    "Reuse src/training/variant_b/**, src/lib/vb-outcomes.ts, scripts/audit-scaffold-quality.mjs. Extend — don't fork.",
+    "New code under src/training/variant_{g,h,i}/ + scripts/variant_{g,h,i}-*.mjs + tests/training-variant-{g,h,i}.test.ts.",
+    "NEVER apply patches to registry/ directly from eval runs — only on commit from user-approved variant in the main branch.",
+    "The 7 R2 seed fixes (cli-ts, electron-desktop-ts, expo-react-native-ts, fullstack-ts, tauri-desktop, nextjs-ts, hardhat-contracts, browser-extension-ts, react-vite-ts) are LABELED TRAINING DATA — use them.",
+    "Hot path (planPrompt default) unchanged."
   ],
   "structuralAxes": {
-    "variant_d_transcript_first": "Mine Claude Code session transcripts at ~/.claude/projects/**/*.jsonl for (prompt, attempt, correction, retry) quadruples. Primary training signal = Drew's corrections. Lower volume but high semantic signal. AxGEPA trained on correction-pair data.",
-    "variant_e_compose_validate_first": "Every scaffold composed + validated on the corpora is a labeled trace. Pass/fail + capHit = deterministic label. Much bigger data volume, zero human-in-loop needed. AxGEPA trained on labeled validate outcomes.",
-    "variant_f_hybrid_weighted": "Combines both signals. Transcript-derived pairs get higher weight (stronger signal), validate-derived get volume. Telemetry per-signal to track which source drives each optimization step."
+    "variant_g_deterministic_rules": "Pure rules engine. Read audit output, match error signatures (TS6046 target / Cannot find chrome / Cannot find @tailwindcss/vite / etc.) to deterministic package.json patches. NO LLM. Fast, cheap, zero-hallucination. Scores high on simplicity + safety, low on generalization to novel errors.",
+    "variant_h_axgepa_llm_proposer": "Pure LLM pipeline. AxGEPA-trained fix proposer with the 7 seed fixes as training examples. Signature: (errorSignature, familyPackageJson, frameworkPackageJson) → proposedPatch + reasoning. Scores high on generalization + training-value, lower on simplicity + safety.",
+    "variant_i_hybrid_rules_first_llm_fallback": "Rules-engine handles known patterns (fast path), LLM handles novel errors (slow path). Adds automated PR creation for all patches instead of direct apply — patch → branch → PR → human review. Scores high on safety + oversight, moderate on everything else."
   },
-  "rerunBaseline": "Re-measured after R1 merge: ideasai recall 0.878 (±0), p95 0.44-0.48ms, bit-exact deterministic across 5 runs. Baseline frozen.",
-  "discoveredAt": "2026-04-20T00:00:00Z",
-  "updatedAt": "2026-04-20T00:00:00Z"
+  "discoveredAt": "2026-04-20T04:00:00Z"
 }

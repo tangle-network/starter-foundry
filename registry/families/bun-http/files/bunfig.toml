@@ -1,0 +1,9 @@
+# Bun runtime configuration. See https://bun.sh/docs/runtime/bunfig.
+
+[install]
+# Lockfile is committed. Set to false to skip writing.
+saveTextLockfile = true
+
+[test]
+# Per-file timeout for Bun's built-in test runner.
+timeout = 5000

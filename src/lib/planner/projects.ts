@@ -140,6 +140,11 @@ export function chooseApiFamily(text: string): FamilyChoice {
   if (hasAny(text, ['cloudflare', 'durable object', 'edge api', 'edge function', 'hono edge'])) {
     return { family: 'cloudflare-worker-ts', layers: ['framework:cloudflare-worker-ts'], path: 'apps/edge' }
   }
+  // Bun must be checked before the generic Node path below. "bun" alone is a
+  // stronger signal than the fuzzier Node defaults.
+  if (hasAny(text, ['bun', 'bun.serve', 'bun runtime', 'bun api', 'bun http', 'bun.js'])) {
+    return { family: 'bun-http', layers: ['framework:bun-http'], path: 'apps/api' }
+  }
   if (hasAny(text, ['rust', 'cargo', 'axum', 'rust api', 'rust backend'])) {
     return { family: 'rust-service', layers: ['framework:rust-http'], path: 'apps/api' }
   }

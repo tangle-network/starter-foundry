@@ -1,0 +1,15 @@
+{
+  "id": "bun-http",
+  "description": "Bun.serve-based HTTP framework layer for Bun API starters.",
+  "appliesTo": ["bun-http"],
+  "files": [
+    {
+      "source": "files/server.ts",
+      "target": "src/server.ts"
+    },
+    {
+      "source": "files/handlers.ts",
+      "target": "src/handlers.ts"
+    }
+  ]
+}

@@ -7,6 +7,7 @@
     "expectedCapabilities": [
       "capability:ai-chat-ui",
       "capability:layout-chat",
+      "capability:shadcn",
       "capability:tailwind"
     ],
     "category": "ai-saas",
@@ -20,6 +21,7 @@
     "expectedCapabilities": [
       "capability:ai-chat-ui",
       "capability:layout-chat",
+      "capability:shadcn",
       "capability:tailwind"
     ],
     "category": "ai-saas",
@@ -35,6 +37,7 @@
     "expectedCapabilities": [
       "capability:ai-chat-ui",
       "capability:layout-dashboard",
+      "capability:shadcn",
       "capability:tailwind"
     ],
     "category": "ai-saas",
@@ -47,7 +50,9 @@
     "expectedFamily": "nextjs-ts",
     "expectedCapabilities": [
       "capability:ai-chat-ui",
-      "capability:layout-dashboard"
+      "capability:layout-dashboard",
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "ai-saas",
     "actualLayers": []
@@ -73,6 +78,7 @@
     "expectedCapabilities": [
       "capability:ai-chat-ui",
       "capability:layout-chat",
+      "capability:shadcn",
       "capability:tailwind"
     ],
     "category": "ai-saas",
@@ -86,6 +92,7 @@
     "expectedCapabilities": [
       "capability:ai-chat-ui",
       "capability:layout-dashboard",
+      "capability:shadcn",
       "capability:tailwind"
     ],
     "category": "ai-saas",
@@ -97,9 +104,10 @@
     "votes": 142,
     "expectedFamily": "fullstack-ts",
     "expectedCapabilities": [
-      "capability:layout-dashboard",
       "capability:chart-widget",
-      "capability:shadcn"
+      "capability:layout-dashboard",
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "ai-saas",
     "actualLayers": []
@@ -126,6 +134,7 @@
     "expectedCapabilities": [
       "capability:ai-chat-ui",
       "capability:layout-chat",
+      "capability:shadcn",
       "capability:tailwind"
     ],
     "category": "ai-saas",
@@ -141,6 +150,7 @@
     "expectedCapabilities": [
       "capability:ai-chat-ui",
       "capability:layout-dashboard",
+      "capability:shadcn",
       "capability:tailwind"
     ],
     "category": "ai-saas",
@@ -154,7 +164,8 @@
     "expectedCapabilities": [
       "capability:ai-chat-ui",
       "capability:layout-dashboard",
-      "capability:shadcn"
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "ai-saas",
     "actualLayers": []
@@ -166,8 +177,10 @@
     "expectedFamily": "fullstack-ts",
     "expectedCapabilities": [
       "capability:ai-chat-ui",
+      "capability:chart-widget",
       "capability:layout-dashboard",
-      "capability:chart-widget"
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "ai-saas",
     "actualLayers": []
@@ -179,8 +192,10 @@
     "expectedFamily": "fullstack-ts",
     "expectedCapabilities": [
       "capability:ai-chat-ui",
+      "capability:chart-widget",
       "capability:layout-dashboard",
-      "capability:chart-widget"
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "ai-saas",
     "actualLayers": []
@@ -192,9 +207,10 @@
     "expectedFamily": "fullstack-ts",
     "expectedCapabilities": [
       "capability:ai-chat-ui",
-      "capability:layout-dashboard",
       "capability:chart-widget",
-      "capability:shadcn"
+      "capability:layout-dashboard",
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "ai-saas",
     "actualLayers": []
@@ -207,7 +223,8 @@
     "expectedCapabilities": [
       "capability:ai-chat-ui",
       "capability:layout-dashboard",
-      "capability:shadcn"
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "ai-saas",
     "actualLayers": []
@@ -220,6 +237,7 @@
     "expectedCapabilities": [
       "capability:ai-chat-ui",
       "capability:layout-dashboard",
+      "capability:shadcn",
       "capability:tailwind"
     ],
     "category": "ai-saas",
@@ -233,6 +251,7 @@
     "expectedCapabilities": [
       "capability:ai-chat-ui",
       "capability:layout-chat",
+      "capability:shadcn",
       "capability:tailwind"
     ],
     "category": "ai-saas",
@@ -246,6 +265,7 @@
     "expectedCapabilities": [
       "capability:ai-chat-ui",
       "capability:layout-chat",
+      "capability:shadcn",
       "capability:tailwind"
     ],
     "category": "ai-saas",
@@ -259,6 +279,7 @@
     "expectedCapabilities": [
       "capability:ai-chat-ui",
       "capability:layout-dashboard",
+      "capability:shadcn",
       "capability:tailwind"
     ],
     "category": "ai-saas",
@@ -271,7 +292,9 @@
     "expectedFamily": "fullstack-ts",
     "expectedCapabilities": [
       "capability:ai-chat-ui",
-      "capability:layout-dashboard"
+      "capability:layout-dashboard",
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "ai-saas",
     "actualLayers": []
@@ -284,7 +307,8 @@
     "expectedCapabilities": [
       "capability:ai-chat-ui",
       "capability:layout-dashboard",
-      "capability:shadcn"
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "ai-saas",
     "actualLayers": []
@@ -297,7 +321,8 @@
     "expectedCapabilities": [
       "capability:ai-chat-ui",
       "capability:layout-dashboard",
-      "capability:shadcn"
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "ai-saas",
     "actualLayers": []
@@ -323,6 +348,7 @@
     "expectedCapabilities": [
       "capability:ai-chat-ui",
       "capability:layout-chat",
+      "capability:shadcn",
       "capability:tailwind"
     ],
     "category": "ai-saas",
@@ -334,9 +360,10 @@
     "votes": 178,
     "expectedFamily": "nextjs-ts",
     "expectedCapabilities": [
-      "capability:marketplace",
       "capability:layout-dashboard",
-      "capability:shadcn"
+      "capability:marketplace",
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "marketplace",
     "actualLayers": [
@@ -349,8 +376,9 @@
     "votes": 234,
     "expectedFamily": "fullstack-ts",
     "expectedCapabilities": [
-      "capability:marketplace",
       "capability:layout-dashboard",
+      "capability:marketplace",
+      "capability:shadcn",
       "capability:tailwind"
     ],
     "category": "marketplace",
@@ -362,9 +390,10 @@
     "votes": 312,
     "expectedFamily": "nextjs-ts",
     "expectedCapabilities": [
-      "capability:marketplace",
       "capability:layout-dashboard",
-      "capability:shadcn"
+      "capability:marketplace",
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "marketplace",
     "actualLayers": [
@@ -377,9 +406,10 @@
     "votes": 189,
     "expectedFamily": "fullstack-ts",
     "expectedCapabilities": [
-      "capability:marketplace",
       "capability:layout-dashboard",
-      "capability:shadcn"
+      "capability:marketplace",
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "marketplace",
     "actualLayers": [
@@ -392,8 +422,9 @@
     "votes": 267,
     "expectedFamily": "nextjs-ts",
     "expectedCapabilities": [
-      "capability:marketplace",
       "capability:layout-dashboard",
+      "capability:marketplace",
+      "capability:shadcn",
       "capability:tailwind"
     ],
     "category": "marketplace",
@@ -407,9 +438,10 @@
     "votes": 345,
     "expectedFamily": "nextjs-ts",
     "expectedCapabilities": [
-      "capability:marketplace",
       "capability:layout-dashboard",
-      "capability:shadcn"
+      "capability:marketplace",
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "marketplace",
     "actualLayers": [
@@ -422,8 +454,9 @@
     "votes": 198,
     "expectedFamily": "nextjs-ts",
     "expectedCapabilities": [
-      "capability:marketplace",
       "capability:layout-dashboard",
+      "capability:marketplace",
+      "capability:shadcn",
       "capability:tailwind"
     ],
     "category": "marketplace",
@@ -437,8 +470,9 @@
     "votes": 223,
     "expectedFamily": "nextjs-ts",
     "expectedCapabilities": [
-      "capability:marketplace",
       "capability:layout-dashboard",
+      "capability:marketplace",
+      "capability:shadcn",
       "capability:tailwind"
     ],
     "category": "marketplace",
@@ -452,9 +486,10 @@
     "votes": 289,
     "expectedFamily": "nextjs-ts",
     "expectedCapabilities": [
-      "capability:marketplace",
       "capability:layout-dashboard",
-      "capability:shadcn"
+      "capability:marketplace",
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "marketplace",
     "actualLayers": [
@@ -467,8 +502,9 @@
     "votes": 356,
     "expectedFamily": "nextjs-ts",
     "expectedCapabilities": [
-      "capability:marketplace",
       "capability:layout-dashboard",
+      "capability:marketplace",
+      "capability:shadcn",
       "capability:tailwind"
     ],
     "category": "marketplace",
@@ -482,9 +518,10 @@
     "votes": 156,
     "expectedFamily": "fullstack-ts",
     "expectedCapabilities": [
-      "capability:layout-dashboard",
       "capability:layout-admin",
-      "capability:shadcn"
+      "capability:layout-dashboard",
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "saas-tools",
     "actualLayers": [
@@ -497,9 +534,10 @@
     "votes": 234,
     "expectedFamily": "fullstack-ts",
     "expectedCapabilities": [
-      "capability:layout-dashboard",
       "capability:chart-widget",
-      "capability:shadcn"
+      "capability:layout-dashboard",
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "saas-tools",
     "actualLayers": [
@@ -525,9 +563,10 @@
     "votes": 167,
     "expectedFamily": "fullstack-ts",
     "expectedCapabilities": [
-      "capability:layout-dashboard",
       "capability:chart-widget",
-      "capability:shadcn"
+      "capability:layout-dashboard",
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "saas-tools",
     "actualLayers": [
@@ -540,9 +579,10 @@
     "votes": 145,
     "expectedFamily": "fullstack-ts",
     "expectedCapabilities": [
-      "capability:layout-dashboard",
       "capability:layout-auth",
-      "capability:shadcn"
+      "capability:layout-dashboard",
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "saas-tools",
     "actualLayers": []
@@ -553,9 +593,10 @@
     "votes": 178,
     "expectedFamily": "fullstack-ts",
     "expectedCapabilities": [
-      "capability:layout-dashboard",
       "capability:chart-widget",
-      "capability:shadcn"
+      "capability:layout-dashboard",
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "saas-tools",
     "actualLayers": [
@@ -569,9 +610,10 @@
     "votes": 201,
     "expectedFamily": "fullstack-ts",
     "expectedCapabilities": [
-      "capability:layout-dashboard",
       "capability:layout-admin",
-      "capability:shadcn"
+      "capability:layout-dashboard",
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "saas-tools",
     "actualLayers": []
@@ -610,9 +652,10 @@
     "votes": 334,
     "expectedFamily": "fullstack-ts",
     "expectedCapabilities": [
-      "capability:layout-dashboard",
       "capability:chart-widget",
-      "capability:shadcn"
+      "capability:layout-dashboard",
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "saas-tools",
     "actualLayers": []
@@ -623,9 +666,10 @@
     "votes": 245,
     "expectedFamily": "react-vite-ts",
     "expectedCapabilities": [
-      "capability:webrtc",
       "capability:layout-dashboard",
-      "capability:tailwind"
+      "capability:shadcn",
+      "capability:tailwind",
+      "capability:webrtc"
     ],
     "category": "webrtc",
     "actualLayers": [
@@ -638,9 +682,11 @@
     "votes": 389,
     "expectedFamily": "fullstack-ts",
     "expectedCapabilities": [
-      "capability:webrtc",
+      "capability:layout-auth",
       "capability:layout-dashboard",
-      "capability:layout-auth"
+      "capability:shadcn",
+      "capability:tailwind",
+      "capability:webrtc"
     ],
     "category": "webrtc",
     "actualLayers": []
@@ -651,9 +697,10 @@
     "votes": 312,
     "expectedFamily": "fullstack-ts",
     "expectedCapabilities": [
-      "capability:webrtc",
       "capability:layout-dashboard",
-      "capability:tailwind"
+      "capability:shadcn",
+      "capability:tailwind",
+      "capability:webrtc"
     ],
     "category": "webrtc",
     "actualLayers": [
@@ -666,9 +713,10 @@
     "votes": 198,
     "expectedFamily": "fullstack-ts",
     "expectedCapabilities": [
-      "capability:webrtc",
       "capability:layout-dashboard",
-      "capability:tailwind"
+      "capability:shadcn",
+      "capability:tailwind",
+      "capability:webrtc"
     ],
     "category": "webrtc",
     "actualLayers": []
@@ -679,9 +727,10 @@
     "votes": 223,
     "expectedFamily": "nextjs-ts",
     "expectedCapabilities": [
-      "capability:webrtc",
       "capability:layout-dashboard",
-      "capability:shadcn"
+      "capability:shadcn",
+      "capability:tailwind",
+      "capability:webrtc"
     ],
     "category": "webrtc",
     "actualLayers": []
@@ -693,8 +742,10 @@
     "expectedFamily": "fullstack-ts",
     "expectedCapabilities": [
       "capability:agent-intel",
+      "capability:chart-widget",
       "capability:layout-dashboard",
-      "capability:chart-widget"
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "data-intel",
     "actualLayers": [
@@ -710,8 +761,10 @@
     "expectedFamily": "nextjs-ts",
     "expectedCapabilities": [
       "capability:agent-intel",
+      "capability:chart-widget",
       "capability:layout-dashboard",
-      "capability:chart-widget"
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "data-intel",
     "actualLayers": [
@@ -738,8 +791,10 @@
     "expectedFamily": "fullstack-ts",
     "expectedCapabilities": [
       "capability:agent-intel",
+      "capability:chart-widget",
       "capability:layout-dashboard",
-      "capability:chart-widget"
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "data-intel",
     "actualLayers": []
@@ -751,7 +806,9 @@
     "expectedFamily": "fullstack-ts",
     "expectedCapabilities": [
       "capability:agent-intel",
-      "capability:layout-dashboard"
+      "capability:layout-dashboard",
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "data-intel",
     "actualLayers": [
@@ -764,8 +821,9 @@
     "votes": 189,
     "expectedFamily": "react-vite-ts",
     "expectedCapabilities": [
-      "capability:layout-dashboard",
       "capability:chart-widget",
+      "capability:layout-dashboard",
+      "capability:shadcn",
       "capability:tailwind"
     ],
     "category": "crypto",
@@ -789,7 +847,8 @@
     "expectedFamily": "fullstack-ts",
     "expectedCapabilities": [
       "capability:layout-dashboard",
-      "capability:shadcn"
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "crypto",
     "actualLayers": []
@@ -800,8 +859,10 @@
     "votes": 278,
     "expectedFamily": "fullstack-ts",
     "expectedCapabilities": [
+      "capability:chart-widget",
       "capability:layout-dashboard",
-      "capability:chart-widget"
+      "capability:shadcn",
+      "capability:tailwind"
     ],
     "category": "crypto",
     "actualLayers": []

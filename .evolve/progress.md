@@ -150,3 +150,22 @@ No action. No AI slop comments. 2 "legacy" references are legit documentation.
 - 8 jscpd clones — all 2-instance; /deep-clean rule says don't DRY two
 
 Net: cleaner deps hygiene, 3 truly-dead functions removed, knip config added for the next contributor. No capability loss.
+
+## 2026-04-20 — R3 multi-pursue signal-collapse
+
+R3 dispatched 2026-04-20T04:00 to build self-healing audit→fix→judge→apply pipeline against 5 broken framework layers. Between dispatch and execution:
+- PR #9 (buildout pipeline) — no layer fixes
+- PR #10 (tier 1: router + toolchain) — fixed multiple layer deps
+- PR #11 (deep-clean + planner split) — indirect: added knip config, cleaned types
+- PR #12 (react-vite-ts App.tsx) — addressed template-rewrite signal
+- release 0.5.4 — no layer fixes
+- audit cleanup bug fix (this session) — maxRetries on temp-dir rm
+
+Net: 4 of 5 R3 target failures closed by manual work. 1 remains (tangle-blueprint cargo install — rustc/blueprint-macros toolchain issue).
+
+Signal-rich surfaces moving forward:
+- **Template rewrites** (buildout-analysis.json topRewrittenFiles): 13 files with ≥3 rewrites each — rich enough for multi-pursue
+- **Capability gaps** (.evolve/capability-gaps.json): 20+ missed attachments
+- **Buildout end-to-end pass rate** (VB outcomes): 54% baseline, room to move
+
+R3 auto-fixer is still the right tool to build — just not against a 1-failure input set. Governor should re-pick against a signal-rich surface.

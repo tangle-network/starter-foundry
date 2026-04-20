@@ -1,11 +1,11 @@
 {
-  "mode": "meta-harness",
+  "mode": "awaiting-governor",
   "goal": "faster + better planner (accuracy, capability hit, latency)",
-  "status": "converged-generation-1",
+  "status": "r3-signal-collapse",
   "round": 11,
   "generation": 11,
   "activePursuit": ".evolve/meta-harness/config.json",
-  "updatedAt": "2026-04-16T00:00:00Z",
+  "updatedAt": "2026-04-20T19:15:00Z",
   "baseline": {
     "accuracy": 0.9945,
     "latencyP95Ms": 0.902,
@@ -26,6 +26,7 @@
   "priorMode": {
     "mode": "pursue",
     "goal": "real tangle templates + crate publishing",
-    "blocked": "crate publishing — CARGO_REGISTRY_TOKEN needs owner access (shekohex or Tjemmmic)"
-  }
+    "blocked": "crate publishing \u2014 CARGO_REGISTRY_TOKEN needs owner access (shekohex or Tjemmmic)"
+  },
+  "note": "R3 multi-pursue target (5 broken layers) closed by manual PRs #9-#12 before proposers executed. 37/37 layers pass audit. Next governor pass should re-read signal from buildout-analysis (template rewrite rate) or capability-gaps."
 }

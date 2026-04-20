@@ -21,17 +21,61 @@
       ]
     },
     "seedFixes": [
-      { "family": "cli-ts", "cause": "missing typescript+@types/node devDep", "commit": "87cd1a5" },
-      { "family": "electron-desktop-ts", "cause": "missing typescript+@types/node devDep", "commit": "87cd1a5" },
-      { "family": "expo-react-native-ts", "cause": "missing typescript+@types/react (still broken — RN issue is deeper)", "commit": "87cd1a5" },
-      { "family": "fullstack-ts", "cause": "missing typescript+@types/node devDep", "commit": "87cd1a5" },
-      { "family": "tauri-desktop", "cause": "missing typescript+@types/node devDep", "commit": "87cd1a5" },
-      { "family": "nextjs-ts", "cause": "missing typescript+@types/node devDep", "commit": "d652883" },
-      { "family": "hardhat-contracts", "cause": "missing typescript+@types/node devDep", "commit": "d652883" },
-      { "family": "browser-extension-ts", "cause": "missing typescript+@types/node+@types/chrome", "commit": "d652883" },
-      { "family": "react-vite-ts", "cause": "added typescript+@types/node (still broken — @tailwindcss/vite resolution is separate)", "commit": "d652883" }
+      {
+        "family": "cli-ts",
+        "cause": "missing typescript+@types/node devDep",
+        "commit": "87cd1a5"
+      },
+      {
+        "family": "electron-desktop-ts",
+        "cause": "missing typescript+@types/node devDep",
+        "commit": "87cd1a5"
+      },
+      {
+        "family": "expo-react-native-ts",
+        "cause": "missing typescript+@types/react (still broken \u2014 RN issue is deeper)",
+        "commit": "87cd1a5"
+      },
+      {
+        "family": "fullstack-ts",
+        "cause": "missing typescript+@types/node devDep",
+        "commit": "87cd1a5"
+      },
+      {
+        "family": "tauri-desktop",
+        "cause": "missing typescript+@types/node devDep",
+        "commit": "87cd1a5"
+      },
+      {
+        "family": "nextjs-ts",
+        "cause": "missing typescript+@types/node devDep",
+        "commit": "d652883"
+      },
+      {
+        "family": "hardhat-contracts",
+        "cause": "missing typescript+@types/node devDep",
+        "commit": "d652883"
+      },
+      {
+        "family": "browser-extension-ts",
+        "cause": "missing typescript+@types/node+@types/chrome",
+        "commit": "d652883"
+      },
+      {
+        "family": "react-vite-ts",
+        "cause": "added typescript+@types/node (still broken \u2014 @tailwindcss/vite resolution is separate)",
+        "commit": "d652883"
+      }
     ],
     "recordedAt": "2026-04-20T04:00:00Z"
   },
-  "frontier": []
+  "frontier": [],
+  "round3Outcome": {
+    "status": "pursuit-converged-signal-exhausted",
+    "recordedAt": "2026-04-20T19:25:00Z",
+    "finding": "R3 target was 5 broken layers; 4 fixed manually via PRs #9-#12 before R3 variants executed. 1 remains: tangle-blueprint cargo install (Rust toolchain / blueprint-macros version). Single-failure state is degenerate for 3-proposer evolution (coverage is binary).",
+    "recommendation": "Do not build variant_{g,h,i} against 1 failure. Either (a) fix tangle-blueprint directly (manual \u2014 would contradict reflection), (b) pivot multi-pursue to a signal-rich surface (template rewrites \u2014 buildout-analysis shows 10+ files with rewrite counts \u22653), or (c) defer the auto-fixer until a new batch of failures accumulates naturally from buildout telemetry.",
+    "auditSnapshot": "36/37 framework layers pass (tangle-blueprint install-phase fail; 3 layers skipped as non-audited). Was 25/37 at R3 baseline.",
+    "cumulativeManualDelta": "+12 layers fixed between R3 dispatch and now, across 4 PRs"
+  }
 }

@@ -372,6 +372,11 @@ export async function planPrompt({
     const family = registry.families.get(starterSelection.spec.family)
     const spec: ComposeSpec = {
       ...starterSelection.spec,
+      // Scrub partner if it's incompatible with the selected family — otherwise
+      // composeStarter throws at compose time, after the caller has already
+      // allocated a workspace and shown the user a "preparing" UI (blueprint-
+      // agent bug report #3).
+      partner: resolvePartnerForFamily(starterSelection.spec.partner ?? effectivePartner, starterSelection.spec.family),
       projectName: buildSlug(prompt, starterSelection.spec.projectName),
       primaryArtifactTargetMs: 2500,
       userPrompt: prompt,

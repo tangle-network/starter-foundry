@@ -34,6 +34,27 @@ export function buildWebProject(
   text: string,
   registry?: Registry,
 ): ProjectEntry {
+  // WASM-Rust fronts take precedence over React/Next when the prompt
+  // specifically asks for Rust-in-browser compute.
+  if (hasAny(text, ['wasm-bindgen', 'wasm-pack', 'rust wasm', 'rust in browser', 'webassembly rust', 'browser wasm'])) {
+    return {
+      id: 'web',
+      path: 'apps/web',
+      spec: {
+        projectName: `${buildSlug(prompt, 'workspace')}-web`,
+        family: 'wasm-rust',
+        layers: ['framework:wasm-rust'],
+        partner: resolvePartnerForFamily(partner, 'wasm-rust'),
+        slots: {},
+        variables: {
+          headline: 'Rust + WASM in your browser',
+          subheadline: 'Native-speed compute shipped as a 20-line call from the frontend.',
+        },
+        primaryArtifactTargetMs: 3500,
+      },
+    }
+  }
+
   const isNext = hasAny(text, ['next', 'next.js', 'nextjs', 'app router', 'seo'])
   const family = isNext ? 'nextjs-ts' : 'react-vite-ts'
   const frameworkLayer = isNext ? 'framework:nextjs-app-router' : 'framework:react-vite-ts'

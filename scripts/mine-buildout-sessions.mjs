@@ -295,10 +295,15 @@ for (const projectSlug of projectDirs) {
 
   for (const file of sessionFiles) {
     const sourcePath = join(projDir, file)
+    // State key must be unique across projects. Two projects may both ship
+    // `sess.jsonl` — keying on filename alone collides. Prefix with project
+    // slug so state is globally unique. We keep `sessionId` (for the event's
+    // identity) distinct from `stateKey` (for our mtimes/poisoned tracking).
     const sessionId = file.replace(/\.jsonl$/, '')
+    const stateKey = `${projectSlug}::${sessionId}`
     scanned++
 
-    if (!forceAll && forceSession !== sessionId && state.poisoned[sessionId]) continue
+    if (!forceAll && forceSession !== sessionId && state.poisoned[stateKey]) continue
 
     let fileStat
     try {
@@ -308,7 +313,7 @@ for (const projectSlug of projectDirs) {
       continue
     }
 
-    const prevMtime = state.mtimes[sessionId] ?? 0
+    const prevMtime = state.mtimes[stateKey] ?? 0
     if (!rebuild && !forceAll && forceSession !== sessionId && fileStat.mtimeMs <= prevMtime) continue
 
     try {
@@ -319,17 +324,17 @@ for (const projectSlug of projectDirs) {
         .map(tryParseJson)
         .filter(Boolean)
       if (entries.length === 0) {
-        state.mtimes[sessionId] = fileStat.mtimeMs
+        state.mtimes[stateKey] = fileStat.mtimeMs
         continue
       }
       const event = extractEvent(entries, sessionId, sourcePath, projectSlug)
       appendFileSync(DEFAULT_PATHS.buildoutsJsonl, JSON.stringify(event) + '\n')
       newEvents++
-      state.mtimes[sessionId] = fileStat.mtimeMs
-      delete state.poisoned[sessionId]
+      state.mtimes[stateKey] = fileStat.mtimeMs
+      delete state.poisoned[stateKey]
     } catch (err) {
       logError(sessionId, sourcePath, err)
-      state.poisoned[sessionId] = {
+      state.poisoned[stateKey] = {
         ts: new Date().toISOString(),
         error: String(err?.message ?? err).slice(0, 500),
       }

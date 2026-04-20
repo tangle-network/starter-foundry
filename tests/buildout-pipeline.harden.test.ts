@@ -36,7 +36,7 @@ function setupWorkspace() {
 
 function makeFakeSessionProjectsDir(root: string) {
   const projects = join(root, 'projects')
-  const slug = '-private-var-folders-wk-T-factory-local-phase2-ethereum-l1-moXxXxXx-fake-scenario-r1-fake-scenario-abcd'
+  const slug = '-private-var-folders-wk-T-factory-local-phase2-ethereum-l1-mozxcvbnm-fake-scenario-r1-fake-scenario-abcd'
   const sessDir = join(projects, slug)
   mkdirSync(sessDir, { recursive: true })
   return { projects, sessDir }
@@ -73,8 +73,11 @@ test('hardening: concurrent miners — lock prevents duplicate events', async ()
       ].join('\n'),
     )
 
-    // Actually concurrent: three spawn() calls without awaiting each → all three
-    // processes run at once → only one should acquire the lock.
+    // Three concurrent spawns. The real invariant is "no duplicate events,"
+    // not "exactly N processes locked out" — depending on scheduling, the
+    // second+third miner may (a) hit the lock and exit EX_TEMPFAIL, or
+    // (b) start after the first released the lock, acquire it, see unchanged
+    // mtime, and exit 0 having written nothing. Both are correct behavior.
     const runners = [0, 1, 2].map(
       () =>
         new Promise<{ status: number | null }>((resolveFn) => {
@@ -87,11 +90,17 @@ test('hardening: concurrent miners — lock prevents duplicate events', async ()
         }),
     )
     const results = await Promise.all(runners)
-    const successes = results.filter((r) => r.status === 0)
-    const locked = results.filter((r) => r.status === 75) // EX_TEMPFAIL
-    assert.equal(successes.length, 1, `expected exactly 1 miner to succeed, got ${successes.length} (locked=${locked.length})`)
-    assert.equal(locked.length, 2, `expected 2 miners locked out, got ${locked.length}`)
+    // Every exit must be either success (0) or lock-contention (75). No crashes.
+    for (const r of results) {
+      assert.ok(r.status === 0 || r.status === 75, `unexpected miner exit ${r.status}`)
+    }
+    // At least one must have succeeded, at least one must have been locked
+    // out — proves the lock actually blocked concurrent entry.
+    assert.ok(results.some((r) => r.status === 0), 'at least one miner must succeed')
+    assert.ok(results.some((r) => r.status === 75), 'at least one miner must hit the lock')
 
+    // The actual invariant: exactly one event recorded, regardless of how
+    // many processes ran.
     const out = join(dir, '.evolve/traces/buildouts.jsonl')
     const lines = existsSync(out)
       ? readFileSync(out, 'utf8').trim().split('\n').filter((l) => l.length > 0)

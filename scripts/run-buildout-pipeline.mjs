@@ -11,13 +11,18 @@
 
 import { spawnSync } from 'node:child_process'
 import { performance } from 'node:perf_hooks'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 const argv = process.argv.slice(2)
 
+// Resolve stage scripts relative to THIS file, not cwd. Lets the orchestrator
+// be invoked from any working directory (tests, CI, a user's repo clone).
+const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url))
 const STAGES = [
-  { name: 'mine', script: 'scripts/mine-buildout-sessions.mjs' },
-  { name: 'join', script: 'scripts/join-buildout-outcomes.mjs' },
-  { name: 'analyze', script: 'scripts/analyze-buildouts.mjs' },
+  { name: 'mine', script: join(SCRIPT_DIR, 'mine-buildout-sessions.mjs') },
+  { name: 'join', script: join(SCRIPT_DIR, 'join-buildout-outcomes.mjs') },
+  { name: 'analyze', script: join(SCRIPT_DIR, 'analyze-buildouts.mjs') },
 ]
 
 const results = []

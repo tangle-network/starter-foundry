@@ -44,12 +44,15 @@ function runCmd(cmd, args, cwd) {
     timeout: timeoutMs,
     env: { ...process.env, CI: '1', PNPM_NO_AUDIT: '1' },
   })
+  // Tail to last 30 lines to keep artifact size bounded while preserving
+  // real error context. Some tools (pnpm install, cargo) write errors to
+  // stdout; others (tsc) to stderr. Downstream consumers need BOTH.
   return {
     exitCode: res.status ?? -1,
     signal: res.signal,
     durationMs: performance.now() - t0,
-    stdoutTail: (res.stdout ?? '').split('\n').slice(-12).join('\n'),
-    stderrTail: (res.stderr ?? '').split('\n').slice(-12).join('\n'),
+    stdoutTail: (res.stdout ?? '').split('\n').slice(-30).join('\n'),
+    stderrTail: (res.stderr ?? '').split('\n').slice(-30).join('\n'),
   }
 }
 
@@ -109,11 +112,25 @@ for (const layer of filtered) {
   const phases = []
 
   const install = runCmd(pm.cmd, pm.install, tmp)
-  phases.push({ phase: 'install', cmd: `${pm.cmd} ${pm.install.join(' ')}`, ok: install.exitCode === 0, durationMs: install.durationMs, stderrTail: install.stderrTail.slice(-400) })
+  phases.push({
+    phase: 'install',
+    cmd: `${pm.cmd} ${pm.install.join(' ')}`,
+    ok: install.exitCode === 0,
+    durationMs: install.durationMs,
+    stderrTail: install.stderrTail.slice(-2000),
+    stdoutTail: install.stdoutTail.slice(-2000),
+  })
 
   if (install.exitCode === 0 && pm.cmd === 'pnpm' && existsSync(join(tmp, 'tsconfig.json'))) {
     const typecheck = runCmd('pnpm', ['exec', 'tsc', '--noEmit'], tmp)
-    phases.push({ phase: 'typecheck', cmd: 'pnpm exec tsc --noEmit', ok: typecheck.exitCode === 0, durationMs: typecheck.durationMs, stderrTail: typecheck.stderrTail.slice(-400), stdoutTail: typecheck.stdoutTail.slice(-400) })
+    phases.push({
+      phase: 'typecheck',
+      cmd: 'pnpm exec tsc --noEmit',
+      ok: typecheck.exitCode === 0,
+      durationMs: typecheck.durationMs,
+      stderrTail: typecheck.stderrTail.slice(-2000),
+      stdoutTail: typecheck.stdoutTail.slice(-2000),
+    })
   } else if (install.exitCode === 0 && pm.cmd === 'pnpm') {
     phases.push({ phase: 'typecheck', skipped: 'no-tsconfig', ok: true })
   }

@@ -30,7 +30,7 @@ function envKey(provider: LLMProvider): string | undefined {
   return process.env['OPENAI_API_KEY']
 }
 
-export function detectProvider(): LLMProvider | null {
+function detectProvider(): LLMProvider | null {
   const explicit = process.env['STARTER_FOUNDRY_LLM_PROVIDER'] as LLMProvider | undefined
   if (explicit && envKey(explicit)) return explicit
   // Tangle router is the preferred path for Tangle projects — routes through

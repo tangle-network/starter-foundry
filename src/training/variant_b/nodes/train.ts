@@ -266,11 +266,3 @@ export function buildCorpusMinedInstruction(trainables: Trace[], knownCapabiliti
   return lines.join('\n')
 }
 
-export async function loadOptimizedProgram(optimizedPath: string): Promise<SerializedOptimizedProgram | null> {
-  try {
-    const raw = await readFile(optimizedPath, 'utf8')
-    return JSON.parse(raw) as SerializedOptimizedProgram
-  } catch {
-    return null
-  }
-}

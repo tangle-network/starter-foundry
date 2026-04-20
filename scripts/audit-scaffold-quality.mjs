@@ -136,7 +136,12 @@ for (const layer of filtered) {
   }
 
   audits.push({ layerId, family, pm: pm.cmd, phases })
-  rmSync(tmp, { recursive: true, force: true })
+  try {
+    rmSync(tmp, { recursive: true, force: true, maxRetries: 3, retryDelay: 50 })
+  } catch {
+    // Cargo build artifacts can hold transient locks; leaking the temp dir
+    // is strictly better than crashing the audit mid-run.
+  }
 
   const status = phases.every((p) => p.ok) ? '✓' : '✗'
   console.log(`  ${status} ${layerId} (${family}) via ${pm.cmd}`)

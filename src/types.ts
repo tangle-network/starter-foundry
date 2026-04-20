@@ -103,6 +103,20 @@ export interface LayerManifest extends ManifestBase {
   variants?: string[]
   /** Concrete build suggestions for the AI agent when this capability is active. */
   buildHints?: BuildHints
+  /**
+   * Packages this layer contributes to the composed scaffold's root package.json.
+   * Merged into the family's package.json at compose time so capability layers
+   * can actually ship their runtime deps instead of scaffolding config files and
+   * expecting the agent to figure out which package to install.
+   *
+   * Added 2026-04-20 in response to blueprint-agent bug report #4: agents were
+   * installing snarkjs/circomlibjs 4× on zk-mixer-ui because no capability
+   * layer had a way to declare deps.
+   */
+  packageDeps?: {
+    dependencies?: Record<string, string>
+    devDependencies?: Record<string, string>
+  }
 }
 
 export interface PartnerManifest extends ManifestBase {

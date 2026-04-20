@@ -35,8 +35,9 @@
     "ethers":                      { "capability": null, "confidence": 0, "note": "generic EVM RPC client — same reasoning as viem. Mapping it to evm-wallet-dashboard produced false positives (zk-mixer-ui etc.) because ethers is installed for any EVM interaction." },
     "@rainbow-me/rainbowkit":      { "capability": "capability:evm-wallet-dashboard", "confidence": 0.9 },
 
-    "snarkjs":                     { "capability": null, "confidence": 0, "note": "JS-based zk tooling, low priority. Real zk path is Rust (sp1/risc0). If an agent reaches for snarkjs, route them to framework:zk-prover-service instead." },
-    "circomlibjs":                 { "capability": null, "confidence": 0, "note": "same as snarkjs" },
+    "snarkjs":                     { "capability": "capability:zk-browser", "confidence": 0.9, "note": "Browser-side Groth16 proof generation. Ships in capability:zk-browser (added 2026-04-20 after blueprint-agent bug #4 flagged 4× snarkjs installs on zk-mixer-ui, 0% pass)." },
+    "circomlibjs":                 { "capability": "capability:zk-browser", "confidence": 0.9, "note": "Poseidon + circom primitive helpers. Ships alongside snarkjs in capability:zk-browser." },
+    "circomlib":                   { "capability": "capability:zk-browser", "confidence": 0.85, "note": "circom primitive circuit library. Ships with capability:zk-browser." },
     "sp1":                         { "capability": null, "confidence": 0, "note": "Rust crate, not npm. Framework-level signal for framework:zk-prover-service." },
     "risc0":                       { "capability": null, "confidence": 0, "note": "Rust crate, not npm. Framework-level signal for framework:zk-prover-service." },
     "risc0-zkvm":                  { "capability": null, "confidence": 0, "note": "Rust crate; same." },

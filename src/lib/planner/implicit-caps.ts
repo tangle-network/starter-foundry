@@ -36,6 +36,7 @@ import {
   CHAT_ARCHETYPE_SIGNALS,
   IMPLICIT_UI_FAMILIES,
   VIDEO_ARCHETYPE_SIGNALS,
+  ZK_BROWSER_ARCHETYPE_SIGNALS,
 } from './signals.js'
 
 function isAiProductPrompt(text: string): boolean {
@@ -112,6 +113,14 @@ export function inferImplicitCapabilities(
 
   if (hasAny(text, AUTH_ARCHETYPE_SIGNALS) && !has('capability:layout-auth')) {
     out.push('capability:layout-auth')
+  }
+
+  // Browser-native ZK: mixer, private voting, anonymous credential flows.
+  // Detector surfaced snarkjs+circomlibjs 4× each on zk-mixer-ui with 0% pass;
+  // the scaffold previously had no way to ship these packages (no layer
+  // declared packageDeps until LayerManifest.packageDeps landed 2026-04-20).
+  if (hasAny(text, ZK_BROWSER_ARCHETYPE_SIGNALS) && !has('capability:zk-browser')) {
+    out.push('capability:zk-browser')
   }
 
   return out

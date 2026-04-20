@@ -1,0 +1,50 @@
+{
+  "timestamp": "2026-04-20T18:10:00Z",
+  "commit": "1ea624b",
+  "scope": "src/ + scripts/ + tests/ (83 files, 15,269 LOC)",
+  "measurements": {
+    "tsc_noEmit": "clean (no errors)",
+    "tsc_tests": "clean",
+    "tests_passing": 401,
+    "tests_total": 401,
+    "weak_types": 31,
+    "weak_types_classification": "100% legitimate (unknown at JSON/LLM/error boundaries) — no removal target",
+    "try_catch_src": 49,
+    "try_catch_total": 79,
+    "debt_markers_todo_fixme": 0,
+    "circular_deps": 0,
+    "jscpd_duplication_pct": 1.04,
+    "jscpd_clones": 8,
+    "lint_violations": "n/a (no eslint)",
+    "knip_unused_files": 2,
+    "knip_unused_exports": 7,
+    "knip_unused_types": 26,
+    "knip_unlisted_deps": 1
+  },
+  "knip_findings": {
+    "unused_files_real": {
+      "reason": "dynamically-imported contract endpoints for scripts/multi-pursue-eval.mjs",
+      "files": [
+        "src/training/variant_b/generate.ts",
+        "src/training/variant_b/judge.ts"
+      ],
+      "action": "add to knip entry list"
+    },
+    "unused_exports_real": {
+      "detectProvider": "used only inside llm.ts — make non-exported",
+      "parseInstructionRules": "dead — used nowhere",
+      "scoreCandidateStandalone": "dead",
+      "loadOptimizedProgram": "dead",
+      "startSpan": "used only inside telemetry.ts withSpan — make non-exported",
+      "endSpan": "same",
+      "failSpan": "same"
+    },
+    "unused_types_real": {
+      "reason": "these ARE the public contract per docs/INTEGRATION.md — external consumers import them; keep exported",
+      "count": 26
+    },
+    "unlisted_dep": {
+      "@opentelemetry/api": "dynamically require()'d in src/lib/telemetry.ts — add to optionalDependencies"
+    }
+  }
+}

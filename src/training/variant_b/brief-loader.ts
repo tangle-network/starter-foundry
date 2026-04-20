@@ -253,19 +253,6 @@ function buildDeterministicBrief(artifact: SerializedOptimizedProgram): BriefFn 
   }
 }
 
-// Parse the corpus-mined instruction (used by tests for round-trip validation)
-export function parseInstructionRules(instruction: string): Array<{ keywords: string[]; capability: string }> {
-  const rules: Array<{ keywords: string[]; capability: string }> = []
-  for (const line of instruction.split('\n')) {
-    const m = line.match(/mentions any of \[([^\]]+)\] include "([^"]+)"/)
-    if (m && m[1] && m[2]) {
-      const keywords = m[1].split(',').map((s) => s.trim()).filter(Boolean)
-      rules.push({ keywords, capability: m[2] })
-    }
-  }
-  return rules
-}
-
 // LLM-backed brief: wraps a fresh ax program with the optimized instruction.
 // Every call does one LLM forward through router.tangle.tools — the optimizer
 // has reshaped the prompt template, so the distribution of canonicalPrompts

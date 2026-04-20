@@ -33,3 +33,4 @@ package-lock.json
 #   .evolve/progress.md
 .evolve/vb-diagnostic.json
 .evolve/scaffold-quality-audit.json
+report/

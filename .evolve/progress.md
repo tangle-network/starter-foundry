@@ -109,3 +109,44 @@ Recall reveals the planner was always shipping ~88% of user-requested capabiliti
 - held-out passRate: 0.93 (-7pp, 3 scenarios workspace-routed differently)
 
 Kept off by default because the held-out passRate regression isn't worth the recall delta for production traffic. The infra stays available for the next pursuit round (when we wire up a real MIPRO sidecar or redesign the canonical-emitter to avoid the workspace routing regressions).
+
+---
+
+## 2026-04-20 — Deep-clean pass
+
+Measured before/after on starter-foundry post-tier1-closure. 4-phase
+dependency-ordered cleanup; no parallel concerns conflict.
+
+### Phase 0 — baseline
+- 15,269 LOC, 83 files
+- 31 weak types (all `unknown` at boundaries — legitimate)
+- 49 try/catch in src/ (all catching real external errors)
+- 0 circular deps, 0 TODO/FIXME, 1.04% duplication
+- knip: 2 unused files, 7 unused exports, 1 unlisted dep, 26 unused types
+
+### Phase 1 — Structure
+No action. Graph was already clean (0 circular deps, no type-sharing tangles).
+
+### Phase 2 — Strengthen
+- Deleted 3 dead functions: `parseInstructionRules`, `loadOptimizedProgram`, `scoreCandidateStandalone` (0 callers each)
+- Made 4 internal-only functions non-exported: `detectProvider` (llm.ts), `startSpan` + `endSpan` + `failSpan` (telemetry.ts — used only inside withSpan/traced)
+- Added `@opentelemetry/api` to `optionalDependencies` (it was dynamically `require()`'d but undeclared)
+- Added `knip.json` config so the next contributor catches dead code immediately
+
+### Phase 3 — Polish
+No action. No AI slop comments. 2 "legacy" references are legit documentation.
+
+### Phase 4 — measure
+- -35 LOC net (dead code removed)
+- -1 weak type, -1 try/catch (from deleted functions)
+- knip clean: 0 unused files, 0 unused exports, 0 unlisted deps
+- 23 remaining "unused" exported types are the INTEGRATION.md public contract
+- 401/401 tests pass, pipeline runs clean in 0.2s
+
+### What was intentionally NOT changed
+- 23 public contract types — external consumers depend on them per docs/INTEGRATION.md
+- 30 `unknown` at boundaries — correct pattern
+- 48 try/catch — all catching real externals (fs/network/subprocess)
+- 8 jscpd clones — all 2-instance; /deep-clean rule says don't DRY two
+
+Net: cleaner deps hygiene, 3 truly-dead functions removed, knip config added for the next contributor. No capability loss.

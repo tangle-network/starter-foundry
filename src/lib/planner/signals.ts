@@ -1,0 +1,339 @@
+// Signal constants used across the planner. Pure data — no behavior.
+// Every list is a hasAny-style substring match; case handled by the caller.
+//
+// Grouped by where the signal fires in the pipeline:
+//   - Lane detection:      FRONTEND_SIGNALS, API_SIGNALS, WORKER_SIGNALS,
+//                          FULLSTACK_SIGNALS, WORKSPACE_SIGNALS, SINGLE_LANE_SIGNALS,
+//                          FRAMEWORK_API_TERMS, STRONG_API_TERMS,
+//                          EXPLICIT_WORKER_SIGNALS
+//   - Archetype inference: IMPLICIT_UI_FAMILIES, REACT_FAMILIES,
+//                          CHAT_ARCHETYPE_SIGNALS, CHART_STRONG_SIGNALS,
+//                          AI_PRODUCT_PHRASES, VIDEO_ARCHETYPE_SIGNALS,
+//                          ADMIN_ARCHETYPE_SIGNALS, AUTH_ARCHETYPE_SIGNALS
+
+// Families where implicit UI capability inference fires (archetype-based
+// dashboard/chat/chart attachment). Moving it out of this set means losing
+// the auto-attached React UI layers.
+export const IMPLICIT_UI_FAMILIES = new Set(['react-vite-ts', 'nextjs-ts', 'fullstack-ts', 'remix-ts'])
+
+// React families that get unconditional tailwind + shadcn attachment.
+// Keep in sync with IMPLICIT_UI_FAMILIES — any addition here should also
+// go there.
+export const REACT_FAMILIES = new Set(['react-vite-ts', 'nextjs-ts', 'fullstack-ts', 'remix-ts'])
+
+// Chat-first archetype: product's primary surface is a conversational thread,
+// not a data-heavy dashboard. Matches phrases where the user interacts by
+// talking to the AI (assistant / tutor / companion) or the product IS a chatbot.
+export const CHAT_ARCHETYPE_SIGNALS = [
+  'chatbot',
+  'chat bot',
+  'support bot',
+  'ai assistant',
+  'cooking assistant',
+  'shopping assistant',
+  'writing assistant',
+  'personal assistant',
+  'ai tutor',
+  'language tutor',
+  'homework help',
+  'homework helper',
+  'bedtime stor',
+  'voice companion',
+  'ai companion',
+  'symptom checker',
+  'describe what',
+  'i describe',
+  'conversations with',
+  'conversation with me',
+  'has conversations',
+  'chat with me',
+  'chats with me',
+  'texts me',
+  'explains concepts',
+  // dialogue-shape prompts: "I tell it...", "I ask it..."
+  'tell it ',
+  'ask it ',
+  'tells me',
+  'tells you',
+]
+
+// STRONG chart signals — single match triggers chart-widget. Each is a
+// near-certain indicator of a data-viz surface. Intentionally avoids single
+// words like "track" / "patterns" / "trends" / "charts" which carry too many
+// unrelated senses (seating charts, music tracks, movement patterns).
+export const CHART_STRONG_SIGNALS = [
+  'gantt',
+  'burndown',
+  'kpi',
+  'analytics',
+  'metrics',
+  'churn',
+  'sentiment analysis',
+  'sentiment patterns',
+  'sentiment over time',
+  'see trends',
+  'shows sentiment',
+  'price changes',
+  'price tracking',
+  'tracks price',
+  'tracks floor',
+  'tracks mentions',
+  'tracks what performs',
+  'compensation trends',
+  'salary ranges',
+  'portfolio tracker',
+  'portfolio value',
+  'floor prices',
+  'valuation',
+  'sales reporting',
+  'auto-generates esg',
+  'sustainability reports',
+  'status reports',
+  'yield farming',
+  'apys across',
+  'competitive pricing',
+  'competitor websites',
+  'listing aggregator',
+  'auto-compound',
+  'neighborhood trends',
+  'comparable sales',
+  'deals below market',
+  'churn metrics',
+  'nps tracking',
+  'low-stock alerts',
+  'categorizes spending',
+  'savings tips',
+  'payment tracking',
+  "track what's paid",
+  'coaching opportunities',
+  'see stats',
+  'see metrics',
+  'dashboard to see',
+  'performance tracking',
+  'p&l',
+  'revenue metrics',
+]
+
+// AI product signals — literal phrases that indicate "the product is AI-powered"
+// and likely ships a chat surface. Kept as a hasAny list (case-insensitive
+// word-boundary match via matchesKeyword) rather than a wide regex.
+export const AI_PRODUCT_PHRASES = [
+  'ai app',
+  'ai tool',
+  'ai platform',
+  'ai assistant',
+  'ai agent',
+  'ai bot',
+  'ai advisor',
+  'ai tutor',
+  'ai companion',
+  'ai writer',
+  'ai scheduler',
+  'ai analyzer',
+  'ai optimizer',
+  'ai planner',
+  'ai generator',
+  'ai helper',
+  'ai reviewer',
+  'ai builder',
+  'ai engine',
+  'ai system',
+  'ai pipeline',
+  'ai workflow',
+  'ai manager',
+  'ai screener',
+  'ai screening',
+  'ai coach',
+  'ai copilot',
+  'ai feature',
+  'ai cooking',
+  'ai personal',
+  'ai language',
+  'ai voice',
+  'ai travel',
+  'ai meal',
+  'ai interior',
+  'ai code',
+  'ai recipe',
+  'ai resume',
+  'ai social',
+  'ai customer',
+  'ai legal',
+  'ai medical',
+  'ai homework',
+  'ai newsletter',
+  'ai podcast',
+  'ai video',
+  'ai property',
+  'ai content',
+  'ai data',
+  'ai recruit',
+  'ai symptom',
+  'ai image',
+  'ai photo',
+  'ai audio',
+  'ai chat',
+  'ai email',
+  'ai search',
+  'ai-powered',
+  'ai-driven',
+  'generative ai',
+  'artificial intelligence',
+  // "AI <verb>s ..." — "AI does X" in plain language
+  'ai suggests',
+  'ai turns',
+  'ai generates',
+  'ai highlights',
+  'ai writes',
+  'ai answers',
+  'ai analyzes',
+  'ai estimates',
+  'ai categor',
+  'ai identif',
+  'ai creat',
+  'ai cuts',
+  'ai tailors',
+  'ai adapts',
+  'ai screens',
+  'ai extracts',
+  'ai explains',
+  'ai reads',
+  'ai understands',
+  'ai processes',
+  'ai translates',
+  'ai summar',
+  'ai detects',
+  'ai recommends',
+  'ai scores',
+  // "AI that/to/for ..." shapes
+  'ai that',
+  'ai to ',
+  'ai which',
+  'ai for',
+  // "build/make/create me an ai ..."
+  'an ai ',
+  'a ai ',
+  // Implicit-AI products (no literal "AI" but the capability is AI-dependent)
+  'transcribes',
+  'transcription',
+  'gives me a summary',
+  'summarizes',
+  'auto-summar',
+  'automatically generates',
+  'automatically cuts',
+]
+
+// Implicit video/call surface — natural prompts that describe video rooms,
+// consultations, low-latency audio, or streaming without saying "webrtc".
+export const VIDEO_ARCHETYPE_SIGNALS = [
+  'video consultation',
+  'video consultations',
+  'video rooms',
+  'video room',
+  'video call',
+  'video calls',
+  'video updates',
+  'video conferencing',
+  'video conference',
+  'virtual co-working',
+  'virtual coworking',
+  'low-latency audio',
+  'persistent video',
+  'video tutoring',
+  'async video',
+  'screen sharing',
+  'shared whiteboard',
+  'telehealth',
+  'livekit',
+  'peer-to-peer',
+  'jam session',
+]
+
+// Admin/operations archetypes — internal SaaS tools with bulk management,
+// document workflows, role-based access, approval flows. These want layout-admin
+// alongside layout-dashboard.
+export const ADMIN_ARCHETYPE_SIGNALS = [
+  'onboarding tool',
+  'onboarding app',
+  'employee onboarding',
+  'vendor onboarding',
+  'approval workflow',
+  'approval flow',
+  'back office',
+  'content management',
+  'data table',
+  'crud operations',
+  'role-based',
+  'multi-step sign-off',
+  'dues collection',
+  'maintenance requests',
+  'document storage',
+  'collects documents',
+  'auto-assign',
+  'assigns tasks',
+  'hr tool',
+  'admin panel',
+]
+
+// Auth/portal archetypes — client portals, tenant portals, customer-specific
+// views with login flows.
+export const AUTH_ARCHETYPE_SIGNALS = [
+  'client portal',
+  'customer portal',
+  'tenant portal',
+  'accounting firm',
+  'document portal',
+  'share tax returns',
+  'patient portal',
+  'secure login',
+]
+
+// Single-surface families that never become workspaces.
+export const SINGLE_LANE_SIGNALS = [
+  'expo', 'react native', 'mobile app', 'ios app', 'android app',
+  'browser extension', 'chrome extension', 'manifest v3',
+  'electron', 'desktop app', 'desktop assistant',
+  'command line', 'terminal tool',
+  'streamlit', 'gradio', 'data app', 'tauri',
+]
+
+export const FRONTEND_SIGNALS = [
+  'frontend', 'ui', 'website', 'landing', 'dashboard', 'web app', 'app',
+  'preview', 'next', 'react', 'platform', 'dapp', 'interface', 'portal',
+  // "X page" / "Y screen" — UI nouns. Buildout corpus showed prompts like
+  // "DEX swap page" / "NFT mint page" routing to forge-contracts only
+  // because no frontend signal matched.
+  'page', 'screen', 'mint page', 'swap page', 'bridge page',
+  'staking page', 'claim page',
+]
+
+export const API_SIGNALS = [
+  'api', 'backend', 'server', 'endpoint', 'service', 'webhook', 'health check',
+  'cloudflare', 'durable object', 'edge api', 'edge function', 'payment webhook',
+  'server wallet', 'rest api', 'graphql api',
+]
+
+// Framework namespace "api" mentions that aren't REST APIs — disambiguate.
+export const FRAMEWORK_API_TERMS = ['composition api', 'options api', 'signals api', 'context api', 'hooks api']
+export const STRONG_API_TERMS = ['backend', 'server', 'endpoint', 'webhook', 'rest api', 'graphql api', 'api service', 'api endpoint', 'health check']
+
+export const WORKER_SIGNALS = [
+  'trading bot', 'background job', 'background worker', 'worker for', 'playwright worker',
+  'automation worker', 'go worker', 'golang worker', 'queue', 'cron', 'market stream', 'bot',
+]
+
+export const EXPLICIT_WORKER_SIGNALS = [
+  'trading bot', 'background job', 'background worker', 'worker for', 'playwright worker',
+  'automation worker', 'go worker', 'golang worker', 'queue', 'cron', 'market stream',
+]
+
+export const FULLSTACK_SIGNALS = [
+  'fullstack', 'full stack', 'dashboard with api', 'app with api', 'admin app', 'admin panel',
+  'database-backed', 'dashboard and api', 'admin flows', 'saas', 'saas app', 'saas platform',
+  'internal tool', 'back office', 'crud app',
+]
+
+export const WORKSPACE_SIGNALS = [
+  'workspace', 'monorepo', 'separate backend', 'separate api',
+  'background worker', 'contract lane', 'contract lanes',
+]

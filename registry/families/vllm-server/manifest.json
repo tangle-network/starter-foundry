@@ -1,6 +1,6 @@
 {
   "id": "vllm-server",
-  "description": "vLLM-based LLM inference server with OpenAI-compatible endpoints. Production-shape model serving — PagedAttention memory, continuous batching, quantization-aware. For AI products that serve their own model instead of calling a provider API.",
+  "description": "vLLM-based LLM inference server with OpenAI-compatible endpoints. Production-shape model serving \u2014 PagedAttention memory, continuous batching, quantization-aware. For AI products that serve their own model instead of calling a provider API.",
   "tags": [
     "ml",
     "llm",
@@ -127,6 +127,39 @@
       "fine-tuned model deployment",
       "llm inference platform",
       "self-hosted chatgpt alternative"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Self-hosted LLM inference with OpenAI-compatible endpoints (/v1/chat/completions, /v1/completions, /v1/models). PagedAttention memory, continuous batching. For products that serve their own model instead of calling a provider API.",
+    "firstSteps": [
+      "Install Python deps: `pip install -r requirements.txt`. Requires CUDA 12.1+ + an NVIDIA GPU; vLLM does NOT run on CPU.",
+      "Set the API key: `export VLLM_API_KEY=$(openssl rand -hex 16)` \u2014 the server rejects unauth'd /v1/* without it. To run without auth, set it to empty.",
+      "Edit config.yaml to pick a model. Default is Llama-3.1-8B-Instruct (needs ~16GB VRAM). For 8GB cards add `quantization: awq` and switch to an AWQ-quantized variant.",
+      "Start: `python -m src.server`. First request pulls the model from HuggingFace (multi-minute), then serves.",
+      "Test: `curl http://localhost:{{port}}/v1/chat/completions -H \"Authorization: Bearer $VLLM_API_KEY\" -H \"Content-Type: application/json\" -d '{\"model\":\"{{modelId}}\",\"messages\":[{\"role\":\"user\",\"content\":\"hi\"}]}'`",
+      "Prometheus metrics at `/metrics`. Scrape + alert on tokens/sec + active-request count for capacity planning."
+    ],
+    "gotchas": [
+      "vLLM is CUDA-only. No Metal / ROCm / CPU. Attempting to import on a Mac fails at package resolution \u2014 use Modal / RunPod / Lambda / bare-metal for dev.",
+      "First model load takes 1-5 minutes. Keep the container warm; don't rely on autoscale-from-zero unless you budget for cold-start latency.",
+      "The OpenAI SDK expects a real model id string \u2014 `{{modelId}}` gets the HF path after compose. Pass it to the client verbatim.",
+      "Quantization (awq/gptq/fp8) affects output quality. Benchmark against your eval set before deploying quantized to prod.",
+      "For multi-GPU, set `tensor_parallel_size` to the GPU count \u2014 must divide model heads evenly (usually 2, 4, 8)."
+    ],
+    "architectureNotes": [
+      "FastAPI fronts vLLM's AsyncLLMEngine. Adding middleware (rate-limiting, per-user usage meters) is ~10 lines of FastAPI.",
+      "The AsyncLLMEngine instance lives in app.state (set in lifespan). Don't re-instantiate it \u2014 model load is expensive.",
+      "Swap engines by changing the import in server.py + requirements.txt \u2014 OpenAI-compat shape is the same across vLLM / sglang / TGI / ollama."
+    ],
+    "placeholders": [
+      {
+        "path": "config.yaml",
+        "description": "Default points at meta-llama/Meta-Llama-3.1-8B-Instruct. Change `model.id` to the product's actual model (HF path). Adjust quantization + tensor_parallel_size for your hardware."
+      },
+      {
+        "path": "src/server.py",
+        "description": "FastAPI + vLLM wiring. Add product-specific middleware (per-user rate limits, request logging, custom routes) \u2014 the default is a bare OpenAI-compat proxy."
+      }
     ]
   }
 }

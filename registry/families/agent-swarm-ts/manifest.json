@@ -1,6 +1,6 @@
 {
   "id": "agent-swarm-ts",
-  "description": "Multi-agent swarm family — supervisor/worker orchestration with shared state, tool-routing, and handoff protocols. Based on LangGraph state machines or CrewAI role-based crews. For products where one LLM call isn't enough: research assistants that delegate to search/code/analysis sub-agents, customer support with triage + specialist agents, document pipelines with extract/analyze/summarize roles.",
+  "description": "Multi-agent swarm family \u2014 supervisor/worker orchestration with shared state, tool-routing, and handoff protocols. Based on LangGraph state machines or CrewAI role-based crews. For products where one LLM call isn't enough: research assistants that delegate to search/code/analysis sub-agents, customer support with triage + specialist agents, document pipelines with extract/analyze/summarize roles.",
   "tags": [
     "agent",
     "multi-agent",
@@ -137,6 +137,40 @@
       "triage and specialist support",
       "document pipeline agents",
       "planner and executor agents"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Multi-agent orchestration with supervisor/worker handoffs. Use when ONE LLM call isn't enough \u2014 research agents that delegate to search/analyze/summarize roles, triage+specialist support, document pipelines. For a single agent with tool use, use `agent-service-ts` instead.",
+    "firstSteps": [
+      "Set the router API key: `export OPENAI_API_KEY=$TANGLE_ROUTER_KEY` \u2014 agents call via router.tangle.tools, NOT OpenAI directly.",
+      "Add a new specialist: create `src/agents/<name>.ts` exporting a `run<Name>(state)` function. Register it in supervisor.ts's node graph.",
+      "Extend `SwarmState` in src/state.ts when adding fields the new agent reads/writes. Use the Annotation<T>({ reducer }) pattern \u2014 reducers determine how updates merge.",
+      "The supervisor is rule-based (src/supervisor.ts). Swap to an LLM-driven supervisor by replacing `supervise()` with an LLM call if the routing is non-obvious.",
+      "Test end-to-end: `curl -X POST http://localhost:{{port}}/run -d '{\"task\": \"your task\"}'` \u2014 kicks off researcher \u2192 writer."
+    ],
+    "gotchas": [
+      "LangGraph's Annotation reducers fire on EVERY state update. Accidentally returning {messages: state.messages} duplicates history. Return only the FIELDS you're changing.",
+      "The `END` marker terminates the graph. The supervisor must set `nextAgent: \"END\"` when work is done \u2014 otherwise the graph loops forever.",
+      "ChatOpenAI needs `configuration.baseURL` set to router.tangle.tools \u2014 without it calls go to api.openai.com and fail/cost unexpectedly.",
+      "Shared state = tight coupling. If a new agent needs a field that no other agent reads, DON'T put it in SwarmState \u2014 use private module-scope instead."
+    ],
+    "architectureNotes": [
+      "StateGraph flow: START \u2192 supervisor \u2192 (researcher | writer | END). Each specialist edges back to supervisor, enabling re-routing.",
+      "LangGraph checkpointing (MemorySaver, SqliteSaver) lets you pause/resume sessions. Enable via `graph.compile({ checkpointer })` for long-running workflows."
+    ],
+    "placeholders": [
+      {
+        "path": "src/agents/researcher.ts",
+        "description": "Placeholder researcher agent returning generic bullet notes. Replace system prompt + tool surface for the product's actual research domain."
+      },
+      {
+        "path": "src/agents/writer.ts",
+        "description": "Placeholder writer converting notes to prose. Replace system prompt for the product's target voice/format."
+      },
+      {
+        "path": "src/supervisor.ts",
+        "description": "Rule-based supervisor (has-notes? \u2192 writer; else \u2192 researcher). Replace with product-specific routing or an LLM-driven supervisor for non-linear flows."
+      }
     ]
   }
 }

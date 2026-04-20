@@ -122,5 +122,35 @@
       "geometry engine",
       "scientific computing web"
     ]
+  },
+  "buildHints": {
+    "whenToUse": "Rust compiled to WASM + served by Vite. Use for compute-heavy browser workloads: crypto primitives, image/video processing, physics, geometry, scientific compute. Native-speed calls from React, 20-line API.",
+    "firstSteps": [
+      "Install wasm-pack (required): `curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh`",
+      "Run `pnpm run build:wasm` BEFORE `pnpm dev` \u2014 Vite imports from ./pkg/ which only exists after wasm-pack runs.",
+      "Extend `src/lib.rs` \u2014 annotate exports with `#[wasm_bindgen]`. Rust types auto-translate to JS (`&str` \u2192 string, `Vec<u8>` \u2192 Uint8Array).",
+      "Call from TS: `import init, { myFn } from './pkg/<crateName>.js'` then `await init()` once at module top-level.",
+      "Run native Rust tests via `cargo test` \u2014 they use the same src/lib.rs without WASM compilation."
+    ],
+    "gotchas": [
+      "Proving keys + ML weights are multi-MB \u2014 put them under `public/` (served as static assets), not imported as modules. Vite inlines imports <4KB and base64-bloats larger.",
+      "wasm-bindgen types that contain references (&str, &[u8]) force a copy across the JS/WASM boundary. For hot loops, pass owned types (String, Vec<u8>).",
+      "`top-level await` is required to await init() at module scope \u2014 vite-plugin-top-level-await is wired in vite.config.ts; don't remove it.",
+      "The `pkg/` directory regenerates on every build. Do NOT edit generated files; they are overwritten."
+    ],
+    "architectureNotes": [
+      "Compile profile `release` with `opt-level = \"s\"` + LTO is configured in Cargo.toml \u2014 smaller binaries. For CPU-heavy workloads switch to `opt-level = 3`.",
+      "The crate type is `[\"cdylib\", \"rlib\"]` \u2014 cdylib for wasm-bindgen output, rlib so Rust unit tests still link."
+    ],
+    "placeholders": [
+      {
+        "path": "src/lib.rs",
+        "description": "Default exports `greet()` and `fibonacci()` as demonstrations. Replace with the product's actual WASM-exposed API \u2014 each public function needs `#[wasm_bindgen]`."
+      },
+      {
+        "path": "src/main.ts",
+        "description": "Default DOM wiring that demos greet + fibonacci. Replace with the product's actual UI that calls the real WASM exports."
+      }
+    ]
   }
 }

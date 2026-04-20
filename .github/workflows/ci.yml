@@ -27,6 +27,10 @@ jobs:
           node-version: '22'
           cache: 'pnpm'
 
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+
       - name: install
         run: pnpm install --frozen-lockfile
 
@@ -34,7 +38,11 @@ jobs:
         run: pnpm build
 
       - name: unit + integration tests
-        run: pnpm test
+        # Force serial execution: workspace benchmarks + http-start validation
+        # checks reserve ephemeral ports, and parallel runners race on them.
+        run: |
+          tsc -p tsconfig.test.json
+          node --test --test-concurrency=1 dist-tests/*.test.js
 
   matrix-eval:
     name: router matrix eval (deterministic, no key)

@@ -38,11 +38,10 @@ jobs:
         run: pnpm build
 
       - name: unit + integration tests
-        # Force serial execution: workspace benchmarks + http-start validation
-        # checks reserve ephemeral ports, and parallel runners race on them.
-        run: |
-          tsc -p tsconfig.test.json
-          node --test --test-concurrency=1 dist-tests/*.test.js
+        # Serial test execution enforced in package.json (workspace benchmarks
+        # + http-start validation checks reserve ephemeral ports and race
+        # under parallel execution).
+        run: pnpm test
 
   matrix-eval:
     name: router matrix eval (deterministic, no key)

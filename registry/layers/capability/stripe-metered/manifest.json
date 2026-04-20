@@ -1,0 +1,35 @@
+{
+  "id": "stripe-metered",
+  "description": "Stripe usage-based billing via Billing Meters — report events as they happen, Stripe aggregates and bills on your cadence. For AI products (tokens consumed), API businesses (requests), storage/compute products (GB-hours).",
+  "appliesTo": [
+    "nextjs-ts",
+    "fullstack-ts",
+    "api-service",
+    "bun-http",
+    "deno-edge"
+  ],
+  "files": [
+    {
+      "source": "files/metered.ts",
+      "target": "lib/stripe-metered.ts"
+    }
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "stripe": "^17.0.0"
+    }
+  },
+  "keywords": [
+    "stripe metered",
+    "usage-based billing",
+    "per-token billing",
+    "per-request billing",
+    "billing meters",
+    "pay-as-you-go",
+    "consumption billing",
+    "metered usage"
+  ],
+  "buildHints": {
+    "whenToUse": "Attach for products that bill on consumption rather than flat tiers. Report events via stripe.billing.meterEvents.create — Stripe aggregates and bills on the cycle you configured in the meter definition."
+  }
+}

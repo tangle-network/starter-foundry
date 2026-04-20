@@ -1,0 +1,31 @@
+{
+  "id": "tangle-tee",
+  "description": "TEE (Trusted Execution Environment) blueprint capability — operators run jobs inside an enclave (Intel TDX / AWS Nitro / Phala dStack) and produce a remote-attestation-backed proof. Apply to tangle-blueprint for private-compute, confidential data processing, or regulated workload jobs.",
+  "appliesTo": ["tangle-blueprint"],
+  "files": [
+    {
+      "source": "files/tee-config.json",
+      "target": "tee-config.json"
+    }
+  ],
+  "keywords": [
+    "tee",
+    "trusted execution environment",
+    "enclave",
+    "intel tdx",
+    "aws nitro enclave",
+    "phala dstack",
+    "confidential compute",
+    "remote attestation",
+    "private compute blueprint",
+    "confidential job"
+  ],
+  "buildHints": {
+    "whenToUse": "Attach when the blueprint must run in an enclave — handling private keys, regulated PII, or producing attested outputs for downstream trust.",
+    "firstSteps": [
+      "Pick a backend in tee-config.json (intel-tdx | aws-nitro | phala-dstack)",
+      "Wire the attestation verifier in your job's verify_result.rs",
+      "Emit the RA quote alongside the job output"
+    ]
+  }
+}

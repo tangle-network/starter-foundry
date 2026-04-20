@@ -1,0 +1,27 @@
+{
+  "id": "agent-swarm-ts",
+  "description": "LangGraph-based supervisor/worker multi-agent scaffold. Ships a researcher + writer pair plus a supervisor that routes between them via a shared state graph.",
+  "appliesTo": ["agent-swarm-ts"],
+  "files": [
+    {
+      "source": "files/server.ts",
+      "target": "src/server.ts"
+    },
+    {
+      "source": "files/state.ts",
+      "target": "src/state.ts"
+    },
+    {
+      "source": "files/supervisor.ts",
+      "target": "src/supervisor.ts"
+    },
+    {
+      "source": "files/researcher.ts",
+      "target": "src/agents/researcher.ts"
+    },
+    {
+      "source": "files/writer.ts",
+      "target": "src/agents/writer.ts"
+    }
+  ]
+}

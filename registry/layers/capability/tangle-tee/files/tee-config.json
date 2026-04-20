@@ -1,0 +1,20 @@
+{
+  "backend": "phala-dstack",
+  "backends": {
+    "intel-tdx": {
+      "docs": "https://www.intel.com/content/www/us/en/developer/tools/trust-domain-extensions/overview.html",
+      "attestation": "DCAP quote",
+      "verifier": "intel-trust-authority or local DCAP verifier"
+    },
+    "aws-nitro": {
+      "docs": "https://docs.aws.amazon.com/enclaves/latest/user/",
+      "attestation": "NSM attestation document (signed COSE)",
+      "verifier": "AWS root CA chain"
+    },
+    "phala-dstack": {
+      "docs": "https://docs.phala.network/dstack",
+      "attestation": "dstack-guest-agent quote",
+      "verifier": "dstack-attestation-verifier"
+    }
+  }
+}

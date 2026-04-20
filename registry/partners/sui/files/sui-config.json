@@ -1,0 +1,18 @@
+{
+  "partner": "sui",
+  "networks": {
+    "mainnet": "https://fullnode.mainnet.sui.io:443",
+    "testnet": "https://fullnode.testnet.sui.io:443",
+    "devnet": "https://fullnode.devnet.sui.io:443"
+  },
+  "sdk": {
+    "typescript": "@mysten/sui",
+    "wallet": "@mysten/wallet-kit",
+    "zkLogin": "@mysten/zklogin"
+  },
+  "docs": {
+    "move": "https://docs.sui.io/concepts/sui-move-concepts",
+    "zklogin": "https://docs.sui.io/concepts/cryptography/zklogin",
+    "sponsoredTx": "https://docs.sui.io/concepts/transactions/sponsored-transactions"
+  }
+}

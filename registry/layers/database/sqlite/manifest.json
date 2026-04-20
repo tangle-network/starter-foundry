@@ -6,6 +6,7 @@
     "agent-service-py",
     "agent-service-rust",
     "agent-service-ts",
+    "agent-swarm-ts",
     "api-service",
     "bun-http",
     "cloudflare-worker-ts",

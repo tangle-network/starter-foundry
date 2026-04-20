@@ -1,0 +1,142 @@
+{
+  "id": "agent-swarm-ts",
+  "description": "Multi-agent swarm family — supervisor/worker orchestration with shared state, tool-routing, and handoff protocols. Based on LangGraph state machines or CrewAI role-based crews. For products where one LLM call isn't enough: research assistants that delegate to search/code/analysis sub-agents, customer support with triage + specialist agents, document pipelines with extract/analyze/summarize roles.",
+  "tags": [
+    "agent",
+    "multi-agent",
+    "swarm",
+    "langgraph",
+    "crewai",
+    "supervisor",
+    "typescript"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "api"
+  },
+  "slots": {
+    "database": {
+      "options": [
+        "database:sqlite",
+        "database:postgres",
+        "database:mongodb",
+        "database:convex"
+      ],
+      "default": "database:postgres"
+    },
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk"
+      ],
+      "default": "auth:none"
+    }
+  },
+  "defaults": {
+    "projectType": "multi-agent",
+    "serviceName": "starter-foundry-swarm",
+    "port": 8098,
+    "orchestrator": "langgraph"
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/validate-swarm.mjs",
+      "target": "validate-swarm.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "src/supervisor.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/agents/researcher.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/agents/writer.ts"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-swarm.mjs"
+      ],
+      "expect": "agent-swarm-ts starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "pnpm run dev",
+      "pnpm test"
+    ],
+    "entrypoints": [
+      "src/supervisor.ts",
+      "src/agents/",
+      "src/state.ts",
+      "package.json"
+    ],
+    "preview": {
+      "path": "/health"
+    },
+    "extensionPoints": [
+      "src/agents/",
+      "src/state.ts",
+      "src/tools/"
+    ]
+  },
+  "keywords": [
+    "multi-agent",
+    "multi agent",
+    "agent swarm",
+    "supervisor agent",
+    "langgraph-js",
+    "langgraphjs",
+    "typescript multi-agent",
+    "agent handoff",
+    "specialist agents",
+    "agent team",
+    "role-based agents"
+  ],
+  "scoring": {
+    "boost": {
+      "multi-agent": 3,
+      "agent swarm": 3,
+      "langgraph-js": 3
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "multi-agent",
+      "multi agent",
+      "agent swarm",
+      "langgraph-js",
+      "langgraphjs",
+      "typescript multi-agent"
+    ],
+    "tier2": [
+      "supervisor agent",
+      "agent handoff",
+      "specialist agents",
+      "agent team"
+    ],
+    "archetypes": [
+      "research assistant with sub-agents",
+      "triage and specialist support",
+      "document pipeline agents",
+      "planner and executor agents"
+    ]
+  }
+}

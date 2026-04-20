@@ -1,0 +1,30 @@
+{
+  "id": "tempo",
+  "description": "Partner pack for Tempo — Paradigm's payments-optimized L1 with sub-second settlement, high throughput, EVM-compatible. Biases toward payments rails, stablecoin-denominated dApps, x402 agent-to-agent flows.",
+  "appliesTo": [
+    "frontend-static",
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "api-service",
+    "evm-infra-ts",
+    "agent-service-ts",
+    "x402-service",
+    "forge-contracts",
+    "hardhat-contracts",
+    "tangle-blueprint"
+  ],
+  "slotDefaults": {
+    "sdk": "sdk:evm-wallet"
+  },
+  "defaults": {
+    "headline": "Build on Tempo — payments-speed L1, EVM-compatible",
+    "subheadline": "Sub-second settlement, stablecoin-first. Tuned for x402 agent payments, micropayments, and high-frequency settlement."
+  },
+  "files": [
+    {
+      "source": "files/tempo-config.json",
+      "target": "tempo-config.json"
+    }
+  ]
+}

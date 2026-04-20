@@ -1,0 +1,36 @@
+{
+  "id": "stripe-checkout-onetime",
+  "description": "Stripe Checkout for one-time purchases — hosted or embedded checkout session for single-purchase products (courses, digital downloads, event tickets, unlock fees). Not for subscriptions — use saas-billing for that.",
+  "appliesTo": [
+    "nextjs-ts",
+    "fullstack-ts",
+    "api-service",
+    "bun-http",
+    "deno-edge"
+  ],
+  "files": [
+    {
+      "source": "files/checkout.ts",
+      "target": "lib/stripe-checkout.ts"
+    }
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "stripe": "^17.0.0"
+    }
+  },
+  "keywords": [
+    "stripe checkout",
+    "one-time purchase",
+    "single purchase",
+    "pay per item",
+    "digital download",
+    "course purchase",
+    "event tickets",
+    "unlock fee",
+    "one-time payment"
+  ],
+  "buildHints": {
+    "whenToUse": "Attach for products selling a single item or one-time unlock. Use hosted Checkout URL unless the UI needs to stay on-brand — then use embedded mode."
+  }
+}

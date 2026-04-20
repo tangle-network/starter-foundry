@@ -34,6 +34,9 @@ jobs:
       - name: install
         run: pnpm install --frozen-lockfile
 
+      - name: validate registry manifests (schemas + keyword overlap + dangling appliesTo)
+        run: node scripts/validate-registry.mjs
+
       - name: typecheck + build
         run: pnpm build
 

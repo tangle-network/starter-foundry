@@ -22,10 +22,10 @@
     }
   ],
   "buildHints": {
-    "dependencies": [
-      "recharts"
-    ],
-    "notes": "MetricCard is standalone (shadcn Card + lucide icons). SimpleChart requires recharts as a peer dependency. Both components use Tailwind CSS variables (--chart-1 through --chart-5) for theming."
+    "architectureNotes": [
+      "dependencies: recharts",
+      "notes: MetricCard is standalone (shadcn Card + lucide icons). SimpleChart requires recharts as a peer dependency. Both components use Tailwind CSS variables (--chart-1 through --chart-5) for theming."
+    ]
   },
   "packageDeps": {
     "dependencies": {

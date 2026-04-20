@@ -315,10 +315,21 @@ function buildAgentsMd(
     '',
   )
 
+  // User's prompt — echo it near the top so the agent sees its brief
+  // before the scaffold's default behavior.
+  if (spec.userPrompt) {
+    lines.push(
+      '## User\'s brief (takes priority over everything else in this file)',
+      '',
+      `> ${spec.userPrompt.replace(/\n/g, '\n> ')}`,
+      '',
+    )
+  }
+
   lines.push(
     '## What\'s here',
     '',
-    `This project was scaffolded by starter-foundry. The user\'s prompt drove the choices below — read their prompt first, it takes priority over everything in this file.`,
+    `This project was scaffolded by starter-foundry. The choices below were made deterministically from the user's brief.`,
     '',
     `- **Family:** \`${spec.family}\``,
     `- **Layers:** ${components.layers.map((l) => `\`${l.group}:${l.id}\``).join(', ')}`,

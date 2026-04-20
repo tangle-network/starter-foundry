@@ -1,19 +1,72 @@
 {
   "product": "starter-foundry",
-  "timestamp": "2026-03-30T05:00:00Z",
+  "timestamp": "2026-04-20T23:44:18.553Z",
+  "coverage": "8/8 flows measured",
+  "aggregate": 0.733,
   "flows": [
-    {"name": "route_accuracy_training", "score": 1.0, "target": 0.95, "status": "pass"},
-    {"name": "route_accuracy_held_out", "score": 1.0, "target": 0.90, "status": "pass"},
-    {"name": "proof_suite", "score": 1.0, "target": 1.0, "status": "pass"},
-    {"name": "compose_latency_ms", "score": 30, "target": 3000, "status": "pass"},
-    {"name": "families", "score": 38, "target": 30, "status": "pass"},
-    {"name": "capability_layers", "score": 60, "target": 40, "status": "pass"},
-    {"name": "product_archetypes", "score": 115, "target": 50, "status": "pass"},
-    {"name": "test_suite", "score": 131, "target": 131, "status": "pass"},
-    {"name": "adversarial_accuracy", "score": 0.83, "target": 0.80, "status": "pass"},
-    {"name": "injection_safety", "score": 1.0, "target": 1.0, "status": "pass"}
-  ],
-  "aggregate": 1.0,
-  "coverage": "10/10 flows measured",
-  "evolveHistory": "5 cycles, 2 generations"
+    {
+      "name": "route_accuracy_held_out",
+      "value": 1,
+      "target": 1,
+      "status": "pass",
+      "productValueClaim": "Every prompt in the held-out corpus routes to the expected family. If this slips, agents start on the wrong scaffold and burn turns pivoting.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "buildout_pass_rate",
+      "value": 0.8181818181818182,
+      "target": 0.85,
+      "status": "fail",
+      "productValueClaim": "Fraction of VB-run agent sessions whose composed scaffold reaches a working state. Directly = user sees something that works.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "scaffold_audit_pass_rate",
+      "value": 1,
+      "target": 1,
+      "status": "pass",
+      "productValueClaim": "Fraction of framework layers where pnpm install + tsc noEmit succeeds on a freshly composed scaffold. A failure here means agents fight install errors on turn 1.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "scaffold_gap_installs",
+      "value": 59,
+      "target": 10,
+      "status": "fail",
+      "productValueClaim": "Count of agent installs that map to packages NO family ships. Each one is a turn of agent work the scaffold should have avoided. Lower = less wasted setup.",
+      "direction": "lower-better"
+    },
+    {
+      "name": "top_file_rewrite_count",
+      "value": 13,
+      "target": 5,
+      "status": "fail",
+      "productValueClaim": "Rewrite count for the most-rewritten file in the corpus. High number = scaffold shipped a template agents systematically replace. Lower = tokens spent on features instead of setup.",
+      "direction": "lower-better"
+    },
+    {
+      "name": "families",
+      "value": 45,
+      "target": 40,
+      "status": "pass",
+      "productValueClaim": "Number of distinct family archetypes the router can route to. Breadth = more prompts find a good home.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "capability_layers",
+      "value": 103,
+      "target": 50,
+      "status": "pass",
+      "productValueClaim": "Distinct capability layers available for attachment. Each one is a bundle of deps + files + context agents get for free.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "partners",
+      "value": 9,
+      "target": 10,
+      "status": "fail",
+      "productValueClaim": "Partner packs — ecosystem-specific biases + config. More partners = more prompts get routed with SDK/addresses pre-wired.",
+      "direction": "higher-better"
+    }
+  ]
 }

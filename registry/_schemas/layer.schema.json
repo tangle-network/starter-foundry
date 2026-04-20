@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "layer.schema.json",
+  "title": "LayerManifest",
+  "type": "object",
+  "required": ["id", "description"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+    "description": { "type": "string", "minLength": 20 },
+    "group": { "type": "string" },
+    "slot": { "type": "string" },
+    "appliesTo": { "type": "array", "items": { "type": "string" } },
+    "defaults": { "type": "object" },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "target"],
+        "properties": {
+          "source": { "type": "string" },
+          "target": { "type": "string" }
+        }
+      }
+    },
+    "validationChecks": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "contextHints": {
+      "type": "object",
+      "properties": {
+        "commands": { "type": "array", "items": { "type": "string" } },
+        "entrypoints": { "type": "array", "items": { "type": "string" } },
+        "extensionPoints": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "keywords": { "type": "array", "items": { "type": "string" } },
+    "capabilityRequires": { "type": "array", "items": { "type": "string" } },
+    "variants": { "type": "array", "items": { "type": "string" } },
+    "buildHints": { "$ref": "buildhints.schema.json" },
+    "packageDeps": {
+      "type": "object",
+      "properties": {
+        "dependencies": { "type": "object", "additionalProperties": { "type": "string" } },
+        "devDependencies": { "type": "object", "additionalProperties": { "type": "string" } }
+      }
+    }
+  }
+}

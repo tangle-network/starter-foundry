@@ -82,3 +82,30 @@ Ran three parallel proposers in isolated worktrees; composed all three into main
 Variants + per-scenario eval lines at `.evolve/meta-harness/variants/` and `.evolve/meta-harness/runs/`. Frontier in `.evolve/meta-harness/frontier.json`, evolution log in `.evolve/meta-harness/evolution.jsonl`.
 
 **Deferred to Generation 2:** capability hit on non-web families (api-service, agent-service-*) is still low because expected UI capabilities would violate `appliesTo` and throw at compose time. Would require either loosening `appliesTo` or emitting the capabilities into workspace lanes' web projects.
+
+---
+
+## 2026-04-19 — Recall metric + variant B infra land
+
+**Decision made and shipped in this PR:**
+1. Added expected-⊆-actual recall alongside Jaccard capHit in the eval harness.
+2. Kept Jaccard capHit for back-compat.
+3. Merged variant B's AxFlow pipeline + judge + idea generator (OFF in hot path).
+4. Did NOT pursue Python MIPRO sidecar — measure before optimize.
+
+**The real numbers (baseline, no brief flag, median of 3):**
+
+| Metric | Jaccard | Recall |
+|---|---|---|
+| ideasai | 0.456 | **0.878** |
+| held-out | 1.000 | 1.000 |
+| vibecoder | 1.000 | 1.000 |
+
+Recall reveals the planner was always shipping ~88% of user-requested capabilities on ideasai. The "missing 55%" of Jaccard is auto-attached layers (tailwind/shadcn/industry) that aren't in the hand-authored expected lists. Ceiling wasn't at 0.46 — it was the metric.
+
+**Variant B brief-loader (opt-in via `--brief-loader`):**
+- ideasai recall: 0.925 (+4.7pp)
+- ideasai Jaccard: 0.477 (+2.1pp)
+- held-out passRate: 0.93 (-7pp, 3 scenarios workspace-routed differently)
+
+Kept off by default because the held-out passRate regression isn't worth the recall delta for production traffic. The infra stays available for the next pursuit round (when we wire up a real MIPRO sidecar or redesign the canonical-emitter to avoid the workspace routing regressions).

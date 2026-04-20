@@ -1,0 +1,57 @@
+{
+  "variant": "variant_b",
+  "scores": {
+    "ideasaiCapHit": 0.477361111111111,
+    "heldOutCapHit": 1,
+    "briefP95Ms": 1.5851670000000126,
+    "judgeAgreement": null,
+    "archetypePromotionYield": 12
+  },
+  "aggregate": {
+    "_aggregate": true,
+    "planner": "dist/lib/prompt-planner.js",
+    "config": {
+      "label": "variant_b",
+      "rewriter": false,
+      "brief": true
+    },
+    "scenarios": 363,
+    "passRate": 0.977961432506887,
+    "meanMs": 0.6931389118457294,
+    "p50Ms": 0.5103750000000105,
+    "p95Ms": 1.5851670000000126,
+    "p99Ms": 4.667166999999978,
+    "maxMs": 7.32566700000001,
+    "dims": {
+      "accuracy": 0.977961432506887,
+      "latencyP95": 1.5851670000000126,
+      "capabilityHitMean": 0.913613406795225,
+      "capabilityRecallMean": 0.987603305785124
+    },
+    "perCorpus": {
+      "held-out": {
+        "passRate": 0.9302325581395349,
+        "meanCapHit": 1,
+        "meanRecall": 1,
+        "meanLatencyMs": 0.6200106511627902,
+        "total": 43
+      },
+      "ideasai": {
+        "passRate": 0.9166666666666666,
+        "meanCapHit": 0.477361111111111,
+        "meanRecall": 0.9249999999999999,
+        "meanLatencyMs": 1.2650160000000006,
+        "total": 60
+      },
+      "vibecoder": {
+        "passRate": 1,
+        "meanCapHit": 1,
+        "meanRecall": 1,
+        "meanLatencyMs": 0.5732615653846145,
+        "total": 260
+      }
+    },
+    "timestamp": "2026-04-20T01:08:27.148Z"
+  },
+  "timestamp": "2026-04-20T01:08:33.493Z"
+}

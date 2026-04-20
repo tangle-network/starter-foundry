@@ -1,0 +1,437 @@
+{
+  "ideas": [
+    {
+      "idea": {
+        "id": "bundle-ai-chat-ui-layout-chat",
+        "description": "Bundle of capability:ai-chat-ui + capability:layout-chat — co-occurs in 8 training prompts.",
+        "family": "fullstack-ts",
+        "capabilities": [
+          "capability:ai-chat-ui",
+          "capability:layout-chat"
+        ],
+        "promptKeywords": [
+          "build",
+          "that",
+          "generates",
+          "personalized",
+          "bedtime",
+          "stories",
+          "kids",
+          "based",
+          "their",
+          "favorite",
+          "characters",
+          "voice"
+        ],
+        "rationale": "Co-occurrence count 8 in ideasai corpus.",
+        "source": "cooccurrence"
+      },
+      "score": {
+        "utility": 0.8,
+        "specificity": 1,
+        "novelty": 0.8,
+        "rubric": 0.5,
+        "composite": 0.7600000000000001,
+        "promotable": true,
+        "notes": ""
+      }
+    },
+    {
+      "idea": {
+        "id": "bundle-ai-chat-ui-tailwind",
+        "description": "Bundle of capability:ai-chat-ui + capability:tailwind — co-occurs in 13 training prompts.",
+        "family": "fullstack-ts",
+        "capabilities": [
+          "capability:ai-chat-ui",
+          "capability:tailwind"
+        ],
+        "promptKeywords": [
+          "build",
+          "that",
+          "generates",
+          "personalized",
+          "bedtime",
+          "stories",
+          "kids",
+          "based",
+          "their",
+          "favorite",
+          "characters",
+          "voice"
+        ],
+        "rationale": "Co-occurrence count 13 in ideasai corpus.",
+        "source": "cooccurrence"
+      },
+      "score": {
+        "utility": 0.8,
+        "specificity": 1,
+        "novelty": 0.8,
+        "rubric": 0.5,
+        "composite": 0.7600000000000001,
+        "promotable": true,
+        "notes": ""
+      }
+    },
+    {
+      "idea": {
+        "id": "bundle-ai-chat-ui-layout-dashboard",
+        "description": "Bundle of capability:ai-chat-ui + capability:layout-dashboard — co-occurs in 16 training prompts.",
+        "family": "fullstack-ts",
+        "capabilities": [
+          "capability:ai-chat-ui",
+          "capability:layout-dashboard"
+        ],
+        "promptKeywords": [
+          "need",
+          "platform",
+          "where",
+          "small",
+          "restaurants",
+          "upload",
+          "their",
+          "paper",
+          "menus",
+          "turns",
+          "them",
+          "into"
+        ],
+        "rationale": "Co-occurrence count 16 in ideasai corpus.",
+        "source": "cooccurrence"
+      },
+      "score": {
+        "utility": 0.8,
+        "specificity": 1,
+        "novelty": 0.8,
+        "rubric": 0.5,
+        "composite": 0.7600000000000001,
+        "promotable": true,
+        "notes": ""
+      }
+    },
+    {
+      "idea": {
+        "id": "bundle-ai-chat-ui-chart-widget",
+        "description": "Bundle of capability:ai-chat-ui + capability:chart-widget — co-occurs in 4 training prompts.",
+        "family": "fullstack-ts",
+        "capabilities": [
+          "capability:ai-chat-ui",
+          "capability:chart-widget"
+        ],
+        "promptKeywords": [
+          "build",
+          "tool",
+          "that",
+          "analyzes",
+          "customer",
+          "service",
+          "call",
+          "recordings",
+          "identifies",
+          "sentiment",
+          "patterns",
+          "escalation"
+        ],
+        "rationale": "Co-occurrence count 4 in ideasai corpus.",
+        "source": "cooccurrence"
+      },
+      "score": {
+        "utility": 0.8,
+        "specificity": 1,
+        "novelty": 0.8,
+        "rubric": 0.5,
+        "composite": 0.7600000000000001,
+        "promotable": true,
+        "notes": ""
+      }
+    },
+    {
+      "idea": {
+        "id": "bundle-ai-chat-ui-shadcn",
+        "description": "Bundle of capability:ai-chat-ui + capability:shadcn — co-occurs in 5 training prompts.",
+        "family": "fullstack-ts",
+        "capabilities": [
+          "capability:ai-chat-ui",
+          "capability:shadcn"
+        ],
+        "promptKeywords": [
+          "build",
+          "tool",
+          "where",
+          "upload",
+          "contracts",
+          "leases",
+          "highlights",
+          "risky",
+          "clauses",
+          "missing",
+          "terms",
+          "suggests"
+        ],
+        "rationale": "Co-occurrence count 5 in ideasai corpus.",
+        "source": "cooccurrence"
+      },
+      "score": {
+        "utility": 0.8,
+        "specificity": 1,
+        "novelty": 0.8,
+        "rubric": 0.5,
+        "composite": 0.7600000000000001,
+        "promotable": true,
+        "notes": ""
+      }
+    },
+    {
+      "idea": {
+        "id": "bundle-layout-chat-tailwind",
+        "description": "Bundle of capability:layout-chat + capability:tailwind — co-occurs in 8 training prompts.",
+        "family": "fullstack-ts",
+        "capabilities": [
+          "capability:layout-chat",
+          "capability:tailwind"
+        ],
+        "promptKeywords": [
+          "build",
+          "that",
+          "generates",
+          "personalized",
+          "bedtime",
+          "stories",
+          "kids",
+          "based",
+          "their",
+          "favorite",
+          "characters",
+          "voice"
+        ],
+        "rationale": "Co-occurrence count 8 in ideasai corpus.",
+        "source": "cooccurrence"
+      },
+      "score": {
+        "utility": 0.8,
+        "specificity": 1,
+        "novelty": 0.8,
+        "rubric": 0.5,
+        "composite": 0.7600000000000001,
+        "promotable": true,
+        "notes": ""
+      }
+    },
+    {
+      "idea": {
+        "id": "bundle-layout-dashboard-tailwind",
+        "description": "Bundle of capability:layout-dashboard + capability:tailwind — co-occurs in 17 training prompts.",
+        "family": "fullstack-ts",
+        "capabilities": [
+          "capability:layout-dashboard",
+          "capability:tailwind"
+        ],
+        "promptKeywords": [
+          "need",
+          "platform",
+          "where",
+          "small",
+          "restaurants",
+          "upload",
+          "their",
+          "paper",
+          "menus",
+          "turns",
+          "them",
+          "into"
+        ],
+        "rationale": "Co-occurrence count 17 in ideasai corpus.",
+        "source": "cooccurrence"
+      },
+      "score": {
+        "utility": 0.8,
+        "specificity": 1,
+        "novelty": 0.8,
+        "rubric": 0.5,
+        "composite": 0.7600000000000001,
+        "promotable": true,
+        "notes": ""
+      }
+    },
+    {
+      "idea": {
+        "id": "bundle-layout-dashboard-shadcn",
+        "description": "Bundle of capability:layout-dashboard + capability:shadcn — co-occurs in 24 training prompts.",
+        "family": "fullstack-ts",
+        "capabilities": [
+          "capability:layout-dashboard",
+          "capability:shadcn"
+        ],
+        "promptKeywords": [
+          "build",
+          "tool",
+          "that",
+          "auto",
+          "generates",
+          "sustainability",
+          "reports",
+          "small",
+          "businesses",
+          "pulling",
+          "data",
+          "from"
+        ],
+        "rationale": "Co-occurrence count 24 in ideasai corpus.",
+        "source": "cooccurrence"
+      },
+      "score": {
+        "utility": 0.8,
+        "specificity": 1,
+        "novelty": 0.8,
+        "rubric": 0.5,
+        "composite": 0.7600000000000001,
+        "promotable": true,
+        "notes": ""
+      }
+    },
+    {
+      "idea": {
+        "id": "bundle-layout-dashboard-marketplace",
+        "description": "Bundle of capability:layout-dashboard + capability:marketplace — co-occurs in 10 training prompts.",
+        "family": "fullstack-ts",
+        "capabilities": [
+          "capability:layout-dashboard",
+          "capability:marketplace"
+        ],
+        "promptKeywords": [
+          "build",
+          "marketplace",
+          "where",
+          "freelance",
+          "musicians",
+          "list",
+          "their",
+          "services",
+          "event",
+          "organizers",
+          "browse",
+          "book"
+        ],
+        "rationale": "Co-occurrence count 10 in ideasai corpus.",
+        "source": "cooccurrence"
+      },
+      "score": {
+        "utility": 0.8,
+        "specificity": 1,
+        "novelty": 0.8,
+        "rubric": 0.5,
+        "composite": 0.7600000000000001,
+        "promotable": true,
+        "notes": ""
+      }
+    },
+    {
+      "idea": {
+        "id": "bundle-layout-dashboard-webrtc",
+        "description": "Bundle of capability:layout-dashboard + capability:webrtc — co-occurs in 5 training prompts.",
+        "family": "fullstack-ts",
+        "capabilities": [
+          "capability:layout-dashboard",
+          "capability:webrtc"
+        ],
+        "promptKeywords": [
+          "build",
+          "video",
+          "tutoring",
+          "platform",
+          "with",
+          "screen",
+          "sharing",
+          "shared",
+          "whiteboard",
+          "session",
+          "recording",
+          "built"
+        ],
+        "rationale": "Co-occurrence count 5 in ideasai corpus.",
+        "source": "cooccurrence"
+      },
+      "score": {
+        "utility": 0.8,
+        "specificity": 1,
+        "novelty": 0.8,
+        "rubric": 0.5,
+        "composite": 0.7600000000000001,
+        "promotable": true,
+        "notes": ""
+      }
+    },
+    {
+      "idea": {
+        "id": "bundle-chart-widget-layout-dashboard",
+        "description": "Bundle of capability:chart-widget + capability:layout-dashboard — co-occurs in 16 training prompts.",
+        "family": "fullstack-ts",
+        "capabilities": [
+          "capability:chart-widget",
+          "capability:layout-dashboard"
+        ],
+        "promptKeywords": [
+          "build",
+          "tool",
+          "that",
+          "analyzes",
+          "customer",
+          "service",
+          "call",
+          "recordings",
+          "identifies",
+          "sentiment",
+          "patterns",
+          "escalation"
+        ],
+        "rationale": "Co-occurrence count 16 in ideasai corpus.",
+        "source": "cooccurrence"
+      },
+      "score": {
+        "utility": 0.8,
+        "specificity": 1,
+        "novelty": 0.8,
+        "rubric": 0.5,
+        "composite": 0.7600000000000001,
+        "promotable": true,
+        "notes": ""
+      }
+    },
+    {
+      "idea": {
+        "id": "bundle-chart-widget-shadcn",
+        "description": "Bundle of capability:chart-widget + capability:shadcn — co-occurs in 7 training prompts.",
+        "family": "fullstack-ts",
+        "capabilities": [
+          "capability:chart-widget",
+          "capability:shadcn"
+        ],
+        "promptKeywords": [
+          "build",
+          "tool",
+          "that",
+          "auto",
+          "generates",
+          "sustainability",
+          "reports",
+          "small",
+          "businesses",
+          "pulling",
+          "data",
+          "from"
+        ],
+        "rationale": "Co-occurrence count 7 in ideasai corpus.",
+        "source": "cooccurrence"
+      },
+      "score": {
+        "utility": 0.8,
+        "specificity": 1,
+        "novelty": 0.8,
+        "rubric": 0.5,
+        "composite": 0.7600000000000001,
+        "promotable": true,
+        "notes": ""
+      }
+    }
+  ],
+  "promotable": 12
+}

@@ -104,7 +104,8 @@ if (existsSync(genPath) && existsSync(judgePath)) {
   console.log(`\n=== [${variant}] GENERATE + JUDGE ===`)
   const ideaOut = `.evolve/ideas/${variant}.json`
   mkdirSync('.evolve/ideas', { recursive: true })
-  const genRes = run(process.execPath, ['-e', `
+  const genRes = run(process.execPath, ['--input-type=module', '-e', `
+    import fs from 'node:fs';
     const g = await import('${resolve(genPath)}');
     const j = await import('${resolve(judgePath)}');
     const ideas = await g.generateIdeas({ registryRoot: 'registry', tracesPath: '.evolve/traces' });
@@ -114,7 +115,7 @@ if (existsSync(genPath) && existsSync(judgePath)) {
       scored.push({ idea, score });
     }
     const promotable = scored.filter(s => s.score?.promotable).length;
-    require('fs').writeFileSync('${ideaOut}', JSON.stringify({ ideas: scored, promotable }, null, 2));
+    fs.writeFileSync('${ideaOut}', JSON.stringify({ ideas: scored, promotable }, null, 2));
   `.replace(/\n/g, ' ')])
   if (genRes.status === 0 && existsSync(ideaOut)) {
     const ideaData = JSON.parse(readFileSync(ideaOut, 'utf8'))

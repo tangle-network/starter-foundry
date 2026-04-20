@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, 'drew/**']
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    name: build + test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: install
+        run: pnpm install --frozen-lockfile
+
+      - name: typecheck + build
+        run: pnpm build
+
+      - name: unit + integration tests
+        run: pnpm test
+
+  matrix-eval:
+    name: router matrix eval (deterministic, no key)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: build-test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: install
+        run: pnpm install --frozen-lockfile
+
+      - name: build
+        run: pnpm build
+
+      - name: matrix eval (brief path no-ops without API key — measures deterministic baseline)
+        run: |
+          node scripts/meta-harness-eval.mjs \
+            --out .evolve/meta-harness/runs/ci-baseline.jsonl \
+            --label ci-baseline
+
+      - name: assert CI thresholds
+        run: |
+          node -e '
+            const fs = require("node:fs");
+            const lines = fs.readFileSync(".evolve/meta-harness/runs/ci-baseline.jsonl", "utf8").trim().split("\n");
+            const agg = JSON.parse(lines[lines.length - 1]);
+            const ideasai = agg.perCorpus["ideasai"];
+            const heldOut = agg.perCorpus["held-out"];
+            const vibe = agg.perCorpus["vibecoder"];
+            const fail = [];
+            // Route accuracy must stay at the current deterministic baseline.
+            if (agg.passRate < 0.99) fail.push(`passRate ${agg.passRate} < 0.99`);
+            if (heldOut.passRate < 1.0) fail.push(`held-out passRate ${heldOut.passRate} < 1.0`);
+            if (vibe.passRate < 1.0) fail.push(`vibecoder passRate ${vibe.passRate} < 1.0`);
+            // Recall: held-out must stay perfect, ideasai must not slip below the
+            // recorded baseline of 0.878 minus a 2pp tolerance band.
+            if (heldOut.meanRecall !== undefined && heldOut.meanRecall < 1.0) fail.push(`held-out recall ${heldOut.meanRecall} < 1.0`);
+            if (ideasai.meanRecall !== undefined && ideasai.meanRecall < 0.85) fail.push(`ideasai recall ${ideasai.meanRecall} < 0.85 (baseline 0.878)`);
+            // Latency floor on the deterministic path.
+            if (agg.p95Ms > 5) fail.push(`p95 ${agg.p95Ms}ms > 5ms (deterministic path)`);
+            if (fail.length) {
+              console.error("CI threshold failures:");
+              for (const f of fail) console.error("  - " + f);
+              process.exit(1);
+            }
+            console.log("thresholds OK:", JSON.stringify({
+              passRate: agg.passRate,
+              ideasaiRecall: ideasai.meanRecall,
+              heldOutRecall: heldOut.meanRecall,
+              p95Ms: agg.p95Ms,
+            }, null, 2));
+          '
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: matrix-eval-result
+          path: .evolve/meta-harness/runs/ci-baseline.jsonl
+          retention-days: 14

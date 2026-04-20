@@ -99,37 +99,38 @@
   },
   "keywords": [
     "multi-agent",
+    "multi agent",
     "agent swarm",
     "supervisor agent",
-    "crewai",
-    "langgraph",
-    "agent orchestration",
+    "langgraph-js",
+    "langgraphjs",
+    "typescript multi-agent",
     "agent handoff",
     "specialist agents",
-    "agent delegation",
     "agent team",
     "role-based agents"
   ],
   "scoring": {
     "boost": {
       "multi-agent": 3,
-      "swarm": 3,
-      "langgraph": 2,
-      "crewai": 2
+      "agent swarm": 3,
+      "langgraph-js": 3
     }
   },
   "tieredKeywords": {
     "tier1": [
       "multi-agent",
+      "multi agent",
       "agent swarm",
-      "supervisor agent",
-      "agent orchestration"
+      "langgraph-js",
+      "langgraphjs",
+      "typescript multi-agent"
     ],
     "tier2": [
-      "langgraph",
-      "crewai",
+      "supervisor agent",
       "agent handoff",
-      "specialist agents"
+      "specialist agents",
+      "agent team"
     ],
     "archetypes": [
       "research assistant with sub-agents",

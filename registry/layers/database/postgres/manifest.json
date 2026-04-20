@@ -9,6 +9,7 @@
     "api-service",
     "bun-http",
     "cloudflare-worker-ts",
+    "deno-edge",
     "dspy-pipeline-py",
     "evm-infra-ts",
     "fullstack-ts",

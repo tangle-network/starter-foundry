@@ -26,5 +26,10 @@
     "multicall",
     "wallet dashboard",
     "balance dashboard"
-  ]
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "viem": "^2.21.0"
+    }
+  }
 }

@@ -1,0 +1,15 @@
+{
+  "id": "vllm-server",
+  "description": "vLLM-based OpenAI-compatible inference server. FastAPI wrapper that delegates /v1/chat/completions and /v1/completions to vLLM's AsyncLLMEngine.",
+  "appliesTo": ["vllm-server"],
+  "files": [
+    {
+      "source": "files/server.py",
+      "target": "src/server.py"
+    },
+    {
+      "source": "files/__init__.py",
+      "target": "src/__init__.py"
+    }
+  ]
+}

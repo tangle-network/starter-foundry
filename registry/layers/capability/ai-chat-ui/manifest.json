@@ -25,7 +25,9 @@
       "chat-data.json"
     ]
   },
-  "capabilityRequires": ["layout-chat"],
+  "capabilityRequires": [
+    "layout-chat"
+  ],
   "keywords": [
     "chat interface",
     "chat ui",
@@ -61,5 +63,11 @@
       "Server-Sent Events for streaming",
       "Markdown rendering"
     ]
+  },
+  "packageDeps": {
+    "dependencies": {
+      "ai": "^4.0.0",
+      "@ai-sdk/react": "^1.0.0"
+    }
   }
 }

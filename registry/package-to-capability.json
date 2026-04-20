@@ -45,11 +45,16 @@
     "@solana/web3.js":             { "capability": null, "confidence": 0, "note": "generic Solana SDK — used across AMM/NFT/perps/staking/launchpad. Presence alone does not pick a capability." },
     "@solana/wallet-adapter-react": { "capability": null, "confidence": 0, "note": "wallet connect UI — not specific to AMM. Any Solana frontend uses it." },
 
-    "@codemirror/view":            { "capability": null, "confidence": 0, "note": "code editor — used for AI code assistants, markdown editors, configuration UIs, playgrounds. Not agent-dashboard-specific." },
-    "@codemirror/state":           { "capability": null, "confidence": 0, "note": "same as @codemirror/view" },
-    "@codemirror/lang-javascript": { "capability": null, "confidence": 0, "note": "same as @codemirror/view" },
+    "codemirror":                  { "capability": "capability:code-editor", "confidence": 0.95, "note": "CodeMirror 6 editor. Ships in capability:code-editor (added 2026-04-20 from detector's 15× agent-trading gap)." },
+    "@codemirror/view":            { "capability": "capability:code-editor", "confidence": 0.95 },
+    "@codemirror/state":           { "capability": "capability:code-editor", "confidence": 0.95 },
+    "@codemirror/lang-javascript": { "capability": "capability:code-editor", "confidence": 0.9 },
+    "@codemirror/lang-json":       { "capability": "capability:code-editor", "confidence": 0.9 },
+    "@codemirror/theme-one-dark":  { "capability": "capability:code-editor", "confidence": 0.9 },
+    "@codemirror/commands":        { "capability": "capability:code-editor", "confidence": 0.9 },
+    "@codemirror/autocomplete":    { "capability": "capability:code-editor", "confidence": 0.9 },
 
-    "date-fns":                    { "capability": null, "confidence": 0, "note": "utility, no capability mapping" },
+    "date-fns":                    { "capability": "capability:date-utils", "confidence": 0.9, "note": "date formatting + arithmetic. Ships in capability:date-utils (added 2026-04-20 from detector's 3× dao-proposals gap)." },
     "zod":                         { "capability": null, "confidence": 0, "note": "schema library, used everywhere" },
 
     "axios":                       { "capability": null, "confidence": 0, "note": "http client, used everywhere" },

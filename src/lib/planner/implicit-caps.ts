@@ -34,6 +34,8 @@ import {
   AUTH_ARCHETYPE_SIGNALS,
   CHART_STRONG_SIGNALS,
   CHAT_ARCHETYPE_SIGNALS,
+  CODE_EDITOR_ARCHETYPE_SIGNALS,
+  DATE_HEAVY_ARCHETYPE_SIGNALS,
   IMPLICIT_UI_FAMILIES,
   VIDEO_ARCHETYPE_SIGNALS,
   ZK_BROWSER_ARCHETYPE_SIGNALS,
@@ -113,6 +115,19 @@ export function inferImplicitCapabilities(
 
   if (hasAny(text, AUTH_ARCHETYPE_SIGNALS) && !has('capability:layout-auth')) {
     out.push('capability:layout-auth')
+  }
+
+  // Code-editor surface (AI playgrounds, SQL editors, markdown with code).
+  // Detector flagged codemirror installed 15× across agent-trading — scaffold
+  // needed a pre-built editor component.
+  if (hasAny(text, CODE_EDITOR_ARCHETYPE_SIGNALS) && !has('capability:code-editor')) {
+    out.push('capability:code-editor')
+  }
+
+  // Date-heavy products: calendar, scheduling, booking, deadline tracking.
+  // date-fns is tree-shakeable so this is a cheap attach.
+  if (hasAny(text, DATE_HEAVY_ARCHETYPE_SIGNALS) && !has('capability:date-utils')) {
+    out.push('capability:date-utils')
   }
 
   // Browser-native ZK: mixer, private voting, anonymous credential flows.

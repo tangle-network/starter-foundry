@@ -1,0 +1,15 @@
+{
+  "id": "deno-edge",
+  "description": "Deno.serve-based HTTP framework layer for Deno edge API starters.",
+  "appliesTo": ["deno-edge"],
+  "files": [
+    {
+      "source": "files/server.ts",
+      "target": "src/server.ts"
+    },
+    {
+      "source": "files/handlers.ts",
+      "target": "src/handlers.ts"
+    }
+  ]
+}

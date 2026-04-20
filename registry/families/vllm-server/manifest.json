@@ -1,0 +1,132 @@
+{
+  "id": "vllm-server",
+  "description": "vLLM-based LLM inference server with OpenAI-compatible endpoints. Production-shape model serving — PagedAttention memory, continuous batching, quantization-aware. For AI products that serve their own model instead of calling a provider API.",
+  "tags": [
+    "ml",
+    "llm",
+    "inference",
+    "python",
+    "serving",
+    "vllm"
+  ],
+  "taxonomy": {
+    "language": "python",
+    "runtime": "python",
+    "surface": "api"
+  },
+  "slots": {
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk"
+      ],
+      "default": "auth:none"
+    }
+  },
+  "defaults": {
+    "projectType": "inference",
+    "serviceName": "starter-foundry-vllm",
+    "port": 8097,
+    "modelId": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+    "maxModelLen": 4096
+  },
+  "files": [
+    {
+      "source": "files/requirements.txt",
+      "target": "requirements.txt"
+    },
+    {
+      "source": "files/config.yaml",
+      "target": "config.yaml"
+    },
+    {
+      "source": "files/validate-vllm.mjs",
+      "target": "validate-vllm.mjs"
+    },
+    {
+      "source": "files/README-serving.md",
+      "target": "docs/serving.md"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "src/server.py"
+    },
+    {
+      "type": "file-exists",
+      "path": "requirements.txt"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-vllm.mjs"
+      ],
+      "expect": "vllm starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pip install -r requirements.txt",
+      "python -m src.server",
+      "curl http://localhost:{{port}}/v1/chat/completions -H 'Content-Type: application/json' -d '{\"model\":\"{{modelId}}\",\"messages\":[{\"role\":\"user\",\"content\":\"hi\"}]}'"
+    ],
+    "entrypoints": [
+      "src/server.py",
+      "config.yaml",
+      "requirements.txt"
+    ],
+    "preview": {
+      "path": "/health"
+    },
+    "extensionPoints": [
+      "config.yaml",
+      "src/middleware/",
+      "src/routes/"
+    ]
+  },
+  "keywords": [
+    "vllm",
+    "llm serving",
+    "llm inference server",
+    "self-hosted llm",
+    "model serving",
+    "openai-compatible api",
+    "paged attention",
+    "continuous batching",
+    "llama",
+    "gpu inference",
+    "inference server",
+    "serve llama"
+  ],
+  "scoring": {
+    "boost": {
+      "vllm": 4,
+      "inference server": 3
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "vllm",
+      "llm inference server",
+      "self-hosted llm",
+      "model serving"
+    ],
+    "tier2": [
+      "openai-compatible api",
+      "serve llama",
+      "gpu inference",
+      "paged attention",
+      "continuous batching"
+    ],
+    "archetypes": [
+      "private llm host",
+      "on-prem llm",
+      "fine-tuned model deployment",
+      "llm inference platform",
+      "self-hosted chatgpt alternative"
+    ]
+  }
+}

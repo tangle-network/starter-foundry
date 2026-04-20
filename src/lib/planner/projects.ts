@@ -145,6 +145,15 @@ export function chooseApiFamily(text: string): FamilyChoice {
   if (hasAny(text, ['bun', 'bun.serve', 'bun runtime', 'bun api', 'bun http', 'bun.js'])) {
     return { family: 'bun-http', layers: ['framework:bun-http'], path: 'apps/api' }
   }
+  if (hasAny(text, ['deno', 'deno.serve', 'deno runtime', 'deno deploy', 'deno edge'])) {
+    return { family: 'deno-edge', layers: ['framework:deno-edge'], path: 'apps/api' }
+  }
+  // LLM inference server — vLLM / self-hosted model serving / OpenAI-compatible.
+  // Must come before python-api so prompts about "python llm inference server"
+  // route to vllm-server instead of the generic python HTTP path.
+  if (hasAny(text, ['vllm', 'llm inference server', 'llm serving', 'self-hosted llm', 'model serving', 'serve llama', 'openai-compatible api', 'paged attention', 'gpu inference', 'inference server'])) {
+    return { family: 'vllm-server', layers: ['framework:vllm-server'], path: 'apps/inference' }
+  }
   if (hasAny(text, ['rust', 'cargo', 'axum', 'rust api', 'rust backend'])) {
     return { family: 'rust-service', layers: ['framework:rust-http'], path: 'apps/api' }
   }

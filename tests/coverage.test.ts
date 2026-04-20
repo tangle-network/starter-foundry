@@ -36,6 +36,7 @@ const FAMILY_PROMPTS: Record<string, string> = {
   "bun-http": "Build a Bun HTTP API using Bun.serve",
   "cli-ts": "Build a TypeScript CLI tool",
   "cloudflare-worker-ts": "Build a Cloudflare Worker edge API",
+  "deno-edge": "Build a Deno HTTP API using Deno.serve with Deno Deploy target",
   "dspy-pipeline-py": "Build a DSPy text classification pipeline",
   "eigenlayer-avs": "Build an EigenLayer AVS for oracle data",
   "electron-desktop-ts": "Build an Electron desktop app",
@@ -64,6 +65,7 @@ const FAMILY_PROMPTS: Record<string, string> = {
   "sveltekit-ts": "Build a SvelteKit app with SSR",
   "tangle-blueprint": "Build a Tangle Blueprint for oracle data",
   "tauri-desktop": "Build a Tauri desktop app",
+  "vllm-server": "Build a self-hosted LLM inference server using vLLM with OpenAI-compatible endpoints",
   "vue-ts": "Build a Vue 3 app with Composition API",
   "wasm-rust": "Build a Rust + WASM browser image processor using wasm-bindgen",
   "worker-job": "Build a trading bot worker",
@@ -197,6 +199,8 @@ const CAP_PROMPTS: Record<string, { prompt: string; family: string }> = {
   "capability:ai-rag-chat": { prompt: "Build a Next.js RAG chatbot with source citations and retrieval", family: "nextjs-ts" },
   "capability:ai-voice-chat": { prompt: "Build a voice agent chat interface with speech-to-text", family: "nextjs-ts" },
   "capability:zk-browser": { prompt: "Build a privacy-preserving mixer UI with commitment deposits and nullifier-based withdrawals using zk proofs", family: "react-vite-ts" },
+  "capability:code-editor": { prompt: "Build a prompt playground with a syntax highlighting code editor for JavaScript", family: "react-vite-ts" },
+  "capability:date-utils": { prompt: "Build a scheduling app with appointment booking and a calendar view with recurring events", family: "react-vite-ts" },
 };
 
 for (const [capId, config] of Object.entries(CAP_PROMPTS)) {

@@ -69,5 +69,10 @@
       "Stripe Customer Portal",
       "Stripe Webhooks"
     ]
+  },
+  "packageDeps": {
+    "dependencies": {
+      "stripe": "^17.0.0"
+    }
   }
 }

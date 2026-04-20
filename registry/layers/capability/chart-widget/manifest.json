@@ -1,7 +1,12 @@
 {
   "id": "chart-widget",
   "description": "Dashboard chart components (metric cards + recharts line/bar/area) with mock starter data.",
-  "appliesTo": ["frontend-static", "react-vite-ts", "nextjs-ts", "fullstack-ts"],
+  "appliesTo": [
+    "frontend-static",
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts"
+  ],
   "files": [
     {
       "source": "files/starter-data.json",
@@ -17,7 +22,14 @@
     }
   ],
   "buildHints": {
-    "dependencies": ["recharts"],
+    "dependencies": [
+      "recharts"
+    ],
     "notes": "MetricCard is standalone (shadcn Card + lucide icons). SimpleChart requires recharts as a peer dependency. Both components use Tailwind CSS variables (--chart-1 through --chart-5) for theming."
+  },
+  "packageDeps": {
+    "dependencies": {
+      "recharts": "^2.15.0"
+    }
   }
 }

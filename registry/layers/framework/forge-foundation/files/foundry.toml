@@ -7,21 +7,10 @@ script = "script"
 solc_version = "0.8.28"
 optimizer = true
 optimizer_runs = 200
-via_ir = false
-auto_detect_solc = false
-fs_permissions = [{ access = "read-write", path = "./" }]
-gas_reports = ["*"]
-verbosity = 2
 
-[profile.ci]
-verbosity = 4
-fuzz = { runs = 1000 }
-invariant = { runs = 256 }
-
-[fmt]
-line_length = 100
-tab_width = 4
-bracket_spacing = false
-int_types = "long"
+remappings = [
+  "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+  "forge-std/=lib/forge-std/src/"
+]
 
 # See more at https://book.getfoundry.sh/reference/config/overview

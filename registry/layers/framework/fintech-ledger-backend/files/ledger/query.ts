@@ -1,46 +1,66 @@
-import { Decimal } from 'decimal.js';
-import { db } from './db';
-import { transactions } from './schema';
-import { eq, and, gte, lte } from 'drizzle-orm';
-
-export interface Transaction {
-  id: string;
-  accountId: string;
-  amount: string;
-  currency: string;
-  type: 'credit' | 'debit';
-  description: string | null;
-  createdAt: Date;
-}
+import { Decimal } from 'decimal.js'
+import { and, desc, eq, gte, lte } from 'drizzle-orm'
+import { db } from '../db/client.js'
+import { entries, transactions } from '../db/schema.js'
 
 export interface LedgerBalance {
-  accountId: string;
-  balance: string;
-  currency: string;
+  accountId: string
+  balance: string
+  asOf: string
 }
 
-export async function getBalance(accountId: string, currency: string): Promise<LedgerBalance> {
+export interface LedgerEntry {
+  id: string
+  transactionId: string
+  accountId: string
+  direction: 'debit' | 'credit'
+  amount: string
+  currency: string
+  postedAt: Date
+}
+
+export async function accountBalance(accountId: string, asOf: Date = new Date()): Promise<LedgerBalance> {
   const rows = await db
-    .select()
-    .from(transactions)
-    .where(and(eq(transactions.accountId, accountId), eq(transactions.currency, currency)));
+    .select({
+      direction: entries.direction,
+      amount: entries.amount,
+    })
+    .from(entries)
+    .innerJoin(transactions, eq(entries.transactionId, transactions.id))
+    .where(and(eq(entries.accountId, accountId), lte(transactions.postedAt, asOf)))
 
-  const balance = rows.reduce((acc: Decimal, r: typeof rows[number]) => {
-    const amount = new Decimal(r.amount);
-    return r.type === 'credit' ? acc.plus(amount) : acc.minus(amount);
-  }, new Decimal(0));
+  const balance = rows.reduce<Decimal>((acc, r) => {
+    const amt = new Decimal(r.amount)
+    return r.direction === 'credit' ? acc.plus(amt) : acc.minus(amt)
+  }, new Decimal(0))
 
-  return { accountId, balance: balance.toFixed(2), currency };
+  return { accountId, balance: balance.toFixed(2), asOf: asOf.toISOString() }
 }
 
-export async function getTransactions(
+export async function accountEntries(
   accountId: string,
-  from?: Date,
-  to?: Date
-): Promise<Transaction[]> {
-  const conditions = [eq(transactions.accountId, accountId)];
-  if (from) conditions.push(gte(transactions.createdAt, from));
-  if (to) conditions.push(lte(transactions.createdAt, to));
+  options: { limit?: number; from?: Date; to?: Date } = {},
+): Promise<LedgerEntry[]> {
+  const limit = options.limit ?? 100
+  const conditions = [eq(entries.accountId, accountId)]
+  if (options.from) conditions.push(gte(transactions.postedAt, options.from))
+  if (options.to) conditions.push(lte(transactions.postedAt, options.to))
 
-  return db.select().from(transactions).where(and(...conditions));
+  const rows = await db
+    .select({
+      id: entries.id,
+      transactionId: entries.transactionId,
+      accountId: entries.accountId,
+      direction: entries.direction,
+      amount: entries.amount,
+      currency: entries.currency,
+      postedAt: transactions.postedAt,
+    })
+    .from(entries)
+    .innerJoin(transactions, eq(entries.transactionId, transactions.id))
+    .where(and(...conditions))
+    .orderBy(desc(transactions.postedAt))
+    .limit(limit)
+
+  return rows
 }

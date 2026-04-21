@@ -73,6 +73,29 @@ const flows = [
     productValueClaim: 'Rewrite count for the most-rewritten file in the corpus. High number = scaffold shipped a template agents systematically replace. Lower = tokens spent on features instead of setup.',
     direction: 'lower-better',
   },
+  // Turns to preview — median wallMs / per-turn estimate from VB outcomes.
+  {
+    name: 'median_wall_seconds_per_buildout',
+    value: (() => {
+      const outcomes = (buildout?.perScenario ?? []).map((s) => s.meanWallMs).filter((v) => typeof v === 'number' && v > 0)
+      if (outcomes.length === 0) return null
+      outcomes.sort((a, b) => a - b)
+      const mid = outcomes[Math.floor(outcomes.length / 2)]
+      return Number((mid / 1000).toFixed(1))
+    })(),
+    target: 600,
+    productValueClaim: 'Median wall-time per buildout session in seconds. Faster preview = user sees working product sooner = lower abandon rate. Proxy for turns_to_preview until that lands.',
+    direction: 'lower-better',
+  },
+  // Orchestration noise — capability-gap entries where the scaffold DID ship
+  // the dep but agents installed it anyway (install-pipeline issue).
+  {
+    name: 'orchestration_installs',
+    value: gaps?.breakdown?.orchestration ?? null,
+    target: 15,
+    productValueClaim: 'Count of redundant agent installs when the scaffold already ships the package. Each one is a sign that the consumer pipeline isn\'t running install before handing the scaffold to the agent — informs blueprint-agent orchestration, not our scaffold.',
+    direction: 'lower-better',
+  },
   // Registry breadth — running growth metric.
   {
     name: 'families',

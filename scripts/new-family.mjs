@@ -21,11 +21,45 @@ function arg(flag, fallback) {
   const i = process.argv.indexOf(flag)
   return i >= 0 ? process.argv[i + 1] : fallback
 }
+const flag = (n) => process.argv.includes(n)
 
 const name = arg('--name')
 const runtime = arg('--runtime') || 'node'
 const surface = arg('--surface') || 'api'
 const description = arg('--description') || `${runtime} ${surface} starter`
+
+// Optional LLM-drafted hints. Activated when --llm is passed and the router
+// key + @ax-llm/ax are available. When off, the hint slots carry TODO
+// placeholders (the contributor fills them in).
+async function draftHintsWithLLM(nameArg, runtimeArg, surfaceArg, descriptionArg) {
+  if (!flag('--llm')) return null
+  try {
+    const { createLLM, isLLMAvailable } = await import('../dist/lib/llm.js')
+    if (!isLLMAvailable()) {
+      console.log('  (--llm requested but no key set; skipping LLM draft)')
+      return null
+    }
+    const { ax } = await import('@ax-llm/ax')
+    const drafter = ax(
+      'familyName:string, runtime:string, surface:string, description:string -> whenToUse:string, firstSteps:string[], gotchas:string[]',
+    )
+    const llm = createLLM()
+    const out = await drafter.forward(llm, {
+      familyName: nameArg,
+      runtime: runtimeArg,
+      surface: surfaceArg,
+      description: descriptionArg,
+    })
+    return {
+      whenToUse: out.whenToUse ?? null,
+      firstSteps: Array.isArray(out.firstSteps) ? out.firstSteps : [],
+      gotchas: Array.isArray(out.gotchas) ? out.gotchas : [],
+    }
+  } catch (err) {
+    console.log(`  (LLM draft failed: ${err.message}; falling back to TODO placeholders)`)
+    return null
+  }
+}
 
 if (!name || !/^[a-z][a-z0-9-]*$/.test(name)) {
   console.error('usage: --name <kebab-case-id> [--runtime <node|bun|deno|rust|go|python|wasm>] [--surface <api|frontend|worker|contracts|agent-service|inference>] [--description "..."]')
@@ -46,6 +80,8 @@ const language = {
   rust: 'rust', go: 'go', python: 'python', wasm: 'rust',
 }[runtime] || 'typescript'
 
+const drafted = await draftHintsWithLLM(name, runtime, surface, description)
+
 const familyManifest = {
   id: name,
   description: description.length >= 20 ? description : `${description} — ${runtime} ${surface} starter (regenerate description before shipping)`,
@@ -61,13 +97,13 @@ const familyManifest = {
     tier2: [],
   },
   buildHints: {
-    whenToUse: `TODO: one sentence on when a prompt should route here. Describe the product archetype, not the tech.`,
-    firstSteps: [
+    whenToUse: drafted?.whenToUse ?? `TODO: one sentence on when a prompt should route here. Describe the product archetype, not the tech.`,
+    firstSteps: drafted?.firstSteps?.length ? drafted.firstSteps : [
       'TODO: first command an agent should run (install deps + start dev server).',
       'TODO: primary entrypoint the agent extends.',
       'TODO: where brand / product strings live.',
     ],
-    gotchas: [
+    gotchas: drafted?.gotchas?.length ? drafted.gotchas : [
       'TODO: one non-obvious trap specific to this runtime.',
     ],
     placeholders: [

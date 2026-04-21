@@ -34,3 +34,16 @@ package-lock.json
 .evolve/vb-diagnostic.json
 .evolve/scaffold-quality-audit.json
 report/
+
+# Local compose/debug scratch (unrendered composes for manual inspection)
+.scratch/
+.tmp-compose-*/
+
+# Template library per-version audits + run logs — reproducible from the run
+.evolve/template-library-archive/
+.evolve/review-memory/*.audit.json
+.evolve/review-memory/*.run.log
+.evolve/review-memory/*.jsonl
+.evolve/evolve-branch.run.log
+.evolve/evolve-retry.run.log
+.evolve/evolve-v2*.run.log

@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{{headline}}</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; }
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        margin: 0;
+        min-height: 100vh;
+        background: #0a0a0a;
+        color: #f2f2f2;
+      }
+      #root { max-width: 760px; margin: 0 auto; padding: 1.5rem; }
+      h1 { margin: 0 0 0.25rem 0; font-size: 1.3rem; }
+      .sub { margin: 0 0 1.25rem 0; color: #888; }
+      .panels {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 0.75rem;
+      }
+      @media (max-width: 620px) { .panels { grid-template-columns: 1fr; } }
+      .panel {
+        background: #111;
+        border: 1px solid #222;
+        border-radius: 10px;
+        padding: 0.75rem;
+        min-height: 160px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .panel h3 { margin: 0; font-size: 0.85rem; color: #aaa; font-weight: 500; }
+      textarea {
+        flex: 1;
+        background: #0a0a0a;
+        color: #f2f2f2;
+        border: 1px solid #222;
+        border-radius: 6px;
+        padding: 0.5rem;
+        resize: none;
+        font-family: inherit;
+        font-size: 0.9rem;
+      }
+      .drop {
+        flex: 1;
+        border: 2px dashed #333;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        color: #666;
+        font-size: 0.85rem;
+        text-align: center;
+        padding: 0.5rem;
+        cursor: pointer;
+      }
+      .drop.active { border-color: #5fa; color: #5fa; }
+      .drop img { max-width: 100%; max-height: 120px; border-radius: 4px; }
+      button {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+        border: 0;
+        border-radius: 6px;
+        background: #357;
+        color: white;
+        cursor: pointer;
+      }
+      button.danger { background: #933; }
+      button:disabled { opacity: 0.4; cursor: wait; }
+      button.send {
+        width: 100%;
+        margin-top: 1rem;
+        padding: 0.9rem;
+        font-size: 1rem;
+        background: #2a8;
+      }
+      pre#out {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: #111;
+        border: 1px solid #222;
+        border-radius: 8px;
+        min-height: 4rem;
+        white-space: pre-wrap;
+        font-size: 0.9rem;
+      }
+      .pill {
+        display: inline-block;
+        padding: 0.125rem 0.5rem;
+        background: #222;
+        border-radius: 99px;
+        font-size: 0.75rem;
+        color: #aaa;
+      }
+      .recording { color: #f66; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

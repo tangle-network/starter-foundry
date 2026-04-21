@@ -1,0 +1,101 @@
+{
+  "id": "ollama-server",
+  "description": "Ollama self-hosted LLM starter — Docker Compose + thin TS client. Local-first, llama.cpp-backed, GGUF models. Port 11434, OpenAI-compatible /api/generate + /api/chat.",
+  "tags": ["inference", "llm", "ollama", "docker", "typescript"],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "inference"
+  },
+  "defaults": {
+    "projectType": "inference",
+    "serviceName": "starter-foundry-ollama",
+    "port": 11434
+  },
+  "files": [
+    { "source": "files/docker-compose.yml", "target": "docker-compose.yml" },
+    { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/Modelfile", "target": "Modelfile" },
+    { "source": "files/README.md", "target": "README.md" },
+    { "source": "files/validate-ollama.mjs", "target": "validate-ollama.mjs" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "docker-compose.yml" },
+    { "type": "file-exists", "path": "src/client.ts" },
+    { "type": "file-exists", "path": "Modelfile" },
+    {
+      "type": "command-success",
+      "command": ["node", "validate-ollama.mjs"],
+      "expect": "ollama starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "docker compose up -d",
+      "docker compose exec ollama ollama pull llama3.2",
+      "pnpm install",
+      "pnpm dev"
+    ],
+    "entrypoints": ["src/client.ts", "Modelfile", "docker-compose.yml"],
+    "preview": { "path": "/api/tags", "port": "11434" },
+    "extensionPoints": ["Modelfile", "src/client.ts", "docker-compose.yml"]
+  },
+  "keywords": [
+    "ollama",
+    "ollama server",
+    "local llm",
+    "llama.cpp",
+    "gguf",
+    "self-hosted llm",
+    "on-device llm",
+    "llama3",
+    "mistral local",
+    "qwen local"
+  ],
+  "scoring": {
+    "boost": { "ollama": 5, "local llm": 3, "gguf": 3 }
+  },
+  "tieredKeywords": {
+    "tier1": ["ollama", "ollama local", "local llm", "gguf"],
+    "tier2": ["llama.cpp", "self-hosted inference", "on-device llm", "ollama modelfile"],
+    "archetypes": [
+      "local llm chat",
+      "private rag",
+      "offline coding assistant",
+      "self-hosted autocomplete",
+      "ollama-backed agent",
+      "on-prem llm api"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Self-hosted / local LLM inference where privacy, offline operation, or zero-vendor-cost matter more than absolute throughput. Pick over vllm-server when targeting laptops, edge, or air-gapped deploys; pick vllm-server for production GPU serving at scale.",
+    "firstSteps": [
+      "Start the server: `docker compose up -d` — binds 11434 on host. CPU-only by default; uncomment the GPU block in docker-compose.yml to use CUDA.",
+      "Pull a model (one-time): `docker compose exec ollama ollama pull llama3.2` (or qwen2.5, mistral, gemma3 — see https://ollama.com/library). First pull is ~2-8 GB.",
+      "Install client deps: `pnpm install`. The TS client in `src/client.ts` calls `POST /api/generate` and streams JSON lines.",
+      "Customize the model: edit `Modelfile` (FROM llama3.2, SYSTEM prompt, PARAMETER temperature ...), then `ollama create <name> -f Modelfile` inside the container.",
+      "Verify: `curl http://localhost:11434/api/tags` lists loaded models. `pnpm dev` runs the example client call."
+    ],
+    "gotchas": [
+      "Models are pulled at runtime, NOT baked into the image. A fresh container has zero models — the first request on an unpulled model returns a clear error, not a hang.",
+      "The Ollama streaming response is newline-delimited JSON (NDJSON), NOT SSE. Parse line-by-line with a decoder that handles partial lines across chunks — naive JSON.parse on chunks will corrupt.",
+      "`ollama run <model>` is an interactive REPL inside the container — do NOT use it from scripts. Use the HTTP API for programmatic calls.",
+      "GPU inference requires `deploy.resources.reservations.devices` in docker-compose.yml AND nvidia-container-toolkit on the host. Missing either silently falls back to CPU (slow)."
+    ],
+    "architectureNotes": [
+      "Ollama wraps llama.cpp — inference runs in a single process; parallelism is limited. For multi-tenant high-QPS, put a queue in front or move to vllm-server.",
+      "Model storage lives in the `ollama` named volume — survive container recreation, but a volume `docker volume rm` deletes everything. Back up before upgrades."
+    ],
+    "placeholders": [
+      {
+        "path": "src/client.ts",
+        "description": "Example client hitting /api/generate with a default prompt. Replace the prompt + streaming handler with the product's actual LLM call flow."
+      },
+      {
+        "path": "Modelfile",
+        "description": "Model customization (base, system prompt, temperature, stop tokens). Replace SYSTEM with the product's actual persona/constraints."
+      }
+    ]
+  }
+}

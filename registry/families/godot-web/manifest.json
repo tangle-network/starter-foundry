@@ -1,0 +1,172 @@
+{
+  "id": "godot-web",
+  "description": "Godot 4.3 HTML5 export scaffold — project.godot, a minimal scene with a label + sprite, a _ready/_process script, and an export_presets.cfg pointed at exports/web/. Open in Godot 4.3+, press Export → HTML5, ship the resulting dist. Foundation for Godot browser games, prototypes, and jam entries.",
+  "tags": [
+    "frontend",
+    "gdscript",
+    "godot",
+    "game-engine",
+    "html5"
+  ],
+  "taxonomy": {
+    "language": "gdscript",
+    "runtime": "godot",
+    "surface": "frontend"
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "serviceName": "starter-foundry-godot-web",
+    "port": 8060
+  },
+  "files": [
+    {
+      "source": "files/project.godot",
+      "target": "project.godot"
+    },
+    {
+      "source": "files/export_presets.cfg",
+      "target": "export_presets.cfg"
+    },
+    {
+      "source": "files/icon.svg",
+      "target": "icon.svg"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/validate-godot-web.mjs",
+      "target": "validate-godot-web.mjs"
+    },
+    {
+      "source": "files/.gitignore",
+      "target": ".gitignore"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "project.godot"
+    },
+    {
+      "type": "file-exists",
+      "path": "export_presets.cfg"
+    },
+    {
+      "type": "file-exists",
+      "path": "scenes/main.tscn"
+    },
+    {
+      "type": "file-exists",
+      "path": "scripts/main.gd"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-godot-web.mjs"
+      ],
+      "expect": "godot-web starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "godot --editor .",
+      "godot --headless --export-release 'Web' exports/web/index.html"
+    ],
+    "entrypoints": [
+      "project.godot",
+      "scenes/main.tscn",
+      "scripts/main.gd",
+      "export_presets.cfg"
+    ],
+    "preview": {
+      "path": "/"
+    },
+    "extensionPoints": [
+      "scenes/main.tscn",
+      "scripts/main.gd"
+    ]
+  },
+  "keywords": [
+    "godot",
+    "godot web",
+    "godot html5",
+    "godot 4",
+    "gdscript game",
+    "godot browser",
+    "godot export",
+    "godot engine"
+  ],
+  "scoring": {
+    "boost": {
+      "godot": 5,
+      "godot web": 5,
+      "godot html5": 5,
+      "godot 4": 4,
+      "gdscript game": 4
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "godot",
+      "godot web",
+      "godot html5",
+      "godot 4",
+      "gdscript game"
+    ],
+    "tier2": [
+      "godot browser",
+      "godot export",
+      "godot engine",
+      "godot jam",
+      "godot prototype"
+    ],
+    "archetypes": [
+      "godot browser game",
+      "godot jam entry",
+      "godot 2d platformer web",
+      "godot card game",
+      "godot interactive fiction",
+      "godot puzzle demo",
+      "godot incremental game",
+      "godot shader demo",
+      "godot visual novel",
+      "godot tile-based roguelike"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Godot-authored games or interactive content targeting the browser. This scaffold gives you the project skeleton and export preset; you still open Godot 4.3+ to iterate and to actually export. Pick bevy-web for Rust-first games or threejs-game for JavaScript-first 3D content.",
+    "firstSteps": [
+      "Install Godot 4.3+ from godotengine.org (or via `brew install --cask godot` on macOS). Command-line builds additionally require the matching Web export templates — download via Editor → Manage Export Templates.",
+      "Open the project: `godot --editor .` from the project root, or drag `project.godot` onto the Godot executable.",
+      "Inspect `scenes/main.tscn` — one Node2D root with a Sprite2D and a Label; `scripts/main.gd` attaches to the root and drives a simple _process animation. Press F5 to run in the editor.",
+      "Export to web: Project → Export → select `Web` → Export Project. Output lands in `exports/web/` as `index.html` + `index.js` + `index.wasm` + `index.pck`. Ship that directory to any static host.",
+      "Headless CI export: `godot --headless --export-release 'Web' exports/web/index.html` from the project root once export templates are installed."
+    ],
+    "gotchas": [
+      "Godot 4 HTML5 builds require SharedArrayBuffer, which browsers only expose when the page is served with `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp`. Without these headers the export loads to a blank canvas — configure your static host (Cloudflare Pages, Vercel, nginx) to emit them for the exports/web/ directory.",
+      "Web export templates must match the Godot editor version exactly (e.g. 4.3-stable editor needs 4.3-stable templates). Downloading a `dev` template for a `stable` editor silently fails at export time.",
+      "The `.godot/` directory is editor-generated cache — do NOT commit it. The supplied .gitignore excludes it.",
+      "Godot's HTML5 threading requires WebAssembly threads, which are behind the COOP/COEP gate above AND require the browser to have threads enabled (all modern browsers do, but some mobile browsers in lockdown modes don't).",
+      "Audio autoplay is blocked in every browser until the user interacts — wire audio start to a click/keypress or the first frame will have no sound.",
+      "Export presets live in `export_presets.cfg` and are version-controlled; they reference absolute paths in your editor on first save — the supplied preset uses relative paths (`exports/web/index.html`) to keep the repo portable."
+    ],
+    "architectureNotes": [
+      "Scenes are the primary unit of composition — prefer many small scenes instanced into a parent over one god-scene.",
+      "Attach scripts to scene roots only when a node truly owns state; pure utility logic belongs in autoloads (singletons) configured in project.godot.",
+      "For web builds specifically, preload assets aggressively — Godot streams from the .pck but first-touch latency on large scenes is visible."
+    ],
+    "placeholders": [
+      {
+        "path": "scenes/main.tscn",
+        "description": "Main scene with a Node2D root, a centered Sprite2D using the default icon, and a Label. Replace with the real game scene; keep the top-level Node2D if other scenes attach the same `main.gd` script."
+      },
+      {
+        "path": "scripts/main.gd",
+        "description": "GDScript attached to the Node2D root — _ready prints engine version, _process rotates the sprite. Replace the process logic with real input handling and game-loop systems."
+      }
+    ]
+  }
+}

@@ -1,0 +1,190 @@
+{
+  "id": "triton-server",
+  "description": "NVIDIA Triton Inference Server — multi-framework model serving (ONNX, TensorRT, PyTorch, Python backend, ensembles). Docker-compose scaffold with a model_repository layout, an identity/echo model for smoke-testing, and a tritonclient HTTP example. For serving classical ML (ResNet, Whisper, embeddings) and mixed ONNX/TensorRT pipelines at NVIDIA-optimized latency.",
+  "tags": [
+    "ml",
+    "inference",
+    "triton",
+    "nvidia",
+    "onnx",
+    "tensorrt",
+    "serving"
+  ],
+  "taxonomy": {
+    "language": "python",
+    "runtime": "python",
+    "surface": "inference"
+  },
+  "slots": {
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk"
+      ],
+      "default": "auth:none"
+    }
+  },
+  "defaults": {
+    "projectType": "inference",
+    "serviceName": "starter-foundry-triton",
+    "port": 8000,
+    "grpcPort": 8001,
+    "metricsPort": 8002
+  },
+  "files": [
+    {
+      "source": "files/docker-compose.yml",
+      "target": "docker-compose.yml"
+    },
+    {
+      "source": "files/requirements.txt",
+      "target": "requirements.txt"
+    },
+    {
+      "source": "files/client.py",
+      "target": "src/client.py"
+    },
+    {
+      "source": "files/model_repository/identity/config.pbtxt",
+      "target": "model_repository/identity/config.pbtxt"
+    },
+    {
+      "source": "files/model_repository/identity/1/.gitkeep",
+      "target": "model_repository/identity/1/.gitkeep"
+    },
+    {
+      "source": "files/README-triton.md",
+      "target": "docs/triton.md"
+    },
+    {
+      "source": "files/validate-triton.mjs",
+      "target": "validate-triton.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "docker-compose.yml"
+    },
+    {
+      "type": "file-exists",
+      "path": "requirements.txt"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/client.py"
+    },
+    {
+      "type": "file-exists",
+      "path": "model_repository/identity/config.pbtxt"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-triton.mjs"
+      ],
+      "expect": "triton starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "docker compose up -d",
+      "pip install -r requirements.txt",
+      "python -m src.client",
+      "curl http://localhost:{{port}}/v2/health/ready"
+    ],
+    "entrypoints": [
+      "docker-compose.yml",
+      "model_repository/",
+      "src/client.py"
+    ],
+    "preview": {
+      "path": "/v2/health/ready",
+      "port": "{{port}}"
+    },
+    "extensionPoints": [
+      "model_repository/",
+      "src/client.py"
+    ]
+  },
+  "keywords": [
+    "triton",
+    "triton server",
+    "nvidia triton",
+    "tritonserver",
+    "triton inference server",
+    "model repository",
+    "onnx serving",
+    "tensorrt serving",
+    "ensemble model",
+    "triton http",
+    "triton grpc"
+  ],
+  "scoring": {
+    "boost": {
+      "triton": 4,
+      "nvidia triton": 4,
+      "onnx serving": 3,
+      "tensorrt serving": 3
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "triton",
+      "nvidia triton",
+      "triton inference server",
+      "model repository"
+    ],
+    "tier2": [
+      "onnx serving",
+      "tensorrt serving",
+      "ensemble model",
+      "triton backend"
+    ],
+    "archetypes": [
+      "classical ml model serving",
+      "onnx production server",
+      "multi-framework model server",
+      "nvidia optimized inference"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Pick Triton when the workload is classical ML (CV/ASR/embeddings/recommenders), when you're combining ONNX + TensorRT + Python backends in ensembles, or when NVIDIA-specific optimizations (TensorRT, CUDA graphs, dynamic batching) matter. For pure LLM serving use vllm-server / sglang-server / tgi-server — they're faster and simpler for that shape.",
+    "firstSteps": [
+      "Add a model: drop weights under model_repository/<name>/<version>/ (e.g. `model.onnx` or `model.plan`)",
+      "Write/edit model_repository/<name>/config.pbtxt — platform, inputs, outputs, dynamic_batching",
+      "docker compose up -d (pulls ~15GB — tritonserver image is large)",
+      "curl http://localhost:{{port}}/v2/health/ready — wait for HTTP 200",
+      "python -m src.client — infer against the identity model"
+    ],
+    "gotchas": [
+      "model_repository version directories MUST be integers (`1`, `2`, ...). Triton silently skips non-integer dirs like `v1` or `latest`.",
+      "config.pbtxt `platform` and `backend` are mutually exclusive per model. Pick one — e.g. `backend: \"onnxruntime\"` for ONNX, `platform: \"tensorrt_plan\"` for TRT plans.",
+      "Input tensor dims use `-1` for dynamic dims, `1` for batch. Getting this wrong returns opaque `inference failed` errors with no stack trace.",
+      "The HTTP endpoint is `/v2/` (KServe v2 spec), gRPC is on 8001. Legacy `/api/infer` docs refer to Triton v1 and do not apply.",
+      "Ensemble models in config.pbtxt require every sub-model listed in `ensemble_scheduling.step` to already be loaded — load order matters.",
+      "TRT engines (`.plan`) are built for a specific GPU + CUDA + TRT version. An engine built on A100 will not run on H100. Rebuild per deploy target.",
+      "The nvcr.io registry needs `docker login nvcr.io` for private variants; the public tritonserver image is unauthenticated."
+    ],
+    "placeholders": [
+      {
+        "path": "src/main.py",
+        "description": "model_repository/<name>/<version>/ — drop real model weights here"
+      },
+      {
+        "path": "src/main.py",
+        "description": "model_repository/<name>/config.pbtxt — declare inputs/outputs/batching"
+      },
+      {
+        "path": "src/main.py",
+        "description": "src/client.py — swap model_name + tensor shapes to match your model"
+      },
+      {
+        "path": "src/main.py",
+        "description": "docker-compose.yml — pin the tritonserver image tag (e.g. 24.10-py3)"
+      }
+    ]
+  }
+}

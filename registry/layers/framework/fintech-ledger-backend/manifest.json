@@ -1,0 +1,82 @@
+{
+  "id": "fintech-ledger-backend",
+  "description": "Double-entry ledger framework layer — accounts/transactions/entries schema, atomic post_transaction with debit=credit invariant, as-of-timestamp balance query.",
+  "appliesTo": ["fintech-ledger-backend"],
+  "files": [
+    { "source": "files/server.ts", "target": "src/server.ts" },
+    { "source": "files/schema.ts", "target": "src/db/schema.ts" },
+    { "source": "files/db.ts", "target": "src/db/client.ts" },
+    { "source": "files/post.ts", "target": "src/ledger/post.ts" },
+    { "source": "files/ledger/query.ts", "target": "src/ledger/query.ts" },
+    { "source": "files/money.ts", "target": "src/ledger/money.ts" },
+    { "source": "files/transactions-api.ts", "target": "src/api/transactions.ts" },
+    { "source": "files/drizzle.config.ts", "target": "drizzle.config.ts" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" }
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "fastify": "^5.0.0",
+      "drizzle-orm": "^0.36.0",
+      "postgres": "^3.4.5",
+      "decimal.js": "^10.4.3"
+    },
+    "devDependencies": {
+      "drizzle-kit": "^0.30.0",
+      "typescript": "^5.9.0",
+      "@types/node": "^20.17.0"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "When you need a production-grade double-entry ledger API: fintech, accounting, payments reconciliation, or any backend that must track money with strict debit=credit invariants.",
+    "firstSteps": [
+      "Run `pnpm install` then `DATABASE_URL=postgres://user:pass@host/db pnpm dev` — the server listens on PORT (default 3000) with /health, POST /api/transactions, and GET /api/accounts/:id/balance.",
+      "Run `pnpm db:generate && pnpm db:migrate` to create the accounts, transactions, and entries tables in Postgres.",
+      "Seed accounts by inserting rows into the accounts table (code, name, type, currency); then POST /api/transactions with at least two balanced entries (one debit, one credit) to verify the ledger.",
+      "Run `pnpm validate` to confirm all required files exist and the debit=credit invariant is present in the source."
+    ],
+    "gotchas": [
+      "NEVER use JavaScript number (float) for money — 0.1 + 0.2 !== 0.3. All arithmetic goes through decimal.js; amounts stored as NUMERIC(20,4) in Postgres.",
+      "Debit MUST equal credit per transaction, per currency. postTransaction enforces this before and after insert; the DB transaction rolls back on any mismatch.",
+      "Reversing an entry is NOT deleting it — post a new transaction with opposite direction. Audit trail requires immutability.",
+      "Idempotency keys are mandatory on external-facing endpoints; a retried POST without one duplicates the posting.",
+      "Account balance sign depends on type: asset/expense = debits - credits; liability/equity/income = credits - debits. Getting this backward is the #1 accounting bug.",
+      "As-of balance queries filter by posted_at <= asOf, not created_at — backdated corrections are real."
+    ],
+    "architectureNotes": [
+      "Every transaction is N entries where sum(debits) == sum(credits) per currency — enforced in src/ledger/post.ts before and after insert.",
+      "A single DB transaction wraps every posting; partial inserts leave an unbalanced ledger which is a business-critical corruption.",
+      "src/db/schema.ts owns the Drizzle table definitions; src/ledger/post.ts owns the invariant; src/ledger/query.ts owns balance semantics."
+    ],
+    "placeholders": [
+      {
+        "path": "src/server.ts",
+        "description": "Minimal http.createServer router. Wire in authentication middleware and rate-limiting before exposing to the internet."
+      },
+      {
+        "path": "src/db/client.ts",
+        "description": "Postgres connection using DATABASE_URL env var. Adjust pool size (max) for your expected concurrency."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "DATABASE_URL=postgres://user:pass@host/db PORT=3000 HOST=0.0.0.0 pnpm dev",
+      "pnpm db:generate",
+      "pnpm db:migrate",
+      "pnpm validate"
+    ],
+    "entrypoints": [
+      "src/server.ts",
+      "src/db/schema.ts",
+      "src/ledger/post.ts",
+      "src/ledger/query.ts"
+    ],
+    "preview": { "path": "/health" },
+    "extensionPoints": [
+      "src/db/schema.ts",
+      "src/ledger/",
+      "src/api/"
+    ]
+  }
+}

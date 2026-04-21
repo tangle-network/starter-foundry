@@ -1,0 +1,85 @@
+{
+  "id": "legal-case-mgmt",
+  "description": "Legal practice management API — matters, parties, documents, time entries, billing rates, invoice generation from time entries.",
+  "tags": [
+    "legal",
+    "case-management",
+    "api",
+    "typescript"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "api"
+  },
+  "slots": {
+    "database": {
+      "options": ["database:sqlite", "database:postgres"],
+      "default": "database:postgres"
+    },
+    "auth": {
+      "options": ["auth:none", "auth:better-auth", "auth:clerk"],
+      "default": "auth:better-auth"
+    }
+  },
+  "defaults": {
+    "projectType": "api",
+    "serviceName": "starter-foundry-legal",
+    "port": 8102,
+    "databaseProvider": "postgres"
+  },
+  "files": [
+    { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/validate-legal.mjs", "target": "validate-legal.mjs" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "src/server.ts" },
+    { "type": "file-exists", "path": "src/db/schema.ts" },
+    { "type": "file-exists", "path": "src/api/matter.ts" },
+    { "type": "file-exists", "path": "src/api/billing.ts" },
+    {
+      "type": "command-success",
+      "command": ["node", "validate-legal.mjs"],
+      "expect": "legal starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm dev", "pnpm drizzle-kit generate", "pnpm drizzle-kit migrate"],
+    "entrypoints": ["src/server.ts", "src/db/schema.ts", "src/api/matter.ts", "src/api/billing.ts"],
+    "preview": { "path": "/health" },
+    "extensionPoints": ["src/db/schema.ts", "src/api/"]
+  },
+  "keywords": [
+    "legal tech",
+    "legaltech",
+    "case management",
+    "law practice",
+    "matter management",
+    "legal billing",
+    "attorney timekeeping",
+    "law firm software",
+    "legal saas",
+    "practice management"
+  ],
+  "scoring": {
+    "boost": {
+      "legal": 3,
+      "law": 3
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "legal tech",
+      "legaltech",
+      "case management",
+      "law practice",
+      "matter management",
+      "legal billing",
+      "attorney timekeeping",
+      "law firm software",
+      "practice management"
+    ],
+    "tier2": ["legal saas", "billable hours", "trust accounting"]
+  }
+}

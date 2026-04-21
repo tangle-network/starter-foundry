@@ -1,0 +1,46 @@
+{
+  "id": "polygon",
+  "description": "Partner pack for Polygon — PoS chain + Polygon zkEVM + AggLayer for cross-chain liquidity. Biases toward consumer-scale dApps, NFTs, and payments where low fees + Ethereum compatibility matter more than raw throughput.",
+  "appliesTo": [
+    "frontend-static",
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "api-service",
+    "evm-infra-ts",
+    "agent-service-ts",
+    "agent-service-py",
+    "worker-job",
+    "forge-contracts",
+    "hardhat-contracts"
+  ],
+  "slotDefaults": {
+    "sdk": "sdk:evm-wallet"
+  },
+  "defaults": {
+    "headline": "Ship on Polygon — consumer-scale EVM with AggLayer",
+    "subheadline": "PoS + zkEVM + AggLayer. Low fees, wide wallet support, cross-chain composability."
+  },
+  "files": [
+    {
+      "source": "files/partner-config.json",
+      "target": "partner-config.json"
+    },
+    {
+      "source": "files/starter-brand.json",
+      "target": "starter-brand.json"
+    }
+  ],
+  "buildHints": {
+    "whenToUse": "Prompt mentions Polygon, MATIC, zkEVM, NFT drop, consumer-scale dApp, or payments rail needing sub-cent gas.",
+    "firstSteps": [
+      "Polygon PoS chainId 137 (mainnet) / 80002 (Amoy testnet). Polygon zkEVM chainId 1101 / 2442 (Cardona testnet).",
+      "Decide PoS vs zkEVM early: PoS = widest liquidity + cheapest gas; zkEVM = Ethereum security + higher composability with L1.",
+      "Bridge via the official Polygon Portal (portal.polygon.technology) for PoS ↔ Ethereum. For AggLayer cross-chain messaging, see docs.polygon.technology/agglayer."
+    ],
+    "gotchas": [
+      "PoS reorgs happen — Polygon PoS has produced 100+ block reorgs historically. Wait for ≥128 confirmations for financial finality, not just 1.",
+      "zkEVM and PoS are NOT the same chain; an asset on PoS is not available on zkEVM without explicit bridging. Check chainId at every contract boundary."
+    ]
+  }
+}

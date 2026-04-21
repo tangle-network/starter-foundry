@@ -1,0 +1,74 @@
+{
+  "id": "kotlin-multiplatform",
+  "description": "Kotlin Multiplatform framework layer — Gradle build, shared commonMain entry point, and expect/actual Platform surface for cross-platform targets.",
+  "appliesTo": ["kotlin-multiplatform"],
+  "files": [
+    {
+      "source": "files/settings.gradle.kts",
+      "target": "settings.gradle.kts"
+    },
+    {
+      "source": "files/build.gradle.kts",
+      "target": "build.gradle.kts"
+    },
+    {
+      "source": "files/src/commonMain/kotlin/App.kt",
+      "target": "src/commonMain/kotlin/App.kt"
+    },
+    {
+      "source": "files/AGENTS.md",
+      "target": "AGENTS.md"
+    }
+  ],
+  "buildHints": {
+    "whenToUse": "Pick kotlin-multiplatform when the user names KMP, Kotlin Multiplatform, Compose Multiplatform, expect/actual, or wants Jetpack Compose on iOS. For Flutter use flutter-app; for JS-driven mobile use expo-react-native-ts.",
+    "firstSteps": [
+      "Install JDK 17+ and ensure `java -version` reports 17 or higher.",
+      "Install Gradle 8+ (`brew install gradle` on macOS).",
+      "Run `gradle dependencies --no-daemon` to resolve and download dependencies.",
+      "Run `gradle build --no-daemon` to compile commonMain and produce outputs.",
+      "Open `src/commonMain/kotlin/App.kt` — this is the shared entry point."
+    ],
+    "gotchas": [
+      "Requires Gradle 8+ and JDK 17+ on PATH; invoke via `gradle <task> --no-daemon`.",
+      "iOS/Android native targets require the Kotlin Multiplatform Gradle plugin; this setup compiles the JVM/common target only.",
+      "Kotlin stdlib version must stay in sync with the kotlin(\"multiplatform\") plugin version in build.gradle.kts.",
+      "Do NOT re-enable `kotlin.native.binary.memoryModel=strict` — the new memory model (default since Kotlin 1.9) is required by coroutines and Compose Multiplatform.",
+      "`expect` declarations must be matched by an `actual` in EVERY target source set — missing an actual in iosMain fails the iOS build only."
+    ],
+    "architectureNotes": [
+      "`src/commonMain/kotlin/App.kt` exports `main()` — the minimal shared entry point. Extend commonMain with your cross-platform logic here.",
+      "Platform APIs go behind `expect fun platformName(): String` in commonMain with `actual` implementations in androidMain + iosMain (add those source sets as needed).",
+      "Auth/payments/sdk slot layers drop JSON config at the repo root; a bootstrap function in commonMain reads those and dispatches to the right platform service via expect/actual."
+    ],
+    "placeholders": [
+      {
+        "path": "settings.gradle.kts",
+        "description": "rootProject.name `my-kmp-app` — replace with your project slug (the rootProject.name directive)."
+      },
+      {
+        "path": "src/commonMain/kotlin/App.kt",
+        "description": "Package declaration — add `package com.example.starter` if needed; must match any platform actuals."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "gradle dependencies --no-daemon",
+      "gradle build --no-daemon",
+      "gradle test --no-daemon",
+      "gradle tasks --no-daemon"
+    ],
+    "entrypoints": [
+      "src/commonMain/kotlin/App.kt",
+      "build.gradle.kts",
+      "settings.gradle.kts"
+    ],
+    "preview": null,
+    "extensionPoints": [
+      "src/commonMain/kotlin/",
+      "src/androidMain/kotlin/",
+      "src/iosMain/kotlin/"
+    ]
+  }
+}

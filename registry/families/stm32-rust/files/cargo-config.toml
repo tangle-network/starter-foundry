@@ -1,0 +1,20 @@
+# Cortex-M4F with hardware FPU — thumbv7em-none-eabihf.
+# The -T link args pull in cortex-m-rt's link.x (which in turn includes
+# memory.x from the crate root) plus defmt.x for the RTT log format.
+
+[build]
+target = "thumbv7em-none-eabihf"
+
+[target.thumbv7em-none-eabihf]
+# `probe-rs run` flashes the binary and streams RTT back to stdout.
+# Swap the chip name for the exact STM32 MCU on your board.
+runner = "probe-rs run --chip STM32F411RETx"
+rustflags = [
+    "-C", "link-arg=--nmagic",
+    "-C", "link-arg=-Tlink.x",
+    "-C", "link-arg=-Tdefmt.x",
+    "-C", "target-cpu=cortex-m4",
+]
+
+[env]
+DEFMT_LOG = "info"

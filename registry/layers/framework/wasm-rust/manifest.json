@@ -12,6 +12,10 @@
       "target": "src/main.ts"
     },
     {
+      "source": "files/pkg/starter_foundry_wasm.d.ts",
+      "target": "src/pkg/starter_foundry_wasm.d.ts"
+    },
+    {
       "source": "files/index.html",
       "target": "index.html"
     }

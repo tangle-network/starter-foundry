@@ -1,0 +1,43 @@
+# Identity/echo model — exists so `docker compose up` + `python -m src.client`
+# works out-of-the-box without shipping real weights. Replace with your real
+# model by:
+#   1) dropping weights into ../<version>/   (e.g. model.onnx, model.plan)
+#   2) changing `backend:` to match (onnxruntime | tensorrt | python | pytorch)
+#   3) updating input/output dims to your model's actual shape
+#
+# Triton ships a built-in `identity` backend that echoes inputs verbatim —
+# no weight file is required for this version.
+
+name: "identity"
+backend: "identity"
+max_batch_size: 8
+
+input [
+  {
+    name: "INPUT0"
+    data_type: TYPE_FP32
+    dims: [ 4 ]
+  }
+]
+
+output [
+  {
+    name: "OUTPUT0"
+    data_type: TYPE_FP32
+    dims: [ 4 ]
+  }
+]
+
+# Dynamic batching — Triton coalesces concurrent single-sample requests.
+# Tune max_queue_delay_microseconds per latency SLO.
+dynamic_batching {
+  preferred_batch_size: [ 4, 8 ]
+  max_queue_delay_microseconds: 1000
+}
+
+instance_group [
+  {
+    count: 1
+    kind: KIND_GPU
+  }
+]

@@ -1,0 +1,145 @@
+{
+  "id": "healthcare-hipaa-backend",
+  "description": "HIPAA-aligned healthcare backend — patients / encounters / providers schema, append-only audit log, field-level PHI encryption, PHI-access middleware.",
+  "tags": [
+    "healthcare",
+    "hipaa",
+    "api",
+    "backend",
+    "typescript"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "api"
+  },
+  "slots": {
+    "database": {
+      "options": [
+        "database:sqlite",
+        "database:postgres"
+      ],
+      "default": "database:postgres"
+    },
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk"
+      ],
+      "default": "auth:better-auth"
+    }
+  },
+  "defaults": {
+    "projectType": "api",
+    "serviceName": "starter-foundry-healthcare",
+    "port": 8100,
+    "databaseProvider": "postgres",
+    "encryptionKeyEnv": "PHI_ENCRYPTION_KEY"
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/validate-hipaa.mjs",
+      "target": "validate-hipaa.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "src/server.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/db/schema.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/encryption.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/api/phi-access.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "config/hipaa.md"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-hipaa.mjs"
+      ],
+      "expect": "hipaa starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "pnpm dev",
+      "pnpm drizzle-kit generate",
+      "pnpm drizzle-kit migrate"
+    ],
+    "entrypoints": [
+      "src/server.ts",
+      "src/db/schema.ts",
+      "src/encryption.ts",
+      "src/api/phi-access.ts",
+      "config/hipaa.md"
+    ],
+    "preview": {
+      "path": "/health"
+    },
+    "extensionPoints": [
+      "src/db/schema.ts",
+      "src/api/",
+      "config/hipaa.md"
+    ]
+  },
+  "keywords": [
+    "hipaa",
+    "healthcare api",
+    "phi",
+    "patient records",
+    "medical backend",
+    "healthcare compliance",
+    "ehr",
+    "emr",
+    "protected health information",
+    "telemedicine backend",
+    "patient portal api"
+  ],
+  "scoring": {
+    "boost": {
+      "hipaa": 4,
+      "phi": 4
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "hipaa",
+      "phi",
+      "protected health information",
+      "healthcare api",
+      "patient records",
+      "medical backend",
+      "ehr",
+      "emr"
+    ],
+    "tier2": [
+      "healthcare compliance",
+      "telemedicine backend",
+      "patient portal api",
+      "clinical data api",
+      "encounter records"
+    ]
+  }
+}

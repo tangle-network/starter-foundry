@@ -63,5 +63,27 @@
       "Browser proof generation takes 1-5s depending on circuit size — show a loading UI.",
       "circomlibjs is CommonJS — may need Vite/webpack interop config for ESM consumers."
     ]
+  },
+  "tieredKeywords": {
+    "archetypes": [
+      "mixer",
+      "privacy-preserving mixer",
+      "private voting",
+      "anonymous voting",
+      "anonymous credential",
+      "nullifier",
+      "commitment preimage",
+      "merkle root display",
+      "zk proof",
+      "zk-snark",
+      "zero-knowledge proof",
+      "circom",
+      "zk mixer",
+      "verify your note",
+      "downloadable note",
+      "stealth address",
+      "private deposit",
+      "private withdraw"
+    ]
   }
 }

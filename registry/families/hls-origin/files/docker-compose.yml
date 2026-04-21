@@ -1,0 +1,32 @@
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "{{nginxPort}}:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - hls-data:/var/www/hls:ro
+    depends_on:
+      - ffmpeg
+
+  ffmpeg:
+    # jrottenberg/ffmpeg ships ffmpeg + ffprobe with libx264/libvpx/AAC. Mount
+    # the shared hls volume so segments written by ffmpeg are immediately
+    # visible to nginx.
+    image: jrottenberg/ffmpeg:7.1-alpine
+    restart: unless-stopped
+    # Keep the container up with a no-op; each stream is launched with
+    # `./start-stream.sh` which docker-exec's into this container.
+    entrypoint: ["tail", "-f", "/dev/null"]
+    volumes:
+      - hls-data:/var/www/hls
+      - ./start-stream.sh:/usr/local/bin/start-stream.sh:ro
+    # If you want an RTMP ingest endpoint, uncomment and pair with an
+    # nginx-rtmp or srtrelay image — ffmpeg itself can't accept RTMP in
+    # listen mode reliably.
+    # ports:
+    #   - "{{rtmpPort}}:{{rtmpPort}}"
+
+volumes:
+  hls-data:

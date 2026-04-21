@@ -104,6 +104,18 @@ export interface LayerManifest extends ManifestBase {
   appliesTo?: string[]
   /** Keywords for capability auto-detection. detectCapabilities scores prompts against these. */
   keywords?: string[]
+  /**
+   * Tiered keywords (same shape as FamilyManifest.tieredKeywords). Capability
+   * manifests use `tieredKeywords.archetypes` to declare their archetype
+   * signal arrays — the single source of truth for `implicit-caps.ts` in
+   * future; today it's enforced-parity with signals.ts arrays via a test.
+   */
+  tieredKeywords?: {
+    tier1?: string[]
+    tier2?: string[]
+    tier3?: string[]
+    archetypes?: string[]
+  }
   /** Other capability IDs that must be present when this capability is attached. */
   capabilityRequires?: string[]
   /** Available variant directory names under variants/. When present, compose picks one deterministically. */
@@ -353,6 +365,21 @@ export interface ComposeResult {
   filesWritten: string[]
   composeReportPath: string
   components: ComposeComponents
+  /**
+   * Per-family prompt fragment — a concatenated string of any
+   * `registry/families/<id>/prompt-fragment.md` (family) +
+   * `registry/partners/<id>/prompt-fragment.md` (partner). Consumers
+   * (blueprint-agent etc.) can splice this into their own system prompt
+   * without reading the registry directly. Empty string when no family/
+   * partner ships a fragment.
+   */
+  promptFragment: string
+  /**
+   * Path to the composed SBOM (CycloneDX 1.5). null if the scaffold has
+   * no manifested deps (e.g. Go/Rust without Cargo.toml). Consumers feed
+   * this to supply-chain scanners.
+   */
+  sbomPath: string | null
 }
 
 export interface ValidationCheckResult {

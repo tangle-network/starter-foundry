@@ -1,0 +1,70 @@
+{
+  "id": "hugo-static",
+  "description": "Hugo framework layer — _default baseof layout, home template, and index content; boots with `pnpm dev` after install.",
+  "appliesTo": ["hugo-static"],
+  "files": [
+    { "source": "files/baseof.html", "target": "layouts/_default/baseof.html" },
+    { "source": "files/index.html", "target": "layouts/index.html" },
+    { "source": "files/_index.md", "target": "content/_index.md" },
+    { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/.gitignore", "target": ".gitignore" }
+  ],
+  "packageDeps": {
+    "devDependencies": {
+      "hugo-extended": "^0.127.0"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "Content-heavy static sites, blogs, documentation hubs, and marketing pages where Go template layouts and sub-second build times are the primary constraint.",
+    "firstSteps": [
+      "Run `pnpm install` to fetch the Hugo binary via the `hugo-extended` npm wrapper, then `pnpm dev` — Hugo serves on port 1313 with live reload.",
+      "`config.toml` at the project root controls the site title, baseURL, and params. Edit `params.subtitle` to update the subheading rendered in `baseof.html`.",
+      "Drop Markdown posts under `content/posts/` with YAML front matter (`title`, `date`, `draft: false`). They appear automatically in the home page list via `{{ .Site.RegularPages }}`.",
+      "Override a single-page template by creating `layouts/_default/single.html` with a `{{ define \"main\" }}` block — it inherits the chrome from `baseof.html`.",
+      "Run `pnpm build` to emit minified output to `public/` — deploy that directory to any static host (Netlify, Cloudflare Pages, GitHub Pages)."
+    ],
+    "gotchas": [
+      "Hugo's live-reload snippet is injected by `hugo server -D` only; it is stripped from `pnpm build` output — do not reference it in templates.",
+      "The `{{ with .Site.RegularPages }}` block in `layouts/index.html` lists only published pages. Set `draft: false` in front matter or pass `-D` to the server to see drafts.",
+      "`config.toml` `baseURL` must end with `/` and match the deployment domain; relative URLs break RSS and canonical tags when it does not.",
+      "Hugo template errors surface as blank output, not runtime panics. Add `{{ warnf \"%v\" . }}` in a template to inspect the data context during development."
+    ],
+    "architectureNotes": [
+      "Layout lookup: `layouts/<type>/<kind>.html` → `layouts/_default/<kind>.html` → `baseof.html`. Every page type only needs to define `{{ define \"main\" }}`; the surrounding chrome comes from `baseof.html`.",
+      "Content files in `content/` are data; layouts in `layouts/` are views. Keep reusable markup in `layouts/partials/` rather than inlining it in page templates."
+    ],
+    "placeholders": [
+      {
+        "path": "content/_index.md",
+        "description": "Home page content — replace the body text with real copy. The front matter `title` matches the site title in `config.toml` by convention."
+      },
+      {
+        "path": "layouts/index.html",
+        "description": "Home page template — wraps `.Content` from `content/_index.md` and lists all regular pages. Add section-specific markup or shortcodes here."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "pnpm dev",
+      "pnpm build"
+    ],
+    "entrypoints": [
+      "config.toml",
+      "layouts/_default/baseof.html",
+      "layouts/index.html",
+      "content/_index.md"
+    ],
+    "preview": {
+      "port": "1313",
+      "path": "/"
+    },
+    "extensionPoints": [
+      "layouts/partials/",
+      "layouts/_default/single.html",
+      "content/posts/",
+      "static/"
+    ]
+  }
+}

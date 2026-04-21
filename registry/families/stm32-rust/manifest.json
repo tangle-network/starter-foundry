@@ -1,0 +1,170 @@
+{
+  "id": "stm32-rust",
+  "description": "STM32 bare-metal Rust firmware using the Embassy async framework — #[embassy_executor::main], async GPIO blink on an LED, and an async UART echo loop. Targets the STM32F4 family (STM32F411 Nucleo/Black Pill by default; swap HAL feature + memory.x for other chips). Flash + RTT via probe-rs.",
+  "tags": [
+    "embedded",
+    "rust",
+    "bare-metal",
+    "firmware"
+  ],
+  "taxonomy": {
+    "language": "rust",
+    "runtime": "embassy",
+    "surface": "embedded"
+  },
+  "slots": {
+    "auth": {
+      "options": ["auth:none"],
+      "default": "auth:none"
+    },
+    "payments": {
+      "options": ["payments:none"],
+      "default": "payments:none"
+    },
+    "sdk": {
+      "options": ["sdk:none"],
+      "default": "sdk:none"
+    }
+  },
+  "defaults": {
+    "projectType": "embedded",
+    "crateName": "starter_foundry_stm32",
+    "packageName": "starter-foundry-stm32",
+    "headline": "Async Rust on Cortex-M with Embassy",
+    "subheadline": "embassy-stm32 + embassy-executor — async GPIO + UART echo on bare-metal STM32F4."
+  },
+  "files": [
+    {
+      "source": "files/Cargo.toml",
+      "target": "Cargo.toml"
+    },
+    {
+      "source": "files/cargo-config.toml",
+      "target": ".cargo/config.toml"
+    },
+    {
+      "source": "files/memory.x",
+      "target": "memory.x"
+    },
+    {
+      "source": "files/build.rs",
+      "target": "build.rs"
+    },
+    {
+      "source": "files/Embed.toml",
+      "target": "Embed.toml"
+    },
+    {
+      "source": "files/validate-stm32.mjs",
+      "target": "validate-stm32.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "Cargo.toml"
+    },
+    {
+      "type": "file-exists",
+      "path": ".cargo/config.toml"
+    },
+    {
+      "type": "file-exists",
+      "path": "memory.x"
+    },
+    {
+      "type": "file-exists",
+      "path": "Embed.toml"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/main.rs"
+    },
+    {
+      "type": "command-success",
+      "command": ["node", "validate-stm32.mjs"],
+      "expect": "stm32-rust starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "cargo build --release",
+      "cargo run --release"
+    ],
+    "entrypoints": [
+      "src/main.rs",
+      "Cargo.toml",
+      "memory.x",
+      ".cargo/config.toml"
+    ],
+    "preview": {
+      "path": "/"
+    },
+    "extensionPoints": [
+      "src/main.rs",
+      "memory.x"
+    ]
+  },
+  "keywords": [
+    "stm32",
+    "embassy",
+    "embassy-stm32",
+    "cortex-m",
+    "bare metal rust",
+    "stm32f4",
+    "probe-rs",
+    "no_std",
+    "thumbv7em"
+  ],
+  "scoring": {
+    "boost": {
+      "stm32": 5,
+      "embassy": 4,
+      "cortex-m": 3,
+      "probe-rs": 3,
+      "stm32f4": 4,
+      "thumbv7em": 4
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "stm32",
+      "embassy",
+      "embassy-stm32",
+      "stm32f4",
+      "cortex-m"
+    ],
+    "tier2": [
+      "bare metal rust",
+      "probe-rs",
+      "thumbv7em",
+      "stm32 firmware"
+    ],
+    "archetypes": [
+      "stm32 bare metal",
+      "embassy async firmware",
+      "cortex-m blinky",
+      "stm32 uart echo",
+      "motor controller firmware"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Pick for STM32F/L/G series firmware in Rust when you want async/await (Embassy). For synchronous cortex-m-rt + RTIC, pick a different starter. For Raspberry Pi Pico, use rp2040-embassy.",
+    "firstSteps": [
+      "Install the Cortex-M4F target: rustup target add thumbv7em-none-eabihf",
+      "Install the flasher: cargo install probe-rs --features cli --locked",
+      "Connect an ST-Link (or any CMSIS-DAP probe) to the board",
+      "Build: cargo build --release",
+      "Flash + RTT: cargo run --release     # runs `probe-rs run --chip STM32F411RETx` via the cargo runner"
+    ],
+    "gotchas": [
+      "memory.x must match the actual chip. STM32F411RE = 512K flash + 128K RAM; STM32F401RE = 512K flash + 96K RAM; STM32F103C8 = 64K flash + 20K RAM. Wrong values silently let the linker succeed then crash at boot.",
+      "embassy-stm32 requires exactly one chip feature — e.g. `stm32f411re`. Enabling two (or none) is a compile error with a misleading `time_driver_tim5 not found` message.",
+      "The cortex-m-rt link args (`-Tlink.x`, `-Tdefmt.x`) must be in .cargo/config.toml rustflags. If you put them in build.rs alone they only apply when the `build.rs` crate links, not the downstream bin.",
+      "defmt-rtt requires a running probe-rs to drain the RTT buffer. Without a probe attached at runtime the firmware will spin waiting for the RTT reader after ~1KB of logs.",
+      "Stock embassy-executor wants a time driver. `embassy-time/tick-hz-32_768` + a chip TIM peripheral is the default; forgetting to enable a time-driver feature is the #1 new-user compile error.",
+      "Changing memory.x requires `cargo clean` — cargo does not see memory.x as a build input so the linker will use a stale copy from target/.",
+      "No_std environments have no default panic handler. panic-probe (defmt-flavored) or panic-halt is MANDATORY — the build fails with `#[panic_handler] function required` otherwise."
+    ]
+  }
+}

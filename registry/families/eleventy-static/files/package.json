@@ -1,0 +1,23 @@
+{
+  "name": "{{packageName}}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "eleventy --serve --port={{port}}",
+    "build": "eleventy",
+    "clean": "rm -rf _site",
+    "validate": "node validate-eleventy.mjs",
+    "start": "eleventy --serve --port={{port}}"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.0.0"
+  },
+  "overrides": {
+    "vite": "^6.4.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite": "^6.4.2"
+    }
+  }
+}

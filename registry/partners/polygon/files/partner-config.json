@@ -1,0 +1,16 @@
+{
+  "partnerId": "polygon",
+  "chainId": 137,
+  "networkName": "polygon-pos-mainnet",
+  "rpcUrl": "https://polygon-rpc.com",
+  "testnetChainId": 80002,
+  "testnetRpcUrl": "https://rpc-amoy.polygon.technology",
+  "zkEvmChainId": 1101,
+  "zkEvmRpcUrl": "https://zkevm-rpc.com",
+  "explorerUrl": "https://polygonscan.com",
+  "bridgeUrl": "https://portal.polygon.technology",
+  "blockTimeMs": 2000,
+  "nativeAsset": "MATIC",
+  "runtimeFocus": "pos-or-zkevm-with-agglayer",
+  "preferredOutputs": ["nft-drops", "consumer-payments", "cross-chain-dapps"]
+}

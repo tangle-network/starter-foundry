@@ -1,0 +1,9 @@
+# Version directory for the `identity` model. MUST be an integer (`1`, `2`, ...).
+# Triton silently skips non-integer dirs like `v1` or `latest`.
+#
+# The `identity` backend needs no weight file. For a real model, drop the
+# weights here, e.g.:
+#
+#   model_repository/resnet50/1/model.onnx
+#   model_repository/bert-large/1/model.plan
+#   model_repository/preprocess/1/model.py

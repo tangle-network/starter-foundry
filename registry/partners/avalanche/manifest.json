@@ -1,0 +1,46 @@
+{
+  "id": "avalanche",
+  "description": "Partner pack for Avalanche — C-Chain (EVM) + Subnet architecture for app-specific chains, 2s finality, native asset issuance. Biases toward institutional DeFi, subnet-per-app deployments, and gaming chains.",
+  "appliesTo": [
+    "frontend-static",
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "api-service",
+    "evm-infra-ts",
+    "agent-service-ts",
+    "agent-service-py",
+    "worker-job",
+    "forge-contracts",
+    "hardhat-contracts"
+  ],
+  "slotDefaults": {
+    "sdk": "sdk:evm-wallet"
+  },
+  "defaults": {
+    "headline": "Ship on Avalanche — C-Chain + app-specific Subnets",
+    "subheadline": "Sub-2s finality; deploy to C-Chain for liquidity or spin up a Subnet for sovereign app chains."
+  },
+  "files": [
+    {
+      "source": "files/partner-config.json",
+      "target": "partner-config.json"
+    },
+    {
+      "source": "files/starter-brand.json",
+      "target": "starter-brand.json"
+    }
+  ],
+  "buildHints": {
+    "whenToUse": "Prompt mentions Avalanche, C-Chain, Subnet deployment, AVAX, or needs app-specific rollup/sovereign execution.",
+    "firstSteps": [
+      "C-Chain is chainId 43114 (mainnet) / 43113 (Fuji testnet) — standard EVM, deploy with forge or hardhat.",
+      "For Subnets, use Avalanche CLI (`avalanche subnet create ...`) and deploy custom VM. partner-config.json carries the default C-Chain settings; override for subnet work.",
+      "AVAX is the native gas token; wrap via wAVAX (0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7) for ERC-20-style handling."
+    ],
+    "gotchas": [
+      "Subnets have separate validator sets + tokenomics — don't assume C-Chain liquidity or bridges are available by default.",
+      "Teleporter is the Avalanche-native messaging layer between Subnets; do NOT default to LayerZero/CCIP for intra-Avalanche flows."
+    ]
+  }
+}

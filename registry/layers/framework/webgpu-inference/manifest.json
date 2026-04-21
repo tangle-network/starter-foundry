@@ -1,0 +1,55 @@
+{
+  "id": "webgpu-inference",
+  "description": "WebGPU inference framework layer — src/main.ts with adapter + device + compute pipeline driving a real matmul WGSL kernel, plus the matmul shader itself.",
+  "appliesTo": ["webgpu-inference"],
+  "files": [
+    { "source": "files/src/main.ts", "target": "src/main.ts" },
+    { "source": "files/src/shaders/matmul.wgsl", "target": "src/shaders/matmul.wgsl" }
+  ],
+  "packageDeps": {
+    "devDependencies": {
+      "@webgpu/types": "^0.1.52",
+      "typescript": "^5.9.0",
+      "vite": "^6.4.2"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "Any product that needs to run ML inference inside the browser tab with GPU acceleration — small transformers, embeddings, classifiers, or custom WGSL compute kernels. Pick this over server inference when the workload is latency-sensitive, privacy-sensitive, or must work offline.",
+    "firstSteps": [
+      "Install: `pnpm install` then `pnpm dev` — Vite serves on 5173. Open Chrome 113+, Edge 113+, or Safari 18+; the page prints the output matrix from a GPU matmul.",
+      "The compute pipeline lives in `src/main.ts` — adapter → device → buffers → bind group → pipeline → dispatch → readback. It runs a 4x4 @ 4x4 matmul end-to-end on the GPU.",
+      "The WGSL kernel is in `src/shaders/matmul.wgsl` — edit the workgroup size, tiling, or the inner dot product to benchmark different strategies against a CPU reference.",
+      "For production ML, uncomment the Transformers.js path in `src/main.ts` and `pnpm add @huggingface/transformers` — it auto-detects WebGPU and runs ONNX models with a single `pipeline()` call.",
+      "Build: `pnpm build` emits static assets to `dist/` — deploy to any static host. WebGPU requires HTTPS in production (localhost is exempt)."
+    ],
+    "gotchas": [
+      "WebGPU is Chrome/Edge 113+ and Safari 18+ stable. Firefox ships it behind `dom.webgpu.enabled` — always feature-detect `navigator.gpu` and fall back to WebAssembly SIMD (Transformers.js does this automatically).",
+      "`requestAdapter()` returns `null` on iGPU-blocklisted devices and in private/incognito on some platforms — do not assume adapter is non-null. Surface a user-visible fallback message.",
+      "Buffer sizes must be multiples of 4 bytes and declared with the right `usage` flags — STORAGE for shader-writable, COPY_SRC to read back via a staging buffer, COPY_DST to upload input. Missing COPY_SRC silently produces zeros on readback.",
+      "`mapAsync(GPUMapMode.READ)` requires a buffer created with MAP_READ | COPY_DST — you cannot map a STORAGE buffer directly. Always copy STORAGE → staging → map.",
+      "Workgroup size in the WGSL (`@workgroup_size(x,y,z)`) must match the `dispatchWorkgroups(a,b,c)` call such that `a*x`, `b*y`, `c*z` cover the output tensor dimensions. Off-by-one here produces partial outputs with zero-filled tails.",
+      "Shader compilation errors are async — call `await shaderModule.getCompilationInfo()` and check `.messages` during development; a broken shader otherwise produces silent NaN outputs."
+    ],
+    "architectureNotes": [
+      "Create one GPUDevice per page and reuse it across inference calls — `requestDevice()` is expensive and each device has its own command queue and buffer pool.",
+      "Keep bind group layouts explicit (not auto-generated) once the model stabilizes — auto layouts regenerate on each pipeline creation and fragment the cache, hurting cold-start latency.",
+      "For multi-kernel pipelines (attention + MLP + layernorm), batch commands into a single GPUCommandEncoder before submitting — each `queue.submit` incurs a kernel-launch roundtrip."
+    ],
+    "placeholders": [
+      {
+        "path": "src/main.ts",
+        "description": "WebGPU bootstrap — adapter, device, input/output/staging buffers, bind group, compute pipeline, dispatch, readback, DOM print. Replace the 4x4 matmul with the product's real kernel (attention QK^T, GEMM, convolution) or flip to the Transformers.js branch for ONNX models."
+      },
+      {
+        "path": "src/shaders/matmul.wgsl",
+        "description": "Minimal tiled matmul compute shader. Extend for fused kernels (matmul + bias + activation), different dtypes (f16 via the shader-f16 feature), or quantization (int8 dot-product via DP4a)."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm dev", "pnpm build", "pnpm run validate"],
+    "entrypoints": ["src/main.ts", "src/shaders/matmul.wgsl"],
+    "preview": { "path": "/" },
+    "extensionPoints": ["src/main.ts", "src/shaders/matmul.wgsl"]
+  }
+}

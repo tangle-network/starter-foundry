@@ -1,0 +1,44 @@
+# sky serve up -n {{endpointName}} service.yaml
+#
+# SkyPilot service spec — provisions N replicas of a vLLM server behind a
+# managed load balancer. Handles spot preemption, multi-region failover,
+# and rolling updates automatically.
+
+service:
+  readiness_probe:
+    path: /v1/models
+    # Large models cold-start in 3-10 minutes. Tune post_data if you want
+    # readiness only after a real inference completes.
+    initial_delay_seconds: 600
+  # Replica count. Scale out by editing replicas and `sky serve update`.
+  replicas: 1
+
+resources:
+  accelerators: {{acceleratorSpec}}
+  # Flip to true for 50-80% cost savings. Preemption will restart replicas —
+  # the load balancer drains in-flight requests gracefully.
+  use_spot: false
+  # Multi-cloud: leave clouds unset to let SkyPilot pick the cheapest region.
+  # Pin to a single cloud with `cloud: aws` or `cloud: gcp`.
+  disk_size: 256
+  # Open the vLLM port for the load balancer.
+  ports:
+    - {{port}}
+
+envs:
+  MODEL_ID: {{modelId}}
+  # Gated HF models need a token AND license acceptance on huggingface.co.
+  # Pass via `sky serve up --env HF_TOKEN=...` or set at launch time.
+  HF_TOKEN: ""
+
+setup: |
+  pip install "vllm>=0.6.0" "fastapi>=0.115" "uvicorn[standard]>=0.32"
+
+run: |
+  export HUGGING_FACE_HUB_TOKEN="$HF_TOKEN"
+  python -m vllm.entrypoints.openai.api_server \
+    --model "$MODEL_ID" \
+    --host 0.0.0.0 \
+    --port {{port}} \
+    --max-model-len 4096 \
+    --gpu-memory-utilization 0.90

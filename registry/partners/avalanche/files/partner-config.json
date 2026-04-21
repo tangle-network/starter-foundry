@@ -1,0 +1,14 @@
+{
+  "partnerId": "avalanche",
+  "chainId": 43114,
+  "networkName": "avalanche-c-chain",
+  "rpcUrl": "https://api.avax.network/ext/bc/C/rpc",
+  "testnetChainId": 43113,
+  "testnetRpcUrl": "https://api.avax-test.network/ext/bc/C/rpc",
+  "explorerUrl": "https://snowtrace.io",
+  "blockTimeMs": 2000,
+  "nativeAsset": "AVAX",
+  "wrappedNative": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+  "runtimeFocus": "c-chain-evm-or-subnet",
+  "preferredOutputs": ["institutional-defi", "gaming-subnets", "cross-subnet-messaging"]
+}

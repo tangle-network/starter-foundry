@@ -1,0 +1,173 @@
+{
+  "id": "webgpu-inference",
+  "description": "Browser WebGPU compute starter for ML inference — raw navigator.gpu pipeline runs a WGSL matmul compute shader over real Float32 buffers, reads results back, and prints to DOM. Foundation for in-browser transformer inference, embedding generation, and client-side ML.",
+  "tags": [
+    "frontend",
+    "typescript",
+    "webgpu",
+    "ml",
+    "inference",
+    "compute"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "frontend"
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "serviceName": "starter-foundry-webgpu-inference",
+    "port": 5173
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/vite.config.ts",
+      "target": "vite.config.ts"
+    },
+    {
+      "source": "files/index.html",
+      "target": "index.html"
+    },
+    {
+      "source": "files/validate-webgpu-inference.mjs",
+      "target": "validate-webgpu-inference.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "index.html"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/main.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/shaders/matmul.wgsl"
+    },
+    {
+      "type": "file-exists",
+      "path": "package.json"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-webgpu-inference.mjs"
+      ],
+      "expect": "webgpu-inference starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "pnpm dev",
+      "pnpm build"
+    ],
+    "entrypoints": [
+      "src/main.ts",
+      "src/shaders/matmul.wgsl",
+      "index.html",
+      "vite.config.ts",
+      "package.json"
+    ],
+    "preview": {
+      "path": "/"
+    },
+    "extensionPoints": [
+      "src/main.ts",
+      "src/shaders/matmul.wgsl"
+    ]
+  },
+  "keywords": [
+    "webgpu compute",
+    "gpu in browser",
+    "webgpu inference",
+    "wgsl compute",
+    "browser ml",
+    "transformers.js",
+    "wgsl shader",
+    "gpu matmul",
+    "client-side inference",
+    "webgpu buffers"
+  ],
+  "scoring": {
+    "boost": {
+      "webgpu compute": 5,
+      "webgpu inference": 5,
+      "browser ml": 4,
+      "wgsl compute": 4,
+      "transformers.js": 3
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "webgpu compute",
+      "webgpu inference",
+      "wgsl compute",
+      "browser ml inference",
+      "transformers.js webgpu"
+    ],
+    "tier2": [
+      "gpu in browser",
+      "client-side ml",
+      "browser neural network",
+      "onnx webgpu",
+      "webgpu buffer"
+    ],
+    "archetypes": [
+      "in-browser transformer",
+      "client-side embedding",
+      "browser llm",
+      "webgpu matmul kernel",
+      "wgsl compute playground",
+      "browser image embedding",
+      "local sentiment classifier",
+      "on-device token generator",
+      "webgpu gemm benchmark",
+      "privacy-preserving inference"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Any product that needs to run ML inference inside the browser tab with GPU acceleration — small transformers, embeddings, classifiers, or custom WGSL compute kernels. Pick this over server inference when the workload is latency-sensitive, privacy-sensitive, or must work offline.",
+    "firstSteps": [
+      "Install: `pnpm install` then `pnpm dev` — Vite serves on 5173. Open Chrome 113+, Edge 113+, or Safari 18+; the page will print the output matrix from a GPU matmul.",
+      "The compute pipeline lives in `src/main.ts` — adapter → device → buffers → bind group → pipeline → dispatch → readback. It runs a 4x4 @ 4x4 matmul end-to-end on the GPU.",
+      "The WGSL kernel is in `src/shaders/matmul.wgsl` — edit the workgroup size, tiling, or the inner dot product to benchmark different strategies against a CPU reference.",
+      "For production ML, uncomment the Transformers.js path in `src/main.ts` and `pnpm add @huggingface/transformers` — it auto-detects WebGPU and runs ONNX models with a single `pipeline()` call.",
+      "Build: `pnpm build` emits static assets to `dist/` — deploy to any static host. WebGPU requires HTTPS in production (localhost is exempt)."
+    ],
+    "gotchas": [
+      "WebGPU is Chrome/Edge 113+ and Safari 18+ stable. Firefox ships it behind `dom.webgpu.enabled` — always feature-detect `navigator.gpu` and fall back to WebAssembly SIMD (Transformers.js does this automatically).",
+      "`requestAdapter()` returns `null` on iGPU-blocklisted devices and in private/incognito on some platforms — do not assume adapter is non-null. Surface a user-visible fallback message.",
+      "Buffer sizes must be multiples of 4 bytes and declared with the right `usage` flags — STORAGE for shader-writable, COPY_SRC to read back via a staging buffer, COPY_DST to upload input. Missing COPY_SRC silently produces zeros on readback.",
+      "`mapAsync(GPUMapMode.READ)` requires a buffer created with MAP_READ | COPY_DST — you cannot map a STORAGE buffer directly. Always copy STORAGE → staging → map.",
+      "Workgroup size in the WGSL (`@workgroup_size(x,y,z)`) must match the `dispatchWorkgroups(a,b,c)` call such that `a*x`, `b*y`, `c*z` cover the output tensor dimensions. Off-by-one here produces partial outputs with zero-filled tails.",
+      "Shader compilation errors are async — `await device.createShaderModule({...}).getCompilationInfo()` and log `.messages` during development or bugs will appear as silent NaN outputs."
+    ],
+    "architectureNotes": [
+      "Create one GPUDevice per page and reuse it across inference calls — `requestDevice()` is expensive and each device has its own command queue and buffer pool.",
+      "Keep bind group layouts explicit (not auto-generated) once the model stabilizes — auto layouts regenerate on each pipeline creation and fragment the cache, hurting cold-start latency.",
+      "For multi-kernel pipelines (attention + MLP + layernorm), batch commands into a single GPUCommandEncoder before submitting — each `queue.submit` incurs a kernel-launch roundtrip."
+    ],
+    "placeholders": [
+      {
+        "path": "src/main.ts",
+        "description": "WebGPU bootstrap — adapter, device, input/output/staging buffers, bind group, compute pipeline, dispatch, readback, DOM print. Replace the 4x4 matmul with the product's real kernel (attention QK^T, GEMM, convolution) or flip to the Transformers.js branch for ONNX models."
+      },
+      {
+        "path": "src/shaders/matmul.wgsl",
+        "description": "Minimal tiled matmul compute shader. Extend for fused kernels (matmul + bias + activation), different dtypes (f16 via the shader-f16 feature), or quantization (int8 dot-product via DP4a)."
+      }
+    ]
+  }
+}

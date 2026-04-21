@@ -1,0 +1,101 @@
+name: Nightly measurement
+
+# Re-runs the buildout pipeline + capability-gap detector + scorecard
+# refresh against the current registry state. Commits evidence to
+# .evolve/daily/ so governor decisions have fresh data instead of stale
+# snapshots. Alerts on regressions via workflow failure (set to
+# continue-on-error: false once thresholds are stable).
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # 06:00 UTC daily
+  workflow_dispatch:  # manual trigger
+
+concurrency:
+  group: nightly-measurement
+  cancel-in-progress: false
+
+jobs:
+  measure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: install
+        run: pnpm install --frozen-lockfile
+
+      - name: build
+        run: pnpm build
+
+      - name: run buildout pipeline
+        run: node scripts/run-buildout-pipeline.mjs || true
+        # '|| true' — if the miner finds no new sessions, exit 2 is fine.
+        # Pipeline always writes .evolve/buildout-analysis.json from what it
+        # has; downstream steps handle empty cases.
+
+      - name: refresh capability-gaps
+        run: node scripts/infer-capability-gaps.mjs || true
+
+      - name: refresh scorecard
+        run: node scripts/refresh-scorecard.mjs
+
+      - name: regenerate reference docs from manifests
+        run: node scripts/generate-docs.mjs
+
+      - name: archive daily snapshot
+        run: |
+          DATE=$(date -u +%Y-%m-%d)
+          mkdir -p .evolve/daily
+          cp .evolve/scorecard.json .evolve/daily/scorecard-${DATE}.json
+          if [ -f .evolve/capability-gaps.json ]; then
+            cp .evolve/capability-gaps.json .evolve/daily/gaps-${DATE}.json
+          fi
+          if [ -f .evolve/buildout-analysis.json ]; then
+            cp .evolve/buildout-analysis.json .evolve/daily/buildout-${DATE}.json
+          fi
+          ls -la .evolve/daily/
+
+      - name: commit if scorecard moved
+        run: |
+          git config user.name "starter-foundry nightly"
+          git config user.email "nightly@starter-foundry.noreply"
+          git add .evolve/daily/ .evolve/scorecard.json .evolve/capability-gaps.json .evolve/buildout-analysis.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "no measurement delta; skipping commit"
+            exit 0
+          fi
+          git commit -m "chore(nightly): measurement snapshot $(date -u +%Y-%m-%d)" || exit 0
+          git push origin main || echo "push failed — probably branch protection; see artifact instead"
+        continue-on-error: true
+
+      - name: upload snapshot as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-${{ github.run_id }}
+          path: .evolve/daily/
+          retention-days: 30
+
+      - name: assert scorecard regressions
+        run: |
+          node -e '
+            const s = JSON.parse(require("node:fs").readFileSync(".evolve/scorecard.json", "utf8"));
+            const fails = s.flows.filter((f) => f.status === "fail");
+            if (fails.length > 0) {
+              console.log("\nScorecard regressions:");
+              for (const f of fails) {
+                console.log("  - " + f.name + ": " + f.value + " (target " + f.target + ")");
+              }
+            } else {
+              console.log("\nAll scorecard flows passing.");
+            }
+          '

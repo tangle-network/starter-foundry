@@ -1,0 +1,25 @@
+# Capability: `capability:code-editor`
+
+Browser code editor using CodeMirror 6 — syntax highlighting, theming, line numbers, autocomplete. For AI coding assistants, markdown editors, configuration UIs, playgrounds, query builders.
+
+**Applies to**: react-vite-ts, nextjs-ts, fullstack-ts, remix-ts, sveltekit-ts, vue-ts
+
+## When to use
+
+Attach when the product surface exposes a code/query/markup editor — AI code assistants, prompt playgrounds, markdown editors with syntax-highlighted code blocks, SQL query builders, config editors.
+
+## Shipped deps
+
+- `codemirror`: ^6.0.1
+- `@codemirror/view`: ^6.0.0
+- `@codemirror/state`: ^6.0.0
+- `@codemirror/lang-javascript`: ^6.0.0
+- `@codemirror/lang-json`: ^6.0.0
+- `@codemirror/theme-one-dark`: ^6.0.0
+- `@codemirror/commands`: ^6.0.0
+- `@codemirror/autocomplete`: ^6.0.0
+
+## First moves
+
+- Import CodeEditor from '@/components/code-editor'
+- Pass `value`, `onChange`, and optionally a `language` ('javascript' | 'json' | 'typescript')

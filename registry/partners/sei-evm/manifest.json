@@ -1,0 +1,45 @@
+{
+  "id": "sei-evm",
+  "description": "Partner pack for Sei v2 — parallelized EVM + native Cosmos interop, sub-400ms block time. Biases toward trading, orderbook DEXes, and latency-sensitive payments.",
+  "appliesTo": [
+    "frontend-static",
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "api-service",
+    "evm-infra-ts",
+    "agent-service-ts",
+    "worker-job",
+    "forge-contracts",
+    "hardhat-contracts"
+  ],
+  "slotDefaults": {
+    "sdk": "sdk:evm-wallet"
+  },
+  "defaults": {
+    "headline": "Ship on Sei — parallel EVM + Cosmos interop",
+    "subheadline": "Sub-400ms finality optimized for trading, orderbook DEXes, and real-time payments."
+  },
+  "files": [
+    {
+      "source": "files/partner-config.json",
+      "target": "partner-config.json"
+    },
+    {
+      "source": "files/starter-brand.json",
+      "target": "starter-brand.json"
+    }
+  ],
+  "buildHints": {
+    "whenToUse": "Prompt mentions Sei, parallelized EVM with Cosmos-style interop, or orderbook-style on-chain trading venues.",
+    "firstSteps": [
+      "Sei v2 chainId (mainnet): 1329; testnet (atlantic-2): 1328. RPCs in partner-config.json default to the public endpoints.",
+      "Use the same forge/hardhat toolchain as any EVM; Sei v2 is fully EVM-equivalent at the RPC level.",
+      "For native Cosmos flows (IBC transfers, staking), use sei-js or CosmJS alongside viem — don't try to route Cosmos messages through evm RPC."
+    ],
+    "gotchas": [
+      "Sei v1 (Cosmos-only) and Sei v2 (EVM) share ecosystem but are different execution layers. Make sure code targets v2 RPC if deploying Solidity.",
+      "Block time ~390ms is faster than most indexers default to — reduce poll intervals for live dashboards or use WebSocket subscriptions."
+    ]
+  }
+}

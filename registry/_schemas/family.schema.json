@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "family.schema.json",
+  "title": "FamilyManifest",
+  "type": "object",
+  "required": ["id", "description", "tags"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+    "description": { "type": "string", "minLength": 20 },
+    "tags": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "taxonomy": {
+      "type": "object",
+      "properties": {
+        "language": { "type": "string" },
+        "runtime": { "type": "string" },
+        "surface": { "type": "string" }
+      }
+    },
+    "slots": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "options": { "type": "array", "items": { "type": "string" } },
+          "default": { "type": "string" }
+        }
+      }
+    },
+    "requires": { "type": "array", "items": { "type": "string" } },
+    "defaults": { "type": "object" },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "target"],
+        "properties": {
+          "source": { "type": "string" },
+          "target": { "type": "string" }
+        }
+      }
+    },
+    "validationChecks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": { "enum": ["file-exists", "node-syntax", "http-start", "command-success", "python-compile"] },
+          "path": { "type": "string" },
+          "command": { "type": "array", "items": { "type": "string" } },
+          "expect": { "type": "string" },
+          "env": { "type": "object" },
+          "port": { "type": "string" },
+          "runOnce": { "type": "boolean" }
+        }
+      }
+    },
+    "contextHints": {
+      "type": "object",
+      "properties": {
+        "commands": { "type": "array", "items": { "type": "string" } },
+        "entrypoints": { "type": "array", "items": { "type": "string" } },
+        "preview": {
+          "type": ["object", "null"],
+          "properties": {
+            "path": { "type": "string" },
+            "port": { "type": ["string", "number"] }
+          }
+        },
+        "extensionPoints": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "keywords": { "type": "array", "items": { "type": "string" } },
+    "tieredKeywords": {
+      "type": "object",
+      "properties": {
+        "tier1": { "type": "array", "items": { "type": "string" } },
+        "tier2": { "type": "array", "items": { "type": "string" } },
+        "tier3": { "type": "array", "items": { "type": "string" } },
+        "archetypes": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "scoring": {
+      "type": "object",
+      "properties": {
+        "boost": { "type": "object", "additionalProperties": { "type": "number" } }
+      }
+    },
+    "buildHints": { "$ref": "buildhints.schema.json" }
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "id": "aptos-move",
+  "description": "Aptos Move package framework layer — Move.toml with AptosFramework dep, resource-based module, #[test] suite.",
+  "appliesTo": ["aptos-move"],
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json",
+      "templateVars": ["projectName"]
+    },
+    {
+      "source": "files/Move.toml",
+      "target": "Move.toml",
+      "templateVars": ["projectName"]
+    },
+    {
+      "source": "files/module.move",
+      "target": "sources/{{moduleName}}.move",
+      "templateVars": ["projectName", "moduleName"]
+    },
+    {
+      "source": "files/test.move",
+      "target": "tests/{{moduleName}}Tests.move",
+      "templateVars": ["projectName", "moduleName"]
+    },
+    {
+      "source": "files/scripts/deploy.sh",
+      "target": "scripts/deploy.sh",
+      "templateVars": ["projectName", "moduleName"]
+    },
+    {
+      "source": "files/AGENTS.md",
+      "target": "AGENTS.md",
+      "templateVars": ["projectName", "moduleName"]
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "aptos move compile --named-addresses {{projectName}}=default",
+      "aptos move test --named-addresses {{projectName}}=default",
+      "aptos move publish --named-addresses {{projectName}}=<your_address>"
+    ],
+    "entrypoints": [
+      "Move.toml",
+      "sources/{{moduleName}}.move"
+    ],
+    "preview": null,
+    "extensionPoints": [
+      "sources/{{moduleName}}.move",
+      "tests/{{moduleName}}Tests.move"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Aptos blockchain smart contracts — resource-based modules, on-chain state management, token contracts, DeFi protocols, or any product that needs to deploy and call Move modules on Aptos mainnet/devnet.",
+    "architectureNotes": [
+      "Aptos Move: resources stored under signer account via move_to / borrow_global",
+      "Entry functions are callable from transactions; #[view] functions are read-only reads",
+      "Named address key matches the project name (defined in Move.toml [addresses]); supply the real address with --named-addresses {{projectName}}=<your_address> at compile/publish time",
+      "Counter resource (key ability) stored under the owner's address; holds a u64 value and emits IncrementedEvent on each increment"
+    ],
+    "firstSteps": [
+      "Install the Aptos CLI: brew install aptos (macOS) or see https://aptos.dev/tools/aptos-cli/install-cli/",
+      "Run `aptos move compile --named-addresses {{projectName}}=default` to type-check the module",
+      "Run `aptos move test --named-addresses {{projectName}}=default` to execute the Move unit tests",
+      "Initialize a devnet account with `aptos init --network devnet` before publishing",
+      "Fund the account with `aptos account fund-with-faucet --account default` then publish with `aptos move publish --named-addresses {{projectName}}=<your_address>`"
+    ],
+    "gotchas": [
+      "Aptos Move is NOT Sui Move — imports are aptos_framework::*, not sui::*. Don't copy Sui module patterns.",
+      "Resources can only be accessed with acquires: add `acquires Counter` to any function that reads/writes the resource.",
+      "move_to fails if the resource already exists under that account — use exists<T>(addr) as a guard in initialize.",
+      "Signer capability is non-copyable and non-droppable — pass by &signer reference, never try to store or clone.",
+      "Publishing requires the named address to be a real account with APT for gas: `aptos account fund-with-faucet` on devnet.",
+      "Move unit tests run in-VM and DON'T exercise storage the same way as on-chain execution — still test with real publish for production code.",
+      "Use a snake_case project name (e.g. my_counter) — Move named address identifiers do not allow hyphens."
+    ],
+    "placeholders": [
+      {
+        "path": "Move.toml",
+        "description": "{{projectName}} — Move package name and named-address key (e.g. my_counter). Used in Move.toml [package].name, [addresses].{{projectName}}, and compile/publish CLI flags. Use snake_case — Move identifiers do not allow hyphens."
+      },
+      {
+        "path": "sources/{{moduleName}}.move",
+        "description": "{{moduleName}} — Move module name (e.g. Counter). Used in the module declaration header and as the source/test filename. Default: HelloAptos."
+      }
+    ]
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "id": "phaser-game",
+  "description": "Phaser 3 2D game starter on Vite — arcade physics, one scene, sprite-first game loop with input + update + resize wired from first render.",
+  "tags": ["frontend", "typescript", "phaser", "game", "2d"],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "frontend"
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "serviceName": "starter-foundry-phaser",
+    "port": 5173
+  },
+  "files": [
+    { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/vite.config.ts", "target": "vite.config.ts" },
+    { "source": "files/index.html", "target": "index.html" },
+    { "source": "files/validate-phaser.mjs", "target": "validate-phaser.mjs" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "index.html" },
+    { "type": "file-exists", "path": "src/main.ts" },
+    { "type": "file-exists", "path": "package.json" },
+    {
+      "type": "command-success",
+      "command": ["node", "validate-phaser.mjs"],
+      "expect": "phaser game starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm dev", "pnpm build"],
+    "entrypoints": ["src/main.ts", "src/scenes/MainScene.ts", "index.html"],
+    "preview": { "path": "/" },
+    "extensionPoints": ["src/main.ts", "src/scenes", "public"]
+  },
+  "keywords": [
+    "phaser",
+    "phaser 3",
+    "2d game",
+    "arcade game",
+    "platformer",
+    "sprite",
+    "tilemap",
+    "html5 game"
+  ],
+  "scoring": {
+    "boost": { "phaser": 4 }
+  },
+  "tieredKeywords": {
+    "tier1": ["phaser", "phaser 3", "2d arcade game", "html5 game"],
+    "tier2": ["platformer", "tilemap", "sprite sheet", "shmup", "tower defense"],
+    "archetypes": [
+      "2d platformer",
+      "top-down arcade",
+      "tower defense",
+      "shmup",
+      "endless runner",
+      "match-3 puzzle",
+      "tile-based roguelike",
+      "physics sandbox"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "2D browser games — platformers, arcade, tower defense, match-3, tile-based roguelikes. Pick this over three.js when the primary surface is a 2D canvas with sprites + physics, not 3D geometry.",
+    "firstSteps": [
+      "Install: `pnpm install` then `pnpm dev` — Vite serves on 5173. The starter shows a bouncing sprite in a single Scene.",
+      "Add new scenes under `src/scenes/` and register them in the `scene` array of the Phaser.Game config in `src/main.ts`.",
+      "Put art assets in `public/assets/` and load them with `this.load.image('key', 'assets/foo.png')` inside a Scene's `preload()`.",
+      "Arcade physics is enabled by default — enable per-body via `this.physics.add.sprite(x, y, key)`.",
+      "Build: `pnpm build` emits static assets to `dist/` — ship to any static host."
+    ],
+    "gotchas": [
+      "`this` inside `preload/create/update` is the Scene, not the Game. If you extract callbacks, bind or use arrow functions — losing `this` silently breaks asset loading.",
+      "Phaser clamps `update(time, delta)` delta — you cannot assume 1/60s between frames on throttled tabs. Always scale movement by `delta / 1000`.",
+      "Sprite textures are cached by key — loading the same key twice is a no-op after the first. Use distinct keys per asset or call `this.textures.remove(key)` before reloading.",
+      "Canvas size is controlled by the Phaser.Game config `scale` property, NOT by CSS. Setting CSS width/height stretches the canvas and breaks pointer coordinates."
+    ],
+    "architectureNotes": [
+      "One Phaser.Game instance per page. Scenes are the unit of composition — add, switch, pause, resume.",
+      "Keep game state in the Scene (or a Scene's Registry); do NOT attach it to window/global. Scene transitions clear local state."
+    ],
+    "placeholders": [
+      {
+        "path": "src/scenes/MainScene.ts",
+        "description": "Default scene with a bouncing sprite + input handler. Replace the sprite + logic with the product's actual game loop; keep the scene lifecycle hooks (preload/create/update)."
+      }
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "partnerId": "linea",
+  "chainId": 59144,
+  "networkName": "linea-mainnet",
+  "rpcUrl": "https://rpc.linea.build",
+  "testnetChainId": 59141,
+  "testnetRpcUrl": "https://rpc.sepolia.linea.build",
+  "explorerUrl": "https://lineascan.build",
+  "bridgeUrl": "https://bridge.linea.build",
+  "blockTimeMs": 2000,
+  "runtimeFocus": "zkevm-l2-consumer",
+  "preferredOutputs": ["consumer-dapps", "metamask-native-ux", "cheap-l2-defi"]
+}

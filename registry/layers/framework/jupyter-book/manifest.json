@@ -1,0 +1,63 @@
+{
+  "id": "jupyter-book",
+  "description": "Jupyter Book framework layer — seeds content/chapter-1.md with a MyST executable code cell wired into the book's _toc.yml; NumPy and Matplotlib deps are already in requirements.txt.",
+  "appliesTo": ["jupyter-book"],
+  "files": [
+    {
+      "source": "files/chapter-1.md",
+      "target": "content/chapter-1.md"
+    }
+  ],
+  "buildHints": {
+    "whenToUse": "Scientific documentation, course notes, research reports, or any project that publishes executable notebooks as a navigable multi-page website. Jupyter Book renders MyST Markdown and .ipynb files via Sphinx; outputs include static HTML and optionally LaTeX/PDF.",
+    "firstSteps": [
+      "Install deps: `pip install -r requirements.txt` (installs jupyter-book, numpy, matplotlib).",
+      "Build the book: `jupyter-book build .` — HTML lands in `_build/html/`.",
+      "Preview locally: `python -m http.server --directory _build/html 8098` then open http://localhost:8098.",
+      "Validate the scaffold: `node validate-jupyter-book.mjs` — prints 'jupyter-book starter ok' when all required files are present.",
+      "Add more content: create `.md` or `.ipynb` files under `content/`, then list them as chapters in `_toc.yml`."
+    ],
+    "gotchas": [
+      "`.md` files that use `{code-cell}` directives must carry a YAML front matter block with `kernelspec` (see `chapter-1.md`). Without it Jupyter Book treats the blocks as static fenced code and skips execution entirely.",
+      "`execute_notebooks: auto` in `_config.yml` runs code cells at build time — if NumPy or Matplotlib are missing from `requirements.txt` the build fails with a kernel error. Keep pip deps in sync with imports.",
+      "The `_toc.yml` `root:` field must be a file path without extension; it points to `content/intro`, not `content/intro.md`.",
+      "`{{headline}}` and `{{author}}` in `_config.yml` are template placeholders substituted at compose time — do not hard-code values there.",
+      "Jupyter Book caches notebook outputs in `_build/`; delete that directory when switching Python environments or after adding new packages to avoid stale kernel state.",
+      "The validator (`validate-jupyter-book.mjs`) requires Node.js — it checks structure only, not Python execution. Run `pip install -r requirements.txt` separately before the full `jupyter-book build`."
+    ],
+    "architectureNotes": [
+      "All navigable pages are listed in `_toc.yml`; `_config.yml` sets global metadata, Sphinx extensions, and HTML theme options.",
+      "MyST Markdown (`.md`) and Jupyter Notebooks (`.ipynb`) are first-class citizens — mix them freely in `content/`.",
+      "The `execute_notebooks: auto` policy only re-runs cells when source has changed (Jupyter Book caches results); for reproducibility pin all package versions in `requirements.txt`."
+    ],
+    "placeholders": [
+      {
+        "path": "content/chapter-1.md",
+        "description": "Demo chapter with a NumPy/Matplotlib code cell. Replace with real content or swap for a .ipynb notebook. If keeping it as a .md file with {code-cell} directives, preserve the YAML front matter (jupytext + kernelspec blocks) — removing it silences execution. Ensure the file is listed in _toc.yml."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pip install -r requirements.txt",
+      "jupyter-book build .",
+      "python -m http.server --directory _build/html 8098",
+      "node validate-jupyter-book.mjs"
+    ],
+    "entrypoints": [
+      "_config.yml",
+      "_toc.yml",
+      "content/intro.md",
+      "content/chapter-1.md"
+    ],
+    "preview": {
+      "port": "8098",
+      "path": "/"
+    },
+    "extensionPoints": [
+      "content/",
+      "_toc.yml",
+      "requirements.txt"
+    ]
+  }
+}

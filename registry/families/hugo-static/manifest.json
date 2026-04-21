@@ -1,0 +1,99 @@
+{
+  "id": "hugo-static",
+  "description": "Hugo static site generator starter — Go-binary driven, millisecond builds, content bundles under content/ and layouts in Go templates.",
+  "tags": [
+    "hugo",
+    "static-site",
+    "ssg",
+    "frontend",
+    "go-template"
+  ],
+  "taxonomy": {
+    "language": "go-template",
+    "runtime": "hugo",
+    "surface": "frontend"
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "serviceName": "starter-foundry-hugo",
+    "port": 1313,
+    "headline": "Starter Foundry Hugo",
+    "subheadline": "Hugo content site with minimal theme.",
+    "baseURL": "http://localhost:1313/",
+    "languageCode": "en-us",
+    "databaseProvider": "none"
+  },
+  "files": [
+    {
+      "source": "files/config.toml",
+      "target": "config.toml"
+    },
+    {
+      "source": "files/validate-hugo.mjs",
+      "target": "validate-hugo.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "config.toml"
+    },
+    {
+      "type": "file-exists",
+      "path": "content/_index.md"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-hugo.mjs"
+      ],
+      "expect": "hugo starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "hugo server -D --port {{port}}",
+      "hugo --minify"
+    ],
+    "entrypoints": [
+      "config.toml",
+      "content/_index.md",
+      "layouts/_default/baseof.html"
+    ],
+    "preview": {
+      "port": "{{port}}",
+      "path": "/"
+    },
+    "extensionPoints": [
+      "starter-data.json",
+      "starter-brand.json"
+    ]
+  },
+  "keywords": [
+    "hugo",
+    "hugo site",
+    "hugo blog",
+    "hugo static",
+    "hugo theme",
+    "gohugo"
+  ],
+  "scoring": {
+    "boost": {
+      "hugo": 3,
+      "gohugo": 3
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "hugo",
+      "hugo site",
+      "hugo blog",
+      "gohugo"
+    ],
+    "tier2": [
+      "hugo static",
+      "hugo theme"
+    ]
+  }
+}

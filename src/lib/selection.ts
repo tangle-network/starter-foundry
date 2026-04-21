@@ -83,12 +83,22 @@ function buildIndex(registry: Registry): SelectionIndex {
       continue
     }
 
+    // Per-family scoring.boost — optional map of keyword → extra weight added
+    // ONLY when the keyword also appears in a tiered list. Boost-only keywords
+    // (not in any tier) are intentionally ignored here: registering them
+    // silently as tier2-equivalents caused routing thrash where a specialty
+    // family's broad boost term ("aptos", "qlora") outscored the proper sibling
+    // family on off-topic prompts. Specialty-family overrides for distinctive
+    // phrases live in prompt-planner.ts instead.
+    const boost = (family.scoring as { boost?: Record<string, number> } | undefined)?.boost ?? {}
+
     for (const tier of ['tier1', 'tier2', 'tier3', 'archetypes'] as const satisfies readonly Tier[]) {
       const weight = TIER_WEIGHTS[tier]
       const list = tk[tier]
       if (!list?.length) continue
       for (const raw of list) {
-        addKeyword(singleWord, multiWord, raw, family.id, weight)
+        const extra = boost[raw.toLowerCase()] ?? 0
+        addKeyword(singleWord, multiWord, raw, family.id, weight + extra)
       }
     }
   }

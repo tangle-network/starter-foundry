@@ -1,0 +1,10 @@
+# Unity editor output — replaced on every build.
+Build/*
+!Build/.gitkeep
+
+# Vite output.
+dist/
+node_modules/
+
+# OS junk.
+.DS_Store

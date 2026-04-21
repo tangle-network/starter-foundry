@@ -1,0 +1,10 @@
+# ESP32 Xtensa targets require the esp-rs forked rustc built by espup.
+# Stock nightly does NOT ship the xtensa-esp32-espidf target. Install with:
+#   cargo install espup
+#   espup install
+#   . $HOME/export-esp.sh   # source in every shell before `cargo build`
+
+[toolchain]
+channel = "esp"
+components = ["rust-src"]
+targets = ["xtensa-esp32-espidf"]

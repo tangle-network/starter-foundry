@@ -1,0 +1,106 @@
+{
+  "id": "eleventy-static",
+  "description": "Eleventy (11ty) static site generator starter — zero-config Nunjucks + Markdown pipeline, no client JS by default, instant builds.",
+  "tags": [
+    "eleventy",
+    "11ty",
+    "static-site",
+    "ssg",
+    "frontend"
+  ],
+  "taxonomy": {
+    "language": "javascript",
+    "runtime": "node",
+    "surface": "frontend"
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "serviceName": "starter-foundry-eleventy",
+    "port": 8097,
+    "headline": "Starter Foundry Eleventy",
+    "subheadline": "Content-first static site powered by 11ty.",
+    "databaseProvider": "none"
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/.eleventy.js",
+      "target": ".eleventy.js"
+    },
+    {
+      "source": "files/validate-eleventy.mjs",
+      "target": "validate-eleventy.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": ".eleventy.js"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/index.md"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-eleventy.mjs"
+      ],
+      "expect": "eleventy starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "npm install",
+      "npx @11ty/eleventy --serve",
+      "npx @11ty/eleventy"
+    ],
+    "entrypoints": [
+      ".eleventy.js",
+      "src/index.md",
+      "src/_includes/base.njk"
+    ],
+    "preview": {
+      "port": "{{port}}",
+      "path": "/"
+    },
+    "extensionPoints": [
+      "starter-data.json",
+      "starter-brand.json"
+    ]
+  },
+  "keywords": [
+    "eleventy",
+    "11ty",
+    "eleventy site",
+    "11ty site",
+    "nunjucks",
+    "eleventy blog",
+    "11ty blog",
+    "eleventy ssg"
+  ],
+  "scoring": {
+    "boost": {
+      "eleventy": 3,
+      "11ty": 3
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "eleventy",
+      "11ty",
+      "eleventy site",
+      "11ty site"
+    ],
+    "tier2": [
+      "nunjucks",
+      "eleventy blog",
+      "11ty blog",
+      "eleventy ssg"
+    ]
+  }
+}

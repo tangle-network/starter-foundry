@@ -1,0 +1,48 @@
+{
+  "id": "esp32-rust",
+  "description": "ESP32 Rust firmware entrypoint: src/main.rs wired with esp_idf_svc::sys::link_patches, BlockingWifi scan, and an EspHttpServer on :8080 — ready to flash with cargo espflash.",
+  "appliesTo": ["esp32-rust"],
+  "files": [
+    { "source": "files/.cargo/config.toml", "target": ".cargo/config.toml" },
+    { "source": "files/rust-toolchain.toml", "target": "rust-toolchain.toml" },
+    { "source": "files/Cargo.toml", "target": "Cargo.toml" },
+    { "source": "files/build.rs", "target": "build.rs" },
+    { "source": "files/src/main.rs", "target": "src/main.rs" },
+    { "source": "files/README.md", "target": "README.md" }
+  ],
+  "buildHints": {
+    "whenToUse": "Use for any ESP32 Rust firmware project targeting esp-idf-svc + esp-idf-hal. The family manifest supplies Cargo.toml, .cargo/config.toml, rust-toolchain.toml, sdkconfig.defaults, and build.rs; this layer supplies src/main.rs.",
+    "firstSteps": [
+      "Install the esp-rs toolchain: `cargo install espup && espup install`",
+      "Source the toolchain env in every shell: `. $HOME/export-esp.sh`",
+      "Build: `cargo build --release`",
+      "Flash + monitor: `cargo espflash flash --release --monitor`"
+    ],
+    "gotchas": [
+      "The hardware target (xtensa-esp32-espidf) requires the esp-rs forked rustc installed via espup. The layer ships a stub rust-toolchain.toml with channel = \"stable\" so `cargo check` works without espup; swap to channel = \"esp\" before flashing.",
+      "Source `$HOME/export-esp.sh` in every shell before `cargo build` targeting hardware. Without it rustc cannot find the xtensa target and linking fails with cryptic llvm errors.",
+      "esp_idf_svc::sys::link_patches() MUST be the first call in main — LTO will strip the ESP-IDF init patches otherwise and the board hard-faults on boot.",
+      "The layer's Cargo.toml uses anyhow+log stubs for stable cargo check. Replace with esp-idf-svc, esp-idf-hal, esp-idf-sys and the [package.metadata.esp-idf-sys] block from the family manifest when building for hardware."
+    ],
+    "architectureNotes": [
+      "The layer ships stable-toolchain stubs (rust-toolchain.toml, Cargo.toml, build.rs, src/main.rs) so `cargo check` passes in CI without the esp-rs toolchain installed.",
+      "The family manifest supplies the full hardware-targeting variants (channel = \"esp\", xtensa target, ldproxy linker, esp-idf-svc deps, sdkconfig.defaults). In a composed project the family files should replace the layer stubs.",
+      "src/main.rs comments embed esp_idf_svc::sys::link_patches, EspWifi, and EspHttpServer so downstream agents know exactly which symbols to wire when switching to the hardware toolchain."
+    ],
+    "placeholders": [
+      {
+        "path": "src/main.rs",
+        "description": "WiFi scan + HTTP GET / stub. Replace Configuration::None with real AP credentials and add routes via server.fn_handler() for production firmware."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "cargo build --release",
+      "cargo espflash flash --release --monitor",
+      "cargo espflash flash --release --monitor --chip esp32"
+    ],
+    "entrypoints": ["src/main.rs"],
+    "extensionPoints": ["src/main.rs", "sdkconfig.defaults"]
+  }
+}

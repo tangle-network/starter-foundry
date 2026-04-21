@@ -1,0 +1,174 @@
+{
+  "id": "tauri-menubar",
+  "description": "Tauri menu-bar / tray-anchored popover panel app (Raycast-like floating panel).",
+  "tags": [
+    "desktop",
+    "tauri",
+    "menubar",
+    "popover",
+    "typescript"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "tauri",
+    "surface": "frontend"
+  },
+  "slots": {
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk",
+        "auth:supabase-auth"
+      ],
+      "default": "auth:none"
+    },
+    "payments": {
+      "options": [
+        "payments:none",
+        "payments:stripe",
+        "payments:coinbase-commerce"
+      ],
+      "default": "payments:none"
+    },
+    "sdk": {
+      "options": [
+        "sdk:none",
+        "sdk:coinbase-cdp",
+        "sdk:solana-web3",
+        "sdk:evm-wallet"
+      ],
+      "default": "sdk:none"
+    }
+  },
+  "defaults": {
+    "projectType": "desktop",
+    "port": 4196,
+    "headline": "Starter Foundry Menu Bar",
+    "subheadline": "A tray-anchored popover panel for quick actions, search, and commands."
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/preview-server.mjs",
+      "target": "preview-server.mjs"
+    },
+    {
+      "source": "files/validate-types.mjs",
+      "target": "validate-types.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "src-tauri/Cargo.toml"
+    },
+    {
+      "type": "file-exists",
+      "path": "src-tauri/src/lib.rs"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-types.mjs"
+      ],
+      "expect": "tauri menubar ok"
+    },
+    {
+      "type": "http-start",
+      "command": [
+        "node",
+        "preview-server.mjs"
+      ],
+      "path": "/",
+      "expect": "{{headline}}"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "node preview-server.mjs",
+      "cargo tauri dev"
+    ],
+    "entrypoints": [
+      "src-tauri/src/lib.rs",
+      "src-tauri/tauri.conf.json",
+      "src/App.tsx"
+    ],
+    "preview": {
+      "path": "/"
+    },
+    "extensionPoints": [
+      "auth-config.json",
+      "payments-config.json",
+      "sdk-config.json"
+    ]
+  },
+  "keywords": [
+    "menu bar app",
+    "macos menubar",
+    "menubar app",
+    "tray popover",
+    "floating panel app",
+    "raycast",
+    "alfred clone",
+    "tauri menubar"
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "menu bar app",
+      "macos menubar",
+      "menubar",
+      "raycast-like",
+      "floating panel app"
+    ],
+    "tier2": [
+      "tauri popover",
+      "tray popover",
+      "alfred clone",
+      "quick launcher",
+      "command palette desktop"
+    ],
+    "tier3": [
+      "small utility app",
+      "always on top"
+    ],
+    "archetypes": [
+      "raycast clone",
+      "menu bar utility",
+      "spotlight-style launcher"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Pick tauri-menubar when the app lives in the macOS menu bar or Windows system tray and opens a small floating popover on click (Raycast, Bartender, 1Password mini). The primary window is a short-lived panel positioned near the tray icon — NOT a long-lived workspace window. If the user wants a full desktop window, use tauri-desktop instead. If they want a tray icon with ONLY a menu (no popover), use tauri-tray.",
+    "architectureNotes": [
+      "src-tauri/src/lib.rs owns the TrayIconBuilder and positions the window under the tray icon on show; main.rs just forwards to lib::run().",
+      "The popover window is decorations:false, alwaysOnTop:true, skipTaskbar:true, resizable:false at 320x400.",
+      "Hide-on-blur is wired via the on_window_event focus handler so the panel dismisses like a native menu.",
+      "On macOS set activation policy to Accessory so no dock icon appears; on Windows skipTaskbar achieves the same effect.",
+      "Global shortcut (cmd+shift+space default) toggles the popover — register through tauri-plugin-global-shortcut."
+    ],
+    "components": [
+      "TrayIcon handler (Rust) — opens/positions the popover relative to the click location.",
+      "Compact popover shell (React) — fixed 320x400, scrollable list, single-column layout.",
+      "Command input / fuzzy search row as the primary interaction pattern."
+    ],
+    "gotchas": [
+      "macOS: set `LSUIElement` (activation policy Accessory) or the app shows a dock icon AND the menu-bar icon. Use tauri::ActivationPolicy::Accessory on macOS at setup time.",
+      "macOS notarization: menu-bar apps still need notarization for Gatekeeper — ship with `tauri-build` signing and run `xcrun notarytool submit` before distribution.",
+      "Windows: tray icons need a real .ico file; Tauri default sizing is 16x16 — ship multi-resolution icons or they render blurry on HiDPI.",
+      "Positioning: macOS menu-bar Y coordinate is measured from the top, but some multi-monitor setups put the menu bar on a non-primary display — read `monitor.position()` from the tray event, don't hardcode.",
+      "Hide-on-blur on Windows fires focus-lost when the user clicks the tray icon itself, causing a show-then-immediately-hide loop; gate the hide with a 100ms debounce.",
+      "Auto-launch at login uses tauri-plugin-autostart — on macOS this creates a LaunchAgent plist, on Windows a registry Run key. Users must grant the permission explicitly."
+    ],
+    "integrations": [
+      "tauri-plugin-global-shortcut — hotkey to toggle the popover",
+      "tauri-plugin-autostart — launch at login",
+      "tauri-plugin-positioner — canonical popover positioning relative to tray"
+    ]
+  }
+}

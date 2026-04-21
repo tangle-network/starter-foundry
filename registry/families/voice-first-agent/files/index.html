@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{{headline}}</title>
+    <style>
+      :root { color-scheme: light dark; }
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: #0a0a0a;
+        color: #f2f2f2;
+      }
+      main { max-width: 520px; padding: 2rem; }
+      h1 { margin: 0 0 0.5rem 0; font-size: 1.4rem; }
+      p.sub { margin: 0 0 2rem 0; color: #888; }
+      button#talk {
+        width: 100%;
+        padding: 1.25rem;
+        font-size: 1.1rem;
+        border: 0;
+        border-radius: 12px;
+        background: #d33;
+        color: white;
+        cursor: pointer;
+        user-select: none;
+        touch-action: none;
+      }
+      button#talk[data-state="recording"] { background: #2a8; }
+      button#talk[data-state="thinking"] { background: #888; cursor: wait; }
+      pre#log {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: #111;
+        border: 1px solid #222;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        white-space: pre-wrap;
+        min-height: 6rem;
+        max-height: 18rem;
+        overflow-y: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>{{headline}}</h1>
+      <p class="sub">{{subheadline}}</p>
+      <button id="talk" data-state="idle">Hold to talk</button>
+      <audio id="playback" playsinline></audio>
+      <pre id="log">Ready. Press and hold the button, speak, release.</pre>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

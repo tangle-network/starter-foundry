@@ -1,0 +1,29 @@
+{
+  "id": "multi-tenancy",
+  "description": "Multi-tenancy primitives for SaaS scaffolds — tenant context resolver, middleware, and schema extension helpers.",
+  "group": "capability",
+  "appliesTo": [
+    "fullstack-ts",
+    "nextjs-ts",
+    "api-service",
+    "bun-http",
+    "cloudflare-worker-ts",
+    "python-api",
+    "rust-service",
+    "go-api",
+    "crm-backend",
+    "ecommerce-headless",
+    "k12-edtech",
+    "legal-case-mgmt"
+  ],
+  "keywords": [
+    "multi-tenant",
+    "multi tenancy",
+    "per-tenant",
+    "workspace tenant",
+    "subdomain tenant",
+    "tenant isolation"
+  ],
+  "files": [],
+  "packageDeps": { "dependencies": {} }
+}

@@ -1,0 +1,60 @@
+{
+  "id": "soc2-compliance-pack",
+  "description": "SOC2 Type II compliance overlay — append-only audit log, change-management surface, vendor attestation registry, incident response playbook. Composes onto fintech-ledger-backend / api-service / fullstack-ts.",
+  "tags": ["compliance", "soc2", "overlay"],
+  "taxonomy": { "language": "typescript", "runtime": "node", "surface": "api" },
+  "defaults": {
+    "projectType": "compliance-pack",
+    "serviceName": "starter-foundry-soc2-pack"
+  },
+  "files": [
+    { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/src/audit.ts", "target": "src/audit.ts" },
+    { "source": "files/src/change-mgmt.ts", "target": "src/change-mgmt.ts" },
+    { "source": "files/docs/SOC2-controls.md", "target": "docs/SOC2-controls.md" },
+    { "source": "files/docs/incident-response.md", "target": "docs/incident-response.md" },
+    { "source": "files/docs/vendor-attestations.md", "target": "docs/vendor-attestations.md" },
+    { "source": "files/validate-soc2-pack.mjs", "target": "validate-soc2-pack.mjs" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "src/audit.ts" },
+    { "type": "file-exists", "path": "docs/SOC2-controls.md" },
+    { "type": "command-success", "command": ["node", "validate-soc2-pack.mjs"], "expect": "soc2-pack ok" }
+  ],
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm build"],
+    "entrypoints": ["src/audit.ts", "docs/SOC2-controls.md"],
+    "preview": null,
+    "extensionPoints": ["docs/SOC2-controls.md", "docs/vendor-attestations.md"]
+  },
+  "keywords": ["soc2", "soc 2", "soc2 compliance", "soc 2 type ii", "trust services criteria"],
+  "scoring": { "boost": { "soc2 compliance": 5, "soc 2 type ii": 4 } },
+  "tieredKeywords": {
+    "tier1": ["soc2 compliance", "soc2 compliant", "soc 2 type ii"],
+    "tier2": ["trust services criteria", "cc7.2", "security compliance"]
+  },
+  "buildHints": {
+    "whenToUse": "Bolt SOC2 Type II primitives (audit trail, change-management approvals, vendor registry) onto an existing backend before a Type II audit window opens.",
+    "firstSteps": [
+      "Read `docs/SOC2-controls.md` — Trust Services Criteria CC1-CC9 mapped to files.",
+      "Wire `recordChange()` from `src/change-mgmt.ts` onto every deploy + config change — CC8.1 requires change approvals be logged.",
+      "Enforce CODEOWNERS + branch protection on main (CC7.2). The pack ships a reference `.github/CODEOWNERS` pattern.",
+      "Log into `docs/vendor-attestations.md` every sub-processor with a SOC2 attestation (Stripe, AWS, Vercel, etc.) — auditors check this.",
+      "Set up Uptime + response-time SLI dashboards — CC7.1 availability evidence."
+    ],
+    "gotchas": [
+      "Audit log retention for SOC2 is commonly 12 months minimum; some auditors require 7 years. Confirm with your auditor before TTL'ing old rows.",
+      "Change management (CC8.1) requires ≥1 approver per change — self-merges are flagged. Enforce via branch protection, not honor system.",
+      "Vendor attestations must be CURRENT (within the audit window). A 2-year-old vendor SOC2 report is an exception finding.",
+      "Incident response (CC7.3) needs a tested playbook. Run at least one tabletop exercise before the audit."
+    ],
+    "architectureNotes": [
+      "SOC2 audits are about process evidence, not code. This pack produces the artifacts (audit rows, CODEOWNERS, playbooks) auditors want to see. The controls themselves are operational."
+    ],
+    "placeholders": [
+      { "path": "docs/SOC2-controls.md", "description": "Trust Services Criteria doc. Customize per your audit scope." },
+      { "path": "docs/vendor-attestations.md", "description": "Live vendor registry. Update quarterly." }
+    ]
+  }
+}

@@ -1,0 +1,175 @@
+{
+  "id": "unity-web-proxy",
+  "description": "Build-host scaffold for Unity WebGL exports. The scaffold can't bundle the Unity editor output, so this family ships what you DO check in: a CI batch-mode build script, a Vite-based dev server to serve the built artifact, an index.html wired to the Unity loader, and a Build/ drop-zone for the editor's output. The Unity project itself lives elsewhere (source Assets/) and writes into Build/ via `Unity -batchmode`.",
+  "tags": [
+    "frontend",
+    "typescript",
+    "unity",
+    "webgl",
+    "game-engine"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "frontend"
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "serviceName": "starter-foundry-unity-web",
+    "port": 5173
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/vite.config.ts",
+      "target": "vite.config.ts"
+    },
+    {
+      "source": "files/scripts/build-webgl.sh",
+      "target": "scripts/build-webgl.sh"
+    },
+    {
+      "source": "files/Build/.gitkeep",
+      "target": "Build/.gitkeep"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/validate-unity.mjs",
+      "target": "validate-unity.mjs"
+    },
+    {
+      "source": "files/.gitignore",
+      "target": ".gitignore"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "index.html"
+    },
+    {
+      "type": "file-exists",
+      "path": "package.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "scripts/build-webgl.sh"
+    },
+    {
+      "type": "file-exists",
+      "path": "Build/.gitkeep"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-unity.mjs"
+      ],
+      "expect": "unity-web-proxy starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "pnpm dev",
+      "bash scripts/build-webgl.sh"
+    ],
+    "entrypoints": [
+      "index.html",
+      "vite.config.ts",
+      "scripts/build-webgl.sh",
+      "Build/"
+    ],
+    "preview": {
+      "path": "/"
+    },
+    "extensionPoints": [
+      "index.html",
+      "scripts/build-webgl.sh"
+    ]
+  },
+  "keywords": [
+    "unity webgl",
+    "unity web build",
+    "unity batch mode",
+    "unity html5",
+    "unity browser game",
+    "unity web export",
+    "unity ci build"
+  ],
+  "scoring": {
+    "boost": {
+      "unity webgl": 5,
+      "unity web build": 5,
+      "unity batch mode": 4,
+      "unity html5": 4
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "unity webgl",
+      "unity web build",
+      "unity batch mode",
+      "unity html5"
+    ],
+    "tier2": [
+      "unity browser game",
+      "unity web export",
+      "unity ci build",
+      "unity loader"
+    ],
+    "archetypes": [
+      "unity browser game",
+      "unity webgl demo",
+      "unity portfolio piece",
+      "unity jam entry web",
+      "unity playable ad",
+      "unity training sim web",
+      "unity product viewer",
+      "unity interactive tutorial",
+      "unity marketing demo"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Unity-authored games or interactive content that must ship as a browser-native WebGL build. This scaffold is the serving + CI harness — the Unity project source (Assets/, ProjectSettings/) lives in a separate repo or sibling directory, and the `Unity -batchmode` CLI writes its output into this repo's `Build/` directory. Pick godot-web or bevy-web if you haven't already committed to Unity.",
+    "firstSteps": [
+      "Put your Unity editor build output in `Build/` — you need `Build.loader.js`, `Build.framework.js`, `Build.wasm`, `Build.data`, and optionally `Build.symbols.json` (filenames depend on the Unity product name in Player Settings).",
+      "Run locally: `pnpm install` then `pnpm dev` — Vite serves on 5173 with the COOP/COEP headers Unity 2021 LTS+ needs for threads + SharedArrayBuffer.",
+      "CI build: `bash scripts/build-webgl.sh` — batch-mode Unity CLI incantation that runs a custom BuildScript and writes into `Build/`. Point `UNITY_PROJECT_PATH` at the Unity project source; `UNITY_VERSION` selects the Unity Hub-installed editor.",
+      "Ship: `pnpm build` runs Vite in production mode (`dist/`). The Build/ artifacts are static; any CDN works. Keep the COOP/COEP headers on the serving host.",
+      "For Unity Cloud Build or GitHub Actions, the same `scripts/build-webgl.sh` runs inside the Unity Docker image (`unityci/editor:ubuntu-<version>-webgl-<patch>`)."
+    ],
+    "gotchas": [
+      "Unity 2021.2+ WebGL builds enable threads by default, which requires the page to be served with `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp`. Without these headers the loader fails with a SharedArrayBuffer error — Vite's server is configured here; make sure production hosting mirrors it.",
+      "Unity's Brotli-compressed output (`.br` files) requires the server to send `Content-Encoding: br`; gzip output needs `Content-Encoding: gzip`. Static hosts often strip this header, giving you a corrupted bundle. Either use Disabled compression in Player Settings or verify headers with `curl -I`.",
+      "The Unity loader filename depends on Player Settings → WebGL → Product Name. `index.html` here uses `Build/Build.loader.js` as a placeholder — rename on both sides after the first export so they match.",
+      "Batch-mode Unity must be activated and licensed (Personal/Pro/Plus) or it exits with code 12 after 30 days of trial. For CI, pre-activate with `-createManualActivationFile` + `-manualLicenseFile`.",
+      "WebGL builds have no multi-threaded GC — long GC pauses show up as freezes in JS profilers. Keep per-frame allocations minimal and profile with Unity's built-in profiler attached to the running WebGL page.",
+      "Output size: the data file (`Build.data`) often exceeds 50 MB even for simple games. Enable compression (Brotli for Cloudflare/Vercel; gzip for sites that can't set `Content-Encoding: br`)."
+    ],
+    "architectureNotes": [
+      "Treat this scaffold as pure infra — the Unity C# source is NOT here. Point `UNITY_PROJECT_PATH` at the Unity project (separate repo or sibling dir) and let `build-webgl.sh` drop output into `Build/`.",
+      "Unity's WebGL loader wants exclusive ownership of the canvas; do not decorate it with external CSS transforms (they're ignored on resize)."
+    ],
+    "placeholders": [
+      {
+        "path": "index.html",
+        "description": "Loads Unity's WebGL bootstrap from ./Build/Build.loader.js and starts the instance via createUnityInstance(). Update the loader URL and the Unity company/product metadata in the script block to match your editor Player Settings on first export."
+      },
+      {
+        "path": "scripts/build-webgl.sh",
+        "description": "Unity CLI batch-mode build script. Replace BuildScript.PerformWebGLBuild with your actual editor C# method (e.g. inside Assets/Editor/Build.cs) once the Unity project exists."
+      }
+    ]
+  }
+}

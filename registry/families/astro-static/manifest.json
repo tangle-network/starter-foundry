@@ -1,0 +1,141 @@
+{
+  "id": "astro-static",
+  "description": "Astro 5.x static site starter — islands architecture, zero-JS by default, Vite-powered dev server, MDX-ready content.",
+  "tags": [
+    "astro",
+    "ssg",
+    "frontend",
+    "static"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "frontend"
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "serviceName": "starter-foundry-astro",
+    "port": 4321,
+    "headline": "Starter Foundry landing page",
+    "subheadline": "Astro static starter."
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/validate-astro.mjs",
+      "target": "validate-astro.mjs"
+    },
+    {
+      "source": "files/.gitignore",
+      "target": ".gitignore"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "astro.config.mjs"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/pages/index.astro"
+    },
+    {
+      "type": "file-exists",
+      "path": "package.json"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-astro.mjs"
+      ],
+      "expect": "astro starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "npm install",
+      "npm run dev",
+      "npm run build"
+    ],
+    "entrypoints": [
+      "src/pages/index.astro",
+      "src/layouts/Base.astro",
+      "astro.config.mjs"
+    ],
+    "preview": {
+      "port": "{{port}}",
+      "path": "/"
+    },
+    "extensionPoints": [
+      "src/pages",
+      "src/components",
+      "src/content",
+      "public"
+    ]
+  },
+  "keywords": [
+    "astro",
+    "astrojs",
+    "astro site",
+    "astro static",
+    "astro islands",
+    "islands architecture",
+    "mdx site"
+  ],
+  "scoring": {
+    "boost": {
+      "astro": 3
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "astro",
+      "astrojs",
+      "astro islands"
+    ],
+    "tier2": [
+      "astro site",
+      "astro static",
+      "islands architecture",
+      "mdx site"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Content-focused static sites (marketing, docs, blogs) where you want islands of interactivity without shipping a full SPA runtime.",
+    "firstSteps": [
+      "Install deps with `npm install`. Astro works with pnpm/yarn too but the lockfile here is npm by default.",
+      "Run `npm run dev` — Astro's Vite dev server binds to http://localhost:4321 with HMR.",
+      "Add pages by dropping `.astro` / `.md` / `.mdx` files into `src/pages/` — every file becomes a route (file-based routing).",
+      "Shared layout lives in `src/layouts/Base.astro`. Wrap each page with `<Base title=\"...\">...</Base>`.",
+      "Build production output with `npm run build` — emits fully static HTML/CSS/JS into `./dist`. Preview locally with `npm run preview`."
+    ],
+    "gotchas": [
+      "Frontmatter in `.astro` files runs at BUILD time on the server — you cannot reference browser globals (`window`, `document`) there. Put client code inside `<script>` tags or `client:*` directives.",
+      "To add a React/Vue/Svelte island you must install `@astrojs/<framework>` AND add it to `astro.config.mjs`'s `integrations` array. Just importing a `.jsx` file silently fails.",
+      "Content Collections (v5) replace loose `src/content/*.md` conventions — define a schema in `src/content.config.ts` or file-based content will not be typed.",
+      "`import.meta.env.PUBLIC_*` is the only prefix exposed to client bundles. Non-prefixed env vars are build-time server-only."
+    ],
+    "architectureNotes": [
+      "Astro ships ZERO JS by default. Adding interactivity is opt-in per component via `client:load`, `client:idle`, `client:visible`, or `client:only`.",
+      "Output mode in `astro.config.mjs` defaults to `static`. Switch to `server` / `hybrid` only if the product actually needs SSR — this family is static-only."
+    ],
+    "placeholders": [
+      {
+        "path": "src/pages/index.astro",
+        "description": "Default landing page with placeholder hero + feature grid. Replace ALL visible copy with the product's real content before shipping — treat it as boilerplate, not a template."
+      },
+      {
+        "path": "src/layouts/Base.astro",
+        "description": "Shared HTML shell: <head>, meta tags, global CSS import, <slot /> for page body. Edit meta/OG tags before production."
+      }
+    ]
+  }
+}

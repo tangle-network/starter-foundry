@@ -1,0 +1,60 @@
+{
+  "id": "gdpr-compliance-pack",
+  "description": "GDPR + CPRA compliance layer — consent capture, data subject rights (export/erase), cookie banner, and Record of Processing Activities. Composes onto fullstack-ts / nextjs-ts / ecommerce-headless.",
+  "appliesTo": ["gdpr-compliance-pack"],
+  "files": [
+    { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/AGENTS.md", "target": "AGENTS.md" }
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "react": "^18.3.1",
+      "react-dom": "^18.3.1"
+    },
+    "devDependencies": {
+      "@types/node": "^22.0.0",
+      "@types/react": "^18.3.0",
+      "@types/react-dom": "^18.3.0",
+      "typescript": "^5.9.0"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "Shipping to EU / CA / other jurisdictions with data-subject rights obligations. Bolt onto an existing fullstack/api backend.",
+    "firstSteps": [
+      "Run `pnpm validate` — confirms required files and key exports are present.",
+      "Run `pnpm build` — `tsc --noEmit` typechecks the full pack; zero errors expected.",
+      "Extend `EXAMPLE_ROPA` in `src/data-inventory.ts` with your actual data categories, legal bases, and retention periods.",
+      "Wire `/api/export-my-data` using `collectExport` from `src/data-subject-rights.ts` — must respond within 30 days per Art. 12(3).",
+      "Wire `/api/delete-my-data` using `honorErasure` — must honor erasure within 30 days unless an Art. 17(3) exception applies.",
+      "Drop `<CookieBanner>` at the root layout — consent MUST be gathered BEFORE setting any non-essential cookies.",
+      "Fill out `docs/DPIA-template.md` if you process high-risk categories (Art. 35)."
+    ],
+    "gotchas": [
+      "'Consent' as a legal basis has SIX requirements per Art. 4(11) — freely given, specific, informed, unambiguous, affirmative, withdrawable. Pre-ticked boxes are invalid.",
+      "Legitimate interest (Art. 6(1)(f)) is often a better basis than consent for operational processing — but requires a documented LIA (Legitimate Interest Assessment).",
+      "Right-to-delete is NOT absolute. Exceptions: legal obligation, public interest, establishment of legal claims (Art. 17(3)). Document which exception applies when refusing.",
+      "Data breaches must be reported to the supervisory authority within 72 HOURS per Art. 33.",
+      "CPRA (California) has parallel but not identical rules — this pack covers the shared 80%; add CPRA-specific flows as needed."
+    ],
+    "architectureNotes": [
+      "Replace `InMemoryConsentStore` with a DB-backed implementation before production — the in-memory store does not survive restarts.",
+      "`collectExport` fans out to per-category collectors; each collector returns its slice of the user's data. Add one collector per table/service that holds PII.",
+      "`honorErasure` runs `retentionChecks` before any erasers — pass all Art. 17(3) exception checkers there so refusals are documented before data is touched."
+    ],
+    "placeholders": [
+      { "path": "src/data-inventory.ts", "description": "RoPA seed (`EXAMPLE_ROPA`). Extend with your actual data categories, legal bases, and retention periods." },
+      { "path": "docs/DPIA-template.md", "description": "DPIA template. Fill before processing high-risk categories (Art. 35)." }
+    ]
+  },
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm build", "pnpm validate"],
+    "entrypoints": ["src/consent.ts", "src/data-subject-rights.ts", "src/data-inventory.ts"],
+    "preview": null,
+    "extensionPoints": [
+      "src/data-inventory.ts",
+      "src/consent.ts",
+      "src/components/CookieBanner.tsx"
+    ]
+  }
+}

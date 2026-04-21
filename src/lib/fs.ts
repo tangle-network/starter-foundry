@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import os from 'node:os'
+import { spawn } from 'node:child_process'
 
 export async function ensureDir(dirPath: string): Promise<void> {
   await fs.mkdir(dirPath, { recursive: true })
@@ -70,6 +71,16 @@ export async function fileExists(filePath: string): Promise<boolean> {
   } catch {
     return false
   }
+}
+
+export function runTar(sourceDir: string, archivePath: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    const child = spawn('tar', ['-czf', archivePath, '-C', sourceDir, '.'], {
+      stdio: ['ignore', 'ignore', 'ignore'],
+    })
+    child.on('close', (code) => resolve(code === 0))
+    child.on('error', () => resolve(false))
+  })
 }
 
 export async function listFilesRecursive(rootDir: string): Promise<string[]> {

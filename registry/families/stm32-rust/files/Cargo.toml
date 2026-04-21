@@ -1,0 +1,69 @@
+[package]
+name = "{{crateName}}"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.77"
+
+[[bin]]
+name = "{{crateName}}"
+path = "src/main.rs"
+test = false
+bench = false
+
+[profile.release]
+codegen-units = 1
+debug = 2       # keep debug symbols — they live in the ELF, never on-chip
+lto = "fat"
+opt-level = "z"
+overflow-checks = false
+
+[profile.dev]
+codegen-units = 1
+debug = 2
+opt-level = 1
+overflow-checks = true
+
+[dependencies]
+# Embassy async framework. Chip feature selects which HAL backend + time
+# driver gets compiled in. Swap the `stm32f411re` feature for a different
+# chip (e.g. `stm32l475vg`) — exactly one chip feature must be enabled.
+embassy-stm32 = { version = "0.1", features = [
+    "defmt",
+    "stm32f411re",
+    "unstable-pac",
+    "memory-x",
+    "time-driver-any",
+    "exti",
+] }
+embassy-executor = { version = "0.6", features = [
+    "task-arena-size-32768",
+    "arch-cortex-m",
+    "executor-thread",
+    "executor-interrupt",
+    "defmt",
+    "integrated-timers",
+] }
+embassy-time = { version = "0.3", features = ["defmt", "defmt-timestamp-uptime", "tick-hz-32_768"] }
+embassy-sync = { version = "0.6", features = ["defmt"] }
+embassy-futures = "0.1"
+
+# Cortex-M runtime + panic handling. cortex-m-rt provides the reset vector
+# and linker glue; panic-probe hooks panics into defmt so probe-rs prints
+# the stack trace over RTT on crash.
+cortex-m = { version = "0.7.7", features = ["inline-asm", "critical-section-single-core"] }
+cortex-m-rt = "0.7"
+panic-probe = { version = "0.3", features = ["print-defmt"] }
+
+# Logging over RTT (Real-Time Transfer). defmt-rtt is the transport,
+# defmt is the framing. probe-rs decodes both.
+defmt = "0.3"
+defmt-rtt = "0.4"
+
+# Heapless collections — no alloc in no_std firmware.
+heapless = "0.8"
+
+[patch.crates-io]
+# Embassy uses semver-incompatible pins across its sub-crates; upstream
+# recommends a single git rev pin for reproducibility. Swap to a stable
+# release tag once embassy-stm32 cuts one.
+# embassy-stm32 = { git = "https://github.com/embassy-rs/embassy", rev = "pinned" }

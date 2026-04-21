@@ -1,0 +1,25 @@
+# Controller + policy config for `sky serve`. Referenced from service.yaml
+# via `--controller-yaml sky-serve.yaml` when you want non-default sizing.
+# Most teams leave the defaults and only edit service.yaml.
+
+controller:
+  # Controller VM runs 24/7 and coordinates replicas. ~$30/mo on AWS defaults.
+  resources:
+    cloud: aws
+    cpus: 4+
+    memory: 16+
+    disk_size: 50
+
+service:
+  # Load-balancer policy: round_robin | least_load | queue_first.
+  load_balancing_policy: round_robin
+
+  # Auto-restart replicas on health-check failure.
+  # base_ondemand_fallback_replicas keeps at least one on-demand replica
+  # up even when use_spot: true, so spot-wide outages don't zero out capacity.
+  replica_policy:
+    min_replicas: 1
+    max_replicas: 4
+    base_ondemand_fallback_replicas: 1
+    # Scale out when average QPS per replica exceeds this.
+    target_qps_per_replica: 10

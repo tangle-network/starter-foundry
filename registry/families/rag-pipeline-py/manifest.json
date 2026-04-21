@@ -1,0 +1,174 @@
+{
+  "id": "rag-pipeline-py",
+  "description": "Python RAG pipeline \u2014 ingest local docs, chunk, embed via sentence-transformers, store in Chroma, retrieve top-k, answer via a local LLM (Ollama by default). Production-shape retrieval-augmented generation with langchain-core primitives. For knowledge-base chatbots, internal search, and doc Q&A products that keep their own corpus.",
+  "tags": [
+    "ml",
+    "rag",
+    "retrieval",
+    "python",
+    "langchain",
+    "chroma",
+    "embeddings"
+  ],
+  "taxonomy": {
+    "language": "python",
+    "runtime": "python",
+    "surface": "inference"
+  },
+  "slots": {
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk"
+      ],
+      "default": "auth:none"
+    }
+  },
+  "defaults": {
+    "projectType": "inference",
+    "serviceName": "starter-foundry-rag",
+    "port": 8098,
+    "embeddingModel": "sentence-transformers/all-MiniLM-L6-v2",
+    "llmModel": "llama3.1:8b",
+    "llmBaseUrl": "http://localhost:11434",
+    "vectorDbDir": "./chroma_db"
+  },
+  "files": [
+    {
+      "source": "files/pyproject.toml",
+      "target": "pyproject.toml"
+    },
+    {
+      "source": "files/.env.example",
+      "target": ".env.example"
+    },
+    {
+      "source": "files/docs/sample.md",
+      "target": "docs/sample.md"
+    },
+    {
+      "source": "files/README-rag.md",
+      "target": "docs/rag.md"
+    },
+    {
+      "source": "files/validate-rag.mjs",
+      "target": "validate-rag.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "pyproject.toml"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/pipeline.py"
+    },
+    {
+      "type": "file-exists",
+      "path": "docs/sample.md"
+    },
+    {
+      "type": "file-exists",
+      "path": ".env.example"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-rag.mjs"
+      ],
+      "expect": "rag pipeline starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pip install -e .",
+      "cp .env.example .env",
+      "python -m src.pipeline index",
+      "python -m src.pipeline ask 'what is paged attention?'"
+    ],
+    "entrypoints": [
+      "src/pipeline.py",
+      "pyproject.toml",
+      "docs/"
+    ],
+    "preview": null,
+    "extensionPoints": [
+      "docs/",
+      "src/pipeline.py"
+    ]
+  },
+  "keywords": [
+    "retrieval augmented generation",
+    "rag pipeline",
+    "langchain rag",
+    "chroma rag",
+    "sentence transformers",
+    "vector search python",
+    "embeddings pipeline",
+    "doc qa",
+    "knowledge base chatbot",
+    "local rag"
+  ],
+  "scoring": {
+    "boost": {
+      "rag pipeline": 5,
+      "chroma rag": 4,
+      "langchain rag": 4,
+      "retrieval augmented generation": 3
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "rag pipeline",
+      "retrieval augmented generation",
+      "langchain rag",
+      "chroma rag"
+    ],
+    "tier2": [
+      "sentence transformers",
+      "doc qa",
+      "embeddings pipeline",
+      "vector search python"
+    ],
+    "archetypes": [
+      "internal knowledge base chatbot",
+      "doc-grounded qa bot",
+      "enterprise rag search"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Pick this when the product owns its document corpus and needs grounded, citation-bearing answers. Ships end-to-end: ingest \u2192 chunk \u2192 embed \u2192 Chroma \u2192 retrieve \u2192 LLM. For raw LLM serving without retrieval, use vllm-server / tgi-server / ollama-server; for agentic tool-using loops, use agent-service-py.",
+    "firstSteps": [
+      "pip install -e . to install the package and all langchain/chroma deps",
+      "cp .env.example .env; verify LLM_BASE_URL points at a running Ollama (`ollama serve`) or OpenAI-compatible server",
+      "Drop source docs (.md / .txt / .pdf) into ./docs",
+      "python -m src.pipeline index \u2014 builds the Chroma collection",
+      "python -m src.pipeline ask 'your question here'"
+    ],
+    "gotchas": [
+      "sentence-transformers/all-MiniLM-L6-v2 is 384-dim. Mixing embeddings from different models in the same Chroma collection will silently return garbage \u2014 always nuke VECTOR_DB_DIR when you change EMBEDDING_MODEL.",
+      "Chroma persists SQLite + parquet to VECTOR_DB_DIR. Commit it to git only for tiny demo corpora; for real docs, rebuild on deploy.",
+      "Chunk size tradeoff: too small (<200 chars) loses context; too large (>1500) dilutes retrieval. Default is 800 chars with 120 overlap \u2014 tune per corpus.",
+      "If LLM_BASE_URL is Ollama you must `ollama pull {{llmModel}}` before the first query \u2014 first run otherwise 404s on the /api/chat call.",
+      "pypdf is imported lazily. PDF ingest requires `pip install pypdf`; the default install only handles .md and .txt.",
+      "Embedding the whole corpus is O(docs \u00d7 tokens \u00d7 embedding-forward-pass). For >10k docs use an ONNX/GPU sentence-transformers backend or batch via an embeddings API."
+    ],
+    "placeholders": [
+      {
+        "path": "src/main.py",
+        "description": "docs/ (replace sample.md with the real corpus)"
+      },
+      {
+        "path": "src/main.py",
+        "description": ".env (LLM_BASE_URL, LLM_MODEL, EMBEDDING_MODEL)"
+      },
+      {
+        "path": "src/main.py",
+        "description": "src/pipeline.py (chunk size, retrieval k, prompt template)"
+      }
+    ]
+  }
+}

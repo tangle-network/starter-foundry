@@ -47,5 +47,17 @@
       "The two-column layout shows a branded panel on desktop, form-only on mobile.",
       "Add middleware.ts to protect routes and redirect unauthenticated users."
     ]
+  },
+  "tieredKeywords": {
+    "archetypes": [
+      "client portal",
+      "customer portal",
+      "tenant portal",
+      "accounting firm",
+      "document portal",
+      "share tax returns",
+      "patient portal",
+      "secure login"
+    ]
   }
 }

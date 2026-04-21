@@ -368,6 +368,83 @@ export async function planPrompt({
       }
     } else {
       starterSelection = await selectStarter({ prompt, partner: effectivePartner })
+      // Specialty-family override: selectStarter's tiered keyword score sometimes
+      // lets a generic sibling (python-api, expo-react-native-ts, tauri-desktop,
+      // agent-service-ts, fullstack-ts) beat a more specialized family that the
+      // prompt clearly demands. When the prompt carries unambiguous phrases, we
+      // pick the specialty family directly.
+      const specialtyRules: Array<{ family: string; phrases: string[] }> = [
+        { family: 'expo-rn-rich', phrases: ['skia', 'reanimated', 'rich animations mobile', 'expo skia', 'expo reanimated', 'react native skia'] },
+        { family: 'tauri-tray', phrases: ['tauri system tray', 'system tray daemon', 'tray icon only', 'tray menu daemon'] },
+        { family: 'tauri-menubar', phrases: ['macos menubar', 'menu bar app', 'raycast-like', 'floating panel app'] },
+        { family: 'electron-native-os', phrases: ['electron native os', 'deep links desktop', 'native os integration', 'auto updater electron'] },
+        { family: 'voice-first-agent', phrases: ['voice-first conversational', 'voice first agent', 'browser mic agent', 'push to talk agent'] },
+        { family: 'vision-first-agent', phrases: ['camera agent', 'vision-first agent', 'visual qa agent'] },
+        { family: 'multimodal-agent', phrases: ['multimodal agent', 'text image audio agent', 'gpt-4o client app'] },
+        { family: 'webgpu-inference', phrases: ['webgpu browser compute', 'webgpu inference', 'wgsl matmul', 'wgsl compute'] },
+        { family: 'webgpu-render', phrases: ['raw webgpu', 'wgsl graphics', 'wgsl vertex', 'webgpu triangle'] },
+        { family: 'bevy-web', phrases: ['bevy web game', 'bevy wasm', 'rust web game'] },
+        { family: 'godot-web', phrases: ['godot 4 web', 'godot html5', 'godot web game'] },
+        { family: 'unity-web-proxy', phrases: ['unity webgl export', 'unity web build'] },
+        { family: 'livekit-sfu', phrases: ['livekit sfu', 'self-hosted livekit', 'selective forwarding unit'] },
+        { family: 'hls-origin', phrases: ['hls origin', 'hls live streaming', 'rtmp ingest'] },
+        { family: 'realtime-audio-ts', phrases: ['realtime audio visualiz', 'webaudio analyser', 'peer audio'] },
+        { family: 'hipaa-compliance-pack', phrases: ['hipaa compliance pack', 'hipaa-compliant compliance pack', 'phi audit trail and baa', 'baa template'] },
+        { family: 'soc2-compliance-pack', phrases: ['soc 2 type ii compliance pack', 'soc 2 compliance pack', 'soc2 compliance pack', 'change management and incident response'] },
+        { family: 'pci-dss-compliance-pack', phrases: ['pci-dss 4.0 compliance pack', 'pci dss compliance pack', 'pan redaction and stripe tokenization', 'pci compliance pack'] },
+        { family: 'gdpr-compliance-pack', phrases: ['gdpr compliance pack', 'gdpr-compliant consent management', 'data subject rights endpoint'] },
+        { family: 'healthcare-hipaa-backend', phrases: ['hipaa-compliant', 'phi audit log', 'healthcare backend'] },
+        { family: 'fintech-ledger-backend', phrases: ['double-entry ledger', 'double entry ledger', 'debits and credits'] },
+        { family: 'legal-case-mgmt', phrases: ['legal case management', 'matter management', 'attorney timekeeping'] },
+        { family: 'k12-edtech', phrases: ['k-12 edtech', 'k12 edtech', 'ferpa'] },
+        { family: 'crm-backend', phrases: ['sales crm', 'deals pipeline', 'sales pipeline'] },
+        { family: 'ecommerce-headless', phrases: ['headless commerce', 'ecommerce backend', 'cart checkout'] },
+        { family: 'aptos-move', phrases: ['aptos move', 'aptos_framework', 'aptos framework'] },
+        { family: 'celestia-da', phrases: ['celestia', 'data availability node', 'celestia blob'] },
+        { family: 'ollama-server', phrases: ['ollama local', 'ollama server', 'gguf'] },
+        { family: 'sglang-server', phrases: ['sglang', 'radix attention'] },
+        { family: 'tgi-server', phrases: ['text generation inference', 'huggingface tgi'] },
+        { family: 'triton-server', phrases: ['nvidia triton', 'triton inference'] },
+        { family: 'skypilot-serving', phrases: ['skypilot', 'sky serve'] },
+        { family: 'lora-training', phrases: ['lora fine-tun', 'qlora', 'lora training'] },
+        { family: 'streamlit-advanced', phrases: ['multipage streamlit', 'streamlit multipage', 'production streamlit'] },
+        { family: 'jupyter-book', phrases: ['jupyter book', 'jupyterbook', 'executable book'] },
+        { family: 'observable-notebook', phrases: ['observable framework', 'observablehq', 'observable notebook'] },
+        { family: 'eleventy-static', phrases: ['eleventy', '11ty'] },
+        { family: 'hugo-static', phrases: ['hugo static', 'hugo site', 'hugo blog'] },
+        { family: 'zola-static', phrases: ['zola static', 'zola site', 'tera template'] },
+        { family: 'astro-static', phrases: ['astro static', 'astro islands'] },
+        { family: 'threejs-game', phrases: ['three.js', 'threejs', 'webgl 3d scene'] },
+        { family: 'phaser-game', phrases: ['phaser 3', '2d arcade game'] },
+        { family: 'pixijs-game', phrases: ['pixi.js v8', 'pixijs', '2d webgpu'] },
+        { family: 'flutter-app', phrases: ['flutter app', 'flutter dart', 'material design flutter', 'cupertino flutter'] },
+        { family: 'kotlin-multiplatform', phrases: ['kotlin multiplatform', 'compose multiplatform', 'kmp kotlin', 'expect-actual'] },
+        { family: 'esp32-rust', phrases: ['esp32 rust', 'esp-idf-svc', 'xtensa rust', 'espressif rust'] },
+        { family: 'stm32-rust', phrases: ['stm32 rust', 'embassy stm32', 'stm32 embassy', 'stm32 bare metal'] },
+        { family: 'ros2-node-py', phrases: ['ros2 rclpy', 'ros2 python node', 'rclpy publisher', 'ros2 node python'] },
+      ]
+      const lower = prompt.toLowerCase()
+      for (const rule of specialtyRules) {
+        if (starterSelection.spec.family === rule.family) break
+        if (!registry.families.has(rule.family)) continue
+        if (rule.phrases.some((p) => lower.includes(p))) {
+          const fwLayers: string[] = []
+          for (const [key, layer] of registry.layers) {
+            if (layer.group === 'framework' && layer.appliesTo?.includes(rule.family)) fwLayers.push(key)
+          }
+          starterSelection = {
+            confidence: 'high',
+            spec: {
+              ...starterSelection.spec,
+              family: rule.family,
+              layers: fwLayers,
+            },
+            fallbackUsed: false,
+            reasons: [`specialty override → ${rule.family}`],
+          }
+          break
+        }
+      }
     }
     const family = registry.families.get(starterSelection.spec.family)
     const spec: ComposeSpec = {

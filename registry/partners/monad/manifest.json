@@ -1,0 +1,46 @@
+{
+  "id": "monad",
+  "description": "Partner pack for Monad — parallel-execution EVM L1 with 10k TPS, 1s block time, bytecode-compatible. Biases toward high-throughput DeFi, real-time games on-chain, and latency-sensitive agents.",
+  "appliesTo": [
+    "frontend-static",
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "api-service",
+    "evm-infra-ts",
+    "agent-service-ts",
+    "agent-service-py",
+    "worker-job",
+    "forge-contracts",
+    "hardhat-contracts"
+  ],
+  "slotDefaults": {
+    "sdk": "sdk:evm-wallet"
+  },
+  "defaults": {
+    "headline": "Ship on Monad — 10k TPS parallel EVM",
+    "subheadline": "Bytecode-compatible with Ethereum; tuned for high-throughput DeFi, on-chain games, and low-latency agent flows."
+  },
+  "files": [
+    {
+      "source": "files/partner-config.json",
+      "target": "partner-config.json"
+    },
+    {
+      "source": "files/starter-brand.json",
+      "target": "starter-brand.json"
+    }
+  ],
+  "buildHints": {
+    "whenToUse": "Prompt mentions Monad, parallel EVM, or high-TPS DeFi that would stress Ethereum mainnet.",
+    "firstSteps": [
+      "Configure the chainId (testnet: 10143) and rpcUrl (testnet: https://testnet-rpc.monad.xyz) in partner-config.json — use devnet for local work, testnet for integrations.",
+      "For forge-contracts / hardhat-contracts: add the Monad RPC as a network entry and deploy with the usual toolchain — no Monad-specific compiler flags.",
+      "For evm-infra-ts: default to 1s block-time polling; Monad produces blocks 12× faster than Ethereum mainnet so tune indexer cadence accordingly."
+    ],
+    "gotchas": [
+      "Monad is NOT an OP-stack or zk rollup — it's a parallel-execution L1. Don't assume OP proofs, rollup withdrawal windows, or L1 settlement patterns apply.",
+      "Transaction ordering semantics differ from serial-execution chains; avoid assumptions that tx A settled before tx B just because A was submitted first unless you check block ordering."
+    ]
+  }
+}

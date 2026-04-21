@@ -1,0 +1,11 @@
+# Godot editor cache — regenerated on open, never commit.
+.godot/
+
+# Export output — built artifact.
+exports/
+
+# Editor metadata.
+*.import
+
+# OS junk.
+.DS_Store

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "buildhints.schema.json",
+  "title": "BuildHints",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "pages": { "type": "array", "items": { "type": "string" } },
+    "apiRoutes": { "type": "array", "items": { "type": "string" } },
+    "components": { "type": "array", "items": { "type": "string" } },
+    "dataModels": { "type": "array", "items": { "type": "string" } },
+    "integrations": { "type": "array", "items": { "type": "string" } },
+    "architectureNotes": { "type": "array", "items": { "type": "string" } },
+    "firstSteps": { "type": "array", "items": { "type": "string" } },
+    "gotchas": { "type": "array", "items": { "type": "string" } },
+    "whenToUse": { "type": "string" },
+    "placeholders": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "description"],
+        "additionalProperties": false,
+        "properties": {
+          "path": { "type": "string" },
+          "description": { "type": "string", "minLength": 20 }
+        }
+      }
+    }
+  }
+}

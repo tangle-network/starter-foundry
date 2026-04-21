@@ -1,5 +1,49 @@
 # Evolve Progress — starter-foundry routing quality
 
+## 2026-04-21 — Evolve Round 1: reduce scaffold_gap_installs
+
+Commit: `77d4453`. Target metric: `scaffold_gap_installs` (59 → target ≤10
+per scorecard). Lagging metric — won't update until next VB sweep.
+
+**Hypothesis (verified root cause):** `capability:tailwind.packageDeps`
+was empty. The capability attached tailwind config files but never declared
+`tailwindcss` itself in the composed project's package.json. Any family
+relying on the capability to provide tailwind silently got only the config.
+
+**Intervention (4 files):**
+- `capability:tailwind.packageDeps`: declare `tailwindcss` + `@tailwindcss/vite`
+- `capability:tailwind.appliesTo`: +6 frontend families (electron-native-os,
+  multimodal-agent, vision-first-agent, voice-first-agent, realtime-audio-ts,
+  astro-static)
+- `capability:shadcn.appliesTo`: +2 React+Vite (electron-native-os,
+  multimodal-agent) so lucide-react + clsx + tailwind-merge cascade
+- `REACT_FAMILIES` (planner/signals.ts): +2 so planner auto-attaches
+  tailwind + shadcn without explicit prompt signal
+
+**Verified end-to-end:** compose vision-first-agent with `capability:tailwind`
+attached → `pnpm install` (green) → `pnpm run build` (green, 88ms). The
+composed `package.json` has `tailwindcss: ^4.0.0` + `@tailwindcss/vite: ^4.0.0`.
+On electron-native-os with both `capability:tailwind` + `capability:shadcn`,
+all 5 previously-missing deps (tailwindcss, @tailwindcss/vite, lucide-react,
+clsx, tailwind-merge) present after compose.
+
+**Test suite:** 601/601 (no regression).
+
+**Expected impact** (awaiting next VB sweep to verify): eliminates
+tailwindcss + @tailwindcss/vite + lucide-react + clsx installs on
+subsequent buildouts that land on the newly-covered families. Upper bound
+on gap-installs eliminated: 54 (sum of top-added counts for those 4 pkgs).
+Realistic: some fraction, since not every future buildout will land on
+those families.
+
+**Deferred to Round 2:**
+- Extend `capability:code-editor` auto-attach rules — 18 codemirror adds
+  across buildouts, capability packageDeps already has the right deps
+- Apply promotable template candidates in `.evolve/template-candidates/`
+  (index.html + src/index.css have rewrites waiting) — may reduce
+  top_file_rewrite_count from 13 toward target 5
+- Install gradle + retry kotlin-multiplatform → 47/48 strict pass
+
 ## 2026-04-21 — Pursue Gen 1: e2e 100% complete on drew/s-plus-tier
 
 Commit: `b760e93`. Generation thesis: *match the verifier's rigor to the

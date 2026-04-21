@@ -1,11 +1,13 @@
 {
   "mode": "evolve",
-  "goal": "drive s-plus-tier branch to e2e 100% complete",
-  "status": "gen-1-committed",
+  "goal": "reduce scaffold_gap_installs from 59 toward ≤10 via capability auto-attach + packageDep backfill",
+  "status": "r1-committed",
+  "round": 1,
   "generation": 1,
   "activePursuit": ".evolve/pursuits/2026-04-21-e2e-100-complete.md",
-  "updatedAt": "2026-04-21T07:00:00Z",
-  "commit": "b760e93",
+  "updatedAt": "2026-04-21T07:30:00Z",
+  "commit": "77d4453",
+  "priorCommits": ["b760e93"],
   "baseline": {
     "strictVerifierPassRate": 0.9583,
     "strictVerifierPasses": 46,
@@ -33,7 +35,23 @@
       "kotlin-multiplatform (no gradle binary)"
     ]
   },
+  "round1Results": {
+    "hypothesis": "capability:tailwind.packageDeps is empty → attached families get config files but no tailwindcss npm dep → agents add it themselves 14×",
+    "intervention": [
+      "capability:tailwind.packageDeps: declare tailwindcss + @tailwindcss/vite",
+      "capability:tailwind.appliesTo: +6 frontend families",
+      "capability:shadcn.appliesTo: +2 React+Vite families",
+      "REACT_FAMILIES (signals.ts): +2 so planner auto-attaches for new React families"
+    ],
+    "verified": "compose + pnpm install + pnpm run build green on vision-first-agent with capability:tailwind cascaded",
+    "testSuite": "601/601",
+    "expectedImpact": "14 tailwindcss adds + 14 @tailwindcss/vite adds + 9 clsx adds + 17 lucide-react adds eliminated on future VB runs targeting the newly-covered families (subset of those lands on these families)",
+    "measuredImpactCaveat": "scaffold_gap_installs in .evolve/scorecard.json is a LAGGING metric computed from buildout-analysis.json; won't update until next VB/blueprint-agent sweep. Score delta not yet observable."
+  },
   "deferred": {
+    "r2-codemirror": "capability:code-editor already has packageDeps; extend its keywords + auto-attach rules (planner) to catch more buildout scenarios — 18 codemirror adds in topAddedPackages",
+    "r2-kotlin-gradle": "install gradle binary → retry kotlin-multiplatform to reach 47/48 strict pass",
+    "r2-template-promotion": ".evolve/template-candidates/index.html has 3 promotable candidates; --apply them to their source to reduce top_file_rewrite_count (13→≤5 target)",
     "gen2": "boot-and-audit phase using bad CLI — design complete in pursuit spec, unbuilt",
     "diverseServe": "env flag STARTER_FOUNDRY_DIVERSE_SERVE — unbuilt",
     "resumeBuilderSessions": "claude --resume across shots — untested experiment",
@@ -49,5 +67,5 @@
       "ideasaiCapHit": 0.181
     }
   },
-  "handoff": "Ready for Gen 2 (boot-and-audit with bad CLI) to raise the bar further, or /governor to pick the next surface. Branch drew/s-plus-tier is committed (b760e93) and shippable modulo the agent-eval link: dep for CI. Run `node scripts/promote-template.mjs --all` any time versions are added; `node scripts/gc-template-library.mjs --apply` to prune."
+  "handoff": "Run `/evolve` again to take Round 2 — extend capability:code-editor auto-attach rules (+18 codemirror gap-installs), or apply promotable template candidates (src/App.tsx, index.html have rewritten alternatives waiting in .evolve/template-candidates/). Or `/pursue` for Gen 2 boot-and-audit. Branch is at 77d4453, 601/601 tests green, shippable modulo agent-eval link: dep."
 }

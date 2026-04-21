@@ -1,0 +1,80 @@
+{
+  "id": "ecommerce-headless",
+  "description": "Headless commerce framework layer — products/variants/carts/line_items/orders/payments/webhook_events schema, Stripe PaymentIntent checkout, signature-verified idempotent Stripe webhooks.",
+  "appliesTo": ["ecommerce-headless"],
+  "files": [
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/.env.example", "target": ".env.example" },
+    { "source": "files/AGENTS.md", "target": "AGENTS.md" },
+    { "source": "files/server.ts", "target": "src/server.ts" },
+    { "source": "files/schema.ts", "target": "src/db/schema.ts" },
+    { "source": "files/db.ts", "target": "src/db/client.ts" },
+    { "source": "files/products.ts", "target": "src/api/products.ts" },
+    { "source": "files/cart.ts", "target": "src/api/cart.ts" },
+    { "source": "files/checkout.ts", "target": "src/api/checkout.ts" },
+    { "source": "files/stripe-webhook.ts", "target": "src/webhooks/stripe.ts" },
+    { "source": "files/drizzle.config.ts", "target": "drizzle.config.ts" }
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "drizzle-orm": "^0.36.0",
+      "postgres": "^3.4.5",
+      "stripe": "^17.0.0"
+    },
+    "devDependencies": {
+      "drizzle-kit": "^0.30.0",
+      "typescript": "^5.9.0",
+      "@types/node": "^20.17.0"
+    }
+  },
+  "buildHints": {
+    "apiRoutes": [
+      "GET /health",
+      "GET /api/products / GET /api/products/:id",
+      "POST /api/carts (create cart)",
+      "POST /api/carts/:id/items (add line item)",
+      "DELETE /api/carts/:id/items/:lineItemId",
+      "POST /api/carts/:id/checkout (creates Order + Stripe PaymentIntent, returns client_secret)",
+      "POST /webhooks/stripe (signature-verified, idempotent)"
+    ],
+    "dataModels": [
+      "Product (handle, title, description, status: active|draft|archived)",
+      "Variant (productId, sku, priceCents, currency, inventoryQty, attributes jsonb)",
+      "Cart (customerId nullable, status: active|checked_out|abandoned, currency)",
+      "LineItem (cartId, variantId, qty, unitPriceCents snapshot)",
+      "Order (cartId, customerId, subtotalCents, taxCents, totalCents, status: pending|paid|fulfilled|refunded|cancelled, placedAt, paidAt)",
+      "Payment (orderId, processor: stripe, processorId piId, amountCents, status, capturedAt)",
+      "WebhookEvent (processor, eventId UNIQUE, type, receivedAt, processedAt, payloadJson) — idempotency key"
+    ],
+    "integrations": [
+      "Stripe PaymentIntents for checkout (confirm on client with client_secret)",
+      "Stripe webhooks with signature verification (stripe.webhooks.constructEvent)",
+      "Drizzle ORM with Postgres"
+    ],
+    "architectureNotes": [
+      "Prices captured on LineItem at add-to-cart time — product price changes don't retroactively alter carts",
+      "Inventory decremented on ORDER PLACEMENT (not payment success) to prevent overselling during payment processing",
+      "Webhook idempotency: webhook_events.event_id is UNIQUE; duplicate Stripe deliveries no-op instead of double-crediting the order",
+      "Amounts are integer cents, currency per-row (Stripe minimum amount is also in cents)"
+    ],
+    "firstSteps": [
+      "Copy .env.example to .env and fill in DATABASE_URL (postgres://...) and STRIPE_SECRET_KEY (sk_test_...)",
+      "Run `pnpm db:generate` then `pnpm db:migrate` to create the schema in your database",
+      "Run `pnpm dev` — server starts on PORT (default 8105); confirm with GET /health",
+      "For local webhook testing: `stripe listen --forward-to localhost:8105/webhooks/stripe` and set STRIPE_WEBHOOK_SECRET to the printed whsec_ value",
+      "To add a product: INSERT into products + variants tables (priceCents is integer cents, currency is 3-char ISO code)",
+      "Extend src/db/schema.ts for new fields, then re-run db:generate + db:migrate — Drizzle infers the migration diff automatically"
+    ],
+    "gotchas": [
+      "Stripe webhook signatures MUST be verified with the raw request body BEFORE JSON parsing. Parsing first, then verifying against a re-serialized body, fails because of whitespace differences.",
+      "Webhooks MUST be idempotent. Stripe retries on any non-2xx AND on timeouts even after you succeed. Use webhook_events.event_id UNIQUE as the lock.",
+      "PCI-DSS: NEVER store card numbers (PAN), CVV, or full track data. Only Stripe's payment_intent_id / payment_method_id. PCI-SAQ A requires card data never touches your server — use Stripe.js on the client, server only sees tokens.",
+      "Oversell bug: decrement inventory in the SAME transaction as order placement. Decrementing on webhook 'payment_succeeded' leaves a race where two customers claim the last unit.",
+      "Price drift: snapshot the unit_price onto LineItem at add-to-cart. Reading product.price at checkout means catalog edits retroactively charge customers more (or less).",
+      "Tax is jurisdictional and this scaffold does NOT compute it. Integrate TaxJar / Stripe Tax / Avalara before going live; don't hard-code a percentage.",
+      "Refunds are NEW records (refund payment with negative amount OR separate Refund entity), not UPDATEs to the original payment. Financial auditability demands it.",
+      "Cart expiration / abandoned cart cleanup must NOT release inventory that was decremented on order placement — inventory is released by cancelling the order explicitly.",
+      "Currency minor units differ: JPY has 0 decimals, USD has 2, TND has 3. amountCents isn't literally 'cents' for every currency — follow Stripe's currency docs."
+    ]
+  }
+}

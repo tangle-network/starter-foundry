@@ -1,0 +1,64 @@
+{
+  "id": "celestia-da",
+  "description": "Celestia DA light-node scaffold — docker-compose for the node, config.toml overrides, submit-blob.sh CLI, and a stdlib Go client that round-trips a blob via JSON-RPC.",
+  "appliesTo": ["celestia-da"],
+  "files": [
+    { "source": "files/docker-compose.yml", "target": "docker-compose.yml" },
+    { "source": "files/config.toml", "target": "config.toml" },
+    { "source": "files/submit-blob.sh", "target": "submit-blob.sh" },
+    { "source": "files/cmd/client/main.go", "target": "cmd/client/main.go" },
+    { "source": "files/go.mod", "target": "go.mod" },
+    { "source": "files/go.sum", "target": "go.sum" },
+    { "source": "files/AGENTS.md", "target": "AGENTS.md" }
+  ],
+  "buildHints": {
+    "whenToUse": "Any project that needs a Celestia data-availability layer: modular rollups, sovereign chains, or off-chain data-posting pipelines that must prove DA on the Celestia mocha testnet.",
+    "firstSteps": [
+      "Start the light node: `docker compose up -d` — allow 1-2 minutes for initial header sync.",
+      "Fund the node wallet from the Mocha faucet (address in node logs) — blob.Submit costs TIA gas; without funds you will see `insufficient funds`.",
+      "Export the auth token: `export CELESTIA_NODE_AUTH_TOKEN=$(docker compose exec node celestia light auth admin --p2p.network mocha-4)`",
+      "Run the Go round-trip client: `go run ./cmd/client` — submits a blob and retrieves it at the returned height.",
+      "Or use the shell script: `bash submit-blob.sh \"my payload\"`"
+    ],
+    "gotchas": [
+      "CELESTIA_NODE_AUTH_TOKEN is per container instance — re-export after any `docker compose down && up` cycle.",
+      "blob.GetAll returns null until the chain head advances past the inclusion height — poll `header.NetworkHead` if GetAll returns empty.",
+      "Namespaces must be exactly 29 bytes: 1 version byte + 28 ID bytes. Version-0 user namespaces require the first 18 ID bytes to be 0x00.",
+      "The Go client uses only stdlib — go.sum is intentionally empty. Do not add external deps without running `go mod tidy`."
+    ],
+    "architectureNotes": [
+      "cmd/client/main.go uses only the Go standard library; go.mod declares the module but has no require entries, and go.sum is empty.",
+      "All RPC calls target 127.0.0.1:26658 via JSON-RPC 2.0 with Bearer token auth — same endpoint for blob.Submit, blob.GetAll, and header queries.",
+      "config.toml is the committed knob reference; copy to data/config.toml inside the Docker volume to apply custom overrides."
+    ],
+    "placeholders": [
+      {
+        "path": "cmd/client/main.go",
+        "description": "Hardcoded namespace constant and sample payload. Replace the `namespace` constant and `payload` variable in main() with your application's namespace and data."
+      },
+      {
+        "path": "submit-blob.sh",
+        "description": "Uses the same hardcoded NAMESPACE as cmd/client/main.go. Update NAMESPACE in both files together."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "docker compose up -d",
+      "export CELESTIA_NODE_AUTH_TOKEN=$(docker compose exec node celestia light auth admin --p2p.network mocha-4)",
+      "go run ./cmd/client",
+      "bash submit-blob.sh \"hello celestia\""
+    ],
+    "entrypoints": [
+      "docker-compose.yml",
+      "cmd/client/main.go",
+      "submit-blob.sh"
+    ],
+    "preview": null,
+    "extensionPoints": [
+      "cmd/client/main.go",
+      "config.toml",
+      "docker-compose.yml"
+    ]
+  }
+}

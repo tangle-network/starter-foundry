@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-04-21T08:11:26.333Z",
+  "audits": [
+    {
+      "layerId": "framework:gdpr-compliance-pack",
+      "family": "gdpr-compliance-pack",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 1536.7522920000001,
+          "stderrTail": "",
+          "stdoutTail": "Progress: resolved 1, reused 0, downloaded 0, added 0\nProgress: resolved 12, reused 12, downloaded 0, added 0\nPackages: +12\n++++++++++++\nProgress: resolved 12, reused 12, downloaded 0, added 12, done\n\ndependencies:\n+ react 18.3.1 (19.2.5 is available)\n+ react-dom 18.3.1 (19.2.5 is available)\n\ndevDependencies:\n+ @types/node 22.19.17 (25.6.0 is available)\n+ @types/react 18.3.28 (19.2.14 is available)\n+ @types/react-dom 18.3.7 (19.2.3 is available)\n+ typescript 5.9.3 (6.0.3 is available)\n\nDone in 1.4s using pnpm v10.22.0\n"
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 1093.431209,
+          "stderrTail": "",
+          "stdoutTail": ""
+        },
+        {
+          "phase": "build",
+          "skipped": "no-build-script",
+          "ok": true
+        },
+        {
+          "phase": "validationChecks",
+          "skipped": "none-declared",
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

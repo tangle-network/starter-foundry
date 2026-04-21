@@ -2,29 +2,98 @@
   "id": "webrtc",
   "description": "Adds WebRTC video/voice calling with room management, screen sharing, and participant grid.",
   "group": "capability",
-  "appliesTo": ["nextjs-ts", "react-vite-ts", "fullstack-ts", "remix-ts"],
-  "keywords": ["webrtc", "video call", "voice call", "video chat", "screen sharing", "video conference", "peer to peer", "livekit", "daily", "huddle", "zoom clone", "google meet"],
+  "appliesTo": [
+    "nextjs-ts",
+    "react-vite-ts",
+    "fullstack-ts",
+    "remix-ts"
+  ],
+  "keywords": [
+    "webrtc",
+    "video call",
+    "voice call",
+    "video chat",
+    "screen sharing",
+    "video conference",
+    "peer to peer",
+    "livekit",
+    "daily",
+    "huddle",
+    "zoom clone",
+    "google meet"
+  ],
   "files": [
-    { "source": "files/webrtc-config.json", "target": "webrtc-config.json" },
-    { "source": "files/video-room.tsx", "target": "src/components/webrtc/video-room.tsx" },
-    { "source": "files/participant-tile.tsx", "target": "src/components/webrtc/participant-tile.tsx" },
-    { "source": "files/call-controls.tsx", "target": "src/components/webrtc/call-controls.tsx" }
+    {
+      "source": "files/webrtc-config.json",
+      "target": "webrtc-config.json"
+    },
+    {
+      "source": "files/video-room.tsx",
+      "target": "src/components/webrtc/video-room.tsx"
+    },
+    {
+      "source": "files/participant-tile.tsx",
+      "target": "src/components/webrtc/participant-tile.tsx"
+    },
+    {
+      "source": "files/call-controls.tsx",
+      "target": "src/components/webrtc/call-controls.tsx"
+    }
   ],
   "defaults": {
     "signalingUrl": "ws://localhost:7880",
     "maxParticipants": 12
   },
   "buildHints": {
-    "pages": ["/room", "/room/[id]"],
-    "apiRoutes": ["/api/room/create", "/api/room/token"],
-    "components": ["VideoRoom", "ParticipantTile", "CallControls", "ScreenShareView"],
-    "integrations": ["LiveKit or Daily.co for SFU signaling", "STUN/TURN for NAT traversal"],
+    "pages": [
+      "/room",
+      "/room/[id]"
+    ],
+    "apiRoutes": [
+      "/api/room/create",
+      "/api/room/token"
+    ],
+    "components": [
+      "VideoRoom",
+      "ParticipantTile",
+      "CallControls",
+      "ScreenShareView"
+    ],
+    "integrations": [
+      "LiveKit or Daily.co for SFU signaling",
+      "STUN/TURN for NAT traversal"
+    ],
     "architectureNotes": [
       "VideoRoom manages local/remote media streams and participant grid layout.",
       "CallControls provides mute/unmute, camera toggle, screen share, and leave buttons.",
       "ParticipantTile renders a single video with name overlay and audio indicator.",
       "Wire /api/room/token to generate room access tokens from your signaling provider.",
       "For production, use LiveKit Cloud or self-hosted LiveKit server."
+    ]
+  },
+  "tieredKeywords": {
+    "archetypes": [
+      "video consultation",
+      "video consultations",
+      "video rooms",
+      "video room",
+      "video call",
+      "video calls",
+      "video updates",
+      "video conferencing",
+      "video conference",
+      "virtual co-working",
+      "virtual coworking",
+      "low-latency audio",
+      "persistent video",
+      "video tutoring",
+      "async video",
+      "screen sharing",
+      "shared whiteboard",
+      "telehealth",
+      "livekit",
+      "peer-to-peer",
+      "jam session"
     ]
   }
 }

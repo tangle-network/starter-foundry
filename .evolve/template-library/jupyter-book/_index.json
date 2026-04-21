@@ -1,0 +1,22 @@
+{
+  "family": "jupyter-book",
+  "current": "v_b26ed110d86a",
+  "topN": [
+    "v_b26ed110d86a",
+    "v_b2840787ebae"
+  ],
+  "all": [
+    {
+      "version": "v_b26ed110d86a",
+      "score": 0.6099949926274735,
+      "skipped": null
+    },
+    {
+      "version": "v_b2840787ebae",
+      "score": 0.4599999945728691,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.344Z"
+}

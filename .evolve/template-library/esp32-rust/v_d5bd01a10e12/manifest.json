@@ -1,0 +1,50 @@
+{
+  "id": "esp32-rust",
+  "description": "ESP32 Rust firmware scaffold: minimal Cargo.toml + stable toolchain pin + src/main.rs entrypoint that compiles on stock rustup, ready to extend with esp-idf-svc for real hardware targets.",
+  "appliesTo": ["esp32-rust"],
+  "files": [
+    { "source": "files/Cargo.toml", "target": "Cargo.toml" },
+    { "source": "files/.cargo/config.toml", "target": ".cargo/config.toml" },
+    { "source": "files/rust-toolchain.toml", "target": "rust-toolchain.toml" },
+    { "source": "files/build.rs", "target": "build.rs" },
+    { "source": "files/src/main.rs", "target": "src/main.rs" },
+    { "source": "files/README.md", "target": "README.md" }
+  ],
+  "buildHints": {
+    "whenToUse": "Use this layer for any ESP32 Rust firmware project. It provides a compilable baseline; extend Cargo.toml with esp-idf-svc/esp-idf-hal crates and switch rust-toolchain.toml channel to 'esp' when targeting real hardware via espup.",
+    "firstSteps": [
+      "Run `cargo check` to verify the baseline compiles on stable",
+      "To target real ESP32 hardware: install espup (`cargo install espup && espup install`), change rust-toolchain.toml channel to 'esp', add esp-idf-svc/esp-idf-hal to Cargo.toml",
+      "Source `$HOME/export-esp.sh` in every shell before building for hardware",
+      "Install espflash for flashing: `cargo install espflash cargo-espflash`",
+      "Flash a connected board: `cargo espflash flash --release --monitor`"
+    ],
+    "gotchas": [
+      "The xtensa-esp32-espidf target requires the esp-rs forked rustc. Stock stable rustup cannot resolve esp-idf-svc. Switch channel to 'esp' and run espup before adding firmware crates.",
+      "Source `$HOME/export-esp.sh` in every shell before `cargo check` or `cargo build` when using the esp channel. Without it rustc cannot find the xtensa target.",
+      "Do NOT add a build.rs unless you also add a `build` key in Cargo.toml pointing to it — a stray build.rs in the src root is silently ignored and causes confusion."
+    ],
+    "architectureNotes": [
+      "The stable-channel baseline compiles as a normal Rust binary. Real ESP32 firmware replaces main() with the esp-idf-svc entrypoint pattern and pins channel = 'esp' in rust-toolchain.toml."
+    ],
+    "placeholders": [
+      {
+        "path": "src/main.rs",
+        "description": "Replace the println stub with real firmware logic using esp-idf-svc for WiFi, HTTP, and peripheral access."
+      },
+      {
+        "path": "Cargo.toml",
+        "description": "Add esp-idf-svc, esp-idf-hal, anyhow, and log crates when targeting ESP32 hardware."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "cargo check",
+      "cargo build --release",
+      "cargo espflash flash --release --monitor"
+    ],
+    "entrypoints": ["src/main.rs"],
+    "extensionPoints": ["src/main.rs", "Cargo.toml", "rust-toolchain.toml"]
+  }
+}

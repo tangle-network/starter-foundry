@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="{{ config.default_language }}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ section.title | default(value=config.title) }}</title>
+    <link rel="stylesheet" href="{{ get_url(path='main.css') | safe }}" />
+  </head>
+  <body>
+    <header>
+      <h1>{{ config.title }}</h1>
+      <p>{{ config.extra.subtitle }}</p>
+    </header>
+    <main>
+      {{ section.content | safe }}
+      {% if section.pages %}
+        <h2>Posts</h2>
+        <ul>
+          {% for page in section.pages %}
+            <li><a href="{{ page.permalink | safe }}">{{ page.title }}</a></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </main>
+  </body>
+</html>

@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-04-21T08:03:27.813Z",
+  "audits": [
+    {
+      "layerId": "framework:electron-native-os",
+      "family": "electron-native-os",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 7838.268625,
+          "stderrTail": "",
+          "stdoutTail": "Progress: resolved 469, reused 423, downloaded 0, added 396\nProgress: resolved 469, reused 423, downloaded 0, added 423, done\n\ndependencies:\n+ electron-log 5.4.3\n+ electron-updater 6.8.3\n\ndevDependencies:\n+ @types/node 20.19.39 (25.6.0 is available)\n+ @types/react 18.3.28 (19.2.14 is available)\n+ @types/react-dom 18.3.7 (19.2.3 is available)\n+ @vitejs/plugin-react 4.7.0 (6.0.1 is available)\n+ electron 33.4.11 (41.2.1 is available)\n+ electron-builder 25.1.8 (26.8.1 is available)\n+ electron-vite 2.3.0 (5.0.0 is available)\n+ react 18.3.1 (19.2.5 is available)\n+ react-dom 18.3.1 (19.2.5 is available)\n+ typescript 5.9.3 (6.0.3 is available)\n+ vite 5.4.21 (8.0.9 is available)\n\n╭ Warning ─────────────────────────────────────────────────────────────────────╮\n│                                                                              │\n│   Ignored build scripts: electron, esbuild.                                  │\n│   Run \"pnpm approve-builds\" to pick which dependencies should be allowed     │\n│   to run scripts.                                                            │\n│                                                                              │\n╰──────────────────────────────────────────────────────────────────────────────╯\n\nDone in 7.7s using pnpm v10.22.0\n"
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 1222.2020410000005,
+          "stderrTail": "",
+          "stdoutTail": ""
+        },
+        {
+          "phase": "build",
+          "skipped": "no-build-script",
+          "ok": true
+        },
+        {
+          "phase": "validationChecks",
+          "skipped": "none-declared",
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

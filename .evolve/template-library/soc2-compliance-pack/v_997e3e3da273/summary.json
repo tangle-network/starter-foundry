@@ -1,0 +1,22 @@
+{
+  "familyId": "soc2-compliance-pack",
+  "runAt": "2026-04-21T06:29:43.522Z",
+  "completed": true,
+  "shotsUsed": 1,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 104579,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 104579,
+      "reviewAvailable": true
+    }
+  ]
+}

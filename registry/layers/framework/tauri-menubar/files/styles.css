@@ -1,0 +1,112 @@
+:root {
+  color-scheme: light dark;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 320px;
+  height: 400px;
+  overflow: hidden;
+  background: transparent;
+}
+
+/* Popover container: rounded to match macOS vibrancy, subtle border for
+ * light mode, hard edge for Windows dark contexts. */
+.popover {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.92);
+  color: #0f172a;
+  border-radius: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.18);
+  backdrop-filter: saturate(160%) blur(18px);
+}
+
+@media (prefers-color-scheme: dark) {
+  .popover {
+    background: rgba(15, 23, 42, 0.88);
+    color: #f8fafc;
+    border-color: rgba(248, 250, 252, 0.08);
+  }
+}
+
+.popover__header {
+  padding: 12px 14px 8px;
+}
+
+.popover__header h1 {
+  font-size: 13px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.popover__header p {
+  font-size: 11px;
+  margin: 2px 0 0;
+  opacity: 0.7;
+}
+
+.popover__query {
+  margin: 0 12px;
+  padding: 8px 10px;
+  font-size: 13px;
+  border-radius: 8px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.6);
+  outline: none;
+}
+
+.popover__query:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.popover__list {
+  flex: 1;
+  overflow-y: auto;
+  list-style: none;
+  padding: 6px;
+  margin: 8px 6px 0;
+}
+
+.popover__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.popover__row:hover {
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.popover__row--empty {
+  opacity: 0.6;
+  cursor: default;
+  justify-content: center;
+}
+
+.popover__row kbd {
+  font-size: 11px;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  background: rgba(15, 23, 42, 0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.popover__footer {
+  padding: 8px 14px 12px;
+  font-size: 10px;
+  opacity: 0.55;
+  border-top: 1px solid rgba(15, 23, 42, 0.06);
+}

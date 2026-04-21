@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-04-21T08:05:45.545Z",
+  "audits": [
+    {
+      "layerId": "framework:celestia-da",
+      "family": "celestia-da",
+      "pm": "go",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "go build ./...",
+          "ok": true,
+          "durationMs": 873.669541,
+          "stderrTail": "",
+          "stdoutTail": ""
+        },
+        {
+          "phase": "validationChecks",
+          "skipped": "none-declared",
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

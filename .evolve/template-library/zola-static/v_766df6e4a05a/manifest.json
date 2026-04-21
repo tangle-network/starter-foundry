@@ -1,0 +1,70 @@
+{
+  "id": "zola-static",
+  "description": "Zola framework layer: index Tera template, home content bundle, and a SASS entry file — three files that complete a bootable Zola site when composed with the zola-static family.",
+  "appliesTo": ["zola-static"],
+  "files": [
+    { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/gitignore", "target": ".gitignore" },
+    { "source": "files/index.html", "target": "templates/index.html" },
+    { "source": "files/base.html", "target": "templates/base.html" },
+    { "source": "files/_index.md", "target": "content/_index.md" },
+    { "source": "files/main.scss", "target": "sass/main.scss" },
+    { "source": "files/static.gitkeep", "target": "static/.gitkeep" }
+  ],
+  "buildHints": {
+    "whenToUse": "Static blogs, documentation sites, marketing pages, or any project that needs a zero-JS build pipeline, built-in SASS compilation, and Tera templating without a Node.js dependency.",
+    "firstSteps": [
+      "Install the Zola binary: `brew install zola` (macOS), `snap install zola` (Linux), or download from https://www.getzola.org/documentation/getting-started/installation/",
+      "Run `npm install` (no-op — no Node deps; the package.json scripts are thin wrappers around the Zola CLI for tooling consistency).",
+      "Run `npm run serve` (or `zola serve --port 1111`) from the project root — Zola compiles templates + SASS and live-reloads at http://127.0.0.1:1111.",
+      "Edit `content/_index.md` to change the home page title and body copy; TOML frontmatter is delimited by `+++`.",
+      "Add blog posts as Markdown files in `content/posts/<slug>.md` — each needs `title`, `date`, and optionally `draft = true` in TOML frontmatter.",
+      "Run `zola build` to emit the production site to `public/` — no server required, deploy any static host."
+    ],
+    "gotchas": [
+      "`templates/index.html` is required for the root section (`content/_index.md`); if it is missing or misnamed, Zola aborts with a template-not-found error.",
+      "SASS is compiled automatically from `sass/main.scss` into `public/main.css`; reference it in templates via `{{ get_url(path='main.css') }}`.",
+      "Content files do not render Tera by default — `{{ ... }}` in a Markdown body appears verbatim. The foundry substitutes `{{headline}}` / `{{subheadline}}` placeholders at compose time, before Zola ever sees the files.",
+      "Zola requires `base_url` in `config.toml` to be an absolute URL; leave it as `http://127.0.0.1:1111` for local dev and override for production.",
+      "Section pages (`_index.md`) cannot be drafts — the `draft = true` flag only works on leaf pages."
+    ],
+    "architectureNotes": [
+      "Single Rust binary, zero Node.js / npm required. The only runtime dependency is the `zola` executable on PATH.",
+      "Standard layout: `config.toml` at root, content under `content/`, Tera templates under `templates/`, SASS under `sass/`, static assets under `static/`. Output lands in `public/`.",
+      "Tera inherits work via `{% extends \"base.html\" %}` — split out a `templates/base.html` when adding a second page type to avoid duplicating `<head>`."
+    ],
+    "placeholders": [
+      {
+        "path": "content/_index.md",
+        "description": "`{{headline}}` and `{{subheadline}}` are substituted by the foundry at compose time using the family defaults (`Starter Foundry Zola` / `Zola content site with built-in SASS pipeline.`). Replace them with real copy after scaffolding."
+      },
+      {
+        "path": "templates/index.html",
+        "description": "Minimal single-page template: title, subtitle, and a post list. Extract shared structure (head, nav, footer) into `templates/base.html` and `{% extends %}` from here once a second template is needed."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "zola serve --port 1111",
+      "zola build",
+      "zola check"
+    ],
+    "entrypoints": [
+      "config.toml",
+      "content/_index.md",
+      "templates/index.html",
+      "sass/main.scss"
+    ],
+    "preview": {
+      "port": "1111",
+      "path": "/"
+    },
+    "extensionPoints": [
+      "content/posts/",
+      "templates/",
+      "sass/",
+      "static/"
+    ]
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "id": "aptos-move",
+  "description": "Aptos Move package framework layer — Move.toml with AptosFramework dep, resource-based module, #[test] suite.",
+  "appliesTo": ["aptos-move"],
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json",
+      "templateVars": ["PROJECT_NAME"]
+    },
+    {
+      "source": "files/Move.toml",
+      "target": "Move.toml",
+      "templateVars": ["PROJECT_NAME"]
+    },
+    {
+      "source": "files/module.move",
+      "target": "sources/{{MODULE_NAME}}.move",
+      "templateVars": ["MODULE_NAME"]
+    },
+    {
+      "source": "files/test.move",
+      "target": "tests/{{MODULE_NAME}}Tests.move",
+      "templateVars": ["MODULE_NAME"]
+    },
+    {
+      "source": "files/scripts/deploy.sh",
+      "target": "scripts/deploy.sh",
+      "templateVars": ["PROJECT_NAME", "MODULE_NAME"]
+    },
+    {
+      "source": "files/AGENTS.md",
+      "target": "AGENTS.md",
+      "templateVars": ["PROJECT_NAME", "MODULE_NAME"]
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "aptos move compile --named-addresses module_addr=default",
+      "aptos move test --named-addresses module_addr=default",
+      "aptos move publish --named-addresses module_addr=<your_address>"
+    ],
+    "entrypoints": [
+      "Move.toml",
+      "sources/{{MODULE_NAME}}.move"
+    ],
+    "preview": null,
+    "extensionPoints": [
+      "sources/{{MODULE_NAME}}.move",
+      "tests/{{MODULE_NAME}}Tests.move"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Aptos blockchain smart contracts — resource-based modules, on-chain state management, token contracts, DeFi protocols, or any product that needs to deploy and call Move modules on Aptos mainnet/devnet.",
+    "architectureNotes": [
+      "Aptos Move: resources stored under signer account via move_to / borrow_global",
+      "Entry functions are callable from transactions; #[view] functions are read-only reads",
+      "Named address key is `module_addr` (static identifier in Move.toml [addresses]); supply the real address with --named-addresses module_addr=<your_address> at compile/publish time",
+      "Counter resource (key ability) stored under the owner's address; holds a u64 value and emits IncrementedEvent on each increment"
+    ],
+    "firstSteps": [
+      "Install the Aptos CLI: brew install aptos (macOS) or see https://aptos.dev/tools/aptos-cli/install-cli/",
+      "Run `aptos move compile --named-addresses module_addr=default` to type-check the module",
+      "Run `aptos move test --named-addresses module_addr=default` to execute the Move unit tests",
+      "Initialize a devnet account with `aptos init --network devnet` before publishing",
+      "Fund the account with `aptos account fund-with-faucet --account default` then publish with `aptos move publish --named-addresses module_addr=<your_address>`"
+    ],
+    "gotchas": [
+      "Aptos Move is NOT Sui Move — imports are aptos_framework::*, not sui::*. Don't copy Sui module patterns.",
+      "Resources can only be accessed with acquires: add `acquires Counter` to any function that reads/writes the resource.",
+      "move_to fails if the resource already exists under that account — use exists<T>(addr) as a guard in initialize.",
+      "Signer capability is non-copyable and non-droppable — pass by &signer reference, never try to store or clone.",
+      "Publishing requires the named address to be a real account with APT for gas: `aptos account fund-with-faucet` on devnet.",
+      "Move unit tests run in-VM and DON'T exercise storage the same way as on-chain execution — still test with real publish for production code."
+    ],
+    "placeholders": [
+      {
+        "key": "PROJECT_NAME",
+        "description": "Move package name (e.g. MyProject); used in Move.toml [package].name and package.json name"
+      },
+      {
+        "key": "MODULE_NAME",
+        "description": "Move module name (e.g. Counter); used in module declaration and as the source/test file basename"
+      },
+      {
+        "key": "module_addr",
+        "description": "Static named-address key in Move.toml [addresses] — value is '_' meaning deferred to CLI. Pass the real address via --named-addresses module_addr=<your_address> at compile/publish time. This key is NOT a template placeholder; it is a fixed identifier in Move.toml."
+      }
+    ]
+  }
+}

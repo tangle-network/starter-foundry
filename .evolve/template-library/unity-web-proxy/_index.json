@@ -1,0 +1,22 @@
+{
+  "family": "unity-web-proxy",
+  "current": "v_1cde431f4650",
+  "topN": [
+    "v_1cde431f4650",
+    "v_c2087abd2282"
+  ],
+  "all": [
+    {
+      "version": "v_1cde431f4650",
+      "score": 0.7599978183393583,
+      "skipped": null
+    },
+    {
+      "version": "v_c2087abd2282",
+      "score": 0.6099999945807966,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.435Z"
+}

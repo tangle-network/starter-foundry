@@ -1,0 +1,22 @@
+{
+  "family": "celestia-da",
+  "current": "v_e840339eaa9b",
+  "topN": [
+    "v_e840339eaa9b",
+    "v_9d0b2b342df7"
+  ],
+  "all": [
+    {
+      "version": "v_e840339eaa9b",
+      "score": 0.6449943703782978,
+      "skipped": null
+    },
+    {
+      "version": "v_9d0b2b342df7",
+      "score": 0.49499999456652716,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.267Z"
+}

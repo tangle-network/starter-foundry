@@ -1,0 +1,30 @@
+{
+  "templatePath": "src/index.css",
+  "templateKey": "src.index.css",
+  "family": "react-vite-ts",
+  "tupleCount": 63,
+  "synthesizer": {
+    "mode": "deterministic",
+    "reasoning": "Deterministic: grafted 8 line(s) that appeared in ≥25% of 63 agent rewrites and were missing from the current template. Stripped long comment runs + normalized blanks."
+  },
+  "judge": {
+    "score": 0.5966980795316628,
+    "dimensions": {
+      "addLift": 0.8809523809523809,
+      "removeMatch": 0,
+      "sizeScore": 0.7811094452773613
+    },
+    "reasoning": "incorporatesFrequentlyAddedLines: 0.52 (current: 0.14, lift: 0.38)\nremovesFrequentlyDeletedLines: 0.00 (0/33)\nsizeDelta: 292 chars (score 0.78)",
+    "removesFrequentlyDeletedLines": 0,
+    "incorporatesFrequentlyAddedLines": 0.5238095238095238,
+    "sizeDelta": 292
+  },
+  "audit": {
+    "ok": false,
+    "stage": "typecheck",
+    "stderrTail": "src/components/ui/breadcrumb.tsx(9,65): error TS2724: 'React' has no exported member named 'OlistHTMLAttributes'. Did you mean 'OlHTMLAttributes'?\n",
+    "durationMs": 6731
+  },
+  "decision": "reject",
+  "generatedAt": "2026-04-21T00:15:23.232Z"
+}

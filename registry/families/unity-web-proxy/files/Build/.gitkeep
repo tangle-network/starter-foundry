@@ -1,0 +1,17 @@
+# Unity WebGL build drop-zone.
+#
+# The editor's WebGL export writes into this directory:
+#
+#   Build/
+#     Build.loader.js
+#     Build.framework.js
+#     Build.wasm
+#     Build.data
+#     Build.symbols.json    (Development builds only)
+#
+# Filenames depend on Player Settings → Company Name / Product Name.
+# The loader URL in index.html (Build/Build.loader.js) must match.
+#
+# This .gitkeep preserves the directory in source control without
+# committing the generated artifacts. The sibling .gitignore excludes
+# everything else in here.

@@ -1,0 +1,132 @@
+{
+  "id": "crm-backend",
+  "description": "CRM backend API \u2014 contacts, companies, deals with configurable pipeline stages, activities (calls/emails/meetings), reporting endpoints (won-amount-by-month).",
+  "tags": [
+    "crm",
+    "sales",
+    "api",
+    "typescript"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "api"
+  },
+  "slots": {
+    "database": {
+      "options": [
+        "database:sqlite",
+        "database:postgres"
+      ],
+      "default": "database:postgres"
+    },
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk"
+      ],
+      "default": "auth:better-auth"
+    }
+  },
+  "defaults": {
+    "projectType": "api",
+    "serviceName": "starter-foundry-crm",
+    "port": 8104,
+    "databaseProvider": "postgres"
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/validate-crm.mjs",
+      "target": "validate-crm.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "src/server.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/db/schema.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/api/pipeline.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/api/reporting.ts"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-crm.mjs"
+      ],
+      "expect": "crm starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "pnpm dev",
+      "pnpm drizzle-kit generate",
+      "pnpm drizzle-kit migrate"
+    ],
+    "entrypoints": [
+      "src/server.ts",
+      "src/db/schema.ts",
+      "src/api/pipeline.ts",
+      "src/api/reporting.ts"
+    ],
+    "preview": {
+      "path": "/health"
+    },
+    "extensionPoints": [
+      "src/db/schema.ts",
+      "src/api/"
+    ]
+  },
+  "keywords": [
+    "crm backend",
+    "customer relationship",
+    "customer relationship management",
+    "sales pipeline",
+    "deals pipeline",
+    "sales backend",
+    "contact management",
+    "deals crm",
+    "salesforce clone",
+    "hubspot clone",
+    "pipeline management"
+  ],
+  "scoring": {
+    "boost": {}
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "crm backend",
+      "sales pipeline",
+      "deals pipeline",
+      "customer relationship management",
+      "contact management"
+    ],
+    "tier2": [
+      "salesforce clone",
+      "hubspot clone",
+      "pipeline management",
+      "lead tracking",
+      "sales backend",
+      "crm"
+    ]
+  }
+}

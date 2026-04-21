@@ -1,0 +1,22 @@
+{
+  "familyId": "expo-rn-rich",
+  "runAt": "2026-04-21T08:09:28.949Z",
+  "completed": true,
+  "shotsUsed": 1,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 360900,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 360900,
+      "reviewAvailable": true
+    }
+  ]
+}

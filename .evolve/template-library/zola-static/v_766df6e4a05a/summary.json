@@ -1,0 +1,33 @@
+{
+  "familyId": "zola-static",
+  "runAt": "2026-04-21T06:48:11.461Z",
+  "completed": true,
+  "shotsUsed": 2,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 147506,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": false,
+      "failing": [
+        "skipped:no-package-manager"
+      ],
+      "confidence": 0.82,
+      "shouldContinue": true,
+      "durationMs": 86062,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 2,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 61444,
+      "reviewAvailable": true
+    }
+  ]
+}

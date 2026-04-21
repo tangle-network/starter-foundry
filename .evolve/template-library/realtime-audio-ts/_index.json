@@ -1,0 +1,22 @@
+{
+  "family": "realtime-audio-ts",
+  "current": "v_43b3b93577bb",
+  "topN": [
+    "v_43b3b93577bb",
+    "v_b2a8f4def473"
+  ],
+  "all": [
+    {
+      "version": "v_43b3b93577bb",
+      "score": 0.8299963689133054,
+      "skipped": null
+    },
+    {
+      "version": "v_b2a8f4def473",
+      "score": 0.6549998978992264,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.390Z"
+}

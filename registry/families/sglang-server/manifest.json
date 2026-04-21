@@ -1,0 +1,182 @@
+{
+  "id": "sglang-server",
+  "description": "SGLang inference engine — RadixAttention prefix caching, constrained/structured generation (JSON schema + regex), fastest-in-class latency on structured outputs. Docker-compose scaffold with sglang.launch_server and an OpenAI-compatible client. For agent products that depend on JSON/tool-call validity and heavy prefix-sharing across requests.",
+  "tags": [
+    "ml",
+    "llm",
+    "inference",
+    "python",
+    "serving",
+    "sglang",
+    "structured-generation"
+  ],
+  "taxonomy": {
+    "language": "python",
+    "runtime": "python",
+    "surface": "inference"
+  },
+  "slots": {
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk"
+      ],
+      "default": "auth:none"
+    }
+  },
+  "defaults": {
+    "projectType": "inference",
+    "serviceName": "starter-foundry-sglang",
+    "port": 30000,
+    "modelId": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+    "contextLength": 8192
+  },
+  "files": [
+    {
+      "source": "files/docker-compose.yml",
+      "target": "docker-compose.yml"
+    },
+    {
+      "source": "files/requirements.txt",
+      "target": "requirements.txt"
+    },
+    {
+      "source": "files/client.py",
+      "target": "src/client.py"
+    },
+    {
+      "source": "files/launch.sh",
+      "target": "launch.sh"
+    },
+    {
+      "source": "files/.env.example",
+      "target": ".env.example"
+    },
+    {
+      "source": "files/README-sglang.md",
+      "target": "docs/sglang.md"
+    },
+    {
+      "source": "files/validate-sglang.mjs",
+      "target": "validate-sglang.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "docker-compose.yml"
+    },
+    {
+      "type": "file-exists",
+      "path": "requirements.txt"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/client.py"
+    },
+    {
+      "type": "file-exists",
+      "path": "launch.sh"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-sglang.mjs"
+      ],
+      "expect": "sglang starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "cp .env.example .env",
+      "docker compose up -d",
+      "bash launch.sh",
+      "python -m src.client"
+    ],
+    "entrypoints": [
+      "docker-compose.yml",
+      "launch.sh",
+      "src/client.py"
+    ],
+    "preview": {
+      "path": "/health",
+      "port": "{{port}}"
+    },
+    "extensionPoints": [
+      "docker-compose.yml",
+      "launch.sh",
+      "src/client.py"
+    ]
+  },
+  "keywords": [
+    "sglang",
+    "sglang server",
+    "radix attention",
+    "radixattention",
+    "constrained generation",
+    "structured generation",
+    "json schema decoding",
+    "sglang launch_server",
+    "lmsysorg sglang",
+    "fastest structured output"
+  ],
+  "scoring": {
+    "boost": {
+      "sglang": 4,
+      "radix attention": 4,
+      "structured generation": 3
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "sglang",
+      "radix attention",
+      "sglang server",
+      "constrained generation"
+    ],
+    "tier2": [
+      "structured generation",
+      "json schema decoding",
+      "regex-constrained llm",
+      "sglang launch_server"
+    ],
+    "archetypes": [
+      "structured output llm",
+      "tool-calling inference server",
+      "json-mode inference server"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Pick SGLang when the workload is agentic/tool-calling/JSON-schema-heavy — RadixAttention reuses prefix KV across requests with shared system prompts, and the constrained decoder guarantees valid JSON without re-sampling. For raw throughput on free-form text, vLLM is comparable; for smaller footprints, ollama; for HF ecosystem, tgi.",
+    "firstSteps": [
+      "cp .env.example .env and set MODEL_ID + (optional) HUGGING_FACE_HUB_TOKEN",
+      "docker compose up -d (GPU host) OR `bash launch.sh` (bare-metal Python install)",
+      "curl http://localhost:{{port}}/health",
+      "python -m src.client — exercises plain + JSON-schema-constrained generation"
+    ],
+    "gotchas": [
+      "SGLang ships a torch version pinned inside the Docker image. Don't bind-mount a host Python env — runtime mismatches crash the CUDA kernels.",
+      "RadixAttention's win comes from shared prefixes. If every request has a unique system prompt, SGLang's advantage over vLLM shrinks to nil.",
+      "Constrained generation requires `response_format={'type': 'json_schema', 'schema': {...}}` on the request. Omit that and you get plain unconstrained output.",
+      "Default port is 30000 (not 8000). Make sure LB/firewall rules match.",
+      "--mem-fraction-static above 0.90 can OOM when KV cache grows; 0.85 is the safe default on mixed workloads.",
+      "Gated HF models require HUGGING_FACE_HUB_TOKEN plus license acceptance on the Hub."
+    ],
+    "placeholders": [
+      {
+        "path": "src/main.py",
+        "description": ".env (MODEL_ID, HUGGING_FACE_HUB_TOKEN, CONTEXT_LENGTH)"
+      },
+      {
+        "path": "src/main.py",
+        "description": "launch.sh (model-specific flags, tp-size, mem fraction)"
+      },
+      {
+        "path": "src/main.py",
+        "description": "src/client.py (JSON schema, sampling params)"
+      }
+    ]
+  }
+}

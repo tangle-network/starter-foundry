@@ -2,29 +2,115 @@
   "id": "layout-chat",
   "description": "Pre-built AI chat interface with message list, streaming input, code blocks, and tool-call display.",
   "group": "capability",
-  "appliesTo": ["nextjs-ts", "react-vite-ts", "fullstack-ts", "remix-ts"],
-  "keywords": ["chat", "ai chat", "chatbot", "chat interface", "messaging", "conversation", "chat app", "chat room", "ai assistant"],
-  "capabilityRequires": ["shadcn"],
+  "appliesTo": [
+    "nextjs-ts",
+    "react-vite-ts",
+    "fullstack-ts",
+    "remix-ts"
+  ],
+  "keywords": [
+    "chat",
+    "ai chat",
+    "chatbot",
+    "chat interface",
+    "messaging",
+    "conversation",
+    "chat app",
+    "chat room",
+    "ai assistant"
+  ],
+  "capabilityRequires": [
+    "shadcn"
+  ],
   "files": [
-    { "source": "files/chat-page.tsx", "target": "app/chat/page.tsx" },
-    { "source": "files/chat-page.tsx", "target": "app/page.tsx" },
-    { "source": "files/chat-page.tsx", "target": "src/App.tsx" },
-    { "source": "files/chat-message.tsx", "target": "src/components/chat/chat-message.tsx" },
-    { "source": "files/chat-input.tsx", "target": "src/components/chat/chat-input.tsx" },
-    { "source": "files/chat-sidebar.tsx", "target": "src/components/chat/chat-sidebar.tsx" },
-    { "source": "files/media-manifest.json", "target": "media-manifest.json" }
+    {
+      "source": "files/chat-page.tsx",
+      "target": "app/chat/page.tsx"
+    },
+    {
+      "source": "files/chat-page.tsx",
+      "target": "app/page.tsx"
+    },
+    {
+      "source": "files/chat-page.tsx",
+      "target": "src/App.tsx"
+    },
+    {
+      "source": "files/chat-message.tsx",
+      "target": "src/components/chat/chat-message.tsx"
+    },
+    {
+      "source": "files/chat-input.tsx",
+      "target": "src/components/chat/chat-input.tsx"
+    },
+    {
+      "source": "files/chat-sidebar.tsx",
+      "target": "src/components/chat/chat-sidebar.tsx"
+    },
+    {
+      "source": "files/media-manifest.json",
+      "target": "media-manifest.json"
+    }
   ],
   "buildHints": {
-    "pages": ["/chat", "/chat/[id]"],
-    "apiRoutes": ["/api/chat"],
-    "components": ["ChatPage", "ChatMessage", "ChatInput", "ChatSidebar", "CodeBlock", "StreamingDots"],
-    "integrations": ["Server-Sent Events or WebSocket for streaming", "Markdown rendering via react-markdown or similar"],
+    "pages": [
+      "/chat",
+      "/chat/[id]"
+    ],
+    "apiRoutes": [
+      "/api/chat"
+    ],
+    "components": [
+      "ChatPage",
+      "ChatMessage",
+      "ChatInput",
+      "ChatSidebar",
+      "CodeBlock",
+      "StreamingDots"
+    ],
+    "integrations": [
+      "Server-Sent Events or WebSocket for streaming",
+      "Markdown rendering via react-markdown or similar"
+    ],
     "architectureNotes": [
       "Chat layout is pre-built with sidebar for conversation history and main chat area.",
       "ChatMessage renders user and assistant messages with avatar, timestamp, and markdown.",
       "ChatInput supports multi-line with Shift+Enter and send on Enter.",
       "Wire /api/chat to your LLM provider (OpenAI, Anthropic, etc.) with streaming response.",
       "Code blocks in assistant messages use syntax highlighting placeholder — add shiki or prism."
+    ]
+  },
+  "tieredKeywords": {
+    "archetypes": [
+      "chatbot",
+      "chat bot",
+      "support bot",
+      "ai assistant",
+      "cooking assistant",
+      "shopping assistant",
+      "writing assistant",
+      "personal assistant",
+      "ai tutor",
+      "language tutor",
+      "homework help",
+      "homework helper",
+      "bedtime stor",
+      "voice companion",
+      "ai companion",
+      "symptom checker",
+      "describe what",
+      "i describe",
+      "conversations with",
+      "conversation with me",
+      "has conversations",
+      "chat with me",
+      "chats with me",
+      "texts me",
+      "explains concepts",
+      "tell it ",
+      "ask it ",
+      "tells me",
+      "tells you"
     ]
   }
 }

@@ -1,0 +1,22 @@
+{
+  "family": "healthcare-hipaa-backend",
+  "current": "v_c6643c16c3c2",
+  "topN": [
+    "v_c6643c16c3c2",
+    "v_24b787a5e1e4"
+  ],
+  "all": [
+    {
+      "version": "v_c6643c16c3c2",
+      "score": 0.8499949686358448,
+      "skipped": null
+    },
+    {
+      "version": "v_24b787a5e1e4",
+      "score": 0.6999999945712836,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.323Z"
+}

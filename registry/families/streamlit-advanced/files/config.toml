@@ -1,0 +1,12 @@
+[server]
+headless = true
+port = {{port}}
+address = "0.0.0.0"
+runOnSave = true
+
+[browser]
+gatherUsageStats = false
+
+[theme]
+base = "light"
+primaryColor = "#2563eb"

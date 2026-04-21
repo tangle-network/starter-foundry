@@ -1,0 +1,22 @@
+{
+  "family": "threejs-game",
+  "current": "v_7cca1b066a2d",
+  "topN": [
+    "v_7cca1b066a2d",
+    "v_ef410b902f21"
+  ],
+  "all": [
+    {
+      "version": "v_7cca1b066a2d",
+      "score": 0.7699973044314435,
+      "skipped": null
+    },
+    {
+      "version": "v_ef410b902f21",
+      "score": 0.6199999945807966,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.429Z"
+}

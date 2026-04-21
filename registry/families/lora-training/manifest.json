@@ -1,0 +1,183 @@
+{
+  "id": "lora-training",
+  "description": "LoRA / QLoRA fine-tuning starter — PEFT adapters on top of a 4-bit-quantized base model via bitsandbytes, trained with TRL's SFTTrainer on a JSONL dataset. Ships a complete config-driven train.py, an infer.py that loads base + adapter, and a tiny sample dataset. For teams that want to customize a pretrained LLM without the memory footprint of full fine-tuning.",
+  "tags": [
+    "ml",
+    "llm",
+    "training",
+    "fine-tuning",
+    "lora",
+    "qlora",
+    "peft",
+    "python"
+  ],
+  "taxonomy": {
+    "language": "python",
+    "runtime": "python",
+    "surface": "inference"
+  },
+  "slots": {},
+  "defaults": {
+    "projectType": "inference",
+    "serviceName": "starter-foundry-lora",
+    "baseModelId": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+    "outputDir": "./outputs/lora-adapter",
+    "loraR": 16,
+    "loraAlpha": 32,
+    "learningRate": 0.0002,
+    "epochs": 3
+  },
+  "files": [
+    {
+      "source": "files/pyproject.toml",
+      "target": "pyproject.toml"
+    },
+    {
+      "source": "files/config/train.yaml",
+      "target": "config/train.yaml"
+    },
+    {
+      "source": "files/data/sample.jsonl",
+      "target": "data/sample.jsonl"
+    },
+    {
+      "source": "files/.env.example",
+      "target": ".env.example"
+    },
+    {
+      "source": "files/README-lora.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/validate-lora.mjs",
+      "target": "validate-lora.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "pyproject.toml"
+    },
+    {
+      "type": "file-exists",
+      "path": "config/train.yaml"
+    },
+    {
+      "type": "file-exists",
+      "path": "data/sample.jsonl"
+    },
+    {
+      "type": "file-exists",
+      "path": "train.py"
+    },
+    {
+      "type": "file-exists",
+      "path": "infer.py"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-lora.mjs"
+      ],
+      "expect": "lora training starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pip install -e .",
+      "python train.py --config config/train.yaml",
+      "python infer.py --adapter {{outputDir}} --prompt 'hello'"
+    ],
+    "entrypoints": [
+      "train.py",
+      "infer.py",
+      "config/train.yaml",
+      "data/sample.jsonl"
+    ],
+    "preview": null,
+    "extensionPoints": [
+      "config/train.yaml",
+      "data/sample.jsonl"
+    ]
+  },
+  "keywords": [
+    "lora",
+    "qlora",
+    "peft",
+    "fine-tune",
+    "finetune",
+    "adapter training",
+    "lora adapter",
+    "sft",
+    "sfttrainer",
+    "instruction tuning",
+    "bitsandbytes",
+    "4-bit quantization",
+    "trl",
+    "parameter efficient"
+  ],
+  "scoring": {
+    "boost": {
+      "lora": 4,
+      "qlora": 4,
+      "peft": 3,
+      "fine-tune": 3
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "lora",
+      "qlora",
+      "peft",
+      "fine-tune a model",
+      "adapter training"
+    ],
+    "tier2": [
+      "sfttrainer",
+      "instruction tuning",
+      "4-bit fine-tuning",
+      "trl lora"
+    ],
+    "archetypes": [
+      "domain-specific llm adapter",
+      "custom fine-tuned model",
+      "instruction-tuned adapter",
+      "task-specific lora"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Pick this when you need a custom model behavior (domain language, instruction style, task-specific format) but can't / won't run full fine-tuning. QLoRA 4-bit lets a 7B-8B model tune on a single 24GB GPU; 70B on a single 80GB GPU. For pure inference, use vllm-server / tgi-server / ollama-server. For RAG-style grounding without training, use rag-pipeline-py.",
+    "firstSteps": [
+      "pip install -e . — installs peft, transformers, bitsandbytes, trl, accelerate, datasets",
+      "Replace data/sample.jsonl with your real training set (each line: {\"messages\": [{\"role\": ..., \"content\": ...}, ...]})",
+      "Edit config/train.yaml — base model id, lora_r/alpha, epochs, learning rate",
+      "Set HUGGING_FACE_HUB_TOKEN for gated base models (Llama, Mistral, Gemma)",
+      "python train.py --config config/train.yaml (checkpoints land in {{outputDir}})",
+      "python infer.py --adapter {{outputDir}} --prompt 'test' to smoke-test"
+    ],
+    "gotchas": [
+      "bitsandbytes 4-bit requires CUDA. There is no working CPU path for QLoRA — attempting this on a Mac silently falls back to fp16 and OOMs.",
+      "LoRA target_modules is model-architecture-specific. Llama uses ['q_proj','k_proj','v_proj','o_proj']; Gemma and Mistral differ. Copy the wrong list and training runs but adapters learn nothing.",
+      "lora_r above 64 stops helping and starts overfitting. lora_alpha = 2 * lora_r is the standard ratio.",
+      "Checkpoint sizes: LoRA adapters are 10-500MB. Full merged models are 14-30GB. Don't commit merged models; ship the adapter.",
+      "Gated base models need HUGGING_FACE_HUB_TOKEN AND license acceptance on the Hub — token alone 403s.",
+      "TRL's SFTTrainer expects either `text` or `messages` columns in the dataset. Mixing schemas in one file silently trains on the wrong field.",
+      "flash-attention-2 requires torch >= 2.1 and a SM >= 8.0 GPU (A100/H100). Older GPUs: set `attn_implementation: 'sdpa'` in config/train.yaml."
+    ],
+    "placeholders": [
+      {
+        "path": "src/main.py",
+        "description": "data/sample.jsonl (replace with the real training set)"
+      },
+      {
+        "path": "src/main.py",
+        "description": "config/train.yaml (base model id, hyperparameters, target_modules)"
+      },
+      {
+        "path": "src/main.py",
+        "description": ".env (HUGGING_FACE_HUB_TOKEN for gated base models)"
+      }
+    ]
+  }
+}

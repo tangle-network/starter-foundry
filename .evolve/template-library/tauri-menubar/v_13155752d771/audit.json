@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-04-21T06:35:50.196Z",
+  "audits": [
+    {
+      "layerId": "framework:tauri-menubar",
+      "family": "tauri-menubar",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 3480.759,
+          "stderrTail": "",
+          "stdoutTail": "Progress: resolved 35, reused 24, downloaded 1, added 0\nPackages: +74\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\nProgress: resolved 133, reused 73, downloaded 1, added 0\nProgress: resolved 133, reused 73, downloaded 1, added 74, done\n\ndependencies:\n+ @tauri-apps/api 2.10.1\n+ react 19.2.5\n+ react-dom 19.2.5\n\ndevDependencies:\n+ @tauri-apps/cli 2.10.1\n+ @types/node 20.19.39 (25.6.0 is available)\n+ @types/react 19.2.14\n+ @types/react-dom 19.2.3\n+ @vitejs/plugin-react 4.7.0 (6.0.1 is available)\n+ typescript 5.9.3 (6.0.3 is available)\n+ vite 6.4.2 (8.0.9 is available)\n\n╭ Warning ─────────────────────────────────────────────────────────────────────╮\n│                                                                              │\n│   Ignored build scripts: esbuild.                                            │\n│   Run \"pnpm approve-builds\" to pick which dependencies should be allowed     │\n│   to run scripts.                                                            │\n│                                                                              │\n╰──────────────────────────────────────────────────────────────────────────────╯\n\nDone in 3.3s using pnpm v10.22.0\n"
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 2803.274917,
+          "stderrTail": "",
+          "stdoutTail": ""
+        }
+      ]
+    }
+  ]
+}

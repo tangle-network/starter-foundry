@@ -1,0 +1,22 @@
+{
+  "family": "zola-static",
+  "current": "v_6a946f928686",
+  "topN": [
+    "v_6a946f928686",
+    "v_766df6e4a05a"
+  ],
+  "all": [
+    {
+      "version": "v_6a946f928686",
+      "score": 0.8199978695253044,
+      "skipped": null
+    },
+    {
+      "version": "v_766df6e4a05a",
+      "score": 0.6449999945839675,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.449Z"
+}

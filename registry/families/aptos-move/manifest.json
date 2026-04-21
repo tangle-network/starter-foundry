@@ -1,0 +1,106 @@
+{
+  "id": "aptos-move",
+  "description": "Aptos Move contract starter — Move.toml with aptos-framework dep, resource + entry function module, Move unit tests.",
+  "tags": [
+    "aptos",
+    "move",
+    "contracts",
+    "crypto"
+  ],
+  "taxonomy": {
+    "language": "move",
+    "runtime": "aptos",
+    "surface": "contracts"
+  },
+  "defaults": {
+    "projectType": "contracts",
+    "moduleName": "HelloAptos",
+    "aptosFrameworkRev": "mainnet"
+  },
+  "files": [
+    {
+      "source": "files/validate-aptos.mjs",
+      "target": "validate-aptos.mjs"
+    },
+    {
+      "source": "files/.gitignore",
+      "target": ".gitignore"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "Move.toml"
+    },
+    {
+      "type": "file-exists",
+      "path": "sources/{{moduleName}}.move"
+    },
+    {
+      "type": "file-exists",
+      "path": "tests/{{moduleName}}Tests.move"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-aptos.mjs"
+      ],
+      "expect": "aptos move starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "aptos move compile",
+      "aptos move test",
+      "aptos move publish --named-addresses {{projectName}}=default"
+    ],
+    "entrypoints": [
+      "Move.toml",
+      "sources/{{moduleName}}.move",
+      "tests/{{moduleName}}Tests.move"
+    ],
+    "preview": null,
+    "extensionPoints": [
+      "sources/{{moduleName}}.move",
+      "tests/{{moduleName}}Tests.move"
+    ]
+  },
+  "keywords": [
+    "aptos",
+    "aptos move",
+    "aptos framework",
+    "move module aptos",
+    "aptos contract",
+    "aptos dapp",
+    "aptos token",
+    "aptos coin",
+    "aptos nft"
+  ],
+  "scoring": {
+    "boost": {
+      "aptos": 4
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "aptos",
+      "aptos move",
+      "aptos framework",
+      "aptos contract",
+      "aptos dapp",
+      "move module aptos"
+    ],
+    "tier2": [
+      "aptos token",
+      "aptos coin",
+      "aptos nft",
+      "aptos staking",
+      "aptos defi"
+    ]
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "id": "electron-native-os",
+  "description": "Electron desktop framework layer: sandboxed renderer + contextBridge preload, native dialogs, OS notifications, deep-link routing (macOS open-url + Windows single-instance argv), custom app:// protocol, platform-specific menu builder, and electron-updater auto-update over GitHub Releases. Built with electron-vite + React + TypeScript.",
+  "appliesTo": ["electron-native-os"],
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/electron.vite.config.ts",
+      "target": "electron.vite.config.ts"
+    },
+    {
+      "source": "files/electron-builder.json",
+      "target": "electron-builder.json"
+    },
+    {
+      "source": "files/index.ts",
+      "target": "src/main/index.ts"
+    },
+    {
+      "source": "files/menu.ts",
+      "target": "src/main/menu.ts"
+    },
+    {
+      "source": "files/protocol.ts",
+      "target": "src/main/protocol.ts"
+    },
+    {
+      "source": "files/deeplinks.ts",
+      "target": "src/main/deeplinks.ts"
+    },
+    {
+      "source": "files/updater.ts",
+      "target": "src/main/updater.ts"
+    },
+    {
+      "source": "files/preload.ts",
+      "target": "src/preload/index.ts"
+    },
+    {
+      "source": "files/renderer-index.html",
+      "target": "src/renderer/index.html"
+    },
+    {
+      "source": "files/App.tsx",
+      "target": "src/renderer/App.tsx"
+    },
+    {
+      "source": "files/renderer-main.tsx",
+      "target": "src/renderer/main.tsx"
+    },
+    {
+      "source": "files/styles.css",
+      "target": "src/renderer/styles.css"
+    }
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "electron-log": "^5.2.4",
+      "electron-updater": "^6.3.9",
+      "react": "^18.3.1",
+      "react-dom": "^18.3.1"
+    },
+    "devDependencies": {
+      "@types/node": "^20.17.6",
+      "@types/react": "^18.3.12",
+      "@types/react-dom": "^18.3.1",
+      "@vitejs/plugin-react": "^4.3.3",
+      "electron": "^33.4.0",
+      "electron-builder": "^25.1.8",
+      "electron-vite": "^2.3.0",
+      "typescript": "^5.6.3",
+      "vite": "^5.4.10"
+    }
+  },
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm dev", "pnpm build", "pnpm typecheck"],
+    "entrypoints": ["src/main/index.ts", "src/preload/index.ts", "src/renderer/main.tsx"],
+    "extensionPoints": [
+      "src/main/index.ts",
+      "src/main/menu.ts",
+      "src/main/protocol.ts",
+      "src/preload/index.ts",
+      "src/renderer/App.tsx"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Electron app that needs deep OS integration: native file dialogs, OS notifications, custom protocol (deep links), platform-specific menus, and GitHub Releases auto-update. Use this instead of a plain web framework when the app must run as a signed, distributable desktop binary.",
+    "firstSteps": [
+      "Run `pnpm install` then `pnpm dev` — electron-vite starts the Vite dev server and launches Electron; hot-reload is active for the renderer.",
+      "The preload bridge (`src/preload/index.ts`) is the ONLY surface area between main and renderer. Add new IPC channels there: expose via `contextBridge.exposeInMainWorld` and handle with `ipcMain.handle` in `src/main/index.ts`.",
+      "To add a native feature (e.g. tray icon, system-wide hotkey), add the IPC handler in `src/main/index.ts`, expose the call in `src/preload/index.ts`, and call `window.native.<method>()` from the renderer.",
+      "Deep links are handled in `src/main/deeplinks.ts`. Register the scheme in `electron-builder.json` under `protocols` (already wired) and listen via `deepLinkState.onUrl()` in `src/main/index.ts`.",
+      "Auto-update reads `electron-builder.json`'s `publish` block (GitHub Releases). Set `GH_TOKEN` and run `pnpm package` to build a distributable; subsequent runs will check the configured repo for updates.",
+      "Run `pnpm typecheck` before committing — catches main/preload/renderer type errors in one pass."
+    ],
+    "gotchas": [
+      "The single-instance lock in `src/main/index.ts` MUST be acquired before `app.whenReady()`. Moving it after breaks Windows deep-link routing (second instance launches instead of routing the URL).",
+      "Protocol schemes must be registered via `registerPrivilegedSchemes()` BEFORE `app.whenReady()` — Electron throws if you call `protocol.registerSchemesAsPrivileged` after the ready event.",
+      "The preload is loaded as `src/preload/index.cjs` (electron-vite compiles it to CJS). Do not change the extension or the `sandbox: true` + `contextIsolation: true` flags — removing them wipes the security boundary.",
+      "electron-updater silently fails on unsigned/unnotarized binaries in dev. The `checkForUpdates().catch(...)` in `updater.ts` swallows the error intentionally — add a log statement there to debug update issues.",
+      "For macOS notarization, set `APPLE_ID`, `APPLE_ID_PASSWORD`, and `APPLE_TEAM_ID` environment variables before running `pnpm package`."
+    ],
+    "placeholders": [
+      {
+        "path": "src/renderer/App.tsx",
+        "description": "Demo UI that smoke-tests each native capability card. Replace with your app UI; keep `window.native` calls as-is or extend the preload API for new features."
+      },
+      {
+        "path": "electron-builder.json",
+        "description": "Replace `{{packageName}}` / `{{projectName}}` with your actual app identifiers. Update the `publish.owner` and `publish.repo` fields to point at your GitHub repo for auto-update."
+      }
+    ]
+  }
+}

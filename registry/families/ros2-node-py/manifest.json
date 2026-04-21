@@ -1,0 +1,197 @@
+{
+  "id": "ros2-node-py",
+  "description": "ROS 2 (Jazzy / Humble) Python node package. ament_python build, rclpy, a minimal cmd_vel publisher + /odom subscriber, and a launch file. For mobile robots, manipulator arms, Nav2 stacks, and any robotics product where Python is the glue between drivers and planners.",
+  "tags": [
+    "ros2",
+    "rclpy",
+    "robotics",
+    "python",
+    "ament-python"
+  ],
+  "taxonomy": {
+    "language": "python",
+    "runtime": "ros2",
+    "surface": "robot-node"
+  },
+  "defaults": {
+    "projectType": "robot-node",
+    "packageName": "starter_foundry_ros2",
+    "rosDistro": "jazzy",
+    "nodeName": "minimal_publisher",
+    "cmdVelTopic": "/cmd_vel",
+    "odomTopic": "/odom",
+    "linearX": 0.2,
+    "angularZ": 0.0,
+    "publishRateHz": 10
+  },
+  "files": [
+    {
+      "source": "files/package.xml",
+      "target": "package.xml"
+    },
+    {
+      "source": "files/setup.py",
+      "target": "setup.py"
+    },
+    {
+      "source": "files/setup.cfg",
+      "target": "setup.cfg"
+    },
+    {
+      "source": "files/resource-marker",
+      "target": "resource/{{packageName}}"
+    },
+    {
+      "source": "files/validate-ros2-py.mjs",
+      "target": "validate-ros2-py.mjs"
+    },
+    {
+      "source": "files/README-ros2.md",
+      "target": "docs/ros2.md"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "package.xml"
+    },
+    {
+      "type": "file-exists",
+      "path": "setup.py"
+    },
+    {
+      "type": "file-exists",
+      "path": "resource/{{packageName}}"
+    },
+    {
+      "type": "file-exists",
+      "path": "{{packageName}}/__init__.py"
+    },
+    {
+      "type": "file-exists",
+      "path": "{{packageName}}/minimal_publisher.py"
+    },
+    {
+      "type": "file-exists",
+      "path": "{{packageName}}/minimal_subscriber.py"
+    },
+    {
+      "type": "file-exists",
+      "path": "launch/bringup.launch.py"
+    },
+    {
+      "type": "python-compile",
+      "path": "{{packageName}}/minimal_publisher.py"
+    },
+    {
+      "type": "python-compile",
+      "path": "{{packageName}}/minimal_subscriber.py"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-ros2-py.mjs"
+      ],
+      "expect": "ros2 python node ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "source /opt/ros/{{rosDistro}}/setup.bash",
+      "colcon build --packages-select {{packageName}}",
+      "source install/setup.bash",
+      "ros2 run {{packageName}} publisher",
+      "ros2 launch {{packageName}} bringup.launch.py"
+    ],
+    "entrypoints": [
+      "{{packageName}}/minimal_publisher.py",
+      "{{packageName}}/minimal_subscriber.py",
+      "launch/bringup.launch.py",
+      "package.xml",
+      "setup.py"
+    ],
+    "preview": null,
+    "extensionPoints": [
+      "{{packageName}}/minimal_publisher.py",
+      "{{packageName}}/minimal_subscriber.py",
+      "launch/bringup.launch.py",
+      "package.xml"
+    ]
+  },
+  "keywords": [
+    "ros2",
+    "ros 2",
+    "rclpy",
+    "ros2 node python",
+    "ros2 python node",
+    "ros2 launch",
+    "ros2 publisher",
+    "ros2 subscriber",
+    "cmd_vel",
+    "ament_python",
+    "robot operating system",
+    "ros2 jazzy",
+    "ros2 humble",
+    "nav2",
+    "ros2 teleop",
+    "ros2 turtlebot"
+  ],
+  "scoring": {
+    "boost": {
+      "ros2": 5,
+      "rclpy": 5,
+      "ros2 node python": 5,
+      "ros 2": 4
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "ros2",
+      "ros 2",
+      "rclpy",
+      "ros2 node python",
+      "ros2 python node",
+      "ros2 launch",
+      "cmd_vel",
+      "ament_python"
+    ],
+    "tier2": [
+      "ros2 jazzy",
+      "ros2 humble",
+      "ros2 publisher",
+      "ros2 subscriber",
+      "nav2",
+      "ros2 turtlebot",
+      "robot operating system"
+    ],
+    "archetypes": [
+      "mobile robot controller",
+      "turtlebot driver",
+      "nav2 waypoint follower",
+      "teleop node",
+      "lidar bridge"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Attach for any ROS 2 Python node — mobile robots, manipulators, sensor bridges, Nav2 lifecycle nodes. Pick this over ros2-node-rust unless the prompt specifically asks for Rust / rclrs or hard-realtime.",
+    "firstSteps": [
+      "Install ROS 2 Jazzy (24.04) or Humble (22.04): follow https://docs.ros.org/en/{{rosDistro}}/Installation.html",
+      "Place this package inside a colcon workspace at src/{{packageName}} (the folder containing package.xml)",
+      "cd <workspace>, source /opt/ros/{{rosDistro}}/setup.bash, then colcon build --packages-select {{packageName}}",
+      "source install/setup.bash before running ros2 run / ros2 launch — the overlay does NOT chain automatically"
+    ],
+    "gotchas": [
+      "rclpy is not installable from pip — it ships with the ROS 2 binary distribution. pip install rclpy will fail. Source /opt/ros/{{rosDistro}}/setup.bash so the apt-installed rclpy is on PYTHONPATH.",
+      "ROS_DOMAIN_ID isolates DDS traffic between developers on the same LAN. Default 0 means everyone on the subnet sees your topics — set export ROS_DOMAIN_ID=42 (1-232) per workstation.",
+      "RMW middleware matters: Jazzy defaults to rmw_fastrtps_cpp, Humble also supports rmw_cyclonedds_cpp. Mixing middlewares across nodes causes silent discovery failures — align RMW_IMPLEMENTATION across all terminals.",
+      "Don't forget to source install/setup.bash after every colcon build — ROS overlays are not automatic like nvm/pyenv.",
+      "setup.py entry_points['console_scripts'] is the ONLY way `ros2 run <pkg> <script>` finds executables in ament_python. Missing entry_points = missing scripts, no warning.",
+      "launch files must live under share/{{packageName}}/launch after install — data_files in setup.py maps them. If launch files aren't found, inspect install/{{packageName}}/share/{{packageName}}/launch.",
+      "QoS profiles matter: /odom is typically BEST_EFFORT + VOLATILE, /tf_static is RELIABLE + TRANSIENT_LOCAL. Mismatched QoS between pub/sub = silent drop. Use rclpy.qos.QoSPresetProfiles.SENSOR_DATA for lidar/IMU, SYSTEM_DEFAULT for /cmd_vel.",
+      "resource/{{packageName}} is a mandatory empty marker file — ament uses it to register the package with the index. Deleting it breaks `ros2 pkg list`.",
+      "Multi-robot setups: namespace each node with `__ns:=/robot1` and remap topics with `topic:=/robot1/cmd_vel`. Hard-coded absolute topics ('/cmd_vel') break multi-robot.",
+      "Nav2 lifecycle nodes require manual state transitions. A plain Node subclass won't participate in bt_navigator — inherit from LifecycleNode and wire on_configure/on_activate if integrating with Nav2."
+    ]
+  }
+}

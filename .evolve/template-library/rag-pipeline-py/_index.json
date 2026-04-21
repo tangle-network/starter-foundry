@@ -1,0 +1,22 @@
+{
+  "family": "rag-pipeline-py",
+  "current": "v_0f9b3624312e",
+  "topN": [
+    "v_0f9b3624312e",
+    "v_b97e96372e96"
+  ],
+  "all": [
+    {
+      "version": "v_0f9b3624312e",
+      "score": 0.6299963235445206,
+      "skipped": null
+    },
+    {
+      "version": "v_b97e96372e96",
+      "score": 0.479999994582382,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.386Z"
+}

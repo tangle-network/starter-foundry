@@ -1,0 +1,20 @@
+{
+  "generatedAt": "2026-04-21T06:34:44.041Z",
+  "audits": [
+    {
+      "layerId": "framework:stm32-rust",
+      "family": "stm32-rust",
+      "pm": "cargo",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "cargo check",
+          "ok": true,
+          "durationMs": 41413.702583,
+          "stderrTail": "   Compiling embassy-executor v0.6.3\n    Checking futures-io v0.3.32\n   Compiling defmt-rtt v0.4.2\n   Compiling proc-macro-error2 v2.0.1\n   Compiling darling_core v0.20.11\n    Checking embedded-hal-nb v1.0.0\n    Checking stm32-fmc v0.3.2\n    Checking sdio-host v0.5.0\n    Checking rand_core v0.6.4\n    Checking bit_field v0.10.3\n   Compiling starter_foundry_stm32 v0.1.0 (/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/audit-stm32-rust-oZoa05)\n   Compiling thiserror-impl v2.0.18\n   Compiling futures-macro v0.3.32\n   Compiling cortex-m-rt-macros v0.7.5\n   Compiling darling_macro v0.20.11\n    Checking futures-util v0.3.32\n   Compiling darling v0.20.11\n   Compiling embassy-stm32 v0.1.0\n   Compiling embassy-executor-macros v0.6.2\n   Compiling defmt-parser v1.0.0\n    Checking futures v0.3.32\n    Checking defmt v0.3.100\n    Checking embedded-io v0.6.1\n    Checking embassy-time v0.3.2\n    Checking embassy-net-driver v0.2.0\n    Checking bxcan v0.7.0\n    Checking embassy-usb-driver v0.1.1\n    Checking embassy-embedded-hal v0.1.0\n    Finished `dev` profile [optimized + debuginfo] target(s) in 14.79s\n",
+          "stdoutTail": ""
+        }
+      ]
+    }
+  ]
+}

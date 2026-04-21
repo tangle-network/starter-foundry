@@ -1,0 +1,22 @@
+{
+  "familyId": "realtime-audio-ts",
+  "runAt": "2026-04-21T08:26:46.185Z",
+  "completed": true,
+  "shotsUsed": 1,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 238750,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 238750,
+      "reviewAvailable": true
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+data/
+.celestia-light-*/
+*.log
+auth-token
+.env

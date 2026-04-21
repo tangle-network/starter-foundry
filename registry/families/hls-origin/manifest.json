@@ -1,0 +1,159 @@
+{
+  "id": "hls-origin",
+  "description": "HLS live streaming origin — FFmpeg transcodes an RTMP ingest or file into a segmented .m3u8 playlist; Nginx serves segments with CORS so browser HLS.js or native Safari players can pull directly. Node control plane lists active streams.",
+  "tags": [
+    "hls",
+    "video",
+    "streaming",
+    "rtmp",
+    "ffmpeg",
+    "nginx",
+    "typescript",
+    "docker"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "api"
+  },
+  "defaults": {
+    "projectType": "api",
+    "serviceName": "starter-foundry-hls",
+    "port": 8099,
+    "nginxPort": 8080,
+    "rtmpPort": 1935,
+    "segmentDurationSec": 2,
+    "playlistSize": 6
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/docker-compose.yml",
+      "target": "docker-compose.yml"
+    },
+    {
+      "source": "files/nginx.conf",
+      "target": "nginx.conf"
+    },
+    {
+      "source": "files/start-stream.sh",
+      "target": "start-stream.sh"
+    },
+    {
+      "source": "files/validate-hls.mjs",
+      "target": "validate-hls.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "src/server.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "nginx.conf"
+    },
+    {
+      "type": "file-exists",
+      "path": "docker-compose.yml"
+    },
+    {
+      "type": "file-exists",
+      "path": "start-stream.sh"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-hls.mjs"
+      ],
+      "expect": "hls-origin starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "docker compose up -d",
+      "pnpm run dev",
+      "./start-stream.sh <input-file-or-rtmp-url> demo",
+      "open http://localhost:{{nginxPort}}/hls/demo/stream.m3u8"
+    ],
+    "entrypoints": [
+      "src/server.ts",
+      "nginx.conf",
+      "start-stream.sh",
+      "docker-compose.yml"
+    ],
+    "preview": {
+      "path": "/health"
+    },
+    "extensionPoints": [
+      "nginx.conf",
+      "start-stream.sh",
+      "src/server.ts"
+    ]
+  },
+  "keywords": [
+    "hls",
+    "hls server",
+    "hls origin",
+    "m3u8",
+    "live streaming",
+    "rtmp",
+    "rtmp ingest",
+    "video origin",
+    "streaming server",
+    "video streaming server",
+    "ffmpeg hls",
+    "mpegts segment"
+  ],
+  "scoring": {
+    "boost": {
+      "hls": 4,
+      "m3u8": 3,
+      "rtmp": 3
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "hls",
+      "m3u8",
+      "hls origin",
+      "rtmp ingest"
+    ],
+    "tier2": [
+      "live streaming",
+      "rtmp",
+      "video origin",
+      "streaming server",
+      "ffmpeg hls",
+      "mpegts segment"
+    ],
+    "archetypes": [
+      "self-hosted twitch",
+      "live streaming platform",
+      "video cdn origin",
+      "live event streaming",
+      "broadcast server",
+      "multi-bitrate ladder",
+      "abr streaming origin"
+    ]
+  },
+  "buildHints": {
+    "gotchas": [
+      "Segment duration is a latency/stability tradeoff — 2s segments give ~6s glass-to-glass latency with 3-segment buffer; shorter segments drop glass-to-glass at the cost of more frequent playlist churn and higher client buffering risk on flaky networks.",
+      "Browsers require CORS on both the playlist AND every segment. The nginx.conf here adds Access-Control-Allow-Origin to .m3u8 and .ts — stripping either will break HLS.js.",
+      "Safari plays HLS natively; Chrome/Firefox need hls.js. Your frontend must feature-detect: `video.canPlayType('application/vnd.apple.mpegurl')` — non-empty means native, else bundle hls.js.",
+      "ffmpeg's `-hls_flags delete_segments` is mandatory for a rolling window — without it the origin fills disk with every 2s segment ever transcoded.",
+      "RTMP ingest is TCP port 1935, plaintext. Put nginx-rtmp or srtrelay in front if you need auth/TLS; this origin assumes the ingest side is already trusted.",
+      "FFmpeg needs hardware-accelerated codec config (h264_videotoolbox on macOS, h264_nvenc on nvidia) for production-scale transcoding. The default libx264 in start-stream.sh is CPU-bound and single-stream only."
+    ]
+  }
+}

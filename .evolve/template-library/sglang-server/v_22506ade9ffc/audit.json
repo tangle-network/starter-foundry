@@ -1,0 +1,20 @@
+{
+  "generatedAt": "2026-04-21T06:27:58.754Z",
+  "audits": [
+    {
+      "layerId": "framework:sglang-server",
+      "family": "sglang-server",
+      "pm": "python3",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "python3 -m compileall .",
+          "ok": true,
+          "durationMs": 67.93725,
+          "stderrTail": "",
+          "stdoutTail": "Listing '.'...\nListing './.starter-foundry'...\nListing './docs'...\nListing './src'...\nCompiling './src/__init__.py'...\nCompiling './src/client.py'...\n"
+        }
+      ]
+    }
+  ]
+}

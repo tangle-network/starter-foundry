@@ -1,0 +1,56 @@
+{
+  "id": "webgpu-render",
+  "description": "Raw WebGPU rendering framework layer — src/main.ts drives navigator.gpu directly with a real render pipeline, plus vertex+fragment WGSL.",
+  "appliesTo": ["webgpu-render"],
+  "files": [
+    { "source": "files/src/main.ts", "target": "src/main.ts" },
+    { "source": "files/src/shaders/main.wgsl", "target": "src/shaders/main.wgsl" },
+    { "source": "files/src/vite-env.d.ts", "target": "src/vite-env.d.ts" }
+  ],
+  "packageDeps": {
+    "devDependencies": {
+      "@webgpu/types": "^0.1.52",
+      "typescript": "^5.9.0",
+      "vite": "^6.4.2"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "Any product that needs the raw WebGPU API — custom renderers, engine internals, novel rendering techniques (deferred, cluster-forward, raymarching), or shader-driven art where three.js abstractions get in the way. Pick threejs-game instead if you want a batteries-included 3D scene graph.",
+    "firstSteps": [
+      "Run `pnpm install` then `pnpm dev` — Vite serves on 5173 with HMR; open Chrome 113+, Edge 113+, or Safari 18+; a gradient triangle fills the canvas.",
+      "All rendering logic is in `src/main.ts`: adapter → device → canvas context → render pipeline → render loop → resize handler.",
+      "The shader is `src/shaders/main.wgsl` containing both the `@vertex` and `@fragment` entry points. Extend by adding vertex buffers for real geometry or uniform buffers for camera/time.",
+      "To add a textured quad next: create a GPUTexture, upload via `queue.copyExternalImageToTexture`, bind a GPUSampler + texture in a new bind group, then sample in the fragment shader.",
+      "Run `pnpm build` to emit static assets to `dist/` — deploy to any static host. WebGPU requires HTTPS in production (localhost is exempt)."
+    ],
+    "gotchas": [
+      "WebGPU is Chrome/Edge 113+ and Safari 18+ stable. Always feature-detect `navigator.gpu` and show a fallback UI — Firefox requires `dom.webgpu.enabled`.",
+      "The canvas format from `getPreferredCanvasFormat()` differs by platform (bgra8unorm on macOS, rgba8unorm elsewhere) — store it once and use it in both `context.configure({ format })` AND `pipeline.fragment.targets[0].format`; a mismatch throws at pipeline creation.",
+      "Each frame must call `context.getCurrentTexture().createView()` — the texture is recycled by the swap chain and stale views throw on the next submit.",
+      "Canvas resize: set `canvas.width`/`canvas.height` to `innerWidth * devicePixelRatio` (cap DPR at 2) and re-call `context.configure()` — ignoring this gives blurry output.",
+      "Always cancel `requestAnimationFrame` in the HMR dispose callback — WebGPU does not garbage-collect GPU resources and dangling frames will eventually crash the tab.",
+      "Call `shaderModule.getCompilationInfo()` during development — a broken WGSL module otherwise produces a silent black canvas."
+    ],
+    "architectureNotes": [
+      "Create the GPUDevice once per page — `requestDevice()` is expensive; reuse the device for every pipeline and buffer.",
+      "Pre-create pipelines, bind group layouts, and buffers outside the render loop; only command-buffer construction belongs inside `requestAnimationFrame`.",
+      "For multiple render passes (shadow + main + post), batch into a single GPUCommandEncoder and `queue.submit` once per frame — each submit has a non-trivial CPU/GPU sync cost."
+    ],
+    "placeholders": [
+      {
+        "path": "src/main.ts",
+        "description": "WebGPU render bootstrap — device, canvas context, pipeline, render loop, resize handling. Extend by adding vertex buffers for real geometry, uniform buffers for camera/time, and textures via `queue.copyExternalImageToTexture`."
+      },
+      {
+        "path": "src/shaders/main.wgsl",
+        "description": "Vertex + fragment WGSL. The vertex stage emits a gradient triangle from @builtin(vertex_index). Replace positions with a vertex buffer binding for real meshes."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm dev", "pnpm build", "pnpm run validate"],
+    "entrypoints": ["src/main.ts", "src/shaders/main.wgsl"],
+    "preview": { "path": "/" },
+    "extensionPoints": ["src/main.ts", "src/shaders/main.wgsl"]
+  }
+}

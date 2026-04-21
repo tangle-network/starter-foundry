@@ -1,0 +1,51 @@
+{
+  "id": "soc2-compliance-pack",
+  "description": "SOC2 Type II compliance framework layer — append-only audit log, change-management approvals (CC8.1), vendor registry, and incident-response playbook. Composes onto any Node/TypeScript backend.",
+  "appliesTo": ["soc2-compliance-pack"],
+  "files": [
+    { "source": "files/src/index.ts", "target": "src/index.ts" },
+    { "source": "files/AGENTS.md", "target": "AGENTS.md" }
+  ],
+  "packageDeps": {
+    "devDependencies": {
+      "typescript": "^5.9.0",
+      "@types/node": "^22.0.0"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "Bolt SOC2 Type II primitives (audit trail, change-management approvals, vendor registry) onto an existing Node/TypeScript backend before a Type II audit window opens.",
+    "firstSteps": [
+      "Run `pnpm install` then `pnpm build` (`tsc --noEmit`) — must pass with zero errors.",
+      "Run `node validate-soc2-pack.mjs` to confirm required files and logic are present.",
+      "Wire `recordChange()` from `src/change-mgmt.ts` onto every deploy and config change — CC8.1 requires change approvals to be logged.",
+      "Replace `InMemorySocAuditStore` with a DB-backed implementation before going to production (audit logs must persist across restarts).",
+      "Fill in `docs/vendor-attestations.md` with every sub-processor (Stripe, AWS, Vercel, etc.) and their SOC2 report links."
+    ],
+    "gotchas": [
+      "Audit log retention for SOC2 is commonly 12 months minimum; some auditors require 7 years. Confirm before TTL-ing old rows.",
+      "Change management (CC8.1) requires ≥1 approver per change — self-merges are flagged. Enforce via branch protection, not honor system.",
+      "Vendor attestations must be CURRENT (within the audit window). A 2-year-old vendor SOC2 report is an exception finding.",
+      "Incident response (CC7.3) needs a tested playbook. Run at least one tabletop exercise before the audit."
+    ],
+    "architectureNotes": [
+      "SOC2 audits are about process evidence, not code. This pack produces the artifacts (audit rows, CODEOWNERS, playbooks) auditors want to see. The controls themselves are operational.",
+      "`InMemorySocAuditStore` is intentionally a drop-in; swap it for a Postgres/SQLite implementation by implementing the `SocAuditStore` interface."
+    ],
+    "placeholders": [
+      {
+        "path": "docs/SOC2-controls.md",
+        "description": "Trust Services Criteria CC1–CC9 mapped to files. Customize the scope section per your actual audit."
+      },
+      {
+        "path": "docs/vendor-attestations.md",
+        "description": "Live sub-processor registry. Add every vendor with a SOC2 report and update at least quarterly."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm build", "node validate-soc2-pack.mjs"],
+    "entrypoints": ["src/index.ts"],
+    "preview": null,
+    "extensionPoints": ["src/audit.ts", "src/change-mgmt.ts", "docs/SOC2-controls.md", "docs/vendor-attestations.md"]
+  }
+}

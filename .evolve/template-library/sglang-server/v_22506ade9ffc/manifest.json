@@ -1,0 +1,61 @@
+{
+  "id": "sglang-server",
+  "description": "Python scaffold for SGLang inference — src/ package with OpenAI-compatible client, pyproject.toml with type-checker config, and Makefile targets for install / typecheck / run.",
+  "appliesTo": ["sglang-server"],
+  "files": [
+    { "source": "files/__init__.py", "target": "src/__init__.py" },
+    { "source": "files/pyproject.toml", "target": "pyproject.toml" },
+    { "source": "files/Makefile", "target": "Makefile" }
+  ],
+  "buildHints": {
+    "whenToUse": "This layer supplies the Python project wrapper for the SGLang family — pyproject.toml metadata, a type-checker baseline, and a Makefile so developers can run common tasks without looking up flags.",
+    "firstSteps": [
+      "pip install -r requirements.txt          # install client deps",
+      "pip install -e '.[dev]'                   # install pyright + ruff",
+      "make typecheck                            # pyright src/ — should be clean",
+      "cp .env.example .env && make up          # start the Docker inference server",
+      "make client                               # python -m src.client (server must be running)"
+    ],
+    "gotchas": [
+      "pyproject.toml sets typeCheckingMode=basic; tighten to strict only after adding py.typed and full annotations throughout src/.",
+      "The Makefile uses hard tabs — editors that silently convert to spaces will break make. Most editors detect Makefile type and preserve tabs.",
+      "`pip install -e '.[dev]'` requires pyproject.toml to be present (supplied by this layer); running it before layer application will fail.",
+      "pyright is a dev-only dep; the runtime server has no Python typechecker dependency — requirements.txt stays lean."
+    ],
+    "architectureNotes": [
+      "src/__init__.py makes src/ a proper package so `python -m src.client` resolves without a separate __main__.py.",
+      "pyproject.toml is the single source of truth for Python version, project name, and dev-tool configuration — requirements.txt is kept as a flat pip-installable subset for Docker and CI."
+    ],
+    "placeholders": [
+      {
+        "path": "pyproject.toml",
+        "description": "project.name is 'starter-sglang' — rename to match your actual project before publishing to PyPI or internal package registries."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pip install -r requirements.txt",
+      "pip install -e '.[dev]'",
+      "make typecheck",
+      "make lint",
+      "make client",
+      "make up",
+      "make logs"
+    ],
+    "entrypoints": [
+      "src/client.py",
+      "src/__init__.py"
+    ],
+    "preview": {
+      "path": "/health",
+      "port": "30000"
+    },
+    "extensionPoints": [
+      "src/client.py",
+      "src/__init__.py",
+      "pyproject.toml",
+      "Makefile"
+    ]
+  }
+}

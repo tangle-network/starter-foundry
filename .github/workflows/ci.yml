@@ -34,6 +34,24 @@ jobs:
       - name: install
         run: pnpm install --frozen-lockfile
 
+      - name: validate registry manifests (schemas + keyword overlap + dangling appliesTo)
+        run: node scripts/validate-registry.mjs
+
+      - name: measurement delta (only when registry/ changes)
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch origin main
+          CHANGED=$(git diff --name-only origin/main...HEAD | grep '^registry/' || true)
+          if [ -z "$CHANGED" ]; then
+            echo "no registry/ changes — skipping delta report"
+            exit 0
+          fi
+          pnpm build
+          node scripts/refresh-scorecard.mjs
+          node scripts/pr-measurement-delta.mjs --base origin/main --out .evolve/pr-delta.md || echo "⚠ regressions detected; see PR comment"
+          cat .evolve/pr-delta.md
+        continue-on-error: true
+
       - name: typecheck + build
         run: pnpm build
 

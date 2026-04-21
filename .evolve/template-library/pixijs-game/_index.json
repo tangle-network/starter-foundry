@@ -1,0 +1,22 @@
+{
+  "family": "pixijs-game",
+  "current": "v_4af389ad8f8c",
+  "topN": [
+    "v_4af389ad8f8c",
+    "v_0c5702f1ab3e"
+  ],
+  "all": [
+    {
+      "version": "v_4af389ad8f8c",
+      "score": 0.7699968061802386,
+      "skipped": null
+    },
+    {
+      "version": "v_0c5702f1ab3e",
+      "score": 0.6199999945823821,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.383Z"
+}

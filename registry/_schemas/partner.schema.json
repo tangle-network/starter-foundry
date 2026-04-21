@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "partner.schema.json",
+  "title": "PartnerManifest",
+  "type": "object",
+  "required": ["id", "description"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+    "description": { "type": "string", "minLength": 20 },
+    "appliesTo": { "type": "array", "items": { "type": "string" } },
+    "defaults": { "type": "object" },
+    "slotDefaults": { "type": "object", "additionalProperties": { "type": "string" } },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "target"],
+        "properties": {
+          "source": { "type": "string" },
+          "target": { "type": "string" }
+        }
+      }
+    },
+    "buildHints": { "$ref": "buildhints.schema.json" }
+  }
+}

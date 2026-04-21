@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-04-21T05:33:39.489Z",
+  "audits": [
+    {
+      "layerId": "framework:eleventy-static",
+      "family": "eleventy-static",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 1836.28775,
+          "stderrTail": "",
+          "stdoutTail": "Progress: resolved 1, reused 0, downloaded 0, added 0\nPackages: +129\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\nProgress: resolved 129, reused 85, downloaded 44, added 82\nProgress: resolved 129, reused 85, downloaded 44, added 129, done\n\ndevDependencies:\n+ @11ty/eleventy 3.1.5\n\nDone in 1.7s using pnpm v10.22.0\n"
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

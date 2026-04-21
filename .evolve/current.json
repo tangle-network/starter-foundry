@@ -1,32 +1,84 @@
 {
-  "mode": "awaiting-governor",
-  "goal": "faster + better planner (accuracy, capability hit, latency)",
-  "status": "r3-signal-collapse",
-  "round": 11,
-  "generation": 11,
-  "activePursuit": ".evolve/meta-harness/config.json",
-  "updatedAt": "2026-04-20T19:15:00Z",
+  "mode": "evolve",
+  "goal": "reduce scaffold_gap_installs from 59 toward ≤10 via capability auto-attach + packageDep backfill",
+  "status": "r2-committed",
+  "round": 2,
+  "generation": 1,
+  "activePursuit": ".evolve/pursuits/2026-04-21-e2e-100-complete.md",
+  "updatedAt": "2026-04-21T08:15:00Z",
+  "commit": "29d5ccc",
+  "priorCommits": ["b760e93", "77d4453", "0ff075c", "f972940"],
   "baseline": {
-    "accuracy": 0.9945,
-    "latencyP95Ms": 0.902,
-    "capabilityHitMean": 0.7827,
-    "ideasaiCapHit": 0.181
+    "strictVerifierPassRate": 0.9583,
+    "strictVerifierPasses": 46,
+    "strictVerifierFails": 2,
+    "strictVerifierTargets": 48,
+    "testSuite": "601/601",
+    "medianShotsToPass": 1,
+    "v2Evolve": {
+      "wallSeconds": 2977,
+      "concurrency": 5,
+      "passCount": 41,
+      "failCount": 1,
+      "targets": 42
+    }
   },
-  "current": {
-    "variant": "merged_abc_v1",
-    "accuracy": 0.9945,
-    "latencyP50Ms": 0.201,
-    "latencyP95Ms": 0.477,
-    "latencyP99Ms": 1.161,
-    "capabilityHitMean": 0.909,
-    "ideasaiCapHit": 0.452,
-    "deltaLatencyP95": -0.425,
-    "deltaIdeasaiCapHit": 0.271
+  "generation1Results": {
+    "thesis": "match the verifier's rigor to the loop's ambition, and stop destroying history",
+    "verifierBarBefore": "compose + install + typecheck (compile-clean)",
+    "verifierBarAfter": "+ pnpm build + family validationChecks (plus smoke-compose opt-in)",
+    "libraryVersions": "v1 + v2 per family, deterministic hash-addressed, scored via template-quality",
+    "passRateUnderOldBar": 0.979,
+    "passRateUnderNewBar": 0.958,
+    "hardFails": [
+      "fintech-ledger-backend (quality ceiling 10 shots)",
+      "kotlin-multiplatform (no gradle binary)"
+    ]
+  },
+  "round2Results": {
+    "hypothesis": "codemirror + 4 sub-packages installed 15× on agent-trading scenarios (incl. hl-builder-code-dashboard) because CODE_EDITOR_ARCHETYPE_SIGNALS didn't cover builder/strategy/rules/dsl phrasings — capability:code-editor.packageDeps was already populated",
+    "intervention": [
+      "CODE_EDITOR_ARCHETYPE_SIGNALS: +10 terms (code dashboard, strategy editor, strategy builder, script editor, rules editor, dsl editor, embedded editor, policy editor, workflow editor, expression editor)",
+      "capability:code-editor.tieredKeywords.archetypes: mirror the 10 new terms (signal-manifest parity test enforces)"
+    ],
+    "verified": "planPrompt on 'hl-builder code dashboard for hyperliquid' → attaches capability:code-editor → composed package.json has codemirror@^6.0.1 + @codemirror/view + state + lang-javascript",
+    "testSuite": "601/601",
+    "expectedImpact": "15 codemirror-cluster gap-installs eliminated on future buildouts where planner routes to a frontend family + prompt contains any of the 10 new signal phrases",
+    "measuredImpactCaveat": "same lagging metric as R1 — impact observable on next VB sweep; scorecard won't move until buildout-analysis is recomputed",
+    "scopeLimit": "prompts that route to a non-frontend family (e.g. 'strategy builder' → worker-job) still won't attach code-editor, which is correct (capability.appliesTo is frontend-only)"
+  },
+  "round1Results": {
+    "hypothesis": "capability:tailwind.packageDeps is empty → attached families get config files but no tailwindcss npm dep → agents add it themselves 14×",
+    "intervention": [
+      "capability:tailwind.packageDeps: declare tailwindcss + @tailwindcss/vite",
+      "capability:tailwind.appliesTo: +6 frontend families",
+      "capability:shadcn.appliesTo: +2 React+Vite families",
+      "REACT_FAMILIES (signals.ts): +2 so planner auto-attaches for new React families"
+    ],
+    "verified": "compose + pnpm install + pnpm run build green on vision-first-agent with capability:tailwind cascaded",
+    "testSuite": "601/601",
+    "expectedImpact": "14 tailwindcss adds + 14 @tailwindcss/vite adds + 9 clsx adds + 17 lucide-react adds eliminated on future VB runs targeting the newly-covered families (subset of those lands on these families)",
+    "measuredImpactCaveat": "scaffold_gap_installs in .evolve/scorecard.json is a LAGGING metric computed from buildout-analysis.json; won't update until next VB/blueprint-agent sweep. Score delta not yet observable."
+  },
+  "deferred": {
+    "r3-capability-audit": "90/104 capabilities have empty packageDeps. Registry audit found 6 with mapped packages missing from deps (capability:tailwind [R1 done — 2 more missing: postcss, @tailwindcss/postcss], layout-auth [@clerk/nextjs, @clerk/clerk-react], saas-billing [@stripe/*], evm-wallet-dashboard [wagmi, @rainbow-me/rainbowkit], ai-agent-dashboard [@ai-sdk/openai], evm-deploy-foundry [@openzeppelin/contracts]). None currently appear in topAddedPackages, so lower priority than codemirror cluster, but fixing pre-empts future gap-install regressions.",
+    "r3-routing-fix": "'strategy builder' / 'rules editor' prompts route to worker-job (backend), not a frontend family — so code-editor auto-attach was correct to skip them. If these scenarios actually need a frontend, family routing needs new signals. Requires VB data on actual scenario prompts to decide.",
+    "r2-kotlin-gradle": "install gradle binary → retry kotlin-multiplatform to reach 47/48 strict pass",
+    "r2-template-promotion": ".evolve/template-candidates/index.html has 3 promotable candidates; --apply them to their source to reduce top_file_rewrite_count (13→≤5 target)",
+    "gen2": "boot-and-audit phase using bad CLI — design complete in pursuit spec, unbuilt",
+    "diverseServe": "env flag STARTER_FOUNDRY_DIVERSE_SERVE — unbuilt",
+    "resumeBuilderSessions": "claude --resume across shots — untested experiment",
+    "agentEvalPublish": "agent-eval is link:../agent-eval; needs publish or workspace setup before CI-on-fresh-clone works"
   },
   "priorMode": {
-    "mode": "pursue",
-    "goal": "real tangle templates + crate publishing",
-    "blocked": "crate publishing \u2014 CARGO_REGISTRY_TOKEN needs owner access (shekohex or Tjemmmic)"
+    "mode": "awaiting-governor",
+    "goal": "faster + better planner (accuracy, capability hit, latency)",
+    "baseline": {
+      "accuracy": 0.9945,
+      "latencyP95Ms": 0.902,
+      "capabilityHitMean": 0.7827,
+      "ideasaiCapHit": 0.181
+    }
   },
-  "note": "R3 multi-pursue target (5 broken layers) closed by manual PRs #9-#12 before proposers executed. 37/37 layers pass audit. Next governor pass should re-read signal from buildout-analysis (template rewrite rate) or capability-gaps."
+  "handoff": "R2 shipped at 29d5ccc. R3 options: (a) fix capability:tailwind's remaining missing deps (postcss, @tailwindcss/postcss) + add @clerk/* to capability:layout-auth packageDeps — pre-emptive, no current gap-install pressure; (b) investigate date-fns 3× + react-router-dom 3× gap-installs (capability:date-utils vs capability:routing — 3 each); (c) install gradle, retry kotlin-multiplatform (47/48 strict); (d) /pursue for Gen 2 boot-and-audit. Branch feat/vb-feedback-consumer at 29d5ccc, 601/601 green."
 }

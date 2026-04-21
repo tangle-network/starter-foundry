@@ -1,0 +1,109 @@
+{
+  "id": "streamlit-advanced",
+  "description": "Production-grade Streamlit starter — multipage app with sidebar nav, st.cache_data, Plotly charts, and a typed Pydantic settings layer.",
+  "tags": [
+    "streamlit",
+    "multipage",
+    "data-app",
+    "python",
+    "dashboard"
+  ],
+  "taxonomy": {
+    "language": "python",
+    "runtime": "python",
+    "surface": "data-app"
+  },
+  "defaults": {
+    "projectType": "data-app",
+    "serviceName": "starter-foundry-streamlit",
+    "port": 8501,
+    "headline": "Streamlit Production Dashboard",
+    "subheadline": "Multipage Streamlit app with caching, Plotly, and typed settings."
+  },
+  "files": [
+    {
+      "source": "files/requirements.txt",
+      "target": "requirements.txt"
+    },
+    {
+      "source": "files/config.toml",
+      "target": ".streamlit/config.toml"
+    },
+    {
+      "source": "files/validate-streamlit.mjs",
+      "target": "validate-streamlit.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "app.py"
+    },
+    {
+      "type": "file-exists",
+      "path": "pages/1_analysis.py"
+    },
+    {
+      "type": "python-compile",
+      "path": "app.py"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-streamlit.mjs"
+      ],
+      "expect": "streamlit-advanced starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pip install -r requirements.txt",
+      "streamlit run app.py --server.port {{port}}"
+    ],
+    "entrypoints": [
+      "app.py",
+      "pages/1_analysis.py",
+      ".streamlit/config.toml"
+    ],
+    "preview": {
+      "port": "{{port}}",
+      "path": "/"
+    },
+    "extensionPoints": [
+      "starter-data.json",
+      "starter-brand.json"
+    ]
+  },
+  "keywords": [
+    "streamlit multipage",
+    "multipage streamlit",
+    "streamlit dashboard app",
+    "production streamlit",
+    "streamlit plotly",
+    "streamlit caching",
+    "streamlit app with tabs",
+    "streamlit sidebar"
+  ],
+  "scoring": {
+    "boost": {
+      "streamlit multipage": 5,
+      "multipage streamlit": 5,
+      "production streamlit": 4
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "streamlit multipage",
+      "multipage streamlit",
+      "production streamlit",
+      "streamlit dashboard app"
+    ],
+    "tier2": [
+      "streamlit plotly",
+      "streamlit caching",
+      "streamlit sidebar",
+      "streamlit app with tabs"
+    ]
+  }
+}

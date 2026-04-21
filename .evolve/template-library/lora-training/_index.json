@@ -1,0 +1,22 @@
+{
+  "family": "lora-training",
+  "current": "v_8d5746bb3429",
+  "topN": [
+    "v_8d5746bb3429",
+    "v_e8639faa26c6"
+  ],
+  "all": [
+    {
+      "version": "v_8d5746bb3429",
+      "score": 0.629995556803336,
+      "skipped": null
+    },
+    {
+      "version": "v_e8639faa26c6",
+      "score": 0.46999999457921104,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.360Z"
+}

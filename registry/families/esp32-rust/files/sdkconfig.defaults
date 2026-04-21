@@ -1,0 +1,28 @@
+# ESP-IDF Kconfig seed. Values here get merged into sdkconfig during the
+# first `cargo build`. Changing this file after a build requires removing
+# .embuild/ to force a regen — ESP-IDF does not re-read defaults on every
+# cargo build, it snapshots them into sdkconfig.
+
+# Main task stack bump. 3584 (default) is not enough for WiFi + TLS + HTTP
+# — the first time you call `EspHttpServer::new()` inside the main task
+# you'll overflow and hit a StoreProhibited panic if this is left low.
+CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192
+
+# FreeRTOS tick rate — 1kHz matches embassy-time defaults.
+CONFIG_FREERTOS_HZ=1000
+
+# WiFi-enable NVS (WiFi stores calibration blobs in NVS; without this the
+# first boot is very slow while RF calibration runs).
+CONFIG_ESP32_PHY_CALIBRATION_AND_DATA_STORAGE=y
+
+# HTTP server — default 10 URIs is fine; bump buffer for JSON bodies.
+CONFIG_HTTPD_MAX_REQ_HDR_LEN=1024
+CONFIG_HTTPD_MAX_URI_LEN=512
+
+# Logging: info-level by default, can override per-module at runtime.
+CONFIG_LOG_DEFAULT_LEVEL_INFO=y
+CONFIG_LOG_MAXIMUM_LEVEL_DEBUG=y
+
+# Use modern C++ stdlib (required by some esp-idf-sys transitive deps).
+CONFIG_COMPILER_CXX_EXCEPTIONS=n
+CONFIG_COMPILER_OPTIMIZATION_SIZE=y

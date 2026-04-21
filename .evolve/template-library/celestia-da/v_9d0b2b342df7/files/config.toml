@@ -1,0 +1,32 @@
+# Celestia light-node config overrides. The container also reads its own
+# config.toml inside the data volume — this file is a committed copy of the
+# knobs this starter actually cares about. To apply: cp config.toml data/config.toml
+
+[RPC]
+  Address = "0.0.0.0"
+  Port = "26658"
+  SkipAuth = false
+
+[P2P]
+  ListenAddresses = ["/ip4/0.0.0.0/tcp/2121"]
+  Network = "mocha-4"
+
+[Header]
+  TrustedHash = ""
+  TrustedPeers = []
+
+[DASer]
+  # Data-availability sampling — how many samples per block to prove DA.
+  SamplingRange = 100
+  ConcurrencyLimit = 16
+
+[State]
+  DefaultKeyName = "my_celes_key"
+  DefaultBackendName = "test"
+
+[Share]
+  # Timeout for fetching shares from peers when answering blob.Get.
+  DiscoveryInterval = "30s"
+
+[Node]
+  StartupTimeout = "2m"

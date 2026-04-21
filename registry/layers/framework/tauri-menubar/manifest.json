@@ -1,0 +1,92 @@
+{
+  "id": "tauri-menubar",
+  "description": "Tauri 2 menu-bar layer: tray icon + 320×400 popover panel with hide-on-blur, global-shortcut toggle, and macOS Accessory-policy dock hiding.",
+  "appliesTo": ["tauri-menubar"],
+  "files": [
+    { "source": "files/tsconfig.json",    "target": "tsconfig.json" },
+    { "source": "files/vite.config.ts",   "target": "vite.config.ts" },
+    { "source": "files/index.html",       "target": "index.html" },
+    { "source": "files/main.tsx",         "target": "src/main.tsx" },
+    { "source": "files/App.tsx",          "target": "src/App.tsx" },
+    { "source": "files/styles.css",       "target": "src/styles.css" },
+    { "source": "files/Cargo.toml",       "target": "src-tauri/Cargo.toml" },
+    { "source": "files/build.rs",         "target": "src-tauri/build.rs" },
+    { "source": "files/main.rs",          "target": "src-tauri/src/main.rs" },
+    { "source": "files/lib.rs",           "target": "src-tauri/src/lib.rs" },
+    { "source": "files/tauri.conf.json",  "target": "src-tauri/tauri.conf.json" }
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "react": "^19.2.0",
+      "react-dom": "^19.2.0",
+      "@tauri-apps/api": "^2.0.0"
+    },
+    "devDependencies": {
+      "@tauri-apps/cli": "^2.0.0",
+      "@types/node": "^20.17.0",
+      "@types/react": "^19.2.0",
+      "@types/react-dom": "^19.2.0",
+      "@vitejs/plugin-react": "^4.7.0",
+      "typescript": "^5.9.0",
+      "vite": "^6.4.2"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "Pick tauri-menubar when the app lives in the macOS menu bar or Windows system tray and opens a small floating popover on click (Raycast-style launcher, quick-access panel). NOT for full desktop windows — use tauri-desktop for that.",
+    "firstSteps": [
+      "Run `pnpm install` then `cargo tauri dev` — Vite serves on :1420, Tauri wraps it as a tray popover positioned under the menu-bar icon.",
+      "All Rust setup is in `src-tauri/src/lib.rs`: TrayIconBuilder, tauri-plugin-positioner wiring, and the hide-on-blur WindowEvent handler.",
+      "The React surface is `src/App.tsx` — a 320×400 fixed-size panel with a search input and scrollable action list.",
+      "Add Tauri IPC commands in `src-tauri/src/lib.rs` with `#[tauri::command]` and call them from the frontend with `import { invoke } from '@tauri-apps/api/core'`.",
+      "Run `cargo tauri icon path/to/icon.png` to generate the full icon set in `src-tauri/icons/` before building for distribution."
+    ],
+    "gotchas": [
+      "macOS: `ActivationPolicy::Accessory` is set in the lib.rs setup closure — this hides the dock icon. Comment it out during development if you need Xcode debugger attach.",
+      "Tray icon requires at least one valid icon file. Run `cargo tauri icon <1024x1024.png>` to generate the full set before `cargo tauri build`; the icons/ directory is not scaffolded here.",
+      "Hide-on-blur on Windows fires when the user clicks the tray icon itself, causing a show-then-immediately-hide loop. Add a ~100ms debounce if you extend the focus handler.",
+      "`src-tauri/build.rs` calls `tauri_build::build()` which must stay — removing it breaks Tauri's code-generation step that produces `tauri::generate_context!()`."
+    ],
+    "architectureNotes": [
+      "`src-tauri/src/lib.rs` owns the TrayIconBuilder and uses tauri-plugin-positioner's `Position::TrayCenter` to place the window under the icon on left-click.",
+      "`src-tauri/src/main.rs` is a thin shim forwarding to `lib::run()` so all setup logic is testable without spawning a window.",
+      "The popover window (tauri.conf.json) is decorations:false, alwaysOnTop:true, skipTaskbar:true, resizable:false, 320×400 — changing these dims requires matching CSS changes in `src/styles.css`."
+    ],
+    "placeholders": [
+      {
+        "path": "src/App.tsx",
+        "description": "{{headline}} and {{subheadline}} are substituted at compose time. Replace the SEED action list with real commands backed by #[tauri::command] handlers in lib.rs."
+      },
+      {
+        "path": "src-tauri/Cargo.toml",
+        "description": "{{crateName}} is substituted at compose time with the snake_case project name (used for both [package].name and the lib crate name)."
+      },
+      {
+        "path": "src-tauri/src/main.rs",
+        "description": "{{crateName}}_lib::run() is substituted at compose time to match the crate name declared in Cargo.toml."
+      },
+      {
+        "path": "src-tauri/tauri.conf.json",
+        "description": "{{projectName}} and {{packageName}} are substituted at compose time with the human-readable project name and npm package slug."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "cargo tauri dev",
+      "pnpm build",
+      "node preview-server.mjs",
+      "node validate-types.mjs"
+    ],
+    "entrypoints": [
+      "src-tauri/src/lib.rs",
+      "src-tauri/tauri.conf.json",
+      "src/App.tsx"
+    ],
+    "preview": { "path": "/" },
+    "extensionPoints": [
+      "src-tauri/src/lib.rs",
+      "src/App.tsx"
+    ]
+  }
+}

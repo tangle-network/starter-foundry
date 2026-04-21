@@ -1,0 +1,22 @@
+{
+  "family": "crm-backend",
+  "current": "v_a8966425ec03",
+  "topN": [
+    "v_a8966425ec03",
+    "v_27a09bc8104c"
+  ],
+  "all": [
+    {
+      "version": "v_a8966425ec03",
+      "score": 0.829993413180175,
+      "skipped": null
+    },
+    {
+      "version": "v_27a09bc8104c",
+      "score": 0.6449999945665271,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.273Z"
+}

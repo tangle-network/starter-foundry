@@ -1,0 +1,78 @@
+{
+  "id": "legal-case-mgmt",
+  "description": "Legal practice management framework layer — Drizzle ORM schema for matters/parties/documents/time-entries/billing-rates/invoices, Node http REST routes, and decimal-safe invoice draft generation.",
+  "appliesTo": ["legal-case-mgmt"],
+  "files": [
+    { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/server.ts", "target": "src/server.ts" },
+    { "source": "files/schema.ts", "target": "src/db/schema.ts" },
+    { "source": "files/db.ts", "target": "src/db/client.ts" },
+    { "source": "files/matter.ts", "target": "src/api/matter.ts" },
+    { "source": "files/billing.ts", "target": "src/api/billing.ts" },
+    { "source": "files/drizzle.config.ts", "target": "drizzle.config.ts" },
+    { "source": "files/.env.example", "target": ".env.example" },
+    { "source": "files/AGENTS.md", "target": "AGENTS.md" }
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "drizzle-orm": "^0.36.0",
+      "postgres": "^3.4.5",
+      "decimal.js": "^10.4.3"
+    },
+    "devDependencies": {
+      "drizzle-kit": "^0.30.0",
+      "typescript": "^5.9.0",
+      "@types/node": "^20.17.0"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "Building a law-firm SaaS API that needs matter tracking, attorney time-keeping, content-addressed document retention, and billing. Supplies the full Drizzle schema, six REST endpoints, and decimal-safe invoice generation out of the box.",
+    "firstSteps": [
+      "Copy .env.example to .env and set DATABASE_URL to a Postgres 15+ connection string.",
+      "Run `pnpm install` then `pnpm db:generate && pnpm db:migrate` to create all tables.",
+      "Run `pnpm dev` — server starts on port 8102; verify with `curl http://localhost:8102/health`.",
+      "Seed a client row directly in the DB (or add POST /api/clients), then POST /api/matters with { clientId, matterNumber, title }.",
+      "Insert at least one billing_rates row for the attorney before drafting an invoice.",
+      "POST /api/matters/:id/time-entries with { attorneyId, workedAt (ISO), minutes (integer), narrative } to log time.",
+      "POST /api/matters/:id/invoice/draft aggregates all unbilled billable entries into a draft Invoice row.",
+      "Routes: GET /health · POST /api/matters · GET /api/matters/:id · POST /api/matters/:id/time-entries · GET /api/matters/:id/time-entries · POST /api/matters/:id/invoice/draft"
+    ],
+    "gotchas": [
+      "Time entries MUST be stored in minutes (positive integer), not fractional hours. Rounding 0.1h + 0.1h across 200 entries drifts real dollars.",
+      "Hourly rates MUST use integer cents — billing.ts uses decimal.js for all arithmetic. Never convert to float before arithmetic.",
+      "Documents are IMMUTABLE under retention obligations. Do NOT add UPDATE or DELETE endpoints for the documents table — amendments are new rows referencing the prior contentHash.",
+      "Attorney-client privilege: access control MUST be enforced at the matter level, not just the document level. Leaking matter title or party names to the wrong client is still a privilege breach.",
+      "Trust / IOLTA accounting is SEPARATE from the operating ledger — commingling is a bar-disciplinary offense. If this service handles trust funds it needs its own chart of accounts with explicit segregation.",
+      "Conflicts checking is NOT implemented — before opening a matter in production, check all party names against every prior matter including opposing parties.",
+      "Billable-hours rounding convention varies by firm (6-minute increments is common). Store raw minutes; apply firm rounding at invoice generation time inside billing.ts.",
+      "Retention: many jurisdictions require 5–7 years after matter closure. Soft-delete + lifecycle policy; never hard-delete document rows."
+    ],
+    "architectureNotes": [
+      "Matter-centric schema: every party, document, time entry, and invoice belongs to a Matter. This mirrors the legal concept of 'matter' as the unit of work and the unit of privilege.",
+      "Documents are content-addressed: content_hash = sha256(bytes) is the primary identity. Replacing a document creates a new row; the old row is never mutated.",
+      "Time entries are immutable once invoiced — draftInvoice() sets invoice_id FK inside a transaction; callers cannot unset it.",
+      "Billing rates are time-bounded (effectiveAt). billing.ts resolves each entry to the rate effective at entry.workedAt so historical invoices stay accurate after a rate change.",
+      "Invoice draft runs in one DB transaction: aggregate unbilled entries → compute amounts via Decimal → insert Invoice → set invoice_id on each entry. Avoids double-billing on retry.",
+      "Data models: clients · attorneys · matters · parties · documents · billing_rates · invoices · time_entries. See src/db/schema.ts for full Drizzle column/index definitions."
+    ],
+    "placeholders": [
+      {
+        "path": "src/server.ts",
+        "description": "{{port}} is replaced with the numeric port from family defaults (8102). {{serviceName}} is replaced with the service name. After compose these are literal strings."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "pnpm dev",
+      "pnpm db:generate",
+      "pnpm db:migrate",
+      "pnpm validate"
+    ],
+    "entrypoints": ["src/server.ts", "src/db/schema.ts", "src/api/matter.ts", "src/api/billing.ts"],
+    "preview": { "path": "/health" },
+    "extensionPoints": ["src/db/schema.ts", "src/api/"]
+  }
+}

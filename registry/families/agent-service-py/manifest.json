@@ -155,5 +155,14 @@
       "sentiment analyzer",
       "opinion mining"
     ]
+  },
+  "scoring": {
+    "boost": {
+      "crewai": 4,
+      "pydanticai": 4,
+      "autogen": 4,
+      "agno": 3,
+      "llamaindex": 3
+    }
   }
 }

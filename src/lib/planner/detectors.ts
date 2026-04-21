@@ -123,6 +123,16 @@ export function inferPartner(text: string): string | null {
   if (hasAny(text, ['chainlink', 'price feed', 'vrf', 'ccip', 'data feeds'])) return 'chainlink'
   if (hasAny(text, ['sui', 'mysten', 'zklogin', 'sponsored transaction'])) return 'sui'
   if (hasAny(text, ['tempo', 'tempo l1', 'tempo chain', 'tempo payments'])) return 'tempo'
+  if (hasAny(text, ['monad', 'monad chain', 'parallel evm'])) return 'monad'
+  if (hasAny(text, ['sei', 'sei v2', 'sei evm', 'sei network'])) return 'sei-evm'
+  if (hasAny(text, ['avalanche', 'avax', 'c-chain', 'c chain', 'subnet', 'teleporter'])) return 'avalanche'
+  if (hasAny(text, ['linea', 'consensys zkevm', 'linea mainnet'])) return 'linea'
+  if (hasAny(text, ['polygon', 'matic', 'polygon zkevm', 'agglayer', 'polygon pos'])) return 'polygon'
+  if (hasAny(text, ['hyperliquid', 'hyperevm', 'hype', 'perp dex'])) return 'hyperliquid'
+  if (hasAny(text, ['usdc', 'circle usdc', 'cctp', 'circle api'])) return 'usdc-circle'
+  if (hasAny(text, ['usdt', 'tether', 'trc-20', 'trc20'])) return 'tether'
+  if (hasAny(text, ['lens protocol', 'lens chain', 'lens profile', 'lens feed'])) return 'lens'
+  if (hasAny(text, ['farcaster', 'warpcast', 'frames v2', 'frame sdk', 'neynar', 'mini app'])) return 'farcaster'
   return null
 }
 

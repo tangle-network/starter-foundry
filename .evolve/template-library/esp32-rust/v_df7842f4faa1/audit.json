@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-04-21T08:58:16.484Z",
+  "audits": [
+    {
+      "layerId": "framework:esp32-rust",
+      "family": "esp32-rust",
+      "pm": "cargo",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "cargo check",
+          "ok": true,
+          "durationMs": 6922.871916,
+          "stderrTail": "   Compiling syn v2.0.117\n   Compiling cvt v0.1.2\n   Compiling heck v0.4.1\n   Compiling serde v1.0.228\n   Compiling errno v0.3.14\n   Compiling thiserror v1.0.69\n   Compiling serde_json v1.0.149\n   Compiling fs_at v0.2.1\n   Compiling either v1.15.0\n   Compiling memchr v2.8.0\n   Compiling once_cell v1.21.4\n   Compiling serde_derive v1.0.228\n   Compiling thiserror-impl v1.0.69\n   Compiling itoa v1.0.18\n   Compiling strum_macros v0.24.3\n   Compiling home v0.5.12\n   Compiling fastrand v2.4.1\n   Compiling normpath v1.5.0\n   Compiling which v4.4.2\n   Compiling remove_dir_all v0.8.4\n   Compiling tempfile v3.27.0\n   Compiling filetime v0.2.27\n   Compiling bitflags v1.3.2\n   Compiling log v0.4.29\n   Compiling shlex v1.3.0\n   Compiling strum v0.24.1\n   Compiling embuild v0.31.4\n   Compiling esp32-app v0.1.0 (/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/audit-esp32-rust-Ako70k)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 6.73s\n",
+          "stdoutTail": ""
+        },
+        {
+          "phase": "validationChecks",
+          "skipped": "none-declared",
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

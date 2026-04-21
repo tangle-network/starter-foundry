@@ -1,0 +1,51 @@
+{
+  "id": "ollama-server",
+  "description": "Ollama framework layer — streaming NDJSON TypeScript client for /api/generate with line-buffered chunk parsing.",
+  "appliesTo": ["ollama-server"],
+  "files": [
+    { "source": "files/src/client.ts", "target": "src/client.ts" }
+  ],
+  "packageDeps": {
+    "devDependencies": {
+      "@types/node": "^22.0.0"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "Self-hosted / local LLM inference where privacy, offline operation, or zero-vendor-cost matter. Use over cloud LLM layers when data must stay on-prem or when targeting laptops and air-gapped environments.",
+    "firstSteps": [
+      "Start Ollama: `docker compose up -d` — binds port 11434 on the host. CPU-only by default; uncomment the GPU block in docker-compose.yml for CUDA.",
+      "Pull a model (one-time): `docker compose exec ollama ollama pull llama3.2` (~2-8 GB). Other options: qwen2.5, mistral, gemma3.",
+      "Install deps and run: `pnpm install && pnpm dev` — `src/client.ts` calls /api/generate and streams the response to stdout.",
+      "Customize the persona: edit `Modelfile` (FROM, SYSTEM, PARAMETER temperature/stop), then `ollama create mymodel -f Modelfile` inside the container.",
+      "Verify: `curl http://localhost:11434/api/tags` lists loaded models; `pnpm typecheck` must pass with zero errors."
+    ],
+    "gotchas": [
+      "The Ollama response stream is NDJSON, not SSE — each chunk is a JSON line. The client buffers partial lines across `read()` calls; do not replace the line-split logic with a single `JSON.parse` on the raw chunk.",
+      "Models are pulled at runtime, not baked into the image. A fresh container returns an error (not a hang) for an unpulled model — always pull before calling /api/generate.",
+      "`@types/node` is required for `process.stdout.write` and `process.exit` — it is declared in this layer's packageDeps and must remain in devDependencies.",
+      "GPU inference requires both `deploy.resources.reservations.devices` in docker-compose.yml AND nvidia-container-toolkit on the host. Missing either silently falls back to slow CPU mode."
+    ],
+    "architectureNotes": [
+      "Replace the example prompt in `src/client.ts` and the stdout handler with the product's actual call flow — the streaming loop and NDJSON parser are production-ready and should be kept.",
+      "For chat (multi-turn), switch the endpoint to /api/chat and pass a `messages` array instead of a flat `prompt` string; the NDJSON framing is identical."
+    ],
+    "placeholders": [
+      {
+        "path": "src/client.ts",
+        "description": "Example client calling /api/generate with a hardcoded prompt. Replace the prompt string and stdout handler with the product's actual LLM call flow. Keep the streaming loop and NDJSON parser."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "docker compose up -d",
+      "docker compose exec ollama ollama pull llama3.2",
+      "pnpm install",
+      "pnpm dev",
+      "pnpm typecheck"
+    ],
+    "entrypoints": ["src/client.ts"],
+    "preview": { "path": "/api/tags", "port": "11434" },
+    "extensionPoints": ["src/client.ts", "Modelfile", "docker-compose.yml"]
+  }
+}

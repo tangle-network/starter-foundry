@@ -1,0 +1,28 @@
+; Godot 4.3 project file. Do not hand-edit sections Godot owns
+; (`config/features`, `rendering/`) unless you know what you're doing;
+; opening the project in the editor will re-stamp them.
+
+config_version=5
+
+[application]
+
+config/name="{{serviceName}}"
+config/description="Godot 4.3 HTML5 starter — web-first scene with scene-agnostic main script."
+run/main_scene="res://scenes/main.tscn"
+config/features=PackedStringArray("4.3", "GL Compatibility")
+config/icon="res://icon.svg"
+
+[display]
+
+window/size/viewport_width=1152
+window/size/viewport_height=648
+window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
+
+[rendering]
+
+; GL Compatibility driver works on the widest set of browsers/WebGL
+; targets. Switch to "forward_plus" only if you have confirmed the
+; target audience is on desktop Chrome/Edge 113+ with WebGPU enabled.
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"

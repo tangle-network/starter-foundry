@@ -1,0 +1,30 @@
+{
+  "templatePath": "index.html",
+  "templateKey": "index.html",
+  "family": "react-vite-ts",
+  "tupleCount": 62,
+  "synthesizer": {
+    "mode": "llm",
+    "reasoning": "The candidate template incorporates consistent patterns from common rewrites while preserving the current template's structure and font imports. Key changes include: updating doctype to uppercase DOCTYPE for consistency with modern standards shown in sample rewrites; changing charset from utf-8 to UTF-8 for standardization; adjusting viewport meta to match common pattern (initial-scale=1.0); changing app div id from \"app\" to \"root\" which is more conventional; updating main entry point from main.ts to main.tsx to match React + TypeScript conventions; and maintaining the Inter font Google Fonts configuration. These modifications align with react-vite-ts family conventions while keeping the template's original headline placeholder and font loading strategy."
+  },
+  "judge": {
+    "score": 0.7065304614085102,
+    "dimensions": {
+      "addLift": 0.6818181818181819,
+      "removeMatch": 0.5555555555555556,
+      "sizeScore": 0.9947735191637631
+    },
+    "reasoning": "incorporatesFrequentlyAddedLines: 0.36 (current: 0.18, lift: 0.18)\nremovesFrequentlyDeletedLines: 0.56 (5/9)\nsizeDelta: 3 chars (score 0.99)",
+    "removesFrequentlyDeletedLines": 0.5555555555555556,
+    "incorporatesFrequentlyAddedLines": 0.36363636363636365,
+    "sizeDelta": 3
+  },
+  "audit": {
+    "ok": true,
+    "stage": "done",
+    "stderrTail": "",
+    "durationMs": 7129
+  },
+  "decision": "promotable",
+  "generatedAt": "2026-04-21T01:54:03.412Z"
+}

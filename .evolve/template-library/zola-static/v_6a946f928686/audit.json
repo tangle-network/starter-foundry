@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2026-04-21T08:42:32.709Z",
+  "audits": [
+    {
+      "layerId": "framework:zola-static",
+      "family": "zola-static",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 277.141917,
+          "stderrTail": "",
+          "stdoutTail": "Already up to date\n\nDone in 161ms using pnpm v10.22.0\n"
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        },
+        {
+          "phase": "build",
+          "skipped": "no-build-script",
+          "ok": true
+        },
+        {
+          "phase": "validationChecks",
+          "skipped": "none-declared",
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

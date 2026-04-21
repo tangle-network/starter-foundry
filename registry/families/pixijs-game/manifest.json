@@ -1,0 +1,90 @@
+{
+  "id": "pixijs-game",
+  "description": "Pixi.js v8 2D starter on Vite — Application, one Container, rotating sprite, resize + ticker wired from first render. Pixi v8 API (not v7).",
+  "tags": ["frontend", "typescript", "pixi.js", "game", "2d", "webgpu"],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "frontend"
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "serviceName": "starter-foundry-pixi",
+    "port": 5173
+  },
+  "files": [
+    { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/vite.config.ts", "target": "vite.config.ts" },
+    { "source": "files/index.html", "target": "index.html" },
+    { "source": "files/validate-pixi.mjs", "target": "validate-pixi.mjs" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "index.html" },
+    { "type": "file-exists", "path": "src/main.ts" },
+    { "type": "file-exists", "path": "package.json" },
+    {
+      "type": "command-success",
+      "command": ["node", "validate-pixi.mjs"],
+      "expect": "pixi game starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm dev", "pnpm build"],
+    "entrypoints": ["src/main.ts", "index.html", "vite.config.ts"],
+    "preview": { "path": "/" },
+    "extensionPoints": ["src/main.ts", "src/scenes", "public/assets"]
+  },
+  "keywords": [
+    "pixi",
+    "pixi.js",
+    "pixijs",
+    "2d webgl",
+    "2d webgpu",
+    "2d renderer",
+    "interactive canvas",
+    "sprite animation"
+  ],
+  "scoring": {
+    "boost": { "pixi.js": 4, "pixijs": 4, "pixi": 3 }
+  },
+  "tieredKeywords": {
+    "tier1": ["pixi.js", "pixijs", "pixi v8", "2d webgpu"],
+    "tier2": ["2d webgl renderer", "interactive canvas", "sprite animation", "data visualization canvas"],
+    "archetypes": [
+      "interactive 2d data visualization",
+      "particle system",
+      "sprite-based hud",
+      "whiteboard canvas",
+      "live generative art",
+      "2d map editor",
+      "real-time chart"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "High-performance 2D canvas work — interactive data viz, particle systems, generative art, map editors, live charts. Pick over Phaser when you want a raw renderer without scene+physics machinery.",
+    "firstSteps": [
+      "Install: `pnpm install` then `pnpm dev` — Vite serves on 5173 with HMR. A rotating gradient sprite renders immediately.",
+      "Pixi v8 uses `await app.init(...)` — it is ASYNC. Do not call `new Application()` and start rendering synchronously; sprites attached before init never appear.",
+      "Put art in `public/assets/` and load via `Assets.load('assets/foo.png')` — the v8 Assets loader replaces the v7 Loader class.",
+      "Attach children to `app.stage` (or a sub-Container). `app.ticker.add(...)` drives per-frame updates.",
+      "Build: `pnpm build` emits static assets to `dist/` — deploy on any static host."
+    ],
+    "gotchas": [
+      "Pixi v8 is a BREAKING rewrite of v7. Do NOT copy v7 tutorials — `new Application({ width, height })` is gone; use `const app = new Application(); await app.init({ width, height });`.",
+      "Pixi v8 supports both WebGL and WebGPU. Default renderer is chosen automatically — pin with `preference: 'webgpu'` if you need WebGPU explicitly.",
+      "The Ticker runs after `app.init()` only. Don't add ticker callbacks before init — they're attached to a placeholder and never fire.",
+      "On teardown (HMR, route change), call `app.destroy(true, { children: true, texture: true })` to release GPU memory. Without it, HMR leaks textures fast."
+    ],
+    "architectureNotes": [
+      "Application owns: renderer, stage (root Container), ticker. One Application per canvas.",
+      "Scene composition = Container hierarchy. Containers transform children; leaves are Sprites, Graphics, Text, Mesh."
+    ],
+    "placeholders": [
+      {
+        "path": "src/main.ts",
+        "description": "Application init + rotating sprite. Replace the placeholder content with the product's actual draw loop; keep the init + destroy plumbing."
+      }
+    ]
+  }
+}

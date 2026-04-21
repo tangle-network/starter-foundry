@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-04-21T08:26:17.564Z",
+  "audits": [
+    {
+      "layerId": "framework:rag-pipeline-py",
+      "family": "rag-pipeline-py",
+      "pm": "python3",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "python3 -m compileall .",
+          "ok": true,
+          "durationMs": 76.41645800000003,
+          "stderrTail": "",
+          "stdoutTail": "Listing '.'...\nListing './.starter-foundry'...\nListing './docs'...\nListing './src'...\nCompiling './src/__init__.py'...\nCompiling './src/pipeline.py'...\n"
+        },
+        {
+          "phase": "validationChecks",
+          "skipped": "none-declared",
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

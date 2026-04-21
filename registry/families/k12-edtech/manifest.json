@@ -1,0 +1,64 @@
+{
+  "id": "k12-edtech",
+  "description": "K-12 SIS / gradebook API — students, teachers, classes, assignments, submissions, grades, parent relations, FERPA-aligned audit trail on grade reads.",
+  "tags": ["k-12", "edtech", "api", "typescript"],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "api"
+  },
+  "slots": {
+    "database": { "options": ["database:sqlite", "database:postgres"], "default": "database:postgres" },
+    "auth": { "options": ["auth:none", "auth:better-auth", "auth:clerk"], "default": "auth:clerk" }
+  },
+  "defaults": {
+    "projectType": "api",
+    "serviceName": "starter-foundry-k12",
+    "port": 8103,
+    "databaseProvider": "postgres"
+  },
+  "files": [
+    { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/validate-k12.mjs", "target": "validate-k12.mjs" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "src/server.ts" },
+    { "type": "file-exists", "path": "src/db/schema.ts" },
+    { "type": "file-exists", "path": "src/api/classroom.ts" },
+    { "type": "file-exists", "path": "src/api/gradebook.ts" },
+    { "type": "command-success", "command": ["node", "validate-k12.mjs"], "expect": "k12 starter ok" }
+  ],
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm dev", "pnpm drizzle-kit generate", "pnpm drizzle-kit migrate"],
+    "entrypoints": ["src/server.ts", "src/db/schema.ts", "src/api/classroom.ts", "src/api/gradebook.ts"],
+    "preview": { "path": "/health" },
+    "extensionPoints": ["src/db/schema.ts", "src/api/"]
+  },
+  "keywords": [
+    "k-12",
+    "k12",
+    "edtech",
+    "ed tech",
+    "classroom management",
+    "gradebook",
+    "student information system",
+    "sis",
+    "school software",
+    "lms backend",
+    "learning management"
+  ],
+  "scoring": { "boost": { "k-12": 4, "edtech": 3, "gradebook": 4 } },
+  "tieredKeywords": {
+    "tier1": [
+      "k-12",
+      "k12",
+      "edtech",
+      "classroom management",
+      "gradebook",
+      "student information system",
+      "sis"
+    ],
+    "tier2": ["school software", "lms backend", "learning management", "ferpa"]
+  }
+}

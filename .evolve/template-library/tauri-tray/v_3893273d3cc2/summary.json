@@ -1,0 +1,33 @@
+{
+  "familyId": "tauri-tray",
+  "runAt": "2026-04-21T06:39:39.879Z",
+  "completed": true,
+  "shotsUsed": 2,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 295627,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": false,
+      "failing": [
+        "typecheck"
+      ],
+      "confidence": 0.92,
+      "shouldContinue": true,
+      "durationMs": 240860,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 2,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 54766,
+      "reviewAvailable": true
+    }
+  ]
+}

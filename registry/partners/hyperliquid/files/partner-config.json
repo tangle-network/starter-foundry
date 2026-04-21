@@ -1,0 +1,12 @@
+{
+  "partnerId": "hyperliquid",
+  "apiUrl": "https://api.hyperliquid.xyz",
+  "wsUrl": "wss://api.hyperliquid.xyz/ws",
+  "testnetApiUrl": "https://api.hyperliquid-testnet.xyz",
+  "hyperEvmChainId": 999,
+  "hyperEvmRpcUrl": "https://rpc.hyperliquid.xyz/evm",
+  "testnetChainId": 998,
+  "testnetEvmRpcUrl": "https://rpc.hyperliquid-testnet.xyz/evm",
+  "runtimeFocus": "perp-dex-l1-plus-hyperevm",
+  "preferredOutputs": ["trading-ui", "market-maker-bot", "perps-composability"]
+}

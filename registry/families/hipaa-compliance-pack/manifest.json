@@ -1,0 +1,63 @@
+{
+  "id": "hipaa-compliance-pack",
+  "description": "HIPAA compliance overlay — PHI audit trail, field-level AES-256-GCM helpers, role-based minimum-necessary middleware, BAA acknowledgment surface. Composes onto fullstack-ts / api-service / healthcare-hipaa-backend.",
+  "tags": ["compliance", "hipaa", "healthcare", "overlay"],
+  "taxonomy": { "language": "typescript", "runtime": "node", "surface": "api" },
+  "defaults": {
+    "projectType": "compliance-pack",
+    "serviceName": "starter-foundry-hipaa-pack"
+  },
+  "files": [
+    { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/src/encryption.ts", "target": "src/encryption.ts" },
+    { "source": "files/src/phi-access.ts", "target": "src/phi-access.ts" },
+    { "source": "files/src/audit-log.ts", "target": "src/audit-log.ts" },
+    { "source": "files/docs/HIPAA-controls.md", "target": "docs/HIPAA-controls.md" },
+    { "source": "files/docs/BAA-template.md", "target": "docs/BAA-template.md" },
+    { "source": "files/validate-hipaa-pack.mjs", "target": "validate-hipaa-pack.mjs" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "src/encryption.ts" },
+    { "type": "file-exists", "path": "src/phi-access.ts" },
+    { "type": "file-exists", "path": "docs/HIPAA-controls.md" },
+    { "type": "command-success", "command": ["node", "validate-hipaa-pack.mjs"], "expect": "hipaa-pack ok" }
+  ],
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm build"],
+    "entrypoints": ["src/encryption.ts", "src/phi-access.ts", "src/audit-log.ts"],
+    "preview": null,
+    "extensionPoints": ["src/phi-access.ts", "docs/HIPAA-controls.md"]
+  },
+  "keywords": ["hipaa", "hipaa compliance", "phi audit", "baa", "protected health information", "healthcare compliance"],
+  "scoring": { "boost": { "hipaa compliance": 5, "phi audit trail": 4 } },
+  "tieredKeywords": {
+    "tier1": ["hipaa compliance", "hipaa compliant", "phi audit trail", "baa template"],
+    "tier2": ["protected health information", "healthcare compliance backend"]
+  },
+  "buildHints": {
+    "whenToUse": "Bolt HIPAA primitives (audit trail, field encryption, minimum-necessary middleware) onto an existing healthcare backend. Not a standalone application.",
+    "firstSteps": [
+      "Read `docs/HIPAA-controls.md` — each §164.312 control maps to one file in this pack.",
+      "Wire `withPhiAccess` from `src/phi-access.ts` onto every route that reads or writes PHI. The middleware MUST log BEFORE returning.",
+      "Wire `src/encryption.ts` helpers on every column storing SSN, DOB, MRN, or free-text clinical notes. AES-256-GCM with per-field IV.",
+      "Emit the BAA template (`docs/BAA-template.md`) as a signed doc before production data lands. Gate the production API behind a signed-BAA state flag.",
+      "Confirm `audit_logs` table is append-only at the DB level (TRIGGER or permission) — application-only enforcement is insufficient per §164.312(c)(2)."
+    ],
+    "gotchas": [
+      "Do NOT log PHI to stdout, structured JSON logs, or error traces. Every logger must run through a PHI-redaction filter — one slip violates §164.312(b).",
+      "Audit retention is ≥6 years per §164.316(b)(2)(i). Design the storage tier for it — don't plan to TTL old audit rows.",
+      "De-identification per §164.514 is NOT anonymization. Safe Harbor requires 18 specific identifier classes removed; Expert Determination needs a signed statistician's attestation.",
+      "Encryption at rest is 'addressable' not 'required' in §164.312 — but skipping it is almost always an audit failure. Always encrypt.",
+      "Minimum-necessary rule (§164.502(b)) means APIs must filter, not just the UI. A /patients endpoint that returns the full row and lets the caller discard fields is a violation."
+    ],
+    "architectureNotes": [
+      "Pair with `healthcare-hipaa-backend` family for a full starter, or compose onto `fullstack-ts` / `api-service` / `python-api` for incremental adoption.",
+      "Audit table schema: id, actor_user_id, actor_role, action (enum), subject_table, subject_id, subject_fields_accessed[], at (timestamp), request_id, client_ip. Never include the PHI itself in the audit row — reference it by ID only."
+    ],
+    "placeholders": [
+      { "path": "src/phi-access.ts", "description": "Reference middleware. Replace the stubbed route matchers with the product's real routes; keep the audit-before-return order." },
+      { "path": "docs/BAA-template.md", "description": "BAA template. Legal MUST review + customize before use — it is not legal advice." }
+    ]
+  }
+}

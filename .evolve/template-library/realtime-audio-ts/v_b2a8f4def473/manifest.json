@@ -1,0 +1,58 @@
+{
+  "id": "realtime-audio-ts",
+  "description": "Realtime audio framework layer — Vite + WebAudio mic capture, FFT bar visualizer, and a WebRTC peer stub with a documented signalling seam.",
+  "appliesTo": ["realtime-audio-ts"],
+  "defaults": {
+    "headline": "Starter Foundry Realtime Audio",
+    "subheadline": "Mic capture, FFT visualization, and a WebRTC peer-audio seam — browser-native."
+  },
+  "files": [
+    { "source": "files/index.html", "target": "index.html" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/vite.config.ts", "target": "vite.config.ts" },
+    { "source": "files/main.ts", "target": "src/main.ts" },
+    { "source": "files/audio.ts", "target": "src/audio.ts" },
+    { "source": "files/visualizer.ts", "target": "src/visualizer.ts" },
+    { "source": "files/peer.ts", "target": "src/peer.ts" },
+    { "source": "files/styles.css", "target": "src/styles.css" }
+  ],
+  "packageDeps": {
+    "devDependencies": {
+      "typescript": "^5.9.0",
+      "vite": "^6.4.2"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "Pick realtime-audio-ts when the app captures microphone audio in the browser, visualizes it with an AnalyserNode/FFT, and optionally streams audio to a peer via WebRTC. Signalling transport (WebSocket, Ably, Pusher) is intentionally left as a seam.",
+    "firstSteps": [
+      "Run `pnpm install` then `pnpm dev` — Vite serves on 5173; click 'Start microphone' to unlock the AudioContext and see the FFT bars animate.",
+      "Audio pipeline lives in src/audio.ts (AudioContext + GainNode + AnalyserNode); the visualizer reads from the analyser in src/visualizer.ts each RAF tick.",
+      "WebRTC harness is in src/peer.ts — `createPeer({ stream, onStateChange })` wires tracks and exposes createOffer/acceptAnswer; add your own WebSocket transport where the SIGNALLING TODO comments appear.",
+      "Run `pnpm build` to emit static assets to dist/ — no server required, deploy to any static host."
+    ],
+    "gotchas": [
+      "AUTOPLAY POLICY: call audioContext.resume() inside the Start button click handler — creating an AudioContext at module load leaves it suspended and getByteFrequencyData returns all zeros with no error.",
+      "getUserMedia requires HTTPS or localhost. Use `vite --host --https` for LAN device testing.",
+      "Preallocate the Uint8Array for getByteFrequencyData ONCE at attach() time and reuse every RAF frame — allocating inside the loop causes GC jank at 60fps.",
+      "Call pc.addTrack() for every stream track BEFORE pc.createOffer(), otherwise the SDP lacks an m=audio line and the remote peer has nothing to answer.",
+      "iOS Safari destroys the AudioContext after 30s in background — listen to visibilitychange and call context.resume() on return."
+    ],
+    "architectureNotes": [
+      "src/audio.ts owns the AudioContext lifecycle — created in the constructor, resumed in unlock() which must be called from within a user-gesture handler.",
+      "src/visualizer.ts drives rendering from requestAnimationFrame; the buffer is preallocated at attach() time to avoid GC pressure in the hot loop.",
+      "src/peer.ts is a WebRTC harness: call createPeer({ stream, onStateChange }) after getUserMedia, then createOffer() when ready to initiate. Signalling transport is intentionally left as a seam."
+    ],
+    "placeholders": [
+      {
+        "path": "src/peer.ts",
+        "description": "SIGNALLING TODO comments mark exactly where to wire a WebSocket, Ably, Pusher, or socket.io transport for ICE candidate exchange."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm dev", "pnpm build", "node validate-realtime-audio.mjs"],
+    "entrypoints": ["src/main.ts", "src/audio.ts", "src/visualizer.ts", "src/peer.ts"],
+    "preview": { "path": "/" },
+    "extensionPoints": ["src/peer.ts", "src/audio.ts"]
+  }
+}

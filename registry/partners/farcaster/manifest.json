@@ -1,0 +1,44 @@
+{
+  "id": "farcaster",
+  "description": "Partner pack for Farcaster — decentralized social protocol on OP + Base, Frames for inline dApps, Warps for tipping. Biases toward social+crypto fusion apps, frame-based mini-apps, and agent accounts.",
+  "appliesTo": [
+    "frontend-static",
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "expo-react-native-ts",
+    "api-service",
+    "agent-service-ts",
+    "worker-job"
+  ],
+  "slotDefaults": {
+    "sdk": "sdk:evm-wallet"
+  },
+  "defaults": {
+    "headline": "Build on Farcaster — social + Frames + mini-apps",
+    "subheadline": "Hubs for content, Frames for inline dApps, Base-native wallet. Ship a mini-app the feed can render without leaving the client."
+  },
+  "files": [
+    {
+      "source": "files/partner-config.json",
+      "target": "partner-config.json"
+    },
+    {
+      "source": "files/starter-brand.json",
+      "target": "starter-brand.json"
+    }
+  ],
+  "buildHints": {
+    "whenToUse": "Prompt mentions Farcaster, Warpcast, Frames, Mini Apps, FID, or Hub APIs. Also social+onchain hybrid flows where cast context matters.",
+    "firstSteps": [
+      "For reading casts/users, use Neynar (neynar.com) or Pinata Hub — the protocol-level Hub API is low-level; Neynar gives indexed search, reactions, feeds.",
+      "For Frames v2 / Mini Apps, return the required meta tags from your Next.js route; use `@farcaster/frame-sdk` client-side. Spec: https://miniapps.farcaster.xyz.",
+      "Auth via SIWF (Sign-In With Farcaster) — the browser-extension-less flow uses QR code + AuthKit (`@farcaster/auth-kit`)."
+    ],
+    "gotchas": [
+      "Hubs are eventually-consistent — a cast might not appear on every Hub for 5-30s. For time-critical flows (airdrops by FID), double-check via Neynar with a fallback Hub.",
+      "Frames/Mini Apps run inside the client (Warpcast/Base) iframe — window.parent is gated. Treat the Frame API as the sole source of truth for user identity, not window.*.",
+      "FID is a uint32; don't persist as a string without a comment. Custody address (EVM) and FID are separate — link via the IdRegistry contract on Optimism."
+    ]
+  }
+}

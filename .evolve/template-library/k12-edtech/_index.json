@@ -1,0 +1,22 @@
+{
+  "family": "k12-edtech",
+  "current": "v_a62bbf76a2b1",
+  "topN": [
+    "v_a62bbf76a2b1",
+    "v_2ffda059647b"
+  ],
+  "all": [
+    {
+      "version": "v_a62bbf76a2b1",
+      "score": 0.8299955241137114,
+      "skipped": null
+    },
+    {
+      "version": "v_2ffda059647b",
+      "score": 0.6449999945760401,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.346Z"
+}

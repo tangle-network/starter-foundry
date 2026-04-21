@@ -1,0 +1,22 @@
+{
+  "family": "sglang-server",
+  "current": "v_4b496a72251e",
+  "topN": [
+    "v_4b496a72251e",
+    "v_22506ade9ffc"
+  ],
+  "all": [
+    {
+      "version": "v_4b496a72251e",
+      "score": 0.6399966219891553,
+      "skipped": null
+    },
+    {
+      "version": "v_22506ade9ffc",
+      "score": 0.47999999457921105,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.399Z"
+}

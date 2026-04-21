@@ -1,0 +1,9 @@
+[package]
+name = "esp32-app"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[build-dependencies]
+embuild = { version = "0.31", features = ["espidf"] }

@@ -1,0 +1,22 @@
+{
+  "familyId": "pci-dss-compliance-pack",
+  "runAt": "2026-04-21T08:20:47.208Z",
+  "completed": true,
+  "shotsUsed": 1,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 199697,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 199696,
+      "reviewAvailable": true
+    }
+  ]
+}

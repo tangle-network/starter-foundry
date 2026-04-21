@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-04-21T08:34:27.001Z",
+  "audits": [
+    {
+      "layerId": "framework:tauri-tray",
+      "family": "tauri-tray",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 1804.621917,
+          "stderrTail": "",
+          "stdoutTail": "Progress: resolved 1, reused 0, downloaded 0, added 0\nProgress: resolved 15, reused 5, downloaded 0, added 0\nPackages: +6\n++++++\nProgress: resolved 16, reused 6, downloaded 0, added 6, done\n\ndependencies:\n+ @tauri-apps/api 2.10.1\n\ndevDependencies:\n+ @tauri-apps/cli 2.10.1\n+ @types/node 20.19.39 (25.6.0 is available)\n+ typescript 5.9.3 (6.0.3 is available)\n\nDone in 1.6s using pnpm v10.22.0\n"
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 953.013375,
+          "stderrTail": "",
+          "stdoutTail": ""
+        },
+        {
+          "phase": "build",
+          "skipped": "no-build-script",
+          "ok": true
+        },
+        {
+          "phase": "validationChecks",
+          "skipped": "none-declared",
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

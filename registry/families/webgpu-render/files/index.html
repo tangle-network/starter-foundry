@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{serviceName}}</title>
+    <style>
+      html, body { margin: 0; padding: 0; height: 100%; background: #0b0d10; overflow: hidden; }
+      canvas { display: block; width: 100vw; height: 100vh; }
+      #status { position: fixed; top: 12px; left: 12px; font: 12px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace; color: #e7ecf3; background: rgba(17,22,29,0.82); border: 1px solid #2a3240; padding: 6px 10px; border-radius: 6px; pointer-events: none; }
+      #status.err { color: #ff8080; border-color: #ff8080; }
+    </style>
+  </head>
+  <body>
+    <canvas id="scene"></canvas>
+    <div id="status">Initializing WebGPU…</div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

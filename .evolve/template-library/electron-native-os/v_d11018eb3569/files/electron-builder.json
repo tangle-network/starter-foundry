@@ -1,0 +1,39 @@
+{
+  "appId": "com.starterfoundry.{{packageName}}",
+  "productName": "{{projectName}}",
+  "directories": {
+    "output": "release"
+  },
+  "files": [
+    "out/**/*",
+    "node_modules/**/*",
+    "package.json"
+  ],
+  "protocols": [
+    {
+      "name": "{{projectName}}",
+      "schemes": ["{{packageName}}"]
+    }
+  ],
+  "mac": {
+    "hardenedRuntime": true,
+    "gatekeeperAssess": false,
+    "entitlements": "build/entitlements.mac.plist",
+    "entitlementsInherit": "build/entitlements.mac.plist",
+    "notarize": true
+  },
+  "win": {
+    "target": ["nsis"],
+    "publisherName": "{{projectName}}"
+  },
+  "linux": {
+    "target": ["AppImage", "deb"],
+    "category": "Utility"
+  },
+  "publish": [
+    {
+      "provider": "github",
+      "releaseType": "release"
+    }
+  ]
+}

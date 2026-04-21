@@ -1,6 +1,6 @@
 {
   "name": "@tangle-network/starter-foundry",
-  "version": "0.5.4",
+  "version": "0.6.0",
   "description": "Deterministic project scaffold engine for AI coding platforms",
   "type": "module",
   "license": "MIT",
@@ -55,12 +55,37 @@
     "release": "node dist/cli.js release",
     "sync:warm-list": "node scripts/sync-warm-list.mjs",
     "sync:warm-list:write": "node scripts/sync-warm-list.mjs --write",
-    "audit:visual": "node scripts/visual-audit.mjs"
+    "audit:visual": "node scripts/visual-audit.mjs",
+    "validate:registry": "node scripts/validate-registry.mjs",
+    "new:family": "node scripts/new-family.mjs",
+    "new:capability": "node scripts/new-capability.mjs",
+    "new:partner": "node scripts/new-partner.mjs",
+    "repl": "node scripts/repl.mjs",
+    "watch": "node scripts/watch.mjs",
+    "docs:gen": "node scripts/generate-docs.mjs",
+    "scorecard": "node scripts/refresh-scorecard.mjs",
+    "changelog": "node scripts/generate-changelog.mjs",
+    "propose:capabilities": "node scripts/propose-capabilities.mjs",
+    "propose:archive-dead": "node scripts/archive-dead-families.mjs",
+    "refresh:partners": "node scripts/refresh-partner-configs.mjs",
+    "trend:archive": "node scripts/archive-scorecard-trend.mjs",
+    "cve:sweep": "node scripts/cve-sweep.mjs",
+    "propose:family": "node scripts/propose-family.mjs",
+    "template:sweep": "node scripts/template-quality-sweep.mjs",
+    "template:open-prs": "node scripts/open-template-prs.mjs",
+    "template:regression-watch": "node scripts/template-regression-watcher.mjs",
+    "trend:pass-rate": "node scripts/family-pass-rate-trend.mjs",
+    "dep:cascade": "node scripts/dep-cascade-detector.mjs",
+    "sla:probe": "node scripts/sla-probe.mjs",
+    "sla:rollup": "node scripts/sla-rollup.mjs",
+    "rollback:version": "node scripts/rollback-version.mjs",
+    "gen:types": "node scripts/gen-types-from-schemas.mjs"
   },
   "engines": {
     "node": ">=20"
   },
   "devDependencies": {
+    "@tangle-network/agent-eval": "link:../agent-eval",
     "@types/node": "^20.0.0",
     "typescript": "^5.7.0"
   },

@@ -1,0 +1,9 @@
+{
+  "name": "{{projectName}}",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "aptos move compile --named-addresses {{projectName}}=default",
+    "test": "aptos move test --named-addresses {{projectName}}=default"
+  }
+}

@@ -12,8 +12,20 @@
     "frontend-static",
     "browser-extension-ts",
     "electron-desktop-ts",
-    "tauri-desktop"
+    "tauri-desktop",
+    "electron-native-os",
+    "multimodal-agent",
+    "vision-first-agent",
+    "voice-first-agent",
+    "realtime-audio-ts",
+    "astro-static"
   ],
+  "packageDeps": {
+    "dependencies": {
+      "@tailwindcss/vite": "^4.0.0",
+      "tailwindcss": "^4.0.0"
+    }
+  },
   "files": [
     {
       "source": "files/tailwind-config.json",

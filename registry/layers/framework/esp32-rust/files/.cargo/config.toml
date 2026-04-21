@@ -1,0 +1,3 @@
+# Target must be configured by the developer after installing espup.
+# Run: cargo install espup && espup install && . $HOME/export-esp.sh
+# Then build: cargo build --release --target xtensa-esp32-espidf

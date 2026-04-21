@@ -1,0 +1,22 @@
+{
+  "familyId": "lora-training",
+  "runAt": "2026-04-21T06:09:13.134Z",
+  "completed": true,
+  "shotsUsed": 1,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 161510,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 161510,
+      "reviewAvailable": true
+    }
+  ]
+}

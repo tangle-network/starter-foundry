@@ -1,0 +1,46 @@
+# HuggingFace Text Generation Inference.
+# Pin the image tag in production — `latest` can break custom architectures
+# when HF bumps the embedded transformers version.
+services:
+  tgi:
+    image: ghcr.io/huggingface/text-generation-inference:latest
+    container_name: {{serviceName}}
+    restart: unless-stopped
+    ports:
+      - "{{port}}:80"
+    # NCCL / all-reduce needs more than the default 64MB /dev/shm.
+    shm_size: 1gb
+    environment:
+      MODEL_ID: ${MODEL_ID:-{{modelId}}}
+      HUGGING_FACE_HUB_TOKEN: ${HUGGING_FACE_HUB_TOKEN:-}
+      MAX_INPUT_LENGTH: ${MAX_INPUT_LENGTH:-{{maxInputLength}}}
+      MAX_TOTAL_TOKENS: ${MAX_TOTAL_TOKENS:-{{maxTotalTokens}}}
+      # QUANTIZE: awq | gptq | eetq | bitsandbytes-nf4 | bitsandbytes-fp4
+      QUANTIZE: ${QUANTIZE:-}
+      # NUM_SHARD > 1 splits across multiple GPUs (tensor parallelism).
+      NUM_SHARD: ${NUM_SHARD:-1}
+    command:
+      - --model-id
+      - ${MODEL_ID:-{{modelId}}}
+      - --max-input-length
+      - "${MAX_INPUT_LENGTH:-{{maxInputLength}}}"
+      - --max-total-tokens
+      - "${MAX_TOTAL_TOKENS:-{{maxTotalTokens}}}"
+      - --port
+      - "80"
+    volumes:
+      # Model weights cache. First boot downloads 15-60GB here.
+      - ./data:/data
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s

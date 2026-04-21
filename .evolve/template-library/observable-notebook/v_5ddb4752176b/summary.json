@@ -1,0 +1,44 @@
+{
+  "familyId": "observable-notebook",
+  "runAt": "2026-04-21T06:15:44.448Z",
+  "completed": true,
+  "shotsUsed": 3,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 275151,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": false,
+      "failing": [
+        "typecheck"
+      ],
+      "confidence": 0.88,
+      "shouldContinue": true,
+      "durationMs": 128370,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 2,
+      "pass": false,
+      "failing": [
+        "typecheck"
+      ],
+      "confidence": 0.88,
+      "shouldContinue": true,
+      "durationMs": 77652,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 3,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 69128,
+      "reviewAvailable": true
+    }
+  ]
+}

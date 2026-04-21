@@ -1,0 +1,22 @@
+{
+  "familyId": "eleventy-static",
+  "runAt": "2026-04-21T05:33:39.494Z",
+  "completed": true,
+  "shotsUsed": 1,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 141637,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 141637,
+      "reviewAvailable": true
+    }
+  ]
+}

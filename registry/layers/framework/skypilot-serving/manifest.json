@@ -1,0 +1,68 @@
+{
+  "id": "skypilot-serving",
+  "description": "SkyPilot multi-cloud LLM serving — sky serve up provisions GPU replicas across AWS/GCP/Azure/Kubernetes, auto-picks cheapest region, handles spot preemption, and load-balances across replicas. vLLM runs the model on each replica behind a managed endpoint.",
+  "appliesTo": ["skypilot-serving"],
+  "files": [
+    { "source": "files/AGENTS.md", "target": "AGENTS.md" }
+  ],
+  "buildHints": {
+    "whenToUse": "Pick SkyPilot when you need multi-cloud LLM inference, spot-GPU cost savings, or automatic failover across cloud regions. For single-host or single-cloud deployments, use vllm-server or tgi-server directly — SkyPilot adds value only when multi-cloud orchestration or spot preemption handling matters.",
+    "firstSteps": [
+      "pip install -r requirements.txt",
+      "Authenticate with at least one cloud: `aws configure` / `gcloud auth login` / `kubectl config` — then run `sky check` to confirm ≥1 cloud is enabled.",
+      "Edit service.yaml: set resources.accelerators (e.g. A100:1), envs.MODEL_ID (e.g. meta-llama/Meta-Llama-3.1-8B-Instruct), and replicas.",
+      "sky serve up -n <endpointName> service.yaml   — pass --env HF_TOKEN=$HF_TOKEN for gated models.",
+      "sky serve status <endpointName> — wait for replica READY (3-10 min cold start), then hit the printed endpoint URL.",
+      "sky serve down <endpointName> when done — you are billed while replicas run."
+    ],
+    "gotchas": [
+      "`sky serve up` starts billing immediately. `sky serve down` is not optional — add a teardown step to any CI/review pipeline.",
+      "Accelerator strings are SkyPilot-specific: A100:1, A100-80GB:1, H100:1, L4:1. Cloud instance names (p4d.24xlarge) go under resources.instance_type, not accelerators.",
+      "use_spot: true saves 50-80% but spot preemption restarts replicas. Tune readiness_probe.initial_delay_seconds for your model's cold-start time; the default 600s is intentionally conservative.",
+      "First `sky serve up` provisions a controller VM (~$30/mo on AWS). Leave it running — it coordinates all your services and restarting it is slower and pricier than keeping it live.",
+      "Large model weights re-download on every replica spawn unless you add file_mounts pointing to an S3/GCS bucket. For models >7B parameters, set up weight caching before scaling to multiple replicas.",
+      "Kubernetes backend: `sky check kubernetes` must succeed BEFORE `sky serve up` — otherwise SkyPilot silently falls back to the first configured cloud."
+    ],
+    "architectureNotes": [
+      "service.yaml is the replica spec — describes what runs on each GPU VM. sky-serve.yaml is the controller config — load-balancer policy, replica scaling, controller sizing. Edit service.yaml first; most teams never touch sky-serve.yaml.",
+      "SkyPilot is the orchestrator; vLLM is the default inference engine. Swap the run: block to use TGI, SGLang, Triton, or a custom FastAPI app. SkyPilot only requires an open port and a passing readiness probe.",
+      "The readiness probe hits /v1/models. Any OpenAI-compatible server that responds to that path qualifies as ready."
+    ],
+    "placeholders": [
+      {
+        "path": "service.yaml",
+        "description": "{{modelId}} — HuggingFace model ID (e.g. meta-llama/Meta-Llama-3.1-8B-Instruct). {{acceleratorSpec}} — GPU spec (A100:1, H100:1, L4:1). {{port}} — port the inference server binds to (default 8000)."
+      },
+      {
+        "path": ".env.example",
+        "description": "{{modelId}} — HuggingFace model ID. {{acceleratorSpec}} — GPU spec. {{endpointName}} — SkyPilot service name. Also set HF_TOKEN to your HuggingFace token for gated models before deploying."
+      },
+      {
+        "path": "README.md",
+        "description": "{{endpointName}} — SkyPilot service name used in all sky serve commands. {{modelId}} — HuggingFace model ID shown in the example curl call."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pip install -r requirements.txt",
+      "sky check",
+      "sky serve up -n <endpointName> service.yaml",
+      "sky serve status <endpointName>",
+      "sky serve logs <endpointName> --target replica 1",
+      "sky serve down <endpointName>",
+      "node validate-skypilot.mjs"
+    ],
+    "entrypoints": [
+      "AGENTS.md",
+      "service.yaml",
+      "sky-serve.yaml",
+      "README.md"
+    ],
+    "preview": null,
+    "extensionPoints": [
+      "service.yaml",
+      "sky-serve.yaml"
+    ]
+  }
+}

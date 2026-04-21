@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-04-21T05:54:32.721Z",
+  "audits": [
+    {
+      "layerId": "framework:hipaa-compliance-pack",
+      "family": "hipaa-compliance-pack",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 936.0571669999999,
+          "stderrTail": "",
+          "stdoutTail": "Progress: resolved 1, reused 0, downloaded 0, added 0\nPackages: +3\n+++\nProgress: resolved 3, reused 3, downloaded 0, added 3, done\n\ndevDependencies:\n+ @types/node 22.19.17 (25.6.0 is available)\n+ typescript 5.9.3 (6.0.3 is available)\n\nDone in 808ms using pnpm v10.22.0\n"
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 925.8688329999998,
+          "stderrTail": "",
+          "stdoutTail": ""
+        }
+      ]
+    }
+  ]
+}

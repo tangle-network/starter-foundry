@@ -1,0 +1,26 @@
+title: "{{headline}}"
+author: "{{author}}"
+copyright: ""
+logo: ""
+
+execute:
+  execute_notebooks: auto
+
+parse:
+  myst_enable_extensions:
+    - colon_fence
+    - dollarmath
+    - linkify
+    - substitution
+
+html:
+  use_issues_button: false
+  use_repository_button: false
+
+latex:
+  latex_documents:
+    targetname: book.tex
+
+sphinx:
+  config:
+    html_title: "{{headline}}"

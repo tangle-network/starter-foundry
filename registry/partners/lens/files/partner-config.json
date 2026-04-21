@@ -1,0 +1,12 @@
+{
+  "partnerId": "lens",
+  "apiUrl": "https://api.lens.xyz",
+  "chainId": 232,
+  "chainName": "lens-chain-mainnet",
+  "rpcUrl": "https://rpc.lens.xyz",
+  "testnetChainId": 37111,
+  "testnetRpcUrl": "https://rpc.testnet.lens.xyz",
+  "explorerUrl": "https://explorer.lens.xyz",
+  "runtimeFocus": "decentralized-social-graph",
+  "preferredOutputs": ["social-app", "creator-platform", "portable-identity"]
+}

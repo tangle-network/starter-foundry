@@ -1,0 +1,22 @@
+{
+  "familyId": "zola-static",
+  "runAt": "2026-04-21T08:42:32.714Z",
+  "completed": true,
+  "shotsUsed": 1,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 122013,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 122013,
+      "reviewAvailable": true
+    }
+  ]
+}

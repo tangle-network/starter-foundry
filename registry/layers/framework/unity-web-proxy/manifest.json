@@ -1,0 +1,63 @@
+{
+  "id": "unity-web-proxy",
+  "description": "Unity web framework layer — index.html with a real Unity loader shim (createUnityInstance, progress bar, early SharedArrayBuffer guard, error surface). Pairs with the unity-web-proxy family files (Vite dev server, tsconfig, batch-mode build script).",
+  "appliesTo": ["unity-web-proxy"],
+  "files": [
+    {
+      "source": "files/index.html",
+      "target": "index.html"
+    }
+  ],
+  "packageDeps": {
+    "devDependencies": {
+      "typescript": "^5.9.0",
+      "vite": "^6.4.2"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "Unity-authored games or interactive content that must ship as a browser-native WebGL build. This layer wires the HTML entry point — the family supplies the Vite dev server, tsconfig, and CI batch-mode build script.",
+    "firstSteps": [
+      "Run `pnpm install` then `pnpm dev` — Vite serves on http://localhost:5173 with the COOP/COEP headers Unity 2021.2+ needs for SharedArrayBuffer.",
+      "Drop the Unity WebGL editor export into `Build/` — you need `Build.loader.js`, `Build.framework.js`, `Build.wasm`, and `Build.data` (filenames reflect Player Settings → Product Name).",
+      "If your Unity product name differs from `Build`, update the `buildUrl` constant and the `<script src>` in `index.html` to match.",
+      "Run `pnpm build` to produce a static `dist/` ready for any CDN — ensure the CDN also sets the COOP/COEP headers or threaded builds will fail."
+    ],
+    "gotchas": [
+      "Unity 2021.2+ WebGL builds require `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp` — without them the loader fails with a SharedArrayBuffer error. Vite's dev server is pre-configured; mirror these headers on the production host.",
+      "The loader filename in `index.html` (`Build/Build.loader.js`) is a placeholder matching the default build script output. It must exactly match the filename Unity writes, which is derived from Player Settings → Product Name.",
+      "Brotli/gzip-compressed Unity output (`.br` / `.gz` files) requires the server to send the correct `Content-Encoding` header; most static hosts strip it. Either disable compression in Unity Player Settings or verify headers with `curl -I` after deploy."
+    ],
+    "architectureNotes": [
+      "index.html checks for `SharedArrayBuffer` before calling `createUnityInstance` and surfaces a human-readable error if missing — keeps the COOP/COEP misconfiguration failure mode visible instead of the opaque Unity loader panic.",
+      "The Unity canvas owns full-viewport layout via CSS `inset: 0` on `#unity-container` — do not add CSS transforms to `#unity-canvas` itself, as Unity resizes it via the API and external transforms are ignored."
+    ],
+    "placeholders": [
+      {
+        "path": "index.html",
+        "description": "Loads Unity's WebGL bootstrap from ./Build/Build.loader.js. Update `buildUrl`, the `<script src>`, and the `companyName`/`productName` constants to match your Unity Player Settings after the first editor export."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "pnpm dev",
+      "pnpm build",
+      "pnpm run build:webgl",
+      "node validate-unity.mjs"
+    ],
+    "entrypoints": [
+      "index.html",
+      "vite.config.ts",
+      "scripts/build-webgl.sh",
+      "Build/"
+    ],
+    "preview": {
+      "path": "/"
+    },
+    "extensionPoints": [
+      "index.html",
+      "scripts/build-webgl.sh"
+    ]
+  }
+}

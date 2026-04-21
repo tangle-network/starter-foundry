@@ -1,0 +1,22 @@
+{
+  "familyId": "hls-origin",
+  "runAt": "2026-04-21T08:10:52.534Z",
+  "completed": true,
+  "shotsUsed": 1,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 204481,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 204481,
+      "reviewAvailable": true
+    }
+  ]
+}

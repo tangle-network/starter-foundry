@@ -1,0 +1,96 @@
+{
+  "id": "zola-static",
+  "description": "Zola static site generator starter — single Rust binary, Tera templates, built-in SASS compiler, one-file config.toml.",
+  "tags": [
+    "zola",
+    "static-site",
+    "ssg",
+    "frontend",
+    "tera"
+  ],
+  "taxonomy": {
+    "language": "tera",
+    "runtime": "zola",
+    "surface": "frontend"
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "serviceName": "starter-foundry-zola",
+    "port": 1111,
+    "headline": "Starter Foundry Zola",
+    "subheadline": "Zola content site with built-in SASS pipeline.",
+    "baseURL": "http://127.0.0.1:1111",
+    "languageCode": "en",
+    "databaseProvider": "none"
+  },
+  "files": [
+    {
+      "source": "files/config.toml",
+      "target": "config.toml"
+    },
+    {
+      "source": "files/validate-zola.mjs",
+      "target": "validate-zola.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "config.toml"
+    },
+    {
+      "type": "file-exists",
+      "path": "content/_index.md"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-zola.mjs"
+      ],
+      "expect": "zola starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "zola serve --port {{port}}",
+      "zola build"
+    ],
+    "entrypoints": [
+      "config.toml",
+      "content/_index.md",
+      "templates/index.html"
+    ],
+    "preview": {
+      "port": "{{port}}",
+      "path": "/"
+    },
+    "extensionPoints": [
+      "starter-data.json",
+      "starter-brand.json"
+    ]
+  },
+  "keywords": [
+    "zola",
+    "zola site",
+    "zola blog",
+    "tera template",
+    "zola static"
+  ],
+  "scoring": {
+    "boost": {
+      "zola": 3
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "zola",
+      "zola site",
+      "zola blog"
+    ],
+    "tier2": [
+      "tera template",
+      "zola static"
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "{{packageName}}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "validate": "node validate-astro.mjs"
+  },
+  "dependencies": {
+    "astro": "^5.2.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "typescript": "^5.7.0"
+  },
+  "overrides": {
+    "vite": "^6.4.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite": "^6.4.2"
+    }
+  }
+}

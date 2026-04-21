@@ -1,0 +1,27 @@
+services:
+  livekit:
+    image: livekit/livekit-server:latest
+    restart: unless-stopped
+    command: ["--config", "/etc/livekit.yaml"]
+    network_mode: host
+    # Host networking is required so the SFU can advertise its real port range
+    # (UDP 50000-60000 by default) to WebRTC clients without NAT rewriting.
+    volumes:
+      - ./livekit.yaml:/etc/livekit.yaml:ro
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    # Used for multi-node room state coordination. A single-node deployment
+    # works without Redis, but keeping it in compose means scaling to N SFUs
+    # is a `docker compose up --scale livekit=N` away.
+    ports:
+      - "127.0.0.1:6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+
+volumes:
+  redis-data:

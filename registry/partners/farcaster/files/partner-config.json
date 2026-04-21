@@ -1,0 +1,10 @@
+{
+  "partnerId": "farcaster",
+  "hubUrl": "https://nemes.farcaster.xyz:2281",
+  "neynarApiUrl": "https://api.neynar.com",
+  "authKitRpc": "https://mainnet.optimism.io",
+  "idRegistryChain": "optimism",
+  "idRegistryAddress": "0x00000000Fc6c5F01Fc30151999387Bb99A9f489b",
+  "runtimeFocus": "decentralized-social-plus-frames",
+  "preferredOutputs": ["mini-app-frame", "social-crypto-hybrid", "agent-persona-account"]
+}

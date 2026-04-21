@@ -1,0 +1,171 @@
+{
+  "id": "bevy-web",
+  "description": "Bevy game engine (Rust) targeting the browser via WebAssembly. Ships a minimal DefaultPlugins app — camera + 3D cube + rotation system — plus a Trunk.toml so `trunk serve` builds WASM, runs wasm-bindgen, and hosts the page in one command. Foundation for Bevy web games, interactive demos, and Rust-first 3D content.",
+  "tags": [
+    "frontend",
+    "rust",
+    "wasm",
+    "bevy",
+    "game-engine",
+    "3d"
+  ],
+  "taxonomy": {
+    "language": "rust",
+    "runtime": "wasm",
+    "surface": "frontend"
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "crateName": "starter_foundry_bevy",
+    "port": 8080
+  },
+  "files": [
+    {
+      "source": "files/Cargo.toml",
+      "target": "Cargo.toml"
+    },
+    {
+      "source": "files/Trunk.toml",
+      "target": "Trunk.toml"
+    },
+    {
+      "source": "files/index.html",
+      "target": "index.html"
+    },
+    {
+      "source": "files/build.sh",
+      "target": "build.sh"
+    },
+    {
+      "source": "files/validate-bevy-web.mjs",
+      "target": "validate-bevy-web.mjs"
+    },
+    {
+      "source": "files/.gitignore",
+      "target": ".gitignore"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "Cargo.toml"
+    },
+    {
+      "type": "file-exists",
+      "path": "Trunk.toml"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/main.rs"
+    },
+    {
+      "type": "file-exists",
+      "path": "index.html"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-bevy-web.mjs"
+      ],
+      "expect": "bevy-web starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "rustup target add wasm32-unknown-unknown",
+      "cargo install --locked trunk",
+      "trunk serve",
+      "trunk build --release"
+    ],
+    "entrypoints": [
+      "src/main.rs",
+      "Cargo.toml",
+      "Trunk.toml",
+      "index.html"
+    ],
+    "preview": {
+      "path": "/"
+    },
+    "extensionPoints": [
+      "src/main.rs"
+    ]
+  },
+  "keywords": [
+    "bevy",
+    "bevy web",
+    "rust web game",
+    "wasm game engine",
+    "bevy wasm",
+    "bevy engine",
+    "rust game engine",
+    "trunk bevy",
+    "bevy browser"
+  ],
+  "scoring": {
+    "boost": {
+      "bevy": 5,
+      "bevy web": 5,
+      "bevy wasm": 5,
+      "rust web game": 4,
+      "wasm game engine": 4
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "bevy",
+      "bevy web",
+      "bevy wasm",
+      "rust web game",
+      "wasm game engine"
+    ],
+    "tier2": [
+      "bevy engine",
+      "rust game engine",
+      "trunk bevy",
+      "bevy browser",
+      "ecs game rust"
+    ],
+    "archetypes": [
+      "bevy browser game",
+      "rust 3d demo",
+      "bevy jam entry",
+      "ecs tech demo",
+      "bevy shader toy",
+      "rust physics playground",
+      "wasm voxel renderer",
+      "bevy card game",
+      "rust roguelike web",
+      "bevy multiplayer demo"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Rust-first game or interactive 3D content that needs to run in a browser. Bevy gives you an ECS, rendering, input, audio, and a plugin ecosystem; Trunk handles the WASM build + asset pipeline. Pick wasm-rust instead if you only need a pure compute module with no engine.",
+    "firstSteps": [
+      "Install the toolchain once: `rustup target add wasm32-unknown-unknown` then `cargo install --locked trunk wasm-bindgen-cli`. Trunk is the standard Bevy-web build tool — it wraps wasm-bindgen + wasm-opt and serves the page.",
+      "Run: `trunk serve` — it compiles Rust to WASM, runs wasm-bindgen, writes `dist/`, and opens http://localhost:8080 with hot-reload on Rust changes.",
+      "Edit `src/main.rs` — the Bevy app adds DefaultPlugins, spawns a camera + light + rotating cube, and registers a system that rotates it. Replace the cube with your geometry and add systems/resources as the game grows.",
+      "Ship: `trunk build --release` emits `dist/` with a hashed WASM bundle, JS shim, and HTML; deploy to any static host.",
+      "For audio + advanced renderer features, enable the right Bevy features in Cargo.toml (`bevy = { version = \"0.14\", features = [\"default\"] }`); strip defaults for a smaller bundle when you only need 2D."
+    ],
+    "gotchas": [
+      "Bevy requires the `wasm32-unknown-unknown` target AND wasm-bindgen at the exact version pinned in Cargo.lock — drift gives cryptic `imported memory` link errors. Always install with `--locked`.",
+      "WebGPU backend is Chrome/Edge 113+ and Safari 18+ stable; on Firefox (stable) Bevy falls back to WebGL2. If you depend on a WebGPU-only feature (compute shaders, bindless resources), guard it and expose a fallback or gate the app.",
+      "Asset loading uses fetch() relative to the page — `bevy::asset::AssetServer` expects files under the Trunk `public_url` (set in Trunk.toml). Dropping assets next to src/ will 404.",
+      "Bevy's WASM binary is large even for small apps (~10–20 MB debug, ~3–6 MB release with wasm-opt). Always ship release builds with `wasm-opt -Oz` (Trunk does this by default).",
+      "The default Bevy logger uses ANSI escape codes — on the browser console they render as garbage. Swap in `bevy::log::LogPlugin` with `level: Level::INFO` and a custom filter for clean WASM logs.",
+      "Bevy 0.14 removed some 0.13 re-exports; if you're porting an older example, check the migration guide — API churn is real between minor versions."
+    ],
+    "architectureNotes": [
+      "One `App::new()` per process — Bevy is not reentrant. All plugins, systems, and resources attach to that single app.",
+      "Systems are stateless functions operating on queries + resources; do not hold handles across frames in locals. State belongs in `Resource`s or `Component`s.",
+      "Keep WASM-specific code under `#[cfg(target_arch = \"wasm32\")]` so the same crate still runs natively for fast iteration."
+    ],
+    "placeholders": [
+      {
+        "path": "src/main.rs",
+        "description": "Minimal Bevy app — DefaultPlugins, camera, light, rotating cube, and a system that updates rotation each frame. Replace the cube with real geometry, add input systems, swap DefaultPlugins for a narrower plugin group for smaller bundles."
+      }
+    ]
+  }
+}

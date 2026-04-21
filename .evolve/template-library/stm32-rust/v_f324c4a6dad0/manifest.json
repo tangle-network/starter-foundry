@@ -1,0 +1,66 @@
+{
+  "id": "stm32-rust",
+  "description": "STM32 bare-metal Rust firmware using the Embassy async framework — #[embassy_executor::main], async GPIO blink on PA5, and a DMA-backed async UART echo on USART2/PA2-PA3. Targets STM32F411RE (Nucleo/Black Pill); swap HAL feature + memory.x for other chips. Flash + RTT via probe-rs.",
+  "appliesTo": ["stm32-rust"],
+  "files": [
+    { "source": "files/rust-toolchain.toml", "target": "rust-toolchain.toml" },
+    { "source": "files/src/main.rs", "target": "src/main.rs" },
+    { "source": "files/Embed.toml", "target": "Embed.toml" }
+  ],
+  "buildHints": {
+    "whenToUse": "Pick for STM32F/L/G series firmware in Rust when you want async/await (Embassy). For synchronous cortex-m-rt + RTIC, pick a different starter. For Raspberry Pi Pico, use rp2040-embassy.",
+    "firstSteps": [
+      "Install the Cortex-M4F target: rustup target add thumbv7em-none-eabihf",
+      "Install the flasher: cargo install probe-rs --features cli --locked",
+      "Connect an ST-Link (or any CMSIS-DAP probe) to the board",
+      "Build: cargo build --release",
+      "Flash + RTT: cargo run --release   (runs `probe-rs run --chip STM32F411RETx` via the cargo runner)",
+      "Open a serial terminal at 115200 baud on the Nucleo's USB COM port — anything you type echoes back"
+    ],
+    "gotchas": [
+      "memory.x must match the actual chip. STM32F411RE = 512K flash + 128K RAM; STM32F401RE = 512K flash + 96K RAM; STM32F103C8 = 64K flash + 20K RAM. Wrong values silently let the linker succeed then crash at boot.",
+      "embassy-stm32 requires exactly one chip feature — e.g. `stm32f411re`. Enabling two (or none) is a compile error with a misleading `time_driver_tim5 not found` message.",
+      "The cortex-m-rt link args (`-Tlink.x`, `-Tdefmt.x`) must be in .cargo/config.toml rustflags. If you put them in build.rs alone they only apply when the `build.rs` crate links, not the downstream bin.",
+      "defmt-rtt requires a running probe-rs to drain the RTT buffer. Without a probe attached at runtime the firmware will spin waiting for the RTT reader after ~1KB of logs.",
+      "Changing memory.x requires `cargo clean` — cargo does not see memory.x as a build input so the linker will use a stale copy from target/.",
+      "UART echo uses DMA1_CH6 (TX, stream 6) and DMA1_CH5 (RX, stream 5) for USART2. On STM32F4, channel numbers in Embed.toml refer to DMA streams. Swapping to a different UART requires picking the matching DMA stream pair from the STM32F4 reference manual.",
+      "bind_interrupts! must name the exact peripheral interrupt (USART2) that matches the peripheral passed to Uart::new. Mismatches are link-time errors, not compile-time."
+    ],
+    "architectureNotes": [
+      "Two tasks: the main task owns the LED and blinks at 500 ms; uart_echo_task owns the UART peripheral and echoes bytes. Embassy's executor multiplexes them cooperatively — no RTOS tick required.",
+      "Owned peripherals passed into a spawned task satisfy 'static because the peripheral tokens are zero-sized move-only values created by embassy_stm32::init(). The executor stores the task future in static memory.",
+      "DMA-backed UART read/write avoids CPU-spin in the echo loop. The DMA transfer completes asynchronously; the task yields via .await until the hardware interrupt fires."
+    ],
+    "placeholders": [
+      {
+        "path": "src/main.rs",
+        "description": "LED pin is PA5 (Nucleo-F401RE/F411RE). Change to PD12 for STM32F4-Discovery or PC13 (active-low) for Black Pill."
+      },
+      {
+        "path": "src/main.rs",
+        "description": "UART is USART2 on PA2 (TX) / PA3 (RX) — the Nucleo VCP bridge. Change peripheral + pins + DMA channels for boards without a VCP or when using a different UART."
+      },
+      {
+        "path": "Embed.toml",
+        "description": "chip = STM32F411RETx. Swap to STM32F401RETx for Nucleo-F401RE, STM32F407VGTx for STM32F4-Discovery, STM32F411CEUx for Black Pill."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "rustup target add thumbv7em-none-eabihf",
+      "cargo build --release",
+      "cargo run --release",
+      "cargo check"
+    ],
+    "entrypoints": [
+      "src/main.rs",
+      "Cargo.toml",
+      "memory.x",
+      ".cargo/config.toml"
+    ],
+    "extensionPoints": [
+      "src/main.rs"
+    ]
+  }
+}

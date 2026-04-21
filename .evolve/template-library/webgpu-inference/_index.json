@@ -1,0 +1,22 @@
+{
+  "family": "webgpu-inference",
+  "current": "v_6990dd601aa3",
+  "topN": [
+    "v_6990dd601aa3",
+    "v_86781b5c621d"
+  ],
+  "all": [
+    {
+      "version": "v_6990dd601aa3",
+      "score": 0.76999767577689,
+      "skipped": null
+    },
+    {
+      "version": "v_86781b5c621d",
+      "score": 0.6199999945839676,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.443Z"
+}

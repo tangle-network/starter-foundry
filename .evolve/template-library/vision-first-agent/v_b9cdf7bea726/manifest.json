@@ -1,0 +1,50 @@
+{
+  "id": "vision-first-agent",
+  "description": "Camera-agent browser runtime — getUserMedia video preview, canvas frame capture, multimodal LLM POST, overlay rendering of text + optional bounding boxes.",
+  "appliesTo": ["vision-first-agent"],
+  "files": [
+    { "source": "files/main.ts", "target": "src/main.ts" },
+    { "source": "files/vite-env.d.ts", "target": "src/vite-env.d.ts" }
+  ],
+  "packageDeps": {
+    "devDependencies": {
+      "@types/node": "^20.17.0",
+      "typescript": "^5.9.0",
+      "vite": "^6.4.2"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "Any product where the primary input is the device camera: visual QA, barcode/QR readers, OCR tools, 'describe what you see' agents, webcam-based search, live inspection apps.",
+    "firstSteps": [
+      "Run `pnpm install` then `pnpm dev` — Vite serves on the configured port; the browser will prompt for camera permission on first visit.",
+      "Point the camera, type a question, and press 'Capture + ask' — the frame is JPEG-compressed and POSTed to `/api/vision`.",
+      "Implement the backend described in `api/README.md` — any multimodal LLM endpoint accepting `{ image, prompt }` and returning `{ answer }` works.",
+      "Run `pnpm validate` to verify scaffold wiring without opening a browser.",
+      "Run `pnpm build` to emit a static bundle to `dist/` — deploy to any static host; HTTPS is required for `getUserMedia` outside localhost."
+    ],
+    "gotchas": [
+      "`getUserMedia` requires HTTPS outside localhost — plain HTTP on any real hostname fails with `NotAllowedError` before the permission prompt appears.",
+      "iOS Safari auto-rotates camera frames based on device orientation but `canvas.drawImage` does not — on mobile portrait the JPEG is sideways. Always read `videoWidth/videoHeight` after `loadedmetadata` fires.",
+      "`canvas.toDataURL()` is synchronous and blocks the main thread on large frames. For >1080p, switch to `canvas.toBlob()` which runs off-thread and is ~3× faster.",
+      "Base64 JPEGs are ~1.33× their binary size. For high-res frames (>500 KB), send as `multipart/form-data` or use `toBlob()` + binary `fetch` to cut payload size.",
+      "The `MediaStream` keeps the camera LED on until every `track.stop()` is called — don't just pause `<video>`, call `stream.getTracks().forEach(t => t.stop())` on teardown."
+    ],
+    "architectureNotes": [
+      "All browser logic lives in `src/main.ts` — camera lifecycle, frame capture, API call, and overlay rendering. Fork cleanly from there.",
+      "The hidden `#work` canvas captures frames; `#overlay` is the visible canvas that draws bounding boxes on top of the `#cam` video element.",
+      "Bounding box coordinates from the API are normalized 0..1 so they survive display-size rescaling — multiply by `overlay.width`/`overlay.height` to get pixel coordinates."
+    ],
+    "placeholders": [
+      {
+        "path": "src/main.ts",
+        "description": "Bootstrap camera agent. Implement the `/api/vision` backend described in `api/README.md`. Optionally replace the bounding-box overlay with custom rendering (heat maps, segmentation masks, etc.)."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm dev", "pnpm build", "pnpm validate"],
+    "entrypoints": ["src/main.ts", "index.html", "api/README.md"],
+    "preview": { "path": "/" },
+    "extensionPoints": ["src/main.ts", "api/"]
+  }
+}

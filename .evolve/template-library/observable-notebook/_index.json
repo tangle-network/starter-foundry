@@ -1,0 +1,22 @@
+{
+  "family": "observable-notebook",
+  "current": "v_705f79ba21f5",
+  "topN": [
+    "v_705f79ba21f5",
+    "v_5ddb4752176b"
+  ],
+  "all": [
+    {
+      "version": "v_705f79ba21f5",
+      "score": 0.7899964738600331,
+      "skipped": null
+    },
+    {
+      "version": "v_5ddb4752176b",
+      "score": 0.6149999945807966,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.368Z"
+}

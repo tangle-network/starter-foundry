@@ -1,0 +1,13 @@
+{
+  "id": "bun-monolith",
+  "peerFamilies": [
+    "bun-http",
+    "agent-swarm-ts",
+    "deno-edge",
+    "angular-ts",
+    "api-service"
+  ],
+  "mode": "deterministic",
+  "reasoning": "No router key available — emitting TODO skeleton; human fills in template files + buildHints.",
+  "generatedAt": "2026-04-21T01:56:52.209Z"
+}

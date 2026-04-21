@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2026-04-21T07:48:15.697Z",
+  "audits": [
+    {
+      "layerId": "framework:aptos-move",
+      "family": "aptos-move",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 283.13691700000004,
+          "stderrTail": "",
+          "stdoutTail": "Already up to date\n\nDone in 167ms using pnpm v10.22.0\n"
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        },
+        {
+          "phase": "build",
+          "skipped": "no-build-script",
+          "ok": true
+        },
+        {
+          "phase": "validationChecks",
+          "skipped": "none-declared",
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

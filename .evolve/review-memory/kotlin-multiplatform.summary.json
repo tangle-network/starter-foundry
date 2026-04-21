@@ -1,0 +1,103 @@
+{
+  "familyId": "kotlin-multiplatform",
+  "runAt": "2026-04-21T07:34:24.100Z",
+  "completed": false,
+  "shotsUsed": 8,
+  "finalPass": false,
+  "finalScore": 0,
+  "finalFailingLayers": [
+    "skipped:no-package-manager"
+  ],
+  "failureClass": "unknown",
+  "wallMs": 1203390,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": false,
+      "failing": [
+        "install"
+      ],
+      "confidence": 0.68,
+      "shouldContinue": true,
+      "durationMs": 250738,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 2,
+      "pass": false,
+      "failing": [
+        "skipped:no-package-manager"
+      ],
+      "confidence": 0.62,
+      "shouldContinue": true,
+      "durationMs": 273534,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 3,
+      "pass": false,
+      "failing": [
+        "skipped:no-package-manager"
+      ],
+      "confidence": 0.58,
+      "shouldContinue": true,
+      "durationMs": 63248,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 4,
+      "pass": false,
+      "failing": [
+        "install"
+      ],
+      "confidence": 0.55,
+      "shouldContinue": true,
+      "durationMs": 111456,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 5,
+      "pass": false,
+      "failing": [
+        "skipped:no-package-manager"
+      ],
+      "confidence": 0.45,
+      "shouldContinue": true,
+      "durationMs": 60796,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 6,
+      "pass": false,
+      "failing": [
+        "install"
+      ],
+      "confidence": 0.38,
+      "shouldContinue": true,
+      "durationMs": 88513,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 7,
+      "pass": false,
+      "failing": [
+        "install"
+      ],
+      "confidence": 0.35,
+      "shouldContinue": true,
+      "durationMs": 295058,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 8,
+      "pass": false,
+      "failing": [
+        "skipped:no-package-manager"
+      ],
+      "confidence": 0.95,
+      "shouldContinue": false,
+      "durationMs": 60047,
+      "reviewAvailable": true
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "family": "eleventy-static",
+  "current": "v_4decf08f309d",
+  "topN": [
+    "v_4decf08f309d",
+    "v_d44c7a47f6f4"
+  ],
+  "all": [
+    {
+      "version": "v_4decf08f309d",
+      "score": 0.7799943599235795,
+      "skipped": null
+    },
+    {
+      "version": "v_d44c7a47f6f4",
+      "score": 0.6199999945681127,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.297Z"
+}

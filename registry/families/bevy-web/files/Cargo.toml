@@ -1,0 +1,27 @@
+[package]
+name = "{{crateName}}"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = { version = "0.14", features = ["default"] }
+
+# wasm-bindgen is pulled in transitively by Bevy's web backend, but we
+# pin a floor here so the direct dependency is visible and patchable.
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = "0.2"
+console_error_panic_hook = "0.1"
+
+[profile.release]
+# `opt-level = "s"` trades a small amount of runtime speed for meaningful
+# bundle-size reductions; Bevy release WASM is dominated by code size,
+# not hot-loop perf. lto = "fat" shaves another 5–10% at the cost of
+# longer builds; enable once iteration speed matters less than ship size.
+opt-level = "s"
+lto = "thin"
+codegen-units = 1
+
+[profile.dev]
+# Debug builds in Bevy WASM are painfully slow without some opt; 1 is
+# the sweet spot for iteration.
+opt-level = 1

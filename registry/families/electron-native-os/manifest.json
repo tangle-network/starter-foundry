@@ -1,0 +1,200 @@
+{
+  "id": "electron-native-os",
+  "description": "Electron app with aggressive native-OS integration — file dialogs, notifications, custom protocols, deep links, auto-updater, Touch Bar / JumpList, platform menus.",
+  "tags": [
+    "desktop",
+    "electron",
+    "native-os",
+    "typescript"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "electron",
+    "surface": "frontend"
+  },
+  "slots": {
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk",
+        "auth:supabase-auth"
+      ],
+      "default": "auth:none"
+    },
+    "payments": {
+      "options": [
+        "payments:none",
+        "payments:stripe",
+        "payments:coinbase-commerce"
+      ],
+      "default": "payments:none"
+    },
+    "sdk": {
+      "options": [
+        "sdk:none",
+        "sdk:coinbase-cdp",
+        "sdk:solana-web3",
+        "sdk:evm-wallet"
+      ],
+      "default": "sdk:none"
+    }
+  },
+  "defaults": {
+    "projectType": "desktop",
+    "port": 4198,
+    "headline": "Starter Foundry Native Desktop",
+    "subheadline": "An Electron shell wired deep into the host OS — dialogs, protocols, deep links, notifications, and auto-update."
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/preview-server.mjs",
+      "target": "preview-server.mjs"
+    },
+    {
+      "source": "files/validate-types.mjs",
+      "target": "validate-types.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "src/main/index.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/main/menu.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/main/protocol.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/main/deeplinks.ts"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-types.mjs"
+      ],
+      "expect": "electron native os ok"
+    },
+    {
+      "type": "http-start",
+      "command": [
+        "node",
+        "preview-server.mjs"
+      ],
+      "path": "/",
+      "expect": "{{headline}}"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "node preview-server.mjs",
+      "pnpm dev"
+    ],
+    "entrypoints": [
+      "src/main/index.ts",
+      "src/main/menu.ts",
+      "src/main/protocol.ts",
+      "src/main/deeplinks.ts",
+      "src/preload/index.ts",
+      "src/renderer/index.html",
+      "src/renderer/App.tsx"
+    ],
+    "preview": {
+      "path": "/"
+    },
+    "extensionPoints": [
+      "auth-config.json",
+      "payments-config.json",
+      "sdk-config.json"
+    ]
+  },
+  "keywords": [
+    "native os integration",
+    "electron native",
+    "file system integration",
+    "deep links desktop",
+    "custom protocol handler",
+    "os notifications desktop",
+    "touch bar app",
+    "jumplist",
+    "auto updater electron",
+    "electron dialog",
+    "native menu"
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "native os integration",
+      "electron native",
+      "custom protocol handler",
+      "deep links desktop",
+      "os notifications desktop",
+      "auto updater electron"
+    ],
+    "tier2": [
+      "file system integration",
+      "touch bar app",
+      "jumplist",
+      "electron dialog",
+      "native menu",
+      "protocol handler",
+      "open with default app"
+    ],
+    "tier3": [
+      "desktop app with file access",
+      "url scheme",
+      "deep link"
+    ],
+    "archetypes": [
+      "deeply native electron",
+      "file-handling desktop app",
+      "url-scheme-registered desktop app"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Pick electron-native-os when the app is a first-class citizen of the host OS — it registers a custom `app://` protocol, handles `myapp://` deep links from the browser, opens native file dialogs, fires rich OS notifications, shows a Touch Bar on macOS and JumpList on Windows, and auto-updates via electron-updater. If the user just needs a generic Electron renderer, use electron-desktop-ts — this family pulls in more wiring than a simple renderer shell needs.",
+    "architectureNotes": [
+      "src/main/index.ts is the orchestrator — it imports menu.ts / protocol.ts / deeplinks.ts / updater.ts and boots them in the right order (protocol handler MUST register before app.whenReady()).",
+      "src/main/menu.ts branches on process.platform to install the macOS app menu (with `about`, `services`, `hide`) and the Windows/Linux menu separately — macOS menus are built into the menu-bar, not the window.",
+      "src/main/protocol.ts registers `app://` for loading local assets AND declares `{{packageName}}://` in the `protocols` electron-builder block for OS-wide deep links.",
+      "src/main/deeplinks.ts handles `second-instance` (Windows/Linux single-instance lock) and `open-url` (macOS) events and forwards the URL to the renderer via IPC.",
+      "src/preload/index.ts exposes a minimal contextBridge API — NEVER enable nodeIntegration in the renderer.",
+      "Renderer is React + Vite; it talks to main only through the preload's typed bridge."
+    ],
+    "components": [
+      "Native file open/save dialogs via dialog.showOpenDialog / dialog.showSaveDialog, invoked over IPC.",
+      "Rich notifications via the Notification class with actions (macOS supports reply + action buttons).",
+      "Touch Bar (macOS) — TouchBarButton + TouchBarScrubber wired to renderer commands.",
+      "JumpList (Windows) — recent documents + tasks via app.setJumpList.",
+      "Custom `app://` protocol for serving renderer assets in production (CSP-safe).",
+      "Deep-link handler (macOS open-url, Win/Linux single-instance argv sniff).",
+      "Auto-updater via electron-updater wired to GitHub Releases."
+    ],
+    "gotchas": [
+      "macOS notarization: the auto-updater silently fails on unsigned / unnotarized builds. Ship with `afterSign` script calling `electron-notarize` — or users get 'app is damaged' errors.",
+      "Windows deep links: you MUST `app.setAsDefaultProtocolClient('myapp')` AND declare the protocol in electron-builder's `protocols` array, otherwise the URL scheme is registered but never routed.",
+      "Windows deep links require the single-instance lock (`app.requestSingleInstanceLock()`) — without it, clicking a `myapp://` URL launches a second copy instead of routing to the running one.",
+      "macOS `open-url` fires BEFORE `app.whenReady()` on cold launch. Cache the URL and replay after ready, otherwise deep links lose their payload on first invocation.",
+      "Custom protocol (`app://`) registered via `protocol.registerFileProtocol` must be called AFTER `app.whenReady()` but BEFORE any BrowserWindow loads — mis-order and the renderer hits 'file not found'.",
+      "Notifications require Info.plist entries on macOS (`NSUserNotificationsUsageDescription`) and a valid app identity — unsigned dev builds show 'Notification delivery failed' in console without surfacing to the user.",
+      "Auto-updater: electron-updater needs `publish` config in package.json/electron-builder.yml AND the `GH_TOKEN` env var on the CI build machine. Missing either produces silent no-op updates.",
+      "contextIsolation is ON by default in modern Electron — any renderer code that expects `window.require` will throw. Always expose via contextBridge.exposeInMainWorld.",
+      "Touch Bar and JumpList are platform-gated — guard with `process.platform === 'darwin'` / `'win32'` or you crash on the other OS."
+    ],
+    "integrations": [
+      "electron-updater — GitHub Releases auto-update channel",
+      "electron-builder — signing, notarization, protocol registration",
+      "electron-log — main-process logging that survives crashes"
+    ]
+  }
+}

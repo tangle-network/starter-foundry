@@ -1,0 +1,33 @@
+{
+  "familyId": "electron-native-os",
+  "runAt": "2026-04-21T05:31:55.798Z",
+  "completed": true,
+  "shotsUsed": 2,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 402561,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": false,
+      "failing": [
+        "typecheck"
+      ],
+      "confidence": 0.95,
+      "shouldContinue": true,
+      "durationMs": 349842,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 2,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 52718,
+      "reviewAvailable": true
+    }
+  ]
+}

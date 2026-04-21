@@ -1,0 +1,171 @@
+{
+  "id": "webgpu-render",
+  "description": "Raw WebGPU rendering starter — no three.js, no abstraction. Drives navigator.gpu directly: adapter → device → canvas context → render pipeline → bind groups → render pass. WGSL vertex + fragment shaders draw a colored triangle at 60fps. Foundation for low-level graphics, custom renderers, and engine work.",
+  "tags": [
+    "frontend",
+    "typescript",
+    "webgpu",
+    "rendering",
+    "graphics",
+    "wgsl"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "frontend"
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "serviceName": "starter-foundry-webgpu-render",
+    "port": 5173
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/vite.config.ts",
+      "target": "vite.config.ts"
+    },
+    {
+      "source": "files/index.html",
+      "target": "index.html"
+    },
+    {
+      "source": "files/validate-webgpu-render.mjs",
+      "target": "validate-webgpu-render.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "index.html"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/main.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/shaders/main.wgsl"
+    },
+    {
+      "type": "file-exists",
+      "path": "package.json"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-webgpu-render.mjs"
+      ],
+      "expect": "webgpu-render starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "pnpm dev",
+      "pnpm build"
+    ],
+    "entrypoints": [
+      "src/main.ts",
+      "src/shaders/main.wgsl",
+      "index.html",
+      "vite.config.ts",
+      "package.json"
+    ],
+    "preview": {
+      "path": "/"
+    },
+    "extensionPoints": [
+      "src/main.ts",
+      "src/shaders/main.wgsl"
+    ]
+  },
+  "keywords": [
+    "webgpu rendering",
+    "raw webgpu",
+    "wgsl graphics",
+    "low-level gpu graphics",
+    "webgpu triangle",
+    "webgpu pipeline",
+    "wgsl vertex shader",
+    "wgsl fragment shader",
+    "gpu render pass"
+  ],
+  "scoring": {
+    "boost": {
+      "webgpu rendering": 5,
+      "raw webgpu": 5,
+      "wgsl graphics": 4,
+      "webgpu triangle": 4
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "raw webgpu",
+      "webgpu rendering",
+      "wgsl graphics",
+      "low-level gpu graphics",
+      "webgpu render pipeline"
+    ],
+    "tier2": [
+      "webgpu triangle",
+      "wgsl vertex shader",
+      "wgsl fragment shader",
+      "gpu render pass",
+      "webgpu canvas context"
+    ],
+    "archetypes": [
+      "custom 3d renderer",
+      "webgpu game engine core",
+      "shader playground",
+      "particle renderer",
+      "webgpu 2d renderer",
+      "tile-based renderer",
+      "deferred renderer",
+      "webgpu demoscene",
+      "raymarching scene",
+      "signed distance field viewer"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Any product that needs the raw WebGPU API — custom renderers, engine internals, novel rendering techniques (deferred, cluster-forward, raymarching), or shader-driven art where three.js's abstractions get in the way. Pick threejs-game instead if you want a batteries-included 3D scene graph.",
+    "firstSteps": [
+      "Install: `pnpm install` then `pnpm dev` — Vite serves on 5173. Open Chrome 113+, Edge 113+, or Safari 18+; a gradient triangle fills the canvas.",
+      "The rendering pipeline is in `src/main.ts` — adapter → device → canvas context config → render pipeline with vertex + fragment WGSL → render pass targeting the swap chain texture.",
+      "The shader is a single file at `src/shaders/main.wgsl` containing both the `@vertex` and `@fragment` entry points. Extend by adding vertex buffers (for real meshes) or uniform buffers (for camera/time).",
+      "To add a textured quad next: create a GPUTexture, upload an ImageBitmap via `queue.copyExternalImageToTexture`, bind a GPUSampler + texture in a new bind group, sample it in the fragment shader.",
+      "Build: `pnpm build` emits static assets to `dist/` — deploy to any static host. WebGPU requires HTTPS in production (localhost is exempt)."
+    ],
+    "gotchas": [
+      "WebGPU is Chrome/Edge 113+ and Safari 18+ stable. Firefox ships it behind `dom.webgpu.enabled` — always feature-detect `navigator.gpu` and show a fallback UI.",
+      "The canvas format from `getPreferredCanvasFormat()` differs between platforms (bgra8unorm on macOS, rgba8unorm elsewhere). Store it once and use it both in `context.configure({ format })` AND the pipeline's `fragment.targets[0].format` — mismatch throws at pipeline creation.",
+      "Each frame must call `context.getCurrentTexture().createView()` — the texture is recycled by the swap chain and stale views throw on the next submit.",
+      "Canvas resize: set `canvas.width` and `canvas.height` to `window.innerWidth * devicePixelRatio` (cap DPR at 2) and re-call `context.configure()` — ignoring this gives blurry output or wrong viewport.",
+      "Always cancel `requestAnimationFrame` on teardown (HMR, route change). WebGPU does not garbage-collect GPU resources; dangling frames leak and eventually crash the tab.",
+      "Shader compilation errors are async — call `module.getCompilationInfo()` during development; a broken WGSL module otherwise produces a silent black canvas."
+    ],
+    "architectureNotes": [
+      "Create the GPUDevice once per page and reuse it for every pipeline and buffer — `requestDevice()` is expensive.",
+      "Pre-create pipelines, bind group layouts, and buffers outside the render loop; only command-buffer construction belongs inside `requestAnimationFrame`.",
+      "For multiple passes (shadow + main + post), batch into a single GPUCommandEncoder and submit once per frame — each `queue.submit` has a non-trivial CPU/GPU sync cost."
+    ],
+    "placeholders": [
+      {
+        "path": "src/main.ts",
+        "description": "WebGPU render bootstrap — device, canvas context, pipeline, bind groups, render loop, resize handling. Extend by adding vertex buffers for real geometry, uniform buffers for camera/time, and textures via `queue.copyExternalImageToTexture`."
+      },
+      {
+        "path": "src/shaders/main.wgsl",
+        "description": "Vertex + fragment WGSL. The vertex stage emits a fullscreen-ish triangle from @builtin(vertex_index); the fragment stage outputs a smooth gradient. Replace the positions with a vertex buffer binding for real meshes."
+      }
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+baseURL = "{{baseURL}}"
+languageCode = "{{languageCode}}"
+title = "{{headline}}"
+
+[params]
+  subtitle = "{{subheadline}}"
+
+[markup.goldmark.renderer]
+  unsafe = true
+
+[server]
+  port = {{port}}

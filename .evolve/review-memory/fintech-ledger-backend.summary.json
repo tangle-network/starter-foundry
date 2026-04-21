@@ -1,0 +1,125 @@
+{
+  "familyId": "fintech-ledger-backend",
+  "runAt": "2026-04-21T07:24:42.152Z",
+  "completed": false,
+  "shotsUsed": 10,
+  "finalPass": false,
+  "finalScore": 0.5,
+  "finalFailingLayers": [
+    "typecheck"
+  ],
+  "failureClass": "budget_exceeded",
+  "wallMs": 1347629,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": false,
+      "failing": [
+        "typecheck"
+      ],
+      "confidence": 0.88,
+      "shouldContinue": true,
+      "durationMs": 353519,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 2,
+      "pass": false,
+      "failing": [
+        "typecheck"
+      ],
+      "confidence": 0.82,
+      "shouldContinue": true,
+      "durationMs": 87880,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 3,
+      "pass": false,
+      "failing": [
+        "typecheck"
+      ],
+      "confidence": 0.78,
+      "shouldContinue": true,
+      "durationMs": 98798,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 4,
+      "pass": false,
+      "failing": [
+        "typecheck"
+      ],
+      "confidence": 0.82,
+      "shouldContinue": true,
+      "durationMs": 345436,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 5,
+      "pass": false,
+      "failing": [
+        "typecheck"
+      ],
+      "confidence": 0.82,
+      "shouldContinue": true,
+      "durationMs": 150312,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 6,
+      "pass": false,
+      "failing": [
+        "typecheck"
+      ],
+      "confidence": 0.72,
+      "shouldContinue": true,
+      "durationMs": 102562,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 7,
+      "pass": false,
+      "failing": [
+        "typecheck"
+      ],
+      "confidence": 0.72,
+      "shouldContinue": true,
+      "durationMs": 77506,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 8,
+      "pass": false,
+      "failing": [
+        "typecheck"
+      ],
+      "confidence": 0.62,
+      "shouldContinue": true,
+      "durationMs": 38907,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 9,
+      "pass": false,
+      "failing": [
+        "typecheck"
+      ],
+      "confidence": 0.72,
+      "shouldContinue": true,
+      "durationMs": 57843,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 10,
+      "pass": false,
+      "failing": [
+        "typecheck"
+      ],
+      "confidence": 0.78,
+      "shouldContinue": true,
+      "durationMs": 34866,
+      "reviewAvailable": true
+    }
+  ]
+}

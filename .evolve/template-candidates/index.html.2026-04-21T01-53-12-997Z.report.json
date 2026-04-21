@@ -1,0 +1,30 @@
+{
+  "templatePath": "index.html",
+  "templateKey": "index.html",
+  "family": "react-vite-ts",
+  "tupleCount": 62,
+  "synthesizer": {
+    "mode": "deterministic",
+    "reasoning": "Deterministic: no frequent agent additions above the 25% threshold. Stripped long comment runs + normalized blanks only (62 tuples analyzed)."
+  },
+  "judge": {
+    "score": 0.45,
+    "dimensions": {
+      "addLift": 0.5,
+      "removeMatch": 0,
+      "sizeScore": 1
+    },
+    "reasoning": "incorporatesFrequentlyAddedLines: 0.18 (current: 0.18, lift: 0.00)\nremovesFrequentlyDeletedLines: 0.00 (0/9)\nsizeDelta: 0 chars (score 1.00)",
+    "removesFrequentlyDeletedLines": 0,
+    "incorporatesFrequentlyAddedLines": 0.18181818181818182,
+    "sizeDelta": 0
+  },
+  "audit": {
+    "ok": true,
+    "stage": "done",
+    "stderrTail": "",
+    "durationMs": 7249
+  },
+  "decision": "reject",
+  "generatedAt": "2026-04-21T01:53:12.997Z"
+}

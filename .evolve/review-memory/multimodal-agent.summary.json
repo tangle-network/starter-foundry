@@ -1,0 +1,22 @@
+{
+  "familyId": "multimodal-agent",
+  "runAt": "2026-04-21T08:15:40.125Z",
+  "completed": true,
+  "shotsUsed": 1,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 201856,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 201856,
+      "reviewAvailable": true
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "{{packageName}}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/client.ts",
+    "typecheck": "tsc --noEmit",
+    "validate": "node validate-ollama.mjs"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.9.0"
+  }
+}

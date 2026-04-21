@@ -1,0 +1,88 @@
+{
+  "id": "crm-backend",
+  "description": "CRM framework layer — contacts/companies/deals/activities/stages schema, configurable pipeline, stage-move endpoint, won-amount-by-month reporting.",
+  "appliesTo": ["crm-backend"],
+  "files": [
+    { "source": "files/server.ts", "target": "src/server.ts" },
+    { "source": "files/schema.ts", "target": "src/db/schema.ts" },
+    { "source": "files/db.ts", "target": "src/db/client.ts" },
+    { "source": "files/contacts.ts", "target": "src/api/contacts.ts" },
+    { "source": "files/pipeline.ts", "target": "src/api/pipeline.ts" },
+    { "source": "files/reporting.ts", "target": "src/api/reporting.ts" },
+    { "source": "files/drizzle.config.ts", "target": "drizzle.config.ts" }
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "drizzle-orm": "^0.36.0",
+      "postgres": "^3.4.5"
+    },
+    "devDependencies": {
+      "drizzle-kit": "^0.30.0",
+      "typescript": "^5.9.0",
+      "@types/node": "^20.17.0"
+    }
+  },
+  "buildHints": {
+    "firstSteps": [
+      "Set DATABASE_URL=postgres://user:pass@localhost:5432/crm in your environment",
+      "Run pnpm install",
+      "Run pnpm db:generate then pnpm db:migrate to create tables",
+      "Run pnpm dev — the server starts on PORT (default 8104)",
+      "POST a Pipeline row first, then Stages, before creating Deals",
+      "GET /health to confirm the server is up"
+    ],
+    "apiRoutes": [
+      "GET /health",
+      "POST /api/contacts / GET /api/contacts/:id",
+      "POST /api/companies / GET /api/companies/:id",
+      "POST /api/deals (create a deal in a stage)",
+      "PATCH /api/deals/:id/stage (move deal across pipeline stages)",
+      "POST /api/activities (call / email / meeting linked to contact+deal)",
+      "GET /api/reports/won-by-month?year=2026",
+      "GET /api/reports/pipeline-value",
+      "GET /api/reports/win-rate (returns counts per status: open/won/lost)"
+    ],
+    "dataModels": [
+      "Company (name, domain, industry, sizeRange, ownerUserId)",
+      "Contact (firstName, lastName, email, phone, title, companyId nullable, ownerUserId)",
+      "Stage (pipelineId, order, name, probability, isClosedWon, isClosedLost) — configurable",
+      "Pipeline (name, isDefault, archivedAt)",
+      "Deal (title, amountCents, currency, stageId, contactId, companyId, ownerUserId, expectedCloseAt, wonAt, lostAt)",
+      "Activity (type: call|email|meeting|note|task, occurredAt, summary, dealId nullable, contactId nullable, ownerUserId)",
+      "DealStageHistory (dealId, fromStageId, toStageId, movedAt, movedByUserId) — audit of pipeline progression"
+    ],
+    "architectureNotes": [
+      "Stages are configurable rows, not an enum — let users reorder / rename / add stages without migrations",
+      "Won/lost deals set wonAt or lostAt timestamp + stage flag; reports filter on those",
+      "Stage transitions write a DealStageHistory row so velocity reports (avg days per stage) are possible",
+      "Amounts are integer cents — avoid float, avoid NUMERIC-vs-bigint lossiness"
+    ],
+    "gotchas": [
+      "Email uniqueness across contacts is a business decision. Multiple contacts can share an email (shared inboxes, spouses at same B2C account) — do NOT make email UNIQUE without product confirmation.",
+      "Deal amounts in integer cents, not NUMERIC(10,2). Multi-currency deals need a currency column per deal; do NOT convert at write time, convert at report time so historical rates don't corrupt the past.",
+      "Pipeline stages are user-editable. Queries that hard-code stage names will break the moment a user renames 'Qualified' to 'MQL'. Query by stage.id or by stage flags (isClosedWon).",
+      "Merging duplicate contacts/companies is a critical CRM feature this starter does NOT implement. Bad merges destroy activities and deals — add a reversible merge log before wiring a merge button.",
+      "GDPR / CCPA: contacts are personal data. Right-to-erasure must soft-delete and preserve activity records anonymized. Hard-deleting a contact cascades and loses historical deals — don't.",
+      "Activity timestamps are the source of truth for 'last contacted'. Background ingestion (email sync, calendar sync) must use the real send/meeting time, not the import time.",
+      "Closed deals are immutable for revenue reporting. Allow editing TITLE / NOTES but do NOT allow editing amount or stage on a deal where wonAt IS NOT NULL without an audit trail + a correction log."
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "pnpm dev",
+      "pnpm db:generate",
+      "pnpm db:migrate",
+      "pnpm typecheck"
+    ],
+    "entrypoints": [
+      "src/server.ts",
+      "src/db/schema.ts",
+      "src/api/contacts.ts",
+      "src/api/pipeline.ts",
+      "src/api/reporting.ts"
+    ],
+    "preview": { "path": "/health" },
+    "extensionPoints": ["src/db/schema.ts", "src/api/"]
+  }
+}

@@ -70,7 +70,7 @@
     ],
     "architectureNotes": [
       "DataTable is powered by @tanstack/react-table with sorting, filtering, and pagination.",
-      "Column definitions are typed \u2014 add your entity columns in the page file.",
+      "Column definitions are typed — add your entity columns in the page file.",
       "EntityForm renders a create/edit dialog with shadcn form components.",
       "Bulk actions bar appears when rows are selected (delete, export, etc.).",
       "Wire API routes to your database (Drizzle, Prisma, etc.)."
@@ -80,5 +80,29 @@
     "dependencies": {
       "@tanstack/react-table": "^8.21.0"
     }
+  },
+  "tieredKeywords": {
+    "archetypes": [
+      "onboarding tool",
+      "onboarding app",
+      "employee onboarding",
+      "vendor onboarding",
+      "approval workflow",
+      "approval flow",
+      "back office",
+      "content management",
+      "data table",
+      "crud operations",
+      "role-based",
+      "multi-step sign-off",
+      "dues collection",
+      "maintenance requests",
+      "document storage",
+      "collects documents",
+      "auto-assign",
+      "assigns tasks",
+      "hr tool",
+      "admin panel"
+    ]
   }
 }

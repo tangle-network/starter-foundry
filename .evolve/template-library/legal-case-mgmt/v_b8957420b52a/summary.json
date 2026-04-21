@@ -1,0 +1,44 @@
+{
+  "familyId": "legal-case-mgmt",
+  "runAt": "2026-04-21T07:30:39.903Z",
+  "completed": true,
+  "shotsUsed": 3,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 357557,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": false,
+      "failing": [
+        "typecheck"
+      ],
+      "confidence": 0.92,
+      "shouldContinue": true,
+      "durationMs": 275185,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 2,
+      "pass": false,
+      "failing": [
+        "typecheck"
+      ],
+      "confidence": 0.82,
+      "shouldContinue": true,
+      "durationMs": 50282,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 3,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 32090,
+      "reviewAvailable": true
+    }
+  ]
+}

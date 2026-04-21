@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-04-21T08:40:06.285Z",
+  "audits": [
+    {
+      "layerId": "framework:triton-server",
+      "family": "triton-server",
+      "pm": "python3",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "python3 -m compileall .",
+          "ok": true,
+          "durationMs": 72.648958,
+          "stderrTail": "",
+          "stdoutTail": "Listing '.'...\nListing './.starter-foundry'...\nListing './docs'...\nListing './model_repository'...\nListing './model_repository/identity'...\nListing './model_repository/identity/1'...\nListing './src'...\nCompiling './src/__init__.py'...\nCompiling './src/client.py'...\n"
+        },
+        {
+          "phase": "validationChecks",
+          "skipped": "none-declared",
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

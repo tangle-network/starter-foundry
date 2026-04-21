@@ -241,12 +241,40 @@ async function composeStarterInner(spec: ComposeSpec, outDir: string): Promise<C
   const llmsTxt = buildLlmsTxt(spec, components, composeReport.contextHints)
   await fs.writeFile(path.join(outDir, 'llms.txt'), `${llmsTxt}\n`, 'utf8')
 
+  // Generate SBOM (CycloneDX) from the composed scaffold's dep manifest.
+  const { writeSbom } = await import('./sbom.js')
+  const sbomPath = await writeSbom(outDir, spec.projectName)
+
+  // Collect optional prompt-fragment.md files from family + partner.
+  const promptFragment = await collectPromptFragment(components)
+
   return {
     outDir,
     filesWritten: [...new Set([...filesWritten, 'AGENTS.md', 'CLAUDE.md', 'llms.txt'])].sort(),
     composeReportPath: path.join(outDir, '.starter-foundry', 'compose-report.json'),
     components: composeReport.components,
+    promptFragment,
+    sbomPath,
   }
+}
+
+async function collectPromptFragment(components: ResolvedComponents): Promise<string> {
+  const fragments: string[] = []
+  const familyFrag = path.join(components.family.baseDir, 'prompt-fragment.md')
+  try {
+    fragments.push(await fs.readFile(familyFrag, 'utf8'))
+  } catch {
+    // Optional file — absence is fine.
+  }
+  if (components.partner) {
+    const partnerFrag = path.join(components.partner.baseDir, 'prompt-fragment.md')
+    try {
+      fragments.push(await fs.readFile(partnerFrag, 'utf8'))
+    } catch {
+      // Optional.
+    }
+  }
+  return fragments.join('\n\n---\n\n').trim()
 }
 
 function buildLlmsTxt(
@@ -315,10 +343,21 @@ function buildAgentsMd(
     '',
   )
 
+  // User's prompt — echo it near the top so the agent sees its brief
+  // before the scaffold's default behavior.
+  if (spec.userPrompt) {
+    lines.push(
+      '## User\'s brief (takes priority over everything else in this file)',
+      '',
+      `> ${spec.userPrompt.replace(/\n/g, '\n> ')}`,
+      '',
+    )
+  }
+
   lines.push(
     '## What\'s here',
     '',
-    `This project was scaffolded by starter-foundry. The user\'s prompt drove the choices below — read their prompt first, it takes priority over everything in this file.`,
+    `This project was scaffolded by starter-foundry. The choices below were made deterministically from the user's brief.`,
     '',
     `- **Family:** \`${spec.family}\``,
     `- **Layers:** ${components.layers.map((l) => `\`${l.group}:${l.id}\``).join(', ')}`,
@@ -423,6 +462,30 @@ function buildAgentsMd(
       '',
     )
   }
+
+  // Progressive disclosure — turn-order sections agents pattern-match on.
+  lines.push(
+    '## Turn 1 (do these before writing features)',
+    '',
+    '1. Call the dev-server route from Step 0 (above). Wait for success.',
+    '2. Read the user\'s brief (above) and the Placeholders section.',
+    '3. Rewrite `personalize.json` + `personalize.css` (brand strings + palette). These are render-time — preview updates on next refresh, no rebuild.',
+    '4. Delete or rewrite EVERY file in the Placeholders list. Not optional.',
+    '5. Only after (3) + (4) do you start feature work.',
+    '',
+    '## Before first preview screenshot',
+    '',
+    '- Confirm the landing surface renders the user\'s product (no default KPI cards from a dashboard template).',
+    '- Brand strings in `personalize.json` are product-specific, not the scaffold default.',
+    '- Any placeholder file in the list above has been replaced or deleted.',
+    '',
+    '## Before shipping',
+    '',
+    '- Run the family\'s validate script (see Key files above).',
+    '- Re-check Gotchas (above) against what you built — those traps bite most at ship time.',
+    '- If you added deps, they\'re in `package.json`; if you added routes/pages, they\'re reachable.',
+    '',
+  )
 
   lines.push(
     '## How to use this scaffold',

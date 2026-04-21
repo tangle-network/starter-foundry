@@ -1,22 +1,11 @@
-import { spawn } from 'node:child_process'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { evaluateAgents } from './agent-runners.js'
 import { createAuditBundle } from './audit.js'
 import { benchmarkStarter } from './benchmark.js'
-import { createTempDir, sanitizePackageName, writeJson } from './fs.js'
+import { createTempDir, runTar, sanitizePackageName, writeJson } from './fs.js'
 import { validateStarter } from './validate.js'
 import type { ComposeSpec } from '../types.js'
-
-function runTar(sourceDir: string, archivePath: string): Promise<boolean> {
-  return new Promise((resolve) => {
-    const child = spawn('tar', ['-czf', archivePath, '-C', sourceDir, '.'], {
-      stdio: ['ignore', 'ignore', 'ignore'],
-    })
-    child.on('close', (code) => resolve(code === 0))
-    child.on('error', () => resolve(false))
-  })
-}
 
 export async function createRelease({
   spec,

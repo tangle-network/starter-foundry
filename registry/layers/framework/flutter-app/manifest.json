@@ -1,0 +1,15 @@
+{
+  "id": "flutter-app",
+  "description": "Flutter + Dart framework layer — main.dart with MaterialApp.router, GoRouter, Provider, and an example home screen.",
+  "appliesTo": ["flutter-app"],
+  "defaults": {
+    "headline": "Starter Foundry Flutter App",
+    "subheadline": "A Flutter mobile shell with GoRouter, Provider, and Dio wired for auth, billing, and wallet seams."
+  },
+  "files": [
+    {
+      "source": "files/main.dart",
+      "target": "lib/main.dart"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "familyId": "ecommerce-headless",
+  "runAt": "2026-04-21T05:31:17.666Z",
+  "completed": true,
+  "shotsUsed": 2,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 461387,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": false,
+      "failing": [
+        "typecheck"
+      ],
+      "confidence": 0.85,
+      "shouldContinue": true,
+      "durationMs": 374100,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 2,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 87287,
+      "reviewAvailable": true
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "family": "phaser-game",
+  "current": "v_d1702664e96a",
+  "topN": [
+    "v_d1702664e96a",
+    "v_74b0b350ded2"
+  ],
+  "all": [
+    {
+      "version": "v_d1702664e96a",
+      "score": 0.7699961619593482,
+      "skipped": null
+    },
+    {
+      "version": "v_74b0b350ded2",
+      "score": 0.6199999945823821,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.380Z"
+}

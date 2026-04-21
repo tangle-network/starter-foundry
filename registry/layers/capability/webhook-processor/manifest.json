@@ -44,24 +44,20 @@
       "/api/webhooks",
       "/api/webhooks/[provider]"
     ],
-    "architecture": [
-      "webhook-handler.ts → verifySignature(provider, payload, signature, secret) with timing-safe HMAC comparison",
-      "webhook-router.ts → createWebhookRouter({ providers }) returns async (req) => response, matches provider by signature header presence",
-      "webhook-queue.ts → createWebhookQueue() for idempotent dedup + retry with exponential backoff"
-    ],
-    "supportedProviders": [
-      "Stripe (t=/v1= timestamp+signature format)",
-      "GitHub (sha256= prefixed HMAC)",
-      "Generic (raw hex HMAC-SHA256)"
-    ],
     "dataModels": [
       "WebhookEvent { id, provider, type, payload, receivedAt }",
       "QueuedEvent { id, payload, state, attempts, lastError }"
     ],
-    "productionNotes": [
-      "webhook-queue uses in-memory Map — replace with Redis/BullMQ for durable processing",
-      "Add persistent event log (Postgres/DynamoDB) for audit trail",
-      "webhook-config.json secrets should come from environment variables, not the config file"
+    "architectureNotes": [
+      "architecture: webhook-handler.ts \u2192 verifySignature(provider, payload, signature, secret) with timing-safe HMAC comparison",
+      "architecture: webhook-router.ts \u2192 createWebhookRouter({ providers }) returns async (req) => response, matches provider by signature header presence",
+      "architecture: webhook-queue.ts \u2192 createWebhookQueue() for idempotent dedup + retry with exponential backoff",
+      "supportedProviders: Stripe (t=/v1= timestamp+signature format)",
+      "supportedProviders: GitHub (sha256= prefixed HMAC)",
+      "supportedProviders: Generic (raw hex HMAC-SHA256)",
+      "productionNotes: webhook-queue uses in-memory Map \u2014 replace with Redis/BullMQ for durable processing",
+      "productionNotes: Add persistent event log (Postgres/DynamoDB) for audit trail",
+      "productionNotes: webhook-config.json secrets should come from environment variables, not the config file"
     ]
   }
 }

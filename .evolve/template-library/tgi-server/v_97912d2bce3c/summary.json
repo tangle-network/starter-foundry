@@ -1,0 +1,22 @@
+{
+  "familyId": "tgi-server",
+  "runAt": "2026-04-21T08:36:20.374Z",
+  "completed": true,
+  "shotsUsed": 1,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 294757,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 294757,
+      "reviewAvailable": true
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+$fg: #0f172a;
+$muted: #64748b;
+$accent: #2563eb;
+
+body {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  max-width: 720px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  color: $fg;
+}
+
+header {
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+
+  p { color: $muted; margin: 0; }
+}
+
+a { color: $accent; }

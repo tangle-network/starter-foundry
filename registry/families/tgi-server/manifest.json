@@ -1,0 +1,178 @@
+{
+  "id": "tgi-server",
+  "description": "HuggingFace Text Generation Inference server. Docker-compose-first LLM serving with HF's production Rust/Python server — continuous batching, Flash Attention 2, quantization (AWQ, GPTQ, EETQ, bitsandbytes), tensor-parallel sharding, and a native /generate + OpenAI-compatible surface. Pulls weights straight from the Hub.",
+  "tags": [
+    "ml",
+    "llm",
+    "inference",
+    "python",
+    "serving",
+    "huggingface",
+    "tgi"
+  ],
+  "taxonomy": {
+    "language": "python",
+    "runtime": "python",
+    "surface": "inference"
+  },
+  "slots": {
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk"
+      ],
+      "default": "auth:none"
+    }
+  },
+  "defaults": {
+    "projectType": "inference",
+    "serviceName": "starter-foundry-tgi",
+    "port": 8080,
+    "modelId": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+    "maxInputLength": 3072,
+    "maxTotalTokens": 4096
+  },
+  "files": [
+    {
+      "source": "files/docker-compose.yml",
+      "target": "docker-compose.yml"
+    },
+    {
+      "source": "files/requirements.txt",
+      "target": "requirements.txt"
+    },
+    {
+      "source": "files/client.py",
+      "target": "src/client.py"
+    },
+    {
+      "source": "files/.env.example",
+      "target": ".env.example"
+    },
+    {
+      "source": "files/README-tgi.md",
+      "target": "docs/tgi.md"
+    },
+    {
+      "source": "files/validate-tgi.mjs",
+      "target": "validate-tgi.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "docker-compose.yml"
+    },
+    {
+      "type": "file-exists",
+      "path": "requirements.txt"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/client.py"
+    },
+    {
+      "type": "file-exists",
+      "path": ".env.example"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-tgi.mjs"
+      ],
+      "expect": "tgi starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "cp .env.example .env",
+      "docker compose up -d",
+      "pip install -r requirements.txt",
+      "python -m src.client"
+    ],
+    "entrypoints": [
+      "docker-compose.yml",
+      "src/client.py",
+      ".env.example"
+    ],
+    "preview": {
+      "path": "/health",
+      "port": "{{port}}"
+    },
+    "extensionPoints": [
+      "docker-compose.yml",
+      "src/client.py"
+    ]
+  },
+  "keywords": [
+    "tgi",
+    "text generation inference",
+    "huggingface inference",
+    "hf tgi",
+    "hf inference server",
+    "ghcr tgi",
+    "flash attention serving",
+    "hub model serving",
+    "docker compose llm",
+    "generate endpoint"
+  ],
+  "scoring": {
+    "boost": {
+      "tgi": 4,
+      "text generation inference": 4,
+      "huggingface inference": 3
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "tgi",
+      "text generation inference",
+      "huggingface inference server",
+      "hf tgi"
+    ],
+    "tier2": [
+      "flash attention serving",
+      "hub model serving",
+      "/generate endpoint",
+      "gptq awq eetq serving"
+    ],
+    "archetypes": [
+      "huggingface self-hosted llm",
+      "dockerized tgi deployment",
+      "hub-pull inference"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Pick TGI when the model lives on the HuggingFace Hub, docker-compose is the preferred deploy surface, and you want HF's production server (continuous batching, Flash Attention, multi-GPU sharding) without writing a FastAPI wrapper. Choose vllm-server instead when you need PagedAttention / custom OpenAI-compat Python glue; choose ollama-server for local GGUF-first workflows.",
+    "firstSteps": [
+      "Copy .env.example to .env and set HUGGING_FACE_HUB_TOKEN (required for gated models: Llama, Mistral, Gemma)",
+      "Edit MODEL_ID in .env or docker-compose.yml to the HF repo you want to serve",
+      "docker compose up -d — first boot pulls weights to the ./data volume (can be 15-60GB)",
+      "Call `curl localhost:{{port}}/generate -d '{\"inputs\":\"hello\"}'` or run `python -m src.client`"
+    ],
+    "gotchas": [
+      "TGI pins a specific transformers version per image tag. Use a fixed tag (e.g. 2.3.1) in production — `latest` can silently break custom architectures.",
+      "Gated models (Llama, Mistral, Gemma) require HUGGING_FACE_HUB_TOKEN AND acceptance of the model license on the Hub UI — token alone is not enough.",
+      "SHM size: the default docker /dev/shm is 64MB which crashes NCCL on multi-GPU. Keep the `shm_size: 1gb` block in docker-compose.yml.",
+      "MAX_INPUT_LENGTH must be strictly less than MAX_TOTAL_TOKENS (the difference is the generation budget). TGI refuses to start if they're equal.",
+      "Quantization: `--quantize awq` needs AWQ-packed weights; `bitsandbytes-nf4` works on raw weights but is slower. Don't mix.",
+      "CUDA: requires the nvidia container toolkit. `docker compose up` with no GPU silently falls back to CPU and OOMs on any non-tiny model."
+    ],
+    "placeholders": [
+      {
+        "path": "src/main.py",
+        "description": ".env (MODEL_ID, HUGGING_FACE_HUB_TOKEN)"
+      },
+      {
+        "path": "src/main.py",
+        "description": "docker-compose.yml (image tag pin, GPU device count, volume path)"
+      },
+      {
+        "path": "src/main.py",
+        "description": "src/client.py (prompt + generation parameters)"
+      }
+    ]
+  }
+}

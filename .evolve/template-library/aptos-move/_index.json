@@ -1,0 +1,22 @@
+{
+  "family": "aptos-move",
+  "current": "v_9f87cbc66aca",
+  "topN": [
+    "v_9f87cbc66aca",
+    "v_a8496267b01e"
+  ],
+  "all": [
+    {
+      "version": "v_9f87cbc66aca",
+      "score": 0.8099927058837519,
+      "skipped": null
+    },
+    {
+      "version": "v_a8496267b01e",
+      "score": 0.6449999945696981,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.251Z"
+}

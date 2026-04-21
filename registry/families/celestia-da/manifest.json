@@ -1,0 +1,117 @@
+{
+  "id": "celestia-da",
+  "description": "Celestia data-availability starter — light-node docker-compose, Go client that submits and retrieves blobs via the RPC.",
+  "tags": [
+    "celestia",
+    "data-availability",
+    "da-layer",
+    "go",
+    "crypto"
+  ],
+  "taxonomy": {
+    "language": "go",
+    "runtime": "go",
+    "surface": "api"
+  },
+  "defaults": {
+    "projectType": "api",
+    "serviceName": "starter-foundry-celestia",
+    "celestiaNetwork": "mocha",
+    "namespaceHex": "0000000000000000000000000000000000000000000000000000deadbeef",
+    "rpcPort": 26658,
+    "nodeImageTag": "v0.21.0-mocha"
+  },
+  "files": [
+    {
+      "source": "files/validate-celestia.mjs",
+      "target": "validate-celestia.mjs"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/.gitignore",
+      "target": ".gitignore"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "docker-compose.yml"
+    },
+    {
+      "type": "file-exists",
+      "path": "config.toml"
+    },
+    {
+      "type": "file-exists",
+      "path": "submit-blob.sh"
+    },
+    {
+      "type": "file-exists",
+      "path": "client/main.go"
+    },
+    {
+      "type": "file-exists",
+      "path": "go.mod"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-celestia.mjs"
+      ],
+      "expect": "celestia starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "docker compose up -d",
+      "bash submit-blob.sh \"hello celestia\"",
+      "go run ./client"
+    ],
+    "entrypoints": [
+      "docker-compose.yml",
+      "config.toml",
+      "submit-blob.sh",
+      "client/main.go"
+    ],
+    "preview": null,
+    "extensionPoints": [
+      "client/main.go",
+      "config.toml",
+      "docker-compose.yml"
+    ]
+  },
+  "keywords": [
+    "celestia",
+    "data availability",
+    "da layer",
+    "blobstream",
+    "celestia light node",
+    "celestia blob",
+    "modular blockchain",
+    "sovereign rollup"
+  ],
+  "scoring": {
+    "boost": {
+      "celestia": 4
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "celestia",
+      "celestia blob",
+      "celestia light node",
+      "data availability",
+      "da layer"
+    ],
+    "tier2": [
+      "blobstream",
+      "modular blockchain",
+      "sovereign rollup",
+      "namespace commitment"
+    ]
+  }
+}

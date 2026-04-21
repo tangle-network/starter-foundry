@@ -1,0 +1,75 @@
+{
+  "id": "hls-origin",
+  "description": "HLS origin control plane — Node HTTP server that lists active streams by scanning the shared hls-data volume for stream.m3u8 playlists.",
+  "appliesTo": ["hls-origin"],
+  "files": [
+    {
+      "source": "files/server.ts",
+      "target": "src/server.ts"
+    }
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "fast-glob": "^3.3.2"
+    },
+    "devDependencies": {
+      "@types/node": "^20.17.0",
+      "tsx": "^4.19.2",
+      "typescript": "^5.9.0"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "Any project that needs an HLS live-streaming origin: self-hosted Twitch-style ingest, live event broadcasting, video CDN origin, or multi-stream monitoring dashboards. Use when you need a segmented .m3u8 playlist that browsers can pull directly.",
+    "firstSteps": [
+      "Run `pnpm install` then `docker compose up -d` — nginx starts on port {{nginxPort}}, the ffmpeg container stays idle waiting for streams.",
+      "Run `pnpm dev` to start the control plane on port {{port}}. GET /health confirms the server and volume config. GET /streams lists active HLS streams.",
+      "Run `./start-stream.sh testsrc demo` to transcode a synthetic test pattern — segments appear in the shared hls-data volume immediately.",
+      "Open `http://localhost:{{nginxPort}}/hls/demo/stream.m3u8` in Safari or an hls.js player to confirm the live stream.",
+      "Extend `src/server.ts` to add per-stream start/stop endpoints, auth middleware, or webhook callbacks on stream-start/stream-end events."
+    ],
+    "gotchas": [
+      "Segment duration is a latency/stability tradeoff — 2s segments give ~6s glass-to-glass latency with a 3-segment buffer; shorter segments reduce latency at the cost of more playlist churn and higher buffering risk on flaky networks.",
+      "Browsers require CORS on both the playlist AND every segment. The nginx.conf adds Access-Control-Allow-Origin to .m3u8 and .ts responses — removing either header breaks HLS.js.",
+      "Safari plays HLS natively; Chrome/Firefox need hls.js. Feature-detect with `video.canPlayType('application/vnd.apple.mpegurl')` — non-empty means native, otherwise bundle hls.js.",
+      "ffmpeg's `-hls_flags delete_segments` is mandatory for a rolling window — without it the origin fills disk with every 2s segment ever transcoded.",
+      "RTMP ingest is TCP port 1935, plaintext. Put nginx-rtmp or srtrelay in front for auth/TLS; the ffmpeg container here assumes a trusted ingest source.",
+      "libx264 in start-stream.sh is CPU-bound and single-stream. For production scale use h264_videotoolbox (macOS) or h264_nvenc (NVIDIA) by passing a custom FFMPEG_EXTRA_ARGS environment variable."
+    ],
+    "architectureNotes": [
+      "nginx and ffmpeg share the hls-data named volume — ffmpeg writes .ts segments and .m3u8 playlists, nginx reads them with sendfile(). The Node server never touches media data.",
+      "The Node control plane is a management API only: it scans the hls-data volume for active playlists and exposes them over HTTP. Keep media delivery on nginx, not Node.",
+      "Each stream is a sub-directory of /var/www/hls/ — stream name maps directly to the URL path: /hls/<name>/stream.m3u8. This makes per-stream isolation trivial."
+    ],
+    "placeholders": [
+      {
+        "path": "src/server.ts",
+        "description": "Template variables {{port}}, {{nginxPort}}, {{serviceName}} are replaced at compose time. The /health and /streams routes are fully wired — add auth, per-stream lifecycle endpoints, or webhook hooks here."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "docker compose up -d",
+      "pnpm dev",
+      "./start-stream.sh testsrc demo",
+      "./start-stream.sh <input-file-or-rtmp-url> <stream-name>",
+      "open http://localhost:{{nginxPort}}/hls/demo/stream.m3u8",
+      "pnpm run validate"
+    ],
+    "entrypoints": [
+      "src/server.ts",
+      "nginx.conf",
+      "start-stream.sh",
+      "docker-compose.yml"
+    ],
+    "preview": {
+      "path": "/health"
+    },
+    "extensionPoints": [
+      "src/server.ts",
+      "nginx.conf",
+      "start-stream.sh"
+    ]
+  }
+}

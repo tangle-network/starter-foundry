@@ -1,0 +1,181 @@
+{
+  "id": "expo-rn-rich",
+  "description": "Expo React Native app with the rich client-side native stack — Skia canvas, Reanimated v3 worklets, Gesture Handler, React Navigation stack + tabs.",
+  "tags": [
+    "mobile",
+    "react-native",
+    "expo",
+    "skia",
+    "reanimated",
+    "typescript"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "expo",
+    "surface": "frontend"
+  },
+  "slots": {
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk",
+        "auth:supabase-auth"
+      ],
+      "default": "auth:none"
+    },
+    "payments": {
+      "options": [
+        "payments:none",
+        "payments:stripe",
+        "payments:coinbase-commerce"
+      ],
+      "default": "payments:none"
+    },
+    "sdk": {
+      "options": [
+        "sdk:none",
+        "sdk:coinbase-cdp",
+        "sdk:solana-web3",
+        "sdk:evm-wallet"
+      ],
+      "default": "sdk:none"
+    }
+  },
+  "defaults": {
+    "projectType": "mobile",
+    "headline": "Starter Foundry Rich Mobile",
+    "subheadline": "An Expo shell with Skia, Reanimated, Gesture Handler, and navigation — ready for GPU-rich UI."
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/validate-expo-rn-rich.mjs",
+      "target": "validate-expo-rn-rich.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "App.tsx"
+    },
+    {
+      "type": "file-exists",
+      "path": "app.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "babel.config.js"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-expo-rn-rich.mjs"
+      ],
+      "expect": "expo rn rich ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "npx expo start",
+      "node validate-expo-rn-rich.mjs"
+    ],
+    "entrypoints": [
+      "App.tsx",
+      "app.json",
+      "babel.config.js",
+      "src/screens/HomeScreen.tsx",
+      "src/screens/CanvasScreen.tsx",
+      "src/navigation/RootNavigator.tsx"
+    ],
+    "preview": null,
+    "extensionPoints": [
+      "auth-config.json",
+      "payments-config.json",
+      "sdk-config.json"
+    ]
+  },
+  "keywords": [
+    "skia",
+    "react native skia",
+    "reanimated",
+    "rich animations mobile",
+    "native gestures mobile",
+    "expo skia",
+    "expo reanimated",
+    "react navigation",
+    "gesture handler",
+    "gpu mobile",
+    "animated mobile ui"
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "skia",
+      "react native skia",
+      "reanimated",
+      "rich animations mobile",
+      "native gestures mobile",
+      "expo skia",
+      "expo reanimated"
+    ],
+    "tier2": [
+      "react navigation",
+      "gesture handler",
+      "animated mobile ui",
+      "gpu mobile canvas",
+      "60fps mobile animations",
+      "shared element transitions",
+      "interactive mobile charts"
+    ],
+    "tier3": [
+      "animated ios app",
+      "animated android app",
+      "fluid mobile ui"
+    ],
+    "archetypes": [
+      "rich-animations mobile app",
+      "skia canvas mobile app",
+      "reanimated gesture-driven mobile"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Pick expo-rn-rich when the app needs GPU-backed 2D drawing (Skia), worklet-driven 60fps animations (Reanimated v3), native gesture composition (Gesture Handler), and stack+tab navigation (React Navigation). If the user just needs a plain React Native shell without the animation stack, use expo-react-native-ts — this family pulls in ~15MB of extra native deps that need a dev client build.",
+    "architectureNotes": [
+      "Reanimated v3 requires its Babel plugin to be the LAST plugin in babel.config.js — misordering silently breaks worklets with a 'Reanimated 2 failed to create a worklet' runtime error.",
+      "Gesture Handler's GestureHandlerRootView MUST wrap the entire app tree (in App.tsx), not just individual screens, or nested gestures drop events on Android.",
+      "@shopify/react-native-skia ships its own native module — it WILL NOT run inside Expo Go. The project requires a dev client (`eas build --profile development`) or `expo prebuild` to generate ios/android folders.",
+      "React Navigation uses screens from react-native-screens under the hood — enable via `enableScreens()` before the navigator renders for 30–40% lower memory on large stacks.",
+      "Screens go under src/screens/, navigators under src/navigation/. Keeping them split lets agents add new screens without rewriting the root."
+    ],
+    "components": [
+      "RootNavigator — a Native Stack with a Bottom Tabs nested inside.",
+      "HomeScreen — plain RN list to contrast with the canvas screen.",
+      "CanvasScreen — a Skia <Canvas> driving an animated shader/shape via useSharedValue + useDerivedValue.",
+      "GestureHandlerRootView wrapper at the app root.",
+      "SafeAreaProvider wrapping the navigator for notched devices."
+    ],
+    "gotchas": [
+      "Expo Go INCOMPATIBILITY: Skia + Reanimated v3 require a custom dev client. Document in README — users who run `npx expo start` and scan the QR with Expo Go will see 'Native module RNReanimated is not installed'.",
+      "Reanimated babel plugin order: `react-native-reanimated/plugin` MUST be the LAST entry in plugins array. This is the #1 Reanimated crash and the error message does not surface the cause.",
+      "iOS: Add 'NSCameraUsageDescription' / 'NSMicrophoneUsageDescription' to app.json → ios.infoPlist if any Skia shader loads a camera feed — iOS will silently crash the app on access without it.",
+      "Android: The `android.useLegacyPackaging` flag in app.json is needed for hermes-compatible Reanimated — without it the APK balloons by ~20MB.",
+      "`react-native-gesture-handler` must be imported at the TOP of the entry file (index.ts/App.tsx) — any imports BEFORE it will initialize without gesture handler patched in and fire warnings in production.",
+      "React Navigation v7 requires `@react-navigation/native`, `@react-navigation/native-stack`, and `@react-navigation/bottom-tabs` as separate installs. Missing one silently breaks the tab bar.",
+      "Worklet constraints: code inside `useAnimatedStyle` / `useAnimatedReaction` runs on the UI thread and cannot close over JS-thread variables unless marked with `'worklet'`. Mis-use shows up as 'ReferenceError: X is not defined' on interaction.",
+      "EAS Build: Reanimated + Skia push the build past Expo's free-tier 45-minute build limit on first run — set `cache.key` in eas.json to cache the native pods, or upgrade to a paid tier."
+    ],
+    "integrations": [
+      "@shopify/react-native-skia — GPU-backed 2D canvas",
+      "react-native-reanimated v3 — UI-thread animations + worklets",
+      "react-native-gesture-handler — native gesture composition",
+      "@react-navigation/native + native-stack + bottom-tabs — typed navigation",
+      "react-native-safe-area-context — notch/home-indicator insets",
+      "react-native-screens — native screen containers (memory win)"
+    ]
+  }
+}

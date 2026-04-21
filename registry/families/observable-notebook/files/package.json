@@ -1,0 +1,26 @@
+{
+  "name": "{{packageName}}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "clean": "rm -rf dist .observablehq/cache",
+    "dev": "observable preview --port {{port}}",
+    "build": "observable build",
+    "deploy": "observable deploy",
+    "validate": "node validate-observable.mjs"
+  },
+  "dependencies": {
+    "@observablehq/framework": "^1.13.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  },
+  "overrides": {
+    "vite": "^6.4.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite": "^6.4.2"
+    }
+  }
+}

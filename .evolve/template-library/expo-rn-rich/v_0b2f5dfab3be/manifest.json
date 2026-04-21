@@ -1,0 +1,101 @@
+{
+  "id": "expo-rn-rich",
+  "description": "Expo React Native scaffold with Skia GPU canvas, Reanimated v3 worklets, Gesture Handler, and React Navigation (native stack + bottom tabs). Requires a custom dev client — Expo Go is incompatible with Skia and Reanimated v3.",
+  "appliesTo": ["expo-rn-rich"],
+  "files": [
+    { "source": "files/App.tsx", "target": "App.tsx" },
+    { "source": "files/app.json", "target": "app.json" },
+    { "source": "files/babel.config.js", "target": "babel.config.js" },
+    { "source": "files/metro.config.js", "target": "metro.config.js" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/RootNavigator.tsx", "target": "src/navigation/RootNavigator.tsx" },
+    { "source": "files/HomeScreen.tsx", "target": "src/screens/HomeScreen.tsx" },
+    { "source": "files/CanvasScreen.tsx", "target": "src/screens/CanvasScreen.tsx" }
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "@react-navigation/bottom-tabs": "^7.2.0",
+      "@react-navigation/native": "^7.0.0",
+      "@react-navigation/native-stack": "^7.2.0",
+      "@shopify/react-native-skia": "^1.7.0",
+      "expo": "~52.0.0",
+      "expo-build-properties": "~0.13.0",
+      "expo-status-bar": "~2.0.0",
+      "react": "^19.2.0",
+      "react-native": "^0.79.0",
+      "react-native-gesture-handler": "~2.20.0",
+      "react-native-reanimated": "~3.16.0",
+      "react-native-safe-area-context": "~4.12.0",
+      "react-native-screens": "~4.1.0"
+    },
+    "devDependencies": {
+      "@babel/core": "^7.25.0",
+      "@types/react": "^19.2.0",
+      "typescript": "^5.9.0"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "Pick expo-rn-rich when the app needs GPU-backed 2D drawing (Skia), worklet-driven 60fps animations (Reanimated v3), native gesture composition (Gesture Handler), and stack+tab navigation (React Navigation). If the user just needs a plain React Native shell without the animation stack, use expo-react-native-ts — this family pulls in ~15MB of extra native deps that need a dev client build.",
+    "firstSteps": [
+      "Run `pnpm install` to install all JS dependencies — no native build required at this step.",
+      "Run `npx tsc --noEmit` to verify that all types compile cleanly against the installed packages.",
+      "Run `expo prebuild --clean` to generate the ios/ and android/ native project folders from app.json config.",
+      "Build a custom dev client with `eas build --profile development` or `expo run:ios` / `expo run:android` — Expo Go cannot load Skia or Reanimated v3 native modules.",
+      "Once the dev client is installed on device/simulator, start the bundler with `npx expo start --dev-client` and open it in the custom client app.",
+      "Replace {{headline}} / {{subheadline}} in HomeScreen.tsx with real copy, or let the compose tool substitute them via the defaults in the family manifest."
+    ],
+    "gotchas": [
+      "Expo Go INCOMPATIBILITY: Skia + Reanimated v3 require a custom dev client. Users who run `npx expo start` and scan the QR with Expo Go will see 'Native module RNReanimated is not installed'.",
+      "Reanimated babel plugin order: `react-native-reanimated/plugin` MUST be the LAST entry in the babel.config.js plugins array. Misordering silently breaks worklets with a 'Reanimated 2 failed to create a worklet' runtime error.",
+      "`react-native-gesture-handler` must be imported at the TOP of App.tsx before any other imports — any import before it initialises without the gesture patches applied and fires warnings in production.",
+      "GestureHandlerRootView must wrap the entire app tree in App.tsx, not just individual screens, or nested gestures drop events on Android.",
+      "expo-build-properties is required as a dependency because it is referenced as an Expo config plugin in app.json → plugins. Missing it causes `expo prebuild` to fail with 'Cannot find module expo-build-properties'.",
+      "Android: The `android.useLegacyPackaging: true` flag in app.json is needed for Hermes-compatible Reanimated — without it the APK balloons by ~20MB.",
+      "Worklet constraints: code inside `useAnimatedStyle` / `useAnimatedReaction` runs on the UI thread and cannot close over JS-thread variables unless marked with `'worklet'`. Mis-use shows up as 'ReferenceError: X is not defined' on interaction.",
+      "EAS Build: Reanimated + Skia push the build past Expo's free-tier 45-minute limit on first run — set `cache.key` in eas.json to cache native pods, or upgrade to a paid tier."
+    ],
+    "architectureNotes": [
+      "Reanimated v3 requires its Babel plugin to be the LAST plugin in babel.config.js — misordering silently breaks worklets.",
+      "GestureHandlerRootView MUST wrap the entire app tree (App.tsx), not individual screens, or nested gestures drop events on Android.",
+      "@shopify/react-native-skia ships its own native module — it will NOT run inside Expo Go. The project requires a dev client (`eas build --profile development`) or `expo prebuild` to generate ios/android folders.",
+      "react-native-screens is enabled via `enableScreens()` before any navigator renders — this yields 30–40% lower memory on large stacks.",
+      "Screens live under src/screens/, navigators under src/navigation/. This split lets agents add screens without rewriting the root navigator."
+    ],
+    "placeholders": [
+      {
+        "path": "src/screens/HomeScreen.tsx",
+        "description": "{{headline}} and {{subheadline}} are template vars substituted at compose time. The three Section cards (Navigation, Auth, Payments) are stubs — replace or extend with real app content."
+      },
+      {
+        "path": "src/screens/CanvasScreen.tsx",
+        "description": "Orbiting circle driven by Reanimated shared values + Skia Canvas. Replace the Circle/Path primitives with your GPU-backed UI — keep the Canvas, GestureDetector, and shared-value scaffolding."
+      },
+      {
+        "path": "app.json",
+        "description": "{{projectName}} and {{packageName}} are substituted at compose time. Update ios.bundleIdentifier and android.package to match your real bundle ID before running eas build."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "npx tsc --noEmit",
+      "expo prebuild --clean",
+      "npx expo start --dev-client",
+      "eas build --profile development",
+      "node validate-expo-rn-rich.mjs"
+    ],
+    "entrypoints": [
+      "App.tsx",
+      "src/navigation/RootNavigator.tsx",
+      "src/screens/HomeScreen.tsx",
+      "src/screens/CanvasScreen.tsx"
+    ],
+    "preview": null,
+    "extensionPoints": [
+      "src/screens/",
+      "src/navigation/RootNavigator.tsx",
+      "app.json"
+    ]
+  }
+}

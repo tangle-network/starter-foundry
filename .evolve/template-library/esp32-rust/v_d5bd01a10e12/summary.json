@@ -1,0 +1,110 @@
+{
+  "familyId": "esp32-rust",
+  "runAt": "2026-04-21T07:14:20.525Z",
+  "completed": true,
+  "shotsUsed": 9,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 933817,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": false,
+      "failing": [
+        "install"
+      ],
+      "confidence": 0.88,
+      "shouldContinue": true,
+      "durationMs": 217969,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 2,
+      "pass": false,
+      "failing": [
+        "install"
+      ],
+      "confidence": 0.88,
+      "shouldContinue": true,
+      "durationMs": 77254,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 3,
+      "pass": false,
+      "failing": [
+        "install"
+      ],
+      "confidence": 0.92,
+      "shouldContinue": true,
+      "durationMs": 42571,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 4,
+      "pass": false,
+      "failing": [
+        "install"
+      ],
+      "confidence": 0.72,
+      "shouldContinue": true,
+      "durationMs": 60670,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 5,
+      "pass": false,
+      "failing": [
+        "install"
+      ],
+      "confidence": 0.55,
+      "shouldContinue": true,
+      "durationMs": 43691,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 6,
+      "pass": false,
+      "failing": [
+        "install"
+      ],
+      "confidence": 0.45,
+      "shouldContinue": true,
+      "durationMs": 134904,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 7,
+      "pass": false,
+      "failing": [
+        "install"
+      ],
+      "confidence": 0.72,
+      "shouldContinue": true,
+      "durationMs": 39856,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 8,
+      "pass": false,
+      "failing": [
+        "install"
+      ],
+      "confidence": 0.72,
+      "shouldContinue": true,
+      "durationMs": 33323,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 9,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 283579,
+      "reviewAvailable": true
+    }
+  ]
+}

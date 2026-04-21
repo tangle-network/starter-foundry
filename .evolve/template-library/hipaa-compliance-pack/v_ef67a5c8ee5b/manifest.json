@@ -1,0 +1,50 @@
+{
+  "id": "hipaa-compliance-pack",
+  "description": "HIPAA compliance overlay — PHI audit trail, field-level AES-256-GCM helpers, role-based minimum-necessary middleware, BAA acknowledgment surface. Composes onto fullstack-ts / api-service / healthcare-hipaa-backend.",
+  "appliesTo": ["hipaa-compliance-pack"],
+  "files": [
+    { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/AGENTS.md", "target": "AGENTS.md" }
+  ],
+  "packageDeps": {
+    "devDependencies": {
+      "@types/node": "^22.0.0",
+      "typescript": "^5.9.0"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "Bolt HIPAA primitives (audit trail, field encryption, minimum-necessary middleware) onto an existing healthcare backend. Not a standalone application.",
+    "firstSteps": [
+      "Run `pnpm validate` — confirms required files and key exports are present.",
+      "Run `pnpm build` — `tsc --noEmit` typechecks the full pack; zero errors expected.",
+      "Read `docs/HIPAA-controls.md` — each §164.312 control maps to one file in this pack.",
+      "Wire `withPhiAccess` from `src/phi-access.ts` onto every route that reads or writes PHI. The middleware MUST log BEFORE returning.",
+      "Wire `src/encryption.ts` helpers on every column storing SSN, DOB, MRN, or free-text clinical notes. AES-256-GCM with per-field IV; key must come from KMS/Vault, not env vars.",
+      "Replace `InMemoryAuditStore` with a DB-backed append-only store; add a TRIGGER or DENY UPDATE/DELETE on the audit table at the DB level (§164.312(c)(2)).",
+      "Emit `docs/BAA-template.md` as a signed doc before production PHI lands — gate the production API behind a signed-BAA state flag."
+    ],
+    "gotchas": [
+      "Do NOT log PHI to stdout, structured JSON logs, or error traces. Every logger must run through a PHI-redaction filter — one slip violates §164.312(b).",
+      "Audit retention is ≥6 years per §164.316(b)(2)(i). Design the storage tier for it — don't plan to TTL old audit rows.",
+      "De-identification per §164.514 is NOT anonymization. Safe Harbor requires 18 specific identifier classes removed; Expert Determination needs a signed statistician's attestation.",
+      "Encryption at rest is 'addressable' not 'required' in §164.312 — but skipping it is almost always an audit failure. Always encrypt.",
+      "Minimum-necessary rule (§164.502(b)) means APIs must filter, not just the UI. A /patients endpoint that returns the full row and lets the caller discard fields is a violation."
+    ],
+    "architectureNotes": [
+      "Pair with `healthcare-hipaa-backend` family for a full starter, or compose onto `fullstack-ts` / `api-service` / `python-api` for incremental adoption.",
+      "Audit table schema: id, actor_user_id, actor_role, action (enum), subject_table, subject_id, subject_fields_accessed[], at (timestamp), request_id, client_ip. Never include the PHI itself in the audit row — reference it by ID only.",
+      "TS source files are supplied by the family (src/encryption.ts, src/phi-access.ts, src/audit-log.ts, docs/, validate-hipaa-pack.mjs). This layer contributes package.json with a real name, tsconfig.json, and AGENTS.md."
+    ],
+    "placeholders": [
+      { "path": "src/phi-access.ts", "description": "Reference middleware. Replace the stubbed route matchers with the product's real routes; keep the audit-before-return order." },
+      { "path": "docs/BAA-template.md", "description": "BAA template. Legal MUST review + customize before use — it is not legal advice." }
+    ]
+  },
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm build", "pnpm validate"],
+    "entrypoints": ["src/encryption.ts", "src/phi-access.ts", "src/audit-log.ts"],
+    "preview": null,
+    "extensionPoints": ["src/phi-access.ts", "docs/HIPAA-controls.md"]
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "id": "pixijs-game",
+  "description": "Pixi.js v8 framework layer — async Application init, rotating gradient badge, resize + HMR dispose wired from first render.",
+  "appliesTo": ["pixijs-game"],
+  "files": [
+    { "source": "files/src/main.ts", "target": "src/main.ts" },
+    { "source": "files/src/vite-env.d.ts", "target": "src/vite-env.d.ts" }
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "pixi.js": "^8.5.2"
+    },
+    "devDependencies": {
+      "typescript": "^5.9.0",
+      "vite": "^6.4.2"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "High-performance 2D canvas work — interactive data viz, particle systems, generative art, map editors, live charts. Pick over Phaser when you want a raw renderer without scene+physics machinery.",
+    "firstSteps": [
+      "Run `pnpm install` then `pnpm dev` — Vite serves on 5173 with HMR; a rotating gradient badge renders immediately.",
+      "Pixi v8 uses `await app.init(...)` — it is ASYNC. Do not call `new Application()` and start rendering synchronously; sprites attached before init never appear.",
+      "Put art in `public/assets/` and load via `Assets.load('assets/foo.png')` — the v8 Assets loader replaces the v7 Loader class.",
+      "Attach children to `app.stage` (or a sub-Container). `app.ticker.add(...)` drives per-frame updates.",
+      "Run `pnpm build` to emit static assets to `dist/` — deploy on any static host."
+    ],
+    "gotchas": [
+      "Pixi v8 is a BREAKING rewrite of v7. Do NOT copy v7 tutorials — `new Application({ width, height })` is gone; use `const app = new Application(); await app.init({ width, height });`.",
+      "Pixi v8 supports both WebGL and WebGPU. Default renderer is chosen automatically — pin with `preference: 'webgpu'` if needed.",
+      "The Ticker runs after `app.init()` only. Don't add ticker callbacks before init — they're attached to a placeholder and never fire.",
+      "On teardown (HMR, route change), call `app.destroy(true, { children: true, texture: true })` to release GPU memory. Without it, HMR leaks textures fast.",
+      "`import.meta.hot` requires Vite client types — `src/vite-env.d.ts` provides the reference directive; do not delete it or typecheck will fail on the HMR block."
+    ],
+    "architectureNotes": [
+      "Application owns: renderer, stage (root Container), ticker. One Application per canvas.",
+      "Scene composition = Container hierarchy. Containers transform children; leaves are Sprites, Graphics, Text, Mesh."
+    ],
+    "placeholders": [
+      {
+        "path": "src/main.ts",
+        "description": "Application init + rotating badge. Replace the badge Graphics with actual sprites or draw calls; keep the init, resize, and HMR dispose plumbing."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm dev", "pnpm build"],
+    "entrypoints": ["src/main.ts", "index.html"],
+    "preview": { "path": "/" },
+    "extensionPoints": ["src/main.ts", "src/scenes", "public/assets"]
+  }
+}

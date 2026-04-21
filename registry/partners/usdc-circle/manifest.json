@@ -1,0 +1,50 @@
+{
+  "id": "usdc-circle",
+  "description": "Partner pack for Circle USDC — regulated stablecoin with native issuance on 16+ chains via CCTP (Cross-Chain Transfer Protocol). Biases toward compliance-sensitive payments, agent micropayments, and native cross-chain rails.",
+  "appliesTo": [
+    "frontend-static",
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "api-service",
+    "python-api",
+    "evm-infra-ts",
+    "agent-service-ts",
+    "agent-service-py",
+    "worker-job",
+    "x402-service",
+    "forge-contracts",
+    "hardhat-contracts"
+  ],
+  "slotDefaults": {
+    "payments": "payments:stripe",
+    "sdk": "sdk:evm-wallet"
+  },
+  "defaults": {
+    "headline": "Build on USDC — regulated stablecoin + CCTP",
+    "subheadline": "Native on 16+ chains. CCTP burn-and-mint for native cross-chain transfers — no wrapped assets, no bridge risk."
+  },
+  "files": [
+    {
+      "source": "files/partner-config.json",
+      "target": "partner-config.json"
+    },
+    {
+      "source": "files/starter-brand.json",
+      "target": "starter-brand.json"
+    }
+  ],
+  "buildHints": {
+    "whenToUse": "Prompt mentions USDC, Circle, regulated stablecoin, CCTP, cross-chain USDC transfer, or compliance-focused payments.",
+    "firstSteps": [
+      "Use the Circle Developer Console to provision API keys if the flow needs fiat on/off-ramp (https://console.circle.com).",
+      "For cross-chain transfers, prefer CCTP (burn on source, attest via Circle API, mint on destination) over any bridge — CCTP gives native USDC everywhere.",
+      "Contract addresses per chain are in partner-config.json.contracts. USDC is a standard ERC-20 — no SafeERC20 shims needed (unlike USDT)."
+    ],
+    "gotchas": [
+      "CCTP requires a Circle-issued attestation before mint on the destination chain. Expect 13-20 minutes on Ethereum mainnet for the attestation to be available.",
+      "USDC on Solana uses SPL Token, not ERC-20 — use the @solana/spl-token SDK.",
+      "Circle can freeze addresses via the USDC contract's blacklist. Treasury flows should detect blacklist state before irrevocable swaps."
+    ]
+  }
+}

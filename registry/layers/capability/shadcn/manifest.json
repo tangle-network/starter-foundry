@@ -7,7 +7,9 @@
     "fullstack-ts",
     "remix-ts",
     "electron-desktop-ts",
-    "tauri-desktop"
+    "tauri-desktop",
+    "electron-native-os",
+    "multimodal-agent"
   ],
   "files": [
     {

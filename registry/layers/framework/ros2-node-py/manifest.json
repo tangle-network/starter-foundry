@@ -1,0 +1,90 @@
+{
+  "id": "ros2-node-py",
+  "description": "ROS 2 (Jazzy / Humble) Python node layer — MinimalPublisher (Twist → /cmd_vel at 2 Hz) + MinimalSubscriber (/odom → Odometry) + bringup.launch.py. Wires ament_python entry_points; ready to colcon build after sourcing the ROS overlay.",
+  "appliesTo": ["ros2-node-py"],
+  "files": [
+    { "source": "files/setup.py", "target": "setup.py" },
+    { "source": "files/__init__.py", "target": "{{packageName}}/__init__.py" },
+    { "source": "files/my_node.py", "target": "{{packageName}}/my_node.py" },
+    { "source": "files/minimal_publisher.py", "target": "{{packageName}}/minimal_publisher.py" },
+    { "source": "files/minimal_subscriber.py", "target": "{{packageName}}/minimal_subscriber.py" },
+    { "source": "files/bringup.launch.py", "target": "launch/bringup.launch.py" },
+    { "source": "files/AGENTS.md", "target": "AGENTS.md" }
+  ],
+  "buildHints": {
+    "whenToUse": "Attach for any ROS 2 Python node — mobile robots, manipulators, sensor bridges, Nav2 lifecycle nodes. Pick this over ros2-node-rust unless the prompt specifically asks for Rust / rclrs or hard-realtime.",
+    "firstSteps": [
+      "Source the ROS 2 overlay: `source /opt/ros/jazzy/setup.bash` (swap jazzy→humble for 22.04). rclpy is NOT pip-installable — it ships with the apt distribution.",
+      "Place the composed project at `<ws>/src/{{packageName}}` — the directory containing package.xml must be directly under src/.",
+      "From workspace root: `colcon build --packages-select {{packageName}} && source install/setup.bash`",
+      "Run the minimal node: `ros2 run {{packageName}} my_node`",
+      "Run publisher: `ros2 run {{packageName}} publisher` — publishes Twist to /cmd_vel at 2 Hz.",
+      "Run subscriber in a second terminal (after sourcing install/setup.bash): `ros2 run {{packageName}} subscriber` — prints /odom pose.",
+      "Or launch both together: `ros2 launch {{packageName}} bringup.launch.py`"
+    ],
+    "gotchas": [
+      "rclpy is not pip-installable — source /opt/ros/{{rosDistro}}/setup.bash so the apt-installed rclpy lands on PYTHONPATH before calling colcon.",
+      "setup.py entry_points['console_scripts'] is the ONLY way `ros2 run <pkg> <script>` discovers executables. A missing or misspelled entry = silent missing script with no warning.",
+      "resource/{{packageName}} is a mandatory empty ament index marker — deleting it breaks `ros2 pkg list` and makes the package invisible to the ROS graph.",
+      "Launch files must appear under share/{{packageName}}/launch after install. If `ros2 launch` can't find bringup.launch.py, inspect install/{{packageName}}/share/{{packageName}}/launch — data_files in setup.py drives this mapping.",
+      "Re-source install/setup.bash after every colcon build — ROS overlays are not auto-applied like nvm/pyenv. Forgetting this is the #1 cause of 'package not found' after a rebuild.",
+      "ROS_DOMAIN_ID defaults to 0, meaning all nodes on the subnet see each other's topics. Set `export ROS_DOMAIN_ID=<1-232>` per workstation in any shared-network environment.",
+      "Topic names in the node code are relative (e.g. `cmd_vel`, not `/cmd_vel`) so they respect node namespacing and remapping. Absolute names (/cmd_vel) break multi-robot namespace isolation."
+    ],
+    "architectureNotes": [
+      "MinimalPublisher owns the rclpy timer and publishes independently of subscribers — _tick must stay non-blocking (no sleeps, no I/O waits).",
+      "MinimalSubscriber is stateless; extend _on_odom to accumulate pose into a shared dict or write to a ROS parameter for multi-node coordination.",
+      "For Nav2 integration, inherit from rclpy.lifecycle.LifecycleNode and wire on_configure / on_activate callbacks — a plain Node subclass won't participate in bt_navigator lifecycle management."
+    ],
+    "placeholders": [
+      {
+        "path": "package.xml",
+        "description": "Replace 'my_ros2_node' with your actual ROS 2 package name — must match the directory name, setup.py package_name, and the resource marker filename."
+      },
+      {
+        "path": "{{packageName}}/my_node.py",
+        "description": "Minimal node stub — 'my_ros2_node' is a placeholder package name. Replace MyNode class body with your actual node logic: add publishers, subscribers, timers, action clients, or service servers as needed."
+      },
+      {
+        "path": "{{packageName}}/minimal_publisher.py",
+        "description": "Publishes a fixed Twist (linear.x=0.1, angular.z=0.2). Replace the _tick body with real velocity commands from a planner, joystick axis, or control loop output."
+      },
+      {
+        "path": "{{packageName}}/minimal_subscriber.py",
+        "description": "Logs /odom pose to screen. Replace _on_odom with your localization state update, dead-reckoning accumulator, or Nav2 feedback handler."
+      },
+      {
+        "path": "launch/bringup.launch.py",
+        "description": "Launches publisher + subscriber as separate processes. Add more Node() actions here as the robot grows (e.g. costmap server, joystick driver, SLAM node)."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "source /opt/ros/jazzy/setup.bash",
+      "colcon build --packages-select {{packageName}}",
+      "source install/setup.bash",
+      "ros2 run {{packageName}} my_node",
+      "ros2 run {{packageName}} publisher",
+      "ros2 run {{packageName}} subscriber",
+      "ros2 launch {{packageName}} bringup.launch.py",
+      "ros2 topic echo /cmd_vel",
+      "ros2 topic echo /odom"
+    ],
+    "entrypoints": [
+      "{{packageName}}/my_node.py",
+      "{{packageName}}/minimal_publisher.py",
+      "{{packageName}}/minimal_subscriber.py",
+      "launch/bringup.launch.py"
+    ],
+    "preview": null,
+    "extensionPoints": [
+      "{{packageName}}/my_node.py",
+      "{{packageName}}/minimal_publisher.py",
+      "{{packageName}}/minimal_subscriber.py",
+      "launch/bringup.launch.py",
+      "package.xml",
+      "setup.py"
+    ]
+  }
+}

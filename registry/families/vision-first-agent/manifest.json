@@ -1,0 +1,142 @@
+{
+  "id": "vision-first-agent",
+  "description": "Browser camera agent — getUserMedia streams webcam to a <video>, a canvas grabs a JPEG on trigger, POSTs base64 + prompt to /api/vision, renders the multimodal LLM response as text and as an overlay on the captured frame.",
+  "tags": [
+    "vision",
+    "camera",
+    "agent",
+    "browser",
+    "frontend",
+    "typescript",
+    "vite"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "browser",
+    "surface": "frontend"
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "serviceName": "starter-foundry-vision-agent",
+    "port": 4181,
+    "headline": "Point the camera, ask a question",
+    "subheadline": "Capture a frame, send it to a multimodal LLM, see the answer drawn on top of the image."
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/vite.config.ts",
+      "target": "vite.config.ts"
+    },
+    {
+      "source": "files/index.html",
+      "target": "index.html"
+    },
+    {
+      "source": "files/validate-vision.mjs",
+      "target": "validate-vision.mjs"
+    },
+    {
+      "source": "files/api/README.md",
+      "target": "api/README.md"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "src/main.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "index.html"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-vision.mjs"
+      ],
+      "expect": "vision-first-agent starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "pnpm run dev"
+    ],
+    "entrypoints": [
+      "index.html",
+      "src/main.ts",
+      "api/README.md",
+      "vite.config.ts"
+    ],
+    "preview": {
+      "path": "/"
+    },
+    "extensionPoints": [
+      "src/main.ts",
+      "api/"
+    ]
+  },
+  "keywords": [
+    "vision agent",
+    "vision first agent",
+    "camera agent",
+    "browser camera agent",
+    "visual qa",
+    "multimodal vision",
+    "webcam llm",
+    "frame capture agent",
+    "gpt-4v client",
+    "vision llm browser"
+  ],
+  "scoring": {
+    "boost": {
+      "vision agent": 4,
+      "camera agent": 3,
+      "visual qa": 3
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "vision first",
+      "vision first agent",
+      "camera agent",
+      "visual qa",
+      "browser camera agent"
+    ],
+    "tier2": [
+      "webcam llm",
+      "frame capture agent",
+      "gpt-4v client",
+      "vision llm browser",
+      "multimodal vision"
+    ],
+    "archetypes": [
+      "point and identify app",
+      "webcam ocr",
+      "live camera describe",
+      "visual inspection agent",
+      "snap a photo ask an llm",
+      "camera-based search",
+      "barcode camera llm"
+    ]
+  },
+  "buildHints": {
+    "gotchas": [
+      "getUserMedia for camera requires HTTPS outside localhost. Behind plain HTTP on any real hostname the call fails with NotAllowedError before the permission prompt ever appears.",
+      "iOS Safari auto-rotates camera frames based on device orientation but <canvas>.drawImage does NOT. On mobile portrait the captured JPEG is sideways — you must read `(video as any).videoWidth/videoHeight` after `loadedmetadata` fires, and apply orientation if building a production app.",
+      "canvas.toDataURL('image/jpeg', quality) is synchronous and blocks the main thread on large canvases. For >1080p frames, switch to canvas.toBlob() with a callback — it's off-thread and ~3× faster.",
+      "Base64 JPEGs are ~1.33× their binary size. For high-res frames (>500KB), send as multipart/form-data or use toBlob() + binary fetch to cut the payload.",
+      "`facingMode: 'environment'` (rear camera) is a hint, not a guarantee. Desktop browsers ignore it, and some Android devices return a front camera anyway. Always offer a flip-camera button that re-calls getUserMedia with `{ video: { deviceId } }`.",
+      "The MediaStream keeps the camera LED on until every track.stop() is called. Don't just pause the <video>; call `stream.getTracks().forEach(t => t.stop())` when the user is done."
+    ]
+  }
+}

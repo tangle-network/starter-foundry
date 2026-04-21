@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "defaultOutputShare": 0.3,
+  "avgTokensPerToolCall": 850,
+  "rates": [
+    {
+      "id": "claude-opus-4-7",
+      "aliases": ["claude-opus-4-7", "claude-opus-4", "opus-4-7", "opus-4.7", "claude-code", "claude-opus"],
+      "inputUsdPerMtok": 15,
+      "outputUsdPerMtok": 75,
+      "outputShare": 0.3
+    },
+    {
+      "id": "claude-sonnet-4-5",
+      "aliases": ["claude-sonnet-4-5", "claude-sonnet-4", "sonnet-4-5", "sonnet-4.5"],
+      "inputUsdPerMtok": 3,
+      "outputUsdPerMtok": 15,
+      "outputShare": 0.3
+    },
+    {
+      "id": "claude-haiku-4-5",
+      "aliases": ["claude-haiku-4-5", "claude-haiku-4", "haiku-4-5", "haiku-4.5", "claude-haiku"],
+      "inputUsdPerMtok": 1,
+      "outputUsdPerMtok": 5,
+      "outputShare": 0.3
+    },
+    {
+      "id": "gpt-5",
+      "aliases": ["gpt-5", "gpt5", "openai-gpt-5"],
+      "inputUsdPerMtok": 5,
+      "outputUsdPerMtok": 20,
+      "outputShare": 0.3
+    },
+    {
+      "id": "glm-5-1",
+      "aliases": ["glm-5-1", "glm-5.1", "glm5.1", "zhipu-glm"],
+      "inputUsdPerMtok": 0.5,
+      "outputUsdPerMtok": 2,
+      "outputShare": 0.3
+    },
+    {
+      "id": "blueprint-agent-vb",
+      "aliases": ["blueprint-agent-vb", "blueprint-agent"],
+      "inputUsdPerMtok": 15,
+      "outputUsdPerMtok": 75,
+      "outputShare": 0.3
+    }
+  ],
+  "unknown": {
+    "id": "unknown",
+    "aliases": [],
+    "inputUsdPerMtok": 5,
+    "outputUsdPerMtok": 20,
+    "outputShare": 0.3
+  }
+}

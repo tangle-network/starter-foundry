@@ -1,0 +1,23 @@
+{
+  "generatedAt": "2026-04-21T08:58:16.499Z",
+  "concurrency": 1,
+  "maxShots": 10,
+  "builderModel": "sonnet",
+  "wallMs": 561965,
+  "targetCount": 1,
+  "passCount": 1,
+  "failCount": 0,
+  "crashCount": 0,
+  "results": [
+    {
+      "family": "esp32-rust",
+      "exitCode": 0,
+      "durationMs": 561964,
+      "pass": true,
+      "shotsUsed": 3,
+      "failingLayers": [],
+      "failureClass": null,
+      "log": "/Users/drew/webb/starter-foundry/.evolve/review-memory/esp32-rust.run.log"
+    }
+  ]
+}

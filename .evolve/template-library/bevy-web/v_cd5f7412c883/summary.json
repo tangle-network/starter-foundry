@@ -1,0 +1,22 @@
+{
+  "familyId": "bevy-web",
+  "runAt": "2026-04-21T05:17:51.718Z",
+  "completed": true,
+  "shotsUsed": 1,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 347946,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 347946,
+      "reviewAvailable": true
+    }
+  ]
+}

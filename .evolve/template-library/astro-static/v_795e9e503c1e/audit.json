@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-04-21T05:12:03.569Z",
+  "audits": [
+    {
+      "layerId": "framework:astro-static",
+      "family": "astro-static",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 4045.153958,
+          "stderrTail": "",
+          "stdoutTail": "Progress: resolved 1, reused 0, downloaded 0, added 0\nProgress: resolved 202, reused 135, downloaded 19, added 0\nProgress: resolved 440, reused 301, downloaded 40, added 0\nPackages: +345\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\nProgress: resolved 443, reused 305, downloaded 42, added 197\nProgress: resolved 443, reused 305, downloaded 42, added 345, done\n\ndependencies:\n+ astro 5.18.1 (6.1.8 is available)\n\ndevDependencies:\n+ @astrojs/check 0.9.8\n+ typescript 5.9.3 (6.0.3 is available)\n\n╭ Warning ─────────────────────────────────────────────────────────────────────╮\n│                                                                              │\n│   Ignored build scripts: esbuild, sharp.                                     │\n│   Run \"pnpm approve-builds\" to pick which dependencies should be allowed     │\n│   to run scripts.                                                            │\n│                                                                              │\n╰──────────────────────────────────────────────────────────────────────────────╯\n\nDone in 3.9s using pnpm v10.22.0\n"
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 1126.3841659999998,
+          "stderrTail": "",
+          "stdoutTail": ""
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+[package]
+name = "{{crateName}}"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.77"
+resolver = "2"
+
+[[bin]]
+name = "{{crateName}}"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = "s"
+lto = "fat"
+codegen-units = 1
+debug = false
+
+[profile.dev]
+opt-level = "s"
+debug = true
+
+[features]
+default = ["std", "embassy", "esp-idf-svc/native"]
+std = ["esp-idf-svc/std"]
+embassy = ["esp-idf-svc/embassy-sync", "esp-idf-svc/critical-section", "esp-idf-svc/embassy-time-driver"]
+
+[dependencies]
+# Espressif runtime + services. esp-idf-svc wraps the ESP-IDF C APIs
+# (WiFi, NVS, HTTP, MQTT, logging) into safe Rust handles. esp-idf-hal
+# is the peripheral HAL (GPIO, SPI, I2C, UART). esp-idf-sys is the
+# low-level sys crate — pulled in transitively but pinned here so
+# the IDF version is stable.
+esp-idf-svc = { version = "0.49", default-features = false }
+esp-idf-hal = "0.44"
+esp-idf-sys = { version = "0.35", default-features = false }
+log = "0.4"
+anyhow = "1.0"
+heapless = "0.8"
+
+[build-dependencies]
+embuild = "0.32"
+
+[package.metadata.esp-idf-sys]
+esp_idf_version = "v5.2.2"
+esp_idf_tools_install_dir = "global"
+esp_idf_sdkconfig = "sdkconfig"
+esp_idf_sdkconfig_defaults = ["sdkconfig.defaults"]

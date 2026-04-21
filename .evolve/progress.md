@@ -1,6 +1,155 @@
 # Evolve Progress — starter-foundry routing quality
 
-Score: ALL TARGETS MET (Round 2) — 2026-03-30
+## 2026-04-21 — Evolve Round 2: codemirror cluster (15 gap-installs)
+
+Commit: `29d5ccc`. Continues R1's `scaffold_gap_installs` goal.
+
+**Gap target:** 5 CodeMirror packages installed 3× each (15 total) across
+agent-trading scenarios per `.evolve/buildout-analysis.json` (#8-#12 in
+topAddedPackages).
+
+**Diagnosis:** Unlike R1 (tailwind), `capability:code-editor` was
+already well-wired — packageDeps has all 8 codemirror variants, and
+`appliesTo` covers 6 frontend families. The gap was
+`CODE_EDITOR_ARCHETYPE_SIGNALS` didn't match the phrasings the
+agent-trading / hl-builder-code-dashboard scenarios actually use.
+Couldn't access VB scenario prompts directly (blueprint-agent lives
+elsewhere); used scenario IDs as phrasing hints.
+
+**Intervention (2 files):**
+- `CODE_EDITOR_ARCHETYPE_SIGNALS`: +10 signals (code dashboard,
+  strategy editor, strategy builder, script editor, rules editor,
+  dsl editor, embedded editor, policy editor, workflow editor,
+  expression editor)
+- `capability:code-editor.tieredKeywords.archetypes`: mirror the
+  10 new signals (parity test enforces)
+
+**Verified end-to-end:** `planPrompt` on "hl-builder code dashboard
+for hyperliquid" attaches `capability:code-editor` →
+`dist/cli.js compose` pulls `codemirror@^6.0.1` + `@codemirror/view` +
+`state` + `lang-javascript` into composed package.json.
+
+**Scope limit observed:** "strategy builder for options trading"
+routes to `worker-job` (backend family), not react-vite-ts —
+so code-editor is correctly skipped regardless of signal match
+(capability:code-editor.appliesTo is frontend-only). If these
+scenarios need frontend routing, that's a separate fix in
+family-routing heuristics.
+
+**Test suite:** 601/601 (signal-manifest parity test caught the
+initial one-sided edit — good guardrail).
+
+**Capability registry audit (incidental finding, defer to R3):**
+90 of 104 capabilities have empty `packageDeps`. Cross-reference
+with `registry/package-to-capability.json` shows 6 capabilities
+have packages mapped to them but missing from their deps:
+- capability:tailwind → postcss, @tailwindcss/postcss (R1 partial)
+- capability:layout-auth → @clerk/nextjs, @clerk/clerk-react
+- capability:saas-billing → @stripe/stripe-js, @stripe/react-stripe-js
+- capability:evm-wallet-dashboard → wagmi, @rainbow-me/rainbowkit
+- capability:ai-agent-dashboard → @ai-sdk/openai
+- capability:evm-deploy-foundry → @openzeppelin/contracts
+
+None currently appear in topAddedPackages — lower priority than
+codemirror cluster — but fixing pre-empts gap-install regressions
+when/if these scenarios re-enter the benchmark.
+
+**Expected impact:** 15 codemirror-cluster gap-installs eliminated
+on future buildouts where planner routes to a frontend family AND
+prompt contains any of the 10 new phrases. Realistic fraction
+unknown until next VB sweep.
+
+## 2026-04-21 — Evolve Round 1: reduce scaffold_gap_installs
+
+Commit: `77d4453`. Target metric: `scaffold_gap_installs` (59 → target ≤10
+per scorecard). Lagging metric — won't update until next VB sweep.
+
+**Hypothesis (verified root cause):** `capability:tailwind.packageDeps`
+was empty. The capability attached tailwind config files but never declared
+`tailwindcss` itself in the composed project's package.json. Any family
+relying on the capability to provide tailwind silently got only the config.
+
+**Intervention (4 files):**
+- `capability:tailwind.packageDeps`: declare `tailwindcss` + `@tailwindcss/vite`
+- `capability:tailwind.appliesTo`: +6 frontend families (electron-native-os,
+  multimodal-agent, vision-first-agent, voice-first-agent, realtime-audio-ts,
+  astro-static)
+- `capability:shadcn.appliesTo`: +2 React+Vite (electron-native-os,
+  multimodal-agent) so lucide-react + clsx + tailwind-merge cascade
+- `REACT_FAMILIES` (planner/signals.ts): +2 so planner auto-attaches
+  tailwind + shadcn without explicit prompt signal
+
+**Verified end-to-end:** compose vision-first-agent with `capability:tailwind`
+attached → `pnpm install` (green) → `pnpm run build` (green, 88ms). The
+composed `package.json` has `tailwindcss: ^4.0.0` + `@tailwindcss/vite: ^4.0.0`.
+On electron-native-os with both `capability:tailwind` + `capability:shadcn`,
+all 5 previously-missing deps (tailwindcss, @tailwindcss/vite, lucide-react,
+clsx, tailwind-merge) present after compose.
+
+**Test suite:** 601/601 (no regression).
+
+**Expected impact** (awaiting next VB sweep to verify): eliminates
+tailwindcss + @tailwindcss/vite + lucide-react + clsx installs on
+subsequent buildouts that land on the newly-covered families. Upper bound
+on gap-installs eliminated: 54 (sum of top-added counts for those 4 pkgs).
+Realistic: some fraction, since not every future buildout will land on
+those families.
+
+**Deferred to Round 2:**
+- Extend `capability:code-editor` auto-attach rules — 18 codemirror adds
+  across buildouts, capability packageDeps already has the right deps
+- Apply promotable template candidates in `.evolve/template-candidates/`
+  (index.html + src/index.css have rewrites waiting) — may reduce
+  top_file_rewrite_count from 13 toward target 5
+- Install gradle + retry kotlin-multiplatform → 47/48 strict pass
+
+## 2026-04-21 — Pursue Gen 1: e2e 100% complete on drew/s-plus-tier
+
+Commit: `b760e93`. Generation thesis: *match the verifier's rigor to the
+loop's ambition, and stop destroying history.*
+
+**Results:**
+- **46/48 new framework families verify end-to-end** under strict bar
+  (compose + install + typecheck + `pnpm build` + family
+  `validationChecks`). Up from 0/48 at session start.
+- **Propose/verify/review loop proven**: `scripts/enrich-family.mjs`
+  drives per-family enrichment using `@tangle-network/agent-eval`'s
+  `runProposeReview` primitive. Builder = headless `claude -p`, verifier
+  = `scripts/audit-scaffold-quality.mjs` (extended with build +
+  validationChecks + Move/Kotlin/ROS2 detection), reviewer = Anthropic
+  direct → Groq → router fallback with strict role separation.
+- **Versioned template library** at `.evolve/template-library/<family>/v_<hash>/`
+  — 2 versions per family (v1 from session-first bar, v2 from strict
+  bar). Deterministic scoring in `src/lib/template-quality.ts`; promote
+  + gc lifecycle scripts.
+- **Infrastructure scripts**: `enrich-family.mjs`, `evolve-branch.mjs`,
+  `bootstrap-library.mjs`, `promote-template.mjs`,
+  `gc-template-library.mjs`; `src/training/template_v1/run.ts` rewritten
+  around `runProposeReview` (keeping `judge.ts` as deterministic scorer).
+- **10 new partner packs smoke-composed** against first-declared family
+  each (100% pass).
+- **Test suite green**: 601/601.
+
+**Hard fails (not solvable with more shots):**
+- `fintech-ledger-backend` — typecheck convergence ceiling at 10 shots;
+  the builder (sonnet) + reviewer (sonnet-4-6) can't cross this one.
+- `kotlin-multiplatform` — no `gradle` binary on host; verifier skips.
+  Install `gradle` or permanently gate.
+
+**Deferred (designed, not built):**
+- Gen 2: `boot-and-audit` phase using `bad` CLI for real runtime
+  verification of frontend families. Full design in
+  `.evolve/pursuits/2026-04-21-e2e-100-complete.md`.
+- Diverse-serve env flag (`STARTER_FOUNDRY_DIVERSE_SERVE=1`).
+- Builder-session resume (`claude --resume` across shots) — marginal
+  optimization, not worth chasing.
+
+**Known issue:**
+- `@tangle-network/agent-eval` is `link:../agent-eval` in package.json.
+  CI on a fresh clone will fail without that peer directory. Publish
+  agent-eval or switch to a workspace before merging to main.
+
+## 2026-03-30 — Round 2 ALL TARGETS MET
 
 ## Targets
 

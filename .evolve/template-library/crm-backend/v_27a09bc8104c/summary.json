@@ -1,0 +1,33 @@
+{
+  "familyId": "crm-backend",
+  "runAt": "2026-04-21T07:02:14.308Z",
+  "completed": true,
+  "shotsUsed": 2,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 212116,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": false,
+      "failing": [
+        "typecheck"
+      ],
+      "confidence": 0.97,
+      "shouldContinue": true,
+      "durationMs": 187247,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 2,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 24869,
+      "reviewAvailable": true
+    }
+  ]
+}

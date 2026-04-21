@@ -29,19 +29,15 @@
     "json logging"
   ],
   "buildHints": {
-    "architecture": [
-      "createLogger(service) → tagged Logger instance with .withRequestId() for child loggers",
-      "requestLogger middleware → attaches logger + requestId to request context, logs method/path/status/duration on response end",
-      "errorHandler middleware → catches errors, logs stack at error level, returns sanitized JSON response in production"
-    ],
-    "middlewareChain": [
-      "requestLogger (first — sets up context)",
-      "...route handlers...",
-      "errorHandler (last — catches thrown errors)"
-    ],
-    "environmentBehavior": {
-      "development": "Human-readable log lines to stdout",
-      "production": "JSON lines to stdout/stderr, debug level suppressed, error messages sanitized"
-    }
+    "architectureNotes": [
+      "architecture: createLogger(service) \u2192 tagged Logger instance with .withRequestId() for child loggers",
+      "architecture: requestLogger middleware \u2192 attaches logger + requestId to request context, logs method/path/status/duration on response end",
+      "architecture: errorHandler middleware \u2192 catches errors, logs stack at error level, returns sanitized JSON response in production",
+      "middlewareChain: requestLogger (first \u2014 sets up context)",
+      "middlewareChain: ...route handlers...",
+      "middlewareChain: errorHandler (last \u2014 catches thrown errors)",
+      "environmentBehavior.development: Human-readable log lines to stdout",
+      "environmentBehavior.production: JSON lines to stdout/stderr, debug level suppressed, error messages sanitized"
+    ]
   }
 }

@@ -1,0 +1,22 @@
+{
+  "family": "tgi-server",
+  "current": "v_97912d2bce3c",
+  "topN": [
+    "v_97912d2bce3c",
+    "v_412438ae92d6"
+  ],
+  "all": [
+    {
+      "version": "v_97912d2bce3c",
+      "score": 0.6299972792221589,
+      "skipped": null
+    },
+    {
+      "version": "v_412438ae92d6",
+      "score": 0.47999999458079656,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.426Z"
+}

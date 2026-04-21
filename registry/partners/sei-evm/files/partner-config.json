@@ -1,0 +1,12 @@
+{
+  "partnerId": "sei-evm",
+  "chainId": 1329,
+  "networkName": "sei-mainnet",
+  "rpcUrl": "https://evm-rpc.sei-apis.com",
+  "testnetChainId": 1328,
+  "testnetRpcUrl": "https://evm-rpc-testnet.sei-apis.com",
+  "explorerUrl": "https://seitrace.com",
+  "blockTimeMs": 390,
+  "runtimeFocus": "parallel-evm-cosmos-interop",
+  "preferredOutputs": ["orderbook-dex", "real-time-trading", "cosmos-ibc-bridges"]
+}

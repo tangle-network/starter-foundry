@@ -1,0 +1,49 @@
+{
+  "id": "pci-dss-compliance-pack",
+  "description": "PCI DSS 4.0 compliance overlay — CHD tokenization, PAN redaction, and audit primitives for Stripe-backed commerce backends.",
+  "appliesTo": ["pci-dss-compliance-pack"],
+  "files": [
+    { "source": "files/src/index.ts", "target": "src/index.ts" },
+    { "source": "files/AGENTS.md", "target": "AGENTS.md" }
+  ],
+  "packageDeps": {
+    "devDependencies": {
+      "typescript": "^5.9.0",
+      "@types/node": "^22.0.0"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "Adding PCI DSS 4.0 primitives (CHD tokenization, PAN redaction) to a commerce backend. Reduces SAQ scope when paired with Stripe Checkout.",
+    "firstSteps": [
+      "Run `pnpm install && pnpm build` — tsc runs noEmit; zero errors means the scaffold is wired correctly.",
+      "Run `node validate-pci-pack.mjs` — prints 'pci-pack ok' when all required files and exports are present.",
+      "Wire `redactPanInObject()` from `src/pan-redact.ts` onto every log sink and error tracer before the SDK captures request bodies.",
+      "Use `assertNoChdInRef()` from `src/tokenize.ts` in every code path that accepts a payment reference object.",
+      "Import everything through `src/index.ts` — the barrel re-exports the full public surface."
+    ],
+    "gotchas": [
+      "CVV must NEVER be stored post-authorization — PCI DSS 3.2.1 prohibits it even in encrypted form.",
+      "PAN in URL query strings is a violation — always POST to payment endpoints.",
+      "Test card numbers in fixtures (e.g. 4242…) still count as CHD in scope assessments. Quarantine test data.",
+      "Stripe restricted key: scope it to PaymentIntents only for server-side code; never ship the full secret key.",
+      "DO NOT log request/response bodies on payment endpoints without `redactPanInObject()` — log sinks ingest them unfiltered."
+    ],
+    "architectureNotes": [
+      "Scope-reduction strategy: Stripe Elements handles the PAN client-side; the server only ever sees `pm_…` tokens.",
+      "CHD audit events must go to a separate log store from the general app audit log — commingling expands PCI scope.",
+      "The Luhn check in `redactPan()` prevents over-redacting random numeric IDs while still catching real PANs."
+    ],
+    "placeholders": [
+      {
+        "path": "src/pan-redact.ts",
+        "description": "PAN-redaction regex. Extend PAN_PATTERN for BINs your processor uses outside the standard Luhn range."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm build", "node validate-pci-pack.mjs"],
+    "entrypoints": ["src/index.ts", "src/pan-redact.ts", "src/tokenize.ts"],
+    "preview": null,
+    "extensionPoints": ["src/pan-redact.ts", "src/tokenize.ts"]
+  }
+}

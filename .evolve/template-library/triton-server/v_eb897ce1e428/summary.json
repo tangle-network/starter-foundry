@@ -1,0 +1,22 @@
+{
+  "familyId": "triton-server",
+  "runAt": "2026-04-21T06:40:17.781Z",
+  "completed": true,
+  "shotsUsed": 1,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 142059,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 142059,
+      "reviewAvailable": true
+    }
+  ]
+}

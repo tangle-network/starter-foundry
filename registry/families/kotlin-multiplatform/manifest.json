@@ -1,0 +1,196 @@
+{
+  "id": "kotlin-multiplatform",
+  "description": "Kotlin Multiplatform (KMP) + Compose Multiplatform starter \u2014 one Kotlin codebase targeting Android, iOS, and desktop with shared UI in Compose. Uses the expect/actual pattern for platform-specific APIs and Gradle Kotlin DSL for the build. For teams that want Jetpack Compose on iOS, not Dart (Flutter) or Swift.",
+  "tags": [
+    "kotlin",
+    "multiplatform",
+    "compose",
+    "mobile",
+    "android",
+    "ios"
+  ],
+  "taxonomy": {
+    "language": "kotlin",
+    "runtime": "kotlin-multiplatform",
+    "surface": "mobile"
+  },
+  "slots": {
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk",
+        "auth:supabase-auth"
+      ],
+      "default": "auth:none"
+    },
+    "payments": {
+      "options": [
+        "payments:none",
+        "payments:stripe",
+        "payments:coinbase-commerce"
+      ],
+      "default": "payments:none"
+    },
+    "sdk": {
+      "options": [
+        "sdk:none",
+        "sdk:coinbase-cdp",
+        "sdk:solana-web3",
+        "sdk:evm-wallet"
+      ],
+      "default": "sdk:none"
+    }
+  },
+  "defaults": {
+    "projectType": "mobile",
+    "headline": "Starter Foundry KMP App",
+    "subheadline": "A Kotlin Multiplatform shell with Compose UI shared across Android and iOS, plus expect/actual platform seams."
+  },
+  "files": [
+    {
+      "source": "files/build.gradle.kts",
+      "target": "shared/build.gradle.kts"
+    },
+    {
+      "source": "files/settings.gradle.kts",
+      "target": "settings.gradle.kts"
+    },
+    {
+      "source": "files/gradle.properties",
+      "target": "gradle.properties"
+    },
+    {
+      "source": "files/root-build.gradle.kts",
+      "target": "build.gradle.kts"
+    },
+    {
+      "source": "files/validate-kmp.mjs",
+      "target": "validate-kmp.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "settings.gradle.kts"
+    },
+    {
+      "type": "file-exists",
+      "path": "shared/build.gradle.kts"
+    },
+    {
+      "type": "file-exists",
+      "path": "shared/src/commonMain/kotlin/App.kt"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-kmp.mjs"
+      ],
+      "expect": "kotlin-multiplatform starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "./gradlew :shared:build",
+      "./gradlew :shared:iosSimulatorArm64Test",
+      "./gradlew :androidApp:installDebug",
+      "node validate-kmp.mjs"
+    ],
+    "entrypoints": [
+      "shared/src/commonMain/kotlin/App.kt",
+      "shared/src/androidMain/kotlin/Platform.android.kt",
+      "shared/src/iosMain/kotlin/Platform.ios.kt",
+      "shared/build.gradle.kts",
+      "settings.gradle.kts"
+    ],
+    "preview": null,
+    "extensionPoints": [
+      "shared/src/commonMain/kotlin/",
+      "auth-config.json",
+      "payments-config.json",
+      "sdk-config.json"
+    ]
+  },
+  "keywords": [
+    "kotlin",
+    "kotlin multiplatform",
+    "kmp",
+    "compose multiplatform",
+    "jetpack compose",
+    "expect actual",
+    "kotlin ios",
+    "kotlin android",
+    "multiplatform mobile",
+    "gradle kotlin dsl"
+  ],
+  "scoring": {
+    "boost": {
+      "kmp": 3,
+      "kotlin multiplatform": 3,
+      "compose multiplatform": 3,
+      "expect actual": 2,
+      "expect-actual": 2
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "kotlin multiplatform",
+      "kmp",
+      "compose multiplatform",
+      "expect-actual",
+      "expect actual"
+    ],
+    "tier2": [
+      "jetpack compose",
+      "kotlin ios",
+      "kotlin android",
+      "multiplatform mobile",
+      "gradle kotlin dsl"
+    ],
+    "archetypes": [
+      "kmp mobile app",
+      "compose multiplatform app",
+      "kotlin shared ui ios android",
+      "single kotlin codebase mobile"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Pick kotlin-multiplatform when the user names KMP, Kotlin Multiplatform, Compose Multiplatform, `expect`/`actual`, or wants Jetpack Compose on iOS. For Google's Dart-based equivalent use flutter-app. For JS-driven mobile use expo-react-native-ts. For iOS-only SwiftUI use swiftui-expo.",
+    "firstSteps": [
+      "Install JDK 17+, Android Studio (Giraffe+), and Xcode 15+ on a Mac (iOS target needs macOS)",
+      "Run `./gradlew :shared:build` to confirm the shared module compiles across all targets",
+      "Add Android app module under androidApp/ and iOS app under iosApp/ \u2014 the `shared` library is consumed from both",
+      "For iOS: `./gradlew :shared:podPublishXCFramework` (or use the Kotlin Cocoapods plugin)",
+      "Add new platform APIs via the expect/actual pattern \u2014 define `expect` in commonMain, provide `actual` in androidMain + iosMain"
+    ],
+    "gotchas": [
+      "iOS targets require building on macOS with Xcode; Linux/Windows machines can only build Android + desktop targets.",
+      "Compose Multiplatform 1.7+ ships @Composable for iOS but a few Material APIs are still desktop/Android-only \u2014 check expect/actual coverage.",
+      "Gradle daemon + Kotlin/Native compilation are memory-hungry \u2014 bump org.gradle.jvmargs to at least -Xmx4g in gradle.properties.",
+      "Kotlin/Native freezes objects across threads in legacy memory model; this template targets the new memory model (default in Kotlin 1.9+) \u2014 DO NOT re-enable kotlin.native.binary.memoryModel=strict.",
+      "`expect` declarations must be matched by an `actual` in EVERY target source set \u2014 missing an actual in iosMain fails the iOS build only."
+    ],
+    "architectureNotes": [
+      "shared/src/commonMain/kotlin/App.kt hosts the shared @Composable App() surface \u2014 this is what both androidApp and iosApp render.",
+      "Platform APIs (clipboard, secure storage, biometrics) go behind `expect fun platform(): Platform` in commonMain with `actual` implementations in androidMain + iosMain.",
+      "auth/payments/sdk slots drop JSON config at the repo root. A bootstrap function in commonMain reads those and dispatches to the right platform service via expect/actual.",
+      "Gradle KTS is the build contract \u2014 don't mix Groovy `.gradle` and Kotlin `.gradle.kts` files; it breaks IDE navigation and composite builds."
+    ],
+    "placeholders": [
+      {
+        "path": "shared/src/commonMain/kotlin/App.kt",
+        "description": "{{packageName}} \u2014 maps to gradle rootProject.name + applicationId base (kebab-case)"
+      },
+      {
+        "path": "shared/src/commonMain/kotlin/App.kt",
+        "description": "{{projectName}} \u2014 display name in Compose Multiplatform App() title"
+      },
+      {
+        "path": "shared/src/commonMain/kotlin/App.kt",
+        "description": "{{headline}} + {{subheadline}} \u2014 rendered on the shared home composable"
+      }
+    ]
+  }
+}

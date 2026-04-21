@@ -1,0 +1,49 @@
+{
+  "id": "tether",
+  "description": "Partner pack for Tether (USDT) — largest stablecoin by circulating supply, available on 15+ chains. Biases toward cross-chain payment rails, emerging-market remittance, and USDT-denominated trading surfaces.",
+  "appliesTo": [
+    "frontend-static",
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "api-service",
+    "python-api",
+    "evm-infra-ts",
+    "agent-service-ts",
+    "worker-job",
+    "x402-service",
+    "forge-contracts",
+    "hardhat-contracts"
+  ],
+  "slotDefaults": {
+    "payments": "payments:stripe",
+    "sdk": "sdk:evm-wallet"
+  },
+  "defaults": {
+    "headline": "Build on USDT — cross-chain stablecoin rails",
+    "subheadline": "USDT is live on Ethereum, Tron, Solana, Arbitrum, Avalanche, Polygon, BSC + more. Tune flows for remittance, merchant payments, and dollar-denominated trading."
+  },
+  "files": [
+    {
+      "source": "files/partner-config.json",
+      "target": "partner-config.json"
+    },
+    {
+      "source": "files/starter-brand.json",
+      "target": "starter-brand.json"
+    }
+  ],
+  "buildHints": {
+    "whenToUse": "Prompt mentions USDT, Tether, stablecoin payments, remittance, or dollar-denominated on-chain commerce.",
+    "firstSteps": [
+      "Pick the chain first, THEN the USDT contract address. Contract addresses in partner-config.json.contracts map by chain — there is no canonical USDT contract across chains.",
+      "For frontend flows, show the chain name alongside the USDT balance — users regularly confuse Tron USDT with Ethereum USDT.",
+      "For merchant/remittance flows, prefer Tron or Arbitrum for sub-cent gas; default to Ethereum only when institutional flows require it."
+    ],
+    "gotchas": [
+      "USDT on Ethereum is NOT a standard ERC-20 — it's missing the bool return on `approve` and `transferFrom`. Use SafeERC20 or viem's `writeContract` which handles this.",
+      "USDT on Tron uses TRC-20 — a completely different chain. Don't assume an Ethereum wallet can send Tron USDT.",
+      "USDT issuance/redemption is permissioned at the Tether-Ltd level. Addresses can be blacklisted — design escrow + treasury flows to handle this."
+    ]
+  }
+}

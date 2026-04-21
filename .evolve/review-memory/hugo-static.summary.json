@@ -1,0 +1,22 @@
+{
+  "familyId": "hugo-static",
+  "runAt": "2026-04-21T08:10:49.557Z",
+  "completed": true,
+  "shotsUsed": 1,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 142982,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 142982,
+      "reviewAvailable": true
+    }
+  ]
+}

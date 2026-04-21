@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>starter-foundry playground</title>
+  <style>
+    :root {
+      --fg: #111;
+      --muted: #666;
+      --bg: #fff;
+      --accent: #0f62fe;
+      --border: #e5e5e5;
+      --code-bg: #f4f4f4;
+      --pass: #0a7c2a;
+      --fail: #c81e1e;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --fg: #eee; --muted: #999; --bg: #1a1a1a; --accent: #4d8cff; --border: #333; --code-bg: #242424; }
+    }
+    * { box-sizing: border-box; }
+    body { font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--fg); background: var(--bg); margin: 0; padding: 2rem; max-width: 1100px; margin: 0 auto; }
+    h1 { font-size: 1.4rem; margin: 0 0 0.25rem 0; }
+    p.sub { color: var(--muted); margin: 0 0 2rem 0; }
+    textarea { width: 100%; min-height: 110px; padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--code-bg); color: var(--fg); font-family: ui-monospace, monospace; font-size: 13px; resize: vertical; }
+    .row { display: flex; gap: 12px; align-items: center; margin: 12px 0; flex-wrap: wrap; }
+    label { color: var(--muted); font-size: 13px; }
+    input, select { padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--fg); font-size: 13px; }
+    button { padding: 10px 18px; background: var(--accent); color: #fff; border: 0; border-radius: 4px; cursor: pointer; font-weight: 600; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .panel { border: 1px solid var(--border); border-radius: 6px; padding: 16px; margin-top: 16px; }
+    .panel h2 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 0 0 12px 0; }
+    pre { background: var(--code-bg); padding: 12px; border-radius: 4px; overflow-x: auto; font-size: 12px; margin: 0; }
+    .layer { display: inline-block; padding: 2px 8px; margin: 2px 4px 2px 0; background: var(--code-bg); border-radius: 3px; font-family: ui-monospace, monospace; font-size: 12px; }
+    .layer.framework { background: #e3f2fd; color: #0d47a1; }
+    .layer.capability { background: #f0f4c3; color: #33691e; }
+    @media (prefers-color-scheme: dark) {
+      .layer.framework { background: #0d47a1; color: #e3f2fd; }
+      .layer.capability { background: #33691e; color: #f0f4c3; }
+    }
+    .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--muted); border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 8px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .pill { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; text-transform: uppercase; }
+    .pill.high { background: #d4edda; color: #155724; }
+    .pill.medium { background: #fff3cd; color: #856404; }
+    .pill.low { background: #f8d7da; color: #721c24; }
+    .meta { color: var(--muted); font-size: 12px; margin-top: 4px; }
+    .reason { color: var(--muted); font-size: 12px; font-style: italic; margin: 2px 0; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+    .footer { margin-top: 3rem; color: var(--muted); font-size: 11px; text-align: center; }
+    .footer a { color: var(--accent); }
+    .error { color: var(--fail); padding: 12px; background: var(--code-bg); border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>starter-foundry playground</h1>
+  <p class="sub">
+    Paste a prompt. See what the planner routes to, what capabilities attach, and what the composed scaffold looks like. Runs in your browser against a pre-built routing snapshot — no network required.
+  </p>
+
+  <div class="row">
+    <textarea id="prompt" placeholder="Build a fintech SaaS with team management and Stripe billing"></textarea>
+  </div>
+
+  <div class="row">
+    <label for="partner">Partner</label>
+    <select id="partner">
+      <option value="">(none)</option>
+    </select>
+    <label style="margin-left: 12px;">
+      <input type="checkbox" id="diverse" /> STARTER_FOUNDRY_DIVERSE_SERVE
+    </label>
+    <button id="go">Plan</button>
+  </div>
+
+  <div id="error" class="error" style="display: none;"></div>
+
+  <div id="result" style="display: none;">
+    <div class="panel">
+      <h2>Plan</h2>
+      <div id="plan"></div>
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        <h2>Routing reasons</h2>
+        <div id="reasons"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Template library pick</h2>
+        <div id="library"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Composed files (sample)</h2>
+      <pre id="files"></pre>
+    </div>
+
+    <div class="panel">
+      <h2>AGENTS.md preview (first 600 chars)</h2>
+      <pre id="agents"></pre>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>
+      Source: <a href="https://github.com/tangle-network/starter-foundry">tangle-network/starter-foundry</a> ·
+      Snapshot built at <span id="builtAt">build time</span> ·
+      <a href="../reference/README.md">registry reference</a>
+    </p>
+  </div>
+
+  <script type="module">
+    // The playground operates against a static snapshot emitted by
+    // `node scripts/generate-playground-snapshot.mjs`. Everything is
+    // deterministic client-side — no API calls, no server needed.
+    //
+    // When snapshot is missing, show a helpful message with the build
+    // command instead of silently failing.
+    const snapshotUrl = './playground-snapshot.json'
+    const errorEl = document.getElementById('error')
+    const resultEl = document.getElementById('result')
+    const goBtn = document.getElementById('go')
+    const promptEl = document.getElementById('prompt')
+    const partnerEl = document.getElementById('partner')
+    const diverseEl = document.getElementById('diverse')
+    const builtAtEl = document.getElementById('builtAt')
+
+    let snapshot = null
+
+    async function loadSnapshot() {
+      try {
+        const res = await fetch(snapshotUrl)
+        if (!res.ok) throw new Error(`snapshot fetch ${res.status}`)
+        snapshot = await res.json()
+        builtAtEl.textContent = snapshot.generatedAt ?? 'unknown'
+        for (const p of snapshot.partners ?? []) {
+          const opt = document.createElement('option')
+          opt.value = p.id
+          opt.textContent = p.id
+          partnerEl.appendChild(opt)
+        }
+        goBtn.disabled = false
+      } catch (err) {
+        errorEl.style.display = 'block'
+        errorEl.innerHTML =
+          `Snapshot missing at <code>${snapshotUrl}</code>. Build it with:<br>` +
+          `<code style="display:block;margin-top:8px;padding:8px;background:var(--code-bg);">node scripts/generate-playground-snapshot.mjs</code>`
+        goBtn.disabled = true
+      }
+    }
+
+    // Tiny client-side planner: scores families by keyword overlap
+    // against the snapshot's tieredKeywords. Not as nuanced as the
+    // real planPrompt(), but demonstrates the routing shape for the
+    // playground without needing to ship the full TypeScript bundle.
+    function plan(prompt, partner) {
+      const lower = prompt.toLowerCase()
+      const scores = new Map()
+      for (const fam of snapshot.families) {
+        let score = 0
+        const reasons = []
+        for (const [tier, weight] of [['tier1', 4], ['tier2', 2], ['tier3', 1], ['archetypes', 3]]) {
+          for (const kw of (fam.tieredKeywords?.[tier] ?? [])) {
+            if (lower.includes(kw.toLowerCase())) {
+              score += weight
+              reasons.push(`${tier}: "${kw}" (+${weight})`)
+            }
+          }
+        }
+        if (score > 0) scores.set(fam.id, { family: fam, score, reasons })
+      }
+      const sorted = [...scores.values()].sort((a, b) => b.score - a.score)
+      const winner = sorted[0] ?? { family: snapshot.families.find((f) => f.id === 'frontend-static'), score: 0, reasons: ['no match — fallback'] }
+
+      // Capability detection (simplified).
+      const caps = new Set()
+      for (const cap of snapshot.capabilities) {
+        for (const kw of (cap.tieredKeywords?.archetypes ?? cap.keywords ?? [])) {
+          if (lower.includes(kw.toLowerCase())) {
+            if ((cap.appliesTo ?? []).includes(winner.family.id)) {
+              caps.add(cap.id)
+            }
+            break
+          }
+        }
+      }
+
+      return {
+        family: winner.family.id,
+        layers: [`framework:${winner.family.id}`, ...[...caps].map((c) => `capability:${c}`)],
+        reasons: winner.reasons,
+        confidence: winner.score > 6 ? 'high' : winner.score > 0 ? 'medium' : 'low',
+      }
+    }
+
+    function render(result, prompt) {
+      resultEl.style.display = 'block'
+      errorEl.style.display = 'none'
+
+      const planEl = document.getElementById('plan')
+      planEl.innerHTML =
+        `<span class="pill ${result.confidence}">${result.confidence}</span>` +
+        `<span class="meta" style="margin-left:8px;">${result.reasons.length} routing signal(s)</span>` +
+        `<div style="margin-top:8px;">` +
+        result.layers
+          .map((l) => {
+            const kind = l.startsWith('framework:') ? 'framework' : l.startsWith('capability:') ? 'capability' : 'other'
+            return `<span class="layer ${kind}">${l}</span>`
+          })
+          .join('') +
+        `</div>`
+
+      document.getElementById('reasons').innerHTML = result.reasons.length > 0
+        ? result.reasons.map((r) => `<div class="reason">• ${r}</div>`).join('')
+        : '<span class="meta">no keyword matches — fell through to default</span>'
+
+      const libPick = (snapshot.library ?? {})[result.family]
+      if (libPick) {
+        const seed = diverseEl.checked ? prompt : null
+        document.getElementById('library').innerHTML =
+          `<div><strong>current:</strong> <code>${libPick.current}</code></div>` +
+          `<div class="meta">topN: ${libPick.topN.map((v) => `<code>${v}</code>`).join(', ')}</div>` +
+          (seed ? `<div class="meta" style="margin-top:8px;">diverse-serve would pick: <code>${pickDiverse(libPick.topN, seed)}</code></div>` : '')
+      } else {
+        document.getElementById('library').innerHTML = '<span class="meta">family not in template-library yet</span>'
+      }
+
+      const files = (snapshot.composedFiles?.[result.family] ?? ['(no snapshot)']).join('\n')
+      document.getElementById('files').textContent = files
+
+      const agents = snapshot.agentsPreview?.[result.family] ?? '(no AGENTS.md preview snapshot for this family)'
+      document.getElementById('agents').textContent = agents
+    }
+
+    // Same hash-to-index logic as src/lib/selection.ts selectTemplateVersion.
+    function pickDiverse(topN, seed) {
+      if (!topN || topN.length <= 1) return topN?.[0] ?? null
+      let h = 0
+      for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0
+      return topN[h % topN.length]
+    }
+
+    goBtn.addEventListener('click', () => {
+      const prompt = promptEl.value.trim()
+      if (!prompt) {
+        errorEl.style.display = 'block'
+        errorEl.textContent = 'Please enter a prompt.'
+        return
+      }
+      try {
+        const partner = partnerEl.value || null
+        const result = plan(prompt, partner)
+        render(result, prompt)
+      } catch (err) {
+        errorEl.style.display = 'block'
+        errorEl.textContent = `Planning error: ${err.message}`
+      }
+    })
+
+    promptEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) goBtn.click()
+    })
+
+    loadSnapshot()
+  </script>
+</body>
+</html>

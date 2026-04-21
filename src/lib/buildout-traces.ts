@@ -91,6 +91,15 @@ export interface BuildoutOutcome {
   shotsToConvergence: number | null
   wallMs: number
   toolCallsTotal: number
+  /**
+   * Estimated USD cost for the session, summed across all LLM calls.
+   * Null when cost telemetry wasn't captured (older runs, or agents that
+   * don't emit token counts). Enables $/scaffold rollups and
+   * cost-per-capability attribution without re-running buildouts.
+   */
+  costUsd?: number | null
+  /** Total input + output tokens across all LLM calls in the session. */
+  tokenCount?: number | null
 }
 
 export interface MinerState {

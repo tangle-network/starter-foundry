@@ -19,6 +19,7 @@ const MAP: Record<string, string> = {
   ZK_BROWSER_ARCHETYPE_SIGNALS: 'capability:zk-browser',
   CODE_EDITOR_ARCHETYPE_SIGNALS: 'capability:code-editor',
   DATE_HEAVY_ARCHETYPE_SIGNALS: 'capability:date-utils',
+  SAAS_ARCHETYPE_SIGNALS: 'capability:multi-tenancy',
 }
 
 test('signal-manifest parity: every archetype signal array lives in its capability manifest', async () => {

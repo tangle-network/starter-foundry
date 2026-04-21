@@ -1,32 +1,53 @@
 {
-  "mode": "awaiting-governor",
-  "goal": "faster + better planner (accuracy, capability hit, latency)",
-  "status": "r3-signal-collapse",
-  "round": 11,
-  "generation": 11,
-  "activePursuit": ".evolve/meta-harness/config.json",
-  "updatedAt": "2026-04-20T19:15:00Z",
+  "mode": "evolve",
+  "goal": "drive s-plus-tier branch to e2e 100% complete",
+  "status": "gen-1-committed",
+  "generation": 1,
+  "activePursuit": ".evolve/pursuits/2026-04-21-e2e-100-complete.md",
+  "updatedAt": "2026-04-21T07:00:00Z",
+  "commit": "b760e93",
   "baseline": {
-    "accuracy": 0.9945,
-    "latencyP95Ms": 0.902,
-    "capabilityHitMean": 0.7827,
-    "ideasaiCapHit": 0.181
+    "strictVerifierPassRate": 0.9583,
+    "strictVerifierPasses": 46,
+    "strictVerifierFails": 2,
+    "strictVerifierTargets": 48,
+    "testSuite": "601/601",
+    "medianShotsToPass": 1,
+    "v2Evolve": {
+      "wallSeconds": 2977,
+      "concurrency": 5,
+      "passCount": 41,
+      "failCount": 1,
+      "targets": 42
+    }
   },
-  "current": {
-    "variant": "merged_abc_v1",
-    "accuracy": 0.9945,
-    "latencyP50Ms": 0.201,
-    "latencyP95Ms": 0.477,
-    "latencyP99Ms": 1.161,
-    "capabilityHitMean": 0.909,
-    "ideasaiCapHit": 0.452,
-    "deltaLatencyP95": -0.425,
-    "deltaIdeasaiCapHit": 0.271
+  "generation1Results": {
+    "thesis": "match the verifier's rigor to the loop's ambition, and stop destroying history",
+    "verifierBarBefore": "compose + install + typecheck (compile-clean)",
+    "verifierBarAfter": "+ pnpm build + family validationChecks (plus smoke-compose opt-in)",
+    "libraryVersions": "v1 + v2 per family, deterministic hash-addressed, scored via template-quality",
+    "passRateUnderOldBar": 0.979,
+    "passRateUnderNewBar": 0.958,
+    "hardFails": [
+      "fintech-ledger-backend (quality ceiling 10 shots)",
+      "kotlin-multiplatform (no gradle binary)"
+    ]
+  },
+  "deferred": {
+    "gen2": "boot-and-audit phase using bad CLI — design complete in pursuit spec, unbuilt",
+    "diverseServe": "env flag STARTER_FOUNDRY_DIVERSE_SERVE — unbuilt",
+    "resumeBuilderSessions": "claude --resume across shots — untested experiment",
+    "agentEvalPublish": "agent-eval is link:../agent-eval; needs publish or workspace setup before CI-on-fresh-clone works"
   },
   "priorMode": {
-    "mode": "pursue",
-    "goal": "real tangle templates + crate publishing",
-    "blocked": "crate publishing \u2014 CARGO_REGISTRY_TOKEN needs owner access (shekohex or Tjemmmic)"
+    "mode": "awaiting-governor",
+    "goal": "faster + better planner (accuracy, capability hit, latency)",
+    "baseline": {
+      "accuracy": 0.9945,
+      "latencyP95Ms": 0.902,
+      "capabilityHitMean": 0.7827,
+      "ideasaiCapHit": 0.181
+    }
   },
-  "note": "R3 multi-pursue target (5 broken layers) closed by manual PRs #9-#12 before proposers executed. 37/37 layers pass audit. Next governor pass should re-read signal from buildout-analysis (template rewrite rate) or capability-gaps."
+  "handoff": "Ready for Gen 2 (boot-and-audit with bad CLI) to raise the bar further, or /governor to pick the next surface. Branch drew/s-plus-tier is committed (b760e93) and shippable modulo the agent-eval link: dep for CI. Run `node scripts/promote-template.mjs --all` any time versions are added; `node scripts/gc-template-library.mjs --apply` to prune."
 }

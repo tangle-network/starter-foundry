@@ -1,6 +1,52 @@
 # Evolve Progress — starter-foundry routing quality
 
-Score: ALL TARGETS MET (Round 2) — 2026-03-30
+## 2026-04-21 — Pursue Gen 1: e2e 100% complete on drew/s-plus-tier
+
+Commit: `b760e93`. Generation thesis: *match the verifier's rigor to the
+loop's ambition, and stop destroying history.*
+
+**Results:**
+- **46/48 new framework families verify end-to-end** under strict bar
+  (compose + install + typecheck + `pnpm build` + family
+  `validationChecks`). Up from 0/48 at session start.
+- **Propose/verify/review loop proven**: `scripts/enrich-family.mjs`
+  drives per-family enrichment using `@tangle-network/agent-eval`'s
+  `runProposeReview` primitive. Builder = headless `claude -p`, verifier
+  = `scripts/audit-scaffold-quality.mjs` (extended with build +
+  validationChecks + Move/Kotlin/ROS2 detection), reviewer = Anthropic
+  direct → Groq → router fallback with strict role separation.
+- **Versioned template library** at `.evolve/template-library/<family>/v_<hash>/`
+  — 2 versions per family (v1 from session-first bar, v2 from strict
+  bar). Deterministic scoring in `src/lib/template-quality.ts`; promote
+  + gc lifecycle scripts.
+- **Infrastructure scripts**: `enrich-family.mjs`, `evolve-branch.mjs`,
+  `bootstrap-library.mjs`, `promote-template.mjs`,
+  `gc-template-library.mjs`; `src/training/template_v1/run.ts` rewritten
+  around `runProposeReview` (keeping `judge.ts` as deterministic scorer).
+- **10 new partner packs smoke-composed** against first-declared family
+  each (100% pass).
+- **Test suite green**: 601/601.
+
+**Hard fails (not solvable with more shots):**
+- `fintech-ledger-backend` — typecheck convergence ceiling at 10 shots;
+  the builder (sonnet) + reviewer (sonnet-4-6) can't cross this one.
+- `kotlin-multiplatform` — no `gradle` binary on host; verifier skips.
+  Install `gradle` or permanently gate.
+
+**Deferred (designed, not built):**
+- Gen 2: `boot-and-audit` phase using `bad` CLI for real runtime
+  verification of frontend families. Full design in
+  `.evolve/pursuits/2026-04-21-e2e-100-complete.md`.
+- Diverse-serve env flag (`STARTER_FOUNDRY_DIVERSE_SERVE=1`).
+- Builder-session resume (`claude --resume` across shots) — marginal
+  optimization, not worth chasing.
+
+**Known issue:**
+- `@tangle-network/agent-eval` is `link:../agent-eval` in package.json.
+  CI on a fresh clone will fail without that peer directory. Publish
+  agent-eval or switch to a workspace before merging to main.
+
+## 2026-03-30 — Round 2 ALL TARGETS MET
 
 ## Targets
 

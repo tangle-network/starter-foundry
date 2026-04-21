@@ -87,5 +87,22 @@
       "website",
       "landing"
     ]
+  },
+  "buildHints": {
+    "whenToUse": "Pure static landing page served by `serve` (no framework). Use when the product is truly a marketing landing page or a static doc site \u2014 NOT for apps with state.",
+    "firstSteps": [
+      "Edit `index.html` and `app.js` directly. No build step; `serve -l 3000` is all you need.",
+      "Brand strings: inline in `index.html`. Palette: inline `<style>` or separate `.css`."
+    ],
+    "placeholders": [
+      {
+        "path": "index.html",
+        "description": "Default landing with generic hero/feature/CTA blocks. Replace ALL content for the product \u2014 the default is placeholder-only."
+      },
+      {
+        "path": "app.js",
+        "description": "Optional interactivity entry. If the landing is truly static, delete the file + its script tag."
+      }
+    ]
   }
 }

@@ -1,6 +1,6 @@
 {
   "id": "sui",
-  "description": "Partner pack for Sui — Move-based L1 with object-centric model, parallel execution, zkLogin. Biases toward Sui Move contracts + the @mysten/sui TypeScript SDK.",
+  "description": "Partner pack for Sui \u2014 Move-based L1 with object-centric model, parallel execution, zkLogin. Biases toward Sui Move contracts + the @mysten/sui TypeScript SDK.",
   "appliesTo": [
     "frontend-static",
     "react-vite-ts",
@@ -14,7 +14,7 @@
     "database": "database:sqlite"
   },
   "defaults": {
-    "headline": "Build on Sui — object-centric Move with parallel execution",
+    "headline": "Build on Sui \u2014 object-centric Move with parallel execution",
     "subheadline": "zkLogin-backed auth, sub-second finality, gas-less UX via sponsored transactions."
   },
   "files": [
@@ -22,5 +22,20 @@
       "source": "files/sui-config.json",
       "target": "sui-config.json"
     }
-  ]
+  ],
+  "buildHints": {
+    "whenToUse": "Attach for Sui-native products \u2014 object-centric Move contracts, parallel execution benefits (high-TPS games, DEXes), zkLogin auth (Google/Apple login \u2192 on-chain identity), sponsored transactions (gasless UX).",
+    "firstSteps": [
+      "Install SDK: `pnpm add @mysten/sui` (TS client) + `@mysten/wallet-kit` (React wallet connection).",
+      "For Move contracts: `sui move new <name>` then edit sources/. Objects-not-accounts mental model \u2014 see https://docs.sui.io/concepts/object-model.",
+      "For zkLogin: `pnpm add @mysten/zklogin`. Users authenticate via OAuth \u2192 zkLogin derives a deterministic Sui address from the JWT + a salt. No seed phrase.",
+      "For sponsored txs: your backend signs the gas, user signs the transaction data. Use `TransactionBlock.setGasPayment()` to specify sponsor coins."
+    ],
+    "gotchas": [
+      "Sui's object model is not Ethereum's account model. You cannot \"just\" port an ERC-20 \u2014 coins are first-class objects with ownership rules.",
+      "zkLogin salts must be managed server-side (one per user) \u2014 expose them client-side and you leak the user's address derivation.",
+      "Move packages are immutable after publish. Plan upgrades via the upgrade-capability pattern (UpgradeCap object) BEFORE shipping v1.",
+      "Testnet + devnet reset periodically \u2014 do not rely on on-chain state persistence during development."
+    ]
+  }
 }

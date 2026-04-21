@@ -98,5 +98,35 @@
       "loader",
       "action"
     ]
+  },
+  "buildHints": {
+    "whenToUse": "Remix for full-stack React with nested routes, loader/action pattern, and progressive enhancement. Prefer when the product has deeply nested route trees or strong form-submission + server-mutation flows.",
+    "firstSteps": [
+      "Install: `pnpm install` then `pnpm dev`. Remix uses file-based routing under `app/routes/` \u2014 dot-delimited filenames map to URL segments.",
+      "Loaders (server-only) run before render, actions handle form submits. Do not import server-only libraries into components directly \u2014 put them in `.server.ts` files.",
+      "Color palette + brand strings in `app/personalize.css` + `app/personalize.json`."
+    ],
+    "gotchas": [
+      "Remix 2.x is the current line; React Router v7 is the next major. Check the remix-run docs version for guide alignment.",
+      "Loaders throw Response objects for redirects/errors, NOT raw throws \u2014 `throw redirect(...)` / `throw json(...)` are the patterns."
+    ],
+    "placeholders": [
+      {
+        "path": "app/routes/_index.tsx",
+        "description": "Landing page with placeholder hero. Rewrite for the product."
+      },
+      {
+        "path": "app/routes/dashboard.tsx",
+        "description": "Default dashboard route \u2014 generic KPI cards. Replace with the product's primary view."
+      },
+      {
+        "path": "app/root.tsx",
+        "description": "Root document shell + meta. Update `<Meta />` generation for SEO."
+      },
+      {
+        "path": "app/personalize.json",
+        "description": "Brand + copy strings. Edit but also rewrite the routes above."
+      }
+    ]
   }
 }

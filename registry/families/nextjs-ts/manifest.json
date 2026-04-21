@@ -257,5 +257,40 @@
       "swagger",
       "openapi"
     ]
+  },
+  "buildHints": {
+    "whenToUse": "Next.js App Router for full-stack React products that need SEO, server-rendered routes, and a Node backend surface in one project. Chooses server-components by default; opt out per-route with `use client`.",
+    "firstSteps": [
+      "Install: `pnpm install` then `pnpm dev`. Next 16.x uses the App Router \u2014 files under `app/` are routes, files under `components/` are imported.",
+      "Brand strings live in `personalize.json` (at repo root OR src/). Compose writes it as the single source of truth \u2014 edit once, HMR picks up.",
+      "Color palette + Tailwind tokens live in `src/personalize.css` / `app/personalize.css`. Edit HSL custom properties on `:root` + `.dark`; Tailwind v4 `@theme` defaults already compose in.",
+      "shadcn/ui components pre-installed under `src/components/ui/` \u2014 import from `@/components/ui/button`, etc. Path alias `@/` \u2192 `src/`."
+    ],
+    "gotchas": [
+      "App Router is default. If you find yourself writing a pages/ directory, stop \u2014 you're in the wrong mental model for this scaffold.",
+      "Server Components are the default \u2014 every component is SSR unless marked `'use client'`. If a component uses hooks or browser APIs, add the directive at the top."
+    ],
+    "placeholders": [
+      {
+        "path": "app/dashboard/page.tsx",
+        "description": "Default renders generic KPI cards (Total Revenue $45k, Active Users 2,350, etc.). Replace with the product's primary dashboard view \u2014 remove KPI cards that don't apply, add ones that do."
+      },
+      {
+        "path": "app/admin/page.tsx",
+        "description": "Default renders a generic user table. Replace with the product's admin/management surface, or delete the route if no admin surface is needed."
+      },
+      {
+        "path": "app/page.tsx",
+        "description": "Landing / root page with placeholder hero copy. Rewrite the hero content for the product; keep layout shell."
+      },
+      {
+        "path": "app/layout.tsx",
+        "description": "Root layout + metadata. Update `metadata.title` and `metadata.description` for SEO \u2014 and review whether the default `<body>` structure fits the product."
+      },
+      {
+        "path": "personalize.json",
+        "description": "Brand strings (name, tagline, hero headline/subheadline). Edit for the product \u2014 but this is NOT a substitute for rewriting the placeholders above."
+      }
+    ]
   }
 }

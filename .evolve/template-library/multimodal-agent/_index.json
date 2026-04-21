@@ -1,0 +1,22 @@
+{
+  "family": "multimodal-agent",
+  "current": "v_10a91d5279cf",
+  "topN": [
+    "v_10a91d5279cf",
+    "v_8ffd0996aecb"
+  ],
+  "all": [
+    {
+      "version": "v_10a91d5279cf",
+      "score": 0.7699953129185694,
+      "skipped": null
+    },
+    {
+      "version": "v_8ffd0996aecb",
+      "score": 0.6199999945776257,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.365Z"
+}

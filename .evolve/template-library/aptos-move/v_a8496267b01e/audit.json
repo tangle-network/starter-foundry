@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-04-21T06:58:41.646Z",
+  "audits": [
+    {
+      "layerId": "framework:aptos-move",
+      "family": "aptos-move",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 342.217958,
+          "stderrTail": "",
+          "stdoutTail": "Already up to date\n\nDone in 206ms using pnpm v10.22.0\n"
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

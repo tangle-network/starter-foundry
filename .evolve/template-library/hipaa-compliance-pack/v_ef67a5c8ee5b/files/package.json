@@ -1,0 +1,14 @@
+{
+  "name": "hipaa-compliance-pack",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "validate": "node validate-hipaa-pack.mjs"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.0"
+  }
+}

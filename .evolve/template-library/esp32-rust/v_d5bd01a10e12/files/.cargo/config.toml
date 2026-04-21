@@ -1,0 +1,17 @@
+# Uncomment when targeting real ESP32 hardware after running:
+#   cargo install espup && espup install && . $HOME/export-esp.sh
+#
+# [build]
+# target = "xtensa-esp32-espidf"
+#
+# [target.xtensa-esp32-espidf]
+# linker = "ldproxy"
+# runner = "espflash flash --monitor"
+# rustflags = ["--cfg", "espidf_time64", "-C", "default-linker-libraries"]
+#
+# [unstable]
+# build-std = ["std", "panic_abort"]
+#
+# [env]
+# MCU = "esp32"
+# ESP_IDF_VERSION = "v5.2.2"

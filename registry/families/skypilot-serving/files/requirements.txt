@@ -1,0 +1,5 @@
+# SkyPilot CLI + cloud adapters. Pick the adapters that match your cloud(s).
+# Installing all three is cheap (pure Python wrappers); the real footprint is
+# the cloud SDK dependencies.
+skypilot[aws,gcp,kubernetes]>=0.7.0
+httpx>=0.27.0

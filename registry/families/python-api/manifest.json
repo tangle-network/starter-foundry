@@ -111,9 +111,7 @@
     "api in python"
   ],
   "scoring": {
-    "boost": {
-      "python": 2
-    }
+    "boost": {}
   },
   "tieredKeywords": {
     "tier1": [

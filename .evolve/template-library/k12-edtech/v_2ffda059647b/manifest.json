@@ -1,0 +1,104 @@
+{
+  "id": "k12-edtech",
+  "description": "K-12 edtech framework layer — SIS/gradebook schema (students, teachers, classes, assignments, submissions, grades, parent-student links), FERPA-aligned grade-read audit trail.",
+  "appliesTo": ["k12-edtech"],
+  "files": [
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/drizzle.config.ts", "target": "drizzle.config.ts" },
+    { "source": "files/db.ts", "target": "src/db/client.ts" },
+    { "source": "files/schema.ts", "target": "src/db/schema.ts" },
+    { "source": "files/classroom.ts", "target": "src/api/classroom.ts" },
+    { "source": "files/gradebook.ts", "target": "src/api/gradebook.ts" },
+    { "source": "files/server.ts", "target": "src/server.ts" }
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "drizzle-orm": "^0.36.0",
+      "postgres": "^3.4.5"
+    },
+    "devDependencies": {
+      "drizzle-kit": "^0.30.0",
+      "typescript": "^5.9.0",
+      "@types/node": "^20.17.0"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "K-12 school software: gradebooks, student information systems (SIS), roster management, assignment submission portals, or any product that stores student education records and must comply with FERPA.",
+    "firstSteps": [
+      "Set DATABASE_URL to a Postgres connection string, then run `pnpm install && pnpm db:generate && pnpm db:migrate` to create all tables.",
+      "Start the server with `pnpm dev` — it listens on PORT (default 8103) and responds to GET /health immediately.",
+      "Seed a teacher row directly in Postgres, then POST /api/classes with the teacher's UUID as `teacherId`. All other routes flow from there.",
+      "Every call to GET /api/students/:id/grades writes a GradeAccessLog row before returning data — this is the FERPA audit trail. Do not remove or async-detach this write.",
+      "Run `pnpm validate` to verify the scaffold is wired correctly (checks schema tables, FERPA audit hook, /health route, valid package.json).",
+      "Run `npx tsc --noEmit` to typecheck — requires only `pnpm install` first, no build step needed."
+    ],
+    "apiRoutes": [
+      "GET /health",
+      "POST /api/classes (create class)",
+      "GET /api/classes/:id/roster",
+      "POST /api/classes/:id/assignments",
+      "POST /api/assignments/:id/submissions",
+      "POST /api/submissions/:id/grade (teacher grades a submission — audit-logged)",
+      "GET /api/students/:id/grades (audit-logged per FERPA)"
+    ],
+    "dataModels": [
+      "Student (districtStudentId, firstName, lastName, grade, enrolledAt, sisExternalId)",
+      "Teacher (districtStaffId, firstName, lastName, email, role: teacher|admin)",
+      "Class (code, title, subject, academicYear, term, teacherId)",
+      "Enrollment (classId, studentId, enrolledAt, droppedAt nullable)",
+      "Assignment (classId, title, description, totalPoints, dueAt)",
+      "Submission (assignmentId, studentId, submittedAt, content, attachments)",
+      "Grade (submissionId, pointsEarned, letter, gradedByTeacherId, gradedAt)",
+      "Parent (firstName, lastName, email, phone)",
+      "ParentStudent (parentId, studentId, relationship: mother|father|guardian, canAccessGrades)",
+      "GradeAccessLog (actorId, actorRole, studentId, assignmentId, accessedAt, reason)"
+    ],
+    "integrations": [
+      "Drizzle ORM with Postgres",
+      "SIS import adapter (OneRoster CSV / ClassLink / Clever — wire in src/sis/)"
+    ],
+    "placeholders": [
+      {
+        "path": "src/server.ts",
+        "description": "{{port}} is replaced with the family default (8103) at compose time; falls back to the PORT env var at runtime. {{serviceName}} is replaced with the project slug (default: starter-foundry-k12)."
+      }
+    ],
+    "architectureNotes": [
+      "FERPA-aligned: every read of a grade writes a GradeAccessLog row before returning the grade",
+      "Parent access to a child's grades is gated by ParentStudent.canAccessGrades AND custodial-rights flag (not shipped; add before production)",
+      "Enrollments are soft-delete via droppedAt — historical grade lookups need the student on the roster at the time of assignment"
+    ],
+    "gotchas": [
+      "FERPA: student education records are protected. Every disclosure needs either parent consent (<18) or student consent (18+ / post-secondary). This scaffold does NOT implement consent tracking — add before production.",
+      "Directory information vs. education records: directory info (name, grade level, enrollment dates) CAN be disclosed without consent IF parents haven't opted out. Check district's annual directory-info policy.",
+      "Parent access is NOT automatic. Divorced / separated parents may have restricted custody — check custodial_rights before exposing a child's grades to a parent account. Missing this is a district lawsuit.",
+      "COPPA (under 13): collecting PII from students under 13 requires verifiable parental consent. Student accounts for K-7 need the parent consent flow, not direct signup.",
+      "State-level laws (e.g. California SOPIPA, New York 2-d) add requirements beyond FERPA. Check state before storing biometric data, location data, or behavioral tracking.",
+      "Don't log student names or grades into stdout/APM/error-tracking by default — redact in the logging middleware. A Sentry screenshot of a grade is a FERPA violation.",
+      "Grades are immutable once final; amendments are new rows with an `amendment_of_grade_id` FK, not UPDATEs. Preserves audit trail.",
+      "SIS imports are destructive: when OneRoster CSVs arrive, reconciliation must be idempotent and MUST NOT delete students silently — orphan detection should alert, not drop."
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "pnpm dev",
+      "pnpm validate",
+      "npx tsc --noEmit",
+      "pnpm db:generate",
+      "pnpm db:migrate"
+    ],
+    "entrypoints": [
+      "src/server.ts",
+      "src/db/schema.ts",
+      "src/api/classroom.ts",
+      "src/api/gradebook.ts"
+    ],
+    "preview": { "path": "/health" },
+    "extensionPoints": [
+      "src/db/schema.ts",
+      "src/api/",
+      "src/sis/"
+    ]
+  }
+}

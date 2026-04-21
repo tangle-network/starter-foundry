@@ -1,0 +1,75 @@
+{
+  "id": "astro-static",
+  "description": "Astro static framework layer — astro.config.mjs, Base layout, index page, and env.d.ts wired for zero-JS static output.",
+  "appliesTo": ["astro-static"],
+  "files": [
+    {
+      "source": "files/astro.config.mjs",
+      "target": "astro.config.mjs"
+    },
+    {
+      "source": "files/src/env.d.ts",
+      "target": "src/env.d.ts"
+    },
+    {
+      "source": "files/src/pages/index.astro",
+      "target": "src/pages/index.astro"
+    },
+    {
+      "source": "files/src/layouts/Base.astro",
+      "target": "src/layouts/Base.astro"
+    }
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "astro": "^5.2.0"
+    },
+    "devDependencies": {
+      "@astrojs/check": "^0.9.4",
+      "typescript": "^5.7.0"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "Content-focused static sites (marketing, docs, blogs) where you want islands of interactivity without shipping a full SPA runtime.",
+    "firstSteps": [
+      "Run `pnpm install` then `pnpm dev` — Astro's Vite dev server binds to http://localhost:4321 with HMR.",
+      "Pages live in `src/pages/` — every `.astro`, `.md`, or `.mdx` file becomes a route automatically.",
+      "Shared HTML shell is in `src/layouts/Base.astro`. Wrap each page with `<Base title=\"...\">...</Base>`.",
+      "Build with `pnpm build` — emits fully static HTML/CSS/JS to `./dist/`. Preview with `pnpm preview`."
+    ],
+    "gotchas": [
+      "Frontmatter in `.astro` files runs at BUILD time — browser globals (`window`, `document`) are not available there; put client code inside `<script>` tags or `client:*` directives.",
+      "To add a React/Vue/Svelte island you must install `@astrojs/<framework>` AND add it to `astro.config.mjs`'s `integrations` array — just importing a `.jsx` file silently fails.",
+      "`import.meta.env.PUBLIC_*` is the only env prefix exposed to client bundles — non-prefixed vars are build-time server-only."
+    ],
+    "architectureNotes": [
+      "Astro ships ZERO JS by default — interactivity is opt-in per component via `client:load`, `client:idle`, `client:visible`, or `client:only`.",
+      "Output mode is `static` in astro.config.mjs — switch to `server` or `hybrid` only if SSR is actually needed."
+    ],
+    "placeholders": [
+      {
+        "path": "src/pages/index.astro",
+        "description": "Placeholder hero page using `{{headline}}` and `{{subheadline}}` tokens resolved from defaults. Replace with real product copy before shipping."
+      },
+      {
+        "path": "src/layouts/Base.astro",
+        "description": "Shared HTML shell with meta tags and minimal global CSS. Update OG/meta tags and replace the `{{subheadline}}` default before production."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm dev", "pnpm build", "pnpm preview"],
+    "entrypoints": ["src/pages/index.astro", "astro.config.mjs"],
+    "preview": {
+      "port": 4321,
+      "path": "/"
+    },
+    "extensionPoints": [
+      "src/pages",
+      "src/components",
+      "src/content",
+      "src/layouts",
+      "public"
+    ]
+  }
+}

@@ -6,7 +6,8 @@
     "src/training/variant_b/train.ts",
     "src/training/variant_b/brief-loader.ts",
     "src/training/variant_b/generate.ts",
-    "src/training/variant_b/judge.ts"
+    "src/training/variant_b/judge.ts",
+    "src/training/template_v1/run.ts"
   ],
   "project": [
     "src/**/*.ts",

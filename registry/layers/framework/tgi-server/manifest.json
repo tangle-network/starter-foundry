@@ -1,0 +1,41 @@
+{
+  "id": "tgi-server",
+  "description": "Python package scaffold for the TGI client — pyproject.toml for typecheck, typed src/__init__.py, and a src/main.py entrypoint that exercises /generate and /generate_stream against a local TGI server.",
+  "appliesTo": ["tgi-server"],
+  "files": [
+    { "source": "files/src/__init__.py", "target": "src/__init__.py" },
+    { "source": "files/src/main.py",   "target": "src/main.py" },
+    { "source": "files/pyproject.toml","target": "pyproject.toml" }
+  ],
+  "buildHints": {
+    "whenToUse": "Always applied to tgi-server projects — provides the Python package structure (src/__init__.py, src/main.py, pyproject.toml) that wraps the docker-compose + client files supplied by the tgi-server family.",
+    "firstSteps": [
+      "cp .env.example .env — fill in MODEL_ID and HUGGING_FACE_HUB_TOKEN",
+      "docker compose up -d — first boot pulls model weights (~15-60 GB) to ./data; watch `docker compose logs -f` until the health-check passes",
+      "pip install -r requirements.txt",
+      "python -m src.main                         # blocking /generate with default prompt",
+      "python -m src.main --stream 'Your prompt'  # token-streaming via /generate_stream"
+    ],
+    "gotchas": [
+      "Run as a module (`python -m src.main`), not a script (`python src/main.py`) — the relative import `from .client import …` requires the package context.",
+      "mypy runs in strict mode; all three deps (httpx, huggingface_hub, pydantic) ship py.typed markers so `mypy src/` passes clean after `pip install -r requirements.txt`.",
+      "TGI_URL defaults to http://localhost:8080 — if you changed the port mapping in docker-compose.yml, set TGI_URL in .env before running the client."
+    ],
+    "placeholders": [
+      {
+        "path": "src/main.py",
+        "description": "DEFAULT_PROMPT — replace with your actual test prompt before shipping."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pip install -r requirements.txt",
+      "mypy src/",
+      "python -m src.main",
+      "python -m src.main --stream 'Explain transformer attention'"
+    ],
+    "entrypoints": ["src/main.py", "src/client.py"],
+    "extensionPoints": ["src/main.py", "src/client.py"]
+  }
+}

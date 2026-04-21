@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-04-21T06:06:31.437Z",
+  "audits": [
+    {
+      "layerId": "framework:livekit-sfu",
+      "family": "livekit-sfu",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 1638.7622500000002,
+          "stderrTail": "",
+          "stdoutTail": "Progress: resolved 1, reused 0, downloaded 0, added 0\nPackages: +97\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\nProgress: resolved 122, reused 91, downloaded 5, added 18\nProgress: resolved 122, reused 91, downloaded 6, added 97, done\n\ndependencies:\n+ express 4.22.1 (5.2.1 is available)\n+ livekit-server-sdk 2.15.1\n\ndevDependencies:\n+ @types/express 4.17.25 (5.0.6 is available)\n+ @types/node 20.19.39 (25.6.0 is available)\n+ tsx 4.21.0\n+ typescript 5.9.3 (6.0.3 is available)\n\n╭ Warning ─────────────────────────────────────────────────────────────────────╮\n│                                                                              │\n│   Ignored build scripts: esbuild.                                            │\n│   Run \"pnpm approve-builds\" to pick which dependencies should be allowed     │\n│   to run scripts.                                                            │\n│                                                                              │\n╰──────────────────────────────────────────────────────────────────────────────╯\n\nDone in 1.5s using pnpm v10.22.0\n"
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 1020.5051249999999,
+          "stderrTail": "",
+          "stdoutTail": ""
+        }
+      ]
+    }
+  ]
+}

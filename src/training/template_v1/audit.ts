@@ -1,15 +1,12 @@
 // audit.ts — compose a scaffold with the candidate template swapped in,
 // run install + typecheck, ensure we don't regress vs the current template.
 
-import { mkdtempSync, writeFileSync, copyFileSync, mkdirSync, readFileSync, existsSync, readdirSync, statSync, rmSync } from 'node:fs'
-import { dirname, join, resolve } from 'node:path'
+import { mkdtempSync, writeFileSync, mkdirSync, existsSync, rmSync } from 'node:fs'
+import { dirname, join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { tmpdir } from 'node:os'
-import { fileURLToPath } from 'node:url'
 import { composeStarter } from '../../lib/compose.js'
 import type { ComposeSpec } from '../../types.js'
-
-const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..')
 
 export interface AuditInput {
   spec: ComposeSpec
@@ -74,7 +71,5 @@ export async function audit(input: AuditInput): Promise<AuditResult> {
     return { ok: true, stage: 'done', stderrTail: '', durationMs: Date.now() - start }
   } finally {
     try { rmSync(dir, { recursive: true, force: true, maxRetries: 3 }) } catch { /* leak temp on failure */ }
-    // Silence unused-import warnings
-    void readFileSync; void readdirSync; void statSync; void copyFileSync; void REPO
   }
 }

@@ -1,0 +1,152 @@
+{
+  "id": "livekit-sfu",
+  "description": "Self-hosted LiveKit SFU for realtime audio/video rooms. docker-compose ships livekit-server + Redis; Node control plane mints JWT access tokens so clients can join rooms with per-identity grants.",
+  "tags": [
+    "webrtc",
+    "sfu",
+    "livekit",
+    "realtime",
+    "media",
+    "typescript",
+    "docker"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "api"
+  },
+  "defaults": {
+    "projectType": "api",
+    "serviceName": "starter-foundry-livekit",
+    "port": 7880,
+    "controlPort": 8098,
+    "livekitApiKey": "devkey",
+    "livekitApiSecret": "devsecret-change-me-32-bytes-min"
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/docker-compose.yml",
+      "target": "docker-compose.yml"
+    },
+    {
+      "source": "files/livekit.yaml",
+      "target": "livekit.yaml"
+    },
+    {
+      "source": "files/validate-livekit.mjs",
+      "target": "validate-livekit.mjs"
+    },
+    {
+      "source": "files/.env.example",
+      "target": ".env.example"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "src/server.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "livekit.yaml"
+    },
+    {
+      "type": "file-exists",
+      "path": "docker-compose.yml"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-livekit.mjs"
+      ],
+      "expect": "livekit-sfu starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "docker compose up -d",
+      "pnpm run dev",
+      "curl -X POST http://localhost:{{controlPort}}/token -H 'Content-Type: application/json' -d '{\"room\":\"demo\",\"identity\":\"alice\"}'"
+    ],
+    "entrypoints": [
+      "src/server.ts",
+      "livekit.yaml",
+      "docker-compose.yml",
+      "package.json"
+    ],
+    "preview": {
+      "path": "/health"
+    },
+    "extensionPoints": [
+      "livekit.yaml",
+      "src/server.ts",
+      ".env"
+    ]
+  },
+  "keywords": [
+    "livekit sfu",
+    "livekit server",
+    "webrtc sfu",
+    "self-hosted webrtc",
+    "video conferencing server",
+    "realtime audio room",
+    "selective forwarding unit",
+    "sfu server",
+    "webrtc room",
+    "video room server",
+    "self-hosted livekit"
+  ],
+  "scoring": {
+    "boost": {
+      "livekit sfu": 4,
+      "webrtc sfu": 4,
+      "selective forwarding unit": 4,
+      "self-hosted livekit": 3
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "livekit sfu",
+      "webrtc sfu",
+      "selective forwarding unit",
+      "self-hosted livekit",
+      "livekit server self-hosted"
+    ],
+    "tier2": [
+      "self-hosted webrtc",
+      "video conferencing server",
+      "realtime audio room server",
+      "sfu server",
+      "video room server"
+    ],
+    "archetypes": [
+      "self-hosted zoom",
+      "open source meet",
+      "multi-party video call",
+      "webinar platform",
+      "live audio room",
+      "clubhouse clone",
+      "twitter spaces clone",
+      "group voice chat server"
+    ]
+  },
+  "buildHints": {
+    "gotchas": [
+      "getUserMedia requires HTTPS outside localhost — clients won't be able to publish tracks from a plain-HTTP domain on any browser.",
+      "LiveKit SFU needs the public egress IP visible to clients. In docker-compose, set rtc.use_external_ip: true; behind NAT, pre-configure rtc.node_ip and open UDP 7881 + TCP 7881 fallback.",
+      "Access tokens expire — the control plane mints short-lived JWTs (default TTL 6h). Clients must re-request before expiry or the SFU refuses the WS upgrade.",
+      "Redis is only required for multi-node deployments. Single-node works without it; docker-compose still ships Redis so scale-out is a compose-scale away.",
+      "API key + secret in livekit.yaml must stay ≥32 bytes. Shorter secrets are rejected at startup with a cryptic 'HMAC key too short' error."
+    ]
+  }
+}

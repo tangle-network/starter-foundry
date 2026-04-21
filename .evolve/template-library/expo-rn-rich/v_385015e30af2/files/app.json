@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "{{projectName}}",
+    "slug": "{{packageName}}",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.starterfoundry.{{packageName}}"
+    },
+    "android": {
+      "package": "com.starterfoundry.{{packageName}}",
+      "useLegacyPackaging": true
+    },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": { "newArchEnabled": true },
+          "android": { "newArchEnabled": true }
+        }
+      ]
+    ]
+  }
+}

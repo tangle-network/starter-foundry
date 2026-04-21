@@ -1,0 +1,22 @@
+{
+  "family": "webgpu-render",
+  "current": "v_1402d1cff0c4",
+  "topN": [
+    "v_1402d1cff0c4",
+    "v_b2194897cf04"
+  ],
+  "all": [
+    {
+      "version": "v_1402d1cff0c4",
+      "score": 0.7799982069951802,
+      "skipped": null
+    },
+    {
+      "version": "v_b2194897cf04",
+      "score": 0.6299999945823821,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.446Z"
+}

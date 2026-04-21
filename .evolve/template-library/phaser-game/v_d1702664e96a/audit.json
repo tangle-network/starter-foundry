@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-04-21T08:24:35.641Z",
+  "audits": [
+    {
+      "layerId": "framework:phaser-game",
+      "family": "phaser-game",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 1704.9552910000002,
+          "stderrTail": "",
+          "stdoutTail": "Progress: resolved 1, reused 0, downloaded 0, added 0\nPackages: +17\n+++++++++++++++++\nProgress: resolved 66, reused 17, downloaded 0, added 16\nProgress: resolved 66, reused 17, downloaded 0, added 17, done\n\ndependencies:\n+ phaser 3.90.0 (4.0.0 is available)\n\ndevDependencies:\n+ typescript 5.9.3 (6.0.3 is available)\n+ vite 6.4.2 (8.0.9 is available)\n\n╭ Warning ─────────────────────────────────────────────────────────────────────╮\n│                                                                              │\n│   Ignored build scripts: esbuild.                                            │\n│   Run \"pnpm approve-builds\" to pick which dependencies should be allowed     │\n│   to run scripts.                                                            │\n│                                                                              │\n╰──────────────────────────────────────────────────────────────────────────────╯\n\nDone in 1.5s using pnpm v10.22.0\n"
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 952.6447499999999,
+          "stderrTail": "",
+          "stdoutTail": ""
+        },
+        {
+          "phase": "build",
+          "skipped": "no-build-script",
+          "ok": true
+        },
+        {
+          "phase": "validationChecks",
+          "skipped": "none-declared",
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

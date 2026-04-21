@@ -1,0 +1,181 @@
+{
+  "id": "skypilot-serving",
+  "description": "SkyPilot-based multi-cloud LLM deployment \u2014 `sky serve up` launches a managed serving endpoint across AWS/GCP/Azure/Kubernetes, auto-picks cheapest region, handles spot preemption, load balances replicas. Ships a vLLM service spec, a sky-serve controller config, and a README flow. For teams running LLM inference across clouds or on spot GPUs without writing Terraform.",
+  "tags": [
+    "ml",
+    "llm",
+    "inference",
+    "python",
+    "serving",
+    "skypilot",
+    "multi-cloud"
+  ],
+  "taxonomy": {
+    "language": "python",
+    "runtime": "python",
+    "surface": "inference"
+  },
+  "slots": {
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk"
+      ],
+      "default": "auth:none"
+    }
+  },
+  "defaults": {
+    "projectType": "inference",
+    "serviceName": "starter-foundry-sky",
+    "endpointName": "starter-foundry-sky",
+    "port": 8000,
+    "modelId": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+    "acceleratorSpec": "A100:1"
+  },
+  "files": [
+    {
+      "source": "files/requirements.txt",
+      "target": "requirements.txt"
+    },
+    {
+      "source": "files/service.yaml",
+      "target": "service.yaml"
+    },
+    {
+      "source": "files/sky-serve.yaml",
+      "target": "sky-serve.yaml"
+    },
+    {
+      "source": "files/.env.example",
+      "target": ".env.example"
+    },
+    {
+      "source": "files/README-skypilot.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/validate-skypilot.mjs",
+      "target": "validate-skypilot.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "service.yaml"
+    },
+    {
+      "type": "file-exists",
+      "path": "sky-serve.yaml"
+    },
+    {
+      "type": "file-exists",
+      "path": "requirements.txt"
+    },
+    {
+      "type": "file-exists",
+      "path": "README.md"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-skypilot.mjs"
+      ],
+      "expect": "skypilot starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pip install -r requirements.txt",
+      "sky check",
+      "sky serve up -n {{endpointName}} service.yaml",
+      "sky serve status {{endpointName}}",
+      "sky serve logs {{endpointName}} --target replica 1"
+    ],
+    "entrypoints": [
+      "service.yaml",
+      "sky-serve.yaml",
+      "README.md"
+    ],
+    "preview": null,
+    "extensionPoints": [
+      "service.yaml",
+      "sky-serve.yaml"
+    ]
+  },
+  "keywords": [
+    "skypilot",
+    "sky serve",
+    "skyserve",
+    "multi-cloud llm",
+    "multi-cloud inference",
+    "spot inference",
+    "spot gpu",
+    "cheapest gpu",
+    "sky launch",
+    "sky.co",
+    "berkeley sky",
+    "cloud llm deployment",
+    "managed llm serving"
+  ],
+  "scoring": {
+    "boost": {
+      "skypilot": 4,
+      "sky serve": 4,
+      "multi-cloud": 2
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "skypilot",
+      "sky serve",
+      "multi-cloud llm",
+      "spot inference"
+    ],
+    "tier2": [
+      "spot gpu",
+      "cheapest gpu",
+      "managed llm serving",
+      "cloud llm deployment"
+    ],
+    "archetypes": [
+      "cross-cloud llm host",
+      "spot-GPU inference endpoint",
+      "cheapest-region llm serving"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Pick SkyPilot when you want a single YAML that deploys LLM inference across AWS/GCP/Azure/Kubernetes, handles spot preemption + failover, and auto-picks the cheapest region. For single-host docker-compose deployment, use vllm-server / tgi-server / sglang-server directly. SkyPilot is the multi-cloud orchestrator \u2014 the underlying server is still vLLM (or whatever you specify).",
+    "firstSteps": [
+      "pip install -r requirements.txt (installs skypilot[aws,gcp,kubernetes])",
+      "Configure one cloud \u2014 `aws configure` / `gcloud auth login` / `kubectl config` \u2014 then `sky check`",
+      "Review service.yaml \u2014 set resources.accelerators, the model id, and replica count",
+      "sky serve up -n {{endpointName}} service.yaml",
+      "sky serve status {{endpointName}} \u2014 wait for a replica to reach READY, then hit the printed URL"
+    ],
+    "gotchas": [
+      "SkyPilot provisions real cloud resources. `sky serve up` starts billing immediately \u2014 always run `sky serve down {{endpointName}}` when you're done.",
+      "Accelerator strings are SkyPilot-specific: `A100:1`, `A100-80GB:1`, `H100:1`. Cloud-specific names (`p4d.24xlarge`) go under `resources.instance_type`.",
+      "`use_spot: true` is great for cost but spot preemption will restart replicas; services.yaml `readiness_probe` must be tuned for cold-start time.",
+      "First `sky serve up` launches a controller VM (~$30/month on AWS). Reuse it for all services \u2014 don't `sky down` the controller.",
+      "Model weights download on every replica spawn unless you mount a shared bucket. For large models, use `file_mounts` with S3/GCS to cache weights.",
+      "Credentials: SkyPilot reads local cloud SDK configs (~/.aws, ~/.config/gcloud, ~/.kube). CI pipelines need these explicitly plumbed.",
+      "Kubernetes backend: `sky check kubernetes` must succeed BEFORE `sky serve up` \u2014 otherwise SkyPilot silently falls back to the first configured cloud."
+    ],
+    "placeholders": [
+      {
+        "path": "src/main.py",
+        "description": "service.yaml (MODEL_ID, accelerators, replica count, spot flag)"
+      },
+      {
+        "path": "src/main.py",
+        "description": "sky-serve.yaml (controller sizing, readiness probe, load balancing policy)"
+      },
+      {
+        "path": ".env",
+        "description": "HF_TOKEN for gated models \u2014 passed into the replicas via the envs map in service.yaml."
+      }
+    ]
+  }
+}

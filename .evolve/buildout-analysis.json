@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "summary": {
-    "generatedAt": "2026-04-20T18:11:38.236Z",
-    "totalBuildouts": 198,
+    "generatedAt": "2026-04-21T02:53:13.892Z",
+    "totalBuildouts": 201,
     "withOutcome": 121,
     "passRate": 0.8181818181818182,
     "meanBlendedScore": 0.9284132231404949,
     "totalPassing": 99,
     "totalFailing": 22,
-    "distinctScenarios": 31,
+    "distinctScenarios": 34,
     "distinctPartners": [
       "arbitrum-stylus",
       "base-defi",
@@ -16,6 +16,7 @@
       "coinbase-smart-wallet",
       "ethereum-l1",
       "fhenix-fhe",
+      "fintech-mixed",
       "hyperliquid-perps",
       "kalshi-event-contracts",
       "okx-xlayer",
@@ -515,6 +516,48 @@
         1,
         2,
         3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "fintech-mixed",
+      "scenarioId": "budget-dashboard",
+      "total": 1,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "fintech-mixed",
+      "scenarioId": "transaction-categorizer",
+      "total": 1,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "fintech-mixed",
+      "scenarioId": "invoice-factoring",
+      "total": 1,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "replayRounds": [
+        1
       ],
       "passRate": null
     }

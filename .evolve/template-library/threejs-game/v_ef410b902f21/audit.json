@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-04-21T05:04:42.977Z",
+  "audits": [
+    {
+      "layerId": "framework:threejs-game",
+      "family": "threejs-game",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 2644.746541,
+          "stderrTail": "",
+          "stdoutTail": "Progress: resolved 1, reused 0, downloaded 0, added 0\nPackages: +23\n+++++++++++++++++++++++\nProgress: resolved 72, reused 16, downloaded 5, added 0\nProgress: resolved 72, reused 16, downloaded 7, added 22\nProgress: resolved 72, reused 16, downloaded 7, added 23, done\n\ndependencies:\n+ three 0.170.0 (0.184.0 is available)\n\ndevDependencies:\n+ @types/three 0.170.0 (0.184.0 is available)\n+ typescript 5.9.3 (6.0.3 is available)\n+ vite 6.4.2 (8.0.9 is available)\n\n╭ Warning ─────────────────────────────────────────────────────────────────────╮\n│                                                                              │\n│   Ignored build scripts: esbuild.                                            │\n│   Run \"pnpm approve-builds\" to pick which dependencies should be allowed     │\n│   to run scripts.                                                            │\n│                                                                              │\n╰──────────────────────────────────────────────────────────────────────────────╯\n\nDone in 2.5s using pnpm v10.22.0\n"
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 1338.1196670000004,
+          "stderrTail": "",
+          "stdoutTail": ""
+        }
+      ]
+    }
+  ]
+}

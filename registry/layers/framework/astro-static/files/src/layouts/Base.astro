@@ -1,0 +1,33 @@
+---
+interface Props {
+  title: string
+  description?: string
+}
+
+const { title, description = '{{subheadline}}' } = Astro.props
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <slot />
+    <style is:global>
+      :root {
+        --fg: #0a0a0a;
+        --bg: #ffffff;
+        --accent: #4338ca;
+      }
+      html { font-family: system-ui, sans-serif; background: var(--bg); color: var(--fg); }
+      body { margin: 0; }
+      main { max-width: 64ch; margin: 0 auto; padding: 4rem 1.5rem; }
+      a { color: var(--accent); }
+    </style>
+  </body>
+</html>

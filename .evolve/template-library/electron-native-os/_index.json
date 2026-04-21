@@ -1,0 +1,22 @@
+{
+  "family": "electron-native-os",
+  "current": "v_d11018eb3569",
+  "topN": [
+    "v_d11018eb3569",
+    "v_374a739bc102"
+  ],
+  "all": [
+    {
+      "version": "v_d11018eb3569",
+      "score": 0.8499941519786911,
+      "skipped": null
+    },
+    {
+      "version": "v_374a739bc102",
+      "score": 0.6749999945728691,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.288Z"
+}

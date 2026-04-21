@@ -1,0 +1,22 @@
+{
+  "family": "pci-dss-compliance-pack",
+  "current": "v_d59ddc7702f0",
+  "topN": [
+    "v_d59ddc7702f0",
+    "v_48a365a815fe"
+  ],
+  "all": [
+    {
+      "version": "v_d59ddc7702f0",
+      "score": 0.7799957997764461,
+      "skipped": null
+    },
+    {
+      "version": "v_48a365a815fe",
+      "score": 0.6199999945823821,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.376Z"
+}

@@ -1,0 +1,12 @@
+{
+  "name": "zola-static-scaffold",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "zola build",
+    "serve": "zola serve",
+    "check": "zola check",
+    "validate": "node validate-zola.mjs"
+  },
+  "devDependencies": {}
+}

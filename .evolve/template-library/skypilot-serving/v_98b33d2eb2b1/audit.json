@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-04-21T08:31:29.676Z",
+  "audits": [
+    {
+      "layerId": "framework:skypilot-serving",
+      "family": "skypilot-serving",
+      "pm": "python3",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "python3 -m compileall .",
+          "ok": true,
+          "durationMs": 60.75954199999995,
+          "stderrTail": "",
+          "stdoutTail": "Listing '.'...\nListing './.starter-foundry'...\n"
+        },
+        {
+          "phase": "validationChecks",
+          "skipped": "none-declared",
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

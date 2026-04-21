@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-04-21T08:07:27.842Z",
+  "audits": [
+    {
+      "layerId": "framework:godot-web",
+      "family": "godot-web",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 1713.309375,
+          "stderrTail": "",
+          "stdoutTail": "Progress: resolved 1, reused 0, downloaded 0, added 0\nPackages: +86\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\nProgress: resolved 86, reused 86, downloaded 0, added 5\nProgress: resolved 86, reused 86, downloaded 0, added 86, done\n\ndevDependencies:\n+ serve 14.2.6\n+ typescript 5.9.3 (6.0.3 is available)\n\nDone in 1.5s using pnpm v10.22.0\n"
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 1035.2611249999998,
+          "stderrTail": "",
+          "stdoutTail": ""
+        },
+        {
+          "phase": "build",
+          "skipped": "no-build-script",
+          "ok": true
+        },
+        {
+          "phase": "validationChecks",
+          "skipped": "none-declared",
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

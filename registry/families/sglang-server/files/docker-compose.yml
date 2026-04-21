@@ -1,0 +1,46 @@
+# SGLang inference server — RadixAttention prefix caching + constrained decoding.
+# Pin the image tag in production (lmsysorg/sglang:v0.3.6 or similar);
+# `latest` tracks fast-moving CUDA + torch bumps.
+services:
+  sglang:
+    image: lmsysorg/sglang:latest
+    container_name: {{serviceName}}
+    restart: unless-stopped
+    ports:
+      - "{{port}}:30000"
+    shm_size: 1gb
+    environment:
+      HUGGING_FACE_HUB_TOKEN: ${HUGGING_FACE_HUB_TOKEN:-}
+      HF_TOKEN: ${HUGGING_FACE_HUB_TOKEN:-}
+    command:
+      - python3
+      - -m
+      - sglang.launch_server
+      - --model-path
+      - ${MODEL_ID:-{{modelId}}}
+      - --host
+      - "0.0.0.0"
+      - --port
+      - "30000"
+      - --context-length
+      - "${CONTEXT_LENGTH:-{{contextLength}}}"
+      - --mem-fraction-static
+      - "${MEM_FRACTION_STATIC:-0.85}"
+      - --tp-size
+      - "${TP_SIZE:-1}"
+      # --enable-torch-compile cuts prefill latency but costs ~1min startup.
+    volumes:
+      - ./data:/root/.cache/huggingface
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:30000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s

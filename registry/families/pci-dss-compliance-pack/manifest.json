@@ -1,0 +1,50 @@
+{
+  "id": "pci-dss-compliance-pack",
+  "description": "PCI DSS 4.0 compliance overlay — cardholder-data tokenization via Stripe, PAN redaction middleware, secure-delete helpers, CHD-scoped audit logs. Composes onto ecommerce-headless / api-service.",
+  "tags": ["compliance", "pci", "pci-dss", "payments"],
+  "taxonomy": { "language": "typescript", "runtime": "node", "surface": "api" },
+  "defaults": { "projectType": "compliance-pack", "serviceName": "starter-foundry-pci-pack" },
+  "files": [
+    { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/src/pan-redact.ts", "target": "src/pan-redact.ts" },
+    { "source": "files/src/tokenize.ts", "target": "src/tokenize.ts" },
+    { "source": "files/docs/PCI-DSS-controls.md", "target": "docs/PCI-DSS-controls.md" },
+    { "source": "files/validate-pci-pack.mjs", "target": "validate-pci-pack.mjs" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "src/pan-redact.ts" },
+    { "type": "command-success", "command": ["node", "validate-pci-pack.mjs"], "expect": "pci-pack ok" }
+  ],
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm build"],
+    "entrypoints": ["src/pan-redact.ts", "src/tokenize.ts"],
+    "preview": null,
+    "extensionPoints": []
+  },
+  "keywords": ["pci", "pci dss", "pci-dss", "pci compliant", "pan redaction", "cardholder data"],
+  "scoring": { "boost": { "pci dss": 5, "pci compliant": 4 } },
+  "tieredKeywords": {
+    "tier1": ["pci dss", "pci-dss compliant", "pci 4.0", "cardholder data environment"],
+    "tier2": ["pan redaction", "card tokenization", "pci scope"]
+  },
+  "buildHints": {
+    "whenToUse": "Adding PCI DSS 4.0 primitives (CHD tokenization, PAN redaction) to a commerce backend. Reduces SAQ scope when paired with Stripe Checkout.",
+    "firstSteps": [
+      "Use Stripe Checkout or Stripe Elements — CHD never touches your servers. This pack's tokenize.ts wraps Stripe's createPaymentMethod.",
+      "Wire `redactPan()` from `src/pan-redact.ts` onto every log + error tracer. One raw PAN in Sentry = SAQ failure.",
+      "Audit log scope: only CHD-access events go to the PCI audit store; general app audit stays in its own store.",
+      "Never store full PAN, CVV, or PIN. If you need to reference a card, store the Stripe payment_method id (`pm_...`) — it's a token, not CHD."
+    ],
+    "gotchas": [
+      "CVV must NEVER be stored post-authorization — PCI DSS 3.2.1 prohibits it. Even in encrypted form.",
+      "PAN in URL query strings is a violation — always POST.",
+      "Test card numbers in fixtures (e.g. 4242...) still count as CHD in the scope assessment. Quarantine test data.",
+      "Stripe's restricted key patterns: use a restricted key scoped to PaymentIntents only for server-side code; never ship the full secret key.",
+      "DO NOT log request/response bodies on payment endpoints without redaction — the log sink often ingests them unfiltered."
+    ],
+    "placeholders": [
+      { "path": "src/pan-redact.ts", "description": "PAN-redaction regex. Extend for BINs your processor uses outside the standard Luhn range." }
+    ]
+  }
+}

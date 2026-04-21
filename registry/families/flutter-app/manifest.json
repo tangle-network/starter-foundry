@@ -1,0 +1,189 @@
+{
+  "id": "flutter-app",
+  "description": "Flutter mobile app starter \u2014 Dart 3, Material 3, GoRouter-based navigation, Provider state management, Dio HTTP client. For products that want a single Dart codebase shipping to iOS, Android, web, and desktop with Google's first-party mobile framework (not React Native / Expo).",
+  "tags": [
+    "mobile",
+    "flutter",
+    "dart",
+    "cross-platform"
+  ],
+  "taxonomy": {
+    "language": "dart",
+    "runtime": "flutter",
+    "surface": "mobile"
+  },
+  "slots": {
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk",
+        "auth:supabase-auth"
+      ],
+      "default": "auth:none"
+    },
+    "payments": {
+      "options": [
+        "payments:none",
+        "payments:stripe",
+        "payments:coinbase-commerce"
+      ],
+      "default": "payments:none"
+    },
+    "sdk": {
+      "options": [
+        "sdk:none",
+        "sdk:coinbase-cdp",
+        "sdk:solana-web3",
+        "sdk:evm-wallet"
+      ],
+      "default": "sdk:none"
+    }
+  },
+  "defaults": {
+    "projectType": "mobile",
+    "headline": "Starter Foundry Flutter App",
+    "subheadline": "A Flutter mobile shell with GoRouter nav, Provider state, and Dio networking wired for auth, billing, and wallet seams."
+  },
+  "files": [
+    {
+      "source": "files/pubspec.yaml",
+      "target": "pubspec.yaml"
+    },
+    {
+      "source": "files/analysis_options.yaml",
+      "target": "analysis_options.yaml"
+    },
+    {
+      "source": "files/validate-flutter.mjs",
+      "target": "validate-flutter.mjs"
+    },
+    {
+      "source": "files/android/app/build.gradle",
+      "target": "android/app/build.gradle"
+    },
+    {
+      "source": "files/ios/Runner/Info.plist",
+      "target": "ios/Runner/Info.plist"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "pubspec.yaml"
+    },
+    {
+      "type": "file-exists",
+      "path": "lib/main.dart"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-flutter.mjs"
+      ],
+      "expect": "flutter starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "flutter pub get",
+      "flutter run",
+      "node validate-flutter.mjs"
+    ],
+    "entrypoints": [
+      "lib/main.dart",
+      "pubspec.yaml",
+      "analysis_options.yaml"
+    ],
+    "preview": null,
+    "extensionPoints": [
+      "lib/screens/",
+      "lib/services/",
+      "auth-config.json",
+      "payments-config.json",
+      "sdk-config.json"
+    ]
+  },
+  "keywords": [
+    "flutter",
+    "dart",
+    "material design",
+    "material 3",
+    "cupertino",
+    "flutter app",
+    "dart mobile",
+    "go_router",
+    "provider state",
+    "dio http",
+    "cross-platform dart"
+  ],
+  "scoring": {
+    "boost": {
+      "flutter": 3,
+      "dart": 3,
+      "cupertino": 2,
+      "material 3": 2
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "flutter",
+      "dart",
+      "go_router",
+      "cupertino",
+      "material 3"
+    ],
+    "tier2": [
+      "flutter app",
+      "dart mobile",
+      "material design",
+      "provider state",
+      "dio http",
+      "cross-platform dart"
+    ],
+    "archetypes": [
+      "flutter mobile app",
+      "dart ios android",
+      "material design app",
+      "cupertino ios app",
+      "single-codebase mobile"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Pick flutter-app when the user names Flutter, Dart, pubspec, GoRouter, Provider, Riverpod, BLoC, Cupertino, or Material 3 \u2014 Google's first-party SDK with a single Dart codebase shipping to iOS + Android + web + desktop. For JS/TS-driven React Native workflows use expo-react-native-ts. For iOS-only Swift use swiftui-expo. For Kotlin-first multiplatform with Compose UI use kotlin-multiplatform.",
+    "firstSteps": [
+      "Install Flutter SDK 3.x locally: https://docs.flutter.dev/get-started/install",
+      "Run `flutter pub get` to resolve pubspec.yaml dependencies",
+      "Run `flutter run` to launch on a connected device or simulator",
+      "Edit lib/main.dart to add new screens; register routes in the GoRouter config",
+      "Use Provider (or swap to Riverpod) for app-wide state \u2014 see the ChangeNotifier example in lib/main.dart"
+    ],
+    "gotchas": [
+      "Flutter requires the Flutter SDK locally \u2014 CI and scaffold validation only check structure, not compile. Run `flutter analyze` before shipping.",
+      "iOS builds need Xcode + a provisioning profile; Android needs JDK 17+ and the Android SDK. Don't expect `flutter run` to work in a bare container.",
+      "GoRouter 14+ uses declarative routes \u2014 mutating route state mid-navigation throws. Always navigate via `context.go(...)` or `context.push(...)`.",
+      "Provider rebuilds the entire subtree on notifyListeners \u2014 use `Consumer` + `Selector` to scope rebuilds on hot lists.",
+      "Dio interceptors run in registration order; auth-refresh interceptors must be added BEFORE logging interceptors or refresh storms show up in logs."
+    ],
+    "architectureNotes": [
+      "lib/main.dart wires MaterialApp.router to a GoRouter instance and a MultiProvider root \u2014 the two extension seams are (a) new route defs and (b) new ChangeNotifier providers.",
+      "Screens live under lib/screens/, services (API clients, repositories) under lib/services/. Keep widgets leaf-only; push state up to providers.",
+      "Auth/payments/sdk slots drop config JSON at the project root \u2014 a bootstrap hook reads those at app start and rehydrates the matching service. Keep secrets out of the client bundle; fetch from a secured backend."
+    ],
+    "placeholders": [
+      {
+        "path": "{{packageName}} \u2014 maps to pubspec.yaml `name",
+        "description": "` (lowercase, snake_case)"
+      },
+      {
+        "path": "lib/main.dart",
+        "description": "{{projectName}} \u2014 display name used in MaterialApp title"
+      },
+      {
+        "path": "lib/main.dart",
+        "description": "{{headline}} + {{subheadline}} \u2014 shown on the home screen"
+      }
+    ]
+  }
+}

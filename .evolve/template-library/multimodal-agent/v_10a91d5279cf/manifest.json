@@ -1,0 +1,60 @@
+{
+  "id": "multimodal-agent",
+  "description": "React 19 multimodal composer — three independent inputs (text, image drop, audio record) packed into one multipart POST to /api/multimodal.",
+  "appliesTo": ["multimodal-agent"],
+  "files": [
+    {
+      "source": "files/main.tsx",
+      "target": "src/main.tsx"
+    },
+    {
+      "source": "files/App.tsx",
+      "target": "src/App.tsx"
+    }
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "react": "^19.2.0",
+      "react-dom": "^19.2.0"
+    },
+    "devDependencies": {
+      "@types/react": "^19.2.0",
+      "@types/react-dom": "^19.2.0",
+      "@vitejs/plugin-react": "^4.7.0",
+      "typescript": "^5.9.0",
+      "vite": "^6.4.2"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "Multimodal LLM clients that accept text, image, and audio in one request — GPT-4o, Claude Vision, or Gemini multimodal.",
+    "firstSteps": [
+      "Run `pnpm install` then `pnpm dev` — the three-panel composer loads on port 4182.",
+      "Wire the backend: implement POST /api/multimodal that accepts multipart/form-data with fields `text`, `image`, and `audio`. See api/README.md for provider recipes (Anthropic, OpenAI, Gemini).",
+      "The client handles both non-streamed JSON `{\"reply\":\"...\"}` and streamed text/plain — pick whichever the backend returns.",
+      "Run `node validate-multimodal.mjs` to verify the scaffold wiring before adding features."
+    ],
+    "gotchas": [
+      "multipart/form-data is the only format all three big multimodal APIs accept without re-encoding. Don't wrap image + audio in a JSON body — base64 overhead bloats payloads and breaks streaming.",
+      "React 19 Strict Mode runs effects twice in dev — getUserMedia without a cleanup track-stop causes NotReadableError on the second invocation. The cleanup is already wired; don't remove it.",
+      "Dropped files trigger both `dragover` and `drop` — preventDefault on dragover is MANDATORY or the browser navigates to the file URL and the drop handler never fires.",
+      "Safari's DataTransferItemList only exposes files synchronously inside the drop handler. Awaiting anything before reading `e.dataTransfer.files` clears the list.",
+      "The <audio> preview element needs `URL.revokeObjectURL` on re-record or remove — Chrome retains the blob until full GC otherwise."
+    ],
+    "architectureNotes": [
+      "Three independent useState machines (text, image, audio) converge only at send() — this prevents stale-closure bugs that arise from a single merged state object.",
+      "Streaming is plain Fetch API ReadableStream + TextDecoder — no SSE or WebSocket dependency required."
+    ],
+    "placeholders": [
+      {
+        "path": "src/App.tsx",
+        "description": "{{headline}} and {{subheadline}} are template tokens replaced at compose time by the family defaults. The POST target /api/multimodal is the fixed contract — implement that route in your backend."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm dev", "pnpm build", "node validate-multimodal.mjs"],
+    "entrypoints": ["src/App.tsx", "src/main.tsx", "api/README.md"],
+    "preview": { "path": "/" },
+    "extensionPoints": ["src/App.tsx", "api/"]
+  }
+}

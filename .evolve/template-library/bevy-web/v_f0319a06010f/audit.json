@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-04-21T07:54:23.617Z",
+  "audits": [
+    {
+      "layerId": "framework:bevy-web",
+      "family": "bevy-web",
+      "pm": "cargo",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "cargo check",
+          "ok": true,
+          "durationMs": 29685.362083,
+          "stderrTail": "    Checking bevy_a11y v0.14.2\n    Checking bevy_time v0.14.2\n    Checking bevy_asset v0.14.2\n    Checking bevy_log v0.14.2\n    Checking bevy_input v0.14.2\n    Checking bevy_window v0.14.2\n    Checking bevy_hierarchy v0.14.2\n    Checking bevy_diagnostic v0.14.2\n    Checking bevy_transform v0.14.2\n    Checking bevy_state v0.14.2\n    Checking bevy_gilrs v0.14.2\n    Checking bevy_winit v0.14.2\n    Checking bevy_render v0.14.2\n    Checking coreaudio-rs v0.11.3\n    Checking rodio v0.18.1\n    Checking bevy_audio v0.14.2\n    Checking bevy_core_pipeline v0.14.2\n    Checking bevy_animation v0.14.2\n    Checking bevy_scene v0.14.2\n    Checking bevy_sprite v0.14.2\n    Checking bevy_pbr v0.14.2\n    Checking bevy_text v0.14.2\n    Checking bevy_ui v0.14.2\n    Checking bevy_gizmos v0.14.2\n    Checking bevy_gltf v0.14.2\n    Checking bevy_internal v0.14.2\n    Checking bevy v0.14.2\n    Checking starter_foundry_bevy v0.1.0 (/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/audit-bevy-web-RqOc2Z)\n    Finished `dev` profile [optimized + debuginfo] target(s) in 29.44s\n",
+          "stdoutTail": ""
+        },
+        {
+          "phase": "validationChecks",
+          "skipped": "none-declared",
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "family": "astro-static",
+  "current": "v_578cafa9e9c4",
+  "topN": [
+    "v_578cafa9e9c4",
+    "v_795e9e503c1e"
+  ],
+  "all": [
+    {
+      "version": "v_578cafa9e9c4",
+      "score": 0.7899926579322045,
+      "skipped": null
+    },
+    {
+      "version": "v_795e9e503c1e",
+      "score": 0.6299999945649417,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.259Z"
+}

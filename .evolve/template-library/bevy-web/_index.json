@@ -1,0 +1,22 @@
+{
+  "family": "bevy-web",
+  "current": "v_f0319a06010f",
+  "topN": [
+    "v_f0319a06010f",
+    "v_cd5f7412c883"
+  ],
+  "all": [
+    {
+      "version": "v_f0319a06010f",
+      "score": 0.6099932891948885,
+      "skipped": null
+    },
+    {
+      "version": "v_cd5f7412c883",
+      "score": 0.4599999945649416,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.264Z"
+}

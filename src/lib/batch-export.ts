@@ -1,10 +1,9 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { spawn } from 'node:child_process'
 import { composeStarter } from './compose.js'
 import { fattenStarter } from './fatten.js'
 import { validateStarter } from './validate.js'
-import { ensureDir, readJson, writeJson } from './fs.js'
+import { ensureDir, readJson, runTar, writeJson } from './fs.js'
 import { listRegistry } from './registry.js'
 import type { ComposeSpec } from '../types.js'
 
@@ -39,16 +38,6 @@ interface BatchExportResult {
   failed: number
   results: ExportResult[]
   durationMs: number
-}
-
-function runTar(sourceDir: string, archivePath: string): Promise<boolean> {
-  return new Promise((resolve) => {
-    const child = spawn('tar', ['-czf', archivePath, '-C', sourceDir, '.'], {
-      stdio: ['ignore', 'ignore', 'ignore'],
-    })
-    child.on('close', (code) => resolve(code === 0))
-    child.on('error', () => resolve(false))
-  })
 }
 
 export async function batchExport({

@@ -1,50 +1,54 @@
 {
-  "timestamp": "2026-04-20T18:10:00Z",
-  "commit": "1ea624b",
-  "scope": "src/ + scripts/ + tests/ (83 files, 15,269 LOC)",
-  "measurements": {
-    "tsc_noEmit": "clean (no errors)",
-    "tsc_tests": "clean",
-    "tests_passing": 401,
-    "tests_total": 401,
-    "weak_types": 31,
-    "weak_types_classification": "100% legitimate (unknown at JSON/LLM/error boundaries) — no removal target",
-    "try_catch_src": 49,
-    "try_catch_total": 79,
-    "debt_markers_todo_fixme": 0,
-    "circular_deps": 0,
-    "jscpd_duplication_pct": 1.04,
-    "jscpd_clones": 8,
-    "lint_violations": "n/a (no eslint)",
-    "knip_unused_files": 2,
-    "knip_unused_exports": 7,
-    "knip_unused_types": 26,
-    "knip_unlisted_deps": 1
+  "timestamp": "2026-04-21T00:53:00Z",
+  "scope": "full-repo post-tier1-closure merge + Batch 6 additions",
+  "notesVsPriorRun": "Prior deep-clean (2026-04-20, commit 1ea624b) closed 401-test baseline. Since then Batch 6 added brand/visual-regression/multi-propose/training/template_v1 + CLI entrypoints that regressed some knip metrics.",
+  "build": "pass",
+  "tests": { "passed": 466, "failed": 0, "total": 466 },
+  "typeErrors": 0,
+  "strictMode": true,
+  "weakTypes": 1,
+  "debtMarkers": 0,
+  "tryCatchBlocks": 20,
+  "circularDeps": 0,
+  "src": {
+    "files": 66,
+    "lines": 11534,
+    "duplicatedLines": 92,
+    "duplicationPercent": 0.8,
+    "clones": 9,
+    "longestFiles": [
+      "src/lib/compose.ts (502)",
+      "src/lib/workspace.ts (499)",
+      "src/lib/keywords.ts (475)",
+      "src/types.ts (471)",
+      "src/lib/prompt-planner.ts (455)"
+    ]
   },
-  "knip_findings": {
-    "unused_files_real": {
-      "reason": "dynamically-imported contract endpoints for scripts/multi-pursue-eval.mjs",
-      "files": [
-        "src/training/variant_b/generate.ts",
-        "src/training/variant_b/judge.ts"
-      ],
-      "action": "add to knip entry list"
-    },
-    "unused_exports_real": {
-      "detectProvider": "used only inside llm.ts — make non-exported",
-      "parseInstructionRules": "dead — used nowhere",
-      "scoreCandidateStandalone": "dead",
-      "loadOptimizedProgram": "dead",
-      "startSpan": "used only inside telemetry.ts withSpan — make non-exported",
-      "endSpan": "same",
-      "failSpan": "same"
-    },
-    "unused_types_real": {
-      "reason": "these ARE the public contract per docs/INTEGRATION.md — external consumers import them; keep exported",
-      "count": 26
-    },
-    "unlisted_dep": {
-      "@opentelemetry/api": "dynamically require()'d in src/lib/telemetry.ts — add to optionalDependencies"
-    }
+  "scripts": {
+    "files": 36,
+    "lines": 4079,
+    "duplicatedLines": 75,
+    "duplicationPercent": 1.84,
+    "clones": 7
+  },
+  "knip": {
+    "unusedFiles": 2,
+    "unusedExports": 1,
+    "unusedTypes": 28,
+    "newUnusedFiles": [
+      "src/training/template_v1/audit.ts",
+      "src/training/template_v1/run.ts"
+    ],
+    "newUnusedExports": ["chooseWorkerFamily @ src/lib/planner/projects.ts:107"]
+  },
+  "deadCode": {
+    "voidImportsPattern": "src/training/template_v1/audit.ts had 5 unused imports silenced with `void X`"
+  },
+  "clonesHotspot": {
+    "runTar": "identical 10-line function in batch-export.ts and release.ts — pure 2-instance, token-for-token duplicate"
+  },
+  "outdated": {
+    "@types/node": "20.19.39 -> 25.6.0",
+    "typescript": "5.9.3 -> 6.0.3"
   }
 }

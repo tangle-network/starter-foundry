@@ -1,0 +1,138 @@
+{
+  "id": "healthcare-hipaa-backend",
+  "description": "HIPAA-aligned healthcare API framework layer — Drizzle schema (patients, encounters, providers, immutable audit_logs), PHI field-level encryption, PHI-access middleware.",
+  "appliesTo": ["healthcare-hipaa-backend"],
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/server.ts",
+      "target": "src/server.ts"
+    },
+    {
+      "source": "files/schema.ts",
+      "target": "src/db/schema.ts"
+    },
+    {
+      "source": "files/db.ts",
+      "target": "src/db/client.ts"
+    },
+    {
+      "source": "files/encryption.ts",
+      "target": "src/encryption.ts"
+    },
+    {
+      "source": "files/phi-access.ts",
+      "target": "src/api/phi-access.ts"
+    },
+    {
+      "source": "files/patients.ts",
+      "target": "src/api/patients.ts"
+    },
+    {
+      "source": "files/encounters.ts",
+      "target": "src/api/encounters.ts"
+    },
+    {
+      "source": "files/drizzle.config.ts",
+      "target": "drizzle.config.ts"
+    },
+    {
+      "source": "files/hipaa.md",
+      "target": "config/hipaa.md"
+    }
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "drizzle-orm": "^0.36.0",
+      "postgres": "^3.4.5"
+    },
+    "devDependencies": {
+      "drizzle-kit": "^0.30.0",
+      "typescript": "^5.9.0",
+      "@types/node": "^20.17.0"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "Healthcare products, clinical platforms, patient portals, EHR/EMR integrations, or any service that stores or transmits Protected Health Information (PHI) and requires HIPAA-compliant infrastructure from day one.",
+    "firstSteps": [
+      "Run `pnpm install` then set `DATABASE_URL` (postgres://...) and `PHI_ENCRYPTION_KEY` (64-char hex: `node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\"`).",
+      "Run `pnpm db:generate && pnpm db:migrate` to create the patients, encounters, providers, and audit_logs tables.",
+      "Start the server with `pnpm dev` — it listens on port 8100. `GET /health` should return `{\"status\":\"ok\"}`.",
+      "All `/api/*` routes require `X-Actor-Id` and `X-Actor-Role` headers; wire in your real auth layer (better-auth or Clerk slot) before storing real PHI.",
+      "Run `node validate-hipaa.mjs` to verify all required HIPAA controls are present."
+    ],
+    "apiRoutes": [
+      "GET /health",
+      "GET /api/patients/:id (authn + audit-logged PHI read)",
+      "POST /api/patients (authn, PHI encrypted at rest)",
+      "GET /api/encounters/:id",
+      "POST /api/encounters"
+    ],
+    "dataModels": [
+      "Patient (mrn, encryptedName, encryptedDob, encryptedSsn, sex, createdAt)",
+      "Provider (npi, name, specialty, createdAt)",
+      "Encounter (patientId, providerId, encounteredAt, encryptedNotes, cptCode, icd10Codes)",
+      "AuditLog (actorId, action, resourceType, resourceId, occurredAt, reason) — append-only"
+    ],
+    "integrations": [
+      "Drizzle ORM with Postgres",
+      "Node crypto (AES-256-GCM) for field-level PHI encryption",
+      "Append-only audit_logs via trigger / INSERT-only grants"
+    ],
+    "architectureNotes": [
+      "PHI is never stored in plaintext — encrypted columns use AES-256-GCM with per-record IV",
+      "Every PHI read goes through phi-access middleware which writes an AuditLog row BEFORE returning data",
+      "audit_logs is append-only: no UPDATE/DELETE grants in production; enforced by Postgres trigger",
+      "Encryption key comes from PHI_ENCRYPTION_KEY env — in production this lives in a KMS (AWS KMS, GCP KMS, HashiCorp Vault)"
+    ],
+    "gotchas": [
+      "NEVER log PHI to stdout, stderr, files, or APM traces — logging middleware must redact patient.name, patient.dob, encounter.notes. Console.log of a Patient row is a HIPAA breach.",
+      "A BAA (Business Associate Agreement) with every subprocessor (cloud provider, email, analytics, error tracking) is REQUIRED before storing real PHI. Test data only until BAAs are executed.",
+      "audit_logs must be append-only. Do NOT add .update() / .delete() helpers on the AuditLog table — the whole point is tamper-evidence.",
+      "AES-256-GCM requires a UNIQUE IV per encryption. Reusing IV + key on different plaintexts breaks confidentiality. The helper generates a random 12-byte IV per field.",
+      "Don't store the encryption key in the database, source code, or the same secret store as the DB creds. Key compromise + DB compromise = total PHI exposure.",
+      "HIPAA minimum-necessary rule: API responses must filter fields based on the caller's role. A billing user doesn't need to see encounter.notes.",
+      "PHI must be encrypted in transit — TLS 1.2+ only. Disable HTTP. Disable weak ciphers.",
+      "Audit log retention is 6 years minimum under HIPAA. Lifecycle policy on object storage, NOT ad-hoc deletes."
+    ],
+    "placeholders": [
+      {
+        "path": "src/api/phi-access.ts",
+        "description": "resolveActor reads X-Actor-Id / X-Actor-Role headers as a stub. Replace with your real auth layer (Clerk, better-auth, mTLS) before storing real PHI."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "pnpm dev",
+      "pnpm typecheck",
+      "pnpm db:generate",
+      "pnpm db:migrate",
+      "pnpm validate"
+    ],
+    "entrypoints": [
+      "src/server.ts",
+      "src/db/schema.ts",
+      "src/encryption.ts",
+      "src/api/phi-access.ts",
+      "config/hipaa.md"
+    ],
+    "preview": {
+      "path": "/health"
+    },
+    "extensionPoints": [
+      "src/db/schema.ts",
+      "src/api/",
+      "src/api/phi-access.ts",
+      "config/hipaa.md"
+    ]
+  }
+}

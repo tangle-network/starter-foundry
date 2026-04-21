@@ -1,0 +1,164 @@
+{
+  "id": "threejs-game",
+  "description": "Three.js WebGL 3D scene starter on Vite with a renderer, camera, lit mesh, and resize loop wired from first render.",
+  "tags": [
+    "frontend",
+    "typescript",
+    "three.js",
+    "webgl",
+    "game",
+    "3d"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "frontend"
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "serviceName": "starter-foundry-threejs",
+    "port": 5173
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/vite.config.ts",
+      "target": "vite.config.ts"
+    },
+    {
+      "source": "files/index.html",
+      "target": "index.html"
+    },
+    {
+      "source": "files/validate-threejs.mjs",
+      "target": "validate-threejs.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "index.html"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/main.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "package.json"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-threejs.mjs"
+      ],
+      "expect": "threejs game starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "pnpm dev",
+      "pnpm build"
+    ],
+    "entrypoints": [
+      "src/main.ts",
+      "index.html",
+      "vite.config.ts",
+      "package.json"
+    ],
+    "preview": {
+      "path": "/"
+    },
+    "extensionPoints": [
+      "src/main.ts",
+      "src/scene.ts",
+      "src/loop.ts"
+    ]
+  },
+  "keywords": [
+    "three.js",
+    "threejs",
+    "webgl",
+    "3d scene",
+    "3d viewer",
+    "3d model",
+    "gltf",
+    "webgpu",
+    "shader",
+    "glsl"
+  ],
+  "scoring": {
+    "boost": {
+      "three.js": 4,
+      "threejs": 4,
+      "webgl": 2
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "three.js",
+      "threejs",
+      "webgl 3d scene",
+      "3d model viewer",
+      "gltf viewer"
+    ],
+    "tier2": [
+      "3d scene",
+      "3d game",
+      "webgl",
+      "shader",
+      "glsl",
+      "raymarching",
+      "point cloud"
+    ],
+    "archetypes": [
+      "3d model viewer",
+      "3d product configurator",
+      "3d scene editor",
+      "gltf viewer",
+      "webgl game",
+      "3d portfolio",
+      "shader playground",
+      "particle system",
+      "physics sandbox",
+      "first person demo",
+      "orbital camera demo",
+      "3d data visualization"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "3D scene viewers, WebGL games, shader playgrounds, gltf/fbx asset explorers, or any product archetype where the primary surface is a live 3D canvas.",
+    "firstSteps": [
+      "Install: `pnpm install` then `pnpm dev` — Vite serves on 5173 with HMR, the cube should render immediately.",
+      "The full scene lives in `src/main.ts` — scene, camera, renderer, lights, mesh, and animation loop are all in one file so you can fork cleanly.",
+      "Add 3D models via `three/examples/jsm/loaders/GLTFLoader.js` — place assets in `public/` (Vite serves it at the root) and load with `new GLTFLoader().load('/model.glb', ...)`.",
+      "Build: `pnpm build` emits static assets to `dist/` — deploy anywhere; there is no server.",
+      "For shaders, import `.glsl` as `?raw` or inline as template strings; there is no GLSL plugin by default."
+    ],
+    "gotchas": [
+      "Canvas must be resized on window resize — call `renderer.setSize(w, h)` AND `camera.aspect = w/h; camera.updateProjectionMatrix()`. Setting only CSS width/height stretches the image and does not update the projection.",
+      "`renderer.setPixelRatio(window.devicePixelRatio)` is required for sharp output on retina, but cap it at 2 — uncapped it tanks framerate on 3x phones.",
+      "`requestAnimationFrame` must be cancelled on teardown (HMR, route change), otherwise multiple loops run in parallel and CPU climbs. Store the handle and call `cancelAnimationFrame`.",
+      "Dispose geometries, materials, and textures manually when swapping scenes — three.js does not garbage-collect GPU memory. Use `geometry.dispose()`, `material.dispose()`, `texture.dispose()`."
+    ],
+    "architectureNotes": [
+      "Single renderer, single scene, single render loop — do not create a new `WebGLRenderer` per frame or per component; it leaks the GL context.",
+      "Keep render-loop work pure: mutate transforms in the loop, construct meshes/materials outside it. Allocations inside the loop cause GC pauses visible as jank."
+    ],
+    "placeholders": [
+      {
+        "path": "src/main.ts",
+        "description": "Scene bootstrap — renderer, camera, lights, and a rotating cube plus resize + animation loop. Replace the cube with the product's actual geometry or `GLTFLoader` call; keep the resize + dispose plumbing."
+      }
+    ]
+  }
+}

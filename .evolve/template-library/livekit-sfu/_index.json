@@ -1,0 +1,22 @@
+{
+  "family": "livekit-sfu",
+  "current": "v_f24ddb6bc43b",
+  "topN": [
+    "v_f24ddb6bc43b",
+    "v_951cda59852d"
+  ],
+  "all": [
+    {
+      "version": "v_f24ddb6bc43b",
+      "score": 0.7699954827990234,
+      "skipped": null
+    },
+    {
+      "version": "v_951cda59852d",
+      "score": 0.6099999945776257,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.357Z"
+}

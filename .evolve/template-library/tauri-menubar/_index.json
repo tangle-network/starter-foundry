@@ -1,0 +1,16 @@
+{
+  "family": "tauri-menubar",
+  "current": "v_13155752d771",
+  "topN": [
+    "v_13155752d771"
+  ],
+  "all": [
+    {
+      "version": "v_13155752d771",
+      "score": 0.6999999945807965,
+      "skipped": null
+    }
+  ],
+  "generationCount": 1,
+  "lastPromotedAt": "2026-04-21T09:04:56.415Z"
+}

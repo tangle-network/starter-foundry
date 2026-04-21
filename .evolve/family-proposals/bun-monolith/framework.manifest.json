@@ -1,0 +1,8 @@
+{
+  "id": "bun-monolith",
+  "description": "Framework layer for bun-monolith.",
+  "appliesTo": [
+    "bun-monolith"
+  ],
+  "files": []
+}

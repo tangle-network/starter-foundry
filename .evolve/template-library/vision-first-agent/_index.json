@@ -1,0 +1,22 @@
+{
+  "family": "vision-first-agent",
+  "current": "v_4559caf7cf98",
+  "topN": [
+    "v_4559caf7cf98",
+    "v_b9cdf7bea726"
+  ],
+  "all": [
+    {
+      "version": "v_4559caf7cf98",
+      "score": 0.7699984169155887,
+      "skipped": null
+    },
+    {
+      "version": "v_b9cdf7bea726",
+      "score": 0.6199999945839676,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.438Z"
+}

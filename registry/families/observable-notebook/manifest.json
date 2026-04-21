@@ -1,0 +1,110 @@
+{
+  "id": "observable-notebook",
+  "description": "Observable Framework starter — reactive data-app SSG that renders Markdown with JavaScript data loaders into a static site, no server runtime in production.",
+  "tags": [
+    "observable",
+    "observable-framework",
+    "data-app",
+    "notebook",
+    "frontend"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "frontend"
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "serviceName": "starter-foundry-observable",
+    "port": 3000,
+    "headline": "Starter Foundry Observable",
+    "subheadline": "Reactive data dashboards with Observable Framework.",
+    "databaseProvider": "none"
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/observablehq.config.ts",
+      "target": "observablehq.config.ts"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/index.md",
+      "target": "src/index.md"
+    },
+    {
+      "source": "files/validate-observable.mjs",
+      "target": "validate-observable.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "observablehq.config.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/index.md"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-observable.mjs"
+      ],
+      "expect": "observable starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "npm install",
+      "npm run dev",
+      "npm run build"
+    ],
+    "entrypoints": [
+      "observablehq.config.ts",
+      "src/index.md",
+      "src/overview.md"
+    ],
+    "preview": {
+      "port": "{{port}}",
+      "path": "/"
+    },
+    "extensionPoints": [
+      "starter-data.json",
+      "starter-brand.json"
+    ]
+  },
+  "keywords": [
+    "observable",
+    "observable framework",
+    "observablehq",
+    "observable notebook",
+    "reactive dashboard",
+    "data loader"
+  ],
+  "scoring": {
+    "boost": {
+      "observable": 3,
+      "observablehq": 3
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "observable framework",
+      "observablehq",
+      "observable notebook"
+    ],
+    "tier2": [
+      "observable",
+      "reactive dashboard",
+      "data loader"
+    ]
+  }
+}

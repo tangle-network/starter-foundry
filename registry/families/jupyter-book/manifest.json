@@ -1,0 +1,115 @@
+{
+  "id": "jupyter-book",
+  "description": "Jupyter Book starter — publish executable Markdown and notebooks as a multi-page book with MyST, executed by Sphinx under the hood.",
+  "tags": [
+    "jupyter-book",
+    "jupyter",
+    "documentation",
+    "scientific",
+    "python"
+  ],
+  "taxonomy": {
+    "language": "python",
+    "runtime": "python",
+    "surface": "docs"
+  },
+  "defaults": {
+    "projectType": "docs",
+    "serviceName": "starter-foundry-jbook",
+    "port": 8098,
+    "headline": "Starter Foundry Jupyter Book",
+    "subheadline": "Executable scientific book built with Jupyter Book and MyST.",
+    "author": "Starter Foundry"
+  },
+  "files": [
+    {
+      "source": "files/_config.yml",
+      "target": "_config.yml"
+    },
+    {
+      "source": "files/_toc.yml",
+      "target": "_toc.yml"
+    },
+    {
+      "source": "files/requirements.txt",
+      "target": "requirements.txt"
+    },
+    {
+      "source": "files/intro.md",
+      "target": "content/intro.md"
+    },
+    {
+      "source": "files/validate-jupyter-book.mjs",
+      "target": "validate-jupyter-book.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "_config.yml"
+    },
+    {
+      "type": "file-exists",
+      "path": "_toc.yml"
+    },
+    {
+      "type": "file-exists",
+      "path": "content/intro.md"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-jupyter-book.mjs"
+      ],
+      "expect": "jupyter-book starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pip install -r requirements.txt",
+      "jupyter-book build .",
+      "python -m http.server --directory _build/html {{port}}"
+    ],
+    "entrypoints": [
+      "_config.yml",
+      "_toc.yml",
+      "content/intro.md"
+    ],
+    "preview": {
+      "port": "{{port}}",
+      "path": "/"
+    },
+    "extensionPoints": [
+      "starter-data.json"
+    ]
+  },
+  "keywords": [
+    "jupyter book",
+    "jupyter-book",
+    "executable book",
+    "myst markdown",
+    "scientific documentation",
+    "notebook book",
+    "computational narrative"
+  ],
+  "scoring": {
+    "boost": {
+      "jupyter-book": 3,
+      "jupyter book": 3
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "jupyter book",
+      "jupyter-book",
+      "executable book",
+      "computational narrative"
+    ],
+    "tier2": [
+      "myst markdown",
+      "scientific documentation",
+      "notebook book"
+    ]
+  }
+}

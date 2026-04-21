@@ -223,7 +223,7 @@
       "complexity": "simple",
       "partner": null,
       "prompt": "Write an Aptos Move module for a token vesting contract.",
-      "expected": { "kind": "starter", "family": "move-contracts" }
+      "expected": { "kind": "starter", "family": "aptos-move" }
     },
     {
       "id": "ho-workspace-saas-agent",

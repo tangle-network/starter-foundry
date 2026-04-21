@@ -1,0 +1,174 @@
+{
+  "id": "tauri-tray",
+  "description": "Tauri system-tray daemon app — tray icon + context menu + native notifications, no primary window.",
+  "tags": [
+    "desktop",
+    "tauri",
+    "tray",
+    "daemon",
+    "typescript"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "tauri",
+    "surface": "frontend"
+  },
+  "slots": {
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk",
+        "auth:supabase-auth"
+      ],
+      "default": "auth:none"
+    },
+    "payments": {
+      "options": [
+        "payments:none",
+        "payments:stripe",
+        "payments:coinbase-commerce"
+      ],
+      "default": "payments:none"
+    },
+    "sdk": {
+      "options": [
+        "sdk:none",
+        "sdk:coinbase-cdp",
+        "sdk:solana-web3",
+        "sdk:evm-wallet"
+      ],
+      "default": "sdk:none"
+    }
+  },
+  "defaults": {
+    "projectType": "desktop",
+    "port": 4197,
+    "headline": "Starter Foundry Tray Daemon",
+    "subheadline": "A background tray-icon app driven by a context menu and native notifications."
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/preview-server.mjs",
+      "target": "preview-server.mjs"
+    },
+    {
+      "source": "files/validate-types.mjs",
+      "target": "validate-types.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "src-tauri/Cargo.toml"
+    },
+    {
+      "type": "file-exists",
+      "path": "src-tauri/src/lib.rs"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-types.mjs"
+      ],
+      "expect": "tauri tray ok"
+    },
+    {
+      "type": "http-start",
+      "command": [
+        "node",
+        "preview-server.mjs"
+      ],
+      "path": "/",
+      "expect": "{{headline}}"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "node preview-server.mjs",
+      "cargo tauri dev"
+    ],
+    "entrypoints": [
+      "src-tauri/src/lib.rs",
+      "src-tauri/tauri.conf.json"
+    ],
+    "preview": {
+      "path": "/"
+    },
+    "extensionPoints": [
+      "auth-config.json",
+      "payments-config.json",
+      "sdk-config.json"
+    ]
+  },
+  "keywords": [
+    "system tray app",
+    "tray icon only",
+    "background daemon ui",
+    "notification app",
+    "tray menu app",
+    "tauri tray",
+    "status bar app",
+    "taskbar tray"
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "system tray app",
+      "tray icon only",
+      "tauri tray",
+      "tray menu",
+      "background daemon"
+    ],
+    "tier2": [
+      "notification app",
+      "status bar daemon",
+      "taskbar tray",
+      "background worker ui",
+      "silent desktop app"
+    ],
+    "tier3": [
+      "always running app",
+      "sync client",
+      "desktop notifier"
+    ],
+    "archetypes": [
+      "tray-only utility",
+      "background sync daemon",
+      "notifier app"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Pick tauri-tray when the app has NO primary window — it lives as a tray icon with a right-click context menu and fires OS notifications. Classic examples: Dropbox sync, 1Password background, a Slack notifier, a build-status watcher. If the user needs a popover panel on click, use tauri-menubar. If they need a real window, use tauri-desktop.",
+    "architectureNotes": [
+      "No webview is shown on startup — the app is effectively headless Rust with a tray surface.",
+      "All user interaction is via the tray menu (tauri::menu::Menu) and tauri_plugin_notification for native toast messages.",
+      "A hidden utility webview CAN be created lazily if the agent later needs HTML rendering for a settings pane, but the default shape is pure tray.",
+      "macOS: activation policy set to Accessory so no dock icon appears.",
+      "Windows: startup registers the app in the registry Run key via tauri-plugin-autostart so the tray survives reboots."
+    ],
+    "components": [
+      "Tray menu items (Status, Sync now, Open logs, Preferences, Quit).",
+      "Notification dispatch on sync events (success/failure/reminders).",
+      "Optional file-system log writer — tray daemons often need introspection without a UI."
+    ],
+    "gotchas": [
+      "macOS: without ActivationPolicy::Accessory you end up with a ghost dock icon AND a tray icon. Always set it in the .setup() handler.",
+      "macOS notarization: background daemons still need the hardened runtime + notarization — users see a scary Gatekeeper warning otherwise.",
+      "Windows: tray-only apps without a window confuse some antivirus heuristics. Sign the binary with a code-signing cert and submit to Microsoft SmartScreen via Partner Center to avoid SmartScreen warnings.",
+      "Notifications on macOS require `NSUserNotificationsUsageDescription` in Info.plist (via tauri.conf.json bundle.macOS) AND the user must grant permission on first send — handle the denial case.",
+      "Linux (GNOME 45+): tray icons require the AppIndicator extension. Document this in README — Tauri uses libappindicator under the hood and silently fails on stock GNOME.",
+      "If you later add a hidden webview, do NOT ship it as `visible: true` in tauri.conf.json — set `visible: false` and show programmatically, otherwise the window flashes on app start."
+    ],
+    "integrations": [
+      "tauri-plugin-notification — OS-native toast/alert banners",
+      "tauri-plugin-autostart — launch at login so the tray survives reboots",
+      "tauri-plugin-log — file-based logging since there is no on-screen UI"
+    ]
+  }
+}

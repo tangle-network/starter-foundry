@@ -1,0 +1,22 @@
+{
+  "familyId": "tauri-menubar",
+  "runAt": "2026-04-21T06:35:50.570Z",
+  "completed": true,
+  "shotsUsed": 1,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 260573,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 260573,
+      "reviewAvailable": true
+    }
+  ]
+}

@@ -1,50 +1,45 @@
 {
-  "timestamp": "2026-04-20T18:30:00Z",
-  "branch": "drew/deep-clean",
-  "baselineCommit": "1ea624b",
+  "timestamp": "2026-04-21T01:05:00Z",
+  "branch": "drew/rlm",
+  "scope": "full-repo post-tier1-closure",
   "deltas": {
-    "loc": { "before": 15269, "after": 15234, "delta": -35 },
-    "weak_types": { "before": 31, "after": 30, "delta": -1, "note": "all remaining are legitimate unknown at JSON/LLM/error boundaries" },
-    "try_catch_src": { "before": 49, "after": 48, "delta": -1, "note": "removed with the 3 dead functions" },
-    "knip_unused_files": { "before": 2, "after": 0, "delta": -2, "note": "added dynamic-import contract endpoints to knip entry" },
-    "knip_unused_exports": { "before": 7, "after": 0, "delta": -7 },
-    "knip_unlisted_deps": { "before": 1, "after": 0, "delta": -1, "note": "@opentelemetry/api added as optionalDependencies" },
-    "knip_unused_types": { "before": 26, "after": 23, "delta": -3, "note": "23 remaining are public integration contract per docs/INTEGRATION.md" },
-    "circular_deps": { "before": 0, "after": 0, "note": "already clean" },
-    "jscpd_duplication_pct": { "before": 1.04, "after": 1.05, "note": "essentially flat; remaining 8 clones are 2-instance, not worth DRY per /deep-clean rule" },
-    "debt_markers": { "before": 0, "after": 0 },
-    "tests_passing": { "before": 401, "after": 401 }
+    "srcLines": { "before": 11534, "after": 11518, "delta": -16 },
+    "duplicationPercent": { "before": 0.8, "after": 0.71, "delta": -0.09 },
+    "clones": { "before": 9, "after": 8, "delta": -1 },
+    "knipUnusedFiles": { "before": 2, "after": 0, "delta": -2 },
+    "knipUnusedExports": { "before": 1, "after": 0, "delta": -1 },
+    "knipUnusedTypes": { "before": 28, "after": 30, "delta": 2, "note": "net +2 from AuditInput/AuditResult now reachable via run.ts entry but not externally imported — kept for internal clarity" },
+    "typeErrors": { "before": 0, "after": 0 },
+    "circularDeps": { "before": 0, "after": 0 },
+    "tests": { "before": 466, "after": 466 }
   },
-  "changes_made": {
-    "dead_code_removed": [
-      "src/training/variant_b/brief-loader.ts — parseInstructionRules (never called)",
-      "src/training/variant_b/nodes/train.ts — loadOptimizedProgram (never called)",
-      "src/training/variant_b/nodes/judge.ts — scoreCandidateStandalone (never called)"
+  "changes": {
+    "deadCodeRemoved": [
+      "src/training/template_v1/audit.ts — 5 unused imports (readFileSync, readdirSync, statSync, copyFileSync, REPO) previously silenced with `void X`"
     ],
-    "made_non_exported": [
-      "src/lib/llm.ts — detectProvider (internal to module)",
-      "src/lib/telemetry.ts — startSpan / endSpan / failSpan (used internally by withSpan/traced only)"
+    "exportsTightened": [
+      "src/lib/planner/projects.ts — chooseWorkerFamily now file-local (only used internally)"
     ],
-    "deps_hygiene": [
-      "package.json — added @opentelemetry/api to optionalDependencies (was transitively required via dynamic import, not declared)"
+    "extractedShared": [
+      "src/lib/fs.ts — added runTar() helper; dedup'd 2× identical 10-line implementations in batch-export.ts + release.ts"
     ],
-    "tooling_added": [
-      "knip.json — entry + project + ignore config for downstream contributors to catch dead code"
+    "toolingAdjusted": [
+      "knip.json — added src/training/template_v1/run.ts as entry (CLI invoked via `pnpm tsx`, not a static import)"
     ]
   },
-  "not_changed_and_why": {
-    "public_contract_types": "23 unused exported types (BuildoutEvent, InferredCapability, ScenarioOutcome, LLMProvider, etc.) are the integration contract documented in docs/INTEGRATION.md — external consumers import them. Keep exported.",
-    "unknown_typed_boundaries": "30 remaining `unknown` usages are all at legitimate boundaries: JSON parse output, LLM tool-use output, caught errors. That's the correct pattern; removal would hide real variance.",
-    "try_catch_blocks": "48 remaining are all catching real external errors (fs, network, cargo/pnpm subprocess exits, malformed JSON). None silently swallow.",
-    "jscpd_clones": "Remaining 8 clones are 2-instance patterns (cache load/persist, branch handlers). Per /deep-clean rule: don't DRY two — abstraction cost exceeds duplication cost.",
-    "readme_length": "Long README is intentional — it's the public feature surface. Not bloat."
+  "notChangedAndWhy": {
+    "unusedTypes": "30 interface/type exports remain unused externally. These are the public integration contract (BuildoutEvent, InferredCapability, SemanticMatch, ScenarioOutcome, LLM types, training harness inputs). External SDKs / tools import them. Keep exported.",
+    "twoInstanceClones": "Remaining 8 clones are 2-instance patterns (e.g. agents CSV parsing in cli.ts cases, timer+spawn in agent-runners vs fatten with different semantics). Per /deep-clean rule: don't DRY two-instance duplication.",
+    "outdatedMajors": "@types/node 20→25 and typescript 5.9→6.0 are major version bumps — scope creep; separate task.",
+    "longFiles": "compose.ts (502), workspace.ts (499), keywords.ts (475) are not bloat — they implement distinct concerns cohesively. Splitting would add import noise without reducing complexity."
   },
   "verification": {
     "build": "pass",
-    "tests": "401/401 pass",
-    "pipeline_smoke": "mine+join+analyze 0.2s, no errors",
-    "knip_residual": "0 unused files, 0 unused exports, 0 unlisted deps, 23 public-API types",
-    "madge_circular": 0,
-    "jscpd_duplication": "1.05% (low-value residual)"
+    "tests": "466/466 pass",
+    "buildoutPipeline": "mine+join+analyze 0.2s, no errors",
+    "madgeCircular": 0,
+    "jscpdSrcPct": 0.71,
+    "knipUnusedFiles": 0,
+    "knipUnusedExports": 0
   }
 }

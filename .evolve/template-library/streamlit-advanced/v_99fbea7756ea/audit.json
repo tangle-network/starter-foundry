@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-04-21T08:32:56.397Z",
+  "audits": [
+    {
+      "layerId": "framework:streamlit-advanced",
+      "family": "streamlit-advanced",
+      "pm": "python3",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "python3 -m compileall .",
+          "ok": true,
+          "durationMs": 36.31904100000003,
+          "stderrTail": "",
+          "stdoutTail": "Listing '.'...\nListing './.starter-foundry'...\nListing './.streamlit'...\nCompiling './app.py'...\nListing './pages'...\nCompiling './pages/1_analysis.py'...\n"
+        },
+        {
+          "phase": "validationChecks",
+          "skipped": "none-declared",
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

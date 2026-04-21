@@ -1,0 +1,22 @@
+{
+  "family": "expo-rn-rich",
+  "current": "v_385015e30af2",
+  "topN": [
+    "v_385015e30af2",
+    "v_0b2f5dfab3be"
+  ],
+  "all": [
+    {
+      "version": "v_385015e30af2",
+      "score": 0.8399947245195967,
+      "skipped": null
+    },
+    {
+      "version": "v_0b2f5dfab3be",
+      "score": 0.6799999945712837,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.305Z"
+}

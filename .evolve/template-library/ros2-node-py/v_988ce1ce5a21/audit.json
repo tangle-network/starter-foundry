@@ -1,0 +1,20 @@
+{
+  "generatedAt": "2026-04-21T07:37:50.247Z",
+  "audits": [
+    {
+      "layerId": "framework:ros2-node-py",
+      "family": "ros2-node-py",
+      "pm": "python3",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "python3 -m compileall .",
+          "ok": true,
+          "durationMs": 492.179291,
+          "stderrTail": "",
+          "stdoutTail": "Listing '.'...\nListing './.starter-foundry'...\nListing './docs'...\nListing './launch'...\nCompiling './launch/bringup.launch.py'...\nListing './resource'...\nCompiling './setup.py'...\nListing './starter_foundry_ros2'...\nCompiling './starter_foundry_ros2/__init__.py'...\nCompiling './starter_foundry_ros2/minimal_publisher.py'...\nCompiling './starter_foundry_ros2/minimal_subscriber.py'...\nCompiling './starter_foundry_ros2/my_node.py'...\n"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "id": "observable-notebook",
+  "description": "Observable Framework layer: overview page demonstrating a JavaScript data loader and Plot chart.",
+  "appliesTo": ["observable-notebook"],
+  "files": [
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/src/observablehq.d.ts", "target": "src/observablehq.d.ts" },
+    { "source": "files/overview.md", "target": "src/overview.md" },
+    { "source": "files/data/rows.json.ts", "target": "src/data/rows.json.ts" }
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "@observablehq/framework": "^1.13.0"
+    },
+    "devDependencies": {
+      "typescript": "^5.7.0",
+      "@types/node": "^20.0.0"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "Interactive data dashboards, analytics UIs, internal reporting tools, or any project where markdown-first reactive notebooks are the primary surface.",
+    "firstSteps": [
+      "Run `pnpm install` then `pnpm dev` — Observable Framework serves on port 3000 with HMR; the home page renders immediately.",
+      "Pages live in `src/` as `.md` files — `src/index.md` is the home page, `src/overview.md` is the demo Overview page.",
+      "Data loaders live in `src/data/` — `src/data/rows.json.ts` runs at build time and its JSON output is consumed in `overview.md` via `FileAttachment`.",
+      "Run `pnpm build` to emit a fully-static site to `dist/` — no server runtime in production, deploy to any CDN."
+    ],
+    "gotchas": [
+      "`Plot` and `Inputs` are Observable Framework globals in `.md` pages — do NOT import them; adding an explicit import will cause a runtime error.",
+      "Data loaders run at build time (and dev-server boot), not in the browser — they have full Node.js access but must write JSON, CSV, or plain text to stdout.",
+      "The `observablehq.config.ts` `pages` array controls sidebar navigation — add a new entry whenever you add a new `.md` file in `src/`.",
+      "TypeScript in `.md` fenced code blocks is not typechecked by `tsc` — only `observablehq.config.ts` and explicit `src/**/*.ts` files are covered."
+    ],
+    "architectureNotes": [
+      "Each `.md` page is an isolated reactive notebook — JavaScript cells run top-to-bottom and can reference earlier cells by name.",
+      "Data loaders decouple heavy computation from the browser — run SQL, Node scripts, or any subprocess as a loader and ship only the serialised output."
+    ],
+    "placeholders": [
+      {
+        "path": "src/data/rows.json.ts",
+        "description": "Synthetic monthly-revenue data loader. Replace the generated array with a real database query or API fetch; keep the `process.stdout.write(JSON.stringify(...))` call so Observable Framework picks up the output."
+      },
+      {
+        "path": "src/overview.md",
+        "description": "Demo overview page backed by the rows.json data loader. Swap in domain-specific metrics, rename columns, and adjust the Plot mark type to match the actual data shape."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm dev", "pnpm build"],
+    "entrypoints": ["observablehq.config.ts", "src/index.md", "src/overview.md"],
+    "preview": { "port": "3000", "path": "/" },
+    "extensionPoints": ["src/data/", "src/components/", "src/overview.md"]
+  }
+}

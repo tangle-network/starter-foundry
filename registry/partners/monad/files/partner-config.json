@@ -1,0 +1,10 @@
+{
+  "partnerId": "monad",
+  "chainId": 10143,
+  "networkName": "monad-testnet",
+  "rpcUrl": "https://testnet-rpc.monad.xyz",
+  "explorerUrl": "https://testnet.monadexplorer.com",
+  "blockTimeMs": 1000,
+  "runtimeFocus": "parallel-evm-l1",
+  "preferredOutputs": ["high-throughput-defi", "on-chain-games", "low-latency-agents"]
+}

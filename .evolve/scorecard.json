@@ -1,8 +1,8 @@
 {
   "product": "starter-foundry",
-  "timestamp": "2026-04-21T00:14:16.833Z",
-  "coverage": "11/11 flows measured",
-  "aggregate": 0.533,
+  "timestamp": "2026-04-21T02:58:41.101Z",
+  "coverage": "12/12 flows measured",
+  "aggregate": 0.497,
   "flows": [
     {
       "name": "route_accuracy_held_out",
@@ -69,8 +69,16 @@
       "direction": "lower-better"
     },
     {
+      "name": "estimated_tokens_per_buildout",
+      "value": 92000,
+      "target": 80000,
+      "status": "fail",
+      "productValueClaim": "Median tokens spent per buildout (proxy: median turns × 2k tokens/turn). Fewer tokens = lower cost per user session + lower LLM API cost for consumers.",
+      "direction": "lower-better"
+    },
+    {
       "name": "families",
-      "value": 45,
+      "value": 85,
       "target": 40,
       "status": "pass",
       "productValueClaim": "Number of distinct family archetypes the router can route to. Breadth = more prompts find a good home.",
@@ -86,9 +94,9 @@
     },
     {
       "name": "partners",
-      "value": 9,
+      "value": 19,
       "target": 10,
-      "status": "fail",
+      "status": "pass",
       "productValueClaim": "Partner packs — ecosystem-specific biases + config. More partners = more prompts get routed with SDK/addresses pre-wired.",
       "direction": "higher-better"
     }

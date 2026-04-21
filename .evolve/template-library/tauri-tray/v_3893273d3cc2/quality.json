@@ -1,0 +1,21 @@
+{
+  "score": 0.6549999945823821,
+  "components": {
+    "validationPass": 0,
+    "bundleBuildOk": 0.25,
+    "typecheckOk": 0.15,
+    "installOk": 0.1,
+    "richness": 0.08000000000000002,
+    "firstShotBonus": 0.025,
+    "freshness": 0.049999994582382044
+  },
+  "dimensions": {
+    "installMs": 3235.4567500000003,
+    "buildMs": null,
+    "tscMs": 5000.994917000001,
+    "validationMs": null,
+    "fileCount": 8,
+    "shotsUsed": 2,
+    "daysOld": 0.00003954861111111111
+  }
+}

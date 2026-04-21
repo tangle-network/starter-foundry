@@ -1,0 +1,44 @@
+{
+  "familyId": "celestia-da",
+  "runAt": "2026-04-21T08:05:45.550Z",
+  "completed": true,
+  "shotsUsed": 3,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 423699,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": false,
+      "failing": [
+        "install"
+      ],
+      "confidence": 0.85,
+      "shouldContinue": true,
+      "durationMs": 97401,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 2,
+      "pass": false,
+      "failing": [
+        "install"
+      ],
+      "confidence": 0.82,
+      "shouldContinue": true,
+      "durationMs": 253793,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 3,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 72504,
+      "reviewAvailable": true
+    }
+  ]
+}

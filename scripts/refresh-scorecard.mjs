@@ -113,6 +113,22 @@ const flows = [
     productValueClaim: 'Count of redundant agent installs when the scaffold already ships the package. Each one is a sign that the consumer pipeline isn\'t running install before handing the scaffold to the agent — informs blueprint-agent orchestration, not our scaffold.',
     direction: 'lower-better',
   },
+  // Cost proxy: mean agent turns × estimated tokens-per-turn (conservative
+  // 2k tok per turn). Real number when blueprint-agent emits actual token
+  // counts via emitBuildoutEvent.outcome.
+  {
+    name: 'estimated_tokens_per_buildout',
+    value: (() => {
+      const turns = (buildout?.perScenario ?? []).map((s) => s.meanTurns).filter((v) => typeof v === 'number' && v > 0)
+      if (turns.length === 0) return null
+      turns.sort((a, b) => a - b)
+      const medianTurns = turns[Math.floor(turns.length / 2)]
+      return Math.round(medianTurns * 2000)
+    })(),
+    target: 80000,
+    productValueClaim: 'Median tokens spent per buildout (proxy: median turns × 2k tokens/turn). Fewer tokens = lower cost per user session + lower LLM API cost for consumers.',
+    direction: 'lower-better',
+  },
   // Registry breadth — running growth metric.
   {
     name: 'families',

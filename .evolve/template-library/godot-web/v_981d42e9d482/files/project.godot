@@ -1,0 +1,5 @@
+; Engine configuration file.
+[gd_resource type="ProjectSettings" format=3]
+[application]
+config/name="GodotWebStarter"
+config/features=PackedStringArray("4.2", "Web")

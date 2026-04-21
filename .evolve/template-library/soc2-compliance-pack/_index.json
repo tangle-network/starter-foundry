@@ -1,0 +1,22 @@
+{
+  "family": "soc2-compliance-pack",
+  "current": "v_66ec5cc79efe",
+  "topN": [
+    "v_66ec5cc79efe",
+    "v_997e3e3da273"
+  ],
+  "all": [
+    {
+      "version": "v_66ec5cc79efe",
+      "score": 0.779996654892821,
+      "skipped": null
+    },
+    {
+      "version": "v_997e3e3da273",
+      "score": 0.6199999945792112,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.404Z"
+}

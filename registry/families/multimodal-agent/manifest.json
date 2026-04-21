@@ -1,0 +1,143 @@
+{
+  "id": "multimodal-agent",
+  "description": "React + Vite multimodal client — three concurrent inputs (text prompt, dropped image, recorded audio) are packed into a single multipart POST to /api/multimodal, and the multimodal LLM's streamed response renders back in the composer. For building GPT-4o/Claude/Gemini multimodal clients without picking a vendor SDK.",
+  "tags": [
+    "multimodal",
+    "react",
+    "vite",
+    "agent",
+    "frontend",
+    "typescript"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "browser",
+    "surface": "frontend"
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "serviceName": "starter-foundry-multimodal",
+    "port": 4182,
+    "headline": "One message, three modalities",
+    "subheadline": "Drop an image, record 3 seconds of audio, type your question. Send — the multimodal LLM sees all three."
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/vite.config.ts",
+      "target": "vite.config.ts"
+    },
+    {
+      "source": "files/index.html",
+      "target": "index.html"
+    },
+    {
+      "source": "files/validate-multimodal.mjs",
+      "target": "validate-multimodal.mjs"
+    },
+    {
+      "source": "files/api/README.md",
+      "target": "api/README.md"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "src/main.tsx"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/App.tsx"
+    },
+    {
+      "type": "file-exists",
+      "path": "index.html"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-multimodal.mjs"
+      ],
+      "expect": "multimodal-agent starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "pnpm run dev"
+    ],
+    "entrypoints": [
+      "src/App.tsx",
+      "src/main.tsx",
+      "index.html",
+      "api/README.md"
+    ],
+    "preview": {
+      "path": "/"
+    },
+    "extensionPoints": [
+      "src/App.tsx",
+      "api/"
+    ]
+  },
+  "keywords": [
+    "multimodal agent",
+    "multimodal chat",
+    "text image audio",
+    "gpt-4o client",
+    "claude vision voice",
+    "multimodal input",
+    "multimodal composer",
+    "multimodal ui",
+    "multimodal llm client",
+    "multimodal frontend"
+  ],
+  "scoring": {
+    "boost": {
+      "multimodal": 4,
+      "multimodal agent": 4,
+      "gpt-4o": 3
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "multimodal agent",
+      "multimodal chat",
+      "multimodal composer",
+      "text image audio"
+    ],
+    "tier2": [
+      "gpt-4o client",
+      "claude vision voice",
+      "multimodal input",
+      "multimodal llm client",
+      "multimodal ui"
+    ],
+    "archetypes": [
+      "point camera ask record chatbot",
+      "multi-input assistant",
+      "image plus voice chat",
+      "drag drop image to llm",
+      "gpt4o playground",
+      "claude vision audio demo"
+    ]
+  },
+  "buildHints": {
+    "gotchas": [
+      "multipart/form-data is the only format all three big multimodal APIs accept without re-encoding. Don't wrap image + audio in a JSON body — base64 + UTF-8 overhead bloats payloads and breaks streaming.",
+      "React 19 Strict Mode runs effects twice in dev — if you kick off getUserMedia inside useEffect without a cleanup, the second call races the first and you get NotReadableError. Always return a cleanup that stops the tracks.",
+      "Dropped files trigger both `dragover` and `drop` — you MUST preventDefault on dragover or the browser will navigate to the file instead of firing your drop handler.",
+      "Recording audio AND previewing an image AND typing text in the same component means three independent state machines. Keep them in separate useState hooks — one merged state object leads to stale-closure bugs.",
+      "The <audio>/<video> preview elements need `URL.revokeObjectURL` when the user re-records or removes the file, else Chrome leaks ~50MB per blob until GC eventually fires.",
+      "Safari's DataTransferItemList only exposes files synchronously inside the drop handler. If you await anything before reading `e.dataTransfer.files`, the list is already cleared."
+    ]
+  }
+}

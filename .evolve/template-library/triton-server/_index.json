@@ -1,0 +1,22 @@
+{
+  "family": "triton-server",
+  "current": "v_71ce9545daea",
+  "topN": [
+    "v_71ce9545daea",
+    "v_eb897ce1e428"
+  ],
+  "all": [
+    {
+      "version": "v_71ce9545daea",
+      "score": 0.6399976373969433,
+      "skipped": null
+    },
+    {
+      "version": "v_eb897ce1e428",
+      "score": 0.47999999458079656,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.432Z"
+}

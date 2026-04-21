@@ -1,0 +1,33 @@
+{
+  "familyId": "aptos-move",
+  "runAt": "2026-04-21T06:58:41.651Z",
+  "completed": true,
+  "shotsUsed": 2,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 248795,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": false,
+      "failing": [
+        "install"
+      ],
+      "confidence": 0.9,
+      "shouldContinue": true,
+      "durationMs": 162207,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 2,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 86588,
+      "reviewAvailable": true
+    }
+  ]
+}

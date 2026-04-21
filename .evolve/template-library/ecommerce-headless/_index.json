@@ -1,0 +1,22 @@
+{
+  "family": "ecommerce-headless",
+  "current": "v_65dfceadd346",
+  "topN": [
+    "v_65dfceadd346",
+    "v_12f345771ade"
+  ],
+  "all": [
+    {
+      "version": "v_65dfceadd346",
+      "score": 0.8499941815892949,
+      "skipped": null
+    },
+    {
+      "version": "v_12f345771ade",
+      "score": 0.6749999945728691,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.280Z"
+}

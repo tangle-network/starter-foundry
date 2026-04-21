@@ -1,0 +1,22 @@
+{
+  "family": "skypilot-serving",
+  "current": "v_98b33d2eb2b1",
+  "topN": [
+    "v_98b33d2eb2b1",
+    "v_fcd085fda0e8"
+  ],
+  "all": [
+    {
+      "version": "v_98b33d2eb2b1",
+      "score": 0.6099968183869229,
+      "skipped": null
+    },
+    {
+      "version": "v_fcd085fda0e8",
+      "score": 0.4599999945776255,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.402Z"
+}

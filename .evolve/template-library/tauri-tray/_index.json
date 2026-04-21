@@ -1,0 +1,22 @@
+{
+  "family": "tauri-tray",
+  "current": "v_c18a2f4f3ace",
+  "topN": [
+    "v_c18a2f4f3ace",
+    "v_3893273d3cc2"
+  ],
+  "all": [
+    {
+      "version": "v_c18a2f4f3ace",
+      "score": 0.8299970994863014,
+      "skipped": null
+    },
+    {
+      "version": "v_3893273d3cc2",
+      "score": 0.6549999945823821,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.421Z"
+}

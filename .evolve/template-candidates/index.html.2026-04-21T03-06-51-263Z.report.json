@@ -1,0 +1,31 @@
+{
+  "templatePath": "index.html",
+  "templateKey": "index.html",
+  "family": "react-vite-ts",
+  "tupleCount": 62,
+  "synthesizer": {
+    "mode": "llm",
+    "reasoning": "The candidate template incorporates the most common variations found in agent rewrites while maintaining the core structure and styling references of the current template. Key changes include: updating the doctype to uppercase <!DOCTYPE html> which is standard convention, changing charset from utf-8 to UTF-8 (uppercase), updating viewport meta tag to match common patterns with 1.0 instead of 1, changing the root div id from \"app\" to \"root\" which is more prevalent in rewrites, and updating the script entry point from /src/main.ts to /src/main.tsx to align with TypeScript React conventions. The Google Fonts preconnect links and Inter font import are retained as they appear in common rewrites and provide consistent styling."
+  },
+  "judge": {
+    "score": 0.6974395523176011,
+    "dimensions": {
+      "addLift": 0.6818181818181819,
+      "removeMatch": 0.5555555555555556,
+      "sizeScore": 0.9947735191637631,
+      "vbTrend": 0.5
+    },
+    "reasoning": "incorporatesFrequentlyAddedLines: 0.36 (current: 0.18, lift: 0.18)\nremovesFrequentlyDeletedLines: 0.56 (5/9)\nsizeDelta: 3 chars (score 0.99)",
+    "removesFrequentlyDeletedLines": 0.5555555555555556,
+    "incorporatesFrequentlyAddedLines": 0.36363636363636365,
+    "sizeDelta": 3
+  },
+  "audit": {
+    "ok": true,
+    "stage": "done",
+    "stderrTail": "",
+    "durationMs": 7197
+  },
+  "decision": "promotable",
+  "generatedAt": "2026-04-21T03:06:51.263Z"
+}

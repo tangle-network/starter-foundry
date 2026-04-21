@@ -1,0 +1,14 @@
+{
+  "name": "godot-web-starter",
+  "version": "0.1.0",
+  "description": "Godot 4 web export starter scaffold",
+  "private": true,
+  "scripts": {
+    "build": "echo 'Run: godot --export-release Web export/web/index.html'",
+    "dev": "npx serve export/web"
+  },
+  "devDependencies": {
+    "serve": "^14.2.0",
+    "typescript": "^5.4.0"
+  }
+}

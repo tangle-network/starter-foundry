@@ -1,0 +1,22 @@
+{
+  "familyId": "stm32-rust",
+  "runAt": "2026-04-21T08:31:25.420Z",
+  "completed": true,
+  "shotsUsed": 1,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 212861,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 212861,
+      "reviewAvailable": true
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "id": "triton-server",
+  "description": "Python project scaffold for NVIDIA Triton Inference Server — src/ package, pyproject.toml with pyright/ruff config, and Makefile targets for install / typecheck / up / client / health.",
+  "appliesTo": ["triton-server"],
+  "files": [
+    { "source": "files/__init__.py",    "target": "src/__init__.py" },
+    { "source": "files/pyproject.toml", "target": "pyproject.toml" },
+    { "source": "files/Makefile",       "target": "Makefile" },
+    { "source": "files/AGENTS.md",      "target": "AGENTS.md" }
+  ],
+  "buildHints": {
+    "whenToUse": "This layer supplies the Python project wrapper for the Triton family — pyproject.toml metadata, a type-checker baseline, and a Makefile so developers can run common tasks without looking up flags.",
+    "firstSteps": [
+      "make install          # pip install -r requirements.txt (tritonclient + numpy)",
+      "make install-dev      # pip install -e '.[dev]' (pyright + ruff)",
+      "make typecheck        # pyright src/ — should be clean out of the box",
+      "make up               # docker compose up -d  (pulls ~15 GB on first run)",
+      "make health           # curl /v2/health/ready — wait for HTTP 200",
+      "make client           # python -m src.client — infer against the identity echo model"
+    ],
+    "gotchas": [
+      "pyproject.toml sets typeCheckingMode=basic; tighten to strict only after adding py.typed and full annotations throughout src/.",
+      "The Makefile uses hard tabs — editors that silently convert to spaces will break make. Most editors detect Makefile type and preserve tabs.",
+      "`make install-dev` requires pyproject.toml to be present (supplied by this layer); running it before layer application will fail.",
+      "pyright is a dev-only dep; the runtime Triton container has no Python typechecker dependency — requirements.txt stays lean.",
+      "model_repository version directories MUST be integers (`1`, `2`, ...). Triton silently skips non-integer dirs like `v1` or `latest`.",
+      "config.pbtxt `platform` and `backend` are mutually exclusive per model — use `backend: \"onnxruntime\"` for ONNX, `platform: \"tensorrt_plan\"` for TRT plans.",
+      "TRT engines (`.plan`) are built for a specific GPU + CUDA + TRT version. An engine built on A100 will not run on H100. Rebuild per deploy target."
+    ],
+    "architectureNotes": [
+      "src/__init__.py makes src/ a proper package so `python -m src.client` resolves without a separate __main__.py.",
+      "pyproject.toml is the single source of truth for Python version, project name, and dev-tool config — requirements.txt is kept as a flat pip-installable subset for Docker and CI.",
+      "The Makefile `health` target hits /v2/health/ready (KServe v2 spec) — not /api/infer, which belongs to the Triton v1 protocol."
+    ],
+    "placeholders": [
+      {
+        "path": "pyproject.toml",
+        "description": "project.name is 'starter-triton' — rename to match your actual project before publishing to PyPI or internal package registries."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "make install",
+      "make install-dev",
+      "make typecheck",
+      "make lint",
+      "make up",
+      "make health",
+      "make client",
+      "make logs"
+    ],
+    "entrypoints": [
+      "src/client.py",
+      "src/__init__.py",
+      "docker-compose.yml",
+      "model_repository/"
+    ],
+    "preview": {
+      "path": "/v2/health/ready",
+      "port": "8000"
+    },
+    "extensionPoints": [
+      "src/client.py",
+      "model_repository/",
+      "pyproject.toml",
+      "Makefile"
+    ]
+  }
+}

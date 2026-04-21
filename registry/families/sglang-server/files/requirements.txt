@@ -1,0 +1,5 @@
+# Client-side only. The SGLang server itself runs via docker-compose
+# (or via the bare-metal launch.sh).
+openai>=1.50.0
+httpx>=0.27.0
+pydantic>=2.9.0

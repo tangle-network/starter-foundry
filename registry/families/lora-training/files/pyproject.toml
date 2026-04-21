@@ -1,0 +1,29 @@
+[project]
+name = "{{serviceName}}"
+version = "0.1.0"
+description = "LoRA / QLoRA fine-tuning starter — PEFT + TRL + bitsandbytes"
+requires-python = ">=3.10"
+dependencies = [
+  "transformers>=4.44.0",
+  "peft>=0.13.0",
+  "trl>=0.11.0",
+  "accelerate>=0.34.0",
+  "bitsandbytes>=0.44.0",
+  "datasets>=3.0.0",
+  "pyyaml>=6.0.2",
+  "python-dotenv>=1.0.0",
+  "sentencepiece>=0.2.0",
+  "protobuf>=4.25.0",
+]
+
+[project.optional-dependencies]
+# Optional on Ampere+/Hopper GPUs. Skip on older cards or set
+# attn_implementation: 'sdpa' in config/train.yaml.
+flash = ["flash-attn>=2.6.0"]
+
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["train", "infer"]

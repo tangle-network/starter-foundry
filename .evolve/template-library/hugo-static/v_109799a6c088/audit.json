@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-04-21T05:54:23.352Z",
+  "audits": [
+    {
+      "layerId": "framework:hugo-static",
+      "family": "hugo-static",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 2130.59825,
+          "stderrTail": "",
+          "stdoutTail": "Progress: resolved 1, reused 0, downloaded 0, added 0\nProgress: resolved 125, reused 85, downloaded 39, added 0\nPackages: +145\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\nProgress: resolved 145, reused 105, downloaded 40, added 145, done\n\ndevDependencies:\n+ hugo-extended 0.127.0 (0.160.1 is available)\n\n╭ Warning ─────────────────────────────────────────────────────────────────────╮\n│                                                                              │\n│   Ignored build scripts: hugo-extended.                                      │\n│   Run \"pnpm approve-builds\" to pick which dependencies should be allowed     │\n│   to run scripts.                                                            │\n│                                                                              │\n╰──────────────────────────────────────────────────────────────────────────────╯\n\nDone in 2s using pnpm v10.22.0\n"
+        },
+        {
+          "phase": "typecheck",
+          "skipped": "no-tsconfig",
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "id": "esp32-rust",
+  "description": "ESP32 Rust firmware starter using the esp-idf-svc + esp-idf-hal stack on top of the ESP-IDF (FreeRTOS). Includes WiFi scan, GPIO LED task, and a tiny HTTP server on :8080. For IoT firmware where you want Rust ergonomics on Espressif's Xtensa silicon without going fully no_std.",
+  "tags": [
+    "embedded",
+    "rust",
+    "iot",
+    "firmware"
+  ],
+  "taxonomy": {
+    "language": "rust",
+    "runtime": "esp-idf",
+    "surface": "embedded"
+  },
+  "slots": {
+    "auth": {
+      "options": ["auth:none"],
+      "default": "auth:none"
+    },
+    "payments": {
+      "options": ["payments:none"],
+      "default": "payments:none"
+    },
+    "sdk": {
+      "options": ["sdk:none"],
+      "default": "sdk:none"
+    }
+  },
+  "defaults": {
+    "projectType": "embedded",
+    "crateName": "starter_foundry_esp32",
+    "packageName": "starter-foundry-esp32",
+    "headline": "Rust on ESP32, WiFi first-class",
+    "subheadline": "esp-idf-svc + esp-idf-hal — FreeRTOS tasks, WiFi, GPIO and an HTTP server on port 8080."
+  },
+  "files": [
+    {
+      "source": "files/Cargo.toml",
+      "target": "Cargo.toml"
+    },
+    {
+      "source": "files/cargo-config.toml",
+      "target": ".cargo/config.toml"
+    },
+    {
+      "source": "files/rust-toolchain.toml",
+      "target": "rust-toolchain.toml"
+    },
+    {
+      "source": "files/sdkconfig.defaults",
+      "target": "sdkconfig.defaults"
+    },
+    {
+      "source": "files/build.rs",
+      "target": "build.rs"
+    },
+    {
+      "source": "files/validate-esp32.mjs",
+      "target": "validate-esp32.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "Cargo.toml"
+    },
+    {
+      "type": "file-exists",
+      "path": ".cargo/config.toml"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/main.rs"
+    },
+    {
+      "type": "file-exists",
+      "path": "sdkconfig.defaults"
+    },
+    {
+      "type": "command-success",
+      "command": ["node", "validate-esp32.mjs"],
+      "expect": "esp32-rust starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "cargo build --release",
+      "cargo espflash flash --release --monitor"
+    ],
+    "entrypoints": [
+      "src/main.rs",
+      "Cargo.toml",
+      "sdkconfig.defaults",
+      ".cargo/config.toml"
+    ],
+    "preview": {
+      "path": "/"
+    },
+    "extensionPoints": [
+      "src/main.rs",
+      "sdkconfig.defaults"
+    ]
+  },
+  "keywords": [
+    "esp32",
+    "esp-idf",
+    "esp-idf-svc",
+    "esp-idf-hal",
+    "espressif",
+    "xtensa",
+    "esp32 rust",
+    "rust esp32",
+    "iot firmware",
+    "embedded wifi"
+  ],
+  "scoring": {
+    "boost": {
+      "esp32": 5,
+      "esp-idf": 5,
+      "espressif": 4,
+      "xtensa": 4,
+      "esp-idf-svc": 4,
+      "esp-idf-hal": 4
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "esp32",
+      "esp-idf",
+      "esp-idf-svc",
+      "esp-idf-hal",
+      "espressif",
+      "xtensa"
+    ],
+    "tier2": [
+      "esp32 rust",
+      "rust esp32",
+      "esp32 firmware",
+      "esp32 wifi"
+    ],
+    "archetypes": [
+      "esp32 iot firmware",
+      "wifi-connected sensor node",
+      "esp32 http server",
+      "esp32 mqtt client",
+      "embedded rust on espressif"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Pick for ESP32 / ESP32-S3 / ESP32-C3 firmware in Rust when you want ESP-IDF services (WiFi, BT, NVS, partition table, HTTP server). For bare-metal Rust on ESP32 without FreeRTOS, use esp-hal no_std instead — that's a different family.",
+    "firstSteps": [
+      "Install the esp-rs toolchain: cargo install espup && espup install",
+      "Source the exports: . $HOME/export-esp.sh (adds xtensa rustc + clang to PATH)",
+      "Install espflash: cargo install espflash cargo-espflash",
+      "Build: cargo build --release",
+      "Flash + monitor a connected board: cargo espflash flash --release --monitor"
+    ],
+    "gotchas": [
+      "xtensa-esp32-espidf requires the esp-rs forked rustc (installed by espup). Stock rustup nightly will NOT build this crate — rust-toolchain.toml must declare channel = \"esp\".",
+      "You MUST source $HOME/export-esp.sh in every shell before building. Without it, rustc cannot find the xtensa target and linking will fail with cryptic llvm errors.",
+      "esp-idf-sys builds the entire ESP-IDF C framework on first compile (~3-5 min). Cache .embuild/ between CI runs or every build is a cold build.",
+      "sdkconfig.defaults is the Kconfig seed. Editing it after first build requires deleting .embuild/ — runtime Kconfig is baked during the ESP-IDF cmake step, not re-read every cargo build.",
+      "FreeRTOS default task stack is 3584 bytes. WiFi + TLS + HTTP will blow it — bump CONFIG_ESP_MAIN_TASK_STACK_SIZE to 8192+ in sdkconfig.defaults (already set in this starter).",
+      "Logging with log::info! requires esp_idf_svc::log::EspLogger::initialize_default() early in main, before any println!. Raw println! over UART works but bypasses the ESP-IDF log level filters.",
+      "Cargo.toml must include [package.metadata.esp-idf-sys] with esp_idf_version — otherwise esp-idf-sys pins to an old IDF and WiFi APIs shift under you."
+    ]
+  }
+}

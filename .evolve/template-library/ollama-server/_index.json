@@ -1,0 +1,22 @@
+{
+  "family": "ollama-server",
+  "current": "v_55d720f94f94",
+  "topN": [
+    "v_55d720f94f94",
+    "v_5ed6ec9d509d"
+  ],
+  "all": [
+    {
+      "version": "v_55d720f94f94",
+      "score": 0.7699959900827626,
+      "skipped": null
+    },
+    {
+      "version": "v_5ed6ec9d509d",
+      "score": 0.6099999945792112,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.372Z"
+}

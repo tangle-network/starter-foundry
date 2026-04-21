@@ -1,0 +1,52 @@
+{
+  "id": "bun-monolith",
+  "description": "Bun-powered monolith with HTTP + cron + SQLite, single-binary deploy",
+  "tags": [
+    "bun",
+    "api",
+    "typescript"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "bun",
+    "surface": "api"
+  },
+  "defaults": {
+    "projectType": "api",
+    "serviceName": "starter-foundry-bun-monolith"
+  },
+  "files": [],
+  "validationChecks": [],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [],
+    "preview": null,
+    "extensionPoints": []
+  },
+  "keywords": [
+    "bun-monolith"
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "bun-monolith"
+    ],
+    "tier2": []
+  },
+  "buildHints": {
+    "whenToUse": "TODO: describe when a prompt should route to bun-monolith. Derive from peer families: bun-http, agent-swarm-ts, deno-edge.",
+    "firstSteps": [
+      "TODO: install command",
+      "TODO: dev-server command",
+      "TODO: entrypoint an agent should extend"
+    ],
+    "gotchas": [
+      "TODO: one non-obvious trap specific to this runtime"
+    ],
+    "placeholders": [
+      {
+        "path": "TODO/entrypoint.xyz",
+        "description": "TODO: primary file agents must replace."
+      }
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "generatedAt": "2026-04-21T05:55:44.487Z",
+  "audits": [
+    {
+      "layerId": "framework:jupyter-book",
+      "family": "jupyter-book",
+      "pm": "python3",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "python3 -m compileall .",
+          "ok": true,
+          "durationMs": 522.836125,
+          "stderrTail": "",
+          "stdoutTail": "Listing '.'...\nListing './.starter-foundry'...\nListing './content'...\n"
+        }
+      ]
+    }
+  ]
+}

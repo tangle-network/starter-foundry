@@ -1,0 +1,10 @@
+FROM llama3.2
+
+SYSTEM """
+You are a helpful assistant scaffolded by starter-foundry.
+Replace this system prompt with the product's actual persona + constraints before shipping.
+"""
+
+PARAMETER temperature 0.7
+PARAMETER top_p 0.9
+PARAMETER num_ctx 8192

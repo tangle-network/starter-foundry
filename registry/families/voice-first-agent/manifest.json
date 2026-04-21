@@ -1,0 +1,140 @@
+{
+  "id": "voice-first-agent",
+  "description": "Browser-first voice agent scaffold — MediaRecorder captures mic audio, POSTs to /api/stt for transcription, /api/llm for the response, /api/tts for speech synthesis, then plays the returned audio. Zero SDK lock-in: raw Web APIs in the browser, server-side wiring is pluggable.",
+  "tags": [
+    "voice",
+    "audio",
+    "agent",
+    "browser",
+    "frontend",
+    "typescript",
+    "vite"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "browser",
+    "surface": "frontend"
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "serviceName": "starter-foundry-voice-agent",
+    "port": 4180,
+    "headline": "Push-to-talk voice agent",
+    "subheadline": "Hold the button, speak, release. STT → LLM → TTS round-trip in the browser."
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/vite.config.ts",
+      "target": "vite.config.ts"
+    },
+    {
+      "source": "files/index.html",
+      "target": "index.html"
+    },
+    {
+      "source": "files/validate-voice.mjs",
+      "target": "validate-voice.mjs"
+    },
+    {
+      "source": "files/api/README.md",
+      "target": "api/README.md"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "src/main.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "index.html"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-voice.mjs"
+      ],
+      "expect": "voice-first-agent starter ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "pnpm run dev"
+    ],
+    "entrypoints": [
+      "index.html",
+      "src/main.ts",
+      "api/README.md",
+      "vite.config.ts"
+    ],
+    "preview": {
+      "path": "/"
+    },
+    "extensionPoints": [
+      "src/main.ts",
+      "api/"
+    ]
+  },
+  "keywords": [
+    "voice first",
+    "voice first agent",
+    "browser voice agent",
+    "push to talk",
+    "mediarecorder agent",
+    "speech to text agent",
+    "speech agent scaffold",
+    "browser mic agent",
+    "whisper client",
+    "voice ui scaffold"
+  ],
+  "scoring": {
+    "boost": {
+      "voice first": 4,
+      "mediarecorder": 3,
+      "push to talk": 3
+    }
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "voice first",
+      "voice first agent",
+      "browser voice agent",
+      "push to talk"
+    ],
+    "tier2": [
+      "mediarecorder",
+      "speech to text agent",
+      "browser mic",
+      "whisper client",
+      "voice ui scaffold"
+    ],
+    "archetypes": [
+      "walkie-talkie web",
+      "voice memo to ai",
+      "hold-to-talk chatbot",
+      "voice notes transcriber",
+      "browser voice recorder with llm",
+      "spoken-input chat ui"
+    ]
+  },
+  "buildHints": {
+    "gotchas": [
+      "getUserMedia requires HTTPS outside localhost. Any non-localhost deployment behind plain HTTP will fail with NotAllowedError — either ship behind TLS or use a tunneled HTTPS URL for dev.",
+      "MediaRecorder MIME support varies by browser: Safari prefers audio/mp4, Chrome/Firefox prefer audio/webm;codecs=opus. Always call MediaRecorder.isTypeSupported() before `new MediaRecorder(stream, {mimeType})` or the constructor throws on Safari.",
+      "Safari autoplay policies block new Audio().play() without a prior user gesture. Trigger playback from the button click handler, not from a fetch .then() callback that may resolve after the gesture context expires.",
+      "Holding the stream open between turns drains the mic LED and frightens users. Call track.stop() on each track when the recording ends; re-request via getUserMedia on the next press.",
+      "Blob size after 10s of 48kHz opus is ~80KB — safe to POST as raw body. Do NOT base64-encode into a JSON field (1.33× payload bloat + parser overhead). Use fetch with blob body and Content-Type from recorder.mimeType.",
+      "iOS Safari requires playsinline on <audio> playback in some contexts and silently suppresses volume control — verify on a real device, simulator behaves differently."
+    ]
+  }
+}

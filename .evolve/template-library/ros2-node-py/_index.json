@@ -1,0 +1,22 @@
+{
+  "family": "ros2-node-py",
+  "current": "v_969f89017163",
+  "topN": [
+    "v_969f89017163",
+    "v_988ce1ce5a21"
+  ],
+  "all": [
+    {
+      "version": "v_969f89017163",
+      "score": 0.6699963594162227,
+      "skipped": null
+    },
+    {
+      "version": "v_988ce1ce5a21",
+      "score": 0.5199999606021689,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.394Z"
+}

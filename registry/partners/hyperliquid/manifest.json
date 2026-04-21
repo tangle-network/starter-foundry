@@ -1,0 +1,46 @@
+{
+  "id": "hyperliquid",
+  "description": "Partner pack for Hyperliquid — on-chain perp DEX with its own L1, order-book matching, sub-second latency. Biases toward trading UIs, market-maker bots, and HyperEVM on-chain programmability.",
+  "appliesTo": [
+    "frontend-static",
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "api-service",
+    "python-api",
+    "evm-infra-ts",
+    "agent-service-ts",
+    "agent-service-py",
+    "worker-job"
+  ],
+  "slotDefaults": {
+    "sdk": "sdk:evm-wallet"
+  },
+  "defaults": {
+    "headline": "Build on Hyperliquid — on-chain perps at order-book latency",
+    "subheadline": "Hyperliquid L1 + HyperEVM. Trading UIs, MM bots, perps-native products, and on-chain composability."
+  },
+  "files": [
+    {
+      "source": "files/partner-config.json",
+      "target": "partner-config.json"
+    },
+    {
+      "source": "files/starter-brand.json",
+      "target": "starter-brand.json"
+    }
+  ],
+  "buildHints": {
+    "whenToUse": "Prompt mentions Hyperliquid, HyperEVM, perpetual futures / perps DEX, on-chain order book, or a market-making bot targeting DEX-native perps.",
+    "firstSteps": [
+      "For trading, use the Hyperliquid Python or TS SDK — WebSocket for order book + REST for order placement. Docs: https://hyperliquid.gitbook.io/hyperliquid-docs.",
+      "For smart-contract flows, target HyperEVM (chainId 999 mainnet, 998 testnet) — it is a standard EVM sharing state with the core L1.",
+      "Signing uses the standard EVM ECDSA path but over EIP-712 typed-data structures specific to Hyperliquid — do NOT reuse raw viem `signMessage` helpers for orders."
+    ],
+    "gotchas": [
+      "The matching layer runs on the L1 (not HyperEVM) — a smart contract on HyperEVM CANNOT place orders directly. Use the L1 API bridge.",
+      "Testnet has its own API hosts + chainId; running against mainnet by accident will route real funds. Always log the network at startup.",
+      "Rate limits are strict on REST: prefer WebSocket for live book, REST only for order submission + queries."
+    ]
+  }
+}

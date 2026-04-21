@@ -1,0 +1,177 @@
+{
+  "id": "realtime-audio-ts",
+  "description": "Browser realtime-audio app — WebAudio mic capture, FFT visualization, WebRTC peer-audio stub.",
+  "tags": [
+    "frontend",
+    "audio",
+    "webaudio",
+    "webrtc",
+    "typescript"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "browser",
+    "surface": "frontend"
+  },
+  "slots": {
+    "auth": {
+      "options": [
+        "auth:none",
+        "auth:better-auth",
+        "auth:clerk",
+        "auth:supabase-auth"
+      ],
+      "default": "auth:none"
+    },
+    "payments": {
+      "options": [
+        "payments:none",
+        "payments:stripe",
+        "payments:coinbase-commerce"
+      ],
+      "default": "payments:none"
+    },
+    "sdk": {
+      "options": [
+        "sdk:none",
+        "sdk:coinbase-cdp",
+        "sdk:solana-web3",
+        "sdk:evm-wallet"
+      ],
+      "default": "sdk:none"
+    }
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "port": 4199,
+    "headline": "Starter Foundry Realtime Audio",
+    "subheadline": "Mic capture, FFT visualization, and a WebRTC peer-audio seam — browser-native."
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/validate-realtime-audio.mjs",
+      "target": "validate-realtime-audio.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "src/main.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "index.html"
+    },
+    {
+      "type": "file-exists",
+      "path": "vite.config.ts"
+    },
+    {
+      "type": "command-success",
+      "command": [
+        "node",
+        "validate-realtime-audio.mjs"
+      ],
+      "expect": "realtime audio ok"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "pnpm dev",
+      "node validate-realtime-audio.mjs"
+    ],
+    "entrypoints": [
+      "index.html",
+      "src/main.ts",
+      "src/audio.ts",
+      "src/visualizer.ts",
+      "src/peer.ts",
+      "vite.config.ts"
+    ],
+    "preview": {
+      "path": "/"
+    },
+    "extensionPoints": [
+      "auth-config.json",
+      "payments-config.json",
+      "sdk-config.json"
+    ]
+  },
+  "keywords": [
+    "realtime audio",
+    "webaudio",
+    "audio visualization",
+    "webrtc audio",
+    "peer audio",
+    "fft visualization",
+    "microphone capture browser",
+    "audio app",
+    "spectrum analyzer",
+    "voice chat web"
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "realtime audio",
+      "webaudio",
+      "audio visualization",
+      "webrtc audio",
+      "peer audio"
+    ],
+    "tier2": [
+      "fft visualization",
+      "microphone capture browser",
+      "spectrum analyzer",
+      "voice chat web",
+      "audio streaming browser",
+      "browser audio app"
+    ],
+    "tier3": [
+      "audio effects",
+      "music visualizer",
+      "karaoke app"
+    ],
+    "archetypes": [
+      "browser voice chat",
+      "web-based audio analyzer",
+      "p2p audio streaming"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Pick realtime-audio-ts when the app captures microphone audio in the browser, visualizes it with an AnalyserNode / FFT, and optionally streams it to a peer via WebRTC. If the user wants voice chat with server-mediated rooms, use a signalling-server + this template — the peer.ts stub has the RTCPeerConnection wired and documents where to plug in the signalling transport.",
+    "architectureNotes": [
+      "src/audio.ts owns the AudioContext lifecycle — it is created lazily on the first user gesture to satisfy autoplay policy (Chrome/Safari refuse to run an AudioContext started before a click).",
+      "src/visualizer.ts runs a requestAnimationFrame loop that reads from AnalyserNode.getByteFrequencyData into a preallocated Uint8Array (allocating in the RAF loop causes GC jank at 60fps).",
+      "src/peer.ts is an RTCPeerConnection harness that accepts an inbound MediaStream, adds its tracks to the peer connection, and exposes createOffer/applyAnswer hooks. Signalling is OUT OF SCOPE — the stub documents exactly where to wire a WebSocket/Ably/Pusher transport.",
+      "src/main.ts is the glue: Start button → requestUserMedia → audio.start(stream) → visualizer.attach(analyser) → peer.addLocalStream(stream)."
+    ],
+    "components": [
+      "Start/Stop button that unlocks the AudioContext on click.",
+      "Canvas-based FFT bar visualizer (one draw per RAF tick).",
+      "Mute / gain slider wired through a GainNode.",
+      "Peer status display (idle / offering / connected).",
+      "Signalling transport seam — a comment block in peer.ts marks where WebSocket code goes."
+    ],
+    "gotchas": [
+      "AUTOPLAY POLICY: a freshly-created AudioContext is suspended in Chrome, Safari, and Firefox until a user gesture. Call audioContext.resume() inside the click handler — NOT at module load — or getByteFrequencyData returns all zeros with no error.",
+      "getUserMedia requires HTTPS (or localhost). On any other http:// origin the browser silently blocks the prompt. Use `vite --host 0.0.0.0 --https` for LAN testing.",
+      "Safari: audioContext.sampleRate differs from Chrome/Firefox (defaults to 44100 or device rate). If you hardcode 48000 in any FFT math the visualizer shifts on Safari — always read `audioContext.sampleRate`.",
+      "Allocating Uint8Array inside the RAF loop causes GC pauses. Preallocate ONE array at attach time and reuse it every frame.",
+      "AnalyserNode.fftSize must be a power of 2 between 32 and 32768. Set it once at creation; changing it mid-stream is allowed but reallocates buffers internally and glitches the canvas.",
+      "RTCPeerConnection: you MUST call addTrack for each track BEFORE createOffer, otherwise the SDP has no m=audio section and the remote peer won't know you're sending audio.",
+      "iOS Safari: AudioContext is destroyed when the page goes to the background for >30s. Listen to visibilitychange and resume() on return, or the meters freeze permanently.",
+      "Echo cancellation: set `{ echoCancellation: true, noiseSuppression: true, autoGainControl: true }` in getUserMedia constraints — defaults vary by browser and you'll get feedback loops in P2P audio without these.",
+      "ICE servers: the peer stub uses Google's public STUN by default. For production you need TURN servers — without them, symmetric-NAT clients fail to connect ~20% of the time."
+    ],
+    "integrations": [
+      "Web Audio API (native) — AudioContext, AnalyserNode, GainNode",
+      "WebRTC (native) — RTCPeerConnection, MediaStream",
+      "MediaDevices.getUserMedia — microphone capture",
+      "Bring-your-own signalling transport (WebSocket / Ably / Pusher / socket.io)"
+    ]
+  }
+}

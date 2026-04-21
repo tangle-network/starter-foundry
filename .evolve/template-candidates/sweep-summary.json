@@ -1,0 +1,127 @@
+{
+  "generatedAt": "2026-04-21T03:07:07.919Z",
+  "topN": 10,
+  "dryRun": false,
+  "results": [
+    {
+      "scaffoldFile": "index.html",
+      "timesRewritten": 13,
+      "family": "react-vite-ts",
+      "templateKey": "index.html",
+      "sourcePath": "registry/layers/framework/react-vite-ts/files/index.html",
+      "status": "ran",
+      "exitCode": 0,
+      "stderrTail": "",
+      "stdoutTail": "harvesting: index.html\n  62 tuples (47 writes, 15 edits)\n  11 frequently-added lines\n  0 frequent imports\nsynthesizing candidate...\n  mode: llm\n  reasoning: The candidate template incorporates the most common variations found in agent rewrites while maintaining the core structure and styling references of the current template. Key changes include: updatin\njudging...\n  score: 0.697\n    addLift: 0.682\n    removeMatch: 0.556\n    sizeScore: 0.995\n    vbTrend: 0.500\nauditing candidate in a composed scaffold...\n  audit: ✓ OK (7197ms)\n\ncandidate → /Users/drew/webb/starter-foundry/.evolve/template-candidates/index.html.2026-04-21T03-06-51-263Z.candidate\nreport    → /Users/drew/webb/starter-foundry/.evolve/template-candidates/index.html.2026-04-21T03-06-51-263Z.report.json\n",
+      "report": {
+        "templatePath": "index.html",
+        "templateKey": "index.html",
+        "family": "react-vite-ts",
+        "tupleCount": 62,
+        "synthesizer": {
+          "mode": "llm",
+          "reasoning": "The candidate template incorporates the most common variations found in agent rewrites while maintaining the core structure and styling references of the current template. Key changes include: updating the doctype to uppercase <!DOCTYPE html> which is standard convention, changing charset from utf-8 to UTF-8 (uppercase), updating viewport meta tag to match common patterns with 1.0 instead of 1, changing the root div id from \"app\" to \"root\" which is more prevalent in rewrites, and updating the script entry point from /src/main.ts to /src/main.tsx to align with TypeScript React conventions. The Google Fonts preconnect links and Inter font import are retained as they appear in common rewrites and provide consistent styling."
+        },
+        "judge": {
+          "score": 0.6974395523176011,
+          "dimensions": {
+            "addLift": 0.6818181818181819,
+            "removeMatch": 0.5555555555555556,
+            "sizeScore": 0.9947735191637631,
+            "vbTrend": 0.5
+          },
+          "reasoning": "incorporatesFrequentlyAddedLines: 0.36 (current: 0.18, lift: 0.18)\nremovesFrequentlyDeletedLines: 0.56 (5/9)\nsizeDelta: 3 chars (score 0.99)",
+          "removesFrequentlyDeletedLines": 0.5555555555555556,
+          "incorporatesFrequentlyAddedLines": 0.36363636363636365,
+          "sizeDelta": 3
+        },
+        "audit": {
+          "ok": true,
+          "stage": "done",
+          "stderrTail": "",
+          "durationMs": 7197
+        },
+        "decision": "promotable",
+        "generatedAt": "2026-04-21T03:06:51.263Z"
+      }
+    },
+    {
+      "scaffoldFile": "src/App.tsx",
+      "timesRewritten": 12,
+      "family": "multimodal-agent",
+      "templateKey": "src.App.tsx",
+      "sourcePath": "registry/layers/framework/multimodal-agent/files/App.tsx",
+      "status": "run-failed",
+      "exitCode": 1,
+      "stderrTail": "bility:shadcn is not compatible with family multimodal-agent\n    at assertCompatibleLayer (/Users/drew/webb/starter-foundry/src/lib/registry.ts:218:11)\n    at <anonymous> (/Users/drew/webb/starter-foundry/src/lib/registry.ts:289:5)\n    at Array.map (<anonymous>)\n    at resolveComponents (/Users/drew/webb/starter-foundry/src/lib/registry.ts:284:46)\n    at async composeStarterInner (/Users/drew/webb/starter-foundry/src/lib/compose.ts:178:22)\n    at async traced (/Users/drew/webb/starter-foundry/src/lib/telemetry.ts:150:20)\n    at async composeStarter (/Users/drew/webb/starter-foundry/src/lib/compose.ts:106:34)\n    at async audit (/Users/drew/webb/starter-foundry/src/training/template_v1/audit.ts:29:5)\n    at async main (/Users/drew/webb/starter-foundry/src/training/template_v1/run.ts:95:13)\n",
+      "stdoutTail": "harvesting: src.App.tsx\n  83 tuples (57 writes, 26 edits)\n  4 frequently-added lines\n  10 frequent imports\nsynthesizing candidate...\n  mode: llm\n  reasoning: The rewrite extracts the JSX and component composition patterns from the sample agent while preserving the multimodal state management logic of the current template. It imports `ConnectButton` and `Sw\njudging...\n  score: 0.731\n    addLift: 0.750\n    removeMatch: 0.563\n    sizeScore: 1.000\n    vbTrend: 0.500\nauditing candidate in a composed scaffold...\n",
+      "report": null
+    },
+    {
+      "scaffoldFile": "src/index.css",
+      "timesRewritten": 8,
+      "status": "no-template-source",
+      "reason": "no registry/ entry ships src/index.css — either it is agent-generated from scratch or the scaffold target is dynamic."
+    },
+    {
+      "scaffoldFile": "foundry.toml",
+      "timesRewritten": 8,
+      "family": "forge-foundation",
+      "templateKey": "foundry.toml",
+      "sourcePath": "registry/layers/framework/forge-foundation/files/foundry.toml",
+      "status": "run-failed",
+      "exitCode": 1,
+      "stderrTail": "Error: Unknown family forge-foundation\n    at resolveComponents (/Users/drew/webb/starter-foundry/src/lib/registry.ts:281:11)\n    at async composeStarterInner (/Users/drew/webb/starter-foundry/src/lib/compose.ts:178:22)\n    at async traced (/Users/drew/webb/starter-foundry/src/lib/telemetry.ts:150:20)\n    at async composeStarter (/Users/drew/webb/starter-foundry/src/lib/compose.ts:106:34)\n    at async audit (/Users/drew/webb/starter-foundry/src/training/template_v1/audit.ts:29:5)\n    at async main (/Users/drew/webb/starter-foundry/src/training/template_v1/run.ts:95:13)\n",
+      "stdoutTail": "harvesting: foundry.toml\n  14 tuples (6 writes, 8 edits)\n  11 frequently-added lines\n  0 frequent imports\nsynthesizing candidate...\n  mode: llm\n  reasoning: The candidate template aligns the current template with the sample agent rewrite by adopting the standardized solc version format (changing from `solc_version = \"0.8.28\"` to `solc = \"0.8.24\"`), adding\njudging...\n  score: 0.562\n    addLift: 0.591\n    removeMatch: 0.250\n    sizeScore: 0.982\n    vbTrend: 0.500\nauditing candidate in a composed scaffold...\n",
+      "report": null
+    },
+    {
+      "scaffoldFile": "src/components/StatusPipeline.tsx",
+      "timesRewritten": 8,
+      "status": "no-template-source",
+      "reason": "no registry/ entry ships src/components/StatusPipeline.tsx — either it is agent-generated from scratch or the scaffold target is dynamic."
+    },
+    {
+      "scaffoldFile": "package.json",
+      "timesRewritten": 6,
+      "family": "agent-service-ts",
+      "templateKey": "package.json",
+      "sourcePath": "registry/families/agent-service-ts/files/package.json",
+      "status": "run-failed",
+      "exitCode": 1,
+      "stderrTail": "",
+      "stdoutTail": "harvesting: package.json\n  0 tuples (0 writes, 0 edits)\n  0 frequently-added lines\n  0 frequent imports\n✗ not enough tuples to synthesize — need ≥3, have 0\n",
+      "report": null
+    },
+    {
+      "scaffoldFile": "src/profiler.rs",
+      "timesRewritten": 5,
+      "status": "no-template-source",
+      "reason": "no registry/ entry ships src/profiler.rs — either it is agent-generated from scratch or the scaffold target is dynamic."
+    },
+    {
+      "scaffoldFile": "src/components/SwapCard.tsx",
+      "timesRewritten": 5,
+      "status": "no-template-source",
+      "reason": "no registry/ entry ships src/components/SwapCard.tsx — either it is agent-generated from scratch or the scaffold target is dynamic."
+    },
+    {
+      "scaffoldFile": "src/main.rs",
+      "timesRewritten": 4,
+      "family": "agent-service-rust",
+      "templateKey": "src.main.rs",
+      "sourcePath": "registry/layers/framework/agent-service-rust/files/main.rs",
+      "status": "run-failed",
+      "exitCode": 1,
+      "stderrTail": "",
+      "stdoutTail": "harvesting: src.main.rs\n  0 tuples (0 writes, 0 edits)\n  0 frequently-added lines\n  0 frequent imports\n✗ not enough tuples to synthesize — need ≥3, have 0\n",
+      "report": null
+    },
+    {
+      "scaffoldFile": "src/optimizer.rs",
+      "timesRewritten": 4,
+      "status": "no-template-source",
+      "reason": "no registry/ entry ships src/optimizer.rs — either it is agent-generated from scratch or the scaffold target is dynamic."
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "id": "threejs-game",
+  "description": "Three.js WebGL framework layer — renderer, camera, lit mesh, animation loop, resize + HMR dispose wired from first render.",
+  "appliesTo": ["threejs-game"],
+  "files": [
+    { "source": "files/src/main.ts", "target": "src/main.ts" },
+    { "source": "files/src/vite-env.d.ts", "target": "src/vite-env.d.ts" }
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "three": "^0.170.0"
+    },
+    "devDependencies": {
+      "@types/three": "^0.170.0",
+      "typescript": "^5.9.0",
+      "vite": "^6.4.2"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "3D scene viewers, WebGL games, shader playgrounds, gltf/fbx asset explorers, or any product archetype where the primary surface is a live 3D canvas.",
+    "firstSteps": [
+      "Run `pnpm install` then `pnpm dev` — Vite serves on 5173 with HMR; the rotating cube renders immediately.",
+      "All scene setup lives in `src/main.ts` — scene, camera, renderer, lights, mesh, and animation loop in one file; fork cleanly from there.",
+      "Add 3D models via `GLTFLoader` from `three/examples/jsm/loaders/GLTFLoader.js`; place assets in `public/` and load with `new GLTFLoader().load('/model.glb', ...)`.",
+      "Run `pnpm build` to emit static assets to `dist/` — no server required, deploy anywhere."
+    ],
+    "gotchas": [
+      "`import.meta.hot` requires Vite client types — `src/vite-env.d.ts` provides the reference directive; do not delete it or typecheck will fail on the HMR block.",
+      "Always cancel `requestAnimationFrame` in the HMR dispose callback; the handle is stored in `rafHandle`. Skipping this causes multiple parallel render loops and runaway CPU usage.",
+      "Call `renderer.setSize(w, h)` AND `camera.aspect = w/h; camera.updateProjectionMatrix()` on resize — CSS-only resize stretches the image without updating the projection matrix.",
+      "Dispose geometries, materials, and textures manually when swapping scenes — Three.js does not garbage-collect GPU memory. Use `geometry.dispose()`, `material.dispose()`, `texture.dispose()`."
+    ],
+    "architectureNotes": [
+      "Single renderer per page — do not construct a new `WebGLRenderer` per frame or per component; it leaks the GL context.",
+      "Keep render-loop work pure: mutate transforms in the loop, allocate meshes and materials outside it. Allocations inside the loop cause GC pauses visible as jank."
+    ],
+    "placeholders": [
+      {
+        "path": "src/main.ts",
+        "description": "Rotating cube bootstrap. Replace the BoxGeometry + MeshStandardMaterial with actual geometry or a GLTFLoader call. Keep the renderer, camera, resize handler, and HMR dispose block."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm dev", "pnpm build"],
+    "entrypoints": ["src/main.ts"],
+    "preview": { "path": "/" },
+    "extensionPoints": ["src/main.ts", "src/scene.ts", "src/loop.ts"]
+  }
+}

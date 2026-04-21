@@ -1,0 +1,78 @@
+{
+  "id": "lora-training",
+  "description": "Framework layer for lora-training — ships train.py (TRL SFTTrainer + PEFT + bitsandbytes) and infer.py (base + adapter). QLoRA 4-bit fine-tunes a 7B-8B model on a single 24 GB GPU; adapter checkpoints are 10-500 MB instead of 14+ GB for a merged model.",
+  "appliesTo": ["lora-training"],
+  "files": [
+    {
+      "source": "files/train.py",
+      "target": "train.py"
+    },
+    {
+      "source": "files/infer.py",
+      "target": "infer.py"
+    },
+    {
+      "source": "files/pyrightconfig.json",
+      "target": "pyrightconfig.json"
+    }
+  ],
+  "buildHints": {
+    "whenToUse": "Pick this when you need custom model behaviour (domain language, instruction style, task-specific format) but cannot or will not run full fine-tuning. QLoRA 4-bit lets a 7B-8B model tune on a single 24 GB GPU; 70B on a single 80 GB GPU. For pure inference without training, use vllm-server or ollama-server. For RAG-style grounding without training, use rag-pipeline-py.",
+    "firstSteps": [
+      "pip install -e .  — installs peft, transformers, bitsandbytes, trl>=0.12, accelerate, datasets",
+      "Replace data/sample.jsonl with your real training set (each line: {\"messages\": [{\"role\": ..., \"content\": ...}, ...]})",
+      "Edit config/train.yaml — set base_model_id, lora_r/alpha, epochs, learning_rate, and target_modules for your architecture",
+      "Set HUGGING_FACE_HUB_TOKEN in .env for gated base models (Llama, Mistral, Gemma)",
+      "python train.py --config config/train.yaml  — checkpoints land in training.output_dir",
+      "python infer.py --adapter ./outputs/lora-adapter --prompt 'test'  — smoke-test the adapter"
+    ],
+    "gotchas": [
+      "bitsandbytes 4-bit requires CUDA. There is no working CPU path for QLoRA — on a Mac it silently falls back to fp16 and OOMs.",
+      "LoRA target_modules is model-architecture-specific. Llama/Mistral use ['q_proj','k_proj','v_proj','o_proj','gate_proj','up_proj','down_proj']; Gemma and Phi differ. The wrong list means training runs but the adapter learns nothing.",
+      "lora_r above 64 stops helping and starts overfitting. Keep lora_alpha = 2 * lora_r (the standard ratio) so the effective learning rate stays stable across rank changes.",
+      "Checkpoint sizes: LoRA adapters are 10-500 MB; fully merged models are 14-30 GB. Commit the adapter directory only — never commit merged weights.",
+      "Gated base models need HUGGING_FACE_HUB_TOKEN *and* licence acceptance on the Hub — the token alone returns 403.",
+      "TRL SFTTrainer expects either a `text` column or a `messages` column. Mixing schemas in one file silently trains on the wrong field.",
+      "flash-attention-2 requires torch >= 2.1 and SM >= 8.0 GPU (A100/H100). On older GPUs set attn_implementation: 'sdpa' in config/train.yaml."
+    ],
+    "architectureNotes": [
+      "train.py is config-driven: all hyperparameters live in config/train.yaml; the script itself requires no edits for most runs.",
+      "infer.py reads the base model id from adapter_config.json (written by PEFT at save time), then falls back to config/train.yaml — no hardcoded model paths.",
+      "The formatting pipeline in train.py auto-detects whether the dataset has a 'messages' column (applies chat template) or a 'text' column (passes raw text to SFTTrainer)."
+    ],
+    "placeholders": [
+      {
+        "path": "data/sample.jsonl",
+        "description": "Replace with the real training set. Each line must be valid JSON with a 'messages' array (or a 'text' string for raw-text SFT)."
+      },
+      {
+        "path": "config/train.yaml",
+        "description": "Set base_model_id to your chosen base model, tune lora_r/lora_alpha, set target_modules for your architecture, and adjust epochs/learning_rate."
+      },
+      {
+        "path": ".env",
+        "description": "Add HUGGING_FACE_HUB_TOKEN=hf_... for gated base models (Llama 3, Mistral, Gemma). Leave empty for open models."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pip install -e .",
+      "python train.py --config config/train.yaml",
+      "python infer.py --adapter ./outputs/lora-adapter --prompt 'hello'",
+      "python infer.py --adapter ./outputs/lora-adapter --prompt 'hello' --no-4bit"
+    ],
+    "entrypoints": [
+      "train.py",
+      "infer.py",
+      "config/train.yaml",
+      "data/sample.jsonl"
+    ],
+    "preview": null,
+    "extensionPoints": [
+      "config/train.yaml",
+      "data/sample.jsonl",
+      "train.py"
+    ]
+  }
+}

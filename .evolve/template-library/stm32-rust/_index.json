@@ -1,0 +1,22 @@
+{
+  "family": "stm32-rust",
+  "current": "v_f324c4a6dad0",
+  "topN": [
+    "v_f324c4a6dad0",
+    "v_72ca07959c5b"
+  ],
+  "all": [
+    {
+      "version": "v_f324c4a6dad0",
+      "score": 0.6399968116041984,
+      "skipped": null
+    },
+    {
+      "version": "v_72ca07959c5b",
+      "score": 0.4649999945807966,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.408Z"
+}

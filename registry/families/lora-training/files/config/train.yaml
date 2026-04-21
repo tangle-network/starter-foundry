@@ -1,0 +1,54 @@
+# LoRA / QLoRA training config. Load via `python train.py --config config/train.yaml`.
+
+model:
+  base_model_id: "{{baseModelId}}"
+  # Load the base in 4-bit (QLoRA). Set to false for plain fp16 LoRA if you
+  # have enough VRAM (needs ~2x the 4-bit footprint).
+  load_in_4bit: true
+  bnb_4bit_quant_type: "nf4"
+  bnb_4bit_compute_dtype: "bfloat16"
+  bnb_4bit_use_double_quant: true
+  # 'flash_attention_2' on A100+/H100 with flash-attn installed;
+  # 'sdpa' on older GPUs; 'eager' for debugging.
+  attn_implementation: "sdpa"
+
+lora:
+  r: {{loraR}}
+  alpha: {{loraAlpha}}
+  dropout: 0.05
+  bias: "none"
+  task_type: "CAUSAL_LM"
+  # MODEL-SPECIFIC. Llama + Mistral share this list; Gemma/Phi differ.
+  # Wrong list = training runs but adapter learns nothing.
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+
+data:
+  path: "data/sample.jsonl"
+  # Column with chat messages. Alternative: 'text' for raw-text SFT.
+  messages_column: "messages"
+  max_seq_length: 2048
+
+training:
+  output_dir: "{{outputDir}}"
+  num_train_epochs: {{epochs}}
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 8
+  learning_rate: {{learningRate}}
+  lr_scheduler_type: "cosine"
+  warmup_ratio: 0.03
+  weight_decay: 0.0
+  optim: "paged_adamw_8bit"
+  logging_steps: 5
+  save_steps: 50
+  save_total_limit: 3
+  bf16: true
+  gradient_checkpointing: true
+  report_to: "none"
+  seed: 42

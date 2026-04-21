@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-04-21T08:18:13.934Z",
+  "audits": [
+    {
+      "layerId": "framework:lora-training",
+      "family": "lora-training",
+      "pm": "python3",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "python3 -m compileall .",
+          "ok": true,
+          "durationMs": 536.5475839999999,
+          "stderrTail": "",
+          "stdoutTail": "Listing '.'...\nListing './.starter-foundry'...\nListing './config'...\nListing './data'...\nCompiling './infer.py'...\nCompiling './train.py'...\n"
+        },
+        {
+          "phase": "validationChecks",
+          "skipped": "none-declared",
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "family": "voice-first-agent",
+  "current": "v_cd7d36686724",
+  "topN": [
+    "v_cd7d36686724",
+    "v_ffbfebd85b3b"
+  ],
+  "all": [
+    {
+      "version": "v_cd7d36686724",
+      "score": 0.7699981998763319,
+      "skipped": null
+    },
+    {
+      "version": "v_ffbfebd85b3b",
+      "score": 0.6099999945839676,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.440Z"
+}

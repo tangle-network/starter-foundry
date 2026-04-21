@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-04-21T07:47:45.462Z",
+  "audits": [
+    {
+      "layerId": "framework:astro-static",
+      "family": "astro-static",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 14205.366292,
+          "stderrTail": "",
+          "stdoutTail": "Progress: resolved 99, reused 99, downloaded 0, added 0\nProgress: resolved 136, reused 136, downloaded 0, added 0\nProgress: resolved 138, reused 138, downloaded 0, added 0\nProgress: resolved 139, reused 138, downloaded 0, added 0\nProgress: resolved 366, reused 270, downloaded 0, added 0\nProgress: resolved 378, reused 282, downloaded 0, added 0\nProgress: resolved 379, reused 282, downloaded 0, added 0\nPackages: +345\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\nProgress: resolved 443, reused 347, downloaded 0, added 36\nProgress: resolved 443, reused 347, downloaded 0, added 312\nProgress: resolved 443, reused 347, downloaded 0, added 345, done\n\ndependencies:\n+ astro 5.18.1 (6.1.8 is available)\n\ndevDependencies:\n+ @astrojs/check 0.9.8\n+ typescript 5.9.3 (6.0.3 is available)\n\n╭ Warning ─────────────────────────────────────────────────────────────────────╮\n│                                                                              │\n│   Ignored build scripts: esbuild, sharp.                                     │\n│   Run \"pnpm approve-builds\" to pick which dependencies should be allowed     │\n│   to run scripts.                                                            │\n│                                                                              │\n╰──────────────────────────────────────────────────────────────────────────────╯\n\nDone in 14s using pnpm v10.22.0\n"
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 1119.469459,
+          "stderrTail": "",
+          "stdoutTail": ""
+        },
+        {
+          "phase": "build",
+          "skipped": "no-build-script",
+          "ok": true
+        },
+        {
+          "phase": "validationChecks",
+          "skipped": "none-declared",
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

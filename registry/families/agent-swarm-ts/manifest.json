@@ -112,8 +112,6 @@
   ],
   "scoring": {
     "boost": {
-      "multi-agent": 3,
-      "agent swarm": 3,
       "langgraph-js": 3
     }
   },

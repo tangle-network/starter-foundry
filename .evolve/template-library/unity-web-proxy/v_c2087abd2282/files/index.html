@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{serviceName}}</title>
+    <style>
+      html, body { margin: 0; padding: 0; height: 100%; background: #0b0d10; color: #e7ecf3; font: 14px/1.5 ui-monospace, Menlo, monospace; overflow: hidden; }
+      #unity-container { position: absolute; inset: 0; display: grid; place-items: center; }
+      #unity-canvas { background: #000; display: block; max-width: 100vw; max-height: 100vh; }
+      #unity-loading-bar { position: absolute; left: 50%; bottom: 48px; transform: translateX(-50%); width: 320px; }
+      #unity-progress-bar-empty { width: 100%; height: 6px; background: #1a2130; border-radius: 3px; overflow: hidden; }
+      #unity-progress-bar-full { width: 0%; height: 100%; background: #6ea8ff; transition: width 120ms linear; }
+      #unity-loading-text { margin-top: 8px; text-align: center; font-size: 12px; color: #95a3b8; }
+      #unity-error { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: 520px; padding: 16px 20px; border: 1px solid #ff8080; border-radius: 8px; background: rgba(40, 12, 12, 0.9); color: #ffd8d8; display: none; }
+      #unity-error.visible { display: block; }
+      #unity-error h2 { margin: 0 0 8px; font-size: 16px; color: #ff8080; }
+      #unity-error code { background: #1a0b0b; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <div id="unity-container">
+      <canvas id="unity-canvas" width="1152" height="648" tabindex="-1"></canvas>
+    </div>
+    <div id="unity-loading-bar">
+      <div id="unity-progress-bar-empty"><div id="unity-progress-bar-full"></div></div>
+      <div id="unity-loading-text">Loading Unity build…</div>
+    </div>
+    <div id="unity-error">
+      <h2>Unity build failed to start</h2>
+      <div id="unity-error-message"></div>
+    </div>
+
+    <!--
+      Unity's WebGL loader is produced by the editor. Update the src
+      below to match your Player Settings → Product Name after the
+      first export (e.g. Build/MyGame.loader.js). The supplied build
+      script drops output at Build/Build.loader.js.
+    -->
+    <script src="Build/Build.loader.js"></script>
+    <script>
+      // Loader metadata — edit these to match Player Settings. Unity
+      // uses them for the browser tab title, copy/paste, and OS-level
+      // app identification on mobile adds-to-home-screen.
+      const buildUrl = 'Build';
+      const loaderConfig = {
+        dataUrl:       buildUrl + '/Build.data',
+        frameworkUrl:  buildUrl + '/Build.framework.js',
+        codeUrl:       buildUrl + '/Build.wasm',
+        streamingAssetsUrl: 'StreamingAssets',
+        companyName:   'Tangle',
+        productName:   '{{serviceName}}',
+        productVersion: '0.1.0',
+        // showBanner is optional; Unity's sample index sets it for
+        // warnings. We prefer our own error surface.
+      };
+
+      const canvas = document.getElementById('unity-canvas');
+      const loadingBar = document.getElementById('unity-loading-bar');
+      const progressFull = document.getElementById('unity-progress-bar-full');
+      const loadingText = document.getElementById('unity-loading-text');
+      const errorBox = document.getElementById('unity-error');
+      const errorMessage = document.getElementById('unity-error-message');
+
+      function showError(msg) {
+        loadingBar.style.display = 'none';
+        errorBox.classList.add('visible');
+        errorMessage.textContent = msg;
+        console.error(msg);
+      }
+
+      // SharedArrayBuffer is required for Unity 2021.2+ threaded builds.
+      // If missing, the Unity loader will throw an opaque error; catch
+      // it early and show something useful.
+      if (typeof SharedArrayBuffer === 'undefined') {
+        showError(
+          'SharedArrayBuffer is unavailable — the page must be served ' +
+          'with Cross-Origin-Opener-Policy: same-origin and ' +
+          'Cross-Origin-Embedder-Policy: require-corp. Update your ' +
+          'hosting config (Vite is pre-configured; verify production).'
+        );
+      } else if (typeof createUnityInstance === 'undefined') {
+        showError(
+          'createUnityInstance is undefined — Build/Build.loader.js ' +
+          'failed to load. Did you drop the Unity WebGL export into ' +
+          'Build/? Filenames come from Player Settings → Product Name.'
+        );
+      } else {
+        createUnityInstance(canvas, loaderConfig, (progress) => {
+          progressFull.style.width = (progress * 100).toFixed(1) + '%';
+          loadingText.textContent = 'Loading Unity build… ' + Math.round(progress * 100) + '%';
+        }).then((unityInstance) => {
+          loadingBar.style.display = 'none';
+          // Expose for debugging: `window.__unity.SendMessage('GameObject', 'Method', 'arg')`.
+          window.__unity = unityInstance;
+        }).catch((err) => {
+          showError('createUnityInstance rejected: ' + (err?.message ?? err));
+        });
+      }
+    </script>
+  </body>
+</html>

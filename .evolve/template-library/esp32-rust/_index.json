@@ -1,0 +1,22 @@
+{
+  "family": "esp32-rust",
+  "current": "v_df7842f4faa1",
+  "topN": [
+    "v_df7842f4faa1",
+    "v_d5bd01a10e12"
+  ],
+  "all": [
+    {
+      "version": "v_df7842f4faa1",
+      "score": 0.6349993661085744,
+      "skipped": null
+    },
+    {
+      "version": "v_d5bd01a10e12",
+      "score": 0.4699999945696981,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.301Z"
+}

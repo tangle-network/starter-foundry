@@ -1,0 +1,45 @@
+{
+  "id": "linea",
+  "description": "Partner pack for Linea — ConsenSys zkEVM L2 with full Ethereum bytecode equivalence, MetaMask-native UX. Biases toward consumer dApps that need cheap tx + the widest possible EVM wallet support.",
+  "appliesTo": [
+    "frontend-static",
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "api-service",
+    "evm-infra-ts",
+    "agent-service-ts",
+    "worker-job",
+    "forge-contracts",
+    "hardhat-contracts"
+  ],
+  "slotDefaults": {
+    "sdk": "sdk:evm-wallet"
+  },
+  "defaults": {
+    "headline": "Ship on Linea — zkEVM with MetaMask-native UX",
+    "subheadline": "ConsenSys zkEVM L2; bytecode-equivalent, cheap, first-class MetaMask wallet integration."
+  },
+  "files": [
+    {
+      "source": "files/partner-config.json",
+      "target": "partner-config.json"
+    },
+    {
+      "source": "files/starter-brand.json",
+      "target": "starter-brand.json"
+    }
+  ],
+  "buildHints": {
+    "whenToUse": "Prompt mentions Linea, zkEVM L2, MetaMask-integrated dApp, or ConsenSys ecosystem.",
+    "firstSteps": [
+      "Linea mainnet chainId 59144, testnet (Sepolia) 59141. RPCs default to the Infura endpoints in partner-config.json.",
+      "Bytecode-equivalent with Ethereum — no Linea-specific opcodes, precompiles, or compiler flags. Deploy exactly as on mainnet.",
+      "MetaMask SDK is first-class; prefer `@metamask/sdk` over WalletConnect for Linea consumer flows."
+    ],
+    "gotchas": [
+      "Linea withdrawals to L1 have a ~1-3 hour proof window typical for zkEVMs; don't promise instant L2→L1 bridging.",
+      "Bridge official only through the Linea-provided bridge (bridge.linea.build) for canonical assets — third-party bridges can mint non-canonical variants."
+    ]
+  }
+}

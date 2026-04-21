@@ -1,0 +1,22 @@
+{
+  "familyId": "healthcare-hipaa-backend",
+  "runAt": "2026-04-21T05:50:32.143Z",
+  "completed": true,
+  "shotsUsed": 1,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 165723,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 165723,
+      "reviewAvailable": true
+    }
+  ]
+}

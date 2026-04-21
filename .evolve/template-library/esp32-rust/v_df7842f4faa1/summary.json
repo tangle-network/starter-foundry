@@ -1,0 +1,44 @@
+{
+  "familyId": "esp32-rust",
+  "runAt": "2026-04-21T08:58:16.490Z",
+  "completed": true,
+  "shotsUsed": 3,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 561759,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": false,
+      "failing": [
+        "install"
+      ],
+      "confidence": 0.88,
+      "shouldContinue": true,
+      "durationMs": 159602,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 2,
+      "pass": false,
+      "failing": [
+        "install"
+      ],
+      "confidence": 0.88,
+      "shouldContinue": true,
+      "durationMs": 210532,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 3,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 191625,
+      "reviewAvailable": true
+    }
+  ]
+}

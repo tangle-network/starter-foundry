@@ -1,0 +1,673 @@
+{
+  "generatedAt": "2026-04-21T02:50:09.569Z",
+  "totalLayersScanned": 67,
+  "distinctDepsScanned": 107,
+  "inconsistentCount": 11,
+  "inconsistent": [
+    {
+      "name": "typescript",
+      "distinctVersions": [
+        "^5.9.0",
+        "^5.7.0"
+      ],
+      "uses": [
+        {
+          "kind": "family",
+          "id": "agent-swarm-ts",
+          "version": "^5.9.0",
+          "path": "registry/families/agent-swarm-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "astro-static",
+          "version": "^5.7.0",
+          "path": "registry/families/astro-static/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "browser-extension-ts",
+          "version": "^5.9.0",
+          "path": "registry/families/browser-extension-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "bun-http",
+          "version": "^5.7.0",
+          "path": "registry/families/bun-http/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "cli-ts",
+          "version": "^5.9.0",
+          "path": "registry/families/cli-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "crm-backend",
+          "version": "^5.9.0",
+          "path": "registry/families/crm-backend/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "ecommerce-headless",
+          "version": "^5.9.0",
+          "path": "registry/families/ecommerce-headless/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "electron-desktop-ts",
+          "version": "^5.9.0",
+          "path": "registry/families/electron-desktop-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "electron-native-os",
+          "version": "^5.9.0",
+          "path": "registry/families/electron-native-os/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "expo-react-native-ts",
+          "version": "^5.9.0",
+          "path": "registry/families/expo-react-native-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "expo-rn-rich",
+          "version": "^5.9.0",
+          "path": "registry/families/expo-rn-rich/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "fintech-ledger-backend",
+          "version": "^5.9.0",
+          "path": "registry/families/fintech-ledger-backend/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "fullstack-ts",
+          "version": "^5.9.0",
+          "path": "registry/families/fullstack-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "hardhat-contracts",
+          "version": "^5.9.0",
+          "path": "registry/families/hardhat-contracts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "healthcare-hipaa-backend",
+          "version": "^5.9.0",
+          "path": "registry/families/healthcare-hipaa-backend/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "hls-origin",
+          "version": "^5.9.0",
+          "path": "registry/families/hls-origin/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "k12-edtech",
+          "version": "^5.9.0",
+          "path": "registry/families/k12-edtech/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "legal-case-mgmt",
+          "version": "^5.9.0",
+          "path": "registry/families/legal-case-mgmt/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "livekit-sfu",
+          "version": "^5.9.0",
+          "path": "registry/families/livekit-sfu/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "multimodal-agent",
+          "version": "^5.9.0",
+          "path": "registry/families/multimodal-agent/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "nextjs-ts",
+          "version": "^5.9.0",
+          "path": "registry/families/nextjs-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "observable-notebook",
+          "version": "^5.7.0",
+          "path": "registry/families/observable-notebook/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "ollama-server",
+          "version": "^5.9.0",
+          "path": "registry/families/ollama-server/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "phaser-game",
+          "version": "^5.9.0",
+          "path": "registry/families/phaser-game/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "pixijs-game",
+          "version": "^5.9.0",
+          "path": "registry/families/pixijs-game/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "react-vite-ts",
+          "version": "^5.9.0",
+          "path": "registry/families/react-vite-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "realtime-audio-ts",
+          "version": "^5.9.0",
+          "path": "registry/families/realtime-audio-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "tauri-desktop",
+          "version": "^5.9.0",
+          "path": "registry/families/tauri-desktop/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "tauri-menubar",
+          "version": "^5.9.0",
+          "path": "registry/families/tauri-menubar/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "tauri-tray",
+          "version": "^5.9.0",
+          "path": "registry/families/tauri-tray/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "threejs-game",
+          "version": "^5.9.0",
+          "path": "registry/families/threejs-game/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "unity-web-proxy",
+          "version": "^5.9.0",
+          "path": "registry/families/unity-web-proxy/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "vision-first-agent",
+          "version": "^5.9.0",
+          "path": "registry/families/vision-first-agent/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "voice-first-agent",
+          "version": "^5.9.0",
+          "path": "registry/families/voice-first-agent/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "wasm-rust",
+          "version": "^5.9.0",
+          "path": "registry/families/wasm-rust/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "webgpu-inference",
+          "version": "^5.9.0",
+          "path": "registry/families/webgpu-inference/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "webgpu-render",
+          "version": "^5.9.0",
+          "path": "registry/families/webgpu-render/files/package.json"
+        }
+      ],
+      "versionCounts": [
+        {
+          "version": "^5.9.0",
+          "count": 34
+        },
+        {
+          "version": "^5.7.0",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "name": "@radix-ui/react-slot",
+      "distinctVersions": [
+        "latest",
+        "^1.1.0"
+      ],
+      "uses": [
+        {
+          "kind": "family",
+          "id": "fullstack-ts",
+          "version": "latest",
+          "path": "registry/families/fullstack-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "nextjs-ts",
+          "version": "^1.1.0",
+          "path": "registry/families/nextjs-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "react-vite-ts",
+          "version": "latest",
+          "path": "registry/families/react-vite-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "remix-ts",
+          "version": "latest",
+          "path": "registry/families/remix-ts/files/package.json"
+        },
+        {
+          "kind": "capability-deps",
+          "id": "shadcn",
+          "version": "^1.1.0",
+          "path": "registry/layers/capability/shadcn/manifest.json"
+        }
+      ],
+      "versionCounts": [
+        {
+          "version": "latest",
+          "count": 3
+        },
+        {
+          "version": "^1.1.0",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "name": "class-variance-authority",
+      "distinctVersions": [
+        "latest",
+        "^0.7.1"
+      ],
+      "uses": [
+        {
+          "kind": "family",
+          "id": "fullstack-ts",
+          "version": "latest",
+          "path": "registry/families/fullstack-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "nextjs-ts",
+          "version": "^0.7.1",
+          "path": "registry/families/nextjs-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "react-vite-ts",
+          "version": "latest",
+          "path": "registry/families/react-vite-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "remix-ts",
+          "version": "latest",
+          "path": "registry/families/remix-ts/files/package.json"
+        },
+        {
+          "kind": "capability-deps",
+          "id": "shadcn",
+          "version": "^0.7.1",
+          "path": "registry/layers/capability/shadcn/manifest.json"
+        }
+      ],
+      "versionCounts": [
+        {
+          "version": "latest",
+          "count": 3
+        },
+        {
+          "version": "^0.7.1",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "name": "clsx",
+      "distinctVersions": [
+        "latest",
+        "^2.1.1"
+      ],
+      "uses": [
+        {
+          "kind": "family",
+          "id": "fullstack-ts",
+          "version": "latest",
+          "path": "registry/families/fullstack-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "nextjs-ts",
+          "version": "^2.1.1",
+          "path": "registry/families/nextjs-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "react-vite-ts",
+          "version": "latest",
+          "path": "registry/families/react-vite-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "remix-ts",
+          "version": "latest",
+          "path": "registry/families/remix-ts/files/package.json"
+        },
+        {
+          "kind": "capability-deps",
+          "id": "shadcn",
+          "version": "^2.1.1",
+          "path": "registry/layers/capability/shadcn/manifest.json"
+        }
+      ],
+      "versionCounts": [
+        {
+          "version": "latest",
+          "count": 3
+        },
+        {
+          "version": "^2.1.1",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "name": "lucide-react",
+      "distinctVersions": [
+        "latest",
+        "^0.468.0"
+      ],
+      "uses": [
+        {
+          "kind": "family",
+          "id": "fullstack-ts",
+          "version": "latest",
+          "path": "registry/families/fullstack-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "nextjs-ts",
+          "version": "^0.468.0",
+          "path": "registry/families/nextjs-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "react-vite-ts",
+          "version": "latest",
+          "path": "registry/families/react-vite-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "remix-ts",
+          "version": "latest",
+          "path": "registry/families/remix-ts/files/package.json"
+        },
+        {
+          "kind": "capability-deps",
+          "id": "shadcn",
+          "version": "^0.468.0",
+          "path": "registry/layers/capability/shadcn/manifest.json"
+        }
+      ],
+      "versionCounts": [
+        {
+          "version": "latest",
+          "count": 3
+        },
+        {
+          "version": "^0.468.0",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "name": "tailwind-merge",
+      "distinctVersions": [
+        "latest",
+        "^2.6.0"
+      ],
+      "uses": [
+        {
+          "kind": "family",
+          "id": "fullstack-ts",
+          "version": "latest",
+          "path": "registry/families/fullstack-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "nextjs-ts",
+          "version": "^2.6.0",
+          "path": "registry/families/nextjs-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "react-vite-ts",
+          "version": "latest",
+          "path": "registry/families/react-vite-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "remix-ts",
+          "version": "latest",
+          "path": "registry/families/remix-ts/files/package.json"
+        },
+        {
+          "kind": "capability-deps",
+          "id": "shadcn",
+          "version": "^2.6.0",
+          "path": "registry/layers/capability/shadcn/manifest.json"
+        }
+      ],
+      "versionCounts": [
+        {
+          "version": "latest",
+          "count": 3
+        },
+        {
+          "version": "^2.6.0",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "name": "tsx",
+      "distinctVersions": [
+        "^4.19.0",
+        "^4.19.2"
+      ],
+      "uses": [
+        {
+          "kind": "family",
+          "id": "agent-swarm-ts",
+          "version": "^4.19.0",
+          "path": "registry/families/agent-swarm-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "hls-origin",
+          "version": "^4.19.2",
+          "path": "registry/families/hls-origin/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "livekit-sfu",
+          "version": "^4.19.2",
+          "path": "registry/families/livekit-sfu/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "ollama-server",
+          "version": "^4.19.2",
+          "path": "registry/families/ollama-server/files/package.json"
+        }
+      ],
+      "versionCounts": [
+        {
+          "version": "^4.19.0",
+          "count": 1
+        },
+        {
+          "version": "^4.19.2",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "name": "@tanstack/react-table",
+      "distinctVersions": [
+        "latest",
+        "^8.21.0"
+      ],
+      "uses": [
+        {
+          "kind": "family",
+          "id": "nextjs-ts",
+          "version": "latest",
+          "path": "registry/families/nextjs-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "react-vite-ts",
+          "version": "latest",
+          "path": "registry/families/react-vite-ts/files/package.json"
+        },
+        {
+          "kind": "capability-deps",
+          "id": "layout-admin",
+          "version": "^8.21.0",
+          "path": "registry/layers/capability/layout-admin/manifest.json"
+        }
+      ],
+      "versionCounts": [
+        {
+          "version": "latest",
+          "count": 2
+        },
+        {
+          "version": "^8.21.0",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "recharts",
+      "distinctVersions": [
+        "latest",
+        "^2.15.0"
+      ],
+      "uses": [
+        {
+          "kind": "family",
+          "id": "nextjs-ts",
+          "version": "latest",
+          "path": "registry/families/nextjs-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "react-vite-ts",
+          "version": "latest",
+          "path": "registry/families/react-vite-ts/files/package.json"
+        },
+        {
+          "kind": "capability-deps",
+          "id": "chart-widget",
+          "version": "^2.15.0",
+          "path": "registry/layers/capability/chart-widget/manifest.json"
+        }
+      ],
+      "versionCounts": [
+        {
+          "version": "latest",
+          "count": 2
+        },
+        {
+          "version": "^2.15.0",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "expo",
+      "distinctVersions": [
+        "^53.0.0",
+        "~52.0.0"
+      ],
+      "uses": [
+        {
+          "kind": "family",
+          "id": "expo-react-native-ts",
+          "version": "^53.0.0",
+          "path": "registry/families/expo-react-native-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "expo-rn-rich",
+          "version": "~52.0.0",
+          "path": "registry/families/expo-rn-rich/files/package.json"
+        }
+      ],
+      "versionCounts": [
+        {
+          "version": "^53.0.0",
+          "count": 1
+        },
+        {
+          "version": "~52.0.0",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "postcss",
+      "distinctVersions": [
+        "latest",
+        "^8.4.49"
+      ],
+      "uses": [
+        {
+          "kind": "family",
+          "id": "fullstack-ts",
+          "version": "latest",
+          "path": "registry/families/fullstack-ts/files/package.json"
+        },
+        {
+          "kind": "family",
+          "id": "nextjs-ts",
+          "version": "^8.4.49",
+          "path": "registry/families/nextjs-ts/files/package.json"
+        }
+      ],
+      "versionCounts": [
+        {
+          "version": "latest",
+          "count": 1
+        },
+        {
+          "version": "^8.4.49",
+          "count": 1
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "id": "phaser-game",
+  "description": "Phaser 3 framework layer — Phaser.Game bootstrap + a single MainScene with arcade physics, a bouncing sprite, and cursor-key input wired from first render.",
+  "appliesTo": ["phaser-game"],
+  "files": [
+    { "source": "files/src/main.ts", "target": "src/main.ts" },
+    { "source": "files/src/scenes/MainScene.ts", "target": "src/scenes/MainScene.ts" }
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "phaser": "^3.87.0"
+    },
+    "devDependencies": {
+      "typescript": "^5.9.0",
+      "vite": "^6.4.2"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "2D browser games — platformers, arcade, tower defense, match-3, tile-based roguelikes. Pick this over three.js when the primary surface is a 2D canvas with sprites + physics, not 3D geometry.",
+    "firstSteps": [
+      "Run `pnpm install` then `pnpm dev` — Vite serves on 5173 with HMR; the bouncing ball renders immediately.",
+      "Add new scenes under `src/scenes/` and register them in the `scene` array of the Phaser.Game config in `src/main.ts`.",
+      "Put art assets in `public/assets/` and load them with `this.load.image('key', 'assets/foo.png')` inside a Scene's `preload()`.",
+      "Arcade physics is enabled by default — attach a physics body via `this.physics.add.sprite(x, y, key)`.",
+      "Run `pnpm build` to emit static assets to `dist/` — deploy to any static host."
+    ],
+    "gotchas": [
+      "`this` inside `preload/create/update` is the Scene, not the Game. If you extract callbacks, bind or use arrow functions — losing `this` silently breaks asset loading.",
+      "Phaser clamps `update(time, delta)` delta — never assume 1/60 s between frames on throttled tabs. Always scale movement by `delta / 1000`.",
+      "Sprite textures are cached by key — loading the same key twice is a no-op after the first load. Use distinct keys per asset or call `this.textures.remove(key)` before reloading.",
+      "Canvas size is controlled by the Phaser.Game config `scale` property, NOT CSS. Setting CSS width/height stretches the canvas and breaks pointer coordinates.",
+      "Phaser ships its own TypeScript declarations; no `@types/phaser` package is needed or available."
+    ],
+    "architectureNotes": [
+      "One Phaser.Game instance per page. Scenes are the unit of composition — add, switch, pause, resume via `this.scene.*`.",
+      "Keep game state in the Scene (or a Scene's `registry`); do NOT attach it to `window`/global. Scene transitions clear local state."
+    ],
+    "placeholders": [
+      {
+        "path": "src/scenes/MainScene.ts",
+        "description": "Default scene with a bouncing sprite + cursor-key input. Replace the graphics-generated ball + logic with your actual game loop; keep the scene lifecycle hooks (preload/create/update)."
+      },
+      {
+        "path": "src/main.ts",
+        "description": "Phaser.Game config with arcade physics and FIT scaling. Adjust width/height, gravity, and the scene array as the game grows."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm dev", "pnpm build", "pnpm validate"],
+    "entrypoints": ["src/main.ts", "src/scenes/MainScene.ts"],
+    "preview": { "path": "/" },
+    "extensionPoints": ["src/main.ts", "src/scenes", "public/assets"]
+  }
+}

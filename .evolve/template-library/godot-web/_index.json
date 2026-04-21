@@ -1,0 +1,22 @@
+{
+  "family": "godot-web",
+  "current": "v_ace1f0f051bf",
+  "topN": [
+    "v_ace1f0f051bf",
+    "v_981d42e9d482"
+  ],
+  "all": [
+    {
+      "version": "v_ace1f0f051bf",
+      "score": 0.8399945324961948,
+      "skipped": null
+    },
+    {
+      "version": "v_981d42e9d482",
+      "score": 0.6549999945728692,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.315Z"
+}

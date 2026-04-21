@@ -45,23 +45,41 @@ test('synthetic: persistBatch appends to .evolve/synthetic/ without duplication'
 })
 
 test('ab: abDecide is stable across calls for the same key', () => {
-  const exp = { name: 'tmpl-vs-min', variants: { a: { weight: 0.5 }, b: { weight: 0.5 } } }
+  const exp = {
+    schemaVersion: 1 as const,
+    id: 'tmpl-vs-min',
+    description: 'template synthesis A/B',
+    rampPct: 100,
+    startedAt: '2026-04-01T00:00:00Z',
+    stoppedAt: null,
+    variants: [{ id: 'a', weight: 1 }, { id: 'b', weight: 1 }],
+    controlVariantId: 'a',
+    primaryMetric: 'pass_rate',
+  }
   const dec1 = abDecide(exp, 'session-abc')
   const dec2 = abDecide(exp, 'session-abc')
   const dec3 = abDecide(exp, 'session-xyz')
-  assert.equal(dec1.variant, dec2.variant, 'same key must pick same variant')
-  assert.equal(dec1.experiment, 'tmpl-vs-min')
-  // Different keys may pick different variants — not strictly required to
-  // differ, but if they do, the experiment is routing traffic.
-  assert.ok(['a', 'b'].includes(dec1.variant))
-  assert.ok(['a', 'b'].includes(dec3.variant))
+  assert.equal(dec1.variantId, dec2.variantId, 'same key must pick same variant')
+  assert.equal(dec1.experimentId, 'tmpl-vs-min')
+  assert.ok(['a', 'b'].includes(dec1.variantId!))
+  assert.ok(['a', 'b'].includes(dec3.variantId!))
 })
 
 test('ab: ramp excludes users below the threshold', () => {
-  const exp = { name: 'ramp-test', ramp: 0.0, variants: { a: { weight: 1 } } }
+  const exp = {
+    schemaVersion: 1 as const,
+    id: 'ramp-test',
+    description: 'ramp=0 excludes',
+    rampPct: 0,
+    startedAt: '2026-04-01T00:00:00Z',
+    stoppedAt: null,
+    variants: [{ id: 'a', weight: 1 }],
+    controlVariantId: 'control',
+    primaryMetric: 'pass_rate',
+  }
   const dec = abDecide(exp, 'any-key')
-  assert.equal(dec.included, false, 'ramp=0 includes nobody')
-  assert.equal(dec.variant, 'control')
+  assert.equal(dec.inRamp, false, 'ramp=0 includes nobody')
+  assert.equal(dec.variantId, 'control')
 })
 
 test('secret-scan: detects AWS keys + OpenAI secrets + private-key blocks', async () => {

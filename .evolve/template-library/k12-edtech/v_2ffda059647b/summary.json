@@ -1,0 +1,33 @@
+{
+  "familyId": "k12-edtech",
+  "runAt": "2026-04-21T06:00:18.532Z",
+  "completed": true,
+  "shotsUsed": 2,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 345621,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": false,
+      "failing": [
+        "typecheck"
+      ],
+      "confidence": 0.93,
+      "shouldContinue": true,
+      "durationMs": 283121,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 2,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 62499,
+      "reviewAvailable": true
+    }
+  ]
+}

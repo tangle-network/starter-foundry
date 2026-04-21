@@ -1,0 +1,10 @@
+[package]
+name = "{{PROJECT_NAME}}"
+version = "1.0.0"
+authors = []
+
+[addresses]
+module_addr = "_"
+
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework/", rev = "mainnet" }

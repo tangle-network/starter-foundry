@@ -27,21 +27,23 @@ export interface SynthesizeResult {
 }
 
 const synthesizer = ax(
-  'templatePath:string, familyId:string, currentTemplate:string, commonLinesInRewrites:string[], commonImports:string[], sampleAgentRewrite:string -> candidateTemplate:string, reasoning:string',
+  'templatePath:string, familyId:string, currentTemplate:string, commonLinesInRewrites:string, commonImports:string, sampleAgentRewrite:string -> candidateTemplate:string, reasoning:string',
 )
 
 async function synthesizeLLM(input: SynthesizeInput): Promise<SynthesizeResult | null> {
   if (!isLLMAvailable()) return null
   const llm = createLLM()
   const sample = input.harvest.samplesAfter[0] ?? ''
+  const lines = input.harvest.frequentlyAddedLines.slice(0, 15).map((l) => `- ${l.line}`).join('\n') || '(none above threshold)'
+  const imports = input.harvest.frequentImports.slice(0, 10).map((i) => `- ${i.token}`).join('\n') || '(no recurring imports)'
   try {
     const out = (await synthesizer.forward(llm, {
       templatePath: input.templatePath,
       familyId: input.familyId,
       currentTemplate: input.currentSource.slice(0, 4000),
-      commonLinesInRewrites: input.harvest.frequentlyAddedLines.slice(0, 15).map((l) => l.line),
-      commonImports: input.harvest.frequentImports.slice(0, 10).map((i) => i.token),
-      sampleAgentRewrite: sample.slice(0, 2000),
+      commonLinesInRewrites: lines,
+      commonImports: imports,
+      sampleAgentRewrite: sample.slice(0, 2000) || '(no sample available)',
     })) as { candidateTemplate?: string; reasoning?: string }
     if (!out.candidateTemplate) return null
     return { mode: 'llm', candidate: out.candidateTemplate, reasoning: out.reasoning ?? '' }

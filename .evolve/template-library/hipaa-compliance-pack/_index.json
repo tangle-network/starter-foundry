@@ -1,0 +1,22 @@
+{
+  "family": "hipaa-compliance-pack",
+  "current": "v_acf7abd46a7b",
+  "topN": [
+    "v_acf7abd46a7b",
+    "v_ef67a5c8ee5b"
+  ],
+  "all": [
+    {
+      "version": "v_acf7abd46a7b",
+      "score": 0.8399946252552639,
+      "skipped": null
+    },
+    {
+      "version": "v_ef67a5c8ee5b",
+      "score": 0.6299999945712836,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.331Z"
+}

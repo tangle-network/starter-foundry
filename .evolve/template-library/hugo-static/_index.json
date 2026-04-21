@@ -1,0 +1,22 @@
+{
+  "family": "hugo-static",
+  "current": "v_2dfbcb4a14e9",
+  "topN": [
+    "v_2dfbcb4a14e9",
+    "v_109799a6c088"
+  ],
+  "all": [
+    {
+      "version": "v_2dfbcb4a14e9",
+      "score": 0.7999948522672502,
+      "skipped": null
+    },
+    {
+      "version": "v_109799a6c088",
+      "score": 0.6399999945728692,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.341Z"
+}

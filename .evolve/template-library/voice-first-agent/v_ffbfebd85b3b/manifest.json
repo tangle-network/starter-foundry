@@ -1,0 +1,50 @@
+{
+  "id": "voice-first-agent",
+  "description": "Push-to-talk voice agent browser runtime — MediaRecorder → /api/stt → /api/llm → /api/tts round-trip with Safari/Chrome/Firefox MIME negotiation.",
+  "appliesTo": ["voice-first-agent"],
+  "files": [
+    {
+      "source": "files/main.ts",
+      "target": "src/main.ts"
+    }
+  ],
+  "packageDeps": {
+    "devDependencies": {
+      "typescript": "^5.9.0",
+      "vite": "^6.4.2"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "Browser-native push-to-talk agents — mic capture, STT → LLM → TTS round-trips — where zero SDK lock-in and cross-browser compatibility matter more than server-side streaming.",
+    "firstSteps": [
+      "Run `pnpm install` then `pnpm dev` — Vite serves on port 4180 (configured in vite.config.ts). The push-to-talk UI renders immediately; mic permission is requested on first button press.",
+      "Wire the three API routes documented in `api/README.md`: POST /api/stt (audio blob → { text }), POST /api/llm ({ transcript } → { reply }), POST /api/tts ({ text } → audio bytes). All logic lives in `src/main.ts`.",
+      "Run `node validate-voice.mjs` (or `pnpm validate`) to verify scaffold coherence before wiring backends.",
+      "Run `pnpm build` to emit a static bundle to `dist/` — deploy behind any CDN that serves HTTPS (required for getUserMedia outside localhost)."
+    ],
+    "gotchas": [
+      "getUserMedia requires HTTPS outside localhost — any plain-HTTP deployment gets NotAllowedError before the mic prompt even appears.",
+      "MediaRecorder MIME support varies by browser: Safari prefers audio/mp4, Chrome/Firefox prefer audio/webm;codecs=opus. pickMimeType() in main.ts handles this via isTypeSupported() — do not bypass it.",
+      "Safari autoplay blocks Audio.play() without a prior user gesture. The pointerdown → roundTrip() path satisfies the requirement; do not move playback into a setTimeout or async callback that escapes the gesture context.",
+      "Call track.stop() on each MediaStreamTrack when recording ends to release the mic-active indicator. main.ts does this in the 'stop' event handler — preserve that pattern if you refactor.",
+      "The /api proxy in vite.config.ts only works during `pnpm dev`. For production, route /api/* through your deployment platform (Cloudflare Workers, Vercel rewrite rules, etc.)."
+    ],
+    "architectureNotes": [
+      "main.ts is an intentionally single-file, no-framework runtime. All state (mediaRecorder, chunks, currentStream) is module-level — there is no component tree to wire.",
+      "The three API contracts (/api/stt, /api/llm, /api/tts) are the only integration surface — swap any backend without touching browser code.",
+      "Audio is POSTed as a raw Blob body with Content-Type from recorder.mimeType — never base64 in JSON. This keeps the STT payload at native size (~80 KB / 10 s of opus)."
+    ],
+    "placeholders": [
+      {
+        "path": "src/main.ts",
+        "description": "Full push-to-talk runtime. API endpoints (/api/stt, /api/llm, /api/tts) return 500 until you wire real backends — see api/README.md for contracts."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm dev", "pnpm build", "pnpm validate"],
+    "entrypoints": ["src/main.ts", "index.html"],
+    "preview": { "path": "/" },
+    "extensionPoints": ["src/main.ts", "api/"]
+  }
+}

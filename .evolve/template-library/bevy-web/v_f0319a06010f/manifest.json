@@ -1,0 +1,48 @@
+{
+  "id": "bevy-web",
+  "description": "Bevy web framework layer — src/main.rs with a real App, DefaultPlugins, camera, light, and a rotating cube driven by a system.",
+  "appliesTo": ["bevy-web"],
+  "files": [
+    {
+      "source": "files/src/main.rs",
+      "target": "src/main.rs"
+    }
+  ],
+  "buildHints": {
+    "whenToUse": "Rust-first game or interactive 3D content that must run in the browser. Bevy supplies an ECS, PBR renderer, input, and audio; Trunk handles the WASM build and asset pipeline. Choose this over a JS-based framework when the logic is inherently systems-based or you want Rust's type safety across the whole codebase.",
+    "firstSteps": [
+      "Install the toolchain once: `rustup target add wasm32-unknown-unknown` then `cargo install --locked trunk`.",
+      "Run `trunk serve` — it compiles Rust to WASM, runs wasm-bindgen, and opens http://localhost:8080 with hot-reload on Rust file changes.",
+      "The Bevy app is in `src/main.rs`: DefaultPlugins + a Camera3dBundle, DirectionalLight, AmbientLight, and a rotating cube. Start replacing the cube with your geometry and adding systems.",
+      "Run `trunk build --release` to emit a production bundle in `dist/` — deploy to any static host."
+    ],
+    "gotchas": [
+      "`wasm-bindgen-cli` must match the version in Cargo.lock. Always install with `--locked`; version drift causes cryptic `imported memory` linker errors.",
+      "WebGPU is Chrome/Edge 113+ and Safari 18+; Firefox stable falls back to WebGL2. Guard any WebGPU-only features behind a capability check.",
+      "WASM binaries are large by default (~10–20 MB debug, ~3–6 MB release). Always ship `trunk build --release`, which runs wasm-opt -Oz automatically.",
+      "Assets loaded via `AssetServer` are fetched relative to the HTML page. Files must be under `public/` (Trunk copies them to `dist/`) — dropping assets next to `src/` causes 404s at runtime."
+    ],
+    "architectureNotes": [
+      "One `App::new()` per process — Bevy is not reentrant. All plugins, systems, and resources attach to that single app.",
+      "Systems are stateless functions operating on queries and resources. State belongs in `Resource`s or `Component`s, not in system-local variables across frames.",
+      "Keep WASM-specific code under `#[cfg(target_arch = \"wasm32\")]` so the crate also builds natively for fast iteration without a browser."
+    ],
+    "placeholders": [
+      {
+        "path": "src/main.rs",
+        "description": "Minimal Bevy app: DefaultPlugins, Camera3dBundle, DirectionalLight, AmbientLight, and a PbrBundle cube with a per-frame rotation system. Replace the cube mesh and material with real geometry, add input and audio systems, or swap DefaultPlugins for a narrower plugin group to reduce bundle size."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "rustup target add wasm32-unknown-unknown",
+      "cargo install --locked trunk",
+      "trunk serve",
+      "trunk build --release"
+    ],
+    "entrypoints": ["src/main.rs"],
+    "preview": { "path": "/" },
+    "extensionPoints": ["src/main.rs"]
+  }
+}

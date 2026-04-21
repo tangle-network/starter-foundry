@@ -1,0 +1,30 @@
+{
+  "name": "{{packageName}}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "node --import tsx src/server.ts",
+    "hls:up": "docker compose up -d",
+    "hls:down": "docker compose down",
+    "hls:logs": "docker compose logs -f",
+    "stream:demo": "./start-stream.sh testsrc demo",
+    "validate": "node validate-hls.mjs"
+  },
+  "dependencies": {
+    "fast-glob": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.9.0"
+  },
+  "overrides": {
+    "vite": "^6.4.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite": "^6.4.2"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "{{packageName}}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "cargo tauri dev",
+    "preview:instant": "node preview-server.mjs",
+    "validate": "node validate-types.mjs"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.0.0",
+    "@types/node": "^20.17.0",
+    "typescript": "^5.9.0"
+  },
+  "overrides": {
+    "vite": "^6.4.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite": "^6.4.2"
+    }
+  }
+}

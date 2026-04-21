@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-04-21T06:15:44.444Z",
+  "audits": [
+    {
+      "layerId": "framework:observable-notebook",
+      "family": "observable-notebook",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 3131.214959,
+          "stderrTail": "",
+          "stdoutTail": "Progress: resolved 1, reused 0, downloaded 0, added 0\nProgress: resolved 175, reused 126, downloaded 0, added 0\n WARN  4 deprecated subdependencies found: glob@10.5.0, glob@8.1.0, inflight@1.0.6, whatwg-encoding@3.1.1\nPackages: +255\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\nProgress: resolved 304, reused 255, downloaded 0, added 83\nProgress: resolved 304, reused 255, downloaded 0, added 255, done\n\ndependencies:\n+ @observablehq/framework 1.13.4\n\ndevDependencies:\n+ @types/node 20.19.39 (25.6.0 is available)\n+ typescript 5.9.3 (6.0.3 is available)\n\n╭ Warning ─────────────────────────────────────────────────────────────────────╮\n│                                                                              │\n│   Ignored build scripts: esbuild.                                            │\n│   Run \"pnpm approve-builds\" to pick which dependencies should be allowed     │\n│   to run scripts.                                                            │\n│                                                                              │\n╰──────────────────────────────────────────────────────────────────────────────╯\n\nDone in 2.9s using pnpm v10.22.0\n"
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 980,
+          "stderrTail": "",
+          "stdoutTail": ""
+        }
+      ]
+    }
+  ]
+}

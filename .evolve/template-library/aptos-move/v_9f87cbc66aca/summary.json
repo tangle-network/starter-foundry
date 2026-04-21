@@ -1,0 +1,22 @@
+{
+  "familyId": "aptos-move",
+  "runAt": "2026-04-21T07:48:15.702Z",
+  "completed": true,
+  "shotsUsed": 1,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 483315,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 483314,
+      "reviewAvailable": true
+    }
+  ]
+}

@@ -28,6 +28,21 @@ function arg(k, fallback) {
 const onlyLayer = arg('--layer', null)
 const outPath = arg('--out', '.evolve/scaffold-quality-audit.json')
 const timeoutMs = Number.parseInt(arg('--timeout', '120000'), 10)
+// Gen-1 verifier extensions — each gated by a flag so retries + existing
+// callers don't pick up stricter grading inadvertently.
+const doBuild = process.argv.includes('--build')
+const doValidation = process.argv.includes('--validation-checks')
+const doSmoke = process.argv.includes('--smoke-compose')
+const buildTimeoutMs = Number.parseInt(arg('--build-timeout', '180000'), 10)
+const validationTimeoutMs = Number.parseInt(arg('--validation-timeout', '60000'), 10)
+
+// Security gate for validationChecks: only run `command-success` entries
+// whose first token is in this allowlist. A hostile manifest can't turn
+// this into an arbitrary-exec vector.
+const VALIDATION_CMD_ALLOWLIST = new Set([
+  'node', 'pnpm', 'npm', 'yarn', 'tsx', 'python3', 'python', 'go',
+  'cargo', 'forge', 'aptos', 'sui', 'bash', 'sh',
+])
 
 const registry = await loadRegistry()
 
@@ -36,12 +51,12 @@ const filtered = onlyLayer ? frameworks.filter((f) => `${f.group}:${f.id}` === o
 
 console.log(`auditing ${filtered.length} framework layers...`)
 
-function runCmd(cmd, args, cwd) {
+function runCmd(cmd, args, cwd, perCallTimeoutMs) {
   const t0 = performance.now()
   const res = spawnSync(cmd, args, {
     cwd,
     encoding: 'utf8',
-    timeout: timeoutMs,
+    timeout: perCallTimeoutMs ?? timeoutMs,
     env: { ...process.env, CI: '1', PNPM_NO_AUDIT: '1' },
   })
   // Tail to last 30 lines to keep artifact size bounded while preserving
@@ -65,8 +80,37 @@ function detectPackageManager(dir) {
   if (existsSync(join(dir, 'foundry.toml'))) return { cmd: 'forge', install: ['build'] }
   if (existsSync(join(dir, 'go.mod'))) return { cmd: 'go', install: ['build', './...'] }
   if (existsSync(join(dir, 'Anchor.toml'))) return { cmd: 'anchor', install: ['build'] }
+  // Aptos / Sui Move projects use Move.toml at the project root; both CLIs
+  // compile through `<cli> move compile`. Aptos-first because it's the more
+  // common toolchain across starter-foundry's current Move families.
+  if (existsSync(join(dir, 'Move.toml'))) {
+    if (existsSync('/opt/homebrew/bin/aptos') || existsSync('/usr/local/bin/aptos')) {
+      return { cmd: 'aptos', install: ['move', 'compile', '--dev'] }
+    }
+    if (existsSync('/opt/homebrew/bin/sui') || existsSync('/usr/local/bin/sui')) {
+      return { cmd: 'sui', install: ['move', 'build'] }
+    }
+  }
+  // ROS2 ament packages — `package.xml` + `setup.py` or CMakeLists.txt. If
+  // `colcon` is on PATH, use it; otherwise fall back to compile-checking the
+  // Python entrypoint so the scaffold still gets *some* verification signal.
+  if (existsSync(join(dir, 'package.xml'))) {
+    if (existsSync('/opt/homebrew/bin/colcon') || existsSync('/usr/local/bin/colcon')) {
+      return { cmd: 'colcon', install: ['build', '--merge-install'] }
+    }
+    if (existsSync(join(dir, 'setup.py'))) {
+      return { cmd: 'python3', install: ['-m', 'compileall', '.'] }
+    }
+  }
   if (existsSync(join(dir, 'pyproject.toml')) || existsSync(join(dir, 'requirements.txt'))) {
     return { cmd: 'python3', install: ['-m', 'compileall', '.'] }
+  }
+  // Kotlin/Gradle — check gradle wrapper before global gradle.
+  if (existsSync(join(dir, 'build.gradle.kts')) || existsSync(join(dir, 'build.gradle'))) {
+    if (existsSync(join(dir, 'gradlew'))) return { cmd: './gradlew', install: ['compileKotlin', '--no-daemon'] }
+    if (existsSync('/opt/homebrew/bin/gradle') || existsSync('/usr/local/bin/gradle')) {
+      return { cmd: 'gradle', install: ['compileKotlin', '--no-daemon'] }
+    }
   }
   return null
 }
@@ -133,6 +177,145 @@ for (const layer of filtered) {
     })
   } else if (install.exitCode === 0 && pm.cmd === 'pnpm') {
     phases.push({ phase: 'typecheck', skipped: 'no-tsconfig', ok: true })
+  }
+
+  // Gen-1: --build phase. Runs the scaffold's own `build` script (typically
+  // `pnpm run build` or `pnpm build`). Catches bundler errors, dead imports,
+  // missing public assets — classes of bug that typecheck alone misses.
+  // Only runs when install + typecheck pass; skipped if no `build` script.
+  if (doBuild && install.exitCode === 0 && pm.cmd === 'pnpm' && phases.every((p) => p.ok || p.skipped)) {
+    const pkgPath = join(tmp, 'package.json')
+    let hasBuild = false
+    try {
+      const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'))
+      hasBuild = typeof pkg.scripts?.build === 'string'
+    } catch {
+      /* treat as no build script */
+    }
+    if (hasBuild) {
+      const build = runCmd('pnpm', ['run', 'build'], tmp, buildTimeoutMs)
+      phases.push({
+        phase: 'build',
+        cmd: 'pnpm run build',
+        ok: build.exitCode === 0,
+        durationMs: build.durationMs,
+        stderrTail: build.stderrTail.slice(-2000),
+        stdoutTail: build.stdoutTail.slice(-2000),
+      })
+    } else {
+      phases.push({ phase: 'build', skipped: 'no-build-script', ok: true })
+    }
+  }
+
+  // Gen-1: --validation-checks phase. Runs the family's declared
+  // validationChecks from registry/families/<id>/manifest.json. Each check
+  // is either a file-exists (deterministic path check) or a command-success
+  // (spawn a whitelisted command, check expected output substring).
+  if (doValidation && install.exitCode === 0 && phases.every((p) => p.ok || p.skipped)) {
+    const famManifestPath = join('registry/families', family, 'manifest.json')
+    let checks = []
+    try {
+      const fam = JSON.parse(readFileSync(famManifestPath, 'utf8'))
+      if (Array.isArray(fam.validationChecks)) checks = fam.validationChecks
+    } catch {
+      /* family has no validationChecks — skip */
+    }
+    if (checks.length === 0) {
+      phases.push({ phase: 'validationChecks', skipped: 'none-declared', ok: true })
+    } else {
+      const checkResults = []
+      for (const check of checks) {
+        if (check.type === 'file-exists' && typeof check.path === 'string') {
+          const ok = existsSync(join(tmp, check.path))
+          checkResults.push({ kind: 'file-exists', path: check.path, ok })
+        } else if (check.type === 'command-success' && Array.isArray(check.command)) {
+          const cmdHead = check.command[0]
+          if (!VALIDATION_CMD_ALLOWLIST.has(cmdHead)) {
+            checkResults.push({ kind: 'command-success', cmd: check.command.join(' '), ok: false, reason: 'not-whitelisted' })
+            continue
+          }
+          const res = runCmd(cmdHead, check.command.slice(1), tmp, validationTimeoutMs)
+          const expectedSub = typeof check.expect === 'string' ? check.expect : null
+          const exitOk = res.exitCode === 0
+          const subOk = expectedSub === null ? true : (res.stdoutTail + res.stderrTail).includes(expectedSub)
+          checkResults.push({
+            kind: 'command-success',
+            cmd: check.command.join(' '),
+            ok: exitOk && subOk,
+            exitCode: res.exitCode,
+            durationMs: res.durationMs,
+            stderrTail: res.stderrTail.slice(-400),
+          })
+        } else {
+          checkResults.push({ kind: 'unknown', type: check.type, ok: false, reason: 'unknown-check-type' })
+        }
+      }
+      const passCount = checkResults.filter((r) => r.ok).length
+      phases.push({
+        phase: 'validationChecks',
+        cmd: `${checks.length} check(s)`,
+        ok: passCount === checkResults.length,
+        durationMs: 0,
+        checksTotal: checkResults.length,
+        checksPassed: passCount,
+        results: checkResults,
+      })
+    }
+  }
+
+  // Gen-1: --smoke-compose phase. Compose the family with one representative
+  // multi-layer spec per surface (from taxonomy.surface). Catches integration
+  // breakage that framework-in-isolation compose hides. Only runs install +
+  // typecheck on the composed spec (not build — would be too slow per family).
+  if (doSmoke && install.exitCode === 0) {
+    const famManifestPath2 = join('registry/families', family, 'manifest.json')
+    let surface = null
+    try {
+      const fam = JSON.parse(readFileSync(famManifestPath2, 'utf8'))
+      surface = fam.taxonomy?.surface ?? null
+    } catch { /* no family manifest */ }
+
+    const smokeLayers =
+      surface === 'frontend' ? [`framework:${family}`, 'capability:tailwind']
+      : surface === 'api' ? [`framework:${family}`]
+      : [`framework:${family}`]
+
+    const smokeSpec = {
+      projectName: `smoke-${layer.id}`,
+      family,
+      layers: smokeLayers,
+      partner: null,
+      slots: {},
+      variables: {},
+    }
+    const smokeTmp = mkdtempSync(join(tmpdir(), `smoke-${layer.id}-`))
+    const smokeSpecPath = join(smokeTmp, 'spec.json')
+    writeFileSync(smokeSpecPath, JSON.stringify(smokeSpec))
+
+    const smokeCompose = runCmd('node', ['dist/cli.js', 'compose', '--spec', smokeSpecPath, '--out', smokeTmp, '--json'], '.')
+    if (smokeCompose.exitCode !== 0) {
+      phases.push({
+        phase: 'smoke-compose',
+        cmd: `compose framework:${family} + ${smokeLayers.slice(1).join(', ') || '(alone)'}`,
+        ok: false,
+        stderrTail: smokeCompose.stderrTail.slice(-800),
+      })
+    } else {
+      const smokePm = detectPackageManager(smokeTmp)
+      if (smokePm) {
+        const smokeInstall = runCmd(smokePm.cmd, smokePm.install, smokeTmp)
+        phases.push({
+          phase: 'smoke-compose',
+          cmd: `compose + ${smokePm.cmd} ${smokePm.install.join(' ')}`,
+          ok: smokeInstall.exitCode === 0,
+          durationMs: smokeInstall.durationMs,
+          stderrTail: smokeInstall.stderrTail.slice(-800),
+        })
+      } else {
+        phases.push({ phase: 'smoke-compose', skipped: 'no-package-manager-after-compose', ok: true })
+      }
+    }
+    try { rmSync(smokeTmp, { recursive: true, force: true, maxRetries: 3, retryDelay: 50 }) } catch {}
   }
 
   audits.push({ layerId, family, pm: pm.cmd, phases })

@@ -1,0 +1,22 @@
+{
+  "family": "legal-case-mgmt",
+  "current": "v_50b0b8c9cc92",
+  "topN": [
+    "v_50b0b8c9cc92",
+    "v_b8957420b52a"
+  ],
+  "all": [
+    {
+      "version": "v_50b0b8c9cc92",
+      "score": 0.8499952820364028,
+      "skipped": null
+    },
+    {
+      "version": "v_b8957420b52a",
+      "score": 0.6749999945776256,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.352Z"
+}

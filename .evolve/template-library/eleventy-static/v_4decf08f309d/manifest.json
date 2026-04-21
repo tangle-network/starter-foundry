@@ -1,0 +1,75 @@
+{
+  "id": "eleventy-static",
+  "description": "Eleventy framework layer: base Nunjucks layout plus a landing page in Markdown.",
+  "appliesTo": ["eleventy-static"],
+  "files": [
+    {
+      "source": "files/base.njk",
+      "target": "src/_includes/base.njk"
+    },
+    {
+      "source": "files/index.md",
+      "target": "src/index.md"
+    },
+    {
+      "source": "files/src/assets/.gitkeep",
+      "target": "src/assets/.gitkeep"
+    }
+  ],
+  "packageDeps": {
+    "devDependencies": {
+      "@11ty/eleventy": "^3.0.0"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "Content-first static sites, blogs, documentation, or any project where pages are authored in Markdown and served as pre-rendered HTML with no client-side JS.",
+    "firstSteps": [
+      "Run `pnpm install` then `pnpm dev` — Eleventy serves on port 8097 with live-reload; the landing page renders from `src/index.md`.",
+      "Add new pages as `.md` or `.njk` files under `src/` — each file becomes a route. The base layout is at `src/_includes/base.njk`.",
+      "Run `pnpm build` to emit HTML to `_site/` — no server required, deploy anywhere (Vercel, Netlify, Cloudflare Pages).",
+      "Run `node validate-eleventy.mjs` to confirm the scaffold is wired correctly before pushing."
+    ],
+    "gotchas": [
+      "Eleventy's `type: module` package uses ESM — `.eleventy.js` must use `export default` syntax, not `module.exports`.",
+      "Layout resolution uses `src/_includes/` because `.eleventy.js` sets `layouts: '_includes'`. If you move layouts, update both the config and all front-matter `layout:` references.",
+      "`pnpm dev` starts a live-reload server via `--serve`; `pnpm build` does a one-shot build to `_site/` with no server.",
+      "The `src/assets/` directory ships empty (`.gitkeep`). The passthrough copy is wired — drop images, fonts, or other static files there and they'll be served at `/assets/`. Delete `.gitkeep` once the directory has real content."
+    ],
+    "architectureNotes": [
+      "One layout for the whole site — `base.njk` is intentionally minimal. Add `src/_includes/post.njk` for blog-post-specific chrome and set `layout: post.njk` in those pages' front matter.",
+      "Global data files live in `src/_data/` — any `.json` or `.js` file there is accessible in every template by its filename (e.g., `src/_data/nav.json` → `{{ nav }}` in any template)."
+    ],
+    "placeholders": [
+      {
+        "path": "src/_includes/base.njk",
+        "description": "Site header outputs `{{ headline }}` and `{{ subheadline }}`. After scaffold replacement these hold concrete strings; to override at runtime, add them to `src/_data/site.json`."
+      },
+      {
+        "path": "src/index.md",
+        "description": "Landing page scaffold. Replace the body content and update the `title` front-matter key to match your project name."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "pnpm dev",
+      "pnpm build",
+      "node validate-eleventy.mjs"
+    ],
+    "entrypoints": [
+      ".eleventy.js",
+      "src/index.md",
+      "src/_includes/base.njk"
+    ],
+    "preview": {
+      "port": "8097",
+      "path": "/"
+    },
+    "extensionPoints": [
+      "src/_data/",
+      "src/_includes/",
+      "src/assets/"
+    ]
+  }
+}

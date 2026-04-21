@@ -1,0 +1,22 @@
+{
+  "familyId": "streamlit-advanced",
+  "runAt": "2026-04-21T06:31:29.823Z",
+  "completed": true,
+  "shotsUsed": 1,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 106114,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 106114,
+      "reviewAvailable": true
+    }
+  ]
+}

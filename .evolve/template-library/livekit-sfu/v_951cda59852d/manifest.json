@@ -1,0 +1,63 @@
+{
+  "id": "livekit-sfu",
+  "description": "LiveKit SFU control plane — Express server that mints short-lived JWT access tokens so browser clients can join rooms with scoped grants.",
+  "appliesTo": ["livekit-sfu"],
+  "files": [
+    {
+      "source": "files/server.ts",
+      "target": "src/server.ts"
+    }
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "express": "^4.21.2",
+      "livekit-server-sdk": "^2.9.2"
+    },
+    "devDependencies": {
+      "@types/express": "^4.17.21",
+      "@types/node": "^20.17.0",
+      "tsx": "^4.19.2",
+      "typescript": "^5.9.0"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "Self-hosted WebRTC rooms — audio/video conferencing, group voice chat, live streaming, Clubhouse/Twitter-Spaces-style audio rooms, or any product that needs server-side JWT room grants without relying on a third-party SFU cloud.",
+    "firstSteps": [
+      "Copy `.env.example` to `.env` and set `LIVEKIT_API_KEY` / `LIVEKIT_API_SECRET` (secret ≥32 bytes); mirror the same pair in `livekit.yaml` under `keys:`.",
+      "Run `docker compose up -d` to start the LiveKit SFU + Redis sidecar, then `pnpm dev` to start the token-minting control plane on port 8098.",
+      "Mint a token: `curl -X POST http://localhost:8098/token -H 'Content-Type: application/json' -d '{\"room\":\"demo\",\"identity\":\"alice\"}'` — response includes `token` and `wsUrl` ready for a LiveKit client SDK.",
+      "In the browser, pass those values to `new Room().connect(wsUrl, token)` from `livekit-client`.",
+      "Verify the control plane is live: `curl http://localhost:8098/health`."
+    ],
+    "gotchas": [
+      "LIVEKIT_API_SECRET must be ≥32 bytes — the server throws at startup if shorter. Generate one with: `openssl rand -base64 32`.",
+      "The same API key/secret pair must appear in BOTH `.env` (for the control plane) AND `livekit.yaml` under `keys:` (for the SFU). A mismatch causes 401s when clients try to join rooms.",
+      "getUserMedia requires HTTPS outside localhost — browser clients cannot publish tracks over plain HTTP.",
+      "The LiveKit SFU uses `network_mode: host` in docker-compose so WebRTC clients can reach the real port range (UDP 50000-60000). Port mapping (`ports:`) won't work for ICE traffic.",
+      "Access tokens expire (default TTL 6h). Browser clients must re-request a token before expiry or the SFU rejects the WS upgrade."
+    ],
+    "architectureNotes": [
+      "The Express server is the trusted boundary — it holds the API secret and mints JWTs; browser clients never see the secret.",
+      "Keep all signing server-side: `/token` accepts room + identity, returns a signed JWT; the browser uses the JWT directly with the LiveKit client SDK (`livekit-client`).",
+      "Redis is included for multi-node scale-out. A single-node deployment works without it, but keeping Redis in compose means horizontal scaling is a `docker compose up --scale livekit=N` away."
+    ],
+    "placeholders": [
+      {
+        "path": "src/server.ts",
+        "description": "Token-minting Express server. The `{{...}}` strings (livekitApiKey, livekitApiSecret, controlPort, port, serviceName) are substituted by the compose engine from family defaults. Extend the VideoGrant fields in the `/token` handler to implement role-based room access (e.g. read-only viewers set canPublish=false)."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "docker compose up -d",
+      "pnpm dev",
+      "curl -X POST http://localhost:8098/token -H 'Content-Type: application/json' -d '{\"room\":\"demo\",\"identity\":\"alice\"}'",
+      "curl http://localhost:8098/health"
+    ],
+    "entrypoints": ["src/server.ts"],
+    "preview": { "path": "/health" },
+    "extensionPoints": ["src/server.ts", "livekit.yaml", ".env"]
+  }
+}

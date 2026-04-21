@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-04-21T06:17:09.987Z",
+  "audits": [
+    {
+      "layerId": "framework:pixijs-game",
+      "family": "pixijs-game",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 4074.4390000000003,
+          "stderrTail": "",
+          "stdoutTail": "Progress: resolved 1, reused 0, downloaded 0, added 0\nPackages: +27\n+++++++++++++++++++++++++++\nProgress: resolved 76, reused 18, downloaded 7, added 25\nProgress: resolved 76, reused 18, downloaded 8, added 26\nProgress: resolved 76, reused 18, downloaded 9, added 26\nProgress: resolved 76, reused 18, downloaded 9, added 27, done\n\ndependencies:\n+ pixi.js 8.18.1\n\ndevDependencies:\n+ typescript 5.9.3 (6.0.3 is available)\n+ vite 6.4.2 (8.0.9 is available)\n\n╭ Warning ─────────────────────────────────────────────────────────────────────╮\n│                                                                              │\n│   Ignored build scripts: esbuild.                                            │\n│   Run \"pnpm approve-builds\" to pick which dependencies should be allowed     │\n│   to run scripts.                                                            │\n│                                                                              │\n╰──────────────────────────────────────────────────────────────────────────────╯\n\nDone in 3.9s using pnpm v10.22.0\n"
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 1128.730125,
+          "stderrTail": "",
+          "stdoutTail": ""
+        }
+      ]
+    }
+  ]
+}

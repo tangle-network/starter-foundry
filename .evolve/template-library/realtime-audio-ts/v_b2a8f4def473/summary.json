@@ -1,0 +1,44 @@
+{
+  "familyId": "realtime-audio-ts",
+  "runAt": "2026-04-21T07:37:10.701Z",
+  "completed": true,
+  "shotsUsed": 3,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 390569,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": false,
+      "failing": [
+        "typecheck"
+      ],
+      "confidence": 0.85,
+      "shouldContinue": true,
+      "durationMs": 191988,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 2,
+      "pass": false,
+      "failing": [
+        "typecheck"
+      ],
+      "confidence": 0.71,
+      "shouldContinue": true,
+      "durationMs": 48871,
+      "reviewAvailable": true
+    },
+    {
+      "shot": 3,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 149710,
+      "reviewAvailable": true
+    }
+  ]
+}

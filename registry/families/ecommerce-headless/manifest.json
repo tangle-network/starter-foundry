@@ -1,0 +1,68 @@
+{
+  "id": "ecommerce-headless",
+  "description": "Headless commerce API — products / variants / carts / orders / payments / webhook events (idempotency-keyed), Stripe payment-intent checkout flow with signature-verified webhooks.",
+  "tags": ["ecommerce", "commerce", "api", "typescript"],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "api"
+  },
+  "slots": {
+    "database": { "options": ["database:sqlite", "database:postgres"], "default": "database:postgres" },
+    "auth": { "options": ["auth:none", "auth:better-auth", "auth:clerk"], "default": "auth:better-auth" },
+    "payments": { "options": ["payments:stripe"], "default": "payments:stripe" }
+  },
+  "defaults": {
+    "projectType": "api",
+    "serviceName": "starter-foundry-commerce",
+    "port": 8105,
+    "databaseProvider": "postgres",
+    "baseCurrency": "USD"
+  },
+  "files": [
+    { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/validate-commerce.mjs", "target": "validate-commerce.mjs" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "src/server.ts" },
+    { "type": "file-exists", "path": "src/db/schema.ts" },
+    { "type": "file-exists", "path": "src/api/cart.ts" },
+    { "type": "file-exists", "path": "src/api/checkout.ts" },
+    { "type": "file-exists", "path": "src/webhooks/stripe.ts" },
+    { "type": "command-success", "command": ["node", "validate-commerce.mjs"], "expect": "commerce starter ok" }
+  ],
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm dev", "pnpm drizzle-kit generate", "pnpm drizzle-kit migrate"],
+    "entrypoints": ["src/server.ts", "src/db/schema.ts", "src/api/cart.ts", "src/api/checkout.ts", "src/webhooks/stripe.ts"],
+    "preview": { "path": "/health" },
+    "extensionPoints": ["src/db/schema.ts", "src/api/", "src/webhooks/"]
+  },
+  "keywords": [
+    "headless commerce",
+    "ecommerce backend",
+    "e-commerce backend",
+    "cart api",
+    "checkout api",
+    "product catalog",
+    "order management",
+    "shopify alternative",
+    "medusa alternative",
+    "commerce api",
+    "stripe checkout"
+  ],
+  "scoring": { "boost": { "ecommerce": 4, "commerce": 3 } },
+  "tieredKeywords": {
+    "tier1": [
+      "headless commerce",
+      "ecommerce backend",
+      "e-commerce backend",
+      "cart api",
+      "checkout api",
+      "product catalog",
+      "order management",
+      "commerce api"
+    ],
+    "tier2": ["shopify alternative", "medusa alternative", "stripe checkout", "product variants", "storefront api"]
+  }
+}

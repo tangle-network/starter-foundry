@@ -1,0 +1,22 @@
+{
+  "family": "hls-origin",
+  "current": "v_eb3f926d7b00",
+  "topN": [
+    "v_eb3f926d7b00",
+    "v_7078a26b8873"
+  ],
+  "all": [
+    {
+      "version": "v_eb3f926d7b00",
+      "score": 0.7599948569904237,
+      "skipped": null
+    },
+    {
+      "version": "v_7078a26b8873",
+      "score": 0.6099999945728691,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.337Z"
+}

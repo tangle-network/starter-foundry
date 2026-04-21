@@ -1,0 +1,56 @@
+{
+  "id": "gdpr-compliance-pack",
+  "description": "GDPR + CPRA compliance overlay — consent capture, right-to-export / right-to-delete endpoints, data inventory manifest, cookie banner. Composes onto fullstack-ts / nextjs-ts / ecommerce-headless.",
+  "tags": ["compliance", "gdpr", "cpra", "privacy"],
+  "taxonomy": { "language": "typescript", "runtime": "node", "surface": "api" },
+  "defaults": { "projectType": "compliance-pack", "serviceName": "starter-foundry-gdpr-pack" },
+  "files": [
+    { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/src/consent.ts", "target": "src/consent.ts" },
+    { "source": "files/src/data-subject-rights.ts", "target": "src/data-subject-rights.ts" },
+    { "source": "files/src/data-inventory.ts", "target": "src/data-inventory.ts" },
+    { "source": "files/src/components/CookieBanner.tsx", "target": "src/components/CookieBanner.tsx" },
+    { "source": "files/docs/GDPR-controls.md", "target": "docs/GDPR-controls.md" },
+    { "source": "files/docs/DPIA-template.md", "target": "docs/DPIA-template.md" },
+    { "source": "files/validate-gdpr-pack.mjs", "target": "validate-gdpr-pack.mjs" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "src/consent.ts" },
+    { "type": "file-exists", "path": "src/data-subject-rights.ts" },
+    { "type": "command-success", "command": ["node", "validate-gdpr-pack.mjs"], "expect": "gdpr-pack ok" }
+  ],
+  "contextHints": {
+    "commands": ["pnpm install", "pnpm build"],
+    "entrypoints": ["src/consent.ts", "src/data-subject-rights.ts", "docs/GDPR-controls.md"],
+    "preview": null,
+    "extensionPoints": ["src/data-inventory.ts"]
+  },
+  "keywords": ["gdpr", "gdpr compliance", "cpra", "consent management", "right to erasure", "data subject rights"],
+  "scoring": { "boost": { "gdpr compliance": 5, "data subject rights": 4 } },
+  "tieredKeywords": {
+    "tier1": ["gdpr compliance", "gdpr compliant", "cpra compliant", "data subject rights"],
+    "tier2": ["right to erasure", "right to be forgotten", "consent banner", "cookie banner gdpr"]
+  },
+  "buildHints": {
+    "whenToUse": "Shipping to EU / CA / other jurisdictions with data-subject rights obligations. Bolt onto an existing fullstack/api backend.",
+    "firstSteps": [
+      "Run `src/data-inventory.ts` to generate a first-draft Record of Processing Activities (RoPA). Customize per your product's schema.",
+      "Wire `/api/export-my-data` using `src/data-subject-rights.ts` — must respond within 30 days per Art. 12(3).",
+      "Wire `/api/delete-my-data` — must honor erasure within 30 days unless one of the Art. 17(3) exceptions applies.",
+      "Drop `CookieBanner.tsx` at the root layout — consent MUST be gathered BEFORE setting any non-essential cookies.",
+      "Fill out `docs/DPIA-template.md` if you process high-risk categories (Art. 35)."
+    ],
+    "gotchas": [
+      "'Consent' as a legal basis has SIX requirements per Art. 4(11) — freely given, specific, informed, unambiguous, affirmative, withdrawable. Pre-ticked boxes are invalid.",
+      "Legitimate interest (Art. 6(1)(f)) is often a better basis than consent for operational processing — but requires a documented LIA (Legitimate Interest Assessment).",
+      "Right-to-delete is NOT absolute. Exceptions: legal obligation, public interest, establishment of legal claims (Art. 17(3)). Document which exception applies when refusing.",
+      "Data breaches must be reported to the supervisory authority within 72 HOURS per Art. 33. Have the notification draft template pre-written.",
+      "CPRA (California) has parallel but not identical rules — the 'shine the light' + 'opt-out of sale' surfaces differ. This pack covers the shared 80%; add CPRA-specific flows as needed."
+    ],
+    "placeholders": [
+      { "path": "src/data-inventory.ts", "description": "RoPA seed. Extend with your actual data categories + legal bases + retention periods." },
+      { "path": "docs/DPIA-template.md", "description": "DPIA template. Fill before processing high-risk categories." }
+    ]
+  }
+}

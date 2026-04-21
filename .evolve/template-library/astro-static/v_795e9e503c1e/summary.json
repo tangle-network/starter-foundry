@@ -1,0 +1,22 @@
+{
+  "familyId": "astro-static",
+  "runAt": "2026-04-21T05:12:03.573Z",
+  "completed": true,
+  "shotsUsed": 1,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 209129,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 209128,
+      "reviewAvailable": true
+    }
+  ]
+}

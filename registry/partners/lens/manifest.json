@@ -1,0 +1,44 @@
+{
+  "id": "lens",
+  "description": "Partner pack for Lens Protocol — decentralized social graph on Lens Chain (zkEVM L2). Biases toward social apps, creator platforms, and feeds that want portable identity + content ownership.",
+  "appliesTo": [
+    "frontend-static",
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "expo-react-native-ts",
+    "api-service",
+    "agent-service-ts",
+    "worker-job"
+  ],
+  "slotDefaults": {
+    "sdk": "sdk:evm-wallet"
+  },
+  "defaults": {
+    "headline": "Build on Lens — portable social graph",
+    "subheadline": "Decentralized profiles, follows, and content on Lens Chain. Users own their graph — you own the UX."
+  },
+  "files": [
+    {
+      "source": "files/partner-config.json",
+      "target": "partner-config.json"
+    },
+    {
+      "source": "files/starter-brand.json",
+      "target": "starter-brand.json"
+    }
+  ],
+  "buildHints": {
+    "whenToUse": "Prompt mentions Lens, social graph, decentralized social, creator platform, or portable profiles/follows across apps.",
+    "firstSteps": [
+      "Install @lens-protocol/client for TS or use the GraphQL API directly (https://api.lens.xyz). API keys optional but recommended for rate limits.",
+      "Authentication uses SIWE (Sign-In With Ethereum) — reuse the existing viem/wagmi flow; don't build a separate auth stack.",
+      "For posting content (publications), sign a typed-data message and submit through the Lens API — gasless via Lens relayer by default."
+    ],
+    "gotchas": [
+      "Lens v3 runs on Lens Chain (its own zkEVM L2) — chainId 232. The v2 Polygon deployment is deprecated; don't read Polygon Lens contracts for new work.",
+      "Profile ownership and content are separate NFTs — handle each in token metadata flows; losing profile access ≠ losing published posts.",
+      "The GraphQL API is the primary interface; direct contract reads work but miss the indexed view (mirrors, reactions, feed ranking)."
+    ]
+  }
+}

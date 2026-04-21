@@ -1,0 +1,93 @@
+name: Template-quality sweep
+
+# Weekly template-quality loop: mines recent buildout rewrites, asks the
+# LLM synthesizer to propose better templates for the top-N most-rewritten
+# files, audits each candidate in a composed scaffold, opens a PR per
+# promotable candidate.
+#
+# Needs repo secret TANGLE_ROUTER_USER_KEY for LLM synthesis. If missing,
+# the synthesizer falls back to deterministic mode (imports grafted,
+# long comment runs stripped) — still useful but less interesting.
+
+on:
+  schedule:
+    - cron: '0 9 * * 2'  # Tuesday 09:00 UTC (day after cve-sweep)
+  workflow_dispatch:
+    inputs:
+      top_n:
+        description: 'Top-N most-rewritten templates to sweep'
+        default: '5'
+        required: false
+      dry_run:
+        description: 'Emit candidates but do NOT open PRs'
+        type: boolean
+        default: false
+        required: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: install
+        run: pnpm install --frozen-lockfile
+
+      - name: build
+        run: pnpm build
+
+      - name: refresh buildout analysis
+        run: node scripts/run-buildout-pipeline.mjs
+
+      - name: refresh family-pass-rate trend
+        run: node scripts/family-pass-rate-trend.mjs
+
+      - name: sweep top-N templates
+        env:
+          TANGLE_ROUTER_USER_KEY: ${{ secrets.TANGLE_ROUTER_USER_KEY }}
+        run: |
+          TOP_N="${{ inputs.top_n || '5' }}"
+          node scripts/template-quality-sweep.mjs --top "$TOP_N"
+
+      - name: upload sweep artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: template-sweep-${{ github.run_id }}
+          path: |
+            .evolve/template-candidates/
+            .evolve/buildout-analysis.json
+          retention-days: 30
+
+      - name: configure git
+        if: ${{ !inputs.dry_run }}
+        run: |
+          git config user.name "starter-foundry template-sweep"
+          git config user.email "template-sweep@starter-foundry.noreply"
+
+      - name: open PRs for promotable candidates
+        if: ${{ !inputs.dry_run }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/open-template-prs.mjs
+
+      - name: watch for post-promotion regressions
+        if: ${{ !inputs.dry_run }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/template-regression-watcher.mjs --open-pr || true

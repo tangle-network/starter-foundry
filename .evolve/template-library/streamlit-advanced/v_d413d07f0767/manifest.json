@@ -1,0 +1,58 @@
+{
+  "id": "streamlit-advanced",
+  "description": "Streamlit advanced framework layer: multipage app shell with sidebar, tabs, caching, Plotly charts, and a typed pydantic-settings module.",
+  "appliesTo": ["streamlit-advanced"],
+  "files": [
+    { "source": "files/app.py", "target": "app.py" },
+    { "source": "files/analysis.py", "target": "pages/1_analysis.py" }
+  ],
+  "buildHints": {
+    "whenToUse": "Data dashboards, internal analytics tools, ML model explorers, or any product where the primary surface is a Python-driven web UI backed by pandas/plotly data.",
+    "firstSteps": [
+      "Run `pip install -r requirements.txt` then `streamlit run app.py` — the app serves on port 8501 with the Overview/Detail/About tab layout immediately visible.",
+      "All settings (headline, service name, port) are read from `APP_*` env vars via the `Settings` class in `app.py`; set them in a `.env` file or your deployment environment.",
+      "Add new pages by dropping `pages/<number>_<Title>.py` files — Streamlit auto-registers them in the sidebar in numeric order; follow the pattern in `pages/1_analysis.py`.",
+      "Heavy data loads should use `@st.cache_data(ttl=...)` for DataFrames and `@st.cache_resource` for database connections — both are demonstrated in `app.py`.",
+      "Run `node validate-streamlit.mjs` to verify the scaffold is wired correctly before deploying."
+    ],
+    "gotchas": [
+      "`st.set_page_config()` must be the first Streamlit call in every page file, including each file under `pages/`; calling anything else first raises a StreamlitAPIException.",
+      "`pydantic-settings` v2 requires `model_config = SettingsConfigDict(env_prefix=...)` — the deprecated inner `class Config` style raises warnings and may fail strict linters.",
+      "Streamlit re-runs the entire script on every widget interaction; keep heavy computation inside `@st.cache_data` / `@st.cache_resource` to avoid re-fetching on each slider move.",
+      "The `.streamlit/config.toml` `port` placeholder (`{{port}}`) must be replaced at compose time — leaving the literal string causes Streamlit to fail to parse the config."
+    ],
+    "architectureNotes": [
+      "Each file under `pages/` is an independent script; do not import from `app.py` — share helpers via a separate module (e.g. `lib/data.py`) imported by both.",
+      "The `Settings` class is the single source of truth for env-driven config; extend it rather than scattering `os.getenv` calls across page files."
+    ],
+    "placeholders": [
+      {
+        "path": "app.py",
+        "description": "Bootstrap dashboard with synthetic time-series data. Replace `load_timeseries` with real data fetching (DB query, API call, CSV read). Keep the Settings class, sidebar layout, and tab structure."
+      },
+      {
+        "path": "pages/1_analysis.py",
+        "description": "Bootstrap analysis page with synthetic segment data. Replace `load_sample` with a real query. Rename the file to reflect the actual page topic."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pip install -r requirements.txt",
+      "streamlit run app.py --server.port 8501",
+      "node validate-streamlit.mjs"
+    ],
+    "entrypoints": [
+      "app.py",
+      "pages/1_analysis.py"
+    ],
+    "preview": {
+      "port": "8501",
+      "path": "/"
+    },
+    "extensionPoints": [
+      "pages/",
+      "app.py"
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "family": "streamlit-advanced",
+  "current": "v_99fbea7756ea",
+  "topN": [
+    "v_99fbea7756ea",
+    "v_d413d07f0767"
+  ],
+  "all": [
+    {
+      "version": "v_99fbea7756ea",
+      "score": 0.6399969558457003,
+      "skipped": null
+    },
+    {
+      "version": "v_d413d07f0767",
+      "score": 0.46999999457921104,
+      "skipped": null
+    }
+  ],
+  "generationCount": 2,
+  "lastPromotedAt": "2026-04-21T09:04:56.412Z"
+}

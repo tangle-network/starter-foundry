@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "mirrors": [
+    {
+      "url": "https://raw.githubusercontent.com/tangle-network/starter-foundry/main/registry-bundle.json",
+      "region": "global",
+      "priority": 1,
+      "notes": "GitHub raw — canonical source of truth"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/gh/tangle-network/starter-foundry@main/registry-bundle.json",
+      "region": "global",
+      "priority": 2,
+      "notes": "jsDelivr auto-mirrors GitHub with global CDN; 1-minute TTL typical"
+    },
+    {
+      "url": "https://unpkg.com/@tangle-network/starter-foundry/registry-bundle.json",
+      "region": "global",
+      "priority": 3,
+      "notes": "unpkg — pulls from npm; requires a published release with the bundle"
+    },
+    {
+      "url": "https://starter-foundry.tangle.network/registry-bundle.json",
+      "region": "global",
+      "priority": 4,
+      "notes": "Cloudflare R2 mirror — fallback when the above are blocked or degraded"
+    }
+  ]
+}

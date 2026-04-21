@@ -29,6 +29,46 @@ const SKIP_WHEN_NO_NODE_DEPS = new Set([
   'fhevm-contracts',
   'tangle-blueprint',
   'eigenlayer-avs',
+  'ollama-server',
+  // Binary-driven SSGs (Hugo, Zola) — no package.json ship.
+  'hugo-static',
+  'zola-static',
+  // Python-based families (already skipped by the no-pkg-json rule,
+  // but listed here for explicit intent in case they later ship
+  // package.json-based tooling).
+  'jupyter-book',
+  'streamlit-advanced',
+  'rag-pipeline-py',
+  'tgi-server',
+  'sglang-server',
+  'triton-server',
+  'skypilot-serving',
+  'lora-training',
+  // Infra / non-Vite families.
+  'livekit-sfu',
+  'hls-origin',
+  'celestia-da',
+  'aptos-move',
+  // Rust/native game engines.
+  'bevy-web',
+  'godot-web',
+  // Native desktop variants — Tauri / Electron own their own build chain.
+  'tauri-menubar',
+  'tauri-tray',
+  'electron-native-os',
+  // Expo has its own metro build; no vite.
+  'expo-rn-rich',
+  // Non-JS mobile / embedded / robotics families.
+  'flutter-app',
+  'kotlin-multiplatform',
+  'esp32-rust',
+  'stm32-rust',
+  'ros2-node-py',
+  // Compliance packs — library-only, no Vite.
+  'hipaa-compliance-pack',
+  'soc2-compliance-pack',
+  'pci-dss-compliance-pack',
+  'gdpr-compliance-pack',
 ])
 
 function hasVitePin(pkg: Record<string, unknown>): boolean {

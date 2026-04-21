@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-04-21T07:55:41.826Z",
+  "audits": [
+    {
+      "layerId": "framework:crm-backend",
+      "family": "crm-backend",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 2605.2380000000003,
+          "stderrTail": "",
+          "stdoutTail": "Progress: resolved 1, reused 0, downloaded 0, added 0\nProgress: resolved 43, reused 21, downloaded 0, added 0\n WARN  2 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5\nPackages: +28\n++++++++++++++++++++++++++++\nProgress: resolved 71, reused 28, downloaded 0, added 27\nProgress: resolved 71, reused 28, downloaded 0, added 28, done\n\ndependencies:\n+ drizzle-orm 0.36.4 (0.45.2 is available)\n+ postgres 3.4.9\n\ndevDependencies:\n+ @types/node 20.19.39 (25.6.0 is available)\n+ drizzle-kit 0.30.6 (0.31.10 is available)\n+ typescript 5.9.3 (6.0.3 is available)\n\n╭ Warning ─────────────────────────────────────────────────────────────────────╮\n│                                                                              │\n│   Ignored build scripts: esbuild.                                            │\n│   Run \"pnpm approve-builds\" to pick which dependencies should be allowed     │\n│   to run scripts.                                                            │\n│                                                                              │\n╰──────────────────────────────────────────────────────────────────────────────╯\n\nDone in 2.4s using pnpm v10.22.0\n"
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 1278.9905419999996,
+          "stderrTail": "",
+          "stdoutTail": ""
+        },
+        {
+          "phase": "build",
+          "skipped": "no-build-script",
+          "ok": true
+        },
+        {
+          "phase": "validationChecks",
+          "skipped": "none-declared",
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

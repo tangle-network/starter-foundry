@@ -1,0 +1,42 @@
+{
+  "id": "rag-pipeline-py",
+  "description": "Framework layer for rag-pipeline-py — ships the ingest + retrieve + answer pipeline (src/pipeline.py) and an AGENTS.md guide for AI-agent consumption.",
+  "appliesTo": ["rag-pipeline-py"],
+  "files": [
+    { "source": "files/pipeline.py", "target": "src/pipeline.py" },
+    { "source": "files/__init__.py", "target": "src/__init__.py" },
+    { "source": "files/AGENTS.md", "target": "AGENTS.md" }
+  ],
+  "buildHints": {
+    "whenToUse": "Apply to any rag-pipeline-py starter to get the full ingest → chunk → embed → Chroma → retrieve → LLM pipeline in a single src/pipeline.py file.",
+    "firstSteps": [
+      "pip install -e . — installs langchain-core, langchain-text-splitters, chromadb, sentence-transformers, httpx, and python-dotenv",
+      "cp .env.example .env — then set LLM_BASE_URL to a running Ollama server (ollama serve) or any OpenAI-compatible endpoint",
+      "Drop source docs (.md / .txt / .pdf) into docs/",
+      "python -m src.pipeline index — builds the Chroma collection from docs/",
+      "python -m src.pipeline ask 'your question here' — retrieves and answers"
+    ],
+    "gotchas": [
+      "Changing EMBEDDING_MODEL invalidates the Chroma collection — delete VECTOR_DB_DIR and re-run index.",
+      "Ollama must be running before ask — start with `ollama serve` and pull the model with `ollama pull llama3.1:8b`.",
+      "PDF ingest requires `pip install pypdf` (or `pip install -e .[pdf]`) — not included in the base install.",
+      "The collection is rebuilt from scratch on every index run — intentional to avoid stale chunks."
+    ],
+    "architectureNotes": [
+      "pipeline.py is the single entrypoint: index() chunks and embeds all docs into Chroma; ask() embeds the query, retrieves top-k chunks, and calls the LLM with a grounded system prompt.",
+      "All tuneable parameters (chunk size, top-k, model names, paths) are read from environment variables — override in .env without touching code.",
+      "LLM routing is auto-detected: URLs containing :11434 or ending in /api use Ollama's /api/chat; all others use OpenAI-compatible /v1/chat/completions."
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pip install -e .",
+      "cp .env.example .env",
+      "python -m src.pipeline index",
+      "python -m src.pipeline ask 'what is paged attention?'"
+    ],
+    "entrypoints": ["src/pipeline.py"],
+    "preview": null,
+    "extensionPoints": ["src/pipeline.py", "docs/"]
+  }
+}

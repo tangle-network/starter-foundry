@@ -1,0 +1,56 @@
+{
+  "id": "godot-web",
+  "description": "Godot 4.3 HTML5 framework layer — main scene (Node2D + Sprite2D + Label) with a typed GDScript driving _ready diagnostics and a _process animation loop. Composes with the godot-web family to form a complete web-export scaffold.",
+  "appliesTo": ["godot-web"],
+  "files": [
+    { "source": "files/scenes/main.tscn", "target": "scenes/main.tscn" },
+    { "source": "files/scripts/main.gd", "target": "scripts/main.gd" },
+    { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/src/main.ts", "target": "src/main.ts" },
+    { "source": "files/project.godot", "target": "project.godot" },
+    { "source": "files/export_presets.cfg", "target": "export_presets.cfg" },
+    { "source": "files/export/web/.gitkeep", "target": "export/web/.gitkeep" }
+  ],
+  "buildHints": {
+    "whenToUse": "Any project using the godot-web family. This layer supplies the scene and script that project.godot points at as the main scene — without it the project opens to an empty editor with no runnable scene.",
+    "firstSteps": [
+      "After composing, open the project: `godot --editor .` from the project root. The editor resolves scenes/main.tscn and scripts/main.gd automatically.",
+      "Press F5 (or the Play button) to run in the editor — the sprite spins and the label shows the Godot version string.",
+      "Validate the file structure without Godot: `node validate-godot-web.mjs` — should print `godot-web starter ok`.",
+      "Export for the web: Project → Export → select Web → Export Project. Output lands in exports/web/ as index.html + index.js + index.wasm + index.pck.",
+      "Serve exports/web/ with any static host. Browsers require COOP/COEP headers (see gotchas) — use `npx serve exports/web` for local preview."
+    ],
+    "gotchas": [
+      "Godot 4 HTML5 builds require SharedArrayBuffer. Browsers only expose it when the page is served with `Cross-Origin-Opener-Policy: same-origin` AND `Cross-Origin-Embedder-Policy: require-corp`. Without these headers the canvas stays blank — configure your static host to emit them for the exports/web/ directory.",
+      "The @onready annotations in main.gd resolve at scene-tree entry. If you reparent or free Sprite2D or Label before _ready fires, the @onready vars will be null and _process will crash. Always modify the scene tree after super._ready() when overriding in subclasses.",
+      "The uid on the [gd_scene] header (`uid://c5starter0foundry`) is a stable placeholder. Godot will replace it with a generated UID the first time you save the scene in the editor — that change is safe to commit.",
+      "Do not commit the .godot/ directory — it is editor-generated cache. The family-supplied .gitignore already excludes it."
+    ],
+    "architectureNotes": [
+      "This layer provides exactly one scene (scenes/main.tscn) and one script (scripts/main.gd). For real projects, add scenes as sibling files and instance them into main.tscn; don't grow main.tscn into a monolith.",
+      "main.gd uses static typing (@onready var _sprite: Sprite2D). Keep types explicit — GDScript's static analyser catches type errors at editor load rather than at runtime.",
+      "The _process loop mutates sprite transform only. Keep heavy work (file I/O, network, heavy math) out of _process; use async signals or threads instead."
+    ],
+    "placeholders": [
+      {
+        "path": "scenes/main.tscn",
+        "description": "Bootstrap scene with Node2D root, centred Sprite2D using the default icon, and a Label. Replace with your real game scene; keep the top-level Node2D if scripts/main.gd remains attached to the root."
+      },
+      {
+        "path": "scripts/main.gd",
+        "description": "GDScript attached to the Node2D root — _ready logs engine version and rendering device, _process rotates the sprite. Replace _process body with real input handling and game-loop logic; preserve _ready for diagnostics."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "godot --editor .",
+      "node validate-godot-web.mjs",
+      "godot --headless --export-release 'Web' exports/web/index.html"
+    ],
+    "entrypoints": ["scenes/main.tscn", "scripts/main.gd"],
+    "preview": { "path": "/" },
+    "extensionPoints": ["scenes/main.tscn", "scripts/main.gd"]
+  }
+}

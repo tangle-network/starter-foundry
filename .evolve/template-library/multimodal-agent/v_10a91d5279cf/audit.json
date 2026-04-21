@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-04-21T08:15:40.121Z",
+  "audits": [
+    {
+      "layerId": "framework:multimodal-agent",
+      "family": "multimodal-agent",
+      "pm": "pnpm",
+      "phases": [
+        {
+          "phase": "install",
+          "cmd": "pnpm install --no-frozen-lockfile",
+          "ok": true,
+          "durationMs": 3164.815708,
+          "stderrTail": "",
+          "stdoutTail": "Progress: resolved 1, reused 0, downloaded 0, added 0\nProgress: resolved 36, reused 30, downloaded 0, added 0\nProgress: resolved 110, reused 61, downloaded 0, added 0\nPackages: +71\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\nProgress: resolved 120, reused 71, downloaded 0, added 71, done\n\ndependencies:\n+ react 19.2.5\n+ react-dom 19.2.5\n\ndevDependencies:\n+ @types/node 20.19.39 (25.6.0 is available)\n+ @types/react 19.2.14\n+ @types/react-dom 19.2.3\n+ @vitejs/plugin-react 4.7.0 (6.0.1 is available)\n+ typescript 5.9.3 (6.0.3 is available)\n+ vite 6.4.2 (8.0.9 is available)\n\n╭ Warning ─────────────────────────────────────────────────────────────────────╮\n│                                                                              │\n│   Ignored build scripts: esbuild.                                            │\n│   Run \"pnpm approve-builds\" to pick which dependencies should be allowed     │\n│   to run scripts.                                                            │\n│                                                                              │\n╰──────────────────────────────────────────────────────────────────────────────╯\n\nDone in 3s using pnpm v10.22.0\n"
+        },
+        {
+          "phase": "typecheck",
+          "cmd": "pnpm exec tsc --noEmit",
+          "ok": true,
+          "durationMs": 1183.5764580000005,
+          "stderrTail": "",
+          "stdoutTail": ""
+        },
+        {
+          "phase": "build",
+          "skipped": "no-build-script",
+          "ok": true
+        },
+        {
+          "phase": "validationChecks",
+          "skipped": "none-declared",
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

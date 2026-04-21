@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro'
+
+const headline = '{{headline}}'
+const subheadline = '{{subheadline}}'
+---
+
+<Base title={headline} description={subheadline}>
+  <main>
+    <h1>{headline}</h1>
+    <p>{subheadline}</p>
+    <p>
+      Edit <code>src/pages/index.astro</code> to replace this placeholder with
+      the product's real content. Add new routes by dropping <code>.astro</code>
+      or <code>.md</code> files into <code>src/pages/</code>.
+    </p>
+  </main>
+</Base>

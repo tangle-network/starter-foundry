@@ -1,0 +1,22 @@
+# Cargo config for the esp-rs (Xtensa) toolchain. `cargo build` with no
+# --target will use the triple below. The linker flags are what ESP-IDF's
+# idf.py would pass when producing the final ELF — we lean on `ldproxy`
+# (installed by `cargo install ldproxy`) to forward them.
+
+[build]
+target = "xtensa-esp32-espidf"
+
+[target.xtensa-esp32-espidf]
+linker = "ldproxy"
+runner = "espflash flash --monitor"
+rustflags = [
+    "--cfg",  "espidf_time64",
+    "-C", "default-linker-libraries",
+]
+
+[unstable]
+build-std = ["std", "panic_abort"]
+
+[env]
+MCU = "esp32"
+ESP_IDF_VERSION = "v5.2.2"

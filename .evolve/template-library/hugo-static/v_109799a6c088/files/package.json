@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "dev": "hugo server -D --port 1313",
+    "build": "hugo --minify",
+    "preview": "hugo server --minify --port 1313"
+  },
+  "devDependencies": {
+    "hugo-extended": "^0.127.0"
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "id": "tauri-tray",
+  "description": "Tauri system-tray daemon — tray icon, right-click context menu, and native OS notifications. No primary window ships by default.",
+  "appliesTo": ["tauri-tray"],
+  "files": [
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/src/main.ts", "target": "src/main.ts" },
+    { "source": "files/src/tray.ts", "target": "src/tray.ts" },
+    { "source": "files/build.rs", "target": "src-tauri/build.rs" },
+    { "source": "files/Cargo.toml", "target": "src-tauri/Cargo.toml" },
+    { "source": "files/main.rs", "target": "src-tauri/src/main.rs" },
+    { "source": "files/lib.rs", "target": "src-tauri/src/lib.rs" },
+    { "source": "files/tauri.conf.json", "target": "src-tauri/tauri.conf.json" }
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "@tauri-apps/api": "^2.0.0"
+    },
+    "devDependencies": {
+      "@tauri-apps/cli": "^2.0.0",
+      "@types/node": "^20.17.0",
+      "typescript": "^5.9.0"
+    }
+  },
+  "buildHints": {
+    "whenToUse": "Pick tauri-tray when the app is a headless background daemon with no primary window — tray icon + context menu + OS notifications only. Classic: Dropbox sync, Slack notifier, build-status watcher. If the user needs a popover panel, use tauri-menubar. If they need a real window, use tauri-desktop.",
+    "firstSteps": [
+      "Run `pnpm install` then `cargo tauri dev` — the daemon registers a tray icon and the context menu is live.",
+      "Template variables ({{crateName}}, {{projectName}}, {{packageName}}) are substituted automatically at compose time.",
+      "Add real icons via `pnpm tauri icon <source.png>` — generates into src-tauri/icons/ and auto-wires them in tauri.conf.json. Until then the tray falls back to a transparent placeholder.",
+      "Extend `on_menu_event` in src-tauri/src/lib.rs with business logic; add `#[tauri::command]` functions for async work.",
+      "Run `node preview-server.mjs` (or `pnpm preview:instant`) for a static HTML preview of the tray menu without a Rust build."
+    ],
+    "gotchas": [
+      "macOS: ActivationPolicy::Accessory is set in .setup() — without it you get both a dock icon AND a tray icon.",
+      "macOS notifications require NSUserNotificationsUsageDescription in Info.plist (via bundle.macOS in tauri.conf.json) and explicit user permission on first send — handle the denial case.",
+      "Linux (GNOME 45+): tray icons require the AppIndicator GNOME extension; document this since Tauri silently fails on stock GNOME.",
+      "build.rs must call tauri_build::build() — without it the Rust compile fails even though the build-dep is listed in Cargo.toml.",
+      "Windows: tray-only apps without a window can trigger AV heuristics — sign the binary and submit to Microsoft SmartScreen via Partner Center."
+    ],
+    "architectureNotes": [
+      "No webview window ships by default — the app is pure Rust with a tray surface.",
+      "Business logic lives in Tauri commands (#[tauri::command]) invoked from the Rust menu handler — keeps dispatch testable.",
+      "Lazy webview: create a hidden webview window programmatically if a settings pane is needed later. Set visible:false in tauri.conf.json to avoid flash-on-start.",
+      "Plugin calls (notification, autostart, log) are made from Rust, so no Tauri capability JSON files are required for this default shape."
+    ],
+    "placeholders": [
+      {
+        "path": "src-tauri/Cargo.toml",
+        "description": "{{crateName}} — snake_case crate name (e.g. my_tray_app). Substituted at compose time."
+      },
+      {
+        "path": "src-tauri/src/lib.rs",
+        "description": "{{projectName}} — used as tray tooltip and notification sender. Substituted at compose time."
+      },
+      {
+        "path": "src-tauri/tauri.conf.json",
+        "description": "{{projectName}} and {{packageName}} — app display name and bundle identifier. Substituted at compose time."
+      }
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "pnpm preview:instant",
+      "cargo tauri dev",
+      "pnpm tauri icon <source.png>"
+    ],
+    "entrypoints": [
+      "src-tauri/src/lib.rs",
+      "src-tauri/tauri.conf.json"
+    ],
+    "preview": {
+      "path": "/"
+    },
+    "extensionPoints": [
+      "src-tauri/src/lib.rs"
+    ]
+  }
+}

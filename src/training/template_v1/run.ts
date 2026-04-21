@@ -1,18 +1,41 @@
-// run.ts — orchestrate harvest → synthesize → judge → audit → emit-candidate.
-// CLI:
-//   pnpm tsx src/training/template_v1/run.ts --template-key src.App.tsx --family react-vite-ts --template-target src/App.tsx --source-path registry/layers/framework/react-vite-ts/files/App.tsx [--apply] [--dry-run]
+// run.ts — template-level propose/verify/review loop. Replaces the previous
+// single-shot synthesize→judge→audit pipeline with the primitive from
+// @tangle-network/agent-eval so a failing audit feeds the next synthesis
+// call instead of being silently dropped.
 //
-// Does NOT auto-merge. Writes the candidate + judge report under
-// .evolve/template-candidates/ for human review. --apply copies the
-// candidate over the source template only if --yes is also passed.
+// CLI (unchanged):
+//   pnpm tsx src/training/template_v1/run.ts \
+//     --template-key src.App.tsx --family react-vite-ts \
+//     --template-target src/App.tsx \
+//     --source-path registry/layers/framework/react-vite-ts/files/App.tsx \
+//     [--dry-run] [--apply --yes] [--max-shots 3]
+//
+// Role split (why this looks different now):
+//   - propose:  multiPropose(...) — generates N candidates, scores each with
+//               the deterministic judge, returns the top one. The reviewer's
+//               prior `nextShotInstruction` is threaded into synthesize as an
+//               extra context line.
+//   - verify:   audit(...) — compose + install + typecheck. Authoritative.
+//   - review:   LLM via reviewer-route (Anthropic direct preferred). Reads the
+//               audit outcome + judge dimensions + prior memory and directs
+//               the next shot. NEVER overturns `verify.pass`.
+//
+// The emit-candidate + --apply gating at the end is preserved unchanged so
+// scripts/template-quality-sweep.mjs and downstream CI keep working.
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { harvest } from './harvest.js'
-import { synthesize } from './synthesize.js'
-import { judge } from './judge.js'
-import { audit } from './audit.js'
+import {
+  runProposeReview,
+  createLlmReviewer,
+  jsonlReviewStore,
+} from '@tangle-network/agent-eval'
+import { harvest, type HarvestSummary } from './harvest.js'
+import { multiPropose, type MultiProposeResult } from './multi-propose.js'
+import { audit, type AuditResult } from './audit.js'
+import { judge, type JudgeResult } from './judge.js'
+import { selectReviewerRoute, reviewerJsonCall } from '../../lib/reviewer-route.js'
 import type { ComposeSpec } from '../../types.js'
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..')
@@ -24,15 +47,36 @@ function arg(flag: string, fallback?: string): string | undefined {
 }
 const flag = (name: string): boolean => process.argv.includes(name)
 
+interface LoopState {
+  candidateSource: string
+  mode: 'llm' | 'deterministic'
+  reasoning: string
+  judge: JudgeResult
+  multi: MultiProposeResult
+}
+
+interface LoopTrace {
+  shot: number
+  proposerCount: number
+  judgeScore: number
+  judgeDimensions: Record<string, number>
+  mode: string
+  auditStage: string
+  auditDurationMs: number
+  auditStderrTail: string
+  priorInstructionTail: string
+}
+
 async function main(): Promise<void> {
   const templateKey = arg('--template-key')
   const family = arg('--family')
   const templateTarget = arg('--template-target')
   const sourcePath = arg('--source-path')
+  const maxShots = Number.parseInt(arg('--max-shots', '3') ?? '3', 10)
 
   if (!templateKey || !family || !templateTarget || !sourcePath) {
     console.error(
-      'usage: --template-key <e.g. src.App.tsx> --family <id> --template-target <path in scaffold> --source-path <repo path to the canonical template source> [--dry-run] [--apply --yes]',
+      'usage: --template-key <e.g. src.App.tsx> --family <id> --template-target <path in scaffold> --source-path <repo path to the canonical template source> [--dry-run] [--apply --yes] [--max-shots N]',
     )
     process.exit(2)
   }
@@ -45,7 +89,7 @@ async function main(): Promise<void> {
   const currentSource = readFileSync(absoluteSource, 'utf8')
 
   console.log(`harvesting: ${templateKey}`)
-  const h = harvest(templateKey)
+  const h: HarvestSummary = harvest(templateKey)
   console.log(`  ${h.tupleCount} tuples (${h.writeCount} writes, ${h.editCount} edits)`)
   console.log(`  ${h.frequentlyAddedLines.length} frequently-added lines`)
   console.log(`  ${h.frequentImports.length} frequent imports`)
@@ -55,34 +99,6 @@ async function main(): Promise<void> {
     process.exit(1)
   }
 
-  console.log('synthesizing candidate...')
-  const s = await synthesize({
-    templatePath: h.templatePath,
-    currentSource,
-    harvest: h,
-    familyId: family,
-  })
-  console.log(`  mode: ${s.mode}`)
-  console.log(`  reasoning: ${s.reasoning.slice(0, 200)}`)
-
-  console.log('judging...')
-  const j = judge({
-    templatePath: h.templatePath,
-    currentSource,
-    candidate: s.candidate,
-    harvest: h,
-  })
-  console.log(`  score: ${j.score.toFixed(3)}`)
-  for (const [dim, v] of Object.entries(j.dimensions)) {
-    console.log(`    ${dim}: ${v.toFixed(3)}`)
-  }
-
-  if (flag('--dry-run')) {
-    console.log('\n[dry-run] — skipping audit + candidate write')
-    return
-  }
-
-  console.log('auditing candidate in a composed scaffold...')
   const spec: ComposeSpec = {
     projectName: `template-audit-${templateKey.replace(/\./g, '-')}`,
     family,
@@ -91,40 +107,217 @@ async function main(): Promise<void> {
     slots: {},
     variables: { headline: 'Audit', subheadline: 'Template-audit compose' },
   }
-  const a = await audit({ spec, templateTarget, candidateSource: s.candidate })
-  console.log(`  audit: ${a.ok ? '✓ OK' : `✗ FAIL @ ${a.stage}`} (${a.durationMs}ms)`)
-  if (!a.ok) {
-    console.log(a.stderrTail)
+
+  const memoryPath = join(REPO, '.evolve/review-memory', `template-${templateKey}.jsonl`)
+  mkdirSync(dirname(memoryPath), { recursive: true })
+
+  // Dry-run short-circuit: one propose + one judge, no audit, no loop.
+  if (flag('--dry-run')) {
+    console.log('\n[dry-run] synthesizing one candidate + judging, no audit')
+    const multi = await multiPropose({
+      templatePath: h.templatePath,
+      currentSource,
+      harvest: h,
+      familyId: family,
+      proposerCount: 1,
+    })
+    const w = multi.winner
+    console.log(`  mode:   ${w.candidate.mode}`)
+    console.log(`  score:  ${w.score.score.toFixed(3)}`)
+    for (const [dim, v] of Object.entries(w.score.dimensions)) {
+      console.log(`    ${dim}: ${v.toFixed(3)}`)
+    }
+    return
   }
 
-  // Emit candidate + report.
+  const route = selectReviewerRoute()
+  if (!route) {
+    console.error('No reviewer key available (ANTHROPIC_API_KEY / GROQ_API_KEY / TANGLE_ROUTER_USER_KEY).')
+    process.exit(2)
+  }
+  console.log(`reviewer: ${route.style} → ${route.model}`)
+
+  const review = createLlmReviewer<LoopState, LoopTrace>({
+    callJson: (req) => reviewerJsonCall(route, req),
+    renderState: (s) =>
+      [
+        `mode=${s.mode} judgeScore=${s.judge.score.toFixed(3)}`,
+        `reasoning: ${s.reasoning.slice(0, 400)}`,
+        `--- candidate (first 1000 chars) ---`,
+        s.candidateSource.slice(0, 1000),
+      ].join('\n'),
+    renderTraceSummary: (t) =>
+      t === undefined
+        ? '(none)'
+        : [
+            `shot=${t.shot} proposerCount=${t.proposerCount}`,
+            `judgeScore=${t.judgeScore.toFixed(3)} mode=${t.mode}`,
+            `auditStage=${t.auditStage} auditDurationMs=${t.auditDurationMs}`,
+            `auditStderrTail: ${t.auditStderrTail.slice(-600)}`,
+            `priorInstructionTail: ${t.priorInstructionTail.slice(-400)}`,
+          ].join('\n'),
+    systemPromptAddendum: [
+      'You are directing a template-rewrite loop for a scaffold file.',
+      'The VERIFIER compiled the scaffold with the candidate swapped in: compose → install → typecheck.',
+      'Failing stages: compose | install | typecheck | (done = pass).',
+      'When the audit fails at typecheck, inspect auditStderrTail for the concrete tsc error and tell the worker which imports or types to fix.',
+      'When the audit fails at install, the candidate likely removed or added a dep that isn\'t resolvable — direct the worker accordingly.',
+      'If verify.pass is true OR you see identical-shape failures on two consecutive shots, set shouldContinue=false.',
+    ].join('\n'),
+  })
+
+  const propose = async (input: { shot: number; goal: string; priorReview: { nextShotInstruction?: string } | null }) => {
+    const instructionTail = input.priorReview?.nextShotInstruction ?? ''
+    // Propose N candidates in parallel (mix of LLM + deterministic), let the
+    // deterministic judge pick the winner. Reviewer feedback propagates
+    // through the LLM synthesizer via env var (stays out of the type-level
+    // contract so other callers of multiPropose don't have to care).
+    if (instructionTail) {
+      process.env['STARTER_FOUNDRY_TEMPLATE_REVIEW_INSTRUCTION'] = instructionTail
+    }
+    const multi = await multiPropose({
+      templatePath: h.templatePath,
+      currentSource,
+      harvest: h,
+      familyId: family,
+      proposerCount: 3,
+    })
+    const w = multi.winner
+    return {
+      state: {
+        candidateSource: w.candidate.candidate,
+        mode: w.candidate.mode,
+        reasoning: w.candidate.reasoning,
+        judge: w.score,
+        multi,
+      } satisfies LoopState,
+      traceSummary: {
+        shot: input.shot,
+        proposerCount: multi.proposerCount,
+        judgeScore: w.score.score,
+        judgeDimensions: w.score.dimensions,
+        mode: w.candidate.mode,
+        auditStage: 'pending',
+        auditDurationMs: 0,
+        auditStderrTail: '',
+        priorInstructionTail: instructionTail.slice(-400),
+      } satisfies LoopTrace,
+    }
+  }
+
+  let lastAudit: AuditResult | null = null
+
+  const verify = async (state: LoopState) => {
+    const a = await audit({ spec, templateTarget, candidateSource: state.candidateSource })
+    lastAudit = a
+    return {
+      pass: a.ok,
+      score: a.ok ? 1 : 0,
+      failingLayers: a.ok ? [] : [a.stage],
+      details: {
+        stage: a.stage,
+        durationMs: a.durationMs,
+        stderrTail: a.stderrTail.slice(-1500),
+        judge: {
+          score: state.judge.score,
+          dimensions: state.judge.dimensions,
+          reasoning: state.judge.reasoning,
+        },
+      },
+    }
+  }
+
+  console.log(`loop: up to ${maxShots} shots`)
+  const initialMulti: MultiProposeResult = {
+    winner: {
+      candidate: { mode: 'deterministic', candidate: currentSource, reasoning: '(unchanged starting state)' },
+      score: judge({
+        templatePath: h.templatePath,
+        currentSource,
+        candidate: currentSource,
+        harvest: h,
+        familyId: family,
+      }),
+    },
+    runnerUps: [],
+    needsHumanTieBreak: false,
+    proposerCount: 0,
+  }
+  const initialState: LoopState = {
+    candidateSource: currentSource,
+    mode: 'deterministic',
+    reasoning: '(unchanged starting state)',
+    judge: initialMulti.winner.score,
+    multi: initialMulti,
+  }
+
+  const report = await runProposeReview<LoopState, LoopTrace>({
+    goal:
+      `Rewrite template '${templateKey}' in family '${family}' so the composed scaffold installs, typechecks, and ` +
+      `incorporates the agent-convergent patterns from harvest (${h.tupleCount} tuples).`,
+    initialState,
+    propose,
+    verify,
+    review,
+    maxShots,
+    maxWallMs: 20 * 60 * 1000,
+    memory: jsonlReviewStore(memoryPath),
+    fallbackInstruction:
+      'Inspect verify.details.stage + stderrTail. Fix the first failing stage — do not change unrelated parts of the template.',
+  })
+
+  const finalState = report.finalState
+  const finalAudit: AuditResult =
+    lastAudit ?? { ok: false, stage: 'compose', stderrTail: '(loop never ran verify)', durationMs: 0 }
+
   mkdirSync(CANDIDATES_DIR, { recursive: true })
   const stamp = new Date().toISOString().replace(/[:.]/g, '-')
   const candidateFile = join(CANDIDATES_DIR, `${templateKey}.${stamp}.candidate`)
   const reportFile = join(CANDIDATES_DIR, `${templateKey}.${stamp}.report.json`)
-  writeFileSync(candidateFile, s.candidate)
-  writeFileSync(reportFile, JSON.stringify({
-    templatePath: h.templatePath,
-    templateKey,
-    family,
-    tupleCount: h.tupleCount,
-    synthesizer: { mode: s.mode, reasoning: s.reasoning },
-    judge: j,
-    audit: a,
-    decision: a.ok && j.score > 0.55 ? 'promotable' : 'reject',
-    generatedAt: new Date().toISOString(),
-  }, null, 2))
+  writeFileSync(candidateFile, finalState.candidateSource)
+  writeFileSync(
+    reportFile,
+    JSON.stringify(
+      {
+        templatePath: h.templatePath,
+        templateKey,
+        family,
+        tupleCount: h.tupleCount,
+        synthesizer: { mode: finalState.mode, reasoning: finalState.reasoning },
+        judge: finalState.judge,
+        audit: finalAudit,
+        loop: {
+          shotsUsed: report.shots.length,
+          maxShots,
+          completed: report.completed,
+          wallMs: report.wallMs,
+          finalPass: report.finalVerification.pass,
+          score: report.score,
+          failureClass: report.failureClass ?? null,
+        },
+        decision: finalAudit.ok && finalState.judge.score > 0.55 ? 'promotable' : 'reject',
+        generatedAt: new Date().toISOString(),
+      },
+      null,
+      2,
+    ),
+  )
 
   console.log(`\ncandidate → ${candidateFile}`)
   console.log(`report    → ${reportFile}`)
+  console.log(`memory    → ${memoryPath}`)
+  console.log(`shots     → ${report.shots.length}/${maxShots}  (pass=${report.finalVerification.pass})`)
 
-  if (flag('--apply') && flag('--yes') && a.ok && j.score > 0.55) {
-    writeFileSync(absoluteSource, s.candidate)
-    console.log(`\n✓ applied candidate to ${absoluteSource} (score ${j.score.toFixed(2)})`)
+  if (flag('--apply') && flag('--yes') && finalAudit.ok && finalState.judge.score > 0.55) {
+    writeFileSync(absoluteSource, finalState.candidateSource)
+    console.log(`\n✓ applied candidate to ${absoluteSource} (score ${finalState.judge.score.toFixed(2)})`)
     console.log(`  commit the change + attach the report in the PR body.`)
   } else if (flag('--apply')) {
     console.log('\nnot applied — either audit failed, score too low, or --yes not passed.')
   }
 }
 
-main().catch((err) => { console.error(err); process.exit(1) })
+main().catch((err) => {
+  console.error(err)
+  process.exit(1)
+})

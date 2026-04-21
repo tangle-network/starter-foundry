@@ -1,0 +1,22 @@
+{
+  "familyId": "hipaa-compliance-pack",
+  "runAt": "2026-04-21T05:54:32.726Z",
+  "completed": true,
+  "shotsUsed": 1,
+  "finalPass": true,
+  "finalScore": 1,
+  "finalFailingLayers": [],
+  "failureClass": null,
+  "wallMs": 264035,
+  "shots": [
+    {
+      "shot": 1,
+      "pass": true,
+      "failing": [],
+      "confidence": 1,
+      "shouldContinue": false,
+      "durationMs": 264034,
+      "reviewAvailable": true
+    }
+  ]
+}

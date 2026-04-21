@@ -76,12 +76,12 @@
     ],
     "placeholders": [
       {
-        "key": "projectName",
-        "description": "Move package name and named address key (e.g. my_counter); used in Move.toml [package].name, [addresses], and compile/publish CLI flags. Use snake_case — Move identifiers do not allow hyphens."
+        "path": "Move.toml",
+        "description": "{{projectName}} — Move package name and named-address key (e.g. my_counter). Used in Move.toml [package].name, [addresses].{{projectName}}, and compile/publish CLI flags. Use snake_case — Move identifiers do not allow hyphens."
       },
       {
-        "key": "moduleName",
-        "description": "Move module name (e.g. Counter); used in the module declaration and as the source/test file basename. Default: HelloAptos."
+        "path": "sources/{{moduleName}}.move",
+        "description": "{{moduleName}} — Move module name (e.g. Counter). Used in the module declaration header and as the source/test filename. Default: HelloAptos."
       }
     ]
   }

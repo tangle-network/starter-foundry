@@ -2,7 +2,6 @@
   "id": "kotlin-multiplatform",
   "description": "Kotlin Multiplatform framework layer — Gradle build, shared commonMain entry point, and expect/actual Platform surface for cross-platform targets.",
   "appliesTo": ["kotlin-multiplatform"],
-  "packageManager": "gradle",
   "files": [
     {
       "source": "files/settings.gradle.kts",
@@ -22,9 +21,6 @@
     }
   ],
   "buildHints": {
-    "installCommand": "gradle dependencies --no-daemon",
-    "buildCommand": "gradle build --no-daemon",
-    "testCommand": "gradle test --no-daemon",
     "whenToUse": "Pick kotlin-multiplatform when the user names KMP, Kotlin Multiplatform, Compose Multiplatform, expect/actual, or wants Jetpack Compose on iOS. For Flutter use flutter-app; for JS-driven mobile use expo-react-native-ts.",
     "firstSteps": [
       "Install JDK 17+ and ensure `java -version` reports 17 or higher.",
@@ -47,9 +43,8 @@
     ],
     "placeholders": [
       {
-        "key": "rootProject.name",
         "path": "settings.gradle.kts",
-        "description": "rootProject.name `my-kmp-app` — replace with your project slug."
+        "description": "rootProject.name `my-kmp-app` — replace with your project slug (the rootProject.name directive)."
       },
       {
         "path": "src/commonMain/kotlin/App.kt",

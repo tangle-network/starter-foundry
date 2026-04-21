@@ -305,6 +305,16 @@ export const CODE_EDITOR_ARCHETYPE_SIGNALS = [
   'javascript editor',
   'typescript editor',
   'codemirror',
+  'code dashboard',
+  'strategy editor',
+  'strategy builder',
+  'script editor',
+  'rules editor',
+  'dsl editor',
+  'embedded editor',
+  'policy editor',
+  'workflow editor',
+  'expression editor',
 ]
 
 // Date-heavy products — scheduling, calendar, timeline, booking, deadline

@@ -426,12 +426,77 @@ async function main(): Promise<void> {
   console.log(`shots     → ${report.shots.length}/${maxShots}  (pass=${report.finalVerification.pass})`)
 
   if (flag('--apply') && flag('--yes') && finalAudit.ok && finalState.judge.score > 0.55) {
+    // Phase F.2 — VB smoke gate. Before applying a template rewrite,
+    // dispatch a bounded VB sweep against the same failing leaves the
+    // feedback file flagged (or a small sample of verticals when no
+    // feedback exists). If the smoke sweep regresses relative to the
+    // prior passing leaves, bail out. --skip-vb-smoke to disable.
+    if (!flag('--skip-vb-smoke') && vbFeedback && vbFeedback.failingLeaves.length > 0) {
+      const smokeOk = await runVbSmoke({
+        vertical: vbFeedback.failingLeaves[0]!.verticalId,
+        leafCount: Math.min(3, vbFeedback.failingLeaves.length),
+        passingBaseline: vbFeedback.passingLeaves.length,
+        templateKey,
+      })
+      if (!smokeOk) {
+        console.log(`\n✗ VB smoke gate failed — NOT applying. See stderr for details.`)
+        process.exit(3)
+      }
+    }
     writeFileSync(absoluteSource, finalState.candidateSource)
     console.log(`\n✓ applied candidate to ${absoluteSource} (score ${finalState.judge.score.toFixed(2)})`)
     console.log(`  commit the change + attach the report in the PR body.`)
   } else if (flag('--apply')) {
     console.log('\nnot applied — either audit failed, score too low, or --yes not passed.')
   }
+}
+
+/**
+ * VB smoke gate (Phase F.2). Invokes blueprint-agent's vb-pipeline
+ * via pnpm subprocess against a narrow leaf set, returns true when
+ * the candidate template does not regress relative to the feedback's
+ * baseline. Non-fatal when blueprint-agent isn't a sibling checkout —
+ * we warn and allow the apply to proceed (the promote workflow is
+ * only meant to run in a CI environment that has both repos).
+ */
+async function runVbSmoke(args: {
+  vertical: string
+  leafCount: number
+  passingBaseline: number
+  templateKey: string
+}): Promise<boolean> {
+  const vbRepo = resolve(REPO, '..', 'blueprint-agent')
+  if (!existsSync(join(vbRepo, 'scripts', 'experiments', 'vb-pipeline.ts'))) {
+    console.warn(
+      `[vb-smoke] blueprint-agent not found at ${vbRepo} — skipping smoke gate. Set a CI workspace with both repos for the full promote flow.`,
+    )
+    return true
+  }
+  const { spawn } = await import('node:child_process')
+  const variant = `smoke-${args.templateKey}-${Date.now().toString(36)}`
+  console.log(`\n[vb-smoke] dispatching blueprint-agent sweep: vertical=${args.vertical} variant=${variant}`)
+  return await new Promise<boolean>((resolvePromise) => {
+    const proc = spawn(
+      'pnpm',
+      [
+        '-s', 'tsx', 'scripts/experiments/vb-pipeline.ts',
+        '--vertical', args.vertical,
+        '--shots', '3',
+        '--verify', 'minimal',
+        '--wall-ms', '600000',
+        '--generation', '99',
+        '--variant', variant,
+        '--skip-render',
+        '--skip-template-feedback',
+      ],
+      { cwd: vbRepo, stdio: 'inherit' },
+    )
+    proc.on('exit', (code) => {
+      const ok = code === 0
+      console.log(`[vb-smoke] exit=${code} ok=${ok}`)
+      resolvePromise(ok)
+    })
+  })
 }
 
 main().catch((err) => {

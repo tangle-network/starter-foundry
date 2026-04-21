@@ -416,5 +416,27 @@
       "task scheduler",
       "cron manager"
     ]
+  },
+  "buildHints": {
+    "whenToUse": "Node-backed fullstack with a React frontend bundled together. Use when the product needs tight frontend/backend coupling but NOT a framework like Next or Remix.",
+    "firstSteps": [
+      "Install: `pnpm install` then `pnpm dev` \u2014 starts the Node server (src/server.ts) with experimental TS strip + watch.",
+      "Brand strings: `src/personalize.json`. Palette: `src/personalize.css`.",
+      "API handlers extend `src/server.ts`. Client components under `src/components/`."
+    ],
+    "placeholders": [
+      {
+        "path": "src/App.tsx",
+        "description": "Default React landing with generic hero + KPI cards. Replace with the product's primary view."
+      },
+      {
+        "path": "src/server.ts",
+        "description": "Default Node server with `/health` + a stub API route. Add the product's real endpoints; keep /health for the preview liveness check."
+      },
+      {
+        "path": "src/personalize.json",
+        "description": "Brand strings \u2014 edit but also rewrite App.tsx content."
+      }
+    ]
   }
 }

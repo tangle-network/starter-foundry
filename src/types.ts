@@ -88,6 +88,13 @@ export interface FamilyManifest extends ManifestBase {
   }
   /** Scoring boosts: when a boost key (e.g. "go") co-occurs with an API term, add boost value to score. */
   scoring?: { boost?: Record<string, number> }
+  /**
+   * Domain-specific build guidance — first moves, gotchas, architecture
+   * notes — written into the composed scaffold's AGENTS.md. Family-level
+   * hints cover runtime-specific UX (e.g. "bun add" vs "pnpm add",
+   * "deno.json tasks", "run wasm-pack first").
+   */
+  buildHints?: BuildHints
 }
 
 export interface LayerManifest extends ManifestBase {
@@ -124,6 +131,11 @@ export interface PartnerManifest extends ManifestBase {
   group: null
   appliesTo?: string[]
   slotDefaults?: Record<string, string>
+  /**
+   * Partner-specific agent guidance — which SDK to use, which env vars
+   * to set, ecosystem gotchas. Written into composed scaffold's AGENTS.md.
+   */
+  buildHints?: BuildHints
 }
 
 export interface Registry {
@@ -161,6 +173,24 @@ export interface BuildPlan {
   dataModels: string[]
   integrations: string[]
   firstMoves: string[]
+  /**
+   * Domain-specific first moves declared by manifests (family + attached
+   * capability layers + partner). Each entry is attributed to its source
+   * (e.g. `family:bun-http: Use bun add not pnpm add`). Rendered in
+   * AGENTS.md as '## Domain first moves'.
+   */
+  domainFirstSteps: Array<{ source: string; step: string }>
+  /**
+   * Runtime-specific traps from manifest buildHints. Rendered in
+   * AGENTS.md as '## Gotchas' so an agent sees them before hitting them.
+   */
+  domainGotchas: Array<{ source: string; note: string }>
+  /**
+   * Default/placeholder files the agent MUST replace with product-specific
+   * content (blueprint-agent Gen 27 finding #6). Rendered in AGENTS.md as
+   * '## Placeholders — MUST replace'.
+   */
+  placeholders: Array<{ source: string; path: string; description: string }>
   /** Natural-language design directives for the AI agent. Not CSS — English rules about aesthetics. */
   designDirective: string | null
   /** shadcn preset code for `pnpm dlx shadcn@latest init --preset <code>` */
@@ -186,6 +216,41 @@ export interface BuildHints {
   dataModels?: string[]
   integrations?: string[]
   architectureNotes?: string[]
+  /**
+   * Domain-specific first moves an agent should make on this scaffold.
+   * Rendered as `## First moves` in AGENTS.md. Write concrete commands +
+   * file paths, not generic "familiarize yourself with the code" advice.
+   * Example (bun-http): "Use `bun add` not `pnpm add` for deps".
+   */
+  firstSteps?: string[]
+  /**
+   * Non-obvious traps specific to this runtime/stack. Rendered as
+   * `## Gotchas` in AGENTS.md. Each entry should name the failure mode
+   * + the fix. Not general "be careful" advice.
+   * Example (wasm-rust): "Proving keys are multi-MB — gitignore pkg/ and
+   * host the .wasm under public/ so Vite serves it."
+   */
+  gotchas?: string[]
+  /**
+   * One sentence on WHY an agent attaches or uses this surface.
+   * Rendered as the intro line of relevant AGENTS.md sections.
+   */
+  whenToUse?: string
+  /**
+   * Scaffold files that ship DEFAULT / PLACEHOLDER content — the agent must
+   * replace them with product-specific behavior, not treat them as working
+   * infrastructure. Blueprint-agent Gen 27 finding #6: 4/5 failing sessions
+   * left default KPI dashboards unchanged because AGENTS.md didn't name them.
+   *
+   * Each entry is `{path, description}` — the path is relative to the
+   * composed scaffold root; description names what the default renders and
+   * what the agent should replace it with.
+   *
+   * Example (nextjs-ts):
+   * [{ path: 'app/dashboard/page.tsx', description: 'Default KPI cards
+   *   (Revenue, Users). Replace with the product's primary view.' }]
+   */
+  placeholders?: Array<{ path: string; description: string }>
 }
 
 export interface ProjectEntry {

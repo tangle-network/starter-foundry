@@ -361,6 +361,45 @@ function buildAgentsMd(
     lines.push('')
   }
 
+  if (buildPlan.placeholders.length > 0) {
+    lines.push(
+      '## Placeholders — MUST replace',
+      '',
+      'These files ship DEFAULT content so the preview renders before your first edit. You MUST replace them with product-specific behavior for the user\'s brief. Rewriting `personalize.json` updates brand strings only — it does NOT replace the content in these files. Treat this list as required-to-rewrite.',
+      '',
+    )
+    for (const { source, path, description } of buildPlan.placeholders) {
+      lines.push(`- \`${path}\` — ${description} _(${source})_`)
+    }
+    lines.push('')
+  }
+
+  if (buildPlan.domainFirstSteps.length > 0) {
+    lines.push(
+      '## Domain first moves',
+      '',
+      'Runtime-specific actions declared by the selected family + layers + partner. Do these before generic setup — they prevent the most common class of first-turn mistakes for this stack.',
+      '',
+    )
+    for (const { source, step } of buildPlan.domainFirstSteps) {
+      lines.push(`- **[${source}]** ${step}`)
+    }
+    lines.push('')
+  }
+
+  if (buildPlan.domainGotchas.length > 0) {
+    lines.push(
+      '## Gotchas',
+      '',
+      'Traps specific to this stack — read before you hit them.',
+      '',
+    )
+    for (const { source, note } of buildPlan.domainGotchas) {
+      lines.push(`- **[${source}]** ${note}`)
+    }
+    lines.push('')
+  }
+
   if (buildPlan.designDirective) {
     lines.push('## Design', '', buildPlan.designDirective, '')
   }

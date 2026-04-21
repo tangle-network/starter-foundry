@@ -24,13 +24,32 @@ const FAMILY_ARCHITECTURE: Record<string, string[]> = {
   'cloudflare-worker-ts': ['Cloudflare Worker', 'Edge runtime', 'Durable Objects if stateful'],
 }
 
-function gatherBuildHints(components: ResolvedComponents): {
+interface FirstStepEntry {
+  source: string
+  step: string
+}
+
+interface GotchaEntry {
+  source: string
+  note: string
+}
+
+interface PlaceholderEntry {
+  source: string
+  path: string
+  description: string
+}
+
+export function gatherBuildHints(components: ResolvedComponents): {
   pages: string[]
   apiRoutes: string[]
   componentNames: string[]
   dataModels: string[]
   integrations: string[]
   architectureNotes: string[]
+  firstSteps: FirstStepEntry[]
+  gotchas: GotchaEntry[]
+  placeholders: PlaceholderEntry[]
 } {
   const pages: string[] = []
   const apiRoutes: string[] = []
@@ -38,6 +57,29 @@ function gatherBuildHints(components: ResolvedComponents): {
   const dataModels: string[] = []
   const integrations: string[] = []
   const architectureNotes: string[] = []
+  const firstSteps: FirstStepEntry[] = []
+  const gotchas: GotchaEntry[] = []
+  const placeholders: PlaceholderEntry[] = []
+
+  // Family buildHints first — runtime-level guidance runs before layers.
+  const familyHints = components.family.buildHints
+  if (familyHints) {
+    if (familyHints.pages) pages.push(...familyHints.pages)
+    if (familyHints.apiRoutes) apiRoutes.push(...familyHints.apiRoutes)
+    if (familyHints.components) componentNames.push(...familyHints.components)
+    if (familyHints.dataModels) dataModels.push(...familyHints.dataModels)
+    if (familyHints.integrations) integrations.push(...familyHints.integrations)
+    if (familyHints.architectureNotes) architectureNotes.push(...familyHints.architectureNotes)
+    if (familyHints.firstSteps) {
+      for (const step of familyHints.firstSteps) firstSteps.push({ source: `family:${components.family.id}`, step })
+    }
+    if (familyHints.gotchas) {
+      for (const note of familyHints.gotchas) gotchas.push({ source: `family:${components.family.id}`, note })
+    }
+    if (familyHints.placeholders) {
+      for (const p of familyHints.placeholders) placeholders.push({ source: `family:${components.family.id}`, ...p })
+    }
+  }
 
   for (const layer of components.layers) {
     const hints = layer.buildHints
@@ -48,6 +90,29 @@ function gatherBuildHints(components: ResolvedComponents): {
     if (hints.dataModels) dataModels.push(...hints.dataModels)
     if (hints.integrations) integrations.push(...hints.integrations)
     if (hints.architectureNotes) architectureNotes.push(...hints.architectureNotes)
+    if (hints.firstSteps) {
+      for (const step of hints.firstSteps) firstSteps.push({ source: `${layer.group}:${layer.id}`, step })
+    }
+    if (hints.gotchas) {
+      for (const note of hints.gotchas) gotchas.push({ source: `${layer.group}:${layer.id}`, note })
+    }
+    if (hints.placeholders) {
+      for (const p of hints.placeholders) placeholders.push({ source: `${layer.group}:${layer.id}`, ...p })
+    }
+  }
+
+  if (components.partner?.buildHints) {
+    const hints = components.partner.buildHints
+    if (hints.firstSteps) {
+      for (const step of hints.firstSteps) firstSteps.push({ source: `partner:${components.partner.id}`, step })
+    }
+    if (hints.gotchas) {
+      for (const note of hints.gotchas) gotchas.push({ source: `partner:${components.partner.id}`, note })
+    }
+    if (hints.placeholders) {
+      for (const p of hints.placeholders) placeholders.push({ source: `partner:${components.partner.id}`, ...p })
+    }
+    if (hints.architectureNotes) architectureNotes.push(...hints.architectureNotes)
   }
 
   return {
@@ -57,6 +122,9 @@ function gatherBuildHints(components: ResolvedComponents): {
     dataModels: [...new Set(dataModels)],
     integrations: [...new Set(integrations)],
     architectureNotes: [...new Set(architectureNotes)],
+    firstSteps,
+    gotchas,
+    placeholders,
   }
 }
 
@@ -115,6 +183,9 @@ export function generateBuildPlan(
     dataModels,
     integrations,
     firstMoves,
+    domainFirstSteps: hints.firstSteps,
+    domainGotchas: hints.gotchas,
+    placeholders: hints.placeholders,
     designDirective,
     presetCode,
   }

@@ -1,6 +1,6 @@
 {
   "id": "bun-http",
-  "description": "Bun HTTP API starter using Bun.serve() — zero-transpile TS, native Bun runtime, instant cold start.",
+  "description": "Bun HTTP API starter using Bun.serve() \u2014 zero-transpile TS, native Bun runtime, instant cold start.",
   "tags": [
     "bun",
     "api",
@@ -133,6 +133,31 @@
       "bun api",
       "bun http",
       "bun.js"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Bun-native HTTP server. Measurably faster cold-start + throughput than Node for small APIs.",
+    "firstSteps": [
+      "Install deps with `bun install` \u2014 NOT `pnpm install`. Bun has its own lockfile (bun.lockb) and resolution.",
+      "Run the dev server with `bun run dev` (hot-reload via --watch). Don't use nodemon / tsx / ts-node \u2014 Bun runs TypeScript directly.",
+      "Tests use Bun's built-in runner: `bun test`. Do NOT add vitest/jest \u2014 Bun's runner is Jest-API-compatible and ships zero-config.",
+      "Extend `src/handlers.ts` \u2014 add new routes to the `routes` map. Handlers are Request \u2192 Response; Bun.serve invokes them per request.",
+      "Env vars: `process.env` OR `Bun.env` (both work). `.env` files auto-load under `bun run`."
+    ],
+    "gotchas": [
+      "Do NOT run `pnpm add` / `npm install` to add deps. Use `bun add <pkg>`. Mixing package managers corrupts node_modules symlink resolution.",
+      "TypeScript types are auto-stripped \u2014 no tsc step. If CI needs real type-checking, add `bun tsc --noEmit` explicitly.",
+      "Bun's Node compat layer is not 100% \u2014 cluster/worker_threads/fs-native APIs that wrap libuv primitives may differ."
+    ],
+    "architectureNotes": [
+      "Bun.serve returns a Server with `port` and `hostname` \u2014 bind it at module scope; don't call it from within a handler.",
+      "Request/Response are standard Fetch API \u2014 handlers are portable to Cloudflare Workers, Deno, fetch-based edge runtimes."
+    ],
+    "placeholders": [
+      {
+        "path": "src/handlers.ts",
+        "description": "Default routes map with just `/health`. Add the product's endpoints here \u2014 each route is `(Request) => Response | Promise<Response>`."
+      }
     ]
   }
 }

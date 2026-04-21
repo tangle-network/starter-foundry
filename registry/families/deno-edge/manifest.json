@@ -1,6 +1,6 @@
 {
   "id": "deno-edge",
-  "description": "Deno runtime HTTP API starter using Deno.serve — zero-transpile TS, secure-by-default permissions, Deno Deploy-compatible.",
+  "description": "Deno runtime HTTP API starter using Deno.serve \u2014 zero-transpile TS, secure-by-default permissions, Deno Deploy-compatible.",
   "tags": [
     "deno",
     "api",
@@ -123,6 +123,31 @@
     "tier2": [
       "deno edge",
       "deno api"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Deno runtime HTTP server. Secure-by-default (explicit permissions), zero-transpile TS, Deno Deploy-compatible. Use when the prompt calls for Deno specifically or for edge-runtime compatibility.",
+    "firstSteps": [
+      "Run the dev server with `deno task dev` \u2014 NOT `pnpm dev` (no package.json here). Tasks live in deno.json.",
+      "Install deps by importing from URLs (https://deno.land/x/...) OR npm: specifiers (`import express from \"npm:express\"`). There is NO `node_modules` unless you opt in.",
+      "Tests: `deno task test`. Use the built-in `Deno.test` API. Do NOT add vitest/jest.",
+      "Extend `src/handlers.ts` \u2014 add routes to the `routes` map.",
+      "Env vars: `Deno.env.get('FOO')`, NOT `process.env.FOO`. Requires `--allow-env` permission."
+    ],
+    "gotchas": [
+      "Deno runs with deny-by-default permissions. `--allow-net --allow-env --allow-read` are already in deno.json tasks \u2014 add more only if the handler needs them.",
+      "npm: specifiers work but some Node libs assume `process.env` / `Buffer` / `__dirname`. Use Deno's `std/` modules first.",
+      "Deno Deploy has a 50MB deployment limit + no filesystem writes. Use Deno KV for state, not SQLite."
+    ],
+    "architectureNotes": [
+      "Deno.serve returns a Server; handlers are plain `(Request) => Response` \u2014 portable to Cloudflare Workers / Bun.",
+      "Prefer import maps in deno.json over inline URL imports for consistency across files."
+    ],
+    "placeholders": [
+      {
+        "path": "src/handlers.ts",
+        "description": "Default routes map with just `/health`. Add the product's endpoints here \u2014 handlers are `(Request) => Response`."
+      }
     ]
   }
 }

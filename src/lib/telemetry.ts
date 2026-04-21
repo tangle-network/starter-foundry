@@ -34,6 +34,12 @@ export interface ComposeEvent {
   partner: string | null
   industry: string | null
   durationMs: number
+  /** Template-library version the diverse-serve selector WOULD pick for
+   * this compose. Null when the family isn't in the library. Observability
+   * signal only — compose still resolves files from registry/. */
+  templateVersion?: string | null
+  /** Whether STARTER_FOUNDRY_DIVERSE_SERVE was set at compose time. */
+  diverseServe?: boolean
 }
 
 export interface CapabilityEvent {

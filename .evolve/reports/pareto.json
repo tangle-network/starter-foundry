@@ -1,0 +1,176 @@
+{
+  "generatedAt": "2026-04-21T23:09:36.499Z",
+  "scenarioCount": 22,
+  "frontier": [
+    {
+      "id": "ethereum-l1/staking-dashboard",
+      "meanWallMs": 203527,
+      "meanScore": 0.9559999999999997,
+      "passRate": 1,
+      "total": 7
+    },
+    {
+      "id": "null/chat-with-tools",
+      "meanWallMs": 370755,
+      "meanScore": 1,
+      "passRate": 1,
+      "total": 1
+    }
+  ],
+  "all": [
+    {
+      "id": "arbitrum-stylus/stylus-gas-profiler",
+      "meanWallMs": 1292064,
+      "meanScore": 0.96,
+      "passRate": 1,
+      "total": 8
+    },
+    {
+      "id": "ethereum-l1/nft-mint-page",
+      "meanWallMs": 553306,
+      "meanScore": 0.9439999999999995,
+      "passRate": 1,
+      "total": 16
+    },
+    {
+      "id": "ethereum-l1/staking-dashboard",
+      "meanWallMs": 203527,
+      "meanScore": 0.9559999999999997,
+      "passRate": 1,
+      "total": 7
+    },
+    {
+      "id": "ethereum-l1/dao-proposals",
+      "meanWallMs": 393548,
+      "meanScore": 0.9640000000000003,
+      "passRate": 1,
+      "total": 11
+    },
+    {
+      "id": "ethereum-l1/agent-trading",
+      "meanWallMs": 380282,
+      "meanScore": 0.967,
+      "passRate": 1,
+      "total": 10
+    },
+    {
+      "id": "ethereum-l1/cross-chain-bridge",
+      "meanWallMs": 1597995,
+      "meanScore": 0.9399999999999997,
+      "passRate": 1,
+      "total": 47
+    },
+    {
+      "id": "null/transaction-categorizer",
+      "meanWallMs": 820248.5,
+      "meanScore": 0.9735,
+      "passRate": 1,
+      "total": 2
+    },
+    {
+      "id": "null/budget-dashboard",
+      "meanWallMs": 452400,
+      "meanScore": 0.9735,
+      "passRate": 1,
+      "total": 2
+    },
+    {
+      "id": "null/invoice-factoring",
+      "meanWallMs": 692684,
+      "meanScore": 0.9735,
+      "passRate": 1,
+      "total": 2
+    },
+    {
+      "id": "null/ach-transfer-flow",
+      "meanWallMs": 702090.5,
+      "meanScore": 1,
+      "passRate": 1,
+      "total": 2
+    },
+    {
+      "id": "null/p2p-lending-protocol",
+      "meanWallMs": 686939,
+      "meanScore": 1,
+      "passRate": 1,
+      "total": 1
+    },
+    {
+      "id": "hyperliquid/hl-builder-code-dashboard",
+      "meanWallMs": 573271,
+      "meanScore": 1,
+      "passRate": 1,
+      "total": 1
+    },
+    {
+      "id": "hyperliquid/hl-vault-depositor",
+      "meanWallMs": 602177,
+      "meanScore": 1,
+      "passRate": 1,
+      "total": 1
+    },
+    {
+      "id": "coinbase-base/base-dex-aggregator",
+      "meanWallMs": 480967,
+      "meanScore": 1,
+      "passRate": 1,
+      "total": 1
+    },
+    {
+      "id": "coinbase-base/base-perp-trading",
+      "meanWallMs": 661214,
+      "meanScore": 1,
+      "passRate": 1,
+      "total": 1
+    },
+    {
+      "id": "null/chat-with-tools",
+      "meanWallMs": 370755,
+      "meanScore": 1,
+      "passRate": 1,
+      "total": 1
+    },
+    {
+      "id": "null/prompt-library",
+      "meanWallMs": 503114,
+      "meanScore": 1,
+      "passRate": 1,
+      "total": 1
+    },
+    {
+      "id": "null/agent-traces-viewer",
+      "meanWallMs": 572818,
+      "meanScore": 1,
+      "passRate": 1,
+      "total": 1
+    },
+    {
+      "id": "null/multi-agent-conversation",
+      "meanWallMs": 899975,
+      "meanScore": 0.947,
+      "passRate": 1,
+      "total": 1
+    },
+    {
+      "id": "null/kyc-onboarding",
+      "meanWallMs": 786153.5,
+      "meanScore": 0.4735,
+      "passRate": 0.5,
+      "total": 2
+    },
+    {
+      "id": "ethereum-l1/dex-swap",
+      "meanWallMs": 750351,
+      "meanScore": 0.8680000000000002,
+      "passRate": 0,
+      "total": 14
+    },
+    {
+      "id": "ethereum-l1/zk-mixer-ui",
+      "meanWallMs": 2225928,
+      "meanScore": 0.782,
+      "passRate": 0,
+      "total": 8
+    }
+  ]
+}

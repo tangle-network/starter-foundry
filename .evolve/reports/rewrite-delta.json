@@ -1,0 +1,169 @@
+{
+  "generatedAt": "2026-04-21T23:09:36.601Z",
+  "counts": {
+    "pre-rewrite-clean": 0,
+    "pre-rewrite-had-issues": 0,
+    "unknown": 25
+  },
+  "interpretation": {
+    "pre-rewrite-clean": "Template was fine before agent touched it — rewrite is stylistic drift. Signal: template is probably already good; rewrite count here should be discounted in judge scoring.",
+    "pre-rewrite-had-issues": "Template had lint issues — agent rewrite was corrective. Signal: template IS the problem; prioritize fixing.",
+    "unknown": "Could not classify (source not in registry, eslint unavailable, unsupported extension)."
+  },
+  "files": [
+    {
+      "file": "index.html",
+      "sourcePath": "registry/families/bevy-web/files/index.html",
+      "timesRewritten": 13,
+      "classified": "unknown",
+      "reason": "unsupported-ext"
+    },
+    {
+      "file": "src/App.tsx",
+      "classified": "unknown",
+      "reason": "source-not-in-registry",
+      "timesRewritten": 12
+    },
+    {
+      "file": "src/index.css",
+      "classified": "unknown",
+      "reason": "source-not-in-registry",
+      "timesRewritten": 8
+    },
+    {
+      "file": "foundry.toml",
+      "sourcePath": "registry/layers/framework/forge-foundation/files/foundry.toml",
+      "timesRewritten": 8,
+      "classified": "unknown",
+      "reason": "unsupported-ext"
+    },
+    {
+      "file": "src/components/StatusPipeline.tsx",
+      "classified": "unknown",
+      "reason": "source-not-in-registry",
+      "timesRewritten": 8
+    },
+    {
+      "file": "package.json",
+      "sourcePath": "registry/families/agent-service-ts/files/package.json",
+      "timesRewritten": 6,
+      "classified": "unknown",
+      "reason": "unsupported-ext"
+    },
+    {
+      "file": "src/profiler.rs",
+      "classified": "unknown",
+      "reason": "source-not-in-registry",
+      "timesRewritten": 5
+    },
+    {
+      "file": "src/components/SwapCard.tsx",
+      "classified": "unknown",
+      "reason": "source-not-in-registry",
+      "timesRewritten": 5
+    },
+    {
+      "file": "src/main.rs",
+      "sourcePath": "registry/layers/framework/bevy-web/files/src/main.rs",
+      "timesRewritten": 4,
+      "classified": "unknown",
+      "reason": "unsupported-ext"
+    },
+    {
+      "file": "src/optimizer.rs",
+      "classified": "unknown",
+      "reason": "source-not-in-registry",
+      "timesRewritten": 4
+    },
+    {
+      "file": "src/lib/contract.ts",
+      "classified": "unknown",
+      "reason": "source-not-in-registry",
+      "timesRewritten": 4
+    },
+    {
+      "file": "src/components/WithdrawPanel.tsx",
+      "classified": "unknown",
+      "reason": "source-not-in-registry",
+      "timesRewritten": 4
+    },
+    {
+      "file": "src/StarterCounter.sol",
+      "classified": "unknown",
+      "reason": "source-not-in-registry",
+      "timesRewritten": 3
+    },
+    {
+      "file": "src/components/CreateProposal.tsx",
+      "classified": "unknown",
+      "reason": "source-not-in-registry",
+      "timesRewritten": 3
+    },
+    {
+      "file": "src/agentEngine.ts",
+      "classified": "unknown",
+      "reason": "source-not-in-registry",
+      "timesRewritten": 3
+    },
+    {
+      "file": "src/components/KillSwitch.tsx",
+      "classified": "unknown",
+      "reason": "source-not-in-registry",
+      "timesRewritten": 3
+    },
+    {
+      "file": "src/lib/crypto.ts",
+      "classified": "unknown",
+      "reason": "source-not-in-registry",
+      "timesRewritten": 3
+    },
+    {
+      "file": "src/NFTCollection.sol",
+      "classified": "unknown",
+      "reason": "source-not-in-registry",
+      "timesRewritten": 3
+    },
+    {
+      "file": "src/pages/ProposalList.tsx",
+      "classified": "unknown",
+      "reason": "source-not-in-registry",
+      "timesRewritten": 3
+    },
+    {
+      "file": "src/pages/ProposalDetail.tsx",
+      "classified": "unknown",
+      "reason": "source-not-in-registry",
+      "timesRewritten": 3
+    },
+    {
+      "file": "src/components/Nav.tsx",
+      "classified": "unknown",
+      "reason": "source-not-in-registry",
+      "timesRewritten": 3
+    },
+    {
+      "file": "src/store.ts",
+      "classified": "unknown",
+      "reason": "source-not-in-registry",
+      "timesRewritten": 3
+    },
+    {
+      "file": "tailwind.config.js",
+      "classified": "unknown",
+      "reason": "source-not-in-registry",
+      "timesRewritten": 3
+    },
+    {
+      "file": "src/components/StrategyEditor.tsx",
+      "classified": "unknown",
+      "reason": "source-not-in-registry",
+      "timesRewritten": 2
+    },
+    {
+      "file": "src/lib/zkproof.ts",
+      "classified": "unknown",
+      "reason": "source-not-in-registry",
+      "timesRewritten": 2
+    }
+  ]
+}

@@ -49,8 +49,23 @@ jobs:
       - name: refresh scorecard
         run: node scripts/refresh-scorecard.mjs
 
+      - name: pareto + heatmap + lint-delta reports
+        run: |
+          node scripts/pareto-report.mjs || true
+          node scripts/coverage-heatmap.mjs || true
+          node scripts/lint-aware-rewrite-delta.mjs || true
+
+      - name: LLM buildout diagnosis (no-op without key)
+        env:
+          TANGLE_ROUTER_USER_KEY: ${{ secrets.TANGLE_ROUTER_USER_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node scripts/llm-buildout-diagnose.mjs || true
+
       - name: regenerate reference docs from manifests
         run: node scripts/generate-docs.mjs
+
+      - name: regenerate playground snapshot
+        run: node scripts/generate-playground-snapshot.mjs
 
       - name: archive daily snapshot
         run: |

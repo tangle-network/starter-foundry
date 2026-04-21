@@ -119,7 +119,7 @@ try {
       `Restores the registry state from commit \`${snap.commitSha.slice(0, 12)}\` (recorded ${snap.recordedAt}).`,
       '',
       '### Reason',
-      '(Fill in: what regressed and why we're rolling back)',
+      "(Fill in: what regressed and why we're rolling back)",
       '',
       '### Expected state after merge',
       `- ${snap.familyCount} families`,

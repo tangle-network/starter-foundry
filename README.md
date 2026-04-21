@@ -22,10 +22,10 @@ The hot path is fully deterministic — no LLM calls, no network. A keyword scor
 
 | | Count | Examples |
 |---|---|---|
-| **Families** | 40 | nextjs-ts, react-vite-ts, agent-service-ts, forge-contracts, solana-program, python-api, go-api, sveltekit-ts |
-| **Capability layers** | 91 | See categories below |
-| **Slot layers** | 18 | database (sqlite/postgres/mongodb/convex), auth (clerk/better-auth/supabase), payments, sdk, queue |
-| **Partners** | 6 | Coinbase, Tangle, EigenLayer, Arbitrum, X Layer, Solana |
+| **Families** | 94 | nextjs-ts, react-vite-ts, agent-service-ts, forge-contracts, solana-native-rust, python-http, go-net-http, sveltekit-ts, wasm-rust, bun-http, tangle-blueprint, kotlin-multiplatform |
+| **Capability layers** | 104 | See categories below |
+| **Slot layers** | 28 | database (sqlite/postgres/mongodb/convex), auth (clerk/better-auth/supabase), payments (stripe/coinbase-commerce), sdk (evm-wallet/solana-web3/coinbase-cdp), queue (bullmq/trigger-dev), industry (10 verticals) |
+| **Partners** | 19 | Arbitrum, Avalanche, Chainlink, Coinbase, EigenLayer, Farcaster, Hyperliquid, Lens, Linea, Monad, Polygon, Sei-EVM, Solana, Sui, Tangle, Tempo, Tether, USDC-Circle, XLayer |
 | **Product archetypes** | 115+ | "Twitter clone" → fullstack-ts + realtime-ws + saas-teams |
 
 ### Capability layers by category
@@ -104,8 +104,15 @@ After family selection, **capability detection** scans the prompt against capabi
 | Route accuracy (training corpus, 60 scenarios) | 100% |
 | Route accuracy (held-out corpus, 43 scenarios) | 100% |
 | Route accuracy (IdeasAI corpus, 60 scenarios) | 100% |
-| Unit + integration tests | 343/343 |
+| Unit + integration tests | 615/615 |
+| Scaffold audit pass rate | 85/89 (4 toolchain-blocked) |
 | Compose latency (warm) | ~5ms |
+
+### Template regeneration pipeline
+
+The `src/training/template_v1/` pipeline rewrites scaffold template files from the convergent-patterns miner, guarded by a four-stage audit: **compose → install → typecheck → correctness**. The correctness stage catches classes of bug the TypeScript compiler can't: unused imports in the candidate file (since no family tsconfig enables `noUnusedLocals`), missing `<script src=...>` targets, and `document.getElementById('X')` calls with no matching HTML id. Any stage failing rejects the candidate before it can land.
+
+Run: `pnpm tsx src/training/template_v1/run.ts --template-key <file> --family <id> --template-target <path> --source-path <repo path> [--apply --yes]`
 
 ## Install
 

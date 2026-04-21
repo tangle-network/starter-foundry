@@ -37,6 +37,7 @@ import {
   CODE_EDITOR_ARCHETYPE_SIGNALS,
   DATE_HEAVY_ARCHETYPE_SIGNALS,
   IMPLICIT_UI_FAMILIES,
+  SAAS_ARCHETYPE_SIGNALS,
   VIDEO_ARCHETYPE_SIGNALS,
   ZK_BROWSER_ARCHETYPE_SIGNALS,
 } from './signals.js'
@@ -128,6 +129,15 @@ export function inferImplicitCapabilities(
   // date-fns is tree-shakeable so this is a cheap attach.
   if (hasAny(text, DATE_HEAVY_ARCHETYPE_SIGNALS) && !has('capability:date-utils')) {
     out.push('capability:date-utils')
+  }
+
+  // SaaS archetype: multi-tenancy is non-negotiable for any product that
+  // serves multiple customers. Attaching by default here means the scaffold
+  // ships with tenant-context middleware + row-level isolation helpers; the
+  // agent builds features on top of a tenant-safe foundation instead of
+  // bolting isolation on later (which is how tenant-leak P0s happen).
+  if (hasAny(text, SAAS_ARCHETYPE_SIGNALS) && !has('capability:multi-tenancy')) {
+    out.push('capability:multi-tenancy')
   }
 
   // Browser-native ZK: mixer, private voting, anonymous credential flows.

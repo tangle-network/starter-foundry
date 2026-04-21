@@ -2,6 +2,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { generateBuildPlan } from './build-plan.js'
 import { ensureDir, sanitizePackageName, writeJson } from './fs.js'
+import { renderIndustryFirstTurn } from './industry-flows.js'
 import { buildVariables, resolveComponents, resolveTemplateObject } from './registry.js'
 import { emit, traced } from './telemetry.js'
 import type { FamilyManifest, LayerManifest, PartnerManifest, ComposeSpec, ComposeResult, ResolvedComponents, ValidationCheck, ContextHints, MediaManifest, MediaSlot } from '../types.js'
@@ -411,6 +412,14 @@ function buildAgentsMd(
       lines.push(`- \`${path}\` — ${description} _(${source})_`)
     }
     lines.push('')
+  }
+
+  // Industry first-turn flow — steers the agent toward the right first
+  // feature for the product archetype. Empty string when no industry:*
+  // layer is attached or the industry isn't in the known map.
+  const industryBlock = renderIndustryFirstTurn(components.layers.map((l) => `${l.group}:${l.id}`))
+  if (industryBlock) {
+    lines.push(industryBlock)
   }
 
   if (buildPlan.domainFirstSteps.length > 0) {

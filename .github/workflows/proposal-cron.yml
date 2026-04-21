@@ -1,0 +1,102 @@
+name: Proposal cron
+
+# Runs the self-improvement proposal scripts on a schedule and opens PRs
+# for any high-confidence suggestions they emit. Turns the loop from
+# "human runs the script, reviews output, opens PR" into "scripts run
+# nightly/weekly, PRs land in review queue, human only decides merge."
+#
+# - propose-capabilities.mjs: detects unmapped package clusters in
+#   buildout traces, proposes new capability layers with packageDeps.
+# - propose-family.mjs: detects mis-routed-prompt clusters, drafts a
+#   new family manifest + files scaffold from N peer families.
+# - open-template-prs.mjs: opens PRs for promoted template candidates
+#   in .evolve/template-candidates/ (already exists; extended here to
+#   consume the proposal outputs).
+
+on:
+  schedule:
+    # Nightly UTC 04:00 — weekday runs only (skip Sat/Sun to avoid the
+    # noise of weekend drift and keep the on-call load on weekdays).
+    - cron: '0 4 * * 1-5'
+  workflow_dispatch:
+
+concurrency:
+  group: proposal-cron
+  cancel-in-progress: false
+
+jobs:
+  capabilities:
+    name: propose capabilities
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: install
+        run: pnpm install --frozen-lockfile
+      - name: build
+        run: pnpm build
+      - name: propose capabilities from unmapped clusters
+        run: node scripts/propose-capabilities.mjs --out .evolve/proposals/capabilities.json
+      - name: open PRs for high-confidence capability proposals
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/open-proposal-prs.mjs --kind capability --min-confidence 0.75 || true
+
+  families:
+    name: propose families
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: install
+        run: pnpm install --frozen-lockfile
+      - name: build
+        run: pnpm build
+      - name: propose family scaffolds from mis-routed clusters
+        run: node scripts/propose-family.mjs --out .evolve/family-proposals/ || true
+      - name: open PRs for new families
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/open-proposal-prs.mjs --kind family --min-confidence 0.75 || true
+
+  template-candidates:
+    name: open template candidate PRs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: install
+        run: pnpm install --frozen-lockfile
+      - name: build
+        run: pnpm build
+      - name: open PRs for promotable template candidates
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/open-template-prs.mjs --min-score 0.7 || true

@@ -49,6 +49,9 @@ for (const e of events) {
       meanScore: 0,
       meanWallMs: 0,
       meanTurns: 0,
+      meanCostUsd: 0,
+      meanTokenCount: 0,
+      costSampleCount: 0,
       replayRounds: new Set(),
     }
   }
@@ -60,6 +63,13 @@ for (const e of events) {
     s.meanScore += e.outcome.blendedScore
     s.meanWallMs += e.outcome.wallMs
     s.meanTurns += e.outcome.toolCallsTotal
+    if (typeof e.outcome.costUsd === 'number') {
+      s.meanCostUsd += e.outcome.costUsd
+      s.costSampleCount++
+    }
+    if (typeof e.outcome.tokenCount === 'number') {
+      s.meanTokenCount += e.outcome.tokenCount
+    }
   }
   if (e.replayRound != null) s.replayRounds.add(e.replayRound)
 }
@@ -68,6 +78,14 @@ for (const s of Object.values(byScenario)) {
     s.meanScore /= s.withOutcome
     s.meanWallMs /= s.withOutcome
     s.meanTurns /= s.withOutcome
+  }
+  // Cost averages only over runs that reported cost (may be < withOutcome).
+  if (s.costSampleCount > 0) {
+    s.meanCostUsd /= s.costSampleCount
+    s.meanTokenCount /= s.costSampleCount
+  } else {
+    s.meanCostUsd = null
+    s.meanTokenCount = null
   }
   s.passRate = s.withOutcome > 0 ? s.pass / s.withOutcome : null
   s.replayRounds = [...s.replayRounds].sort((a, b) => a - b)
@@ -137,6 +155,13 @@ const topRewrittenFiles = [...fileCounts.entries()]
   }))
 
 // Summary block
+// Cost aggregates — only over events where the upstream caller (blueprint-agent
+// / VB) emitted costUsd on the outcome. When absent, meanCostUsd is null.
+const costEvents = withOutcome.filter((e) => typeof e.outcome.costUsd === 'number')
+const tokenEvents = withOutcome.filter((e) => typeof e.outcome.tokenCount === 'number')
+const totalCostUsd = costEvents.reduce((a, e) => a + e.outcome.costUsd, 0)
+const totalTokens = tokenEvents.reduce((a, e) => a + e.outcome.tokenCount, 0)
+
 const summary = {
   generatedAt: new Date().toISOString(),
   totalBuildouts: events.length,
@@ -150,6 +175,26 @@ const summary = {
   totalFailing: fails.length,
   distinctScenarios: Object.keys(byScenario).length,
   distinctPartners: [...new Set(events.map((e) => e.partnerGuess).filter(Boolean))].sort(),
+  // Cost rollup. Tracks $/scaffold across the corpus — the metric that
+  // catches regressions where we accidentally made every buildout 2× more
+  // expensive in tokens even if pass rate stayed flat.
+  costRollup: {
+    sampleCount: costEvents.length,
+    totalCostUsd: costEvents.length > 0 ? totalCostUsd : null,
+    meanCostUsd: costEvents.length > 0 ? totalCostUsd / costEvents.length : null,
+    totalTokens: tokenEvents.length > 0 ? totalTokens : null,
+    meanTokens: tokenEvents.length > 0 ? totalTokens / tokenEvents.length : null,
+    meanCostOnPass:
+      costEvents.filter((e) => e.outcome.allPass).length > 0
+        ? costEvents.filter((e) => e.outcome.allPass).reduce((a, e) => a + e.outcome.costUsd, 0) /
+          costEvents.filter((e) => e.outcome.allPass).length
+        : null,
+    meanCostOnFail:
+      costEvents.filter((e) => !e.outcome.allPass).length > 0
+        ? costEvents.filter((e) => !e.outcome.allPass).reduce((a, e) => a + e.outcome.costUsd, 0) /
+          costEvents.filter((e) => !e.outcome.allPass).length
+        : null,
+  },
 }
 
 const report = {

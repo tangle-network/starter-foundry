@@ -261,6 +261,41 @@ export const VIDEO_ARCHETYPE_SIGNALS = [
   'jam session',
 ]
 
+// SaaS archetypes — multi-customer products where tenant isolation is
+// non-negotiable. When the prompt describes a SaaS shape (teams, orgs,
+// workspaces, subscription tiers, customer accounts), the scaffold must
+// ship capability:multi-tenancy by default so agents don't bolt it on
+// after deploy (tenant leakage is a P0 bug, not a nice-to-have).
+export const SAAS_ARCHETYPE_SIGNALS = [
+  'saas',
+  'saas app',
+  'saas product',
+  'saas platform',
+  'saas tool',
+  'team management',
+  'teams and members',
+  'organization',
+  'organizations',
+  'workspace',
+  'workspaces',
+  'customer accounts',
+  'customer portal',
+  'subscription tiers',
+  'subscription plans',
+  'billing plans',
+  'usage-based billing',
+  'per-seat billing',
+  'tenant',
+  'tenants',
+  'multi-tenant',
+  'multi tenancy',
+  'per-tenant',
+  'tenant isolation',
+  'workspace-level',
+  'org-level',
+  'account-scoped',
+]
+
 // Admin/operations archetypes — internal SaaS tools with bulk management,
 // document workflows, role-based access, approval flows. These want layout-admin
 // alongside layout-dashboard.

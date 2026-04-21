@@ -26,6 +26,117 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+
+/**
+ * Phase F — VB → starter-foundry feedback pipe (reader side).
+ *
+ * Loads the most recent VB feedback file for this template key, if any.
+ * VB emits these at `<vbRepo>/.evolve/template-feedback/<templateKey>.json`
+ * after every sweep. We surface the failing leaves + reviewer diagnoses
+ * into the reviewer's system-prompt addendum so the synthesis loop
+ * knows which real-world VB failures this template rewrite is expected
+ * to fix.
+ *
+ * Directory override: --vb-feedback-dir <path> (default tries sibling
+ * blueprint-agent repo, then in-repo fallback).
+ */
+interface VbTemplateFeedback {
+  schemaVersion: number
+  templateKey: string
+  family: string | null
+  layers: string[]
+  generatedAt: string
+  vbGeneration: number
+  vbVariant: string
+  failingLeaves: Array<{
+    leafId: string
+    verticalId: string
+    difficulty: string
+    blendedScore: number
+    failingLayers: string[]
+    reviewerDiagnoses: string[]
+    shotsUsed: number
+    primaryFailureExcerpt: string | null
+  }>
+  passingLeaves: Array<{
+    leafId: string
+    verticalId: string
+    blendedScore: number
+  }>
+  aggregate: {
+    totalLeaves: number
+    passRate: number
+    meanBlended: number
+    topFailingLayers: Array<{ layer: string; count: number }>
+    commonFailureClusters: string[]
+  }
+}
+
+function loadVbFeedback(
+  templateKey: string,
+  feedbackDirOverride: string | undefined,
+): VbTemplateFeedback | null {
+  const candidates = [
+    feedbackDirOverride,
+    process.env.VB_TEMPLATE_FEEDBACK_DIR,
+    resolve(REPO, '..', 'blueprint-agent', '.evolve', 'template-feedback'),
+    resolve(REPO, '.evolve', 'template-feedback'),
+  ].filter((p): p is string => !!p)
+
+  for (const dir of candidates) {
+    const p = join(dir, `${templateKey}.json`)
+    if (!existsSync(p)) continue
+    try {
+      const raw = JSON.parse(readFileSync(p, 'utf8')) as VbTemplateFeedback
+      if (raw.schemaVersion !== 1) {
+        console.warn(
+          `[vb-feedback] schema v${raw.schemaVersion} at ${p}; this reader expects v1 — skipping`,
+        )
+        continue
+      }
+      console.log(
+        `[vb-feedback] loaded ${p} (${raw.failingLeaves.length} failing, ${raw.passingLeaves.length} passing, passRate=${(raw.aggregate.passRate * 100).toFixed(0)}%)`,
+      )
+      return raw
+    } catch (err) {
+      console.warn(`[vb-feedback] parse failed for ${p}: ${err instanceof Error ? err.message : err}`)
+    }
+  }
+  return null
+}
+
+function renderVbFeedbackForReviewer(fb: VbTemplateFeedback): string {
+  const parts: string[] = []
+  parts.push(
+    `VB SWEEP FEEDBACK (from blueprint-agent gen ${fb.vbGeneration} / ${fb.vbVariant}):`,
+  )
+  parts.push(
+    `  passRate=${(fb.aggregate.passRate * 100).toFixed(0)}% meanBlended=${fb.aggregate.meanBlended.toFixed(2)} leaves=${fb.aggregate.totalLeaves}`,
+  )
+  if (fb.aggregate.topFailingLayers.length > 0) {
+    parts.push(
+      `  top-failing layers: ${fb.aggregate.topFailingLayers
+        .map((l) => `${l.layer}(${l.count})`)
+        .join(', ')}`,
+    )
+  }
+  const worst = fb.failingLeaves.slice(0, 3)
+  if (worst.length > 0) {
+    parts.push('  worst failing leaves:')
+    for (const leaf of worst) {
+      parts.push(
+        `    - ${leaf.verticalId}/${leaf.leafId} (${leaf.difficulty || '?'}) blended=${leaf.blendedScore.toFixed(2)} layers=[${leaf.failingLayers.join(',')}]`,
+      )
+      if (leaf.reviewerDiagnoses.length > 0) {
+        parts.push(`      diagnosis: ${leaf.reviewerDiagnoses[leaf.reviewerDiagnoses.length - 1]!.slice(0, 300)}`)
+      }
+    }
+  }
+  parts.push(
+    'When rewriting this template, PRIORITIZE fixes that address the top-failing layers above. Do not regress any passing leaves.',
+  )
+  return parts.join('\n')
+}
 import {
   runProposeReview,
   createLlmReviewer,
@@ -137,6 +248,11 @@ async function main(): Promise<void> {
   }
   console.log(`reviewer: ${route.style} → ${route.model}`)
 
+  // Load any VB feedback available for this template key (Phase F).
+  // Surfaces real-world failures the current template produced into the
+  // reviewer's addendum so the synthesis loop optimizes for fixing them.
+  const vbFeedback = loadVbFeedback(templateKey, arg('--vb-feedback-dir'))
+
   const review = createLlmReviewer<LoopState, LoopTrace>({
     callJson: (req) => reviewerJsonCall(route, req),
     renderState: (s) =>
@@ -163,6 +279,7 @@ async function main(): Promise<void> {
       'When the audit fails at typecheck, inspect auditStderrTail for the concrete tsc error and tell the worker which imports or types to fix.',
       'When the audit fails at install, the candidate likely removed or added a dep that isn\'t resolvable — direct the worker accordingly.',
       'If verify.pass is true OR you see identical-shape failures on two consecutive shots, set shouldContinue=false.',
+      ...(vbFeedback ? ['', renderVbFeedbackForReviewer(vbFeedback)] : []),
     ].join('\n'),
   })
 

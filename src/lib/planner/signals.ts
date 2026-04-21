@@ -19,7 +19,19 @@ export const IMPLICIT_UI_FAMILIES = new Set(['react-vite-ts', 'nextjs-ts', 'full
 // React families that get unconditional tailwind + shadcn attachment.
 // Keep in sync with IMPLICIT_UI_FAMILIES — any addition here should also
 // go there.
-export const REACT_FAMILIES = new Set(['react-vite-ts', 'nextjs-ts', 'fullstack-ts', 'remix-ts'])
+export const REACT_FAMILIES = new Set([
+  'react-vite-ts',
+  'nextjs-ts',
+  'fullstack-ts',
+  'remix-ts',
+  // S+ tier new React+Vite families — auto-attach tailwind + shadcn so
+  // agents don't have to `pnpm add` them every time. Signal from
+  // .evolve/buildout-analysis.json topAddedPackages (17× lucide-react,
+  // 14× tailwindcss, 9× clsx) showed these utilities are near-universal
+  // across real agent work.
+  'electron-native-os',
+  'multimodal-agent',
+])
 
 // Chat-first archetype: product's primary surface is a conversational thread,
 // not a data-heavy dashboard. Matches phrases where the user interacts by

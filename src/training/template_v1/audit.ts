@@ -2,11 +2,12 @@
 // run install + typecheck, ensure we don't regress vs the current template.
 
 import { mkdtempSync, writeFileSync, mkdirSync, existsSync, rmSync } from 'node:fs'
-import { dirname, join } from 'node:path'
+import { dirname, extname, join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { tmpdir } from 'node:os'
 import { composeStarter } from '../../lib/compose.js'
 import type { ComposeSpec } from '../../types.js'
+import { checkHtmlTsWireup, findUnusedImports } from './correctness.js'
 
 export interface AuditInput {
   spec: ComposeSpec
@@ -17,7 +18,7 @@ export interface AuditInput {
 
 export interface AuditResult {
   ok: boolean
-  stage: 'compose' | 'install' | 'typecheck' | 'done'
+  stage: 'compose' | 'install' | 'typecheck' | 'correctness' | 'done'
   stderrTail: string
   durationMs: number
 }
@@ -65,6 +66,29 @@ export async function audit(input: AuditInput): Promise<AuditResult> {
           stderrTail: ((tsc.stdout ?? '') + (tsc.stderr ?? '')).slice(-1500),
           durationMs: Date.now() - start,
         }
+      }
+    }
+
+    // Correctness checks catch classes of bug tsc doesn't:
+    //   - unused imports in the candidate (tsc only flags those when
+    //     noUnusedLocals: true, which no family tsconfig enables)
+    //   - HTML↔TS wire-up drift: missing <script src=...> files, or
+    //     document.getElementById calls with no matching id in HTML
+    const correctnessFailures = []
+    if (['.ts', '.tsx', '.js', '.jsx'].includes(extname(input.templateTarget))) {
+      correctnessFailures.push(...findUnusedImports(input.candidateSource, input.templateTarget))
+    }
+    correctnessFailures.push(...checkHtmlTsWireup(dir))
+    if (correctnessFailures.length > 0) {
+      const tail = correctnessFailures
+        .map((f) => `  [${f.kind}] ${f.file}: ${f.detail}`)
+        .join('\n')
+        .slice(-1500)
+      return {
+        ok: false,
+        stage: 'correctness',
+        stderrTail: `correctness checks failed (${correctnessFailures.length}):\n${tail}`,
+        durationMs: Date.now() - start,
       }
     }
 

@@ -1,0 +1,25 @@
+[package]
+name = "starter-foundry"
+version = "0.1.0"
+edition = "2021"
+description = "Rust SDK for starter-foundry — compose scaffolds, emit buildout events, validate plans"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/tangle-network/starter-foundry"
+keywords = ["scaffold", "agent", "starter", "registry"]
+categories = ["development-tools"]
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false, optional = true }
+tokio = { version = "1", features = ["fs", "io-util"], optional = true }
+thiserror = "2"
+sha2 = "0.10"
+
+[features]
+default = []
+http = ["dep:reqwest", "dep:tokio"]
+
+[dev-dependencies]
+tokio = { version = "1", features = ["full"] }
+tempfile = "3"

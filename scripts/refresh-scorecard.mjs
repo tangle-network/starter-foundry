@@ -119,6 +119,10 @@ const flows = [
   {
     name: 'estimated_tokens_per_buildout',
     value: (() => {
+      // Prefer real token count from cost rollup when present.
+      const real = buildout?.summary?.costRollup?.meanTokens
+      if (typeof real === 'number' && real > 0) return Math.round(real)
+      // Fallback proxy: median turns × 2k tokens/turn.
       const turns = (buildout?.perScenario ?? []).map((s) => s.meanTurns).filter((v) => typeof v === 'number' && v > 0)
       if (turns.length === 0) return null
       turns.sort((a, b) => a - b)
@@ -126,7 +130,20 @@ const flows = [
       return Math.round(medianTurns * 2000)
     })(),
     target: 80000,
-    productValueClaim: 'Median tokens spent per buildout (proxy: median turns × 2k tokens/turn). Fewer tokens = lower cost per user session + lower LLM API cost for consumers.',
+    productValueClaim: 'Median tokens spent per buildout (real when emitBuildoutEvent supplies tokenCount, proxy from turns otherwise). Fewer tokens = lower cost per user session + lower LLM API cost for consumers.',
+    direction: 'lower-better',
+  },
+  // Real $/scaffold when blueprint-agent emits outcome.costUsd. Null when no
+  // run has emitted cost yet — signals "measurement not wired up" instead of
+  // faking a number.
+  {
+    name: 'cost_usd_per_buildout',
+    value: (() => {
+      const mean = buildout?.summary?.costRollup?.meanCostUsd
+      return typeof mean === 'number' ? Number(mean.toFixed(4)) : null
+    })(),
+    target: 0.5,
+    productValueClaim: 'Mean $ cost per scaffold buildout. Catches regressions where a change doubles token spend even if pass rate stays flat. Drives the ROI conversation on every future capability — is the delta on pass rate worth $X more per user?',
     direction: 'lower-better',
   },
   // Registry breadth — running growth metric.

@@ -1,0 +1,50 @@
+{
+  "name": "starter-foundry-vscode",
+  "displayName": "starter-foundry",
+  "description": "Manifest autocomplete + inline overlap warnings for starter-foundry registry authors",
+  "version": "0.1.0",
+  "publisher": "tangle-network",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Programming Languages", "Linters", "Snippets"],
+  "keywords": ["starter-foundry", "registry", "scaffold", "tangle"],
+  "repository": { "type": "git", "url": "https://github.com/tangle-network/starter-foundry" },
+  "main": "./dist/extension.js",
+  "contributes": {
+    "jsonValidation": [
+      {
+        "fileMatch": "registry/families/*/manifest.json",
+        "url": "./schemas/family.schema.json"
+      },
+      {
+        "fileMatch": "registry/layers/*/*/manifest.json",
+        "url": "./schemas/layer.schema.json"
+      },
+      {
+        "fileMatch": "registry/partners/*/manifest.json",
+        "url": "./schemas/partner.schema.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "starterFoundry.validateRegistry",
+        "title": "starter-foundry: Validate registry"
+      },
+      {
+        "command": "starterFoundry.planPrompt",
+        "title": "starter-foundry: Plan a prompt in the inline playground"
+      }
+    ]
+  },
+  "activationEvents": [
+    "onLanguage:json"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "watch": "tsc -w -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.7.0"
+  }
+}

@@ -1,7 +1,65 @@
+import { createHash } from 'node:crypto'
+import { existsSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { fuzzyKeywordScore } from './keywords.js'
 import { loadRegistry } from './registry.js'
 import { semanticMatch, isSemanticRouterReady } from './semantic-router.js'
 import type { SelectionResult, Confidence, ComposeSpec, Registry } from '../types.js'
+
+const TEMPLATE_LIBRARY_DIR = '.evolve/template-library'
+
+interface LibraryIndex {
+  family: string
+  current: string
+  topN: string[]
+}
+
+/**
+ * Pick a template-library version for `familyId`, optionally diverse-serving
+ * from the top-N candidates when `STARTER_FOUNDRY_DIVERSE_SERVE=1` is set.
+ *
+ * Default behavior (env unset or 0): returns the `current` pointer from
+ * `.evolve/template-library/<family>/_index.json`. Same version every call
+ * — no behavior change vs today.
+ *
+ * Diverse-serve (env=1): hashes the project name (or any stable seed) into
+ * a deterministic index within `topN`, so two different projects can land
+ * on two different versions but the same project name always gets the same
+ * version. Gives us production-grade A/B across the top-quality candidates
+ * without per-user randomization breaking replay.
+ *
+ * Returns null when no `_index.json` exists (family isn't in the library
+ * yet) so callers can fall through to the canonical `registry/layers/`
+ * serve path unchanged.
+ */
+export function selectTemplateVersion(
+  familyId: string,
+  seed: string,
+  opts: { repoRoot?: string; envDiverseServe?: string } = {},
+): string | null {
+  const repoRoot = opts.repoRoot ?? process.cwd()
+  const indexPath = join(repoRoot, TEMPLATE_LIBRARY_DIR, familyId, '_index.json')
+  if (!existsSync(indexPath)) return null
+
+  let idx: LibraryIndex
+  try {
+    idx = JSON.parse(readFileSync(indexPath, 'utf8')) as LibraryIndex
+  } catch {
+    return null
+  }
+
+  const diverseServe = opts.envDiverseServe ?? process.env['STARTER_FOUNDRY_DIVERSE_SERVE']
+  if (diverseServe !== '1' && diverseServe !== 'true') return idx.current
+
+  const candidates = idx.topN?.length ? idx.topN : [idx.current]
+  if (candidates.length <= 1) return idx.current
+
+  // SHA-256 of seed, take first 4 bytes as uint32, mod candidates.length.
+  // Same seed → same pick; different seeds spread uniformly across topN.
+  const hash = createHash('sha256').update(seed).digest()
+  const bucket = hash.readUInt32BE(0) % candidates.length
+  return candidates[bucket]!
+}
 
 const TIER_WEIGHTS = { tier1: 4, tier2: 2, tier3: 1, archetypes: 3 } as const
 type Tier = keyof typeof TIER_WEIGHTS

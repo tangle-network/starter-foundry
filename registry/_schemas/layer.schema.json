@@ -36,6 +36,15 @@
       }
     },
     "keywords": { "type": "array", "items": { "type": "string" } },
+    "tieredKeywords": {
+      "type": "object",
+      "properties": {
+        "tier1": { "type": "array", "items": { "type": "string" } },
+        "tier2": { "type": "array", "items": { "type": "string" } },
+        "tier3": { "type": "array", "items": { "type": "string" } },
+        "archetypes": { "type": "array", "items": { "type": "string" } }
+      }
+    },
     "capabilityRequires": { "type": "array", "items": { "type": "string" } },
     "variants": { "type": "array", "items": { "type": "string" } },
     "buildHints": { "$ref": "buildhints.schema.json" },

@@ -104,6 +104,18 @@ export interface LayerManifest extends ManifestBase {
   appliesTo?: string[]
   /** Keywords for capability auto-detection. detectCapabilities scores prompts against these. */
   keywords?: string[]
+  /**
+   * Tiered keywords (same shape as FamilyManifest.tieredKeywords). Capability
+   * manifests use `tieredKeywords.archetypes` to declare their archetype
+   * signal arrays — the single source of truth for `implicit-caps.ts` in
+   * future; today it's enforced-parity with signals.ts arrays via a test.
+   */
+  tieredKeywords?: {
+    tier1?: string[]
+    tier2?: string[]
+    tier3?: string[]
+    archetypes?: string[]
+  }
   /** Other capability IDs that must be present when this capability is attached. */
   capabilityRequires?: string[]
   /** Available variant directory names under variants/. When present, compose picks one deterministically. */

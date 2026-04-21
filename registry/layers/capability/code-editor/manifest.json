@@ -47,5 +47,23 @@
       "Import CodeEditor from '@/components/code-editor'",
       "Pass `value`, `onChange`, and optionally a `language` ('javascript' | 'json' | 'typescript')"
     ]
+  },
+  "tieredKeywords": {
+    "archetypes": [
+      "code editor",
+      "query editor",
+      "sql editor",
+      "prompt playground",
+      "code playground",
+      "syntax highlight",
+      "syntax highlighting",
+      "markdown editor",
+      "config editor",
+      "schema editor",
+      "json editor",
+      "javascript editor",
+      "typescript editor",
+      "codemirror"
+    ]
   }
 }

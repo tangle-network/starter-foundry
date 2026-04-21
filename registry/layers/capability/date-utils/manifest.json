@@ -34,5 +34,23 @@
       "import { format, formatDistanceToNow, addDays } from 'date-fns'",
       "Pick locale on demand via 'date-fns/locale/en-US' (etc.) for i18n"
     ]
+  },
+  "tieredKeywords": {
+    "archetypes": [
+      "calendar",
+      "scheduling",
+      "booking",
+      "appointment",
+      "timeline",
+      "deadline",
+      "date range",
+      "date picker",
+      "recurring event",
+      "relative time",
+      "event scheduler",
+      "reminders",
+      "due date",
+      "time tracking"
+    ]
   }
 }

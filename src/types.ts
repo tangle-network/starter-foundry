@@ -374,6 +374,12 @@ export interface ComposeResult {
    * partner ships a fragment.
    */
   promptFragment: string
+  /**
+   * Path to the composed SBOM (CycloneDX 1.5). null if the scaffold has
+   * no manifested deps (e.g. Go/Rust without Cargo.toml). Consumers feed
+   * this to supply-chain scanners.
+   */
+  sbomPath: string | null
 }
 
 export interface ValidationCheckResult {

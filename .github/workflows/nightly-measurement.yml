@@ -49,6 +49,9 @@ jobs:
       - name: refresh scorecard
         run: node scripts/refresh-scorecard.mjs
 
+      - name: regenerate reference docs from manifests
+        run: node scripts/generate-docs.mjs
+
       - name: archive daily snapshot
         run: |
           DATE=$(date -u +%Y-%m-%d)

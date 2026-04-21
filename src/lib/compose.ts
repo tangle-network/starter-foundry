@@ -241,6 +241,10 @@ async function composeStarterInner(spec: ComposeSpec, outDir: string): Promise<C
   const llmsTxt = buildLlmsTxt(spec, components, composeReport.contextHints)
   await fs.writeFile(path.join(outDir, 'llms.txt'), `${llmsTxt}\n`, 'utf8')
 
+  // Generate SBOM (CycloneDX) from the composed scaffold's dep manifest.
+  const { writeSbom } = await import('./sbom.js')
+  const sbomPath = await writeSbom(outDir, spec.projectName)
+
   // Collect optional prompt-fragment.md files from family + partner.
   const promptFragment = await collectPromptFragment(components)
 
@@ -250,6 +254,7 @@ async function composeStarterInner(spec: ComposeSpec, outDir: string): Promise<C
     composeReportPath: path.join(outDir, '.starter-foundry', 'compose-report.json'),
     components: composeReport.components,
     promptFragment,
+    sbomPath,
   }
 }
 

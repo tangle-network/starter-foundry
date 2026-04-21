@@ -59,7 +59,11 @@
     "validate:registry": "node scripts/validate-registry.mjs",
     "new:family": "node scripts/new-family.mjs",
     "new:capability": "node scripts/new-capability.mjs",
-    "new:partner": "node scripts/new-partner.mjs"
+    "new:partner": "node scripts/new-partner.mjs",
+    "repl": "node scripts/repl.mjs",
+    "docs:gen": "node scripts/generate-docs.mjs",
+    "scorecard": "node scripts/refresh-scorecard.mjs",
+    "changelog": "node scripts/generate-changelog.mjs"
   },
   "engines": {
     "node": ">=20"

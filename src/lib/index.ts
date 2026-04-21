@@ -29,6 +29,15 @@ export { on, off, emit, traced } from './telemetry.js'
 export type { RouteEvent, ComposeEvent, CapabilityEvent } from './telemetry.js'
 export { emitBuildoutEvent, BUILDOUT_SCHEMA_VERSION, DEFAULT_PATHS } from './buildout-traces.js'
 export type { BuildoutEvent, BuildoutEventInput, BuildoutOutcome } from './buildout-traces.js'
+// Foundational primitives — unblock multiple ROADMAP branches.
+export { generatePrompts, persistBatch } from './synthetic/index.js'
+export type { SyntheticPrompt, SyntheticBatch, GenerateOptions } from './synthetic/index.js'
+export { abDecide } from './ab.js'
+export type { AbExperiment, AbDecision } from './ab.js'
+export { generateSbom, writeSbom } from './sbom.js'
+export type { Sbom, SbomComponent } from './sbom.js'
+export { scanDirectory as scanForSecrets } from './safety/secret-scan.js'
+export type { SecretMatch } from './safety/secret-scan.js'
 export type {
   ComposeSpec,
   WorkspaceSpec,

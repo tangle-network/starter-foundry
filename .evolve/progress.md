@@ -1,5 +1,64 @@
 # Evolve Progress — starter-foundry routing quality
 
+## 2026-04-21 — Evolve Round 2: codemirror cluster (15 gap-installs)
+
+Commit: `29d5ccc`. Continues R1's `scaffold_gap_installs` goal.
+
+**Gap target:** 5 CodeMirror packages installed 3× each (15 total) across
+agent-trading scenarios per `.evolve/buildout-analysis.json` (#8-#12 in
+topAddedPackages).
+
+**Diagnosis:** Unlike R1 (tailwind), `capability:code-editor` was
+already well-wired — packageDeps has all 8 codemirror variants, and
+`appliesTo` covers 6 frontend families. The gap was
+`CODE_EDITOR_ARCHETYPE_SIGNALS` didn't match the phrasings the
+agent-trading / hl-builder-code-dashboard scenarios actually use.
+Couldn't access VB scenario prompts directly (blueprint-agent lives
+elsewhere); used scenario IDs as phrasing hints.
+
+**Intervention (2 files):**
+- `CODE_EDITOR_ARCHETYPE_SIGNALS`: +10 signals (code dashboard,
+  strategy editor, strategy builder, script editor, rules editor,
+  dsl editor, embedded editor, policy editor, workflow editor,
+  expression editor)
+- `capability:code-editor.tieredKeywords.archetypes`: mirror the
+  10 new signals (parity test enforces)
+
+**Verified end-to-end:** `planPrompt` on "hl-builder code dashboard
+for hyperliquid" attaches `capability:code-editor` →
+`dist/cli.js compose` pulls `codemirror@^6.0.1` + `@codemirror/view` +
+`state` + `lang-javascript` into composed package.json.
+
+**Scope limit observed:** "strategy builder for options trading"
+routes to `worker-job` (backend family), not react-vite-ts —
+so code-editor is correctly skipped regardless of signal match
+(capability:code-editor.appliesTo is frontend-only). If these
+scenarios need frontend routing, that's a separate fix in
+family-routing heuristics.
+
+**Test suite:** 601/601 (signal-manifest parity test caught the
+initial one-sided edit — good guardrail).
+
+**Capability registry audit (incidental finding, defer to R3):**
+90 of 104 capabilities have empty `packageDeps`. Cross-reference
+with `registry/package-to-capability.json` shows 6 capabilities
+have packages mapped to them but missing from their deps:
+- capability:tailwind → postcss, @tailwindcss/postcss (R1 partial)
+- capability:layout-auth → @clerk/nextjs, @clerk/clerk-react
+- capability:saas-billing → @stripe/stripe-js, @stripe/react-stripe-js
+- capability:evm-wallet-dashboard → wagmi, @rainbow-me/rainbowkit
+- capability:ai-agent-dashboard → @ai-sdk/openai
+- capability:evm-deploy-foundry → @openzeppelin/contracts
+
+None currently appear in topAddedPackages — lower priority than
+codemirror cluster — but fixing pre-empts gap-install regressions
+when/if these scenarios re-enter the benchmark.
+
+**Expected impact:** 15 codemirror-cluster gap-installs eliminated
+on future buildouts where planner routes to a frontend family AND
+prompt contains any of the 10 new phrases. Realistic fraction
+unknown until next VB sweep.
+
 ## 2026-04-21 — Evolve Round 1: reduce scaffold_gap_installs
 
 Commit: `77d4453`. Target metric: `scaffold_gap_installs` (59 → target ≤10

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "summary": {
-    "generatedAt": "2026-04-21T22:15:08.938Z",
+    "generatedAt": "2026-04-21T23:52:09.541Z",
     "totalBuildouts": 221,
     "withOutcome": 141,
     "passRate": 0.8297872340425532,
@@ -24,7 +24,16 @@
       "okx-xlayer",
       "polymarket-prediction",
       "tangle-blueprints-mpc"
-    ]
+    ],
+    "costRollup": {
+      "sampleCount": 0,
+      "totalCostUsd": null,
+      "meanCostUsd": null,
+      "totalTokens": null,
+      "meanTokens": null,
+      "meanCostOnPass": null,
+      "meanCostOnFail": null
+    }
   },
   "perScenario": [
     {
@@ -36,6 +45,9 @@
       "meanScore": 0.96,
       "meanWallMs": 1292064,
       "meanTurns": 54,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -52,6 +64,9 @@
       "meanScore": 0.9439999999999995,
       "meanWallMs": 553306,
       "meanTurns": 35,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -68,6 +83,9 @@
       "meanScore": 0.9559999999999997,
       "meanWallMs": 203527,
       "meanTurns": 21,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -84,6 +102,9 @@
       "meanScore": 0.9640000000000003,
       "meanWallMs": 393548,
       "meanTurns": 33,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -100,6 +121,9 @@
       "meanScore": 0.967,
       "meanWallMs": 380282,
       "meanTurns": 42,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -116,6 +140,9 @@
       "meanScore": 0.9399999999999997,
       "meanWallMs": 1597995,
       "meanTurns": 165,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -132,6 +159,9 @@
       "meanScore": 0.9735,
       "meanWallMs": 820248.5,
       "meanTurns": 118,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [],
       "passRate": 1
     },
@@ -144,6 +174,9 @@
       "meanScore": 0.9735,
       "meanWallMs": 452400,
       "meanTurns": 28.5,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [],
       "passRate": 1
     },
@@ -156,6 +189,9 @@
       "meanScore": 0.9735,
       "meanWallMs": 692684,
       "meanTurns": 42,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [],
       "passRate": 1
     },
@@ -168,6 +204,9 @@
       "meanScore": 1,
       "meanWallMs": 702090.5,
       "meanTurns": 50.5,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [],
       "passRate": 1
     },
@@ -180,6 +219,9 @@
       "meanScore": 1,
       "meanWallMs": 686939,
       "meanTurns": 63,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [],
       "passRate": 1
     },
@@ -192,6 +234,9 @@
       "meanScore": 1,
       "meanWallMs": 573271,
       "meanTurns": 43,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [],
       "passRate": 1
     },
@@ -204,6 +249,9 @@
       "meanScore": 1,
       "meanWallMs": 602177,
       "meanTurns": 85,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [],
       "passRate": 1
     },
@@ -216,6 +264,9 @@
       "meanScore": 1,
       "meanWallMs": 480967,
       "meanTurns": 58,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [],
       "passRate": 1
     },
@@ -228,6 +279,9 @@
       "meanScore": 1,
       "meanWallMs": 661214,
       "meanTurns": 94,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [],
       "passRate": 1
     },
@@ -240,6 +294,9 @@
       "meanScore": 1,
       "meanWallMs": 370755,
       "meanTurns": 41,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [],
       "passRate": 1
     },
@@ -252,6 +309,9 @@
       "meanScore": 1,
       "meanWallMs": 503114,
       "meanTurns": 53,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [],
       "passRate": 1
     },
@@ -264,6 +324,9 @@
       "meanScore": 1,
       "meanWallMs": 572818,
       "meanTurns": 47,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [],
       "passRate": 1
     },
@@ -276,6 +339,9 @@
       "meanScore": 0.947,
       "meanWallMs": 899975,
       "meanTurns": 143,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [],
       "passRate": 1
     },
@@ -288,6 +354,9 @@
       "meanScore": 0.4735,
       "meanWallMs": 786153.5,
       "meanTurns": 77,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [],
       "passRate": 0.5
     },
@@ -300,6 +369,9 @@
       "meanScore": 0.8680000000000002,
       "meanWallMs": 750351,
       "meanTurns": 46,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -316,6 +388,9 @@
       "meanScore": 0.782,
       "meanWallMs": 2225928,
       "meanTurns": 138,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -332,6 +407,9 @@
       "meanScore": 0,
       "meanWallMs": 1326310,
       "meanTurns": 132,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [],
       "passRate": 0
     },
@@ -344,6 +422,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -360,6 +441,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -376,6 +460,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -392,6 +479,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -408,6 +498,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -424,6 +517,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -440,6 +536,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -456,6 +555,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1
       ],
@@ -470,6 +572,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -486,6 +591,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -502,6 +610,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -518,6 +629,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -534,6 +648,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -550,6 +667,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -566,6 +686,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -582,6 +705,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -598,6 +724,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -614,6 +743,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -630,6 +762,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -646,6 +781,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -662,6 +800,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -678,6 +819,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -694,6 +838,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1,
         2,
@@ -710,6 +857,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1
       ],
@@ -724,6 +874,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1
       ],
@@ -738,6 +891,9 @@
       "meanScore": 0,
       "meanWallMs": 0,
       "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
       "replayRounds": [
         1
       ],

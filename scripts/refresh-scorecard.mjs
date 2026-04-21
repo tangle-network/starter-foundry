@@ -73,7 +73,24 @@ const flows = [
     productValueClaim: 'Rewrite count for the most-rewritten file in the corpus. High number = scaffold shipped a template agents systematically replace. Lower = tokens spent on features instead of setup.',
     direction: 'lower-better',
   },
-  // Turns to preview — median wallMs / per-turn estimate from VB outcomes.
+  // Turns to preview — median agent turns per scenario. Lower = agent got
+  // to a working preview in fewer turns = less token waste, faster UX.
+  // Pulled from perScenario.meanTurns in buildout-analysis.json (no
+  // blueprint-agent wire needed — the miner already extracts turn counts).
+  {
+    name: 'median_turns_per_buildout',
+    value: (() => {
+      const turns = (buildout?.perScenario ?? []).map((s) => s.meanTurns).filter((v) => typeof v === 'number' && v > 0)
+      if (turns.length === 0) return null
+      turns.sort((a, b) => a - b)
+      const mid = turns[Math.floor(turns.length / 2)]
+      return Math.round(mid)
+    })(),
+    target: 40,
+    productValueClaim: 'Median number of agent turns per buildout session. Fewer turns = agent reaches working preview faster = less user wait + fewer tokens spent on setup that could go to features.',
+    direction: 'lower-better',
+  },
+  // Wall-time proxy kept for latency-sensitive tracking.
   {
     name: 'median_wall_seconds_per_buildout',
     value: (() => {
@@ -84,7 +101,7 @@ const flows = [
       return Number((mid / 1000).toFixed(1))
     })(),
     target: 600,
-    productValueClaim: 'Median wall-time per buildout session in seconds. Faster preview = user sees working product sooner = lower abandon rate. Proxy for turns_to_preview until that lands.',
+    productValueClaim: 'Median wall-time per buildout session in seconds. Faster = user sees working product sooner = lower abandon rate.',
     direction: 'lower-better',
   },
   // Orchestration noise — capability-gap entries where the scaffold DID ship

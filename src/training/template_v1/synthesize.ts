@@ -52,22 +52,50 @@ async function synthesizeLLM(input: SynthesizeInput): Promise<SynthesizeResult |
 }
 
 function synthesizeDeterministic(input: SynthesizeInput): SynthesizeResult {
-  // Heuristic: start from the current template, delete verbose blocks the
-  // agents systematically remove, then append any imports they ALWAYS add
-  // if they're not already present. This is a weak candidate — its value
-  // is being a runnable baseline when the LLM path isn't available.
+  // Signal-driven pattern-apply. Extract lines agents consistently ADD to
+  // their version of the template, then graft the ones missing from the
+  // current template into appropriate sections.
   const current = input.currentSource
   let candidate = current
+  const appliedAdditions: string[] = []
 
-  // Strip any block of >3 adjacent comment lines (agents routinely delete
-  // default JSDoc / section dividers).
+  // 1. Find lines that appear in agent rewrites ≥30% of the time AND are
+  //    not in the current source. These are high-confidence additions.
+  const threshold = Math.max(3, Math.floor(input.harvest.tupleCount * 0.25))
+  const frequent = input.harvest.frequentlyAddedLines
+    .filter((l) => l.frequency >= threshold)
+    .filter((l) => !current.includes(l.line))
+
+  const isCss = input.templatePath.endsWith('.css')
+  const isTs = input.templatePath.endsWith('.ts') || input.templatePath.endsWith('.tsx')
+
+  if (isCss && frequent.length > 0) {
+    // CSS: line-level signal is insufficient (rules span multiple lines).
+    // Skip deterministic CSS pattern-apply entirely when we lack structural
+    // parsing — don't ship broken CSS. The LLM path handles this correctly;
+    // deterministic falls back to the comment-strip + normalize pass only.
+    // Explicit no-op so the reasoning string reflects the decision.
+  } else if (isTs && frequent.length > 0) {
+    // TS/TSX: low-risk additions limited to imports that 30%+ of agents add.
+    const importRegex = /^import\s.+from\s['"][^'"]+['"]/
+    const imports = frequent
+      .map((l) => l.line)
+      .filter((l) => importRegex.test(l))
+      .slice(0, 3)
+    if (imports.length > 0) {
+      candidate = imports.join('\n') + '\n' + candidate
+      appliedAdditions.push(...imports)
+    }
+  }
+
+  // 2. Strip verbose comment runs agents routinely delete.
   const lines = candidate.split('\n')
   const kept: string[] = []
   let commentRun = 0
   for (const line of lines) {
-    if (/^\s*(\/\/|\/\*|\*|#)/.test(line)) {
+    if (/^\s*(\/\/|\/\*|\*)/.test(line)) {
       commentRun++
-      if (commentRun <= 2) kept.push(line)
+      if (commentRun <= 3) kept.push(line)
       continue
     }
     commentRun = 0
@@ -75,14 +103,14 @@ function synthesizeDeterministic(input: SynthesizeInput): SynthesizeResult {
   }
   candidate = kept.join('\n')
 
-  // Normalize double-blank-line runs.
+  // 3. Normalize excess blank lines.
   candidate = candidate.replace(/\n{3,}/g, '\n\n')
 
-  return {
-    mode: 'deterministic',
-    candidate,
-    reasoning: `Deterministic mode (LLM unavailable). Stripped long comment runs + normalized blank-line runs based on ${input.harvest.tupleCount} mined rewrite tuples.`,
-  }
+  const reasoning = appliedAdditions.length > 0
+    ? `Deterministic: grafted ${appliedAdditions.length} line(s) that appeared in ≥25% of ${input.harvest.tupleCount} agent rewrites and were missing from the current template. Stripped long comment runs + normalized blanks.`
+    : `Deterministic: no frequent agent additions above the 25% threshold. Stripped long comment runs + normalized blanks only (${input.harvest.tupleCount} tuples analyzed).`
+
+  return { mode: 'deterministic', candidate, reasoning }
 }
 
 export async function synthesize(input: SynthesizeInput): Promise<SynthesizeResult> {

@@ -1,8 +1,8 @@
 {
   "product": "starter-foundry",
-  "timestamp": "2026-04-21T00:01:45.210Z",
-  "coverage": "10/10 flows measured",
-  "aggregate": 0.586,
+  "timestamp": "2026-04-21T00:14:16.833Z",
+  "coverage": "11/11 flows measured",
+  "aggregate": 0.533,
   "flows": [
     {
       "name": "route_accuracy_held_out",
@@ -45,11 +45,19 @@
       "direction": "lower-better"
     },
     {
+      "name": "median_turns_per_buildout",
+      "value": 46,
+      "target": 40,
+      "status": "fail",
+      "productValueClaim": "Median number of agent turns per buildout session. Fewer turns = agent reaches working preview faster = less user wait + fewer tokens spent on setup that could go to features.",
+      "direction": "lower-better"
+    },
+    {
       "name": "median_wall_seconds_per_buildout",
       "value": 750.4,
       "target": 600,
       "status": "fail",
-      "productValueClaim": "Median wall-time per buildout session in seconds. Faster preview = user sees working product sooner = lower abandon rate. Proxy for turns_to_preview until that lands.",
+      "productValueClaim": "Median wall-time per buildout session in seconds. Faster = user sees working product sooner = lower abandon rate.",
       "direction": "lower-better"
     },
     {

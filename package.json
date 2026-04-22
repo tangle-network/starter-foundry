@@ -94,7 +94,7 @@
   "dependencies": {
     "@ax-llm/ax": "^19.0.45",
     "@huggingface/transformers": "^4.0.0",
-    "@tangle-network/tcloud": "^0.4.0"
+    "@tangle-network/tcloud": "^0.4.2"
   },
   "optionalDependencies": {
     "@opentelemetry/api": "^1.9.0"

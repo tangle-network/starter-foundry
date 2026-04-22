@@ -35,7 +35,7 @@
 
 import { TCloudClient, type BridgeSession } from '@tangle-network/tcloud'
 
-type BridgeHarness = 'kimi-code' | 'claude-code' | 'codex'
+type BridgeHarness = 'kimi-code' | 'claude-code' | 'codex' | 'sandbox'
 
 interface BridgeOptions {
   /** Which CLI harness to drive. Defaults to 'kimi-code'. */
@@ -58,6 +58,10 @@ const DEFAULT_MODELS: Record<BridgeHarness, string> = {
   'kimi-code': 'kimi-for-coding',
   'claude-code': 'sonnet',
   codex: 'gpt-5-codex',
+  // For sandbox the "model" slot holds the AgentProfile id (cataloged
+  // in cli-bridge's profiles/ dir). Callers MUST pass model explicitly
+  // — there's no useful default since profile choice IS the dispatch.
+  sandbox: '',
 }
 
 const ROUTER_API_BASE = 'https://router.tangle.tools/api'

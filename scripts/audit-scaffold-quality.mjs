@@ -14,7 +14,7 @@
 //   node scripts/audit-scaffold-quality.mjs --layer framework:forge-foundation
 
 import { spawnSync } from 'node:child_process'
-import { mkdtempSync, rmSync, existsSync, writeFileSync, mkdirSync } from 'node:fs'
+import { mkdtempSync, rmSync, existsSync, writeFileSync, mkdirSync, readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { performance } from 'node:perf_hooks'
@@ -68,6 +68,36 @@ function runCmd(cmd, args, cwd, perCallTimeoutMs) {
     durationMs: performance.now() - t0,
     stdoutTail: (res.stdout ?? '').split('\n').slice(-30).join('\n'),
     stderrTail: (res.stderr ?? '').split('\n').slice(-30).join('\n'),
+  }
+}
+
+/**
+ * Gen-2 addition: retry-on-cold-toolchain wrapper. If the first invocation
+ * timed out (signal=SIGTERM) AND the tail contains a "download in progress"
+ * or "compile in progress" signal that indicates a cold-toolchain fetch
+ * rather than a real build failure, retry once with 3× the original
+ * timeout. Records the retry outcome so operators can distinguish
+ * real flakes from toolchain fetches.
+ */
+function runCmdWithColdToolchainRetry(cmd, args, cwd, perCallTimeoutMs) {
+  const first = runCmd(cmd, args, cwd, perCallTimeoutMs)
+  if (first.exitCode === 0) return first
+  const coldSignals = ['downloading', 'Compiling', 'Fetching', 'Resolving', 'Updating crates']
+  const tail = (first.stdoutTail + '\n' + first.stderrTail).slice(-1000)
+  const looksCold = first.signal === 'SIGTERM' && coldSignals.some((s) => tail.includes(s))
+  if (!looksCold) return first
+  const extendedTimeout = Math.max((perCallTimeoutMs ?? timeoutMs) * 3, 600_000)
+  const retry = runCmd(cmd, args, cwd, extendedTimeout)
+  return {
+    ...retry,
+    retriedFromColdToolchain: true,
+    firstAttempt: {
+      exitCode: first.exitCode,
+      signal: first.signal,
+      durationMs: first.durationMs,
+      stdoutTail: first.stdoutTail,
+      stderrTail: first.stderrTail,
+    },
   }
 }
 
@@ -155,12 +185,18 @@ for (const layer of filtered) {
 
   const phases = []
 
-  const install = runCmd(pm.cmd, pm.install, tmp)
+  // Gen-2: use cold-toolchain-retry wrapper. Installs that time out mid-
+  // download (Go fetching go1.23, Rust cargo fetching crates, Move git
+  // deps) get one retry with 3× timeout before failing. Real build errors
+  // — typecheck fails, unresolved dep — fail the first time without a
+  // misleading retry.
+  const install = runCmdWithColdToolchainRetry(pm.cmd, pm.install, tmp)
   phases.push({
     phase: 'install',
     cmd: `${pm.cmd} ${pm.install.join(' ')}`,
     ok: install.exitCode === 0,
     durationMs: install.durationMs,
+    retriedFromColdToolchain: install.retriedFromColdToolchain ?? false,
     stderrTail: install.stderrTail.slice(-2000),
     stdoutTail: install.stdoutTail.slice(-2000),
   })
@@ -267,18 +303,55 @@ for (const layer of filtered) {
   // multi-layer spec per surface (from taxonomy.surface). Catches integration
   // breakage that framework-in-isolation compose hides. Only runs install +
   // typecheck on the composed spec (not build — would be too slow per family).
+  //
+  // Gen-2 fix: derive the framework layer id from the family's `requires[]`
+  // (canonical source of truth — the family declares which framework it
+  // needs). Falls back to `framework:${family}` only when the family has
+  // no requires[] declared, for families whose framework-layer id does
+  // happen to match the family id (e.g. react-vite-ts). Prior version
+  // always used `framework:${family}` and silently failed on every family
+  // with a split framework layer (forge-contracts → framework:forge-foundation,
+  // nextjs-ts → framework:nextjs-app-router, 10/94 layers affected).
   if (doSmoke && install.exitCode === 0) {
     const famManifestPath2 = join('registry/families', family, 'manifest.json')
     let surface = null
+    let frameworkLayerId = `framework:${family}`
     try {
       const fam = JSON.parse(readFileSync(famManifestPath2, 'utf8'))
       surface = fam.taxonomy?.surface ?? null
-    } catch { /* no family manifest */ }
+      // 1) Prefer family.requires[] if it names a framework layer (newer convention).
+      const frameworkReq = (fam.requires ?? []).find((r) => typeof r === 'string' && r.startsWith('framework:'))
+      if (frameworkReq) {
+        frameworkLayerId = frameworkReq
+      } else {
+        // 2) Fall back: scan registry/layers/framework/*/manifest.json for
+        //    one whose appliesTo includes this family. This is how the
+        //    current registry expresses the family→framework linkage
+        //    (forge-contracts → framework:forge-foundation, nextjs-ts →
+        //    framework:nextjs-app-router, etc.). Prior audit always used
+        //    `framework:${family}` which silently 404'd on every split-
+        //    framework family — 10 of 94 layers failed the audit
+        //    because of this derivation miss, not real quality regressions.
+        const frameworkDir = 'registry/layers/framework'
+        try {
+          for (const dir of readdirSync(frameworkDir)) {
+            if (dir.startsWith('.') || dir.startsWith('_')) continue
+            try {
+              const fw = JSON.parse(readFileSync(join(frameworkDir, dir, 'manifest.json'), 'utf8'))
+              if (Array.isArray(fw.appliesTo) && fw.appliesTo.includes(family)) {
+                frameworkLayerId = `framework:${dir}`
+                break
+              }
+            } catch { /* ignore malformed framework manifest */ }
+          }
+        } catch { /* framework dir not readable */ }
+      }
+    } catch { /* no family manifest — fall back to `framework:${family}` */ }
 
     const smokeLayers =
-      surface === 'frontend' ? [`framework:${family}`, 'capability:tailwind']
-      : surface === 'api' ? [`framework:${family}`]
-      : [`framework:${family}`]
+      surface === 'frontend' ? [frameworkLayerId, 'capability:tailwind']
+      : surface === 'api' ? [frameworkLayerId]
+      : [frameworkLayerId]
 
     const smokeSpec = {
       projectName: `smoke-${layer.id}`,
@@ -296,7 +369,7 @@ for (const layer of filtered) {
     if (smokeCompose.exitCode !== 0) {
       phases.push({
         phase: 'smoke-compose',
-        cmd: `compose framework:${family} + ${smokeLayers.slice(1).join(', ') || '(alone)'}`,
+        cmd: `compose ${frameworkLayerId} + ${smokeLayers.slice(1).join(', ') || '(alone)'}`,
         ok: false,
         stderrTail: smokeCompose.stderrTail.slice(-800),
       })

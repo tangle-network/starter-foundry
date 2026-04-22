@@ -12,20 +12,53 @@
 //
 // Output: .evolve/scorecard.json with fresh timestamp.
 
-import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs'
+import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+// Gen-2: allow tests to redirect REPO to a fixture dir via env var.
+// Production paths use the natural dirname(__filename)/.. derivation;
+// tests set STARTER_FOUNDRY_REPO_OVERRIDE to isolate .evolve/ state.
+const REPO = process.env.STARTER_FOUNDRY_REPO_OVERRIDE
+  ?? resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const OUT = join(REPO, '.evolve/scorecard.json')
 
+// Gen-2: track every file we read so the scorecard can manifest them
+// alongside mtimes. A flow whose input file is older than the canonical
+// source (`.evolve/traces/buildouts.jsonl`) gets stale: true in its
+// output so the governor can refuse to dispatch on stale numbers.
+const inputsRead = []
 function readJson(path) {
-  return existsSync(path) ? JSON.parse(readFileSync(path, 'utf8')) : null
+  if (!existsSync(path)) return null
+  try {
+    const st = statSync(path)
+    inputsRead.push({ path: path.replace(REPO + '/', ''), mtime: st.mtime.toISOString() })
+    return JSON.parse(readFileSync(path, 'utf8'))
+  } catch {
+    return null
+  }
 }
+
+function mtimeOf(path) {
+  try { return existsSync(path) ? statSync(path).mtime.getTime() : 0 } catch { return 0 }
+}
+
+// The canonical freshness anchor — every derived file is supposed to
+// reflect this source. If a derived artifact's mtime is older than
+// buildouts.jsonl, flag every flow computed from it as stale.
+const SOURCE_MTIME = mtimeOf(join(REPO, '.evolve/traces/buildouts.jsonl'))
 
 const buildout = readJson(join(REPO, '.evolve/buildout-analysis.json'))
 const gaps = readJson(join(REPO, '.evolve/capability-gaps.json'))
 const audit = readJson(join(REPO, '.evolve/scaffold-quality-audit.json'))
+
+// Per-input staleness: true when the input file is OLDER than the
+// canonical source. Flows downstream of a stale input get marked stale.
+const staleness = {
+  buildout: mtimeOf(join(REPO, '.evolve/buildout-analysis.json')) < SOURCE_MTIME,
+  gaps: mtimeOf(join(REPO, '.evolve/capability-gaps.json')) < SOURCE_MTIME,
+  audit: mtimeOf(join(REPO, '.evolve/scaffold-quality-audit.json')) < SOURCE_MTIME,
+}
 
 // Registry counts (data-derived).
 const familyCount = readdirSync(join(REPO, 'registry/families')).filter((e) => !e.startsWith('_') && !e.startsWith('.')).length
@@ -34,6 +67,31 @@ const partnerCount = readdirSync(join(REPO, 'registry/partners')).filter((e) => 
 
 const auditPass = audit ? audit.audits.filter((a) => (a.phases ?? []).every((p) => p.ok)).length : null
 const auditTotal = audit?.audits?.length ?? null
+
+// Gen-2: compute run-weighted median turns directly from buildouts.jsonl
+// alongside the scenario-mean-weighted median from buildout-analysis.json.
+// Both are legitimate: scenario-mean-weighted answers "what's a typical
+// scenario's mean turn count" (unweighted by how often each scenario runs);
+// run-weighted answers "what's the median turns across ALL runs" (matches
+// real user-experience cost). Showing both eliminates "which number is
+// real" confusion that misdirected research this session.
+function computeRunWeightedMedianTurns() {
+  const path = join(REPO, '.evolve/traces/buildouts.jsonl')
+  if (!existsSync(path)) return null
+  const turns = []
+  for (const line of readFileSync(path, 'utf8').split('\n')) {
+    if (!line.trim()) continue
+    try {
+      const d = JSON.parse(line)
+      const t = d?.outcome?.toolCallsTotal
+      if (typeof t === 'number' && t > 0) turns.push(t)
+    } catch { /* malformed trace — skip */ }
+  }
+  if (turns.length === 0) return null
+  turns.sort((a, b) => a - b)
+  return turns[Math.floor(turns.length / 2)]
+}
+const runWeightedMedianTurns = computeRunWeightedMedianTurns()
 
 const flows = [
   // Routing — derived from the matrix-eval baseline file if present.
@@ -49,6 +107,7 @@ const flows = [
     value: buildout?.summary?.passRate ?? null,
     target: 0.85,
     productValueClaim: 'Fraction of VB-run agent sessions whose composed scaffold reaches a working state. Directly = user sees something that works.',
+    stale: staleness.buildout,
   },
   // Scaffold install+typecheck.
   {
@@ -56,6 +115,7 @@ const flows = [
     value: auditPass !== null && auditTotal !== null && auditTotal > 0 ? auditPass / auditTotal : null,
     target: 1.0,
     productValueClaim: 'Fraction of framework layers where pnpm install + tsc noEmit succeeds on a freshly composed scaffold. A failure here means agents fight install errors on turn 1.',
+    stale: staleness.audit,
   },
   // Capability-gap noise.
   {
@@ -64,6 +124,7 @@ const flows = [
     target: 10, // running target; goes down as we ship real layers
     productValueClaim: 'Count of agent installs that map to packages NO family ships. Each one is a turn of agent work the scaffold should have avoided. Lower = less wasted setup.',
     direction: 'lower-better',
+    stale: staleness.gaps,
   },
   // Rewrite waste (top rewritten file).
   {
@@ -72,6 +133,7 @@ const flows = [
     target: 5,
     productValueClaim: 'Rewrite count for the most-rewritten file in the corpus. High number = scaffold shipped a template agents systematically replace. Lower = tokens spent on features instead of setup.',
     direction: 'lower-better',
+    stale: staleness.buildout,
   },
   // Turns to preview — median agent turns per scenario. Lower = agent got
   // to a working preview in fewer turns = less token waste, faster UX.
@@ -89,6 +151,18 @@ const flows = [
     target: 40,
     productValueClaim: 'Median number of agent turns per buildout session. Fewer turns = agent reaches working preview faster = less user wait + fewer tokens spent on setup that could go to features.',
     direction: 'lower-better',
+    stale: staleness.buildout,
+    notes: 'scenario-mean-weighted — unweighted by run count per scenario',
+  },
+  // Gen-2 addition: same metric, run-weighted. Dominant scenarios (e.g.
+  // cross-chain-bridge with 47 runs) pull this toward the tail. Tracks
+  // actual-user-cost better than the scenario-mean-weighted version.
+  {
+    name: 'median_turns_per_buildout_run_weighted',
+    value: runWeightedMedianTurns,
+    target: 40,
+    productValueClaim: 'Run-weighted median agent turns. Matches what a random user experiences, since high-frequency scenarios dominate the distribution. Complement to the scenario-mean-weighted metric — both must pass for the corpus to be healthy.',
+    direction: 'lower-better',
   },
   // Wall-time proxy kept for latency-sensitive tracking.
   {
@@ -103,6 +177,7 @@ const flows = [
     target: 600,
     productValueClaim: 'Median wall-time per buildout session in seconds. Faster = user sees working product sooner = lower abandon rate.',
     direction: 'lower-better',
+    stale: staleness.buildout,
   },
   // Orchestration noise — capability-gap entries where the scaffold DID ship
   // the dep but agents installed it anyway (install-pipeline issue).
@@ -112,6 +187,7 @@ const flows = [
     target: 15,
     productValueClaim: 'Count of redundant agent installs when the scaffold already ships the package. Each one is a sign that the consumer pipeline isn\'t running install before handing the scaffold to the agent — informs blueprint-agent orchestration, not our scaffold.',
     direction: 'lower-better',
+    stale: staleness.gaps,
   },
   // Cost proxy: mean agent turns × estimated tokens-per-turn (conservative
   // 2k tok per turn). Real number when blueprint-agent emits actual token
@@ -132,6 +208,7 @@ const flows = [
     target: 80000,
     productValueClaim: 'Median tokens spent per buildout (real when emitBuildoutEvent supplies tokenCount, proxy from turns otherwise). Fewer tokens = lower cost per user session + lower LLM API cost for consumers.',
     direction: 'lower-better',
+    stale: staleness.buildout,
   },
   // Real $/scaffold when blueprint-agent emits outcome.costUsd. Null when no
   // run has emitted cost yet — signals "measurement not wired up" instead of
@@ -145,6 +222,7 @@ const flows = [
     target: 0.5,
     productValueClaim: 'Mean $ cost per scaffold buildout. Catches regressions where a change doubles token spend even if pass rate stays flat. Drives the ROI conversation on every future capability — is the delta on pass rate worth $X more per user?',
     direction: 'lower-better',
+    stale: staleness.buildout,
   },
   // Registry breadth — running growth metric.
   {
@@ -184,6 +262,16 @@ const scorecard = {
   timestamp: new Date().toISOString(),
   coverage: `${flows.filter((f) => f.value !== null).length}/${flows.length} flows measured`,
   aggregate,
+  // Gen-2: explicit inputs manifest — each derived file read during this
+  // scorecard emission, with its mtime and staleness-vs-source verdict.
+  // Downstream consumers (governor, PR automation) can refuse to act on
+  // flows whose source was stale at emission time.
+  inputs: inputsRead,
+  sourceMtime: SOURCE_MTIME > 0 ? new Date(SOURCE_MTIME).toISOString() : null,
+  stale: {
+    anyFlowStale: Object.values(staleness).some(Boolean),
+    ...staleness,
+  },
   flows: flows.map((f) => ({
     name: f.name,
     value: f.value,
@@ -195,6 +283,8 @@ const scorecard = {
           : (Number(f.value) >= Number(f.target) ? 'pass' : 'fail')),
     productValueClaim: f.productValueClaim,
     direction: f.direction ?? 'higher-better',
+    ...(f.stale ? { stale: true } : {}),
+    ...(f.notes ? { notes: f.notes } : {}),
   })),
 }
 

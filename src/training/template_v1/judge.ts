@@ -10,7 +10,7 @@ import type { HarvestSummary } from './harvest.js'
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..')
 const TREND_PATH = join(REPO, '.evolve/traces/family-pass-rate-trend.jsonl')
 
-export interface JudgeInput {
+interface JudgeInput {
   templatePath: string
   currentSource: string
   candidate: string

@@ -6,7 +6,7 @@ import type { HarvestSummary } from './harvest.js'
 import { synthesize, type SynthesizeResult } from './synthesize.js'
 import { judge, type JudgeResult } from './judge.js'
 
-export interface MultiProposeInput {
+interface MultiProposeInput {
   templatePath: string
   currentSource: string
   harvest: HarvestSummary

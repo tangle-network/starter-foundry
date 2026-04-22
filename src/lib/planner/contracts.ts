@@ -12,7 +12,7 @@
 import { hasAny, matchesKeyword } from '../keywords.js'
 import { detectEvmDeployPattern, detectHardhatExplicit } from './detectors.js'
 
-export interface AgentFamilyChoice {
+interface AgentFamilyChoice {
   family: string
   layers: string[]
   path: string

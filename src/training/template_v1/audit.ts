@@ -9,7 +9,7 @@ import { composeStarter } from '../../lib/compose.js'
 import type { ComposeSpec } from '../../types.js'
 import { checkHtmlTsWireup, findUnusedImports } from './correctness.js'
 
-export interface AuditInput {
+interface AuditInput {
   spec: ComposeSpec
   /** Target path inside the composed scaffold (e.g. 'src/App.tsx'). */
   templateTarget: string

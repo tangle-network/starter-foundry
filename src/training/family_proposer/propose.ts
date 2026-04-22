@@ -19,7 +19,7 @@ import { createLLM, isLLMAvailable } from '../../lib/llm.js'
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..')
 const PROPOSALS_DIR = join(REPO, '.evolve/family-proposals')
 
-export interface ProposeFamilyInput {
+interface ProposeFamilyInput {
   id: string
   description: string
   taxonomy: { language: string; runtime: string; surface: string }
@@ -27,7 +27,7 @@ export interface ProposeFamilyInput {
   productCues?: string[]
 }
 
-export interface FamilyProposal {
+interface FamilyProposal {
   id: string
   proposalDir: string
   manifest: unknown

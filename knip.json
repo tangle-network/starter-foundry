@@ -7,7 +7,10 @@
     "src/training/variant_b/brief-loader.ts",
     "src/training/variant_b/generate.ts",
     "src/training/variant_b/judge.ts",
-    "src/training/template_v1/run.ts"
+    "src/training/template_v1/run.ts",
+    "src/eval/replay.ts",
+    "src/eval/diagnoser.ts",
+    "src/eval/propose.ts"
   ],
   "project": [
     "src/**/*.ts",

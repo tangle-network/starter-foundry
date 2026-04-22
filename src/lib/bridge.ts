@@ -11,9 +11,9 @@
 
 import { TCloudClient, type BridgeSession } from '@tangle-network/tcloud'
 
-export type BridgeHarness = 'kimi-code' | 'claude-code' | 'codex'
+type BridgeHarness = 'kimi-code' | 'claude-code' | 'codex'
 
-export interface BridgeOptions {
+interface BridgeOptions {
   /** Which CLI harness to drive. Defaults to 'kimi-code'. */
   harness?: BridgeHarness
   /** Harness-specific model name. Defaults per harness:
@@ -35,7 +35,7 @@ const DEFAULT_MODELS: Record<BridgeHarness, string> = {
 
 const ROUTER_API_BASE = 'https://router.tangle.tools/api'
 
-export function isBridgeAvailable(): boolean {
+function isBridgeAvailable(): boolean {
   const apiKey = process.env['TCLOUD_API_KEY'] ?? process.env['TANGLE_API_KEY']
   const unlock = process.env['BRIDGE_UNLOCK']
   return Boolean(apiKey && unlock)

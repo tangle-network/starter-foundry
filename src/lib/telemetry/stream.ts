@@ -15,7 +15,7 @@
 import { appendFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
-export interface TelemetryStreamOptions {
+interface TelemetryStreamOptions {
   /** Webhook URL. POSTed as JSON: { batchId, events: [...] }. */
   endpoint: string
   /** Max events per batch. Defaults to 50. */
@@ -34,14 +34,14 @@ export interface TelemetryStreamOptions {
   now?: () => number
 }
 
-export interface TelemetryEvent {
+interface TelemetryEvent {
   /** Arbitrary payload; typically a BuildoutEvent. */
   payload: unknown
   /** ISO 8601 — set automatically if absent. */
   emittedAt?: string
 }
 
-export interface TelemetryStream {
+interface TelemetryStream {
   /** Queue an event for delivery. Flushes immediately if batch is full. */
   emit(event: TelemetryEvent): Promise<void>
   /** Force-flush pending events (and outbox) to the endpoint. Returns count actually delivered. */
@@ -56,7 +56,7 @@ interface QueuedEvent extends TelemetryEvent {
   emittedAt: string
 }
 
-export const DEFAULT_OUTBOX_PATH = '.evolve/telemetry-outbox.jsonl'
+const DEFAULT_OUTBOX_PATH = '.evolve/telemetry-outbox.jsonl'
 
 export function createTelemetryStream(options: TelemetryStreamOptions): TelemetryStream {
   if (!options.endpoint) throw new Error('createTelemetryStream: endpoint is required')
@@ -191,28 +191,3 @@ export function createTelemetryStream(options: TelemetryStreamOptions): Telemetr
   }
 }
 
-/**
- * CLI-friendly helper: read the outbox, POST it, truncate on success. Used
- * by scripts/telemetry-flush.mjs.
- */
-export async function flushOutbox(options: {
-  endpoint: string
-  outboxPath?: string
-  authToken?: string
-  fetchImpl?: typeof fetch
-  timeoutMs?: number
-  batchSize?: number
-}): Promise<{ delivered: number; buffered: number; total: number }> {
-  const stream = createTelemetryStream({
-    endpoint: options.endpoint,
-    outboxPath: options.outboxPath,
-    authToken: options.authToken,
-    fetchImpl: options.fetchImpl,
-    timeoutMs: options.timeoutMs,
-    batchSize: options.batchSize ?? 50,
-    flushIntervalMs: 0,
-  })
-  const result = await stream.flush()
-  await stream.close()
-  return { delivered: result.delivered, buffered: result.buffered, total: result.delivered + result.buffered }
-}

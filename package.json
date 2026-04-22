@@ -87,6 +87,7 @@
   "devDependencies": {
     "@tangle-network/agent-eval": "link:../agent-eval",
     "@types/node": "^20.0.0",
+    "knip": "^6.6.0",
     "typescript": "^5.7.0"
   },
   "dependencies": {

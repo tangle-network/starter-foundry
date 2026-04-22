@@ -31,9 +31,19 @@ if ! command -v node >/dev/null 2>&1; then
   exit 0
 fi
 
-if ! node scripts/measure-refresh.mjs --dry-run --quiet >/dev/null 2>&1; then
-  STATUS=$?
-  if [ "$STATUS" = "2" ]; then
+# Capture exit code explicitly — `if ! cmd; then ...; $?` reports the status
+# of `!` (inverted), not `cmd`. Run the check, then branch on the real status.
+set +e
+node scripts/measure-refresh.mjs --dry-run --quiet >/dev/null 2>&1
+STATUS=$?
+set -e
+
+case "$STATUS" in
+  0)
+    # Clean — nothing to do.
+    exit 0
+    ;;
+  2)
     # Drift detected. Surface the specifics and the one-line fix.
     echo ""
     echo "━━━━ pre-push: measurement drift detected ━━━━"
@@ -46,11 +56,10 @@ if ! node scripts/measure-refresh.mjs --dry-run --quiet >/dev/null 2>&1; then
     echo "  git push --no-verify"
     echo ""
     exit 1
-  else
+    ;;
+  *)
     # Non-drift failure (e.g. script error) — warn, don't block.
     echo "pre-push: measure-refresh check failed unexpectedly (exit $STATUS); continuing" >&2
     exit 0
-  fi
-fi
-
-exit 0
+    ;;
+esac

@@ -1,16 +1,16 @@
 {
   "product": "starter-foundry",
-  "timestamp": "2026-04-22T23:18:04.572Z",
+  "timestamp": "2026-04-22T23:23:26.763Z",
   "coverage": "13/14 flows measured",
   "aggregate": 0.455,
   "inputs": [
     {
       "path": ".evolve/buildout-analysis.json",
-      "mtime": "2026-04-22T23:18:04.563Z"
+      "mtime": "2026-04-22T23:23:26.081Z"
     },
     {
       "path": ".evolve/capability-gaps.json",
-      "mtime": "2026-04-22T23:17:49.948Z"
+      "mtime": "2026-04-22T23:23:26.255Z"
     },
     {
       "path": ".evolve/scaffold-quality-audit.json",
@@ -18,10 +18,10 @@
     },
     {
       "path": ".evolve/buildout-analysis-internal.json",
-      "mtime": "2026-04-22T23:17:50.438Z"
+      "mtime": "2026-04-22T23:23:26.718Z"
     }
   ],
-  "sourceMtime": "2026-04-22T23:17:44.945Z",
+  "sourceMtime": "2026-04-22T23:21:52.013Z",
   "stale": {
     "anyFlowStale": true,
     "buildout": false,

@@ -1,17 +1,26 @@
 # Local cli-bridge — wiring starter-foundry's self-heal loop end-to-end
 
 The self-heal proposer (`scripts/self-heal.mjs --dispatch`) and the
-DSPy-RLM pr-reviewer both dispatch agentic work through `tcloud.bridge`
-on top of `@tangle-network/tcloud`. By default that goes through the
-shared cli-bridge inside `router.tangle.tools`. For local development
-— or whenever the prod bridge isn't deployed with the latest code —
-you can run cli-bridge on `localhost` and have tcloud's BYOB headers
-route the request to your box instead.
+DSPy-RLM pr-reviewer both dispatch agentic work through
+`@tangle-network/tcloud`. There are **three** dispatch paths, picked
+automatically by `src/lib/bridge.ts` based on which env vars you set.
 
-## TL;DR
+## Three paths
+
+| # | Path | When | Env required | Cost |
+|---|---|---|---|---|
+| 1 | **Direct local** | Most local dev | `CLI_BRIDGE_URL` + `CLI_BRIDGE_BEARER` | Just your CLI subscriptions |
+| 2 | **BYOB-via-router** | Local CLIs + router observability/billing | Path 1 + `TCLOUD_API_KEY` + `BRIDGE_UNLOCK` + **public tunnel** | Router gate + tunnel (ngrok/cloudflare/tailscale) |
+| 3 | **Production** | Default | `TCLOUD_API_KEY` + `BRIDGE_UNLOCK` | Router gate + shared cli-bridge subscriptions |
+
+## TL;DR — direct mode (path 1, easiest)
+
+cli-bridge is a real OpenAI-compatible HTTP server (`/v1/chat/completions`).
+We point a `TCloudClient` straight at it; no router involvement,
+no tunnel, no `TCLOUD_API_KEY`/`BRIDGE_UNLOCK` needed.
 
 ```bash
-# 1. one-shot setup (generates .env.local, prints next steps)
+# 1. one-shot setup (probes harness binaries, writes .env.local, prints next steps)
 node scripts/setup-local-cli-bridge.mjs
 
 # 2. start the server in its own terminal/tmux pane
@@ -20,35 +29,82 @@ cd ~/code/cli-bridge && export $(grep -v '^#' .env.local | xargs) && pnpm exec t
 # 3. in your starter-foundry shell:
 export CLI_BRIDGE_URL=http://127.0.0.1:8787
 export CLI_BRIDGE_BEARER=<value from .env.local>
-export TCLOUD_API_KEY=sk-tan-...   # for the tcloud SDK envelope
-export BRIDGE_UNLOCK=...            # router-side unlock token
 node scripts/self-heal.mjs --dispatch --top 1
 ```
 
+Verified end-to-end: `createBridge({harness:'claude-code',...}).ask('hi')` → ~150ms → returns the assistant text directly from your local `claude` CLI.
+
 ## Architecture
+
+### Path 1 — Direct local (no router)
 
 ```
    self-heal.mjs / pr-reviewer
                  │
                  ▼
-       tcloud.bridge({...})           ← @tangle-network/tcloud@^0.4.0
+   TCloudClient(baseURL=http://127.0.0.1:8787/v1)
                  │
                  ▼
-   router.tangle.tools/api/chat       ← gates on BRIDGE_UNLOCK
+        cli-bridge (your box)
                  │
                  ▼
-        cli-bridge                    ← SHARED (prod) or LOCAL (BYOB)
-                 │
-                 ▼
-   claude / kimi / codex CLI          ← uses your auth on this box
+   claude / kimi / codex CLI (your auth on this box)
 ```
 
-`CLI_BRIDGE_URL` + `CLI_BRIDGE_BEARER` env vars in starter-foundry
-(read by `src/lib/bridge.ts`) get forwarded as `X-Bridge-Url` +
-`X-Bridge-Bearer` headers via tcloud, telling the router to forward
-to your local cli-bridge instead of the shared one. The router still
-applies billing/observability on the way through — only execution
-location changes.
+cli-bridge IS an OpenAI-compatible server. The SDK's `chat()` POSTs to
+`{baseURL}/chat/completions` — exactly cli-bridge's mounted path. We
+just override `baseURL` and use `Authorization: Bearer ${BRIDGE_BEARER}`.
+No router envelope, no `bridge/` prefix needed (cli-bridge accepts
+`<harness>/<model>` directly).
+
+### Path 2 — BYOB-via-router (tunneled)
+
+```
+   self-heal.mjs / pr-reviewer
+                 │
+                 ▼
+       tcloud.bridge({..., bridgeUrl, bridgeBearer})
+                 │
+                 ▼
+   router.tangle.tools/api/chat                ← BRIDGE_UNLOCK gate
+                 │
+                 ▼ (server-side fetch from router box to your tunnel)
+   https://your-ngrok.ngrok.io                 ← public tunnel
+                 │
+                 ▼
+        cli-bridge (your box)
+                 │
+                 ▼
+   claude / kimi / codex CLI
+```
+
+**Important**: `CLI_BRIDGE_URL` here must be reachable **from the
+router box's network**, not from your laptop. Pure `127.0.0.1` won't
+work — the router will fetch its own loopback. Use ngrok / cloudflare
+tunnel / tailscale funnel:
+
+```bash
+ngrok http 8787
+# → use the https://*.ngrok.io URL as CLI_BRIDGE_URL
+```
+
+### Path 3 — Production (default)
+
+```
+   self-heal.mjs / pr-reviewer
+                 │
+                 ▼
+       tcloud.bridge({...})
+                 │
+                 ▼
+   router.tangle.tools/api/chat                ← BRIDGE_UNLOCK gate
+                 │
+                 ▼
+        cli-bridge inside the router's docker network
+                 │
+                 ▼
+   claude / kimi / codex CLI (router-side auth)
+```
 
 ## Harness CLI auth
 

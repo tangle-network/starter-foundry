@@ -17,7 +17,7 @@
 // the pipeline.
 
 import { spawnSync } from 'node:child_process'
-import { existsSync, readFileSync, readdirSync, writeFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync as wfs } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, statSync, writeFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync as wfs } from 'node:fs'
 import { dirname, join, resolve, extname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { tmpdir } from 'node:os'
@@ -64,27 +64,54 @@ function lintCheck(filePath) {
   }
 }
 
+// Build a (target → sourcePath) index once by walking every manifest.json
+// under registry/families and registry/layers/**. #36: the previous
+// lookup joined `<layer>/files/<relPath>` which never matched because
+// registry file sources are basenames — targets live inside manifest
+// `files[]` entries.
+const targetIndex = new Map()
+function indexManifest(manifestPath, layerDir) {
+  const m = readJson(manifestPath)
+  if (!m || !Array.isArray(m.files)) return
+  for (const entry of m.files) {
+    if (typeof entry?.target !== 'string' || typeof entry?.source !== 'string') continue
+    if (!targetIndex.has(entry.target)) {
+      targetIndex.set(entry.target, join(layerDir, entry.source))
+    }
+  }
+}
+function walkRegistry(base, depth = 0) {
+  if (!existsSync(base) || depth > 3) return
+  for (const name of readdirSync(base)) {
+    const sub = join(base, name)
+    let st
+    try { st = statSync(sub) } catch { continue }
+    if (!st.isDirectory()) continue
+    const manifest = join(sub, 'manifest.json')
+    if (existsSync(manifest)) indexManifest(manifest, sub)
+    walkRegistry(sub, depth + 1)
+  }
+}
+function readJson(path) {
+  try { return JSON.parse(readFileSync(path, 'utf8')) } catch { return null }
+}
+walkRegistry(join(REPO, 'registry/families'))
+walkRegistry(join(REPO, 'registry/layers'))
+
+function findSourceForTarget(target) {
+  return targetIndex.get(target) ?? null
+}
+
 const classifications = []
 for (const entry of rewritten.slice(0, 30)) {
   const relPath = entry.file
-  // Infer the registry source path for this file. Many top-rewritten
-  // files are App.tsx, index.html, etc. — hunt through family file dirs.
-  const candidates = [
-    join(REPO, 'registry/families'),
-    join(REPO, 'registry/layers/framework'),
-  ]
-  let sourcePath = null
-  for (const base of candidates) {
-    if (!existsSync(base)) continue
-    for (const family of readdirSync(base)) {
-      const tryPath = join(base, family, 'files', relPath)
-      if (existsSync(tryPath)) {
-        sourcePath = tryPath
-        break
-      }
-    }
-    if (sourcePath) break
-  }
+  // Resolve the registry SOURCE file for a rewritten TARGET path. The
+  // registry stores files at `<layer>/files/<basename>` and declares
+  // target paths inside each manifest's `files[]` array — so joining
+  // `<layer>/files/<target>` never matches. Walk every manifest under
+  // registry/{families,layers/*}/** and look for a `files[]` entry whose
+  // `target` equals the rewritten path.
+  const sourcePath = findSourceForTarget(relPath)
   if (!sourcePath) {
     classifications.push({ file: relPath, classified: 'unknown', reason: 'source-not-in-registry', timesRewritten: entry.timesRewritten })
     continue

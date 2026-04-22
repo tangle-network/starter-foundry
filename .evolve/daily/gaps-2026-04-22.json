@@ -1,0 +1,595 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-04-20T20:20:05.299Z",
+  "processedEvents": 24,
+  "totalAgentInstalls": 102,
+  "breakdown": {
+    "scaffoldGap": 59,
+    "orchestration": 43
+  },
+  "topScaffoldGaps": [
+    {
+      "package": "@tailwindcss/vite",
+      "timesInstalled": 14,
+      "onPass": 9,
+      "onFail": 5,
+      "inScaffoldDeps": false,
+      "mapsToCapability": "capability:tailwind",
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "agent-trading",
+        "dao-proposals",
+        "dex-swap",
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "snarkjs",
+      "timesInstalled": 4,
+      "onPass": 0,
+      "onFail": 4,
+      "inScaffoldDeps": false,
+      "mapsToCapability": null,
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "circomlibjs",
+      "timesInstalled": 4,
+      "onPass": 0,
+      "onFail": 4,
+      "inScaffoldDeps": false,
+      "mapsToCapability": null,
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "date-fns",
+      "timesInstalled": 3,
+      "onPass": 3,
+      "onFail": 0,
+      "inScaffoldDeps": false,
+      "mapsToCapability": null,
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "dao-proposals"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "@codemirror/view",
+      "timesInstalled": 3,
+      "onPass": 3,
+      "onFail": 0,
+      "inScaffoldDeps": false,
+      "mapsToCapability": null,
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "agent-trading"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "@codemirror/state",
+      "timesInstalled": 3,
+      "onPass": 3,
+      "onFail": 0,
+      "inScaffoldDeps": false,
+      "mapsToCapability": null,
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "agent-trading"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "@codemirror/lang-javascript",
+      "timesInstalled": 3,
+      "onPass": 3,
+      "onFail": 0,
+      "inScaffoldDeps": false,
+      "mapsToCapability": null,
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "agent-trading"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "@codemirror/theme-one-dark",
+      "timesInstalled": 3,
+      "onPass": 3,
+      "onFail": 0,
+      "inScaffoldDeps": false,
+      "mapsToCapability": null,
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "agent-trading"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "codemirror",
+      "timesInstalled": 3,
+      "onPass": 3,
+      "onFail": 0,
+      "inScaffoldDeps": false,
+      "mapsToCapability": null,
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "agent-trading"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "circomlib",
+      "timesInstalled": 3,
+      "onPass": 0,
+      "onFail": 3,
+      "inScaffoldDeps": false,
+      "mapsToCapability": null,
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "react-router-dom",
+      "timesInstalled": 3,
+      "onPass": 3,
+      "onFail": 0,
+      "inScaffoldDeps": false,
+      "mapsToCapability": null,
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "dao-proposals"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "vite",
+      "timesInstalled": 3,
+      "onPass": 1,
+      "onFail": 2,
+      "inScaffoldDeps": false,
+      "mapsToCapability": null,
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "cross-chain-bridge",
+        "dex-swap",
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "@zk-kit/incremental-merkle-tree",
+      "timesInstalled": 2,
+      "onPass": 0,
+      "onFail": 2,
+      "inScaffoldDeps": false,
+      "mapsToCapability": null,
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "ethers",
+      "timesInstalled": 2,
+      "onPass": 0,
+      "onFail": 2,
+      "inScaffoldDeps": false,
+      "mapsToCapability": null,
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "vite-plugin-node-polyfills",
+      "timesInstalled": 2,
+      "onPass": 0,
+      "onFail": 2,
+      "inScaffoldDeps": false,
+      "mapsToCapability": null,
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "axios",
+      "timesInstalled": 1,
+      "onPass": 1,
+      "onFail": 0,
+      "inScaffoldDeps": false,
+      "mapsToCapability": null,
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "nft-mint-page"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "@vitejs/plugin-react",
+      "timesInstalled": 1,
+      "onPass": 0,
+      "onFail": 1,
+      "inScaffoldDeps": false,
+      "mapsToCapability": null,
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "dex-swap"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "pnpm",
+      "timesInstalled": 1,
+      "onPass": 0,
+      "onFail": 1,
+      "inScaffoldDeps": false,
+      "mapsToCapability": null,
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "add",
+      "timesInstalled": 1,
+      "onPass": 0,
+      "onFail": 1,
+      "inScaffoldDeps": false,
+      "mapsToCapability": null,
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    }
+  ],
+  "topOrchestrationInstalls": [
+    {
+      "package": "lucide-react",
+      "timesInstalled": 17,
+      "onPass": 12,
+      "onFail": 5,
+      "inScaffoldDeps": true,
+      "mapsToCapability": "capability:shadcn",
+      "concern": "orchestration",
+      "scenarios": [
+        "agent-trading",
+        "cross-chain-bridge",
+        "dao-proposals",
+        "dex-swap",
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "tailwindcss",
+      "timesInstalled": 14,
+      "onPass": 9,
+      "onFail": 5,
+      "inScaffoldDeps": true,
+      "mapsToCapability": "capability:tailwind",
+      "concern": "orchestration",
+      "scenarios": [
+        "agent-trading",
+        "dao-proposals",
+        "dex-swap",
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "clsx",
+      "timesInstalled": 9,
+      "onPass": 6,
+      "onFail": 3,
+      "inScaffoldDeps": true,
+      "mapsToCapability": "capability:shadcn",
+      "concern": "orchestration",
+      "scenarios": [
+        "cross-chain-bridge",
+        "dao-proposals",
+        "dex-swap"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "@types/node",
+      "timesInstalled": 2,
+      "onPass": 0,
+      "onFail": 2,
+      "inScaffoldDeps": true,
+      "mapsToCapability": null,
+      "concern": "orchestration",
+      "scenarios": [
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "next",
+      "timesInstalled": 1,
+      "onPass": 1,
+      "onFail": 0,
+      "inScaffoldDeps": true,
+      "mapsToCapability": null,
+      "concern": "orchestration",
+      "scenarios": [
+        "agent-trading"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    }
+  ],
+  "topMissedCapabilities": [
+    {
+      "capability": "capability:tailwind",
+      "totalTriggeringInstalls": 28,
+      "gapInstalls": 14,
+      "orchestrationInstalls": 14,
+      "distinctScenarios": 4,
+      "scenarios": [
+        "agent-trading",
+        "dao-proposals",
+        "dex-swap",
+        "zk-mixer-ui"
+      ],
+      "packagesTriggering": [
+        "@tailwindcss/vite",
+        "tailwindcss"
+      ]
+    }
+  ],
+  "perScenarioGap": [
+    {
+      "scenarioId": "zk-mixer-ui",
+      "distinctGapPackages": 10,
+      "totalGapInstalls": 22,
+      "gapPackages": [
+        {
+          "package": "snarkjs",
+          "times": 4,
+          "capability": null
+        },
+        {
+          "package": "circomlibjs",
+          "times": 4,
+          "capability": null
+        },
+        {
+          "package": "circomlib",
+          "times": 3,
+          "capability": null
+        },
+        {
+          "package": "@zk-kit/incremental-merkle-tree",
+          "times": 2,
+          "capability": null
+        },
+        {
+          "package": "ethers",
+          "times": 2,
+          "capability": null
+        },
+        {
+          "package": "@tailwindcss/vite",
+          "times": 2,
+          "capability": "capability:tailwind"
+        },
+        {
+          "package": "vite-plugin-node-polyfills",
+          "times": 2,
+          "capability": null
+        },
+        {
+          "package": "pnpm",
+          "times": 1,
+          "capability": null
+        },
+        {
+          "package": "add",
+          "times": 1,
+          "capability": null
+        },
+        {
+          "package": "vite",
+          "times": 1,
+          "capability": null
+        }
+      ]
+    },
+    {
+      "scenarioId": "agent-trading",
+      "distinctGapPackages": 6,
+      "totalGapInstalls": 18,
+      "gapPackages": [
+        {
+          "package": "@tailwindcss/vite",
+          "times": 3,
+          "capability": "capability:tailwind"
+        },
+        {
+          "package": "@codemirror/view",
+          "times": 3,
+          "capability": null
+        },
+        {
+          "package": "@codemirror/state",
+          "times": 3,
+          "capability": null
+        },
+        {
+          "package": "@codemirror/lang-javascript",
+          "times": 3,
+          "capability": null
+        },
+        {
+          "package": "@codemirror/theme-one-dark",
+          "times": 3,
+          "capability": null
+        },
+        {
+          "package": "codemirror",
+          "times": 3,
+          "capability": null
+        }
+      ]
+    },
+    {
+      "scenarioId": "dao-proposals",
+      "distinctGapPackages": 3,
+      "totalGapInstalls": 12,
+      "gapPackages": [
+        {
+          "package": "@tailwindcss/vite",
+          "times": 6,
+          "capability": "capability:tailwind"
+        },
+        {
+          "package": "date-fns",
+          "times": 3,
+          "capability": null
+        },
+        {
+          "package": "react-router-dom",
+          "times": 3,
+          "capability": null
+        }
+      ]
+    },
+    {
+      "scenarioId": "dex-swap",
+      "distinctGapPackages": 3,
+      "totalGapInstalls": 5,
+      "gapPackages": [
+        {
+          "package": "@tailwindcss/vite",
+          "times": 3,
+          "capability": "capability:tailwind"
+        },
+        {
+          "package": "vite",
+          "times": 1,
+          "capability": null
+        },
+        {
+          "package": "@vitejs/plugin-react",
+          "times": 1,
+          "capability": null
+        }
+      ]
+    },
+    {
+      "scenarioId": "nft-mint-page",
+      "distinctGapPackages": 1,
+      "totalGapInstalls": 1,
+      "gapPackages": [
+        {
+          "package": "axios",
+          "times": 1,
+          "capability": null
+        }
+      ]
+    },
+    {
+      "scenarioId": "cross-chain-bridge",
+      "distinctGapPackages": 1,
+      "totalGapInstalls": 1,
+      "gapPackages": [
+        {
+          "package": "vite",
+          "times": 1,
+          "capability": null
+        }
+      ]
+    }
+  ]
+}

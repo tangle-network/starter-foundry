@@ -1,0 +1,1356 @@
+{
+  "schemaVersion": 1,
+  "summary": {
+    "generatedAt": "2026-04-22T03:54:12.344Z",
+    "totalBuildouts": 253,
+    "withOutcome": 173,
+    "passRate": 0.8497109826589595,
+    "meanBlendedScore": 0.9329884393063578,
+    "totalPassing": 147,
+    "totalFailing": 26,
+    "distinctScenarios": 53,
+    "distinctPartners": [
+      "arbitrum-stylus",
+      "base-defi",
+      "bnb-chain",
+      "coinbase-base",
+      "coinbase-smart-wallet",
+      "ethereum-foundation",
+      "ethereum-l1",
+      "fhenix-fhe",
+      "fintech-mixed",
+      "hyperliquid",
+      "hyperliquid-perps",
+      "kalshi-event-contracts",
+      "okx-xlayer",
+      "polymarket-prediction",
+      "tangle-blueprints-mpc"
+    ],
+    "costRollup": {
+      "sampleCount": 0,
+      "totalCostUsd": null,
+      "meanCostUsd": null,
+      "totalTokens": null,
+      "meanTokens": null,
+      "meanCostOnPass": null,
+      "meanCostOnFail": null
+    }
+  },
+  "perScenario": [
+    {
+      "partner": "arbitrum-stylus",
+      "scenarioId": "stylus-gas-profiler",
+      "total": 8,
+      "withOutcome": 8,
+      "pass": 8,
+      "meanScore": 0.96,
+      "meanWallMs": 1292064,
+      "meanTurns": 54,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": 1
+    },
+    {
+      "partner": "ethereum-l1",
+      "scenarioId": "nft-mint-page",
+      "total": 16,
+      "withOutcome": 16,
+      "pass": 16,
+      "meanScore": 0.9439999999999995,
+      "meanWallMs": 553306,
+      "meanTurns": 35,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": 1
+    },
+    {
+      "partner": "ethereum-l1",
+      "scenarioId": "staking-dashboard",
+      "total": 7,
+      "withOutcome": 7,
+      "pass": 7,
+      "meanScore": 0.9559999999999997,
+      "meanWallMs": 203527,
+      "meanTurns": 21,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": 1
+    },
+    {
+      "partner": "ethereum-l1",
+      "scenarioId": "dao-proposals",
+      "total": 11,
+      "withOutcome": 11,
+      "pass": 11,
+      "meanScore": 0.9640000000000003,
+      "meanWallMs": 393548,
+      "meanTurns": 33,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": 1
+    },
+    {
+      "partner": "ethereum-l1",
+      "scenarioId": "agent-trading",
+      "total": 10,
+      "withOutcome": 10,
+      "pass": 10,
+      "meanScore": 0.967,
+      "meanWallMs": 380282,
+      "meanTurns": 42,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": 1
+    },
+    {
+      "partner": "ethereum-l1",
+      "scenarioId": "cross-chain-bridge",
+      "total": 47,
+      "withOutcome": 47,
+      "pass": 47,
+      "meanScore": 0.9399999999999997,
+      "meanWallMs": 1597995,
+      "meanTurns": 165,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": 1
+    },
+    {
+      "partner": null,
+      "scenarioId": "transaction-categorizer",
+      "total": 4,
+      "withOutcome": 4,
+      "pass": 4,
+      "meanScore": 0.98675,
+      "meanWallMs": 775094.25,
+      "meanTurns": 114.5,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [],
+      "passRate": 1
+    },
+    {
+      "partner": null,
+      "scenarioId": "budget-dashboard",
+      "total": 4,
+      "withOutcome": 4,
+      "pass": 4,
+      "meanScore": 0.98675,
+      "meanWallMs": 462285.5,
+      "meanTurns": 61.25,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [],
+      "passRate": 1
+    },
+    {
+      "partner": null,
+      "scenarioId": "invoice-factoring",
+      "total": 4,
+      "withOutcome": 4,
+      "pass": 4,
+      "meanScore": 0.98675,
+      "meanWallMs": 624387.5,
+      "meanTurns": 57,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [],
+      "passRate": 1
+    },
+    {
+      "partner": null,
+      "scenarioId": "ach-transfer-flow",
+      "total": 4,
+      "withOutcome": 4,
+      "pass": 4,
+      "meanScore": 1,
+      "meanWallMs": 950529.75,
+      "meanTurns": 83.25,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [],
+      "passRate": 1
+    },
+    {
+      "partner": null,
+      "scenarioId": "p2p-lending-protocol",
+      "total": 3,
+      "withOutcome": 3,
+      "pass": 3,
+      "meanScore": 1,
+      "meanWallMs": 1006563.6666666666,
+      "meanTurns": 117,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [],
+      "passRate": 1
+    },
+    {
+      "partner": "hyperliquid",
+      "scenarioId": "hl-builder-code-dashboard",
+      "total": 3,
+      "withOutcome": 3,
+      "pass": 3,
+      "meanScore": 1,
+      "meanWallMs": 1020776.3333333334,
+      "meanTurns": 115.66666666666667,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [],
+      "passRate": 1
+    },
+    {
+      "partner": "hyperliquid",
+      "scenarioId": "hl-vault-depositor",
+      "total": 3,
+      "withOutcome": 3,
+      "pass": 3,
+      "meanScore": 1,
+      "meanWallMs": 1032557,
+      "meanTurns": 121.66666666666667,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [],
+      "passRate": 1
+    },
+    {
+      "partner": "coinbase-base",
+      "scenarioId": "base-perp-trading",
+      "total": 3,
+      "withOutcome": 3,
+      "pass": 3,
+      "meanScore": 1,
+      "meanWallMs": 879839.3333333334,
+      "meanTurns": 101.33333333333333,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [],
+      "passRate": 1
+    },
+    {
+      "partner": null,
+      "scenarioId": "chat-with-tools",
+      "total": 1,
+      "withOutcome": 1,
+      "pass": 1,
+      "meanScore": 1,
+      "meanWallMs": 370755,
+      "meanTurns": 41,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [],
+      "passRate": 1
+    },
+    {
+      "partner": null,
+      "scenarioId": "prompt-library",
+      "total": 1,
+      "withOutcome": 1,
+      "pass": 1,
+      "meanScore": 1,
+      "meanWallMs": 503114,
+      "meanTurns": 53,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [],
+      "passRate": 1
+    },
+    {
+      "partner": null,
+      "scenarioId": "agent-traces-viewer",
+      "total": 3,
+      "withOutcome": 3,
+      "pass": 3,
+      "meanScore": 1,
+      "meanWallMs": 1522706.6666666667,
+      "meanTurns": 164.33333333333334,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [],
+      "passRate": 1
+    },
+    {
+      "partner": null,
+      "scenarioId": "multi-agent-conversation",
+      "total": 1,
+      "withOutcome": 1,
+      "pass": 1,
+      "meanScore": 0.947,
+      "meanWallMs": 899975,
+      "meanTurns": 143,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [],
+      "passRate": 1
+    },
+    {
+      "partner": "ethereum-foundation",
+      "scenarioId": "dex-swap",
+      "total": 2,
+      "withOutcome": 2,
+      "pass": 2,
+      "meanScore": 1,
+      "meanWallMs": 346388,
+      "meanTurns": 38,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [],
+      "passRate": 1
+    },
+    {
+      "partner": null,
+      "scenarioId": "retrieval-workspace",
+      "total": 2,
+      "withOutcome": 2,
+      "pass": 2,
+      "meanScore": 1,
+      "meanWallMs": 1081379,
+      "meanTurns": 135,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [],
+      "passRate": 1
+    },
+    {
+      "partner": null,
+      "scenarioId": "agent-marketplace",
+      "total": 2,
+      "withOutcome": 2,
+      "pass": 2,
+      "meanScore": 1,
+      "meanWallMs": 2013066,
+      "meanTurns": 183,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [],
+      "passRate": 1
+    },
+    {
+      "partner": null,
+      "scenarioId": "eval-harness",
+      "total": 2,
+      "withOutcome": 2,
+      "pass": 2,
+      "meanScore": 1,
+      "meanWallMs": 1656907,
+      "meanTurns": 126,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [],
+      "passRate": 1
+    },
+    {
+      "partner": null,
+      "scenarioId": "kyc-onboarding",
+      "total": 4,
+      "withOutcome": 4,
+      "pass": 3,
+      "meanScore": 0.73675,
+      "meanWallMs": 908772.75,
+      "meanTurns": 101.5,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [],
+      "passRate": 0.75
+    },
+    {
+      "partner": null,
+      "scenarioId": "fraud-ops-console",
+      "total": 3,
+      "withOutcome": 3,
+      "pass": 2,
+      "meanScore": 0.6666666666666666,
+      "meanWallMs": 903171.3333333334,
+      "meanTurns": 97.33333333333333,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [],
+      "passRate": 0.6666666666666666
+    },
+    {
+      "partner": "coinbase-base",
+      "scenarioId": "base-dex-aggregator",
+      "total": 3,
+      "withOutcome": 3,
+      "pass": 1,
+      "meanScore": 0.778,
+      "meanWallMs": 1801153.6666666667,
+      "meanTurns": 230,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [],
+      "passRate": 0.3333333333333333
+    },
+    {
+      "partner": "ethereum-l1",
+      "scenarioId": "dex-swap",
+      "total": 14,
+      "withOutcome": 14,
+      "pass": 0,
+      "meanScore": 0.8680000000000002,
+      "meanWallMs": 750351,
+      "meanTurns": 46,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": 0
+    },
+    {
+      "partner": "ethereum-l1",
+      "scenarioId": "zk-mixer-ui",
+      "total": 8,
+      "withOutcome": 8,
+      "pass": 0,
+      "meanScore": 0.782,
+      "meanWallMs": 2225928,
+      "meanTurns": 138,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": 0
+    },
+    {
+      "partner": "base-defi",
+      "scenarioId": "base-dex-aggregator",
+      "total": 7,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "base-defi",
+      "scenarioId": "base-perp-trading",
+      "total": 6,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "bnb-chain",
+      "scenarioId": "bnb-greenfield-object-store",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "bnb-chain",
+      "scenarioId": "bnb-launchpad-ido",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "coinbase-smart-wallet",
+      "scenarioId": "smart-wallet-passkey-onboarding",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "coinbase-smart-wallet",
+      "scenarioId": "smart-wallet-gasless-checkout",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "coinbase-smart-wallet",
+      "scenarioId": "smart-wallet-subscription-manager",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "ethereum-l1",
+      "scenarioId": "wallet-dashboard",
+      "total": 4,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "fhenix-fhe",
+      "scenarioId": "fhenix-sealed-bid-auction",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "fhenix-fhe",
+      "scenarioId": "fhenix-private-dao-vote",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "fhenix-fhe",
+      "scenarioId": "fhenix-confidential-dex",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "hyperliquid-perps",
+      "scenarioId": "hl-vault-depositor",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "hyperliquid-perps",
+      "scenarioId": "hl-builder-code-dashboard",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "kalshi-event-contracts",
+      "scenarioId": "kalshi-consumer-app",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "kalshi-event-contracts",
+      "scenarioId": "kalshi-institutional-api-console",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "kalshi-event-contracts",
+      "scenarioId": "kalshi-market-maker-dashboard",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "okx-xlayer",
+      "scenarioId": "xlayer-okb-bridge",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "okx-xlayer",
+      "scenarioId": "xlayer-institutional-defi",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "okx-xlayer",
+      "scenarioId": "xlayer-zk-voucher-campaign",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "polymarket-prediction",
+      "scenarioId": "polymarket-portfolio-hedging",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "tangle-blueprints-mpc",
+      "scenarioId": "tangle-mpc-keygen-ceremony",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "tangle-blueprints-mpc",
+      "scenarioId": "tangle-mpc-signing-ceremony",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "tangle-blueprints-mpc",
+      "scenarioId": "tangle-mpc-operator-console",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "fintech-mixed",
+      "scenarioId": "budget-dashboard",
+      "total": 1,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "fintech-mixed",
+      "scenarioId": "transaction-categorizer",
+      "total": 1,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "fintech-mixed",
+      "scenarioId": "invoice-factoring",
+      "total": 1,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1
+      ],
+      "passRate": null
+    }
+  ],
+  "topAddedPackages": [
+    {
+      "key": "pnpm:lucide-react",
+      "timesAdded": 17,
+      "addedOnPass": 12,
+      "addedOnFail": 5
+    },
+    {
+      "key": "pnpm:tailwindcss",
+      "timesAdded": 14,
+      "addedOnPass": 9,
+      "addedOnFail": 5
+    },
+    {
+      "key": "pnpm:@tailwindcss/vite",
+      "timesAdded": 14,
+      "addedOnPass": 9,
+      "addedOnFail": 5
+    },
+    {
+      "key": "pnpm:clsx",
+      "timesAdded": 9,
+      "addedOnPass": 6,
+      "addedOnFail": 3
+    },
+    {
+      "key": "pnpm:<captured-in-trace>",
+      "timesAdded": 5,
+      "addedOnPass": 5,
+      "addedOnFail": 0
+    },
+    {
+      "key": "pnpm:snarkjs",
+      "timesAdded": 4,
+      "addedOnPass": 0,
+      "addedOnFail": 4
+    },
+    {
+      "key": "pnpm:circomlibjs",
+      "timesAdded": 4,
+      "addedOnPass": 0,
+      "addedOnFail": 4
+    },
+    {
+      "key": "pnpm:date-fns",
+      "timesAdded": 3,
+      "addedOnPass": 3,
+      "addedOnFail": 0
+    },
+    {
+      "key": "pnpm:@codemirror/view",
+      "timesAdded": 3,
+      "addedOnPass": 3,
+      "addedOnFail": 0
+    },
+    {
+      "key": "pnpm:@codemirror/state",
+      "timesAdded": 3,
+      "addedOnPass": 3,
+      "addedOnFail": 0
+    },
+    {
+      "key": "pnpm:@codemirror/lang-javascript",
+      "timesAdded": 3,
+      "addedOnPass": 3,
+      "addedOnFail": 0
+    },
+    {
+      "key": "pnpm:@codemirror/theme-one-dark",
+      "timesAdded": 3,
+      "addedOnPass": 3,
+      "addedOnFail": 0
+    },
+    {
+      "key": "pnpm:codemirror",
+      "timesAdded": 3,
+      "addedOnPass": 3,
+      "addedOnFail": 0
+    },
+    {
+      "key": "pnpm:react-router-dom",
+      "timesAdded": 3,
+      "addedOnPass": 3,
+      "addedOnFail": 0
+    },
+    {
+      "key": "pnpm:vite",
+      "timesAdded": 3,
+      "addedOnPass": 1,
+      "addedOnFail": 2
+    },
+    {
+      "key": "pnpm:@zk-kit/incremental-merkle-tree",
+      "timesAdded": 2,
+      "addedOnPass": 0,
+      "addedOnFail": 2
+    },
+    {
+      "key": "pnpm:ethers",
+      "timesAdded": 2,
+      "addedOnPass": 0,
+      "addedOnFail": 2
+    },
+    {
+      "key": "pnpm:@types/node",
+      "timesAdded": 2,
+      "addedOnPass": 0,
+      "addedOnFail": 2
+    },
+    {
+      "key": "pnpm:vite-plugin-node-polyfills",
+      "timesAdded": 2,
+      "addedOnPass": 0,
+      "addedOnFail": 2
+    },
+    {
+      "key": "pnpm:circomlib",
+      "timesAdded": 2,
+      "addedOnPass": 0,
+      "addedOnFail": 2
+    },
+    {
+      "key": "pnpm:axios",
+      "timesAdded": 1,
+      "addedOnPass": 1,
+      "addedOnFail": 0
+    },
+    {
+      "key": "pnpm:next",
+      "timesAdded": 1,
+      "addedOnPass": 1,
+      "addedOnFail": 0
+    },
+    {
+      "key": "npm:circomlib",
+      "timesAdded": 1,
+      "addedOnPass": 0,
+      "addedOnFail": 1
+    },
+    {
+      "key": "pnpm:@vitejs/plugin-react",
+      "timesAdded": 1,
+      "addedOnPass": 0,
+      "addedOnFail": 1
+    },
+    {
+      "key": "pnpm:pnpm",
+      "timesAdded": 1,
+      "addedOnPass": 0,
+      "addedOnFail": 1
+    },
+    {
+      "key": "pnpm:add",
+      "timesAdded": 1,
+      "addedOnPass": 0,
+      "addedOnFail": 1
+    }
+  ],
+  "topAddedDirs": [
+    {
+      "dir": "&&",
+      "timesAdded": 5
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-arbitrum-stylus-mo6kqj5u-stylus-gas-profiler-r3/stylus-gas-profiler-IQNfcV/static",
+      "timesAdded": 3
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo698at6-dex-swap-r1/dex-swap-JlVn7j/src",
+      "timesAdded": 3
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo69wk1b-agent-trading-r1/agent-trading-7r8sjq/src/components",
+      "timesAdded": 3
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo6bolwe-nft-mint-page-r2/nft-mint-page-bY9G4a/frontend",
+      "timesAdded": 3
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo6hvz4a-cross-chain-bridge-r3/cross-chain-bridge-9BgHMI/src/components",
+      "timesAdded": 3
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo6hvz4a-cross-chain-bridge-r3/cross-chain-bridge-9BgHMI/src/lib",
+      "timesAdded": 3
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo6hvz4a-cross-chain-bridge-r3/cross-chain-bridge-9BgHMI/public",
+      "timesAdded": 3
+    },
+    {
+      "dir": "echo",
+      "timesAdded": 3
+    },
+    {
+      "dir": "\"dirs",
+      "timesAdded": 3
+    },
+    {
+      "dir": "created\"",
+      "timesAdded": 3
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo66lt85-nft-mint-page-r1/nft-mint-page-lDU8vu/web",
+      "timesAdded": 2
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo6aac6h-zk-mixer-ui-r1/zk-mixer-ui-J0gLqo/src/{lib,components,hooks,types}",
+      "timesAdded": 2
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo6beihz-cross-chain-bridge-r1/cross-chain-bridge-GPudFX/src/components",
+      "timesAdded": 2
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo6beihz-cross-chain-bridge-r1/cross-chain-bridge-GPudFX/src/lib",
+      "timesAdded": 2
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo6dat2y-agent-trading-r2/agent-trading-5xjOU9/src/app",
+      "timesAdded": 2
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo6dat2y-agent-trading-r2/agent-trading-5xjOU9/src/components",
+      "timesAdded": 2
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo6dat2y-agent-trading-r2/agent-trading-5xjOU9/src/lib",
+      "timesAdded": 2
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-ethereum-l1-mo6gk9kx-zk-mixer-ui-r3/zk-mixer-ui-MGU9Pq/src/{lib,components,hooks}",
+      "timesAdded": 2
+    },
+    {
+      "dir": "/private/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/factory-local-phase2-arbitrum-stylus-mo6jyu5i-stylus-gas-profiler-r2/stylus-gas-profiler-dSA5xw/baselines",
+      "timesAdded": 1
+    }
+  ],
+  "topRewrittenFiles": [
+    {
+      "file": "index.html",
+      "timesRewritten": 13,
+      "rewrittenOnPass": 8,
+      "rewrittenOnFail": 5
+    },
+    {
+      "file": "src/App.tsx",
+      "timesRewritten": 12,
+      "rewrittenOnPass": 7,
+      "rewrittenOnFail": 4
+    },
+    {
+      "file": "src/index.css",
+      "timesRewritten": 8,
+      "rewrittenOnPass": 4,
+      "rewrittenOnFail": 3
+    },
+    {
+      "file": "foundry.toml",
+      "timesRewritten": 8,
+      "rewrittenOnPass": 8,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/components/StatusPipeline.tsx",
+      "timesRewritten": 8,
+      "rewrittenOnPass": 8,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "package.json",
+      "timesRewritten": 6,
+      "rewrittenOnPass": 2,
+      "rewrittenOnFail": 4
+    },
+    {
+      "file": "src/profiler.rs",
+      "timesRewritten": 5,
+      "rewrittenOnPass": 5,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/components/SwapCard.tsx",
+      "timesRewritten": 5,
+      "rewrittenOnPass": 0,
+      "rewrittenOnFail": 3
+    },
+    {
+      "file": "src/main.rs",
+      "timesRewritten": 4,
+      "rewrittenOnPass": 4,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/optimizer.rs",
+      "timesRewritten": 4,
+      "rewrittenOnPass": 4,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/lib/contract.ts",
+      "timesRewritten": 4,
+      "rewrittenOnPass": 0,
+      "rewrittenOnFail": 4
+    },
+    {
+      "file": "src/components/WithdrawPanel.tsx",
+      "timesRewritten": 4,
+      "rewrittenOnPass": 0,
+      "rewrittenOnFail": 4
+    },
+    {
+      "file": "src/StarterCounter.sol",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/components/CreateProposal.tsx",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/agentEngine.ts",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/components/KillSwitch.tsx",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/lib/crypto.ts",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 0,
+      "rewrittenOnFail": 3
+    },
+    {
+      "file": "src/NFTCollection.sol",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/pages/ProposalList.tsx",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/pages/ProposalDetail.tsx",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/components/Nav.tsx",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/store.ts",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "tailwind.config.js",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/components/StrategyEditor.tsx",
+      "timesRewritten": 2,
+      "rewrittenOnPass": 2,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/lib/zkproof.ts",
+      "timesRewritten": 2,
+      "rewrittenOnPass": 0,
+      "rewrittenOnFail": 2
+    }
+  ]
+}

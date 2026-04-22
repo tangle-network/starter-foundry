@@ -1,13 +1,28 @@
 // Bridge sessions — subscription-backed coding harnesses (Kimi Code,
-// Claude Code, Codex) routed through the Tangle Router. Session-resumable
-// by a caller-chosen slug, so multi-turn proposer runs don't re-tokenize
-// prior context and can be iterated on CI fail or review feedback.
+// Claude Code, Codex) routed through the Tangle Router OR a local
+// cli-bridge instance via BYOB. Session-resumable by a caller-chosen
+// slug, so multi-turn proposer runs don't re-tokenize prior context.
+//
+// Two dispatch paths supported:
+//
+//   1. Production (default): tcloud SDK → router.tangle.tools/api →
+//      shared cli-bridge inside the router's docker network. Needs
+//      TCLOUD_API_KEY + BRIDGE_UNLOCK.
+//
+//   2. Local dev: tcloud BYOB headers point at a cli-bridge running
+//      on localhost (or any reachable URL). Set CLI_BRIDGE_URL +
+//      CLI_BRIDGE_BEARER and the wire still goes through the router
+//      (so billing/observability stay centralized) but the harness
+//      execution happens on your box. Useful when the prod bridge
+//      isn't deployed yet, or you want to use a CLI you've authed
+//      locally (kimi login / claude /login) without round-tripping
+//      to prod.
 //
 // Shape: see @tangle-network/tcloud examples/12-bridge-sessions.ts.
 //
-// Analysis RLMs (diagnoser, clusterer, judge) go through src/lib/llm.ts on
-// the OpenAI-compat `/v1` path — this module is strictly for the coding-
-// agent dispatch lane.
+// Analysis RLMs (diagnoser, clusterer, judge) go through src/lib/llm.ts
+// on the OpenAI-compat `/v1` path — this module is strictly for the
+// coding-agent dispatch lane.
 
 import { TCloudClient, type BridgeSession } from '@tangle-network/tcloud'
 
@@ -59,5 +74,12 @@ export function createBridge(opts: BridgeOptions): BridgeSession {
   const harness = opts.harness ?? 'kimi-code'
   const model = opts.model ?? DEFAULT_MODELS[harness]
 
-  return tcloud.bridge({ harness, model, unlock, resume: opts.resume })
+  // BYOB: if the caller has a local cli-bridge running, point at it.
+  // The router still gates on BRIDGE_UNLOCK and forwards the request
+  // body verbatim — only the cli-bridge URL changes.
+  const bridgeUrl = process.env['CLI_BRIDGE_URL']
+  const bridgeBearer = process.env['CLI_BRIDGE_BEARER']
+  const byobCfg = bridgeUrl && bridgeBearer ? { bridgeUrl, bridgeBearer } : {}
+
+  return tcloud.bridge({ harness, model, unlock, resume: opts.resume, ...byobCfg })
 }

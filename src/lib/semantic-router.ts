@@ -94,7 +94,7 @@ function buildFamilyText(family: FamilyManifest): string {
   return parts.join('. ')
 }
 
-export interface SemanticMatch {
+interface SemanticMatch {
   familyId: string
   score: number
 }

@@ -38,7 +38,7 @@ export interface VBExecutionTrace {
 }
 
 /** Aggregate stats per scenarioId — the training-relevant projection. */
-export interface ScenarioOutcome {
+interface ScenarioOutcome {
   scenarioId: string
   partner: string
   runs: number

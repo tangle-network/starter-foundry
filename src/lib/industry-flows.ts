@@ -8,14 +8,14 @@
 // the agent reads these AFTER Step 0 (dev server) and before choosing
 // what to build. See compose.ts (renderAgentsMd) for the injection site.
 
-export interface IndustryFirstTurn {
+interface IndustryFirstTurn {
   industry: string
   shortLabel: string
   firstFeatures: string[]
   whatNotToDo?: string[]
 }
 
-export const INDUSTRY_FIRST_TURNS: Record<string, IndustryFirstTurn> = {
+const INDUSTRY_FIRST_TURNS: Record<string, IndustryFirstTurn> = {
   health: {
     industry: 'health',
     shortLabel: 'Healthcare / wellness / mental health',

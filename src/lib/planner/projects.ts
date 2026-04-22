@@ -21,7 +21,7 @@ import { chooseAgentFamily } from './contracts.js'
 import { buildSlug, resolvePartnerForFamily } from './helpers.js'
 import { inferImplicitCapabilities } from './implicit-caps.js'
 
-export interface FamilyChoice {
+interface FamilyChoice {
   family: string
   layers: string[]
   path: string

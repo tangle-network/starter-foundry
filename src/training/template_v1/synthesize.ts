@@ -13,7 +13,7 @@ import type { HarvestSummary } from './harvest.js'
 import { createLLM, isLLMAvailable } from '../../lib/llm.js'
 import { ax } from '@ax-llm/ax'
 
-export interface SynthesizeInput {
+interface SynthesizeInput {
   templatePath: string
   currentSource: string
   harvest: HarvestSummary

@@ -10,7 +10,7 @@ if (!manifestSource.includes('name = "{{projectName}}"')) {
   throw new Error("Move.toml missing expected package name");
 }
 
-if (!moduleSource.includes("module {{projectName}}::{{moduleName}}")) {
+if (!moduleSource.includes("module package::{{moduleName}}")) {
   throw new Error("Move module path mismatch");
 }
 

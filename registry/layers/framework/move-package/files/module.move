@@ -1,4 +1,4 @@
-module {{projectName}}::{{moduleName}} {
+module package::{{moduleName}} {
     use std::signer;
 
     struct Treasury has key {

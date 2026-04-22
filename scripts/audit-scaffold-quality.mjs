@@ -348,9 +348,23 @@ for (const layer of filtered) {
       }
     } catch { /* no family manifest — fall back to `framework:${family}` */ }
 
+    // Gen-3 fix: only append capability:tailwind when the family is declared
+    // compatible with it (tailwind.appliesTo includes the family). Prior code
+    // blindly attached tailwind to every frontend-surface family — which
+    // includes game engines (bevy-web, phaser-game, pixijs-game, threejs-game,
+    // godot-web, unity-web-proxy), static site generators (eleventy-static,
+    // hugo-static, zola-static), Tauri desktop variants (tauri-menubar,
+    // tauri-tray), webgpu (webgpu-render, webgpu-inference), and others that
+    // don't use tailwind. 16/18 of the 0.809 audit failures were this bug,
+    // not real scaffold regressions.
+    let tailwindCompatible = false
+    try {
+      const twManifest = JSON.parse(readFileSync('registry/layers/capability/tailwind/manifest.json', 'utf8'))
+      tailwindCompatible = Array.isArray(twManifest.appliesTo) && twManifest.appliesTo.includes(family)
+    } catch { /* tailwind manifest unreadable — stay conservative (no tailwind) */ }
+
     const smokeLayers =
-      surface === 'frontend' ? [frameworkLayerId, 'capability:tailwind']
-      : surface === 'api' ? [frameworkLayerId]
+      surface === 'frontend' && tailwindCompatible ? [frameworkLayerId, 'capability:tailwind']
       : [frameworkLayerId]
 
     const smokeSpec = {

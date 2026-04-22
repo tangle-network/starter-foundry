@@ -5,7 +5,6 @@
   "files": [
     { "source": "files/sidebar-layout.tsx", "target": "src/components/layout/sidebar-layout.tsx" },
     { "source": "files/dashboard-page.tsx", "target": "app/dashboard/page.tsx" },
-    { "source": "files/dashboard-page.tsx", "target": "src/App.tsx" },
     { "source": "files/nav-config.ts", "target": "src/config/nav.ts" },
     { "source": "files/media-manifest.json", "target": "media-manifest.json" }
   ],

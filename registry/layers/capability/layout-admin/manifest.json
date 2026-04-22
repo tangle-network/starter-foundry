@@ -33,14 +33,6 @@
       "target": "app/admin/page.tsx"
     },
     {
-      "source": "files/admin-page.tsx",
-      "target": "app/page.tsx"
-    },
-    {
-      "source": "files/admin-page.tsx",
-      "target": "src/App.tsx"
-    },
-    {
       "source": "files/column-header.tsx",
       "target": "src/components/admin/column-header.tsx"
     },

@@ -87,6 +87,22 @@ npm run build && node dist/cli.js <command>
 | `prove --corpus <path> --out <dir>` | Run proof suite over a prompt corpus |
 | `catalog` | List all families and layers |
 
+## Toolchain (for `pnpm test`)
+
+A handful of integration tests validate composed scaffolds end-to-end and
+need real binaries on `PATH`. Without them the tests fail with
+`spawn <bin> ENOENT`. `pnpm pretest` probes the env and prints install
+hints; the actual tests are strict (no auto-skip).
+
+| Tool | Needed for | Install |
+|---|---|---|
+| `forge` | `forge-contracts` family validation, `xlayer-foundry-deploy` / `layerzero-oft` / `account-abstraction` specs, `runPromptCorpus` multichain scenario, workspace benchmark | `curl -L https://foundry.paradigm.xyz \| bash && ~/.foundry/bin/foundryup` |
+| `cargo` | `solana-program` toolchain validation in workspace tests | `curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs \| sh` |
+
+After installing forge, ensure `~/.foundry/bin` is on your `PATH`
+(`foundryup` adds it to `~/.zshenv`/`~/.bashrc`; restart shell or
+`source` the rc file).
+
 ## Routing
 
 Three layers, evaluated in order:

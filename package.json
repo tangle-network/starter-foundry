@@ -38,6 +38,7 @@
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "tsc",
+    "pretest": "node scripts/check-toolchain.mjs",
     "test": "tsc && tsc -p tsconfig.test.json && node --test --test-concurrency=1 dist-tests/*.test.js",
     "catalog": "node dist/cli.js catalog",
     "select": "node dist/cli.js select",

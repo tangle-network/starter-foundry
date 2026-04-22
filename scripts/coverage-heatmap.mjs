@@ -62,14 +62,26 @@ for (const industry of industries) {
   }
 }
 
-// Industry × partner: any partner package that's commonly paired with
-// an industry? Heuristic: look for industry keyword matches in partner
-// descriptions (cheap; bootstrappable signal until we run real traces).
+// Industry × partner: a partner covers an industry when there's at least
+// one family F with F ∈ partner.appliesTo AND F ∈ industry.appliesTo.
+// The cell value is the size of that intersection — higher = more
+// compose-paths where the partner can actually layer onto the industry.
+// (Previously this block was a no-op and emitted an all-zero matrix.)
 const industryPartnerCells = {}
+const industryAppliesTo = {}
+for (const industry of industries) {
+  const manifest = readJson(join(REPO, 'registry/layers/industry', industry, 'manifest.json'))
+  industryAppliesTo[industry] = new Set(manifest?.appliesTo ?? [])
+}
 for (const industry of industries) {
   industryPartnerCells[industry] = {}
+  const iFamilies = industryAppliesTo[industry]
   for (const partner of partners) {
-    industryPartnerCells[industry][partner] = 0 // default: unknown
+    const manifest = readJson(join(REPO, 'registry/partners', partner, 'manifest.json'))
+    const pFamilies = manifest?.appliesTo ?? []
+    let overlap = 0
+    for (const f of pFamilies) if (iFamilies.has(f)) overlap += 1
+    industryPartnerCells[industry][partner] = overlap
   }
 }
 

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-21T23:09:36.601Z",
+  "generatedAt": "2026-04-22T04:27:56.792Z",
   "counts": {
     "pre-rewrite-clean": 0,
     "pre-rewrite-had-issues": 0,
@@ -20,9 +20,10 @@
     },
     {
       "file": "src/App.tsx",
+      "sourcePath": "registry/layers/capability/layout-chat/files/chat-page.tsx",
+      "timesRewritten": 12,
       "classified": "unknown",
-      "reason": "source-not-in-registry",
-      "timesRewritten": 12
+      "reason": "eslint-unavailable"
     },
     {
       "file": "src/index.css",
@@ -32,7 +33,7 @@
     },
     {
       "file": "foundry.toml",
-      "sourcePath": "registry/layers/framework/forge-foundation/files/foundry.toml",
+      "sourcePath": "registry/layers/capability/evm-deploy-foundry/files/foundry.toml",
       "timesRewritten": 8,
       "classified": "unknown",
       "reason": "unsupported-ext"
@@ -64,7 +65,7 @@
     },
     {
       "file": "src/main.rs",
-      "sourcePath": "registry/layers/framework/bevy-web/files/src/main.rs",
+      "sourcePath": "registry/layers/framework/agent-service-rust/files/main.rs",
       "timesRewritten": 4,
       "classified": "unknown",
       "reason": "unsupported-ext"
@@ -161,9 +162,10 @@
     },
     {
       "file": "src/lib/zkproof.ts",
+      "sourcePath": "registry/layers/capability/zk-browser/files/zkproof.ts",
+      "timesRewritten": 2,
       "classified": "unknown",
-      "reason": "source-not-in-registry",
-      "timesRewritten": 2
+      "reason": "eslint-unavailable"
     }
   ]
 }

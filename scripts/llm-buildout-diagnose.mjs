@@ -65,8 +65,13 @@ const topFailFiles = (analysis.topRewrittenFiles ?? [])
   .sort((a, b) => (b.rewrittenOnFail ?? 0) - (a.rewrittenOnFail ?? 0))
   .slice(0, 10)
 
+// #35: passRate=0 with withOutcome=0 means "no measurements yet", not
+// "we measured zero passes". The VB analyzer conflates the two by
+// emitting passRate=0 on unmeasured rows — filtering these out prevents
+// the diagnoser from hallucinating root causes against no-signal
+// scenarios. Only treat a scenario as failing when it has measurements.
 const failingScenarios = (analysis.perScenario ?? [])
-  .filter((s) => s.passRate === 0 || (s.passRate !== null && s.passRate < 0.3))
+  .filter((s) => (s.withOutcome ?? 0) > 0 && (s.passRate ?? 1) < 0.3)
   .sort((a, b) => (a.passRate ?? 0) - (b.passRate ?? 0))
   .slice(0, 20)
 

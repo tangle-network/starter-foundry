@@ -1,8 +1,8 @@
 {
   "product": "starter-foundry",
-  "timestamp": "2026-04-22T21:20:39.695Z",
+  "timestamp": "2026-04-22T21:41:18.474Z",
   "coverage": "13/14 flows measured",
-  "aggregate": 0.447,
+  "aggregate": 0.46,
   "inputs": [
     {
       "path": ".evolve/buildout-analysis.json",
@@ -14,7 +14,7 @@
     },
     {
       "path": ".evolve/scaffold-quality-audit.json",
-      "mtime": "2026-04-22T20:32:51.388Z"
+      "mtime": "2026-04-22T21:41:02.886Z"
     }
   ],
   "sourceMtime": "2026-04-22T18:17:22.067Z",
@@ -44,7 +44,7 @@
     },
     {
       "name": "scaffold_audit_pass_rate",
-      "value": 0.8085106382978723,
+      "value": 0.9787234042553191,
       "target": 1,
       "status": "fail",
       "productValueClaim": "Fraction of framework layers where pnpm install + tsc noEmit succeeds on a freshly composed scaffold. A failure here means agents fight install errors on turn 1.",

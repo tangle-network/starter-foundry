@@ -17,12 +17,12 @@
 
 import { readFileSync, existsSync } from 'node:fs'
 
-export interface PackageCapabilityMap {
+interface PackageCapabilityMap {
   schemaVersion: 1
   mapping: Record<string, { capability: string | null; confidence: number; note?: string }>
 }
 
-export interface BuildoutLike {
+interface BuildoutLike {
   sessionId: string
   initialPrompt: string | null
   scenarioId: string | null
@@ -31,14 +31,14 @@ export interface BuildoutLike {
   outcome?: { allPass: boolean; blendedScore: number } | null
 }
 
-export interface InferredCapability {
+interface InferredCapability {
   capability: string
   confidence: number
   source: 'package' | 'dir'
   sourceToken: string
 }
 
-export interface CapabilityMapSummary {
+interface CapabilityMapSummary {
   distinctPackages: number
   mappedPackages: number
   unmappedPackages: number

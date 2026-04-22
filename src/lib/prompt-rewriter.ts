@@ -44,21 +44,21 @@ const rewriterAgent = ax(
   '"Expand the userPrompt into a canonical, keyword-rich product spec that names concrete technologies drawn from knownFamilies (e.g. nextjs-ts, fullstack-ts, agent-service-ts) and concrete UI/infra patterns drawn from knownCapabilities (e.g. capability:layout-dashboard, capability:ai-chat-ui, capability:saas-billing). The expansion MUST be longer and more specific than the input. Preserve the user intent exactly — do not invent features. Keep the output to 1-3 sentences of plain English that the user could have written themselves." userPrompt:string, knownFamilies:string[], knownCapabilities:string[] -> canonicalPrompt:string, confidence:number',
 )
 
-export interface RewriteResult {
+interface RewriteResult {
   canonicalPrompt: string
   confidence: number
   cacheHit: boolean
   latencyMs: number
 }
 
-export interface RewriteArgs {
+interface RewriteArgs {
   prompt: string
   partner?: string | null
   knownFamilies: string[]
   knownCapabilities: string[]
 }
 
-export type RewriterFn = (args: RewriteArgs) => Promise<RewriteResult | null>
+type RewriterFn = (args: RewriteArgs) => Promise<RewriteResult | null>
 
 let testOverride: RewriterFn | null = null
 export function __setTestRewriter(fn: RewriterFn | null): void {

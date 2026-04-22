@@ -1,54 +1,22 @@
 {
-  "timestamp": "2026-04-21T00:53:00Z",
-  "scope": "full-repo post-tier1-closure merge + Batch 6 additions",
-  "notesVsPriorRun": "Prior deep-clean (2026-04-20, commit 1ea624b) closed 401-test baseline. Since then Batch 6 added brand/visual-regression/multi-propose/training/template_v1 + CLI entrypoints that regressed some knip metrics.",
+  "timestamp": "2026-04-22T04:15:00Z",
+  "scope": "post-PR#39 (review-followups merged) — surface reduction pass",
+  "priorRunNote": "Prior deep-clean 2026-04-21 closed src at 11534 lines. Since then #32 landed dormant-infra + self-heal layer (~+5k lines) and #39 landed review-followups. This run is focused on the net-new surface.",
   "build": "pass",
-  "tests": { "passed": 466, "failed": 0, "total": 466 },
+  "tests": { "passed": 475, "failed": 6, "total": 481, "note": "6 failing are pre-existing integration tests (forge/xlayer toolchain deps) — same on main, not introduced by this or prior work" },
   "typeErrors": 0,
   "strictMode": true,
-  "weakTypes": 1,
-  "debtMarkers": 0,
-  "tryCatchBlocks": 20,
   "circularDeps": 0,
-  "src": {
-    "files": 66,
-    "lines": 11534,
-    "duplicatedLines": 92,
-    "duplicationPercent": 0.8,
-    "clones": 9,
-    "longestFiles": [
-      "src/lib/compose.ts (502)",
-      "src/lib/workspace.ts (499)",
-      "src/lib/keywords.ts (475)",
-      "src/types.ts (471)",
-      "src/lib/prompt-planner.ts (455)"
-    ]
-  },
-  "scripts": {
-    "files": 36,
-    "lines": 4079,
-    "duplicatedLines": 75,
-    "duplicationPercent": 1.84,
-    "clones": 7
-  },
+  "src": { "files": 90, "lines": 16688 },
   "knip": {
-    "unusedFiles": 2,
-    "unusedExports": 1,
-    "unusedTypes": 28,
-    "newUnusedFiles": [
-      "src/training/template_v1/audit.ts",
-      "src/training/template_v1/run.ts"
-    ],
-    "newUnusedExports": ["chooseWorkerFamily @ src/lib/planner/projects.ts:107"]
+    "unusedExports": 5,
+    "unusedExportedTypes": 23,
+    "unusedFiles": 0,
+    "unusedDeps": 0,
+    "unusedDevDeps": 0
   },
-  "deadCode": {
-    "voidImportsPattern": "src/training/template_v1/audit.ts had 5 unused imports silenced with `void X`"
-  },
-  "clonesHotspot": {
-    "runTar": "identical 10-line function in batch-export.ts and release.ts — pure 2-instance, token-for-token duplicate"
-  },
-  "outdated": {
-    "@types/node": "20.19.39 -> 25.6.0",
-    "typescript": "5.9.3 -> 6.0.3"
+  "debtMarkers": {
+    "total": 7,
+    "note": "All 7 are TODO string literals inside LLM output templates in src/training/family_proposer/propose.ts — LLM fills them at runtime. Not code debt."
   }
 }

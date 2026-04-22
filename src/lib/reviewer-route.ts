@@ -4,7 +4,7 @@
 // path is last because a local driver doesn't need the governance/billing
 // plane — and its 6k TPM free-tier cap starves long runs.
 
-export interface ReviewerRoute {
+interface ReviewerRoute {
   url: string
   model: string
   style: 'anthropic' | 'openai'

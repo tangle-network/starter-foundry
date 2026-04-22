@@ -1,9 +1,9 @@
 import { ai } from '@ax-llm/ax'
 import type { AxAIService } from '@ax-llm/ax'
 
-export type LLMProvider = 'tangle-router' | 'anthropic' | 'groq' | 'openai' | 'together' | 'google-gemini'
+type LLMProvider = 'tangle-router' | 'anthropic' | 'groq' | 'openai' | 'together' | 'google-gemini'
 
-export interface LLMOptions {
+interface LLMOptions {
   provider?: LLMProvider
   model?: string
   apiKey?: string

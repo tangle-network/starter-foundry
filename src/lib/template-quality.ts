@@ -6,7 +6,7 @@
 // rankings — a version's score never drifts unless the raw audit/summary
 // changes. Weights live here (not in the scripts) so tuning is one-file.
 
-export interface AuditPhase {
+interface AuditPhase {
   phase: string
   ok?: boolean
   skipped?: string
@@ -15,7 +15,7 @@ export interface AuditPhase {
   checksPassed?: number
 }
 
-export interface AuditReport {
+interface AuditReport {
   layerId: string
   family?: string
   pm?: string
@@ -23,7 +23,7 @@ export interface AuditReport {
   phases?: AuditPhase[]
 }
 
-export interface EnrichmentSummary {
+interface EnrichmentSummary {
   familyId: string
   completed: boolean
   shotsUsed: number
@@ -33,7 +33,7 @@ export interface EnrichmentSummary {
   shots: Array<{ shot: number; pass: boolean; durationMs: number }>
 }
 
-export interface QualityScore {
+interface QualityScore {
   score: number
   /** Individual weighted components that sum to `score`. */
   components: {
@@ -57,7 +57,7 @@ export interface QualityScore {
   }
 }
 
-export interface ScoreInput {
+interface ScoreInput {
   audit: AuditReport
   summary?: EnrichmentSummary | null
   /** Number of files in the layer's files/ directory (1 point per file, capped). */

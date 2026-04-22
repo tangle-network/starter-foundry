@@ -1,45 +1,54 @@
 {
-  "timestamp": "2026-04-21T01:05:00Z",
-  "branch": "drew/rlm",
-  "scope": "full-repo post-tier1-closure",
+  "timestamp": "2026-04-22T04:20:00Z",
+  "branch": "fix/deep-clean-post-39",
+  "scope": "post-PR#39 surface reduction",
   "deltas": {
-    "srcLines": { "before": 11534, "after": 11518, "delta": -16 },
-    "duplicationPercent": { "before": 0.8, "after": 0.71, "delta": -0.09 },
-    "clones": { "before": 9, "after": 8, "delta": -1 },
-    "knipUnusedFiles": { "before": 2, "after": 0, "delta": -2 },
-    "knipUnusedExports": { "before": 1, "after": 0, "delta": -1 },
-    "knipUnusedTypes": { "before": 28, "after": 30, "delta": 2, "note": "net +2 from AuditInput/AuditResult now reachable via run.ts entry but not externally imported — kept for internal clarity" },
+    "srcLines": { "before": 16688, "after": 16507, "delta": -181 },
+    "knipUnusedExports": { "before": 5, "after": 0, "delta": -5 },
+    "knipUnusedExportedTypes": { "before": 23, "after": 0, "delta": -23 },
+    "knipUnusedFiles": { "before": 0, "after": 3, "delta": 3, "note": "src/lib/compose-seed.ts, src/training/routing/train.ts, src/types/registry-schemas.generated.ts — all dormant intentional; compose-seed reserved for reproducibility work (Branch 8 ROADMAP), routing/train for Branch 5, generated schema types for when schemas ship as a consumer API. Keeping." },
+    "knipUnusedDeps": { "before": 0, "after": 0 },
+    "knipUnusedDevDeps": { "before": 0, "after": 0, "note": "madge added during baseline capture, removed at end" },
     "typeErrors": { "before": 0, "after": 0 },
     "circularDeps": { "before": 0, "after": 0 },
-    "tests": { "before": 466, "after": 466 }
+    "tests": { "before": "475/481", "after": "475/481", "note": "6 failing integration tests unchanged — toolchain-gated, pre-existing" }
   },
   "changes": {
     "deadCodeRemoved": [
-      "src/training/template_v1/audit.ts — 5 unused imports (readFileSync, readdirSync, statSync, copyFileSync, REPO) previously silenced with `void X`"
+      "src/lib/ab.ts — welchTTest + TTestResult type + 4 private helpers (twoSidedPValue, logGamma, incompleteBeta, betacf), ~90 lines of unused Welch's t-test stats lib",
+      "src/lib/cost.ts — clearRateTableCache, setRateTable, estimateBuildoutCostAsync (unused cost-table mutators + async wrapper)",
+      "src/lib/telemetry/stream.ts — flushOutbox (referenced a stale scripts/telemetry-flush.mjs that never existed)",
+      "src/lib/visual-regression.ts — serializeSnapshot, parseSnapshot (unused snapshot JSON helpers)"
     ],
     "exportsTightened": [
-      "src/lib/planner/projects.ts — chooseWorkerFamily now file-local (only used internally)"
+      "src/lib/ab.ts: Experiment, ExperimentVariant — internal-only",
+      "src/lib/cost.ts: DEFAULT_AVG_TOKENS_PER_TOOL_CALL — internal constant",
+      "src/lib/industry-flows.ts: IndustryFirstTurn, INDUSTRY_FIRST_TURNS — internal-only",
+      "src/lib/telemetry/stream.ts: TelemetryStreamOptions, TelemetryEvent, TelemetryStream, DEFAULT_OUTBOX_PATH — internal-only (types are inferred from createTelemetryStream signature)",
+      "src/lib/visual-regression.ts: SnapshotOptions — internal-only",
+      "src/lib/bridge.ts: isBridgeAvailable, BridgeHarness, BridgeOptions — internal-only (my own net-new surface in #32; trimmed)",
+      "src/lib/buildout-traces.ts: MinerState",
+      "src/lib/capability-inferrer.ts: PackageCapabilityMap, BuildoutLike, InferredCapability, CapabilityMapSummary",
+      "src/lib/llm.ts: LLMProvider, LLMOptions",
+      "src/lib/planner/contracts.ts: AgentFamilyChoice",
+      "src/lib/planner/projects.ts: FamilyChoice",
+      "src/lib/prompt-rewriter.ts: RewriteResult, RewriteArgs, RewriterFn",
+      "src/lib/reviewer-route.ts: ReviewerRoute",
+      "src/lib/semantic-router.ts: SemanticMatch",
+      "src/lib/template-quality.ts: AuditPhase, AuditReport, EnrichmentSummary, QualityScore, ScoreInput",
+      "src/lib/vb-outcomes.ts: ScenarioOutcome",
+      "src/training/family_proposer/propose.ts: ProposeFamilyInput, FamilyProposal",
+      "src/training/template_v1/*.ts: AuditInput, CorrectnessFailure, RewriteTuple, JudgeInput, MultiProposeInput, SynthesizeInput",
+      "src/training/variant_b/flow.ts: FlowInput, VariantBFlowArgs + six re-exported Input types collapsed to Output-only re-exports",
+      "src/training/variant_b/run-flow.ts: RunFullFlowInput"
     ],
-    "extractedShared": [
-      "src/lib/fs.ts — added runTar() helper; dedup'd 2× identical 10-line implementations in batch-export.ts + release.ts"
-    ],
-    "toolingAdjusted": [
-      "knip.json — added src/training/template_v1/run.ts as entry (CLI invoked via `pnpm tsx`, not a static import)"
+    "configUpdates": [
+      "knip.json: added src/eval/{replay,diagnoser,propose}.ts as entry points — they're consumed via dynamic import from scripts/self-heal.mjs and scripts/replay-traces.mjs which knip can't trace."
     ]
   },
-  "notChangedAndWhy": {
-    "unusedTypes": "30 interface/type exports remain unused externally. These are the public integration contract (BuildoutEvent, InferredCapability, SemanticMatch, ScenarioOutcome, LLM types, training harness inputs). External SDKs / tools import them. Keep exported.",
-    "twoInstanceClones": "Remaining 8 clones are 2-instance patterns (e.g. agents CSV parsing in cli.ts cases, timer+spawn in agent-runners vs fatten with different semantics). Per /deep-clean rule: don't DRY two-instance duplication.",
-    "outdatedMajors": "@types/node 20→25 and typescript 5.9→6.0 are major version bumps — scope creep; separate task.",
-    "longFiles": "compose.ts (502), workspace.ts (499), keywords.ts (475) are not bloat — they implement distinct concerns cohesively. Splitting would add import noise without reducing complexity."
-  },
-  "verification": {
-    "build": "pass",
-    "tests": "466/466 pass",
-    "buildoutPipeline": "mine+join+analyze 0.2s, no errors",
-    "madgeCircular": 0,
-    "jscpdSrcPct": 0.71,
-    "knipUnusedFiles": 0,
-    "knipUnusedExports": 0
-  }
+  "nextDeepCleanHints": [
+    "industry manifest appliesTo lists are uniformly frontend-only — tailoring per-industry is a separate shape-up task (gaming→games, finance→smart-contracts+py, etc.)",
+    "src/training/variant_b/flow.ts still has FlowInput + VariantBFlowArgs as unused args types — tied to CLI surface, may still be consumed externally",
+    "3 knip-unused files kept as dormant intentional — revisit when reproducibility / routing-training / generated-schema consumers wire up"
+  ]
 }

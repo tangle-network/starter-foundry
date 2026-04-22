@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url'
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..')
 const REWRITES_DIR = join(REPO, '.evolve/template-rewrites')
 
-export interface RewriteTuple {
+interface RewriteTuple {
   sessionSlug: string
   sessionFile: string
   tool: 'Edit' | 'Write'

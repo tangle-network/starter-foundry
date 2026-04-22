@@ -6,7 +6,7 @@ import { buildVariantBFlow } from './flow.js'
 import { createLLM } from '../../lib/llm.js'
 import type { FlowOutput } from './flow.js'
 
-export interface RunFullFlowInput {
+interface RunFullFlowInput {
   corpusPath?: string
   registryRoot?: string
   tracesDir?: string

@@ -22,7 +22,7 @@
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { extname, join, relative } from 'node:path'
 
-export interface CorrectnessFailure {
+interface CorrectnessFailure {
   kind: 'unused-import' | 'missing-script-src' | 'missing-element-id' | 'entry-id-mismatch'
   file: string
   detail: string

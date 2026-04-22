@@ -56,7 +56,7 @@ export interface VisualDiff {
   changed: Array<{ path: string; beforeSha256: string; afterSha256: string; beforeBytes: number; afterBytes: number }>
 }
 
-export interface SnapshotOptions {
+interface SnapshotOptions {
   /** Additional globs to ignore beyond the defaults. */
   ignore?: string[]
 }
@@ -172,27 +172,3 @@ export function isClean(d: VisualDiff): boolean {
   return d.added.length === 0 && d.removed.length === 0 && d.changed.length === 0
 }
 
-/**
- * Serialize a snapshot as stable JSON suitable for git storage.
- * Fields are ordered and file list is pre-sorted by path.
- */
-export function serializeSnapshot(s: VisualSnapshot): string {
-  return `${JSON.stringify(
-    {
-      schemaVersion: s.schemaVersion,
-      subject: s.subject,
-      generatedAt: s.generatedAt,
-      files: s.files,
-    },
-    null,
-    2,
-  )}\n`
-}
-
-/** Parse a serialized snapshot. Throws on malformed input. */
-export function parseSnapshot(json: string): VisualSnapshot {
-  const o = JSON.parse(json) as VisualSnapshot
-  if (o.schemaVersion !== 1) throw new Error(`unknown snapshot schema version: ${o.schemaVersion}`)
-  if (!Array.isArray(o.files)) throw new Error('snapshot.files must be an array')
-  return o
-}

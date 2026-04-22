@@ -22,7 +22,7 @@ import type { RankInput, RankOutput } from './nodes/rank.js'
 import { promoteNode } from './nodes/promote.js'
 import type { PromoteInput, PromoteOutput } from './nodes/promote.js'
 
-export interface FlowInput {
+interface FlowInput {
   corpusPath: string
   registryRoot: string
   tracesDir: string
@@ -50,7 +50,7 @@ export interface FlowOutput {
 //   rank     (scored)               -> { ranked: RankedCandidate[] }
 //   promote  (ranked, registryRoot) -> { promoted: string[] }
 
-export interface VariantBFlowArgs extends FlowInput {
+interface VariantBFlowArgs extends FlowInput {
   llm: AxAIService
 }
 
@@ -120,9 +120,4 @@ export function buildVariantBFlow() {
     }))
 }
 
-export type { CollectInput, CollectOutput }
-export type { TrainInput, TrainOutput }
-export type { GenerateInput, GenerateOutput }
-export type { JudgeInput, JudgeOutput }
-export type { RankInput, RankOutput }
-export type { PromoteInput, PromoteOutput }
+export type { CollectOutput, TrainOutput, GenerateOutput, JudgeOutput, RankOutput, PromoteOutput }

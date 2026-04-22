@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url'
 import type { BuildoutEvent } from './buildout-traces.js'
 
 /** Average tokens emitted per tool call (tool args + tool result + assistant thinking). */
-export const DEFAULT_AVG_TOKENS_PER_TOOL_CALL = 850
+const DEFAULT_AVG_TOKENS_PER_TOOL_CALL = 850
 
 export interface ModelRate {
   /** Canonical id, e.g. "claude-opus-4-7". */
@@ -57,10 +57,6 @@ export interface CostEstimate {
 
 let cachedTable: CostRateTable | null = null
 
-export function clearRateTableCache(): void {
-  cachedTable = null
-}
-
 export async function loadRateTable(path?: string): Promise<CostRateTable> {
   if (cachedTable && !path) return cachedTable
   const resolvedPath =
@@ -71,10 +67,6 @@ export async function loadRateTable(path?: string): Promise<CostRateTable> {
   if (!Array.isArray(parsed.rates)) throw new Error('rate table must have rates array')
   if (!path) cachedTable = parsed
   return parsed
-}
-
-export function setRateTable(table: CostRateTable): void {
-  cachedTable = table
 }
 
 function pickRate(model: string, table: CostRateTable): ModelRate {
@@ -124,10 +116,3 @@ export function estimateBuildoutCost(
   }
 }
 
-/**
- * Async convenience wrapper that loads the default rate table when needed.
- */
-export async function estimateBuildoutCostAsync(trace: BuildoutEvent): Promise<CostEstimate> {
-  const table = await loadRateTable()
-  return estimateBuildoutCost(trace, table)
-}

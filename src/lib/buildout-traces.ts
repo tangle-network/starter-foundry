@@ -102,7 +102,7 @@ export interface BuildoutOutcome {
   tokenCount?: number | null
 }
 
-export interface MinerState {
+interface MinerState {
   schemaVersion: typeof BUILDOUT_SCHEMA_VERSION
   /** Per-source-path last mtime observed. Unchanged mtime → skip. */
   mtimes: Record<string, number>

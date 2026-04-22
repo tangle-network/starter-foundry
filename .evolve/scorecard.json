@@ -1,29 +1,34 @@
 {
   "product": "starter-foundry",
-  "timestamp": "2026-04-22T21:41:18.474Z",
+  "timestamp": "2026-04-22T23:18:04.572Z",
   "coverage": "13/14 flows measured",
-  "aggregate": 0.46,
+  "aggregate": 0.455,
   "inputs": [
     {
       "path": ".evolve/buildout-analysis.json",
-      "mtime": "2026-04-22T04:38:45.216Z"
+      "mtime": "2026-04-22T23:18:04.563Z"
     },
     {
       "path": ".evolve/capability-gaps.json",
-      "mtime": "2026-04-22T21:20:36.409Z"
+      "mtime": "2026-04-22T23:17:49.948Z"
     },
     {
       "path": ".evolve/scaffold-quality-audit.json",
       "mtime": "2026-04-22T21:41:02.886Z"
+    },
+    {
+      "path": ".evolve/buildout-analysis-internal.json",
+      "mtime": "2026-04-22T23:17:50.438Z"
     }
   ],
-  "sourceMtime": "2026-04-22T18:17:22.067Z",
+  "sourceMtime": "2026-04-22T23:17:44.945Z",
   "stale": {
     "anyFlowStale": true,
-    "buildout": true,
+    "buildout": false,
     "gaps": false,
-    "audit": false
+    "audit": true
   },
+  "buildoutSource": "historical",
   "flows": [
     {
       "name": "route_accuracy_held_out",
@@ -35,12 +40,11 @@
     },
     {
       "name": "buildout_pass_rate",
-      "value": 0.8497109826589595,
+      "value": 0.6933962264150944,
       "target": 0.85,
       "status": "fail",
       "productValueClaim": "Fraction of VB-run agent sessions whose composed scaffold reaches a working state. Directly = user sees something that works.",
-      "direction": "higher-better",
-      "stale": true
+      "direction": "higher-better"
     },
     {
       "name": "scaffold_audit_pass_rate",
@@ -48,7 +52,8 @@
       "target": 1,
       "status": "fail",
       "productValueClaim": "Fraction of framework layers where pnpm install + tsc noEmit succeeds on a freshly composed scaffold. A failure here means agents fight install errors on turn 1.",
-      "direction": "higher-better"
+      "direction": "higher-better",
+      "stale": true
     },
     {
       "name": "scaffold_gap_installs",
@@ -64,17 +69,15 @@
       "target": 5,
       "status": "fail",
       "productValueClaim": "Rewrite count for the most-rewritten file in the corpus. High number = scaffold shipped a template agents systematically replace. Lower = tokens spent on features instead of setup.",
-      "direction": "lower-better",
-      "stale": true
+      "direction": "lower-better"
     },
     {
       "name": "median_turns_per_buildout",
-      "value": 101,
+      "value": 67,
       "target": 40,
       "status": "fail",
       "productValueClaim": "Median number of agent turns per buildout session. Fewer turns = agent reaches working preview faster = less user wait + fewer tokens spent on setup that could go to features.",
       "direction": "lower-better",
-      "stale": true,
       "notes": "scenario-mean-weighted — unweighted by run count per scenario"
     },
     {
@@ -87,12 +90,11 @@
     },
     {
       "name": "median_wall_seconds_per_buildout",
-      "value": 903.2,
+      "value": 528.6,
       "target": 600,
-      "status": "fail",
+      "status": "pass",
       "productValueClaim": "Median wall-time per buildout session in seconds. Faster = user sees working product sooner = lower abandon rate.",
-      "direction": "lower-better",
-      "stale": true
+      "direction": "lower-better"
     },
     {
       "name": "orchestration_installs",
@@ -104,12 +106,11 @@
     },
     {
       "name": "estimated_tokens_per_buildout",
-      "value": 202667,
+      "value": 133200,
       "target": 80000,
       "status": "fail",
       "productValueClaim": "Median tokens spent per buildout (real when emitBuildoutEvent supplies tokenCount, proxy from turns otherwise). Fewer tokens = lower cost per user session + lower LLM API cost for consumers.",
-      "direction": "lower-better",
-      "stale": true
+      "direction": "lower-better"
     },
     {
       "name": "cost_usd_per_buildout",
@@ -117,8 +118,7 @@
       "target": 0.5,
       "status": "unmeasured",
       "productValueClaim": "Mean $ cost per scaffold buildout. Catches regressions where a change doubles token spend even if pass rate stays flat. Drives the ROI conversation on every future capability — is the delta on pass rate worth $X more per user?",
-      "direction": "lower-better",
-      "stale": true
+      "direction": "lower-better"
     },
     {
       "name": "families",

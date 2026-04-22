@@ -173,4 +173,67 @@ describe('refresh-scorecard', () => {
       rmSync(dir, { recursive: true, force: true })
     }
   })
+
+  // Gen-3: counterfactual fallback. When main analysis is stale AND
+  // internal analysis is fresh, scorecard reads from internal and marks
+  // the buildout-derived flows with source:'counterfactual' instead of
+  // stale:true.
+  test('counterfactual fallback substitutes when main stale + internal fresh', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'scorecard-cf-test-'))
+    try {
+      writeFixture(dir, {
+        buildoutsJsonl: JSON.stringify({ outcome: { toolCallsTotal: 50, allPass: true }, scenarioId: 's1' }),
+        // Main stale pass rate = 0.5
+        buildoutAnalysis: { summary: { passRate: 0.5, costRollup: {} }, perScenario: [], topRewrittenFiles: [] },
+        markStaleBy: 'buildout',
+      })
+      // Internal analysis is fresh + has a different pass rate (0.99) so we
+      // can tell which source the scorecard read from.
+      mkdirSync(join(dir, '.evolve'), { recursive: true })
+      writeFileSync(
+        join(dir, '.evolve/buildout-analysis-internal.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          generator: 'starter-foundry:replay-traces',
+          summary: { passRate: 0.99, costRollup: {} },
+          perScenario: [],
+        }),
+      )
+      const res = runScorecardIn(dir)
+      assert.equal(res.code, 0, res.stdout)
+      const out = JSON.parse(readFileSync(join(dir, '.evolve/scorecard.json'), 'utf8'))
+      assert.equal(out.buildoutSource, 'counterfactual', 'buildoutSource marker present')
+      const passRate = out.flows.find((f: any) => f.name === 'buildout_pass_rate')
+      // Scorecard should have read 0.99 (internal), not 0.5 (main/stale).
+      assert.equal(passRate.value, 0.99, 'read from internal when main stale')
+      assert.notEqual(passRate.stale, true, 'not stale when counterfactual substitutes')
+      assert.equal(passRate.source, 'counterfactual', 'source marker on the flow')
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  })
+
+  test('counterfactual NOT used when main is fresh', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'scorecard-cf-test-'))
+    try {
+      writeFixture(dir, {
+        buildoutsJsonl: JSON.stringify({ outcome: { toolCallsTotal: 50, allPass: true }, scenarioId: 's1' }),
+        buildoutAnalysis: { summary: { passRate: 0.75, costRollup: {} }, perScenario: [], topRewrittenFiles: [] },
+      })
+      // Both main and internal exist, both fresh. Scorecard should prefer main.
+      mkdirSync(join(dir, '.evolve'), { recursive: true })
+      writeFileSync(
+        join(dir, '.evolve/buildout-analysis-internal.json'),
+        JSON.stringify({ summary: { passRate: 0.99, costRollup: {} }, perScenario: [] }),
+      )
+      const res = runScorecardIn(dir)
+      assert.equal(res.code, 0, res.stdout)
+      const out = JSON.parse(readFileSync(join(dir, '.evolve/scorecard.json'), 'utf8'))
+      assert.equal(out.buildoutSource, 'historical', 'historical when main fresh')
+      const passRate = out.flows.find((f: any) => f.name === 'buildout_pass_rate')
+      assert.equal(passRate.value, 0.75, 'read from main when fresh')
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  })
 })

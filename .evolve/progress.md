@@ -1,5 +1,32 @@
 # Evolve Progress — starter-foundry routing quality
 
+## 2026-04-22 (evening) — Pursuit Gen 3: measurement freshness (scorecard self-heals)
+
+Pursuit: `.evolve/pursuits/2026-04-22-measurement-freshness.md`. Thesis: "the scorecard is self-fresh — it regenerates stale inputs at read time, so any `/governor` invocation reads honest data regardless of what the operator remembered." Gen 2 shipped the staleness gate (detection); Gen 3 closes the loop (auto-fix).
+
+**Changes shipped (9):**
+- `scripts/measure-refresh.mjs` — unified orchestrator. Runs only stages whose outputs are older than inputs. Idempotent. ~1s when clean, <10s worst case.
+- `scripts/refresh-scorecard.mjs` read-time self-heal — when `buildout-analysis.json` / `capability-gaps.json` / `buildout-analysis-internal.json` is stale at read time, auto-regen before continuing. Env-guarded via `STARTER_FOUNDRY_NO_SELF_HEAL=1`.
+- Counterfactual fallback — when main is stale and internal is fresh, read internal, mark flows with `source: 'counterfactual'` instead of `stale: true`.
+- `src/eval/replay.ts` schema extension — emits `topRewrittenFiles` + `costRollup` so internal analysis is drop-in compatible with main for scorecard reads.
+- `package.json` scripts — `measure:refresh`, `measure:check`, `setup:hooks`.
+- `scripts/hooks/pre-push.sh` + `scripts/install-git-hooks.mjs` — pre-push blocks stale pushes; clear bypass docs (`--no-verify`, per-clone config key).
+- `.github/workflows/nightly-measurement.yml` simplified — single `pnpm measure:refresh` call replaces manual stage chain.
+- `tests/measure-refresh.test.ts` + `tests/refresh-scorecard.test.ts` extensions — 5 new assertions (+633/633 pass).
+- `docs/MEASUREMENT.md` — freshness contract in one page.
+
+**Verified end-to-end:**
+- Touched source mtime forward → `measure:check` reported drift → `measure:refresh` cleaned it → second `measure:check` clean. Idempotent.
+- Backdated `buildout-analysis.json` by 1h → ran `refresh-scorecard.mjs` directly → self-heal log line fired → output mtime current → scorecard read fresh value.
+- Tests: 633/633 (+5 new, +0 regressions).
+- Diff audit: 0 CRITs, 0 HIGHs.
+
+**Expected impact:** time-to-fresh-scorecard after a VB sweep drops from "until operator remembers" (unbounded, historically multi-hour) to "next scorecard read or next push, whichever comes first" (≤1s read, pre-push enforcement).
+
+**Next:** operator merges PR #46 → next VB sweep → dispatch `/governor` for exploit/explore against self-fresh data.
+
+---
+
 ## 2026-04-22 — Pursuit Gen 2: measurement integrity (scorecard as truth)
 
 Pursuit: `.evolve/pursuits/2026-04-22-measurement-integrity.md`. Thesis: "the scorecard is the governor's truth — every flow is either freshness-gated or self-regenerating, and every flow has a unit test pinning its computation." Rationale: three independent measurement distortions shipped undetected in one day (stale scorecard, stale capability-gaps, audit derivation bug), and without architectural guards the pattern would repeat every round.

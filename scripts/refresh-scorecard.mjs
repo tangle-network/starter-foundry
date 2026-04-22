@@ -13,6 +13,7 @@
 // Output: .evolve/scorecard.json with fresh timestamp.
 
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'node:fs'
+import { spawnSync } from 'node:child_process'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -22,6 +23,75 @@ import { fileURLToPath } from 'node:url'
 const REPO = process.env.STARTER_FOUNDRY_REPO_OVERRIDE
   ?? resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const OUT = join(REPO, '.evolve/scorecard.json')
+
+// Gen-3: read-time self-heal. When a derived input is older than the
+// canonical source (.evolve/traces/buildouts.jsonl), spawn the specific
+// stage that regenerates it BEFORE reading, then continue. Makes the
+// scorecard self-fresh: any caller invoking this script gets honest
+// data regardless of what pipeline runs the operator remembered.
+//
+// Disabled when:
+//   STARTER_FOUNDRY_NO_SELF_HEAL=1       - tests + measure-refresh.mjs set this
+//   STARTER_FOUNDRY_REPO_OVERRIDE is set - test fixtures don't have the scripts
+const SELF_HEAL =
+  process.env.STARTER_FOUNDRY_NO_SELF_HEAL !== '1'
+  && !process.env.STARTER_FOUNDRY_REPO_OVERRIDE
+
+function mtimeOf(path) {
+  try { return existsSync(path) ? statSync(path).mtime.getTime() : 0 } catch { return 0 }
+}
+
+function hoursBetween(newerMs, olderMs) {
+  return ((newerMs - olderMs) / 3_600_000).toFixed(1)
+}
+
+function trySelfHeal(targetPath, scriptRel, reason) {
+  if (!SELF_HEAL) return false
+  const scriptPath = join(REPO, scriptRel)
+  if (!existsSync(scriptPath)) return false
+  console.error(`[self-heal] regenerating ${targetPath.replace(REPO + '/', '')} (${reason})`)
+  const r = spawnSync(process.execPath, [scriptPath], {
+    cwd: REPO,
+    env: { ...process.env, STARTER_FOUNDRY_NO_SELF_HEAL: '1' },
+    stdio: 'pipe',
+    encoding: 'utf8',
+  })
+  if (r.status !== 0) {
+    console.error(`[self-heal] regen failed (exit ${r.status}); keeping stale file`)
+    return false
+  }
+  return true
+}
+
+// The canonical freshness anchor — every derived file is supposed to
+// reflect this source. If a derived artifact's mtime is older than
+// buildouts.jsonl, flag every flow computed from it as stale.
+const SOURCE_PATH = join(REPO, '.evolve/traces/buildouts.jsonl')
+const SOURCE_MTIME = mtimeOf(SOURCE_PATH)
+
+// Gen-3: before reading any analysis file, if the source is newer,
+// regen the analysis. One regen attempt per input per invocation.
+function healIfStale(analysisPath, scriptRel) {
+  if (SOURCE_MTIME === 0) return // source missing — nothing to heal against
+  const outMtime = mtimeOf(analysisPath)
+  if (outMtime >= SOURCE_MTIME) return // already fresh
+  const age = outMtime === 0 ? '(missing)' : `${hoursBetween(SOURCE_MTIME, outMtime)}h stale`
+  trySelfHeal(analysisPath, scriptRel, age)
+}
+
+healIfStale(join(REPO, '.evolve/buildout-analysis.json'), 'scripts/analyze-buildouts.mjs')
+healIfStale(join(REPO, '.evolve/capability-gaps.json'), 'scripts/infer-capability-gaps.mjs')
+// scaffold-quality-audit is 20-30 min to regen; flag-only (no self-heal).
+// replay-traces is fast and deterministic — always run when SELF_HEAL is on.
+if (SELF_HEAL && existsSync(join(REPO, 'scripts/replay-traces.mjs'))) {
+  const replayOut = join(REPO, '.evolve/buildout-analysis-internal.json')
+  // Run replay when its output is older than source OR doesn't exist.
+  // Registry changes are not mtime-tracked here — measure-refresh handles
+  // that deeper check; this is the read-time safety net.
+  if (mtimeOf(replayOut) < SOURCE_MTIME) {
+    trySelfHeal(replayOut, 'scripts/replay-traces.mjs', 'counterfactual refresh')
+  }
+}
 
 // Gen-2: track every file we read so the scorecard can manifest them
 // alongside mtimes. A flow whose input file is older than the canonical
@@ -39,26 +109,53 @@ function readJson(path) {
   }
 }
 
-function mtimeOf(path) {
-  try { return existsSync(path) ? statSync(path).mtime.getTime() : 0 } catch { return 0 }
-}
-
-// The canonical freshness anchor — every derived file is supposed to
-// reflect this source. If a derived artifact's mtime is older than
-// buildouts.jsonl, flag every flow computed from it as stale.
-const SOURCE_MTIME = mtimeOf(join(REPO, '.evolve/traces/buildouts.jsonl'))
-
 const buildout = readJson(join(REPO, '.evolve/buildout-analysis.json'))
 const gaps = readJson(join(REPO, '.evolve/capability-gaps.json'))
 const audit = readJson(join(REPO, '.evolve/scaffold-quality-audit.json'))
 
+// Gen-3: counterfactual fallback. When buildout-analysis.json is stale but
+// buildout-analysis-internal.json (replay-traces output) is fresh, the
+// internal data can substitute for the scorecard's buildout-derived flows.
+// Not all fields map 1:1 — topRewrittenFiles only exists in main analysis —
+// so this is partial substitution with a marker.
+const buildoutInternal = readJson(join(REPO, '.evolve/buildout-analysis-internal.json'))
+const useCounterfactual =
+  buildoutInternal
+  && mtimeOf(join(REPO, '.evolve/buildout-analysis.json')) < SOURCE_MTIME
+  && mtimeOf(join(REPO, '.evolve/buildout-analysis-internal.json')) >= SOURCE_MTIME
+
 // Per-input staleness: true when the input file is OLDER than the
-// canonical source. Flows downstream of a stale input get marked stale.
+// canonical source. Flows downstream of a stale input get marked stale,
+// unless the counterfactual (buildout-analysis-internal.json) is fresh
+// and can substitute — in which case the flow is marked `source:
+// 'counterfactual'` instead of `stale: true`, and read from internal.
+const buildoutStale = mtimeOf(join(REPO, '.evolve/buildout-analysis.json')) < SOURCE_MTIME
 const staleness = {
-  buildout: mtimeOf(join(REPO, '.evolve/buildout-analysis.json')) < SOURCE_MTIME,
+  buildout: buildoutStale && !useCounterfactual,
   gaps: mtimeOf(join(REPO, '.evolve/capability-gaps.json')) < SOURCE_MTIME,
   audit: mtimeOf(join(REPO, '.evolve/scaffold-quality-audit.json')) < SOURCE_MTIME,
 }
+// When counterfactual is used, mark the buildout-derived flows so
+// downstream readers know the source shifted.
+const buildoutSource = useCounterfactual ? 'counterfactual' : 'historical'
+
+// Resolver: prefer main buildout analysis; fall back to internal when stale
+// and internal is fresh. Returns the effective buildout-like object for
+// scorecard flows; some fields (topRewrittenFiles) exist only on main.
+const effectiveBuildout = useCounterfactual
+  ? {
+      // Schema-harmonize: internal has { summary, perScenario, ... } shape
+      // close enough to main for the scorecard's purposes. Missing fields
+      // (topRewrittenFiles, topAddedPackages) are pulled from main if it
+      // exists at all, even if stale — a stale topRewrittenFiles still
+      // matters because it's direction-preserving across single sweeps.
+      summary: buildoutInternal.summary,
+      perScenario: buildoutInternal.perScenario,
+      topRewrittenFiles: buildout?.topRewrittenFiles ?? [],
+      topAddedPackages: buildout?.topAddedPackages ?? [],
+      topAddedDirs: buildout?.topAddedDirs ?? [],
+    }
+  : buildout
 
 // Registry counts (data-derived).
 const familyCount = readdirSync(join(REPO, 'registry/families')).filter((e) => !e.startsWith('_') && !e.startsWith('.')).length
@@ -104,7 +201,7 @@ const flows = [
   // Buildout end-to-end.
   {
     name: 'buildout_pass_rate',
-    value: buildout?.summary?.passRate ?? null,
+    value: effectiveBuildout?.summary?.passRate ?? null,
     target: 0.85,
     productValueClaim: 'Fraction of VB-run agent sessions whose composed scaffold reaches a working state. Directly = user sees something that works.',
     stale: staleness.buildout,
@@ -129,7 +226,7 @@ const flows = [
   // Rewrite waste (top rewritten file).
   {
     name: 'top_file_rewrite_count',
-    value: buildout?.topRewrittenFiles?.[0]?.timesRewritten ?? null,
+    value: effectiveBuildout?.topRewrittenFiles?.[0]?.timesRewritten ?? null,
     target: 5,
     productValueClaim: 'Rewrite count for the most-rewritten file in the corpus. High number = scaffold shipped a template agents systematically replace. Lower = tokens spent on features instead of setup.',
     direction: 'lower-better',
@@ -142,7 +239,7 @@ const flows = [
   {
     name: 'median_turns_per_buildout',
     value: (() => {
-      const turns = (buildout?.perScenario ?? []).map((s) => s.meanTurns).filter((v) => typeof v === 'number' && v > 0)
+      const turns = (effectiveBuildout?.perScenario ?? []).map((s) => s.meanTurns).filter((v) => typeof v === 'number' && v > 0)
       if (turns.length === 0) return null
       turns.sort((a, b) => a - b)
       const mid = turns[Math.floor(turns.length / 2)]
@@ -168,7 +265,7 @@ const flows = [
   {
     name: 'median_wall_seconds_per_buildout',
     value: (() => {
-      const outcomes = (buildout?.perScenario ?? []).map((s) => s.meanWallMs).filter((v) => typeof v === 'number' && v > 0)
+      const outcomes = (effectiveBuildout?.perScenario ?? []).map((s) => s.meanWallMs).filter((v) => typeof v === 'number' && v > 0)
       if (outcomes.length === 0) return null
       outcomes.sort((a, b) => a - b)
       const mid = outcomes[Math.floor(outcomes.length / 2)]
@@ -196,10 +293,10 @@ const flows = [
     name: 'estimated_tokens_per_buildout',
     value: (() => {
       // Prefer real token count from cost rollup when present.
-      const real = buildout?.summary?.costRollup?.meanTokens
+      const real = effectiveBuildout?.summary?.costRollup?.meanTokens
       if (typeof real === 'number' && real > 0) return Math.round(real)
       // Fallback proxy: median turns × 2k tokens/turn.
-      const turns = (buildout?.perScenario ?? []).map((s) => s.meanTurns).filter((v) => typeof v === 'number' && v > 0)
+      const turns = (effectiveBuildout?.perScenario ?? []).map((s) => s.meanTurns).filter((v) => typeof v === 'number' && v > 0)
       if (turns.length === 0) return null
       turns.sort((a, b) => a - b)
       const medianTurns = turns[Math.floor(turns.length / 2)]
@@ -216,7 +313,7 @@ const flows = [
   {
     name: 'cost_usd_per_buildout',
     value: (() => {
-      const mean = buildout?.summary?.costRollup?.meanCostUsd
+      const mean = effectiveBuildout?.summary?.costRollup?.meanCostUsd
       return typeof mean === 'number' ? Number(mean.toFixed(4)) : null
     })(),
     target: 0.5,
@@ -272,6 +369,12 @@ const scorecard = {
     anyFlowStale: Object.values(staleness).some(Boolean),
     ...staleness,
   },
+  // Gen-3: records which source fed the buildout-derived flows — either
+  // 'historical' (main buildout-analysis.json, possibly stale) or
+  // 'counterfactual' (buildout-analysis-internal.json, always fresh-by-
+  // construction because it replays against current registry). Governor
+  // can weight decisions differently for each.
+  buildoutSource,
   flows: flows.map((f) => ({
     name: f.name,
     value: f.value,
@@ -285,6 +388,10 @@ const scorecard = {
     direction: f.direction ?? 'higher-better',
     ...(f.stale ? { stale: true } : {}),
     ...(f.notes ? { notes: f.notes } : {}),
+    // Gen-3: buildout-derived flows carry the source marker so consumers
+    // see that a 'counterfactual' number is the replay-against-current,
+    // not the historical record.
+    ...(f.stale === staleness.buildout && buildoutSource === 'counterfactual' ? { source: 'counterfactual' } : {}),
   })),
 }
 

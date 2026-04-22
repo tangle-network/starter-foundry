@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "generator": "starter-foundry:replay-traces",
-  "registryCommit": "ebe8042",
+  "registryCommit": "7afd775",
   "summary": {
-    "generatedAt": "2026-04-22T21:08:22.512Z",
+    "generatedAt": "2026-04-22T23:20:53.056Z",
     "totalBuildouts": 192,
     "withOutcome": 114,
     "passRate": 0.8245614035087719,
@@ -29,7 +29,16 @@
     "totalPreventedInstalls": 65,
     "totalRemainingGapInstalls": 37,
     "preventionRate": 0.6372549019607843,
-    "estimatedGapInstallsPerBuildout": 0.19270833333333334
+    "estimatedGapInstallsPerBuildout": 0.19270833333333334,
+    "costRollup": {
+      "sampleCount": 0,
+      "meanCostUsd": null,
+      "meanTokens": null,
+      "totalCostUsd": null,
+      "totalTokens": null,
+      "meanCostOnPass": null,
+      "meanCostOnFail": null
+    }
   },
   "perScenario": [
     {
@@ -675,6 +684,128 @@
     {
       "key": "circomlib",
       "timesPrevented": 3
+    }
+  ],
+  "topRewrittenFiles": [
+    {
+      "file": "src/App.tsx",
+      "timesRewritten": 12,
+      "rewrittenOnPass": 7,
+      "rewrittenOnFail": 5
+    },
+    {
+      "file": "src/index.css",
+      "timesRewritten": 8,
+      "rewrittenOnPass": 4,
+      "rewrittenOnFail": 4
+    },
+    {
+      "file": "src/components/StatusPipeline.tsx",
+      "timesRewritten": 8,
+      "rewrittenOnPass": 8,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/profiler.rs",
+      "timesRewritten": 5,
+      "rewrittenOnPass": 5,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/components/SwapCard.tsx",
+      "timesRewritten": 5,
+      "rewrittenOnPass": 0,
+      "rewrittenOnFail": 5
+    },
+    {
+      "file": "src/main.rs",
+      "timesRewritten": 4,
+      "rewrittenOnPass": 4,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/optimizer.rs",
+      "timesRewritten": 4,
+      "rewrittenOnPass": 4,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/lib/contract.ts",
+      "timesRewritten": 4,
+      "rewrittenOnPass": 0,
+      "rewrittenOnFail": 4
+    },
+    {
+      "file": "src/components/WithdrawPanel.tsx",
+      "timesRewritten": 4,
+      "rewrittenOnPass": 0,
+      "rewrittenOnFail": 4
+    },
+    {
+      "file": "src/StarterCounter.sol",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "nft-mint-page-5CnSiH/foundry.toml",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "dex-swap-JlVn7j/package.json",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 0,
+      "rewrittenOnFail": 3
+    },
+    {
+      "file": "dao-proposals-UHUR7e/index.html",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/components/CreateProposal.tsx",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/agentEngine.ts",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/components/KillSwitch.tsx",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/lib/crypto.ts",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 0,
+      "rewrittenOnFail": 3
+    },
+    {
+      "file": "nft-mint-page-bY9G4a/foundry.toml",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/NFTCollection.sol",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
+    },
+    {
+      "file": "src/pages/ProposalList.tsx",
+      "timesRewritten": 3,
+      "rewrittenOnPass": 3,
+      "rewrittenOnFail": 0
     }
   ]
 }

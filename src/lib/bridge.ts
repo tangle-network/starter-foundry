@@ -11,12 +11,15 @@
 
 import { TCloudClient, type BridgeSession } from '@tangle-network/tcloud'
 
-export type BridgeHarness = 'kimi' | 'claude' | 'codex'
+export type BridgeHarness = 'kimi-code' | 'claude-code' | 'codex'
 
 export interface BridgeOptions {
-  /** Which CLI harness to drive. Defaults to 'kimi'. */
+  /** Which CLI harness to drive. Defaults to 'kimi-code'. */
   harness?: BridgeHarness
-  /** Harness-specific model name. Defaults per harness: kimi=kimi-for-coding, claude=sonnet, codex=gpt-5-codex. */
+  /** Harness-specific model name. Defaults per harness:
+   * kimi-code=kimi-for-coding, claude-code=sonnet, codex=gpt-5-codex.
+   * These are Moonshot/Anthropic/OpenAI product/subscription names, not
+   * model-version strings — the wire form is `bridge/<harness>/<model>`. */
   model?: string
   /** Session resume slug. REQUIRED — all follow-up calls with the same
    * slug land on the same CLI conversation without re-tokenizing prior
@@ -25,8 +28,8 @@ export interface BridgeOptions {
 }
 
 const DEFAULT_MODELS: Record<BridgeHarness, string> = {
-  kimi: 'kimi-for-coding',
-  claude: 'sonnet',
+  'kimi-code': 'kimi-for-coding',
+  'claude-code': 'sonnet',
   codex: 'gpt-5-codex',
 }
 
@@ -53,7 +56,7 @@ export function createBridge(opts: BridgeOptions): BridgeSession {
   }
 
   const tcloud = new TCloudClient({ apiKey, baseURL: ROUTER_API_BASE })
-  const harness = opts.harness ?? 'kimi'
+  const harness = opts.harness ?? 'kimi-code'
   const model = opts.model ?? DEFAULT_MODELS[harness]
 
   return tcloud.bridge({ harness, model, unlock, resume: opts.resume })

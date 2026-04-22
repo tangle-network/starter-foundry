@@ -87,7 +87,7 @@ export async function proposeEdit(
     }
   }
 
-  const session = createBridge({ harness: 'kimi', model: 'kimi-for-coding', resume: resumeKey })
+  const session = createBridge({ harness: 'kimi-code', model: 'kimi-for-coding', resume: resumeKey })
   const response = await session.ask(task)
   return { clusterId: proposal.clusterId, resumeKey, dispatched: true, response }
 }

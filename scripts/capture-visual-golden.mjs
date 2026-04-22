@@ -26,9 +26,9 @@ const CHECK = process.argv.includes('--check')
 // graduates to "must not regress" status. Keep small and representative.
 const SPECS = [
   { name: 'react-vite-ts-landing', spec: { projectName: 'golden-rv', family: 'react-vite-ts', layers: ['framework:react-vite-ts', 'capability:layout-landing'], partner: null, slots: {}, variables: { headline: 'Golden', subheadline: 'Golden' } } },
-  { name: 'nextjs-ts-dashboard', spec: { projectName: 'golden-nx', family: 'nextjs-ts', layers: ['framework:nextjs-ts', 'capability:layout-dashboard', 'capability:layout-admin'], partner: null, slots: {}, variables: { headline: 'Golden', subheadline: 'Golden' } } },
+  { name: 'nextjs-ts-dashboard', spec: { projectName: 'golden-nx', family: 'nextjs-ts', layers: ['framework:nextjs-app-router', 'capability:layout-dashboard', 'capability:layout-admin'], partner: null, slots: {}, variables: { headline: 'Golden', subheadline: 'Golden' } } },
   { name: 'fullstack-ts-saas', spec: { projectName: 'golden-fs', family: 'fullstack-ts', layers: ['framework:fullstack-node-ts', 'capability:saas-teams', 'capability:multi-tenancy'], partner: null, slots: {}, variables: { headline: 'Golden', subheadline: 'Golden' } } },
-  { name: 'astro-static-landing', spec: { projectName: 'golden-as', family: 'astro-static', layers: ['framework:astro-static', 'capability:layout-landing'], partner: null, slots: {}, variables: { headline: 'Golden', subheadline: 'Golden' } } },
+  { name: 'astro-static-plain', spec: { projectName: 'golden-as', family: 'astro-static', layers: ['framework:astro-static'], partner: null, slots: {}, variables: { headline: 'Golden', subheadline: 'Golden' } } },
   { name: 'bun-http-api', spec: { projectName: 'golden-bn', family: 'bun-http', layers: ['framework:bun-http'], partner: null, slots: {}, variables: { headline: 'Golden', subheadline: 'Golden' } } },
 ]
 

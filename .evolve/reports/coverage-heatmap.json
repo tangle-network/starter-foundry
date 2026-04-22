@@ -1,0 +1,967 @@
+{
+  "generatedAt": "2026-04-21T23:09:36.543Z",
+  "industries": [
+    "creative",
+    "crypto",
+    "ecommerce",
+    "education",
+    "finance",
+    "fitness",
+    "gaming",
+    "health",
+    "restaurant",
+    "saas"
+  ],
+  "partners": [
+    "arbitrum",
+    "avalanche",
+    "chainlink",
+    "coinbase",
+    "eigenlayer",
+    "farcaster",
+    "hyperliquid",
+    "lens",
+    "linea",
+    "monad",
+    "polygon",
+    "sei-evm",
+    "solana",
+    "sui",
+    "tangle",
+    "tempo",
+    "tether",
+    "usdc-circle",
+    "xlayer"
+  ],
+  "runtimes": [
+    "web-frontend",
+    "web-fullstack",
+    "backend-node",
+    "backend-py",
+    "backend-rust",
+    "backend-go",
+    "mobile",
+    "desktop",
+    "smart-contracts",
+    "gpu-inference",
+    "games",
+    "av-realtime",
+    "verticals"
+  ],
+  "industryRuntime": {
+    "creative": {
+      "web-frontend": 6,
+      "web-fullstack": 1,
+      "backend-node": 0,
+      "backend-py": 0,
+      "backend-rust": 0,
+      "backend-go": 0,
+      "mobile": 0,
+      "desktop": 0,
+      "smart-contracts": 0,
+      "gpu-inference": 0,
+      "games": 0,
+      "av-realtime": 0,
+      "verticals": 0
+    },
+    "crypto": {
+      "web-frontend": 6,
+      "web-fullstack": 1,
+      "backend-node": 0,
+      "backend-py": 0,
+      "backend-rust": 0,
+      "backend-go": 0,
+      "mobile": 0,
+      "desktop": 0,
+      "smart-contracts": 0,
+      "gpu-inference": 0,
+      "games": 0,
+      "av-realtime": 0,
+      "verticals": 0
+    },
+    "ecommerce": {
+      "web-frontend": 6,
+      "web-fullstack": 1,
+      "backend-node": 0,
+      "backend-py": 0,
+      "backend-rust": 0,
+      "backend-go": 0,
+      "mobile": 0,
+      "desktop": 0,
+      "smart-contracts": 0,
+      "gpu-inference": 0,
+      "games": 0,
+      "av-realtime": 0,
+      "verticals": 0
+    },
+    "education": {
+      "web-frontend": 6,
+      "web-fullstack": 1,
+      "backend-node": 0,
+      "backend-py": 0,
+      "backend-rust": 0,
+      "backend-go": 0,
+      "mobile": 0,
+      "desktop": 0,
+      "smart-contracts": 0,
+      "gpu-inference": 0,
+      "games": 0,
+      "av-realtime": 0,
+      "verticals": 0
+    },
+    "finance": {
+      "web-frontend": 6,
+      "web-fullstack": 1,
+      "backend-node": 0,
+      "backend-py": 0,
+      "backend-rust": 0,
+      "backend-go": 0,
+      "mobile": 0,
+      "desktop": 0,
+      "smart-contracts": 0,
+      "gpu-inference": 0,
+      "games": 0,
+      "av-realtime": 0,
+      "verticals": 0
+    },
+    "fitness": {
+      "web-frontend": 6,
+      "web-fullstack": 1,
+      "backend-node": 0,
+      "backend-py": 0,
+      "backend-rust": 0,
+      "backend-go": 0,
+      "mobile": 0,
+      "desktop": 0,
+      "smart-contracts": 0,
+      "gpu-inference": 0,
+      "games": 0,
+      "av-realtime": 0,
+      "verticals": 0
+    },
+    "gaming": {
+      "web-frontend": 6,
+      "web-fullstack": 1,
+      "backend-node": 0,
+      "backend-py": 0,
+      "backend-rust": 0,
+      "backend-go": 0,
+      "mobile": 0,
+      "desktop": 0,
+      "smart-contracts": 0,
+      "gpu-inference": 0,
+      "games": 0,
+      "av-realtime": 0,
+      "verticals": 0
+    },
+    "health": {
+      "web-frontend": 6,
+      "web-fullstack": 1,
+      "backend-node": 0,
+      "backend-py": 0,
+      "backend-rust": 0,
+      "backend-go": 0,
+      "mobile": 0,
+      "desktop": 0,
+      "smart-contracts": 0,
+      "gpu-inference": 0,
+      "games": 0,
+      "av-realtime": 0,
+      "verticals": 0
+    },
+    "restaurant": {
+      "web-frontend": 6,
+      "web-fullstack": 1,
+      "backend-node": 0,
+      "backend-py": 0,
+      "backend-rust": 0,
+      "backend-go": 0,
+      "mobile": 0,
+      "desktop": 0,
+      "smart-contracts": 0,
+      "gpu-inference": 0,
+      "games": 0,
+      "av-realtime": 0,
+      "verticals": 0
+    },
+    "saas": {
+      "web-frontend": 6,
+      "web-fullstack": 1,
+      "backend-node": 0,
+      "backend-py": 0,
+      "backend-rust": 0,
+      "backend-go": 0,
+      "mobile": 0,
+      "desktop": 0,
+      "smart-contracts": 0,
+      "gpu-inference": 0,
+      "games": 0,
+      "av-realtime": 0,
+      "verticals": 0
+    }
+  },
+  "industryPartner": {
+    "creative": {
+      "arbitrum": 0,
+      "avalanche": 0,
+      "chainlink": 0,
+      "coinbase": 0,
+      "eigenlayer": 0,
+      "farcaster": 0,
+      "hyperliquid": 0,
+      "lens": 0,
+      "linea": 0,
+      "monad": 0,
+      "polygon": 0,
+      "sei-evm": 0,
+      "solana": 0,
+      "sui": 0,
+      "tangle": 0,
+      "tempo": 0,
+      "tether": 0,
+      "usdc-circle": 0,
+      "xlayer": 0
+    },
+    "crypto": {
+      "arbitrum": 0,
+      "avalanche": 0,
+      "chainlink": 0,
+      "coinbase": 0,
+      "eigenlayer": 0,
+      "farcaster": 0,
+      "hyperliquid": 0,
+      "lens": 0,
+      "linea": 0,
+      "monad": 0,
+      "polygon": 0,
+      "sei-evm": 0,
+      "solana": 0,
+      "sui": 0,
+      "tangle": 0,
+      "tempo": 0,
+      "tether": 0,
+      "usdc-circle": 0,
+      "xlayer": 0
+    },
+    "ecommerce": {
+      "arbitrum": 0,
+      "avalanche": 0,
+      "chainlink": 0,
+      "coinbase": 0,
+      "eigenlayer": 0,
+      "farcaster": 0,
+      "hyperliquid": 0,
+      "lens": 0,
+      "linea": 0,
+      "monad": 0,
+      "polygon": 0,
+      "sei-evm": 0,
+      "solana": 0,
+      "sui": 0,
+      "tangle": 0,
+      "tempo": 0,
+      "tether": 0,
+      "usdc-circle": 0,
+      "xlayer": 0
+    },
+    "education": {
+      "arbitrum": 0,
+      "avalanche": 0,
+      "chainlink": 0,
+      "coinbase": 0,
+      "eigenlayer": 0,
+      "farcaster": 0,
+      "hyperliquid": 0,
+      "lens": 0,
+      "linea": 0,
+      "monad": 0,
+      "polygon": 0,
+      "sei-evm": 0,
+      "solana": 0,
+      "sui": 0,
+      "tangle": 0,
+      "tempo": 0,
+      "tether": 0,
+      "usdc-circle": 0,
+      "xlayer": 0
+    },
+    "finance": {
+      "arbitrum": 0,
+      "avalanche": 0,
+      "chainlink": 0,
+      "coinbase": 0,
+      "eigenlayer": 0,
+      "farcaster": 0,
+      "hyperliquid": 0,
+      "lens": 0,
+      "linea": 0,
+      "monad": 0,
+      "polygon": 0,
+      "sei-evm": 0,
+      "solana": 0,
+      "sui": 0,
+      "tangle": 0,
+      "tempo": 0,
+      "tether": 0,
+      "usdc-circle": 0,
+      "xlayer": 0
+    },
+    "fitness": {
+      "arbitrum": 0,
+      "avalanche": 0,
+      "chainlink": 0,
+      "coinbase": 0,
+      "eigenlayer": 0,
+      "farcaster": 0,
+      "hyperliquid": 0,
+      "lens": 0,
+      "linea": 0,
+      "monad": 0,
+      "polygon": 0,
+      "sei-evm": 0,
+      "solana": 0,
+      "sui": 0,
+      "tangle": 0,
+      "tempo": 0,
+      "tether": 0,
+      "usdc-circle": 0,
+      "xlayer": 0
+    },
+    "gaming": {
+      "arbitrum": 0,
+      "avalanche": 0,
+      "chainlink": 0,
+      "coinbase": 0,
+      "eigenlayer": 0,
+      "farcaster": 0,
+      "hyperliquid": 0,
+      "lens": 0,
+      "linea": 0,
+      "monad": 0,
+      "polygon": 0,
+      "sei-evm": 0,
+      "solana": 0,
+      "sui": 0,
+      "tangle": 0,
+      "tempo": 0,
+      "tether": 0,
+      "usdc-circle": 0,
+      "xlayer": 0
+    },
+    "health": {
+      "arbitrum": 0,
+      "avalanche": 0,
+      "chainlink": 0,
+      "coinbase": 0,
+      "eigenlayer": 0,
+      "farcaster": 0,
+      "hyperliquid": 0,
+      "lens": 0,
+      "linea": 0,
+      "monad": 0,
+      "polygon": 0,
+      "sei-evm": 0,
+      "solana": 0,
+      "sui": 0,
+      "tangle": 0,
+      "tempo": 0,
+      "tether": 0,
+      "usdc-circle": 0,
+      "xlayer": 0
+    },
+    "restaurant": {
+      "arbitrum": 0,
+      "avalanche": 0,
+      "chainlink": 0,
+      "coinbase": 0,
+      "eigenlayer": 0,
+      "farcaster": 0,
+      "hyperliquid": 0,
+      "lens": 0,
+      "linea": 0,
+      "monad": 0,
+      "polygon": 0,
+      "sei-evm": 0,
+      "solana": 0,
+      "sui": 0,
+      "tangle": 0,
+      "tempo": 0,
+      "tether": 0,
+      "usdc-circle": 0,
+      "xlayer": 0
+    },
+    "saas": {
+      "arbitrum": 0,
+      "avalanche": 0,
+      "chainlink": 0,
+      "coinbase": 0,
+      "eigenlayer": 0,
+      "farcaster": 0,
+      "hyperliquid": 0,
+      "lens": 0,
+      "linea": 0,
+      "monad": 0,
+      "polygon": 0,
+      "sei-evm": 0,
+      "solana": 0,
+      "sui": 0,
+      "tangle": 0,
+      "tempo": 0,
+      "tether": 0,
+      "usdc-circle": 0,
+      "xlayer": 0
+    }
+  },
+  "gaps": [
+    {
+      "industry": "creative",
+      "runtime": "backend-node",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "creative",
+      "runtime": "backend-py",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "creative",
+      "runtime": "backend-rust",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "creative",
+      "runtime": "backend-go",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "creative",
+      "runtime": "mobile",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "creative",
+      "runtime": "desktop",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "creative",
+      "runtime": "smart-contracts",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "creative",
+      "runtime": "gpu-inference",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "creative",
+      "runtime": "games",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "creative",
+      "runtime": "av-realtime",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "creative",
+      "runtime": "verticals",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "crypto",
+      "runtime": "backend-node",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "crypto",
+      "runtime": "backend-py",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "crypto",
+      "runtime": "backend-rust",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "crypto",
+      "runtime": "backend-go",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "crypto",
+      "runtime": "mobile",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "crypto",
+      "runtime": "desktop",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "crypto",
+      "runtime": "smart-contracts",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "crypto",
+      "runtime": "gpu-inference",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "crypto",
+      "runtime": "games",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "crypto",
+      "runtime": "av-realtime",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "crypto",
+      "runtime": "verticals",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "ecommerce",
+      "runtime": "backend-node",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "ecommerce",
+      "runtime": "backend-py",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "ecommerce",
+      "runtime": "backend-rust",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "ecommerce",
+      "runtime": "backend-go",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "ecommerce",
+      "runtime": "mobile",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "ecommerce",
+      "runtime": "desktop",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "ecommerce",
+      "runtime": "smart-contracts",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "ecommerce",
+      "runtime": "gpu-inference",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "ecommerce",
+      "runtime": "games",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "ecommerce",
+      "runtime": "av-realtime",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "ecommerce",
+      "runtime": "verticals",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "education",
+      "runtime": "backend-node",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "education",
+      "runtime": "backend-py",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "education",
+      "runtime": "backend-rust",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "education",
+      "runtime": "backend-go",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "education",
+      "runtime": "mobile",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "education",
+      "runtime": "desktop",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "education",
+      "runtime": "smart-contracts",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "education",
+      "runtime": "gpu-inference",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "education",
+      "runtime": "games",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "education",
+      "runtime": "av-realtime",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "education",
+      "runtime": "verticals",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "finance",
+      "runtime": "backend-node",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "finance",
+      "runtime": "backend-py",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "finance",
+      "runtime": "backend-rust",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "finance",
+      "runtime": "backend-go",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "finance",
+      "runtime": "mobile",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "finance",
+      "runtime": "desktop",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "finance",
+      "runtime": "smart-contracts",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "finance",
+      "runtime": "gpu-inference",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "finance",
+      "runtime": "games",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "finance",
+      "runtime": "av-realtime",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "finance",
+      "runtime": "verticals",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "fitness",
+      "runtime": "backend-node",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "fitness",
+      "runtime": "backend-py",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "fitness",
+      "runtime": "backend-rust",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "fitness",
+      "runtime": "backend-go",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "fitness",
+      "runtime": "mobile",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "fitness",
+      "runtime": "desktop",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "fitness",
+      "runtime": "smart-contracts",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "fitness",
+      "runtime": "gpu-inference",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "fitness",
+      "runtime": "games",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "fitness",
+      "runtime": "av-realtime",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "fitness",
+      "runtime": "verticals",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "gaming",
+      "runtime": "backend-node",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "gaming",
+      "runtime": "backend-py",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "gaming",
+      "runtime": "backend-rust",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "gaming",
+      "runtime": "backend-go",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "gaming",
+      "runtime": "mobile",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "gaming",
+      "runtime": "desktop",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "gaming",
+      "runtime": "smart-contracts",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "gaming",
+      "runtime": "gpu-inference",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "gaming",
+      "runtime": "games",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "gaming",
+      "runtime": "av-realtime",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "gaming",
+      "runtime": "verticals",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "health",
+      "runtime": "backend-node",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "health",
+      "runtime": "backend-py",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "health",
+      "runtime": "backend-rust",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "health",
+      "runtime": "backend-go",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "health",
+      "runtime": "mobile",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "health",
+      "runtime": "desktop",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "health",
+      "runtime": "smart-contracts",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "health",
+      "runtime": "gpu-inference",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "health",
+      "runtime": "games",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "health",
+      "runtime": "av-realtime",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "health",
+      "runtime": "verticals",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "restaurant",
+      "runtime": "backend-node",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "restaurant",
+      "runtime": "backend-py",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "restaurant",
+      "runtime": "backend-rust",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "restaurant",
+      "runtime": "backend-go",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "restaurant",
+      "runtime": "mobile",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "restaurant",
+      "runtime": "desktop",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "restaurant",
+      "runtime": "smart-contracts",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "restaurant",
+      "runtime": "gpu-inference",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "restaurant",
+      "runtime": "games",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "restaurant",
+      "runtime": "av-realtime",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "restaurant",
+      "runtime": "verticals",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "saas",
+      "runtime": "backend-node",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "saas",
+      "runtime": "backend-py",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "saas",
+      "runtime": "backend-rust",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "saas",
+      "runtime": "backend-go",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "saas",
+      "runtime": "mobile",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "saas",
+      "runtime": "desktop",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "saas",
+      "runtime": "smart-contracts",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "saas",
+      "runtime": "gpu-inference",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "saas",
+      "runtime": "games",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "saas",
+      "runtime": "av-realtime",
+      "kind": "industry-runtime"
+    },
+    {
+      "industry": "saas",
+      "runtime": "verticals",
+      "kind": "industry-runtime"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "mode": "evolve",
   "goal": "reduce scaffold_gap_installs from 59 toward ≤10 via capability auto-attach + packageDep backfill",
-  "status": "r2-committed",
+  "status": "r1-r2-validated-by-vb",
   "round": 2,
   "generation": 1,
   "activePursuit": ".evolve/pursuits/2026-04-21-e2e-100-complete.md",

@@ -4,6 +4,7 @@ import { generateBuildPlan } from './build-plan.js'
 import { ensureDir, sanitizePackageName, writeJson } from './fs.js'
 import { renderIndustryFirstTurn } from './industry-flows.js'
 import { buildVariables, resolveComponents, resolveTemplateObject } from './registry.js'
+import { selectTemplateVersion } from './selection.js'
 import { emit, traced } from './telemetry.js'
 import type { FamilyManifest, LayerManifest, PartnerManifest, ComposeSpec, ComposeResult, ResolvedComponents, ValidationCheck, ContextHints, MediaManifest, MediaSlot } from '../types.js'
 
@@ -109,6 +110,11 @@ export async function composeStarter({ spec, outDir }: { spec: ComposeSpec; outD
   })
   const layers = result.components.layers
   const industry = layers.find((l) => l.startsWith('industry:')) ?? null
+  // Observe what diverse-serve would pick from the template-library for
+  // this compose. Doesn't change file resolution (registry/ is still the
+  // canonical serve path); purely a telemetry signal so we can see the
+  // env flag wiring in production traces before we flip default behavior.
+  const diverseVersion = selectTemplateVersion(spec.family, spec.projectName)
   emit('compose', {
     family: spec.family,
     layers,
@@ -116,6 +122,8 @@ export async function composeStarter({ spec, outDir }: { spec: ComposeSpec; outD
     partner: spec.partner ?? null,
     industry,
     durationMs,
+    templateVersion: diverseVersion,
+    diverseServe: process.env['STARTER_FOUNDRY_DIVERSE_SERVE'] === '1' || process.env['STARTER_FOUNDRY_DIVERSE_SERVE'] === 'true',
   })
   return result
 }

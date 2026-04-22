@@ -1,12 +1,16 @@
 // Proposer — takes a GapProposal from the diagnoser and dispatches the
-// actual code edit to Kimi For Coding via the Tangle Router bridge. The
-// coding agent: reads the capability manifest, adds the packageDeps,
-// re-runs replay-traces to verify the gap dropped, commits on a new
-// branch, and opens a PR.
+// actual code edit through the cli-bridge sandbox harness, using the
+// `sf-proposer` AgentProfile shipped at profiles/sf-proposer.json.
 //
-// Sessions are keyed by `proposal-<clusterId>-<shortSha>` so a subsequent
-// review comment or CI failure can resume the exact same conversation
-// without re-tokenizing the full context.
+// The profile carries the system prompt + model + permissions + tools
+// the proposer needs (Read/Write/Edit/Bash, no WebFetch). Replacing
+// "kimi-code/kimi-for-coding" with a profile-driven dispatch decouples
+// the proposer's behavior from any single CLI harness — switch
+// providers/models by editing the JSON, no code changes.
+//
+// Sessions are keyed by `proposal-<clusterId>-<shortSha>` so a
+// subsequent review comment or CI failure can resume the exact same
+// conversation without re-tokenizing the full context.
 
 import { execSync } from 'node:child_process'
 import { createBridge } from '../lib/bridge.js'
@@ -19,6 +23,8 @@ export interface ProposerOptions {
   resume?: string
   /** Open the PR in draft mode. Default true — humans should eyeball before merge. */
   draft?: boolean
+  /** AgentProfile id to dispatch under. Defaults to 'sf-proposer' (profiles/sf-proposer.json). */
+  profileId?: string
 }
 
 export interface ProposerResult {
@@ -87,7 +93,11 @@ export async function proposeEdit(
     }
   }
 
-  const session = createBridge({ harness: 'kimi-code', model: 'kimi-for-coding', resume: resumeKey })
+  // Dispatch through sandbox harness with the sf-proposer AgentProfile.
+  // Wire form: bridge/sandbox/sf-proposer. Profile carries system prompt
+  // + model + permissions + tools — see profiles/sf-proposer.json.
+  const profileId = opts.profileId ?? 'sf-proposer'
+  const session = createBridge({ harness: 'sandbox', model: profileId, resume: resumeKey })
   const response = await session.ask(task)
   return { clusterId: proposal.clusterId, resumeKey, dispatched: true, response }
 }

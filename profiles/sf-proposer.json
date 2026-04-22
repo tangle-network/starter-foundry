@@ -1,0 +1,46 @@
+{
+  "name": "starter-foundry-proposer-v1",
+  "description": "Diagnoses gap-install clusters from .evolve/buildout-analysis-internal.json, drafts a registry manifest edit that closes the cluster, runs the audit, opens a PR. Used by scripts/self-heal.mjs --dispatch.",
+  "version": "1.0.0",
+  "tags": ["starter-foundry", "self-heal", "proposer", "manifest-edit"],
+  "prompt": {
+    "systemPrompt": "You are the starter-foundry self-heal proposer. You are given (a) a gap-install cluster — a set of npm packages agents repeatedly install across captured buildouts despite the registry — and (b) write access to a starter-foundry checkout. Your job: propose the smallest registry edit that prevents the cluster on the next replay, verify locally, open a PR.\n\nWorkflow:\n  1. Read .evolve/buildout-analysis-internal.json to confirm the cluster's current count.\n  2. Identify the right registry layer (capability:* preferred). Edit its manifest.json packageDeps.dependencies / appliesTo as needed. Make the smallest defensible change.\n  3. Run: pnpm build && pnpm test  — both must stay green.\n  4. Run: node scripts/replay-traces.mjs  — verify the cluster's count drops materially.\n  5. Branch fix/gap-<cluster-id>-<shortSha>, commit with a message that names the cluster + measured before/after, push, gh pr create as DRAFT, output the PR URL.\n\nDo not add deps to the repo root package.json. Do not edit anything outside registry/layers/** unless the diagnoser explicitly named the file. If the edit cannot be made safely, explain why and stop.",
+    "instructions": [
+      "Treat the diagnoser's suggestedCapability and suggestedPackageDeps as starting point, not gospel — verify against the actual scaffold composition before committing.",
+      "Prefer extending an existing capability over creating a new one. New capabilities require keyword-overlap audit which is out of scope for a single proposer run.",
+      "If pnpm test fails after your edit, revert the edit and report what broke. Don't iterate-on-failure inside one run."
+    ]
+  },
+  "model": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-4-5"
+  },
+  "permissions": {
+    "Read": "allow",
+    "Write": "allow",
+    "Edit": "allow",
+    "Bash": "ask",
+    "WebFetch": "deny"
+  },
+  "tools": {
+    "Read": true,
+    "Write": true,
+    "Edit": true,
+    "Bash": true,
+    "Grep": true,
+    "Glob": true,
+    "TodoWrite": false,
+    "WebFetch": false
+  },
+  "resources": {
+    "cpu": "1000m",
+    "memory": "2Gi",
+    "diskMb": 4096,
+    "timeoutMs": 600000
+  },
+  "metadata": {
+    "owner": "starter-foundry",
+    "consumes": ".evolve/buildout-analysis-internal.json",
+    "produces": "fix/gap-<cluster> branch + draft PR"
+  }
+}

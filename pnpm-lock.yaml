@@ -15,8 +15,8 @@ importers:
         specifier: ^4.0.0
         version: 4.1.0
       '@tangle-network/tcloud':
-        specifier: ^0.4.0
-        version: 0.4.0(typescript@5.9.3)(zod@4.3.6)
+        specifier: ^0.4.2
+        version: 0.4.2(typescript@5.9.3)(zod@4.3.6)
     devDependencies:
       '@tangle-network/agent-eval':
         specifier: link:../agent-eval
@@ -516,8 +516,8 @@ packages:
       viem:
         optional: true
 
-  '@tangle-network/tcloud@0.4.0':
-    resolution: {integrity: sha512-lIGk7jZX2pr0tBLUB8D9p8SFVlc8flDzk0qNSxhch4Axy8zRXgSqL3qefwtESbULOS1GCy9sjuKwdD1kLEEo8g==}
+  '@tangle-network/tcloud@0.4.2':
+    resolution: {integrity: sha512-+rP/5sKJX/wzEx2hZDupcEZ3N961CAPOSgc9DnTQdQ4Jdgsu0xYYubfOKSQc10N7Pqcjdb5oywbqPwTly6veMw==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -1140,7 +1140,7 @@ snapshots:
     optionalDependencies:
       viem: 2.48.4(typescript@5.9.3)(zod@4.3.6)
 
-  '@tangle-network/tcloud@0.4.0(typescript@5.9.3)(zod@4.3.6)':
+  '@tangle-network/tcloud@0.4.2(typescript@5.9.3)(zod@4.3.6)':
     dependencies:
       '@scure/bip32': 2.2.0
       '@scure/bip39': 2.2.0

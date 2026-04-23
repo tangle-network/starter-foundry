@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "generator": "starter-foundry:replay-traces",
-  "registryCommit": "740df03",
+  "registryCommit": "077581a",
   "summary": {
-    "generatedAt": "2026-04-23T05:15:15.322Z",
+    "generatedAt": "2026-04-23T05:41:22.615Z",
     "totalBuildouts": 192,
     "withOutcome": 114,
     "passRate": 0.8245614035087719,

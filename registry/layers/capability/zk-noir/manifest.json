@@ -5,8 +5,7 @@
     "react-vite-ts",
     "nextjs-ts",
     "fullstack-ts",
-    "remix-ts",
-    "rust-http"
+    "remix-ts"
   ],
   "files": [
     {

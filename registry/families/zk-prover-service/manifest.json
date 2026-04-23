@@ -106,9 +106,6 @@
     ]
   },
   "keywords": [
-    "risc zero",
-    "sp1",
-    "circom",
     "snarkjs",
     "fhenix",
     "zk prover",
@@ -119,9 +116,8 @@
   ],
   "tieredKeywords": {
     "tier1": [
-      "risc zero",
-      "sp1",
-      "circom"
+      "zk prover service",
+      "proof-system.json"
     ],
     "tier2": [
       "snarkjs",

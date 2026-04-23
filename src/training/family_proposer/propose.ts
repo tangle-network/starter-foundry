@@ -169,7 +169,7 @@ function slotForFile(filePath: string, runtime: string, surface?: string): strin
   if (filePath === 'go.mod') return 'Go module declaration with Go version + deps'
   if (filePath === 'main.go') return 'Go binary entrypoint with main() and top-level wiring'
   if (filePath.endsWith('.mjs')) return 'Node validator asserting key files + deps structure'
-  if (filePath === 'README.md') return 'Quickstart + agent-facing extension guide. MUST include an "Environment" section listing env vars if the scaffold reads any.'
+  if (filePath === 'README.md') return 'Project README with THESE exact section headers in order: "## Quickstart" (npm/pnpm install + dev command), "## Environment" (list every VITE_ / env var from .env.example with a one-line description + where to obtain the value), "## Architecture" (what src/main and src/App do, what deps are used for), "## Extension Points" (the 2-3 files an agent will most likely edit when building on this starter). Write as if the reader is a staff engineer who has never seen the domain — explain every non-obvious design choice. No marketing fluff, no emojis.'
   return `${filePath} — agent-extensible entry file`
 }
 

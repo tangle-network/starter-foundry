@@ -436,14 +436,18 @@ export interface ScaffoldMetaVerdict {
 // annotation. Ax coerces output into the declared type and retries if the
 // model returns something uncoercible.
 const META_JUDGE_SIGNATURE =
-  '"Grade a freshly-composed project scaffold on five rubric dimensions (0..1 each, 1=perfect). ' +
-  'Judge ONLY what is given — do not hallucinate files or deps missing from the file list. ' +
-  'correctness = imports resolve, build recipe plausible. ' +
-  'completeness = scaffold covers the prompt\'s stated surfaces. ' +
-  'idiomatic = layout matches the framework\'s canonical pattern. ' +
-  'productionReady = env vars documented, no secrets in source. ' +
-  'overScaffold = 1 if zero extraneous layers, lower if capabilities attached beyond what prompt justifies. ' +
-  'overall = weighted aggregate. verdict = pass | fail | borderline. issues = concise list of concrete defects." ' +
+  '"Grade a freshly-composed project STARTER SCAFFOLD on five rubric dimensions (0..1 each, 1=perfect). ' +
+  'CRITICAL CALIBRATION: a starter scaffold is a SKELETON the agent extends. ' +
+  'Do NOT penalize for missing business logic, missing API client implementations, or missing domain-specific code. ' +
+  'The scaffold\'s job is to give the agent a buildable floor — extension is the agent\'s job. ' +
+  'Judge ONLY what is given; do not hallucinate missing files. ' +
+  'correctness = imports resolve, build recipe plausible, no obvious taxonomy/implementation mismatches (e.g. frontend surface with Node HTTP server in main.ts). ' +
+  'completeness = scaffold has the expected slot files for its (language, runtime, surface) — e.g. frontend TS needs package.json + vite.config + index.html + entrypoint + README. Does NOT require business-logic implementation. ' +
+  'idiomatic = layout + configs + dep versions match the framework\'s current canonical pattern (e.g. vite+react with TS5, not jest+TS4). ' +
+  'productionReady = env vars documented via .env.example or README Environment section, no secrets in source, scripts are the conventional ones for the runtime. ' +
+  'overScaffold = 1 if zero extraneous dependencies or capabilities beyond what the surface justifies. ' +
+  'overall = weighted aggregate; a SKELETON-COMPLETE scaffold with no taxonomy mismatches should score ≥ 0.8 and verdict=pass. ' +
+  'verdict = pass | fail | borderline. issues = concrete defects ONLY (not missing business logic)." ' +
   'userPrompt:string, family:string, layers:string, fileList:string, keyFiles:string -> ' +
   'correctness:number, completeness:number, idiomatic:number, productionReady:number, overScaffold:number, ' +
   'overall:number, verdict:string, issues:string[], rationale:string'

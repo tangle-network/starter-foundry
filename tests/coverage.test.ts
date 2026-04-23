@@ -115,6 +115,8 @@ const FAMILY_PROMPTS: Record<string, string> = {
   "flutter-app": "Build a Flutter dart mobile app with Material Design and Cupertino navigation",
   "kotlin-multiplatform": "Build a Kotlin Multiplatform app with Compose Multiplatform shared UI",
   "kyc-onboarding": "Build a KYC onboarding flow with document verification and liveness check",
+  "fraud-ops-console": "Build a fraud ops console with risk scoring dashboard and alert triage",
+  "polymarket-portfolio-hedging": "Build a Polymarket portfolio hedging dashboard with prediction market positions",
   "esp32-rust": "Build an ESP32 Rust firmware with esp-idf-svc WiFi scanner and xtensa target",
   "stm32-rust": "Build an STM32 Rust firmware with Embassy async bare metal and probe-rs",
   "ros2-node-py": "Build a ROS2 rclpy node publishing Twist messages on cmd_vel",

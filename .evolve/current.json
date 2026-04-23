@@ -1,28 +1,34 @@
 {
   "mode": "evolve",
   "goal": "closed-loop generation flywheel — detect gap → RLM propose → promoter (including fidelity) validates → ship to registry",
-  "status": "evolve-round-3-shipped-infrastructure-metric-flat",
-  "round": 3,
+  "status": "evolve-round-4-shipped",
+  "round": 4,
   "generation": 6,
   "activePursuit": null,
   "lastPursuit": ".evolve/pursuits/2026-04-23-generation-flywheel.md",
-  "updatedAt": "2026-04-23T22:30:00Z",
-  "plateauClock": "1 of 2 (R3 flat; one more flat round triggers /pursue)",
+  "updatedAt": "2026-04-23T22:45:00Z",
+  "plateauClock": "0 of 2 (R4 ADVANCE — 2 real promotes landed)",
   "priorGenerations": [
     { "n": 3, "pursuit": "measurement-freshness", "commit": "9b5aafd" },
     { "n": 5, "pursuit": "closed-loop-generation", "commits": ["52afc18", "ce931c6"] },
     { "n": 6, "pursuit": "generation-flywheel", "commit": "17347c1" }
   ],
   "gen6EvolveRounds": {
-    "r1": "fallback-default + filesForTaxonomy: aggregate 0.407→0.495 (+8.8pp)",
-    "r2": "fidelity gate + 5 plumbing fixes + first shippable promote: aggregate 0.495→0.530 (+3.5pp)",
-    "r3": "refinementHints plumbing + prescriptive slots + 5 structural checks + cross-session memory: aggregate 0.530→0.527 (-0.3pp). Infrastructure ADVANCE, target metric NO-MOVE. Scaffold quality objectively up (Node HTTP → React, TS4 → TS5, jest → vitest); judge threshold now limits on README richness."
+    "r1": "fallback-default + filesForTaxonomy: 0.407→0.495 (+8.8pp)",
+    "r2": "fidelity gate + 5 plumbing fixes + first shippable promote (kyc-onboarding, human-patched): 0.495→0.530 (+3.5pp)",
+    "r3": "refinementHints + prescriptive slots + 6 structural checks + cross-session memory: 0.530→0.527 (flat). Infrastructure ADVANCE, target flat.",
+    "r4": "judge rubric calibration — 'scaffold = skeleton, not MVP': 0.527→0.530 (+0.3pp). 3/3 drafts flipped from 0.70-0.76 borderline → 0.80-0.85 pass. 2 auto-promoted (fraud-ops-console, polymarket-portfolio-hedging); 1 reverted for routing shape-mismatch (zk-mixer-ui)."
   },
-  "shippedFamilies": ["kyc-onboarding"],
-  "cumulativeGen6Delta": "+12.0pp (0.407 → 0.527) over 3 evolve rounds",
+  "shippedFamilies": ["kyc-onboarding", "fraud-ops-console", "polymarket-portfolio-hedging"],
+  "deprecatedFamilies": [
+    { "id": "zk-mixer-ui", "reason": "mixer keyword triggers zk-lane workspace dispatch; unreachable via single-family keyword routing; needs workspace-shaped proposer" }
+  ],
+  "cumulativeGen6Delta": "+12.3pp (0.407 → 0.530) over 4 evolve rounds",
+  "registryGrowth": "99 → 101 families",
   "gen7Candidates": {
-    "A_exploit_r4": "tune judge threshold (accept borderline if overall≥0.8) + richer README slot. Cheap one-round test.",
-    "B_pursue_gen7": "AxGEPA on hintsAuthor + fileAuthor signatures with schema-pass + build-pass + fidelity-pass as composite reward. Needs 20+ outcomes; have ~6."
+    "workspace_proposer": "architectural — generate multi-project workspace compositions; only path to move coverage_lift_per_promote",
+    "axgepa_tier1": "AxGEPA on hintsAuthor keywordsTier1 output — the specific training signal that caught LLM's taxonomy-restatement habit is now concretized",
+    "axgepa_filebody": "AxGEPA on fileAuthor — prescriptive slots are a good baseline but LLM still drifts without continual prompt optimization"
   },
-  "handoff": "Governor should pick exploit-R4 (Option A) over pursue (Option B): one more cheap round tests the hypothesis 'proposer is good, judge is strict.' If R4 also plateaus → pursue trigger. Parallel: accumulate outcomes via nightly for Gen 7 GEPA viability."
+  "handoff": "R5 candidates: (a) exercise capability proposer (parallel volume path, hasn't run this cycle) — target capability_promotion_rate; (b) if that lands, Gen 6 can transition to Gen 7 for workspace-shaped proposer (only move for coverage_lift). Governor should dispatch /evolve targeted at capability promoter — capability_promotion_rate=null is the only unmeasured Gen 6 flow, highest signal."
 }

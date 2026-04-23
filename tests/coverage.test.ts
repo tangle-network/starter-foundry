@@ -198,6 +198,8 @@ const CAP_PROMPTS: Record<string, { prompt: string; family: string }> = {
   "capability:evm-layerzero-oft": { prompt: "Build a LayerZero OFT bridge token", family: "forge-contracts" },
   "capability:evm-protocol-api": { prompt: "Build an indexer API for EVM protocol events", family: "api-service" },
   "capability:evm-wallet-dashboard": { prompt: "Build a wallet balance multicall dashboard", family: "evm-infra-ts" },
+  "capability:evm-nft-mint-page": { prompt: "Build a React NFT mint page with wallet connect and mint button for an EVM contract", family: "react-vite-ts" },
+  "capability:passkey-onboarding": { prompt: "Build a React app with WebAuthn passkey registration and biometric sign-in flow", family: "react-vite-ts" },
   "capability:fhe-private-token": { prompt: "Build a Fhenix private token with encrypted balances", family: "fhenix-contracts" },
   "capability:fhe-private-voting": { prompt: "Build a Fhenix encrypted voting contract with secret ballot", family: "fhenix-contracts" },
   "capability:fhe-sealed-auction": { prompt: "Build a Fhenix blind auction with sealed bid encryption", family: "fhenix-contracts" },

@@ -1,8 +1,8 @@
 {
   "product": "starter-foundry",
-  "timestamp": "2026-04-23T21:47:20.533Z",
-  "coverage": "19/22 flows measured",
-  "aggregate": 0.53,
+  "timestamp": "2026-04-23T21:56:34.304Z",
+  "coverage": "20/22 flows measured",
+  "aggregate": 0.553,
   "inputs": [
     {
       "path": ".evolve/buildout-analysis.json",
@@ -18,7 +18,7 @@
     },
     {
       "path": ".evolve/buildout-analysis-internal.json",
-      "mtime": "2026-04-23T21:40:16.881Z"
+      "mtime": "2026-04-23T21:53:09.939Z"
     },
     {
       "path": ".evolve/agent-eval/2026-04-23/three-layer-report.json",
@@ -134,7 +134,7 @@
     },
     {
       "name": "capability_layers",
-      "value": 107,
+      "value": 109,
       "target": 50,
       "status": "pass",
       "productValueClaim": "Distinct capability layers available for attachment. Each one is a bundle of deps + files + context agents get for free.",
@@ -150,7 +150,7 @@
     },
     {
       "name": "proposal_promotion_rate",
-      "value": 0.0508,
+      "value": 0.0462,
       "target": 0.3,
       "status": "fail",
       "productValueClaim": "Fraction of proposed families/capabilities that passed all validation gates (schema+compose+build) and landed in registry/ over the last 30 days. When this moves, vertical expansion is working — new buildable surfaces per week without manual registry authoring.",
@@ -182,9 +182,9 @@
     },
     {
       "name": "capability_promotion_rate",
-      "value": null,
+      "value": 0.6667,
       "target": 0.4,
-      "status": "unmeasured",
+      "status": "pass",
       "productValueClaim": "Fraction of capability promotion attempts that passed all gates. Capabilities have lower validation bar than families (slot into existing), so this rate should exceed proposal_promotion_rate — parallel high-volume registry expansion.",
       "direction": "higher-better"
     },

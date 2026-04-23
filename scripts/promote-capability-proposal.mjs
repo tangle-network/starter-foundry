@@ -103,15 +103,21 @@ async function promoteOne(id) {
       writeFileSync(join(draftDir, 'validation-errors.json'), JSON.stringify({ gate: 'build-prep', error: buildRes.stderr.slice(-2000) }, null, 2))
       return fail(id, 'schema-pass', `typecheck failed staging capability: ${buildRes.stderr.slice(-300)}`)
     }
-    // Pick target family — first appliesTo entry that exists in registry/families.
+    // Pick target family — first appliesTo entry where BOTH family AND
+    // matching framework layer exist. Family id can differ from framework
+    // layer id (nextjs-ts family uses nextjs-app-router framework), so
+    // matching only on family presence leads to compose failures.
     const appliesTo = Array.isArray(manifest.appliesTo) ? manifest.appliesTo : []
     let targetFamily = null
     for (const fam of appliesTo) {
-      if (existsSync(join(REPO, 'registry/families', fam))) { targetFamily = fam; break }
+      if (existsSync(join(REPO, 'registry/families', fam)) && existsSync(join(REPO, 'registry/layers/framework', fam))) {
+        targetFamily = fam
+        break
+      }
     }
     if (!targetFamily) {
-      writeFileSync(join(draftDir, 'validation-errors.json'), JSON.stringify({ gate: 'compose', error: `no appliesTo family exists in registry: ${appliesTo.join(', ')}` }, null, 2))
-      return fail(id, 'schema-pass', `no appliesTo family in registry: ${appliesTo.join(', ')}`)
+      writeFileSync(join(draftDir, 'validation-errors.json'), JSON.stringify({ gate: 'compose', error: `no appliesTo family has a matching framework layer: ${appliesTo.join(', ')}` }, null, 2))
+      return fail(id, 'schema-pass', `no appliesTo family has matching framework layer: ${appliesTo.join(', ')}`)
     }
     // Compose family + this capability.
     const spec = {

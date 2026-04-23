@@ -555,3 +555,48 @@ Governor should pick. Recommend Option A (exploit) to push past plateau, accumul
 - Gen 7 AxGEPA candidates: proposer's tier1 generation (narrowing taxonomy overlap is the clearest training signal) + hintsAuthor (overall scaffold quality).
 
 **Recommendation:** R5 should exercise the capability proposer (parallel volume path that hasn't run yet), THEN plateau-check. If capability rate hits target, Gen 6 is complete and Gen 7 can focus on the workspace-shape architectural gap.
+
+## 2026-04-23 — /evolve Round 5 (capability proposer — parallel volume)
+
+**Goal:** move `capability_promotion_rate` from null → measurable, via the R4-dormant capability proposer + promoter (Gen 6 Track C).
+
+**Phase 1.5 audit:** capability proposer (`src/training/capability_proposer/propose.ts`) + promoter (`scripts/promote-capability-proposal.mjs`) shipped in Gen 6 commit `17347c1` but never ran end-to-end. 107 existing capabilities; demand-signal scan revealed real unmet gaps: `passkey-onboarding` (3× occurrences), `evm-nft-mint-page` (18× — highest-volume frontend component in corpus), `cross-chain-bridge` (49× but already covered by `defi-bridge`+`crypto-bridge-ui`).
+
+**Picked 2 high-confidence gaps + invoked capability proposer directly** (no capability gap-detector script yet — tracked as R6 candidate):
+- `passkey-onboarding` — appliesTo: nextjs-ts, react-vite-ts, kyc-onboarding
+- `evm-nft-mint-page` — appliesTo: react-vite-ts, nextjs-ts, fullstack-ts
+
+**Bug caught on first promote run:** promoter picked `nextjs-ts` (first appliesTo with a registry family), then compose failed — because `framework:nextjs-ts` doesn't exist. The family uses `framework:nextjs-app-router` (id divergence family ≠ framework-layer). Fix: promoter now requires BOTH family AND matching framework layer to exist before selecting target.
+
+**Result: 2/2 through all 3 gates, both auto-promoted:**
+- `evm-nft-mint-page` → registry/layers/capability/, composed on react-vite-ts, build score 1.00
+- `passkey-onboarding` → registry/layers/capability/, composed on react-vite-ts, build score 1.00
+
+**Metric moves:**
+| Flow | R4 end | R5 end | Verdict |
+|---|---|---|---|
+| full_stack_proposal_rate | 1.00 | 1.00 | ceiling (pass) |
+| llm_proposal_success_rate | 1.00 | 1.00 | ceiling (pass) |
+| proposed_family_first_ship_hours | 0.1h | 0.1h | ceiling |
+| proposal_promotion_rate | 0.0508 | 0.0462 | ±noise |
+| **capability_promotion_rate** | **null** | **0.6667 PASS** | **new flow passing, target 0.4** |
+| coverage_lift_per_promote | 0 | 0 | architectural ceiling |
+| aggregate | 0.530 | **0.553** | **+2.3pp** |
+
+**R5 verdict: ADVANCE.** First measurable capability-flow, 2 new registry entries, aggregate jumped.
+
+**Cumulative Gen 6 (R1+R2+R3+R4+R5): +14.6pp (0.407 → 0.553) over 5 evolve rounds.** Registry: 99 families + 107 caps → 101 families + 109 caps.
+
+**Gen 6 status:** 4/6 flows pass, 2/6 remain:
+- `proposal_promotion_rate` (0.05/0.3): dilutes naturally as nightly runs accumulate more promotes. Not blocked, just slow to move.
+- `coverage_lift_per_promote` (0/0.1): **architectural ceiling** — single-family keyword routing cannot reach demand that lives in workspace-classified prompts. Only Gen 7 (workspace-shaped proposer) moves this.
+
+**Handoff:**
+- Evolve has extracted most of the remaining reachable gain. 5 rounds is the per-invocation cap.
+- One clear Gen 7 target: **workspace-shaped proposer** — the remaining unmoved flow IS the architectural gap the whole Gen 6 arc surfaced.
+- Secondary Gen 7 targets (concretized through R2-R4 repeated regressions):
+  - AxGEPA on `hintsAuthor.keywordsTier1` output (three regressions from taxonomy-restatement tier1)
+  - Capability gap-detector script (parallel to family gap-detector) for nightly capability proposals
+  - Build a `proposeCapabilityCandidates.mjs` driver to formalize R5's inline-node invocation
+
+Governor should escalate to `/pursue` Gen 7 with the workspace-shaped proposer thesis. Pure evolve can't reach coverage_lift.

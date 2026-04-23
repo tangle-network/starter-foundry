@@ -59,18 +59,33 @@ function writeFixture(dir: string, opts: {
   mkdirSync(join(dir, 'registry/partners/p1'), { recursive: true })
 
   // If requested, backdate one input so the staleness gate triggers.
-  // Set the buildouts.jsonl mtime to NOW; the target input mtime to 1hr ago.
-  const now = Date.now() / 1000
-  const oneHourAgo = (Date.now() - 3600_000) / 1000
-  if (opts.buildoutsJsonl) {
-    try { utimesSync(join(dir, '.evolve/traces/buildouts.jsonl'), now, now) } catch { /* noop */ }
+  // Three-point timeline: `future` (all analysis files get this — unambiguously
+  // fresh), `now` (buildouts.jsonl, the source), `oneHourAgo` (backdated
+  // target only). Explicit ordering defeats filesystem resolution races —
+  // Linux sub-second mtimes mean unordered file writes + later source-utimes
+  // would otherwise race, making "non-stale" files LOOK stale.
+  const nowMs = Date.now()
+  const future = (nowMs + 60_000) / 1000
+  const now = nowMs / 1000
+  const oneHourAgo = (nowMs - 3600_000) / 1000
+
+  const touch = (sub: string, t: number) => {
+    try { utimesSync(join(dir, sub), t, t) } catch { /* noop */ }
   }
-  const backdate = (sub: string) => {
-    try { utimesSync(join(dir, sub), oneHourAgo, oneHourAgo) } catch { /* noop */ }
-  }
-  if (opts.markStaleBy === 'buildout') backdate('.evolve/buildout-analysis.json')
-  if (opts.markStaleBy === 'gaps') backdate('.evolve/capability-gaps.json')
-  if (opts.markStaleBy === 'audit') backdate('.evolve/scaffold-quality-audit.json')
+
+  // All analysis files: future mtime. Ensures they're unambiguously
+  // fresh-relative-to-source unless the test explicitly backdates one.
+  if (opts.buildoutAnalysis !== undefined && opts.buildoutAnalysis !== null) touch('.evolve/buildout-analysis.json', future)
+  if (opts.capabilityGaps !== undefined && opts.capabilityGaps !== null) touch('.evolve/capability-gaps.json', future)
+  if (opts.scaffoldAudit !== undefined && opts.scaffoldAudit !== null) touch('.evolve/scaffold-quality-audit.json', future)
+
+  // Source: now. Any analysis file < now is stale.
+  if (opts.buildoutsJsonl) touch('.evolve/traces/buildouts.jsonl', now)
+
+  // Backdate selected target to 1h ago, overriding the `future` set above.
+  if (opts.markStaleBy === 'buildout') touch('.evolve/buildout-analysis.json', oneHourAgo)
+  if (opts.markStaleBy === 'gaps') touch('.evolve/capability-gaps.json', oneHourAgo)
+  if (opts.markStaleBy === 'audit') touch('.evolve/scaffold-quality-audit.json', oneHourAgo)
 }
 
 describe('refresh-scorecard', () => {

@@ -1,0 +1,55 @@
+{
+  "variantId": "variant-B-partner-first",
+  "proposer": "B",
+  "round": 4,
+  "hypothesis": "When a buildout trace carries an explicit partnerGuess (fintech-mixed, polymarket-prediction, coinbase-smart-wallet, tangle-network, deno, …), that partner is a stronger routing signal than the prompt's lane-detection heuristics. If the registry has a family whose tags/keywords/id align with the partner, the router should promote the prompt to a single-project workspace wrapping that partner-aligned family instead of letting shouldBeWorkspace return false and sending it down the generic starter path.",
+  "mechanism": "Added src/lib/planner/partner-first.ts with three pure registry helpers: (1) partnerTokens+PARTNER_ANCHOR_TOKENS decompose hyphenated partner slugs into anchor tokens — e.g. `tangle-network` → {tangle, agent}, `ethereum-l1` → {evm, ethereum, forge}. (2) familySignalTokens builds the token set for each FamilyManifest from id+tags+keywords+tieredKeywords.tier1/tier2. (3) findPartnerAlignedFamilies scores every family by token-overlap (id-substring hits double-weighted) and ranks them. shouldPromotePartnerFirst returns the top match only when score ≥ 2 (narrowing to avoid single-token coincidences). In src/lib/prompt-planner.ts, after the workspace planner declines and before the starter path runs, if an EXPLICIT partner was passed (not inferPartner's soft heuristic) AND shouldPromotePartnerFirst finds a frontend/api/agent-service/fullstack/blueprint family, the planner returns a single-project workspace whose sole project uses the partner-aligned family. Downstream artifact id/path/kind is surface-derived so the workspace's launchPlan stays coherent.",
+  "scores": {
+    "coverage_lift_per_promote": 0.308,
+    "gainedRoute": 8,
+    "routing_stability": {
+      "flipped": 0,
+      "lost": 0
+    },
+    "test_suite_pass": {
+      "tests": 688,
+      "pass": 688,
+      "fail": 0
+    },
+    "routedBefore": 28,
+    "routedAfter": 36,
+    "unroutedBefore": 26,
+    "unroutedAfter": 18,
+    "uniqueFamiliesBefore": 3,
+    "uniqueFamiliesAfter": 5
+  },
+  "newlyRoutedScenarios": [
+    { "scenarioId": "legal-research-agent", "partner": "tangle-network", "to": "agent-service-py" },
+    { "scenarioId": "llm-lora-composer", "partner": "tangle-network", "to": "agent-service-py" },
+    { "scenarioId": "tax-agent-console", "partner": "tangle-network", "to": "agent-service-py" },
+    { "scenarioId": "gtm-agent-outbound", "partner": "tangle-network", "to": "agent-service-py" },
+    { "scenarioId": "deno-llm-proxy", "partner": "deno", "to": "deno-edge" },
+    { "scenarioId": "voice-realtime-studio", "partner": "tangle-network", "to": "agent-service-py" },
+    { "scenarioId": "training-job-launcher", "partner": "tangle-network", "to": "agent-service-py" },
+    { "scenarioId": "retrieval-tuning-cockpit", "partner": "tangle-network", "to": "agent-service-py" }
+  ],
+  "regressionsAndNarrowing": [
+    "Initial variant fired on effectivePartner = partner ?? inferPartner(text). That caused 19 test failures in tests/coverage.test.ts and tests/workspace-detection.test.ts — prompts that mention 'tangle' or 'blueprint' inline (with NO explicit partner arg) were being promoted to workspace when the test expected starter mode. Narrowed the trigger to explicit `partner` only. Explicit-partner is exactly the callsite used by measure-coverage-lift.mjs and by the buildout runtime, so coverage lift is preserved while inline protocol prompts retain their starter routing.",
+    "Second narrowing: shouldPromotePartnerFirst requires score ≥ 2. A single tag coincidence (e.g. a family with tag 'typescript' matching every typescript partner) does not trigger the override. The score threshold is satisfied by either a direct family-id substring (double-weighted) or ≥2 tag/keyword overlaps.",
+    "Third narrowing: surface-set is limited to {frontend, api, agent-service, fullstack, blueprint}. Contract/zkVM/worker surfaces are excluded — those require multi-lane assembly and a single-project wrap would drop the contract/worker lane entirely."
+  ],
+  "files_changed": [
+    "src/lib/prompt-planner.ts",
+    "src/lib/planner/partner-first.ts"
+  ],
+  "baseCommit": "fe9cefd",
+  "constraintsSatisfied": {
+    "editedHarnessOnly": true,
+    "noRegistryManifestChange": true,
+    "noLLMInHotPath": true,
+    "synchronousDeterministic": true,
+    "preservesWorkspaceMultiLane": true,
+    "zeroLostRoutes": true,
+    "zeroFlipped": true
+  }
+}

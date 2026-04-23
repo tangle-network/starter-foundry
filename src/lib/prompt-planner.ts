@@ -41,6 +41,7 @@ import {
 } from './planner/contracts.js'
 import { buildSlug, resolvePartnerForFamily } from './planner/helpers.js'
 import { inferImplicitCapabilities } from './planner/implicit-caps.js'
+import { shouldPromotePartnerFirst } from './planner/partner-first.js'
 import { buildApiProject, buildWebProject, buildWorkerProject, chooseApiFamily } from './planner/projects.js'
 
 interface LaneDetection {
@@ -362,6 +363,83 @@ export async function planPrompt({
       const workspacePlan = buildWorkspacePromptPlan({ prompt, partner: effectivePartner, text, registry })
       if (workspacePlan) {
         return workspacePlan
+      }
+    }
+
+    // Partner-first routing. When the workspace check did NOT fire and the
+    // buildout trace carries an EXPLICIT partnerGuess (e.g. `tangle-network`,
+    // `polymarket-prediction`, `coinbase-smart-wallet`, `deno`) that aligns
+    // with a registry family via tags / keywords / id tokens, promote the
+    // prompt to a single-project workspace wrapping the partner-aligned
+    // family. This absorbs demand from newly-promoted domain-specific
+    // families (polymarket-portfolio-hedging, kyc-onboarding,
+    // fraud-ops-console, tangle-blueprint, deno-edge, …) that otherwise
+    // disappear into generic workspace composition.
+    //
+    // Narrowing — MUST preserve routing_stability:
+    //   (1) Only fires on an explicit caller-supplied `partner`. The soft
+    //       `inferPartner(text)` heuristic is too eager — it tags `'tangle'`
+    //       on any prompt containing "tangle", which breaks coverage tests
+    //       that expect starter-mode routing for bare protocol prompts.
+    //   (2) Only fires when the workspace planner already declined, so the
+    //       28 currently-routed workspace scenarios are never touched.
+    //   (3) forceKind === 'starter' callers (scaffold-builder with a
+    //       curated family) bypass this branch.
+    const PARTNER_FIRST_SURFACES = new Set([
+      'frontend', 'api', 'agent-service', 'fullstack', 'blueprint',
+    ])
+    if (forceKind !== 'starter' && partner) {
+      const partnerMatch = shouldPromotePartnerFirst(partner, registry)
+      if (partnerMatch && PARTNER_FIRST_SURFACES.has(partnerMatch.surface)) {
+        const fwLayers: string[] = []
+        for (const [key, layer] of registry.layers) {
+          if (layer.group === 'framework' && layer.appliesTo?.includes(partnerMatch.familyId)) {
+            fwLayers.push(key)
+          }
+        }
+        const slug = buildSlug(prompt, 'workspace')
+        // Surface → project id + path. Mirrors how buildWebProject /
+        // buildApiProject name their outputs so downstream artifact selectors
+        // (primaryArtifact.kind, path) remain consistent.
+        const surfaceConfig: Record<string, { id: string; path: string; artifactKind: string; artifactPath: string }> = {
+          frontend: { id: 'web', path: 'apps/web', artifactKind: 'preview', artifactPath: '/' },
+          fullstack: { id: 'web', path: 'apps/web', artifactKind: 'preview', artifactPath: '/' },
+          api: { id: 'api', path: 'apps/api', artifactKind: 'service', artifactPath: '/health' },
+          'agent-service': { id: 'agent', path: 'apps/agent', artifactKind: 'service', artifactPath: '/health' },
+          blueprint: { id: 'blueprint', path: 'protocols/tangle', artifactKind: 'service', artifactPath: '/health' },
+        }
+        const cfg = surfaceConfig[partnerMatch.surface] ?? surfaceConfig.frontend!
+        const wrapped: PromptPlan = {
+          kind: 'workspace',
+          confidence: 'medium',
+          reasons: [`partner-first → ${partnerMatch.familyId} (aligned to ${partner})`],
+          spec: {
+            workspaceName: `${slug}-workspace`,
+            userPrompt: prompt,
+            launchPlan: {
+              primaryProjectId: cfg.id,
+              primaryArtifact: { kind: cfg.artifactKind, path: cfg.artifactPath, targetMs: 2500 },
+              initialAgentMission:
+                "Build the user's prompt on top of this partner-aligned scaffold. The starter was chosen because the partner has a dedicated family in the registry — lead with the domain-specific surfaces.",
+            },
+            projects: [
+              {
+                id: cfg.id,
+                path: cfg.path,
+                spec: {
+                  projectName: `${slug}-${cfg.id}`,
+                  family: partnerMatch.familyId,
+                  layers: fwLayers,
+                  partner: resolvePartnerForFamily(partner, partnerMatch.familyId),
+                  slots: {},
+                  variables: {},
+                  primaryArtifactTargetMs: 2500,
+                },
+              },
+            ],
+          },
+        }
+        return wrapped
       }
     }
 

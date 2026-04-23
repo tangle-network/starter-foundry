@@ -38,7 +38,8 @@ import {
 } from '@tangle-network/agent-eval'
 import { planPrompt } from '../dist/lib/prompt-planner.js'
 import { resolveComponents } from '../dist/lib/registry.js'
-import { prepareScaffoldForEval, buildScaffoldMetaPrompt } from '../dist/eval/scaffold-bridge.js'
+import { prepareScaffoldForEval, invokeMetaJudge } from '../dist/eval/scaffold-bridge.js'
+import { isLLMAvailable } from '../dist/lib/llm.js'
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -172,14 +173,42 @@ for (const seed of selected) {
       }) + '\n',
     )
 
-    // Meta score — skipped when --no-judge or credentials missing. Judge
-    // wiring to createLlmReviewer lives in a follow-up — this first ship
-    // captures build_score + structural pass; meta needs the router to
-    // be reachable and is lower priority for the initial baseline.
-    if (!NO_JUDGE) {
-      // TODO: call createLlmReviewer here with buildScaffoldMetaPrompt +
-      // route via TANGLE_ROUTER_USER_KEY. Record via session.recordMetaScore.
-      // Deferred to keep first ship's dependency surface tight.
+    // Meta score — LLM judge via router.tangle.tools. Gated on
+    // --no-judge and on credentials availability. Runs AFTER ship so
+    // the snapshot we grade includes anything install produced (e.g.
+    // node_modules metadata is already excluded by the snapshot, but
+    // install CAN produce lock files that the judge cares about).
+    if (!NO_JUDGE && isLLMAvailable()) {
+      try {
+        const verdict = await invokeMetaJudge({
+          userPrompt: seed.prompt,
+          composedSpec: spec,
+          snapshot: prep.snapshot,
+        })
+        await session.recordMetaScore(
+          verdict.overall,
+          `verdict=${verdict.verdict}; issues=${verdict.issues.length}`,
+        )
+        appendFileSync(tracesPath, JSON.stringify({
+          seed: seed.id,
+          projectId,
+          phase: 'meta-judge',
+          overall: verdict.overall,
+          verdict: verdict.verdict,
+          dimensions: {
+            correctness: verdict.correctness,
+            completeness: verdict.completeness,
+            idiomatic: verdict.idiomatic,
+            productionReady: verdict.productionReady,
+            overScaffold: verdict.overScaffold,
+          },
+          issues: verdict.issues,
+        }) + '\n')
+      } catch (err) {
+        const msg = err?.message?.slice(0, 500) ?? String(err)
+        appendFileSync(tracesPath, JSON.stringify({ seed: seed.id, phase: 'meta-judge', error: msg }) + '\n')
+        if (!QUIET) console.error(`  [${seed.id}] meta-judge failed: ${msg}`)
+      }
     }
 
     await session.endChat({

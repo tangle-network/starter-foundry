@@ -380,3 +380,39 @@ Signal-rich surfaces moving forward:
 - **Buildout end-to-end pass rate** (VB outcomes): 54% baseline, room to move
 
 R3 auto-fixer is still the right tool to build — just not against a 1-failure input set. Governor should re-pick against a signal-rich surface.
+
+## 2026-04-23 — /evolve Round 1 (Gen 6 flywheel exercise)
+
+**Goal:** populate Gen 6 flows (full_stack_proposal_rate, coverage_lift_per_promote, llm_proposal_success_rate) by running the pipeline end-to-end.
+
+**Phase 1.5 audit finding:** Gen 6 Track D shipped the fallback mechanism but every existing callsite (family proposer, rewriter, product-brief, scaffold-bridge) used `createLLM()` without opt-in. Feature built, not wired.
+
+**Fix 1 (bug):** Made fallback the default in `createLLM()` when ≥2 providers are configured. Backward-compatible: single-key setups unchanged, explicit `provider` disables fallback. One-line default change.
+
+**Execution:**
+- `detect-family-gaps --json --top 3` → kyc-onboarding, polymarket-portfolio-hedging, fraud-ops-console (all 0-keyword-match, real user demand)
+- `propose-family-candidates --max-shots 2` → 3/3 succeeded in `mode=llm`, 7 template files each (Track A expansion proven)
+- `promote-family-proposal --all --no-pr` → 3/4 through all 3 gates (schema+compose+build, score=1.0)
+- `measure-coverage-lift --compare baseline` → 0 gained route (see diagnosis below)
+
+**Metric moves (post-honest-revert):**
+| Flow | Before | After | Verdict |
+|------|--------|-------|---------|
+| `full_stack_proposal_rate` | null | 1.00 (pass, target 0.7) | KEEP |
+| `llm_proposal_success_rate` | null | 1.00 (pass, target 0.8) | KEEP |
+| `proposal_promotion_rate` | 0 | 0 (reverted) | honest-0 |
+| `coverage_lift_per_promote` | 0 | 0 (architectural) | ABANDON |
+| aggregate | 0.407 | 0.495 | +8.8pp |
+
+**Honest revert:** the 3 build-gate-passing scaffolds had `description` = "fraud-ops-console ... frontend" but `src/main.ts` shipped Node HTTP (not frontend); `package.json` pinned TypeScript 4.9 (2.5y old); zero domain-specific deps. Goodhart — the build gate passed, the scaffold wasn't useful. Reverted all 3 from registry/, logged `promote-reverted` events, extended scorecard reader to subtract reverted ids from promoted count. The 3 drafts stay in `.evolve/family-proposals/` as training data.
+
+**Diagnosis — coverage_lift_per_promote stays 0:** running `planPrompt` on a real polymarket-portfolio-hedging prompt returns `kind=workspace, projects=[react-vite-ts, api-service]`. Workspace routing dispatches on lane-detection, not family keyword matching — so even a well-targeted new family never gets picked for workspace-classified prompts. Real user demand is workspace-shaped; our single-family promoter produces single-family scaffolds. **Fundamental shape mismatch. Architectural, not tunable.**
+
+**New Gen 7 signals (seeds for /pursue):**
+1. **Description-fidelity judge before promote** — build passing isn't enough; LLM-judge scaffold vs description. Without this, AxGEPA training data from outcomes would be polluted.
+2. **Workspace-shaped proposer** — extend the proposer to produce multi-project workspace compositions, not just single-family scaffolds. Matches the shape real demand arrives in.
+3. **Training corpus accumulating** — 3 (prompt, llm-draft, revert-reason) triples now in drafts + log. AxGEPA on hintsAuthor becomes viable once this hits 20+.
+
+**Not escalating to /pursue yet:** Round 1 is the first evolve round on Gen 6. Plateau escalation rule is 3 rounds without movement. Two rounds remaining; Round 2 should target proposal_promotion_rate honestly by building a pre-promote fidelity judge.
+
+**Handoff:** run `/evolve` Round 2 targeting `proposal_promotion_rate > 0` via a scaffold-fidelity LLM judge gate between build-pass and registry copy.

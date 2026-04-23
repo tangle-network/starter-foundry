@@ -1,0 +1,127 @@
+{
+  "id": "fraud-ops-console",
+  "description": "fraud-ops-console starter — derived from 3× real demand signal. Taxonomy guess: typescript/node/frontend.",
+  "tags": [
+    "node",
+    "frontend",
+    "typescript"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "frontend"
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "serviceName": "starter-foundry-fraud-ops-console"
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/vite.config.ts",
+      "target": "vite.config.ts"
+    },
+    {
+      "source": "files/index.html",
+      "target": "index.html"
+    },
+    {
+      "source": "files/src/main.ts",
+      "target": "src/main.ts"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/validate-node.mjs",
+      "target": "validate-node.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "package.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "tsconfig.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "vite.config.ts"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "Initialize a new Node project",
+      "Install required dependencies",
+      "Set up TypeScript configuration"
+    ],
+    "entrypoints": [
+      "index.ts"
+    ],
+    "preview": null,
+    "extensionPoints": []
+  },
+  "keywords": [
+    "fraud",
+    "operations",
+    "console",
+    "typescript",
+    "node",
+    "security",
+    "validation",
+    "error handling",
+    "logging",
+    "modular architecture"
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "fraud",
+      "operations",
+      "console",
+      "typescript",
+      "node"
+    ],
+    "tier2": [
+      "security",
+      "validation",
+      "error handling",
+      "logging",
+      "modular architecture"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "When building a frontend application with TypeScript and Node, and there's a need for a console-based fraud operations system.",
+    "firstSteps": [
+      "Initialize a new Node project",
+      "Install required dependencies",
+      "Set up TypeScript configuration",
+      "Create a basic console interface"
+    ],
+    "gotchas": [
+      "Ensure proper error handling",
+      "Validate user input",
+      "Implement security measures to prevent fraud"
+    ],
+    "architectureNotes": [
+      "Use a modular architecture to separate concerns",
+      "Implement a logging mechanism for auditing purposes",
+      "Consider using a database to store fraud-related data"
+    ],
+    "placeholders": [
+      {
+        "path": "index.ts",
+        "description": "Primary entrypoint agents must extend."
+      }
+    ]
+  }
+}

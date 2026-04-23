@@ -1,8 +1,8 @@
 {
   "product": "starter-foundry",
-  "timestamp": "2026-04-23T20:21:28.032Z",
-  "coverage": "17/22 flows measured",
-  "aggregate": 0.407,
+  "timestamp": "2026-04-23T20:30:01.919Z",
+  "coverage": "18/22 flows measured",
+  "aggregate": 0.495,
   "inputs": [
     {
       "path": ".evolve/buildout-analysis.json",
@@ -166,25 +166,25 @@
     },
     {
       "name": "llm_proposal_success_rate",
-      "value": null,
+      "value": 1,
       "target": 0.8,
-      "status": "unmeasured",
+      "status": "pass",
       "productValueClaim": "Fraction of proposal attempts that produced an LLM-mode draft (vs falling back to deterministic TODO skeleton). Low → router/provider is unreachable or rate-limiting; deterministic mode cannot produce promotable drafts, so this gates the funnel.",
       "direction": "higher-better"
     },
     {
       "name": "full_stack_proposal_rate",
-      "value": null,
+      "value": 1,
       "target": 0.7,
-      "status": "unmeasured",
+      "status": "pass",
       "productValueClaim": "Fraction of LLM-mode proposals whose templateFiles.length ≥ 3. Bare-README drafts pass the build gate trivially but scaffold nothing useful. This flow catches the \"too-minimal proposal\" regression — Gen 6 Track A (filesForTaxonomy expansion) exists to lift it.",
       "direction": "higher-better"
     },
     {
       "name": "capability_promotion_rate",
-      "value": 0,
+      "value": null,
       "target": 0.4,
-      "status": "fail",
+      "status": "unmeasured",
       "productValueClaim": "Fraction of capability promotion attempts that passed all gates. Capabilities have lower validation bar than families (slot into existing), so this rate should exceed proposal_promotion_rate — parallel high-volume registry expansion.",
       "direction": "higher-better"
     },

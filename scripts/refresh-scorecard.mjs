@@ -355,11 +355,24 @@ const flows = [
         try { return JSON.parse(l) } catch { return null }
       }).filter(Boolean).filter((e) => {
         const t = Date.parse(e.ts ?? '')
-        return Number.isFinite(t) && t >= cutoff
+        if (!Number.isFinite(t) || t < cutoff) return false
+        // Filter test-fixture events that pollute real metrics. Test names
+        // prefixed with `test-` or `synthetic-` are written during `pnpm test`
+        // and must not count toward production promotion/coverage rates.
+        const id = String(e.id ?? '')
+        const newFam = String(e.newFamily ?? '')
+        if (/^test-/.test(id) || /^synthetic-/.test(id)) return false
+        if (/^test-/.test(newFam) || /^synthetic-/.test(newFam)) return false
+        return true
       })
     } catch { /* empty file is fine */ }
+    // A promote-reverted event means a prior 'promoted' was rolled back because
+    // the scaffold, despite passing build, failed a human / fidelity review.
+    // Subtract reverted ids from the promoted count so the rate reflects
+    // shippable promotes, not merely gate-passing ones.
+    const revertedIds = new Set(entries.filter((e) => e.event === 'promote-reverted').map((e) => String(e.id ?? '')))
     const promoteAttempts = entries.filter((e) => e.event === 'promoted' || e.event === 'promote-failed')
-    const promoted = entries.filter((e) => e.event === 'promoted')
+    const promoted = entries.filter((e) => e.event === 'promoted' && !revertedIds.has(String(e.id ?? '')))
     const promotionRate = promoteAttempts.length > 0 ? promoted.length / promoteAttempts.length : null
     const firstShipHours = promoted
       .map((e) => e.draftAgeHours)

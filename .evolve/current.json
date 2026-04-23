@@ -1,26 +1,40 @@
 {
   "mode": "evolve",
   "goal": "closed-loop generation flywheel — detect gap → RLM propose → promoter validates → measure coverage lift → each cycle teaches the next",
-  "status": "pursuit-gen6-shipped",
-  "round": 0,
+  "status": "evolve-round-1-shipped",
+  "round": 1,
   "generation": 6,
   "activePursuit": null,
   "lastPursuit": ".evolve/pursuits/2026-04-23-generation-flywheel.md",
-  "updatedAt": "2026-04-23T21:30:00Z",
+  "updatedAt": "2026-04-23T20:35:00Z",
   "priorGenerations": [
     { "n": 3, "pursuit": "measurement-freshness", "commit": "9b5aafd" },
-    { "n": 5, "pursuit": "closed-loop-generation", "commits": ["52afc18", "ce931c6"] }
+    { "n": 5, "pursuit": "closed-loop-generation", "commits": ["52afc18", "ce931c6"] },
+    { "n": 6, "pursuit": "generation-flywheel", "commit": "17347c1" }
   ],
-  "gen6Tracks": {
-    "A": { "name": "filesForTaxonomy expansion", "status": "shipped", "file": "src/training/family_proposer/propose.ts" },
-    "B": { "name": "coverage-lift measurement", "status": "shipped", "file": "scripts/measure-coverage-lift.mjs", "baseline": "28/54 routed (51.9%), 3 unique families in workspace mode" },
-    "C": { "name": "capability proposer + promoter", "status": "shipped", "files": ["src/training/capability_proposer/propose.ts", "scripts/promote-capability-proposal.mjs"] },
-    "D": { "name": "multi-provider LLM fallback", "status": "shipped", "file": "src/lib/llm.ts", "fallbackOrder": ["together", "anthropic", "tangle-router", "google-gemini", "openai", "groq"] }
+  "round1Results": {
+    "hypothesis": "making fallback the default + running the full Gen 6 pipeline will move at least 2 flows from null to a real value",
+    "verified": "pipeline ran 3 gaps × 2 shots; 3/3 LLM-mode drafts; 3/4 through all gates; 3/3 reverted on fidelity review",
+    "flowMoves": {
+      "full_stack_proposal_rate": "null → 1.00 (pass, target 0.7)",
+      "llm_proposal_success_rate": "null → 1.00 (pass, target 0.8)",
+      "proposal_promotion_rate": "0 → 0 (honest after fidelity revert)",
+      "coverage_lift_per_promote": "0 → 0 (architectural blocker: workspace routing bypasses keyword dispatch)",
+      "aggregate": "0.407 → 0.495 (+8.8pp)"
+    },
+    "gen7Seeds": [
+      "description-fidelity judge before promote (build-gate alone is Goodhart-vulnerable)",
+      "workspace-shaped proposer — real demand arrives multi-lane, not single-family",
+      "training corpus now seeded (3 drafts + revert reasons) for AxGEPA on hintsAuthor"
+    ]
   },
-  "gen6NewFlows": [
-    "full_stack_proposal_rate (target 0.7)",
-    "capability_promotion_rate (target 0.4)",
-    "coverage_lift_per_promote (target 0.10)"
-  ],
-  "handoff": "Gen 6 flywheel shipped. Next: (a) let nightly accumulate promotes so LLM flows materialize; (b) once 20+ (prompt, outcome) pairs exist in generation-impact.jsonl, run AxGEPA on hintsAuthor signature (Gen 7 candidate); (c) Gen 7 moonshot: embedding-based semantic routing replaces token-overlap gap detection + descriptive family metadata."
+  "baselineCoverage": {
+    "at": "2026-04-23T09:42:32.581Z",
+    "scenarios": 54,
+    "routed": 28,
+    "unrouted": 26,
+    "uniqueFamilies": 3,
+    "mostCommonComposition": "nextjs-ts + rust-service"
+  },
+  "handoff": "Round 2 target: scaffold-fidelity LLM judge between build-pass and registry copy. Expected move: proposal_promotion_rate 0 → >0 on honest metric. If Round 2 plateaus and Round 3 plateaus → escalate to /pursue for workspace-shaped proposer (Gen 7)."
 }

@@ -165,6 +165,12 @@ export function createLLM(opts: LLMOptions = {}): AxAIService {
       'No LLM provider configured. Set TANGLE_ROUTER_USER_KEY (preferred for Tangle) or a direct provider key.',
     )
   }
-  if (opts.fallback && !opts.provider) return buildFallbackChain(provider, opts)
+  // Fallback-by-default: if caller didn't pin a provider AND didn't opt-out
+  // AND ≥2 providers are configured, build a resilient chain. Single-key
+  // setups silently get the single-provider path. Callers that need a
+  // specific provider (e.g., scaffold-bridge pinning a Sonnet model) must
+  // pass `provider` explicitly, which disables fallback.
+  const shouldFallback = opts.fallback !== false && !opts.provider && availableProviders().length >= 2
+  if (shouldFallback) return buildFallbackChain(provider, opts)
   return buildSingle(provider, opts)
 }

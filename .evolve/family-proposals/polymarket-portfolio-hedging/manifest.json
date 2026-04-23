@@ -1,0 +1,129 @@
+{
+  "id": "polymarket-portfolio-hedging",
+  "description": "polymarket-portfolio-hedging starter — derived from 3× real demand signal (partner: polymarket-prediction). Taxonomy guess: typescript/node/frontend.",
+  "tags": [
+    "node",
+    "frontend",
+    "typescript"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "frontend"
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "serviceName": "starter-foundry-polymarket-portfolio-hedging"
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/vite.config.ts",
+      "target": "vite.config.ts"
+    },
+    {
+      "source": "files/index.html",
+      "target": "index.html"
+    },
+    {
+      "source": "files/src/main.ts",
+      "target": "src/main.ts"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/validate-node.mjs",
+      "target": "validate-node.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "package.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "tsconfig.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "vite.config.ts"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "Initialize a new Node project",
+      "Set up a frontend framework compatible with TypeScript"
+    ],
+    "entrypoints": [
+      "index.ts"
+    ],
+    "preview": null,
+    "extensionPoints": []
+  },
+  "keywords": [
+    "polymarket-portfolio-hedging",
+    "TypeScript",
+    "Node",
+    "frontend",
+    "portfolio hedging",
+    "real user demand",
+    "polymarket-prediction",
+    "Angular",
+    "Astro",
+    "Next.js",
+    "Observable Framework",
+    "Phaser 3"
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "polymarket-portfolio-hedging",
+      "TypeScript",
+      "Node",
+      "frontend",
+      "portfolio hedging"
+    ],
+    "tier2": [
+      "real user demand",
+      "polymarket-prediction",
+      "Angular",
+      "Astro",
+      "Next.js",
+      "Observable Framework",
+      "Phaser 3"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "When building a portfolio hedging application with real user demand, utilizing TypeScript, Node, and a frontend surface, and requiring integration with polymarket-prediction.",
+    "firstSteps": [
+      "Initialize a new Node project",
+      "Install required dependencies for polymarket-portfolio-hedging",
+      "Set up a frontend framework compatible with TypeScript"
+    ],
+    "gotchas": [
+      "Ensure compatibility between polymarket-portfolio-hedging and polymarket-prediction",
+      "Handle potential errors in real user demand signal processing",
+      "Optimize frontend performance for a seamless user experience"
+    ],
+    "architectureNotes": [
+      "Design a modular architecture to facilitate integration with polymarket-prediction",
+      "Implement a robust data processing pipeline for real user demand signals",
+      "Utilize TypeScript's type checking to ensure code quality and maintainability"
+    ],
+    "placeholders": [
+      {
+        "path": "index.ts",
+        "description": "Primary entrypoint agents must extend."
+      }
+    ]
+  }
+}

@@ -57,16 +57,26 @@ describe('measure-refresh orchestrator', () => {
       // no-op pass, the other tests cover the main flow.
       return
     }
+    // Capture original mtime so we can restore it at cleanup — otherwise
+    // this test pollutes the working directory with a forward-dated source
+    // that the pre-push hook will flag for every subsequent push until
+    // someone re-runs measure-refresh. Restore-original keeps the test
+    // hermetic.
+    const originalMtime = statSync(srcPath).mtime.getTime() / 1000
     const now = Date.now() / 1000
     try {
       utimesSync(srcPath, now + 60, now + 60)
     } catch { /* noop */ }
 
-    const res = run(['--dry-run'])
-    // Exit 2 when --dry-run detects drift.
-    assert.equal(res.code, 2, `dry-run after touch should exit 2; got ${res.code}\n${res.stdout}\n${res.stderr}`)
-
-    // Clean up: run for real so subsequent tests see a clean state.
-    run()
+    try {
+      const res = run(['--dry-run'])
+      // Exit 2 when --dry-run detects drift.
+      assert.equal(res.code, 2, `dry-run after touch should exit 2; got ${res.code}\n${res.stdout}\n${res.stderr}`)
+    } finally {
+      // Restore source mtime regardless of assertion outcome.
+      try { utimesSync(srcPath, originalMtime, originalMtime) } catch { /* noop */ }
+      // Run once more to re-align analysis mtimes with the restored source.
+      run()
+    }
   })
 })

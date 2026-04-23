@@ -1,16 +1,16 @@
 {
   "product": "starter-foundry",
-  "timestamp": "2026-04-23T03:56:49.797Z",
+  "timestamp": "2026-04-23T03:57:32.145Z",
   "coverage": "13/14 flows measured",
   "aggregate": 0.455,
   "inputs": [
     {
       "path": ".evolve/buildout-analysis.json",
-      "mtime": "2026-04-23T03:56:49.086Z"
+      "mtime": "2026-04-23T03:57:26.863Z"
     },
     {
       "path": ".evolve/capability-gaps.json",
-      "mtime": "2026-04-23T03:56:49.269Z"
+      "mtime": "2026-04-23T03:57:27.037Z"
     },
     {
       "path": ".evolve/scaffold-quality-audit.json",
@@ -18,14 +18,14 @@
     },
     {
       "path": ".evolve/buildout-analysis-internal.json",
-      "mtime": "2026-04-23T03:56:49.753Z"
+      "mtime": "2026-04-23T03:57:27.504Z"
     }
   ],
-  "sourceMtime": "2026-04-23T03:56:59.634Z",
+  "sourceMtime": "2026-04-23T03:57:26.504Z",
   "stale": {
     "anyFlowStale": true,
-    "buildout": true,
-    "gaps": true,
+    "buildout": false,
+    "gaps": false,
     "audit": true
   },
   "buildoutSource": "historical",
@@ -44,8 +44,7 @@
       "target": 0.85,
       "status": "fail",
       "productValueClaim": "Fraction of VB-run agent sessions whose composed scaffold reaches a working state. Directly = user sees something that works.",
-      "direction": "higher-better",
-      "stale": true
+      "direction": "higher-better"
     },
     {
       "name": "scaffold_audit_pass_rate",
@@ -62,8 +61,7 @@
       "target": 10,
       "status": "fail",
       "productValueClaim": "Count of agent installs that map to packages NO family ships. Each one is a turn of agent work the scaffold should have avoided. Lower = less wasted setup.",
-      "direction": "lower-better",
-      "stale": true
+      "direction": "lower-better"
     },
     {
       "name": "top_file_rewrite_count",
@@ -71,8 +69,7 @@
       "target": 5,
       "status": "fail",
       "productValueClaim": "Rewrite count for the most-rewritten file in the corpus. High number = scaffold shipped a template agents systematically replace. Lower = tokens spent on features instead of setup.",
-      "direction": "lower-better",
-      "stale": true
+      "direction": "lower-better"
     },
     {
       "name": "median_turns_per_buildout",
@@ -81,7 +78,6 @@
       "status": "fail",
       "productValueClaim": "Median number of agent turns per buildout session. Fewer turns = agent reaches working preview faster = less user wait + fewer tokens spent on setup that could go to features.",
       "direction": "lower-better",
-      "stale": true,
       "notes": "scenario-mean-weighted — unweighted by run count per scenario"
     },
     {
@@ -98,8 +94,7 @@
       "target": 600,
       "status": "pass",
       "productValueClaim": "Median wall-time per buildout session in seconds. Faster = user sees working product sooner = lower abandon rate.",
-      "direction": "lower-better",
-      "stale": true
+      "direction": "lower-better"
     },
     {
       "name": "orchestration_installs",
@@ -107,8 +102,7 @@
       "target": 15,
       "status": "fail",
       "productValueClaim": "Count of redundant agent installs when the scaffold already ships the package. Each one is a sign that the consumer pipeline isn't running install before handing the scaffold to the agent — informs blueprint-agent orchestration, not our scaffold.",
-      "direction": "lower-better",
-      "stale": true
+      "direction": "lower-better"
     },
     {
       "name": "estimated_tokens_per_buildout",
@@ -116,8 +110,7 @@
       "target": 80000,
       "status": "fail",
       "productValueClaim": "Median tokens spent per buildout (real when emitBuildoutEvent supplies tokenCount, proxy from turns otherwise). Fewer tokens = lower cost per user session + lower LLM API cost for consumers.",
-      "direction": "lower-better",
-      "stale": true
+      "direction": "lower-better"
     },
     {
       "name": "cost_usd_per_buildout",
@@ -125,8 +118,7 @@
       "target": 0.5,
       "status": "unmeasured",
       "productValueClaim": "Mean $ cost per scaffold buildout. Catches regressions where a change doubles token spend even if pass rate stays flat. Drives the ROI conversation on every future capability — is the delta on pass rate worth $X more per user?",
-      "direction": "lower-better",
-      "stale": true
+      "direction": "lower-better"
     },
     {
       "name": "families",

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "generator": "starter-foundry:replay-traces",
-  "registryCommit": "863e062",
+  "registryCommit": "740df03",
   "summary": {
-    "generatedAt": "2026-04-23T04:08:11.140Z",
+    "generatedAt": "2026-04-23T05:15:15.322Z",
     "totalBuildouts": 192,
     "withOutcome": 114,
     "passRate": 0.8245614035087719,
@@ -26,10 +26,10 @@
       "tangle-blueprints-mpc"
     ],
     "totalHistoricalInstalls": 102,
-    "totalPreventedInstalls": 65,
-    "totalRemainingGapInstalls": 37,
-    "preventionRate": 0.6372549019607843,
-    "estimatedGapInstallsPerBuildout": 0.19270833333333334,
+    "totalPreventedInstalls": 75,
+    "totalRemainingGapInstalls": 27,
+    "preventionRate": 0.7352941176470589,
+    "estimatedGapInstallsPerBuildout": 0.140625,
     "costRollup": {
       "sampleCount": 0,
       "meanCostUsd": null,
@@ -67,24 +67,9 @@
       "meanWallMs": 2225928,
       "meanTurns": 138,
       "totalHistoricalInstalls": 28,
-      "totalPreventedInstalls": 17,
-      "totalRemainingGapInstalls": 11,
-      "preventionRate": 0.6071428571428571
-    },
-    {
-      "partner": "ethereum-l1",
-      "scenarioId": "dao-proposals",
-      "total": 10,
-      "withOutcome": 10,
-      "pass": 10,
-      "passRate": 1,
-      "meanScore": 0.9640000000000002,
-      "meanWallMs": 393548,
-      "meanTurns": 33,
-      "totalHistoricalInstalls": 27,
       "totalPreventedInstalls": 21,
-      "totalRemainingGapInstalls": 6,
-      "preventionRate": 0.7777777777777778
+      "totalRemainingGapInstalls": 7,
+      "preventionRate": 0.75
     },
     {
       "partner": "ethereum-l1",
@@ -280,6 +265,21 @@
       "totalPreventedInstalls": 0,
       "totalRemainingGapInstalls": 0,
       "preventionRate": 0
+    },
+    {
+      "partner": "ethereum-l1",
+      "scenarioId": "dao-proposals",
+      "total": 10,
+      "withOutcome": 10,
+      "pass": 10,
+      "passRate": 1,
+      "meanScore": 0.9640000000000002,
+      "meanWallMs": 393548,
+      "meanTurns": 33,
+      "totalHistoricalInstalls": 27,
+      "totalPreventedInstalls": 27,
+      "totalRemainingGapInstalls": 0,
+      "preventionRate": 1
     },
     {
       "partner": "fhenix-fhe",
@@ -554,12 +554,6 @@
   ],
   "topRemainingGapInstalls": [
     {
-      "key": "date-fns",
-      "timesRemaining": 3,
-      "remainingOnPass": 3,
-      "remainingOnFail": 0
-    },
-    {
       "key": "@codemirror/view",
       "timesRemaining": 3,
       "remainingOnPass": 3,
@@ -590,27 +584,9 @@
       "remainingOnFail": 0
     },
     {
-      "key": "react-router-dom",
-      "timesRemaining": 3,
-      "remainingOnPass": 3,
-      "remainingOnFail": 0
-    },
-    {
       "key": "vite",
       "timesRemaining": 3,
       "remainingOnPass": 1,
-      "remainingOnFail": 2
-    },
-    {
-      "key": "@zk-kit/incremental-merkle-tree",
-      "timesRemaining": 2,
-      "remainingOnPass": 0,
-      "remainingOnFail": 2
-    },
-    {
-      "key": "ethers",
-      "timesRemaining": 2,
-      "remainingOnPass": 0,
       "remainingOnFail": 2
     },
     {
@@ -682,8 +658,24 @@
       "timesPrevented": 4
     },
     {
+      "key": "date-fns",
+      "timesPrevented": 3
+    },
+    {
       "key": "circomlib",
       "timesPrevented": 3
+    },
+    {
+      "key": "react-router-dom",
+      "timesPrevented": 3
+    },
+    {
+      "key": "@zk-kit/incremental-merkle-tree",
+      "timesPrevented": 2
+    },
+    {
+      "key": "ethers",
+      "timesPrevented": 2
     }
   ],
   "topRewrittenFiles": [

@@ -1,0 +1,92 @@
+{
+  "id": "sp1-zkvm",
+  "description": "Succinct SP1 zkVM workspace — modern general-purpose Rust zkVM with program + script split. Prove arbitrary Rust programs locally or via the Succinct prover network; verify on-chain through the SP1 Gnark/Plonk Solidity verifier.",
+  "tags": [
+    "zk",
+    "zkvm",
+    "rust",
+    "sp1",
+    "succinct",
+    "proofs"
+  ],
+  "taxonomy": {
+    "language": "rust",
+    "runtime": "native",
+    "surface": "zkvm"
+  },
+  "slots": {},
+  "defaults": {
+    "projectType": "zkvm",
+    "programName": "program"
+  },
+  "files": [
+    {
+      "source": "files/Cargo.toml",
+      "target": "Cargo.toml"
+    },
+    {
+      "source": "files/rust-toolchain.toml",
+      "target": "rust-toolchain.toml"
+    },
+    {
+      "source": "files/program-Cargo.toml",
+      "target": "program/Cargo.toml"
+    },
+    {
+      "source": "files/program/main.rs",
+      "target": "program/src/main.rs"
+    },
+    {
+      "source": "files/script-Cargo.toml",
+      "target": "script/Cargo.toml"
+    },
+    {
+      "source": "files/script/main.rs",
+      "target": "script/src/main.rs"
+    },
+    {
+      "source": "files/script/prover.rs",
+      "target": "script/src/prover.rs"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/validate-sp1.mjs",
+      "target": "validate-sp1.mjs"
+    }
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "sp1",
+      "succinct",
+      "succinct labs",
+      "succinct sp1",
+      "succinct zkvm"
+    ],
+    "tier2": [
+      "succinct prover",
+      "succinct network",
+      "sp1 prover",
+      "sp1 zkvm",
+      "sp1-verifier",
+      "sp1 gnark",
+      "sp1 on-chain verifier",
+      "prove rust in sp1"
+    ],
+    "archetypes": [
+      "prove rust programs with sp1",
+      "succinct prover network service",
+      "sp1 rollup",
+      "sp1 on-chain verifier"
+    ]
+  },
+  "validationChecks": [
+    { "type": "file-exists", "path": "Cargo.toml" },
+    { "type": "file-exists", "path": "program/Cargo.toml" },
+    { "type": "file-exists", "path": "program/src/main.rs" },
+    { "type": "file-exists", "path": "script/Cargo.toml" },
+    { "type": "file-exists", "path": "script/src/main.rs" }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "id": "arkworks-prover",
+  "description": "Framework layer for arkworks-prover — content ships from the family scaffold (registry/families/arkworks-prover/files/). This layer is the scaffold declaration that selectStarter emits.",
+  "appliesTo": ["arkworks-prover"],
+  "files": []
+}

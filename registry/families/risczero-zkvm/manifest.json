@@ -1,0 +1,109 @@
+{
+  "id": "risczero-zkvm",
+  "description": "RISC Zero zkVM workspace — general-purpose Rust zkVM with host + guest split. Prove arbitrary Rust programs, optionally via the Bonsai proving network. Pairs with EVM smart contracts through R0 Steel for reading on-chain state inside proofs.",
+  "tags": [
+    "zk",
+    "zkvm",
+    "rust",
+    "risc-zero",
+    "risczero",
+    "bonsai",
+    "r0-steel",
+    "proofs"
+  ],
+  "taxonomy": {
+    "language": "rust",
+    "runtime": "native",
+    "surface": "zkvm"
+  },
+  "slots": {},
+  "defaults": {
+    "projectType": "zkvm",
+    "guestName": "guest"
+  },
+  "files": [
+    {
+      "source": "files/Cargo.toml",
+      "target": "Cargo.toml"
+    },
+    {
+      "source": "files/rust-toolchain.toml",
+      "target": "rust-toolchain.toml"
+    },
+    {
+      "source": "files/host-Cargo.toml",
+      "target": "host/Cargo.toml"
+    },
+    {
+      "source": "files/host/main.rs",
+      "target": "host/src/main.rs"
+    },
+    {
+      "source": "files/host/prover.rs",
+      "target": "host/src/prover.rs"
+    },
+    {
+      "source": "files/methods/Cargo.toml",
+      "target": "methods/Cargo.toml"
+    },
+    {
+      "source": "files/methods/build.rs",
+      "target": "methods/build.rs"
+    },
+    {
+      "source": "files/methods/src-lib.rs",
+      "target": "methods/src/lib.rs"
+    },
+    {
+      "source": "files/methods/guest-Cargo.toml",
+      "target": "methods/guest/Cargo.toml"
+    },
+    {
+      "source": "files/methods/guest/main.rs",
+      "target": "methods/guest/src/main.rs"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/validate-risczero.mjs",
+      "target": "validate-risczero.mjs"
+    }
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "risc zero",
+      "risc0",
+      "risczero",
+      "r0 steel",
+      "zkr0"
+    ],
+    "tier2": [
+      "bonsai",
+      "bonsai prover",
+      "bonsai proving",
+      "risc zero prover",
+      "risc zero zkvm",
+      "risc zero coprocessor",
+      "risc zero rollup",
+      "r0 steel evm"
+    ],
+    "archetypes": [
+      "prove rust programs with risc zero",
+      "risc zero coprocessor for ethereum",
+      "bonsai-powered zk service",
+      "r0 steel evm state proof",
+      "risc zero rollup",
+      "zkvm for rust programs"
+    ]
+  },
+  "validationChecks": [
+    { "type": "file-exists", "path": "Cargo.toml" },
+    { "type": "file-exists", "path": "methods/Cargo.toml" },
+    { "type": "file-exists", "path": "methods/guest/Cargo.toml" },
+    { "type": "file-exists", "path": "methods/guest/src/main.rs" },
+    { "type": "file-exists", "path": "host/Cargo.toml" },
+    { "type": "file-exists", "path": "host/src/main.rs" }
+  ]
+}

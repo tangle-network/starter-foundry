@@ -121,6 +121,9 @@ const FAMILY_PROMPTS: Record<string, string> = {
   "soc2-compliance-pack": "Add a SOC 2 Type II compliance pack with change management and incident response playbook",
   "pci-dss-compliance-pack": "Add a PCI-DSS 4.0 compliance pack with PAN redaction and Stripe tokenization helpers",
   "gdpr-compliance-pack": "Add a GDPR-compliant consent management pack with data subject rights endpoints",
+  "risczero-zkvm": "Build a RISC Zero zkVM prover service that proves Rust programs and uses the Bonsai proving network",
+  "sp1-zkvm": "Build a Succinct SP1 zkVM with the Succinct prover network and an on-chain SP1 Gnark verifier",
+  "arkworks-prover": "Build a custom SNARK circuit from scratch with arkworks hand-rolled r1cs for a research-grade zk proof",
 };
 
 for (const [family, prompt] of Object.entries(FAMILY_PROMPTS)) {
@@ -261,6 +264,9 @@ const CAP_PROMPTS: Record<string, { prompt: string; family: string }> = {
   "capability:tangle-remote-provider": { prompt: "Build a Tangle blueprint that wraps the OpenAI API as a remote provider with credential injection", family: "tangle-blueprint" },
   "capability:tangle-x402": { prompt: "Build a Tangle blueprint with x402 per-call payment gating in USDC", family: "tangle-blueprint" },
   "capability:tangle-mpp": { prompt: "Build a Tangle blueprint with MPP machine payments protocol for agent-to-agent delegation and budget caps", family: "tangle-blueprint" },
+  "capability:routing": { prompt: "Build a DAO UI with a proposal list and proposal detail view — nested routes with deep linking", family: "react-vite-ts" },
+  "capability:zk-noir": { prompt: "Build an Aztec Noir circuit app with a Barretenberg backend and nargo", family: "react-vite-ts" },
+  "capability:zk-gnark": { prompt: "Build a Go API that uses ConsenSys gnark for zk proofs and a Groth16 prover", family: "go-api" },
 };
 
 for (const [capId, config] of Object.entries(CAP_PROMPTS)) {

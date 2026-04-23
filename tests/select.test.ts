@@ -113,14 +113,18 @@ test("select chooses evm infra starter for chain monitoring prompts", async () =
   assert.deepEqual(result.spec.layers, ["framework:evm-infra-ts"]);
 });
 
-test("select chooses zk prover starter for zk prompts", async () => {
+test("select chooses risczero-zkvm for RISC Zero prompts", async () => {
+  // RISC Zero is a general-purpose Rust zkVM — prompts naming it route to
+  // the full-workspace family, not the generic zk-prover-service stub.
+  // zk-prover-service remains for generic "zk prover" prompts without a
+  // specific zkVM named (see the test below).
   const result = await selectStarter({
     prompt: "Build a ZK oracle network on RISC Zero for verifiable external data feeds",
     partner: null,
   });
 
-  assert.equal(result.spec.family, "zk-prover-service");
-  assert.deepEqual(result.spec.layers, ["framework:zk-prover-service"]);
+  assert.equal(result.spec.family, "risczero-zkvm");
+  assert.deepEqual(result.spec.layers, ["framework:risczero-zkvm"]);
 });
 
 test("select chooses stylus starter for stylus prompts", async () => {

@@ -15,10 +15,31 @@
       "target": "src/lib/zkproof.ts"
     },
     {
+      "source": "files/mixer-note.ts",
+      "target": "src/lib/mixer-note.ts"
+    },
+    {
+      "source": "files/mixer-deposit-panel.tsx",
+      "target": "src/components/zk/mixer-deposit-panel.tsx"
+    },
+    {
+      "source": "files/mixer-withdraw-panel.tsx",
+      "target": "src/components/zk/mixer-withdraw-panel.tsx"
+    },
+    {
+      "source": "files/mixer-merkle-panel.tsx",
+      "target": "src/components/zk/mixer-merkle-panel.tsx"
+    },
+    {
+      "source": "files/mixer-verify-panel.tsx",
+      "target": "src/components/zk/mixer-verify-panel.tsx"
+    },
+    {
       "source": "files/zk-circuits.md",
       "target": "docs/zk-circuits.md"
     }
   ],
+  "capabilityRequires": ["shadcn"],
   "packageDeps": {
     "dependencies": {
       "snarkjs": "^0.7.5",

@@ -1,0 +1,85 @@
+name: scorecard-refresh
+
+# Gen-2: nightly scorecard refresh. Catches silent metric drift between
+# research rounds. If the scorecard changed since the last committed
+# version (any flow value moved, staleness flipped, new input recorded),
+# opens a PR so the governor operator reviews the drift before the next
+# research dispatch. No-change days skip the PR entirely.
+#
+# Runs against main — not against feature branches, since drift on a
+# feature branch is expected and noisy. For PR-side drift checks, a
+# follow-on workflow on pull_request would wire this in differently.
+
+on:
+  schedule:
+    # 06:00 UTC daily — well before typical working hours in any TZ so
+    # the PR is visible at the start of the day for whoever's driving
+    # research next.
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    # Manual trigger for on-demand refreshes between scheduled runs.
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+      - name: install
+        run: pnpm install --frozen-lockfile
+      - name: build
+        run: pnpm build
+      - name: audit scaffolds (smoke-compose)
+        run: node scripts/audit-scaffold-quality.mjs --smoke-compose || true
+        # The audit returns non-zero on any layer failure. That's expected
+        # — we still want the scorecard to emit with the current numbers
+        # so downstream reviewers can see the regression rather than have
+        # the workflow abort silently.
+      - name: refresh scorecard
+        run: node scripts/refresh-scorecard.mjs
+      - name: diff check
+        id: diff
+        run: |
+          if git diff --exit-code .evolve/scorecard.json .evolve/scaffold-quality-audit.json > /dev/null 2>&1; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            # Short summary to seed the PR body with the visible deltas.
+            {
+              echo "## Scorecard drift detected $(date -u +%Y-%m-%d)"
+              echo ""
+              echo '```diff'
+              git diff --unified=3 .evolve/scorecard.json | head -80
+              echo '```'
+            } > /tmp/pr-body.md
+          fi
+      - name: open PR when changed
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          BRANCH="scorecard-refresh/$(date -u +%Y-%m-%d)"
+          git config user.name "tangle-bot"
+          git config user.email "bot@tangle.tools"
+          git checkout -b "$BRANCH"
+          git add .evolve/scorecard.json .evolve/scaffold-quality-audit.json
+          git commit -m "chore(scorecard): nightly refresh $(date -u +%Y-%m-%d)"
+          git push -u origin "$BRANCH"
+          gh pr create \
+            --title "scorecard refresh: $(date -u +%Y-%m-%d)" \
+            --body-file /tmp/pr-body.md \
+            --base main \
+            --head "$BRANCH" \
+            --label "scorecard-drift"

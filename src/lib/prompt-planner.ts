@@ -215,8 +215,29 @@ function collectServiceProjects(lanes: LaneDetection, prompt: string, partner: s
     projects.push({ id: 'api', path: 'apps/api', spec: { projectName: `${buildSlug(prompt, 'workspace')}-api`, family: 'x402-service', layers: ['framework:x402-service'], partner: resolvePartnerForFamily(partner, 'x402-service'), slots: {}, variables: {}, primaryArtifactTargetMs: 2500 } })
   }
   if (lanes.zk && !lanes.api) {
-    const proofSystem = text.includes('circom') ? 'circom' : text.includes('fhenix') ? 'fhenix' : text.includes('risc zero') ? 'risc-zero' : 'sp1'
-    projects.push(buildProtocolProject('zk', 'apps/prover', 'zk-prover-service', ['framework:zk-prover-service'], prompt, null, { proofSystem }))
+    // Dispatch to the specific zkVM family when the prompt names one; fall
+    // back to the generic zk-prover-service for unspecific "zk prover" /
+    // "verifiable ml" / "dark pool" / "mixer" / "private voting" prompts.
+    // Mirrors the single-starter routing path so workspace composition is
+    // consistent with single-family selection.
+    let zkFamily = 'zk-prover-service'
+    let zkFramework = 'framework:zk-prover-service'
+    const zkVars: Record<string, string> = {}
+    if (text.includes('risc zero') || text.includes('risc0') || text.includes('risczero') || text.includes('bonsai')) {
+      zkFamily = 'risczero-zkvm'
+      zkFramework = 'framework:risczero-zkvm'
+    } else if (text.includes('sp1') || text.includes('succinct')) {
+      zkFamily = 'sp1-zkvm'
+      zkFramework = 'framework:sp1-zkvm'
+    } else if (text.includes('arkworks') || text.includes('hand-rolled r1cs') || text.includes('custom snark circuit')) {
+      zkFamily = 'arkworks-prover'
+      zkFramework = 'framework:arkworks-prover'
+    } else {
+      // Generic fallback — keep the pre-existing proof-system slot logic so
+      // the generic scaffold composes with a proofSystem hint.
+      zkVars.proofSystem = text.includes('circom') ? 'circom' : text.includes('fhenix') ? 'fhenix' : 'sp1'
+    }
+    projects.push(buildProtocolProject('zk', 'apps/prover', zkFamily, [zkFramework], prompt, null, zkVars))
   }
   if (lanes.agent && !projects.some((p) => p.id === 'agent')) {
     projects.push(buildApiProject(prompt, partner, text, registry))

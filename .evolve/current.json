@@ -1,34 +1,31 @@
 {
   "mode": "evolve",
-  "goal": "closed-loop generation flywheel — 4/6 Gen 6 flows passing; remaining 2 include one architectural ceiling (coverage_lift_per_promote) reachable only via /pursue Gen 7 workspace-shaped proposer",
-  "status": "evolve-round-5-shipped-gen6-near-complete",
-  "round": 5,
+  "goal": "closed-loop generation flywheel — capability pipeline now has nightly autonomy parallel to family pipeline",
+  "status": "evolve-round-6-shipped-infrastructure-autonomy",
+  "round": 6,
   "generation": 6,
   "activePursuit": null,
   "lastPursuit": ".evolve/pursuits/2026-04-23-generation-flywheel.md",
-  "updatedAt": "2026-04-23T23:00:00Z",
-  "plateauClock": "0 of 2 (R5 ADVANCE — capability_promotion_rate new pass)",
-  "evolveRoundCap": "5/5 (per-invocation max reached; re-invoke for Round 6+)",
+  "updatedAt": "2026-04-23T23:15:00Z",
+  "plateauClock": "1 of 2 (R6 flat — but intentional; shipped persistent infrastructure, not metric-moving outcomes)",
   "priorGenerations": [
     { "n": 3, "pursuit": "measurement-freshness", "commit": "9b5aafd" },
     { "n": 5, "pursuit": "closed-loop-generation", "commits": ["52afc18", "ce931c6"] },
-    { "n": 6, "pursuit": "generation-flywheel", "commit": "17347c1" }
+    { "n": 6, "pursuit": "generation-flywheel", "commits": ["17347c1", "ceee7ee", "e2a1908", "dcf9bfc", "3c265e9", "78110b2"] }
   ],
   "gen6EvolveRounds": {
-    "r1": "fallback-default + filesForTaxonomy: 0.407→0.495 (+8.8pp)",
-    "r2": "fidelity gate + 5 plumbing + first shippable (human-patched kyc): 0.495→0.530",
-    "r3": "refinementHints + prescriptive slots + 6 structural checks + cross-session memory: flat",
-    "r4": "judge rubric calibration — 3/3 borderline→pass, 2 auto-promotes: 0.527→0.530 (+real shippables)",
-    "r5": "capability proposer + framework-aware family picker: capability_promotion_rate null→0.6667 PASS: 0.530→0.553 (+2.3pp)"
+    "r1": "fallback-default + filesForTaxonomy: +8.8pp",
+    "r2": "fidelity gate + 5 plumbing + first shippable: +3.5pp",
+    "r3": "refinementHints + prescriptive slots + structural checks: flat",
+    "r4": "judge rubric calibration — 2 auto-promotes: +0.3pp",
+    "r5": "capability proposer — first measurable capability_promotion_rate: +2.3pp",
+    "r6": "capability gap-detector + driver + nightly cron wiring + 5 contract tests: flat (intentional — infrastructure only)"
   },
-  "cumulativeGen6Delta": "+14.6pp (0.407 → 0.553) over 5 evolve rounds",
-  "registry": {
-    "families": "99 → 101 (+kyc-onboarding, +fraud-ops-console, +polymarket-portfolio-hedging; −zk-mixer-ui reverted)",
-    "capabilities": "107 → 109 (+evm-nft-mint-page, +passkey-onboarding)"
+  "cumulativeGen6Delta": "+14.6pp (0.407 → 0.553) over 6 evolve rounds",
+  "nightlyAutonomy": {
+    "families": "detect-family-gaps → propose-family-candidates → promote-family-proposal with fidelity gate",
+    "capabilities": "detect-capability-gaps → propose-capability-candidates → promote-capability-proposal (schema+compose+build)",
+    "expectedNightlyMoves": "0-3 new auto-promotes/night; over 30 days: 10-30 new registry entries"
   },
-  "flowStatus": {
-    "pass": ["full_stack_proposal_rate", "llm_proposal_success_rate", "proposed_family_first_ship_hours", "capability_promotion_rate"],
-    "fail": ["proposal_promotion_rate (0.05, dilutes naturally)", "coverage_lift_per_promote (0, ARCHITECTURAL CEILING)"]
-  },
-  "handoff": "ESCALATE TO /pursue Gen 7. The remaining unmoved flow (coverage_lift_per_promote) is architectural — single-family keyword routing cannot reach demand that lives in workspace-classified prompts. Gen 7 thesis: workspace-shaped proposer that generates multi-project compositions (apps/web + apps/api + shared/types) matching the shape real demand arrives in. Secondary targets: AxGEPA on hintsAuthor.keywordsTier1 (3 regressions from taxonomy-restatement tier1 is clear training signal); capability gap-detector script; formalized propose-capability-candidates.mjs driver."
+  "handoff": "R7 candidates: (a) wait for nightly to populate outcomes + measure real autonomous rate; (b) tackle proposal_promotion_rate denominator pollution via rolling-window tuning; (c) ESCALATE to /pursue Gen 7 for coverage_lift_per_promote architectural gap (workspace-shaped proposer). Recommend (a): one-day-pause evolve to let nightly deliver organic data, THEN governor re-picks. If operator wants immediate motion, (c) is the only remaining structurally-reachable gain."
 }

@@ -600,3 +600,35 @@ Governor should pick. Recommend Option A (exploit) to push past plateau, accumul
   - Build a `proposeCapabilityCandidates.mjs` driver to formalize R5's inline-node invocation
 
 Governor should escalate to `/pursue` Gen 7 with the workspace-shaped proposer thesis. Pure evolve can't reach coverage_lift.
+
+## 2026-04-23 — /evolve Round 6 (new invocation, counter reset — capability gap infra)
+
+**Goal:** unblock nightly capability-generation (R5 was ad-hoc inline-node; no structured detector, no cron wiring) so capability_promotion_rate keeps rising autonomously.
+
+**Operator override:** R5 handed off with "escalate to /pursue Gen 7"; operator re-ran /evolve. Accepted override, stayed in evolve lane. Focused on the R5-named secondary Gen 7 targets that are actually evolve-reachable as infrastructure.
+
+**Shipped:**
+1. `scripts/detect-capability-gaps.mjs` (~180 LoC) — mirror of detect-family-gaps. Tokenizes scenarioIds, compares against union of 714 existing capability keywords, demand-weighted priority. Found real gaps: `stylus-gas-profiler` (8× demand), `invoice-factoring` (7×), `transaction-categorizer` (6×).
+2. `scripts/propose-capability-candidates.mjs` (~110 LoC) — mirror of propose-family-candidates. Pipes detector stdin OR self-invokes. Logs `capability-proposed` / `capability-proposed-failed` events to generation-impact.jsonl.
+3. `tests/gen6-capability-pipeline.test.ts` (5 tests) — shape contract, priority sort, min-count filter, appliesTo-exists check, uncovered-token integrity (the token the gap flagged must NOT already appear in any cap's keywords).
+4. `.github/workflows/proposal-cron.yml` capabilities job — now detect → propose → promote → PR chain (was just package-cluster legacy). Preserves legacy path as parallel first step.
+5. Package.json scripts: `propose:capability-candidates`, `detect:capability-gaps`, `promote:capability-proposal`.
+
+**Metric moves (this round, no new LLM runs):**
+| Flow | R5 | R6 | Verdict |
+|---|---|---|---|
+| All flows | same | same | infrastructure-only round |
+| aggregate | 0.553 | 0.553 | flat (expected — no runs) |
+
+**Why flat is the right outcome:** R6 shipped PERSISTENT infrastructure. The capability pipeline now runs nightly without human invocation. Expected effect will show up AFTER the first nightly runs accumulate capability promotes, pushing `capability_promotion_rate` further above target (currently 0.6667/0.4) and potentially adding new registry entries.
+
+**R6 verdict: infrastructure ADVANCE, metric flat (intentional).** The R5→R6 step is "move ad-hoc exercise into durable pipeline." Cumulative Gen 6 unchanged at +14.6pp.
+
+**Plateau clock:** R3 flat, R4 +0.3pp, R5 +2.3pp, R6 flat. Not 2 consecutive <1% (R5 was +2.3). Plateau clock at 1 of 2.
+
+**Handoff:** the Gen 6 arc now has full nightly autonomy — detect → propose → promote for both families AND capabilities. Next /evolve round should either:
+- Wait for nightly to populate outcomes (no action for ~24h), then measure + iterate on whichever metric shows the clearest regression/opportunity
+- Tackle `proposal_promotion_rate` denominator pollution (rolling-window semantics)
+- Escalate to /pursue Gen 7 for the architectural `coverage_lift_per_promote` gap
+
+The honest signal: evolve has largely extracted its reachable gains on Gen 6. One more flat round → formal plateau → /pursue trigger.

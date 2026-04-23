@@ -340,6 +340,46 @@ const flows = [
     target: 10,
     productValueClaim: 'Partner packs — ecosystem-specific biases + config. More partners = more prompts get routed with SDK/addresses pre-wired.',
   },
+  // ── Gen 4: agent-eval scaffold flow ────────────────────────────
+  // Reads the most-recent three-layer-report.json from
+  // .evolve/agent-eval/<YYYY-MM-DD>/. Mean build_score across all
+  // scaffold-only projects from the last run. Governor uses this to
+  // detect scaffold regressions without waiting for a VB sweep —
+  // compose + install + build is a fast local signal.
+  ...(() => {
+    const agentEvalRoot = join(REPO, '.evolve/agent-eval')
+    if (!existsSync(agentEvalRoot)) return []
+    let latestReport = null
+    try {
+      const days = readdirSync(agentEvalRoot).filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d)).sort()
+      for (let i = days.length - 1; i >= 0; i -= 1) {
+        const p = join(agentEvalRoot, days[i], 'three-layer-report.json')
+        if (existsSync(p)) {
+          latestReport = readJson(p)
+          break
+        }
+      }
+    } catch { /* noop */ }
+    if (!latestReport) return []
+    const meanBuild = latestReport.summary?.meanBuildScore
+    const meanMeta = latestReport.summary?.meanMetaScore
+    return [
+      {
+        name: 'agent_eval_build_pass_rate',
+        value: typeof meanBuild === 'number' ? Number(meanBuild.toFixed(4)) : null,
+        target: 0.95,
+        productValueClaim: 'Fraction of composed scaffolds that pass install+build locally (mean build_score from agent-eval scaffold run). Regresses when a capability manifest changes break compose or a family\'s build recipe stops working — fast local signal, no VB sweep needed.',
+        direction: 'higher-better',
+      },
+      {
+        name: 'agent_eval_meta_pass_rate',
+        value: typeof meanMeta === 'number' ? Number(meanMeta.toFixed(4)) : null,
+        target: 0.85,
+        productValueClaim: 'Mean LLM-judge meta_score on scaffold quality — correctness + completeness + idiomatic layout + production-readiness per the scaffold rubric. Null when judge disabled (--no-judge) or no runs yet.',
+        direction: 'higher-better',
+      },
+    ]
+  })(),
 ]
 
 const aggregate = (() => {

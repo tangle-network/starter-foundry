@@ -1,8 +1,8 @@
 {
   "product": "starter-foundry",
-  "timestamp": "2026-04-23T05:41:23.196Z",
-  "coverage": "13/14 flows measured",
-  "aggregate": 0.455,
+  "timestamp": "2026-04-23T07:24:05.189Z",
+  "coverage": "14/16 flows measured",
+  "aggregate": 0.483,
   "inputs": [
     {
       "path": ".evolve/buildout-analysis.json",
@@ -19,6 +19,10 @@
     {
       "path": ".evolve/buildout-analysis-internal.json",
       "mtime": "2026-04-23T05:41:22.617Z"
+    },
+    {
+      "path": ".evolve/agent-eval/2026-04-23/three-layer-report.json",
+      "mtime": "2026-04-23T07:23:11.834Z"
     }
   ],
   "sourceMtime": "2026-04-23T03:57:26.504Z",
@@ -142,6 +146,22 @@
       "target": 10,
       "status": "pass",
       "productValueClaim": "Partner packs — ecosystem-specific biases + config. More partners = more prompts get routed with SDK/addresses pre-wired.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "agent_eval_build_pass_rate",
+      "value": 0.8,
+      "target": 0.95,
+      "status": "fail",
+      "productValueClaim": "Fraction of composed scaffolds that pass install+build locally (mean build_score from agent-eval scaffold run). Regresses when a capability manifest changes break compose or a family's build recipe stops working — fast local signal, no VB sweep needed.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "agent_eval_meta_pass_rate",
+      "value": null,
+      "target": 0.85,
+      "status": "unmeasured",
+      "productValueClaim": "Mean LLM-judge meta_score on scaffold quality — correctness + completeness + idiomatic layout + production-readiness per the scaffold rubric. Null when judge disabled (--no-judge) or no runs yet.",
       "direction": "higher-better"
     }
   ]

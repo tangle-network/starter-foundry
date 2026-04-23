@@ -1,0 +1,235 @@
+#!/usr/bin/env node
+// Scaffold-wide agent-eval driver.
+//
+// For every seed (family or workspace prompt) in .evolve/agent-eval/seeds.json:
+//   1. planPrompt → spec
+//   2. resolveComponents → components (family + layers)
+//   3. scaffold-bridge.prepareScaffoldForEval → composes to tempdir,
+//      emits snapshot, harness config, structural assertions
+//   4. agent-eval BuilderSession → ship() drives SandboxHarness, records
+//      build_score from harness result
+//   5. agent-eval runAssertions(snapshot) → structural pass rate
+//   6. optional: LLM judge (createLlmReviewer + recordMetaScore) for
+//      meta_score — gated on TANGLE_ROUTER_USER_KEY / ANTHROPIC_API_KEY
+//   7. scoreProject via agent-eval's three-layer-eval → kind='scaffold-only'
+//
+// Output: .evolve/agent-eval/<YYYY-MM-DD>/
+//   - three-layer-report.json  (scoreAllProjects rollup)
+//   - traces.jsonl             (TraceEmitter raw)
+//   - structural-assertions.jsonl
+//   - cost-summary.json        (CostTracker)
+//
+// Usage:
+//   pnpm eval:scaffold              # full sweep — ~96 families + 6 workspaces
+//   pnpm eval:scaffold:sample       # 20 representative scaffolds
+//   node scripts/agent-eval-scaffold.mjs --family risczero-zkvm  # single
+//   node scripts/agent-eval-scaffold.mjs --no-judge              # skip LLM, structural-only
+
+import { readFileSync, writeFileSync, mkdirSync, appendFileSync, existsSync } from 'node:fs'
+import { join, resolve, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import {
+  InMemoryTraceStore,
+  BuilderSession,
+  SubprocessSandboxDriver,
+  scoreAllProjects,
+  runAssertions,
+  CostTracker,
+} from '@tangle-network/agent-eval'
+import { planPrompt } from '../dist/lib/prompt-planner.js'
+import { resolveComponents } from '../dist/lib/registry.js'
+import { prepareScaffoldForEval, buildScaffoldMetaPrompt } from '../dist/eval/scaffold-bridge.js'
+
+const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+
+const argv = process.argv.slice(2)
+const FAMILY_FILTER = (() => { const i = argv.indexOf('--family'); return i >= 0 ? argv[i + 1] : null })()
+const SAMPLE_SIZE = (() => { const i = argv.indexOf('--sample'); return i >= 0 ? Number(argv[i + 1]) : null })()
+const NO_JUDGE = argv.includes('--no-judge')
+const QUIET = argv.includes('--quiet')
+
+// ── seed loading ──────────────────────────────────────────────────
+const seedsPath = join(REPO, '.evolve/agent-eval/seeds.json')
+if (!existsSync(seedsPath)) {
+  console.error(`missing ${seedsPath} — regenerate from tests/coverage.test.ts FAMILY_PROMPTS`)
+  process.exit(2)
+}
+const seeds = JSON.parse(readFileSync(seedsPath, 'utf8'))
+
+const allSeeds = [
+  ...seeds.families.map((s) => ({ id: s.family, prompt: s.prompt, kind: 'family' })),
+  ...seeds.workspaces.map((s) => ({ id: s.id, prompt: s.prompt, kind: 'workspace' })),
+]
+
+let selected = allSeeds
+if (FAMILY_FILTER) {
+  selected = allSeeds.filter((s) => s.id === FAMILY_FILTER)
+  if (selected.length === 0) {
+    console.error(`no seed matches --family ${FAMILY_FILTER}`)
+    process.exit(2)
+  }
+}
+if (SAMPLE_SIZE && SAMPLE_SIZE < selected.length) {
+  // Stratified sample: half from families, half from workspaces.
+  const fams = selected.filter((s) => s.kind === 'family')
+  const wks = selected.filter((s) => s.kind === 'workspace')
+  const famQuota = Math.ceil(SAMPLE_SIZE * 0.7)
+  const wkQuota = Math.min(SAMPLE_SIZE - famQuota, wks.length)
+  // Reservoir-free: shuffle via seeded hash for reproducibility.
+  const shuffled = (arr) => arr.map((x) => [hashString(x.id), x]).sort((a, b) => a[0] - b[0]).map(([, x]) => x)
+  selected = [...shuffled(fams).slice(0, famQuota), ...shuffled(wks).slice(0, wkQuota)]
+}
+
+function hashString(s) {
+  let h = 2166136261 >>> 0
+  for (let i = 0; i < s.length; i += 1) {
+    h ^= s.charCodeAt(i)
+    h = Math.imul(h, 16777619) >>> 0
+  }
+  return h >>> 0
+}
+
+// ── output setup ──────────────────────────────────────────────────
+const dateStr = new Date().toISOString().slice(0, 10)
+const outDir = join(REPO, '.evolve/agent-eval', dateStr)
+mkdirSync(outDir, { recursive: true })
+const tracesPath = join(outDir, 'traces.jsonl')
+const assertionsPath = join(outDir, 'structural-assertions.jsonl')
+// Reset log files for this run — append-only within this session.
+writeFileSync(tracesPath, '')
+writeFileSync(assertionsPath, '')
+
+// ── per-seed run ──────────────────────────────────────────────────
+const store = new InMemoryTraceStore()
+const costTracker = new CostTracker()
+const runReports = []
+
+if (!QUIET) console.log(`agent-eval-scaffold: ${selected.length} seeds, out=${outDir.replace(REPO + '/', '')}`)
+
+for (const seed of selected) {
+  const t0 = Date.now()
+  const projectId = `scaffold:${seed.id}`
+  const plan = await planPrompt({ prompt: seed.prompt, partner: null })
+
+  if (plan.kind === 'workspace') {
+    // Workspace — iterate each project. Capture the FIRST starter project
+    // per seed (the leading family) as the build artifact; extension for
+    // full workspace eval is follow-on work.
+    // For this first ship we grade the "primary" project only.
+    const primary = plan.spec.projects[0]
+    if (!primary) {
+      appendFileSync(tracesPath, JSON.stringify({ seed: seed.id, error: 'empty workspace projects' }) + '\n')
+      continue
+    }
+    await evalSeed({ seed, projectId, spec: primary.spec })
+    continue
+  }
+  await evalSeed({ seed, projectId, spec: plan.spec })
+
+  async function evalSeed({ seed, projectId, spec }) {
+    let prep
+    try {
+      const components = await resolveComponents(spec)
+      prep = await prepareScaffoldForEval({ spec, components })
+    } catch (err) {
+      // Compose failure → record as a failed build with zero score.
+      const msg = err?.message?.slice(0, 500) ?? String(err)
+      appendFileSync(tracesPath, JSON.stringify({ seed: seed.id, phase: 'compose', pass: false, error: msg }) + '\n')
+      if (!QUIET) console.error(`[${seed.id}] compose failed: ${msg}`)
+      return
+    }
+
+    const driver = new SubprocessSandboxDriver({ cwd: prep.scaffoldDir })
+    const session = new BuilderSession(store, { projectId }, driver)
+    await session.startChat()
+
+    // Ship = install + build, as configured per-family in the bridge.
+    // BuilderSession emits an app-build child run with outcome.score from
+    // the harness's testsPassed / testsTotal ratio.
+    let shipResult
+    try {
+      shipResult = await session.ship({ harness: prep.harness })
+    } catch (err) {
+      const msg = err?.message?.slice(0, 500) ?? String(err)
+      appendFileSync(tracesPath, JSON.stringify({ seed: seed.id, phase: 'ship', pass: false, error: msg }) + '\n')
+      prep.cleanup()
+      return
+    }
+
+    // Structural correctness — runAssertions against snapshot files that
+    // the manifest says should exist. Complements the build score: build
+    // can pass while the manifest's promised files are missing.
+    const structural = runAssertions(prep.snapshot, prep.assertions)
+    appendFileSync(
+      assertionsPath,
+      JSON.stringify({
+        seed: seed.id,
+        projectId,
+        pass: structural.pass,
+        score: structural.score,
+        total: prep.assertions.length,
+        failures: structural.results.filter((r) => !r.pass).slice(0, 10).map((r) => r.detail ?? 'unnamed'),
+      }) + '\n',
+    )
+
+    // Meta score — skipped when --no-judge or credentials missing. Judge
+    // wiring to createLlmReviewer lives in a follow-up — this first ship
+    // captures build_score + structural pass; meta needs the router to
+    // be reachable and is lower priority for the initial baseline.
+    if (!NO_JUDGE) {
+      // TODO: call createLlmReviewer here with buildScaffoldMetaPrompt +
+      // route via TANGLE_ROUTER_USER_KEY. Record via session.recordMetaScore.
+      // Deferred to keep first ship's dependency surface tight.
+    }
+
+    await session.endChat({
+      pass: shipResult.result?.passed ?? false,
+      score: shipResult.result?.score ?? 0,
+    })
+    prep.cleanup()
+
+    const dt = Date.now() - t0
+    runReports.push({ seed: seed.id, projectId, wallMs: dt, structuralScore: structural.score, buildScore: shipResult.result?.score ?? 0 })
+    if (!QUIET) {
+      const mark = shipResult.result?.passed ? '✓' : '✗'
+      console.log(`  ${mark} ${seed.id.padEnd(30)} build=${(shipResult.result?.score ?? 0).toFixed(2)} struct=${structural.score.toFixed(2)} (${(dt/1000).toFixed(1)}s)`)
+    }
+  }
+}
+
+// ── aggregate + write report ──────────────────────────────────────
+const threeLayer = await scoreAllProjects(store)
+const reportPath = join(outDir, 'three-layer-report.json')
+const costSummaryPath = join(outDir, 'cost-summary.json')
+
+const summary = {
+  timestamp: new Date().toISOString(),
+  seedsEvaluated: runReports.length,
+  seedsTotal: selected.length,
+  byKind: {
+    full: threeLayer.filter((r) => r.kind === 'full').length,
+    'scaffold-only': threeLayer.filter((r) => r.kind === 'scaffold-only').length,
+  },
+  complete: threeLayer.filter((r) => r.complete).length,
+  meanBuildScore: meanOf(threeLayer, (r) => r.buildScore),
+  meanMetaScore: meanOf(threeLayer, (r) => r.metaScore),
+}
+writeFileSync(reportPath, JSON.stringify({ summary, projects: threeLayer, runReports }, null, 2))
+writeFileSync(costSummaryPath, JSON.stringify(costTracker.getSummary?.() ?? {}, null, 2))
+
+if (!QUIET) {
+  console.log(`\n━━━━ agent-eval-scaffold summary ━━━━`)
+  console.log(`  seeds:            ${summary.seedsEvaluated} / ${summary.seedsTotal}`)
+  console.log(`  kind=full:        ${summary.byKind.full}`)
+  console.log(`  kind=scaffold:    ${summary.byKind['scaffold-only']}`)
+  console.log(`  complete:         ${summary.complete}`)
+  console.log(`  mean build_score: ${summary.meanBuildScore?.toFixed(3) ?? 'n/a'}`)
+  console.log(`  mean meta_score:  ${summary.meanMetaScore?.toFixed(3) ?? 'n/a (judge disabled)'}`)
+  console.log(`  report:           ${reportPath.replace(REPO + '/', '')}`)
+}
+
+function meanOf(arr, extract) {
+  const vals = arr.map(extract).filter((v) => typeof v === 'number')
+  if (vals.length === 0) return null
+  return vals.reduce((a, b) => a + b, 0) / vals.length
+}

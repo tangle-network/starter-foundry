@@ -1,0 +1,5 @@
+{"seed":"vue-ts","projectId":"scaffold:vue-ts","pass":true,"score":1,"total":5,"failures":["unnamed","unnamed","unnamed","unnamed","unnamed"]}
+{"seed":"kotlin-multiplatform","projectId":"scaffold:kotlin-multiplatform","pass":true,"score":1,"total":7,"failures":["unnamed","unnamed","unnamed","unnamed","unnamed","unnamed","unnamed"]}
+{"seed":"solana-program","projectId":"scaffold:solana-program","pass":true,"score":1,"total":3,"failures":["unnamed","unnamed","unnamed"]}
+{"seed":"threejs-game","projectId":"scaffold:threejs-game","pass":true,"score":1,"total":7,"failures":["unnamed","unnamed","unnamed","unnamed","unnamed","unnamed","unnamed"]}
+{"seed":"nextjs+arkworks","projectId":"scaffold:nextjs+arkworks","pass":true,"score":1,"total":56,"failures":["unnamed","unnamed","unnamed","unnamed","unnamed","unnamed","unnamed","unnamed","unnamed","unnamed"]}

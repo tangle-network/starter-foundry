@@ -1,0 +1,113 @@
+{
+  "summary": {
+    "timestamp": "2026-04-23T07:23:11.833Z",
+    "seedsEvaluated": 5,
+    "seedsTotal": 5,
+    "byKind": {
+      "full": 0,
+      "scaffold-only": 5
+    },
+    "complete": 0,
+    "meanBuildScore": 0.8,
+    "meanMetaScore": null
+  },
+  "projects": [
+    {
+      "projectId": "scaffold:vue-ts",
+      "kind": "scaffold-only",
+      "builderRunId": "62671c85-a574-429c-ba50-d431803ec180",
+      "metaScore": null,
+      "buildRunId": "7aa512fc-3a2d-470e-ae10-a03fee1aa3c0",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:kotlin-multiplatform",
+      "kind": "scaffold-only",
+      "builderRunId": "b89b2d82-24f4-43fa-8a54-15a113d8dd67",
+      "metaScore": null,
+      "buildRunId": "5e1cd4f1-cdf6-4c9d-bf26-2bd3d9196ed9",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:solana-program",
+      "kind": "scaffold-only",
+      "builderRunId": "45cd5c6d-5719-4c53-b4a4-e840d8f4900e",
+      "metaScore": null,
+      "buildRunId": "13f36daa-3f76-4517-ae53-fefb16e90ef1",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:threejs-game",
+      "kind": "scaffold-only",
+      "builderRunId": "4caa99b9-43ae-4fd9-8b1f-62f2f5971c2c",
+      "metaScore": null,
+      "buildRunId": "9d00c401-37d6-44c8-98bf-0038a900a1c1",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:nextjs+arkworks",
+      "kind": "scaffold-only",
+      "builderRunId": "29255395-1489-474f-a5ef-ad3801c42e5b",
+      "metaScore": null,
+      "buildRunId": "d46e5fdc-c859-4507-8a57-4df0f81de7d7",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    }
+  ],
+  "runReports": [
+    {
+      "seed": "vue-ts",
+      "projectId": "scaffold:vue-ts",
+      "wallMs": 22798,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "kotlin-multiplatform",
+      "projectId": "scaffold:kotlin-multiplatform",
+      "wallMs": 431,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "solana-program",
+      "projectId": "scaffold:solana-program",
+      "wallMs": 899,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "threejs-game",
+      "projectId": "scaffold:threejs-game",
+      "wallMs": 18110,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "nextjs+arkworks",
+      "projectId": "scaffold:nextjs+arkworks",
+      "wallMs": 15828,
+      "structuralScore": 1,
+      "buildScore": 1
+    }
+  ]
+}

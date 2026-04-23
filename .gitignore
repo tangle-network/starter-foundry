@@ -22,6 +22,9 @@ package-lock.json
 .evolve/critical-audit/
 .evolve/pursuits/
 .evolve/experiments.jsonl
+.evolve/generation-impact.jsonl
+.evolve/family-proposals/*/validation-errors.json
+.evolve/family-proposals/*/promoted.json
 .evolve/visual-audit-baseline.json
 
 # Keep as committed evidence:

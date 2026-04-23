@@ -1,8 +1,8 @@
 {
   "product": "starter-foundry",
-  "timestamp": "2026-04-23T07:49:26.960Z",
-  "coverage": "14/16 flows measured",
-  "aggregate": 0.473,
+  "timestamp": "2026-04-23T08:57:25.749Z",
+  "coverage": "15/18 flows measured",
+  "aggregate": 0.461,
   "inputs": [
     {
       "path": ".evolve/buildout-analysis.json",
@@ -22,7 +22,7 @@
     },
     {
       "path": ".evolve/agent-eval/2026-04-23/three-layer-report.json",
-      "mtime": "2026-04-23T07:48:52.489Z"
+      "mtime": "2026-04-23T08:17:31.974Z"
     }
   ],
   "sourceMtime": "2026-04-23T03:57:26.504Z",
@@ -149,10 +149,26 @@
       "direction": "higher-better"
     },
     {
-      "name": "agent_eval_build_pass_rate",
-      "value": 0.6796,
-      "target": 0.95,
+      "name": "proposal_promotion_rate",
+      "value": 0,
+      "target": 0.3,
       "status": "fail",
+      "productValueClaim": "Fraction of proposed families/capabilities that passed all validation gates (schema+compose+build) and landed in registry/ over the last 30 days. When this moves, vertical expansion is working — new buildable surfaces per week without manual registry authoring.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "proposed_family_first_ship_hours",
+      "value": null,
+      "target": 24,
+      "status": "unmeasured",
+      "productValueClaim": "Median hours from proposal draft creation → registry promotion. Baseline was unbounded (drafts sat as TODOs indefinitely). Target 24h via nightly cron.",
+      "direction": "lower-better"
+    },
+    {
+      "name": "agent_eval_build_pass_rate",
+      "value": 1,
+      "target": 0.95,
+      "status": "pass",
       "productValueClaim": "Fraction of composed scaffolds that pass install+build locally (mean build_score from agent-eval scaffold run). Regresses when a capability manifest changes break compose or a family's build recipe stops working — fast local signal, no VB sweep needed.",
       "direction": "higher-better"
     },

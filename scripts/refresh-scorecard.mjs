@@ -340,6 +340,49 @@ const flows = [
     target: 10,
     productValueClaim: 'Partner packs — ecosystem-specific biases + config. More partners = more prompts get routed with SDK/addresses pre-wired.',
   },
+  // ── Gen 5: closed-loop generation flows ────────────────────────
+  // Read .evolve/generation-impact.jsonl — one entry per proposal
+  // lifecycle event (promoted / promote-failed). Compute a rolling
+  // 30-day window so a stale spike doesn't mask a recent stall.
+  ...(() => {
+    const impactLog = join(REPO, '.evolve/generation-impact.jsonl')
+    if (!existsSync(impactLog)) return []
+    const windowMs = 30 * 24 * 3_600_000
+    const cutoff = Date.now() - windowMs
+    let entries = []
+    try {
+      entries = readFileSync(impactLog, 'utf8').split('\n').filter(Boolean).map((l) => {
+        try { return JSON.parse(l) } catch { return null }
+      }).filter(Boolean).filter((e) => {
+        const t = Date.parse(e.ts ?? '')
+        return Number.isFinite(t) && t >= cutoff
+      })
+    } catch { /* empty file is fine */ }
+    const promoteAttempts = entries.filter((e) => e.event === 'promoted' || e.event === 'promote-failed')
+    const promoted = entries.filter((e) => e.event === 'promoted')
+    const promotionRate = promoteAttempts.length > 0 ? promoted.length / promoteAttempts.length : null
+    const firstShipHours = promoted
+      .map((e) => e.draftAgeHours)
+      .filter((h) => typeof h === 'number')
+    firstShipHours.sort((a, b) => a - b)
+    const medianFirstShip = firstShipHours.length > 0 ? firstShipHours[Math.floor(firstShipHours.length / 2)] : null
+    return [
+      {
+        name: 'proposal_promotion_rate',
+        value: promotionRate !== null ? Number(promotionRate.toFixed(4)) : null,
+        target: 0.3,
+        productValueClaim: 'Fraction of proposed families/capabilities that passed all validation gates (schema+compose+build) and landed in registry/ over the last 30 days. When this moves, vertical expansion is working — new buildable surfaces per week without manual registry authoring.',
+        direction: 'higher-better',
+      },
+      {
+        name: 'proposed_family_first_ship_hours',
+        value: medianFirstShip !== null ? Number(medianFirstShip.toFixed(1)) : null,
+        target: 24,
+        productValueClaim: 'Median hours from proposal draft creation → registry promotion. Baseline was unbounded (drafts sat as TODOs indefinitely). Target 24h via nightly cron.',
+        direction: 'lower-better',
+      },
+    ]
+  })(),
   // ── Gen 4: agent-eval scaffold flow ────────────────────────────
   // Reads the most-recent three-layer-report.json from
   // .evolve/agent-eval/<YYYY-MM-DD>/. Mean build_score across all

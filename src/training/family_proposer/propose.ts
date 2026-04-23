@@ -16,10 +16,12 @@ import { fileURLToPath } from 'node:url'
 import { ax } from '@ax-llm/ax'
 import {
   runProposeReview,
+  inMemoryReviewStore,
   type ProposeFn,
   type VerifyFn,
   type ReviewFn,
   type Verification,
+  type ReviewMemoryEntry,
 } from '@tangle-network/agent-eval'
 import { createLLM, isLLMAvailable } from '../../lib/llm.js'
 
@@ -111,21 +113,53 @@ const hintsAuthor = ax(
   'familyId:string, familyDescription:string, taxonomyLanguage:string, taxonomyRuntime:string, taxonomySurface:string, productCues:string, peerFamiliesSummary:string -> whenToUse:string, firstSteps:string[], gotchas:string[], architectureNotes:string[], keywordsTier1:string[], keywordsTier2:string[], primaryEntrypoint:string, packageDepsCsv:string, reasoning:string',
 )
 
+// R3: file author now takes refinementHints so the RLM reviewer's
+// nextShotInstruction reaches the file-body generation, not just the
+// manifest hints. Without this, fileAuthor produced byte-identical
+// package.json across shots no matter what guidance was given.
 const fileAuthor = ax(
-  'familyId:string, familyDescription:string, taxonomyLanguage:string, taxonomyRuntime:string, taxonomySurface:string, filePath:string, fileRole:string, peerFamiliesSummary:string -> fileBody:string',
+  'familyId:string, familyDescription:string, taxonomyLanguage:string, taxonomyRuntime:string, taxonomySurface:string, filePath:string, fileRole:string, peerFamiliesSummary:string, refinementHints:string[] -> fileBody:string',
 )
 
-function slotForFile(filePath: string, runtime: string): string {
-  if (filePath === 'package.json') return 'package manifest with scripts + pinned deps'
-  if (filePath === 'tsconfig.json') return 'strict TS config for bundler module-resolution'
-  if (filePath === 'vite.config.ts') return 'Vite config with es2022 + dev port'
-  if (filePath === 'index.html') return 'HTML shell loading /src/main.ts'
-  if (filePath === 'src/main.ts' || filePath === 'src/index.ts') return `main entrypoint for the ${runtime} starter`
+function slotForFile(filePath: string, runtime: string, surface?: string): string {
+  // R3: prescriptive slots — include exact schema requirements (keys, scripts,
+  // imports) so the fileAuthor LLM doesn't default to its canned boilerplate
+  // (jest + tsc + node src/index.ts). Without this, the file author ignores
+  // refinementHints and regenerates the same package.json every shot.
+  if (filePath === 'package.json') {
+    if (surface === 'frontend') {
+      return 'Vite+React package manifest with EXACTLY these scripts: {"dev":"vite","build":"tsc --noEmit && vite build","preview":"vite preview","test":"vitest run"}. Dependencies: react, react-dom. DevDependencies: @types/react, @types/react-dom, @vitejs/plugin-react, typescript ^5, vite, vitest. NO jest, NO start script, NO TypeScript 4.x. Set "type": "module" and "private": true.'
+    }
+    if (surface === 'api' || surface === 'agent') {
+      return 'Node/TS API package manifest with scripts: {"dev":"tsx watch src/index.ts","build":"tsc","start":"node dist/index.js","test":"vitest run"}. DevDependencies: tsx, typescript ^5, vitest, @types/node. Set "type":"module" and "private":true.'
+    }
+    if (surface === 'cli') {
+      return 'Node/TS CLI package manifest with {"dev":"tsx src/cli.ts","build":"tsc","test":"vitest run"} and a "bin" field pointing at dist/cli.js. DevDependencies: tsx, typescript ^5, vitest.'
+    }
+    if (surface === 'tooling') {
+      return 'TS tooling package manifest: {"dev":"tsx src/runner.ts","test":"vitest run","build":"tsc"}. DevDependencies: tsx, vitest, typescript ^5.'
+    }
+    return 'package manifest with "dev" + "build" + "test" scripts and pinned TypeScript ^5 (NOT ^4.x).'
+  }
+  if (filePath === 'tsconfig.json') return 'strict TS5 config: target es2022, module esnext, moduleResolution bundler, jsx react-jsx (if frontend), strict true, noEmit true, skipLibCheck true, lib ["es2022","dom","dom.iterable"].'
+  if (filePath === 'vite.config.ts') return 'Vite config importing @vitejs/plugin-react, with defineConfig({ plugins: [react()], server: { port: 5173 } }).'
+  if (filePath === 'index.html') return 'HTML5 shell: <!doctype html>, <div id="root"></div>, <script type="module" src="/src/main.tsx">, responsive viewport meta.'
+  if (filePath === 'src/main.ts' || filePath === 'src/main.tsx') {
+    if (surface === 'frontend') return 'React entrypoint: import React, ReactDOM; createRoot(document.getElementById("root")).render(<App />). MUST NOT import node:http or createServer — this is browser code.'
+    return `main entrypoint for the ${runtime} starter`
+  }
+  if (filePath === 'src/App.tsx') return 'React App component — functional component with useState for app-local state, renders a simple UI surfacing the family\'s domain.'
+  if (filePath === 'src/index.ts') {
+    if (surface === 'api') return 'HTTP server entrypoint using Hono or native Node http, /health endpoint returning 200.'
+    if (surface === 'agent') return 'Agent entrypoint: import agent loop, wire tools, start chat step runner.'
+    return `main entrypoint for the ${runtime} starter`
+  }
   if (filePath === 'src/cli.ts') return 'commander-based CLI entrypoint with --help surface'
   if (filePath === 'src/agent.ts') return 'agent loop entrypoint — tool registry + chat step function'
   if (filePath === 'src/runner.ts') return 'batch runner that iterates scenarios/ + writes results'
   if (filePath === 'scenarios/example.ts') return 'example scenario file the harness picks up'
   if (filePath === 'judges/example.ts') return 'example rubric judge returning {score, rationale}'
+  if (filePath === '.env.example') return 'Environment variables the app reads. List every var with a short comment. Never include real secrets. Frontend vars use VITE_ prefix.'
   if (filePath === 'docker-compose.yml') return 'docker compose with the primary service + volume'
   if (filePath === 'requirements.txt') return 'Python deps pinned to current major versions'
   if (filePath === 'pyproject.toml') return 'Python package metadata + deps'
@@ -135,7 +169,7 @@ function slotForFile(filePath: string, runtime: string): string {
   if (filePath === 'go.mod') return 'Go module declaration with Go version + deps'
   if (filePath === 'main.go') return 'Go binary entrypoint with main() and top-level wiring'
   if (filePath.endsWith('.mjs')) return 'Node validator asserting key files + deps structure'
-  if (filePath === 'README.md') return 'Quickstart + agent-facing extension guide'
+  if (filePath === 'README.md') return 'Quickstart + agent-facing extension guide. MUST include an "Environment" section listing env vars if the scaffold reads any.'
   return `${filePath} — agent-extensible entry file`
 }
 
@@ -144,21 +178,21 @@ function filesForTaxonomy(taxonomy: { language: string; runtime: string; surface
   const runtime = taxonomy.runtime
   const surface = taxonomy.surface
   const validator = `validate-${runtime}.mjs`
-  const toFiles = (paths: string[]) => paths.map((p) => ({ path: p, role: slotForFile(p, runtime) }))
+  const toFiles = (paths: string[]) => paths.map((p) => ({ path: p, role: slotForFile(p, runtime, surface) }))
 
   // TypeScript / Node / Bun / Deno / CF-Worker permutations
   if (lang === 'typescript' || lang === 'javascript') {
     if (surface === 'frontend') {
-      return toFiles(['package.json', 'tsconfig.json', 'vite.config.ts', 'index.html', 'src/main.ts', 'README.md', validator])
+      return toFiles(['package.json', 'tsconfig.json', 'vite.config.ts', 'index.html', 'src/main.tsx', 'src/App.tsx', '.env.example', 'README.md', validator])
     }
     if (surface === 'api' || surface === 'inference') {
-      return toFiles(['package.json', 'tsconfig.json', 'src/index.ts', 'README.md', validator])
+      return toFiles(['package.json', 'tsconfig.json', 'src/index.ts', '.env.example', 'README.md', validator])
     }
     if (surface === 'cli') {
       return toFiles(['package.json', 'tsconfig.json', 'src/cli.ts', 'src/index.ts', 'README.md', validator])
     }
     if (surface === 'agent') {
-      return toFiles(['package.json', 'tsconfig.json', 'src/agent.ts', 'src/index.ts', 'README.md', validator])
+      return toFiles(['package.json', 'tsconfig.json', 'src/agent.ts', 'src/index.ts', '.env.example', 'README.md', validator])
     }
     if (surface === 'tooling') {
       // Eval/test-harness-shaped project: scenarios + judges + runner + validator.
@@ -240,6 +274,17 @@ async function proposeViaLLM(input: ProposeFamilyInput, peers: PeerSummary[]): P
 
     const wantedFiles = filesForTaxonomy(input.taxonomy)
     const templateFiles: Array<{ path: string; body: string }> = []
+    // Extract reviewer directives from productCues for the file generator.
+    // The RLM wrapper prefixes its directives with "REVIEWER DIRECTIVE" so
+    // they're distinguishable from plain product cues. Ax rejects empty
+    // string[] inputs as missing — use ['(no refinements yet)'] as the
+    // shot-1 sentinel so the field is always populated.
+    const directives = (input.productCues ?? []).filter((c) =>
+      /REVIEWER DIRECTIVE|REFINEMENT GUIDANCE|prior fidelity rejection/i.test(c),
+    )
+    const refinementHints = directives.length > 0
+      ? directives
+      : ['(shot 1 — no prior reviewer directives)']
     for (const f of wantedFiles) {
       try {
         const body = (await fileAuthor.forward(llm, {
@@ -251,6 +296,7 @@ async function proposeViaLLM(input: ProposeFamilyInput, peers: PeerSummary[]): P
           filePath: f.path,
           fileRole: f.role,
           peerFamiliesSummary: peerSummary,
+          refinementHints,
         })) as { fileBody?: string }
         if (body.fileBody && body.fileBody.length > 10) {
           templateFiles.push({ path: f.path, body: body.fileBody })
@@ -432,7 +478,48 @@ const proposalReviewer = ax(
   '"Direct the next shot of a registry-family proposer. You do NOT grade — the verifier already flagged the failures. Read the draft summary + failures + prior shots, identify the root cause (missing tier1 keywords? weak description? TODO bodies? wrong taxonomy fields?), and emit a concrete, actionable instruction for the next shot. Do not restate the failures. Direct the worker to fix them in order of blast radius." goal:string, currentDraftSummary:string, verificationFailures:string[], priorShotsMemory:string -> observations:string, diagnosis:string, nextShotInstruction:string, shouldContinue:boolean, confidence:number',
 )
 
-function validateDraftForRLM(state: ProposalDraftState, id: string): string[] {
+/**
+ * R3: read past `event: 'fidelity-fail'` entries from the generation-impact
+ * log for this id and synthesize ReviewMemoryEntry records the RLM reviewer
+ * can see as "prior shots." This is the cheap cross-session learning path —
+ * the proposer sees what the downstream fidelity judge rejected before and
+ * avoids repeating it, without any extra LLM calls per shot.
+ *
+ * Returns [] when the log is missing, malformed, or has no matching events.
+ */
+function loadPriorFidelityEntries(id: string): ReviewMemoryEntry[] {
+  try {
+    const logPath = join(REPO, '.evolve/generation-impact.jsonl')
+    const raw = readFileSync(logPath, 'utf8')
+    const lines = raw.split('\n').filter(Boolean)
+    const entries: ReviewMemoryEntry[] = []
+    let shotCounter = 0
+    for (const line of lines) {
+      let ev: { event?: string; id?: string; overall?: number; verdict?: string; topIssue?: string | null; ts?: string } = {}
+      try { ev = JSON.parse(line) } catch { continue }
+      if (ev.event !== 'fidelity-fail') continue
+      if (String(ev.id) !== id) continue
+      const ts = Date.parse(ev.ts ?? '') || Date.now()
+      const topIssue = ev.topIssue ?? 'fidelity judge rejected this scaffold in a prior session'
+      shotCounter += 1
+      entries.push({
+        shot: shotCounter,
+        timestamp: ts,
+        observations: `Prior session: fidelity judge returned verdict=${ev.verdict ?? 'fail'}, overall=${(ev.overall ?? 0).toFixed(2)}.`,
+        diagnosis: 'Previous proposer attempt was rejected downstream by the scaffold-fidelity judge.',
+        nextShotInstruction: `Prior fidelity rejection: "${topIssue}". Do NOT repeat this defect in the new draft — explicitly address it by adjusting file bodies (e.g., add the missing script, add .env.example, fix taxonomy/implementation mismatch).`,
+        shouldContinue: true,
+        confidence: 0.5,
+        verification: { pass: false, score: ev.overall ?? 0, failingLayers: [topIssue] },
+      })
+    }
+    return entries.slice(-3) // at most 3 prior sessions to keep the memory scan cheap
+  } catch {
+    return []
+  }
+}
+
+function validateDraftForRLM(state: ProposalDraftState, id: string, taxonomy?: { language: string; runtime: string; surface: string }): string[] {
   const errors: string[] = []
   const m = state.manifest
   if (!m) return ['manifest is null']
@@ -446,10 +533,79 @@ function validateDraftForRLM(state: ProposalDraftState, id: string): string[] {
   }
   const tier1 = (m['tieredKeywords'] as Record<string, unknown> | undefined)?.['tier1']
   if (!Array.isArray(tier1) || tier1.length < 3) errors.push('tieredKeywords.tier1 must have ≥3 entries')
+  // R3: tier1 must be domain-specific, not taxonomy restatements. The LLM
+  // loves emitting "TypeScript/Node.js/Frontend" which absorbs generic
+  // prompts. Reject tier1 overlap with taxonomy tags.
+  const taxonomyTerms = new Set(
+    [taxonomy?.language, taxonomy?.runtime, taxonomy?.surface]
+      .filter((s): s is string => typeof s === 'string' && s.length > 0)
+      .flatMap((s) => [s.toLowerCase(), s.toLowerCase().replace(/[^a-z]/g, '')]),
+  )
+  const tier1Lower = Array.isArray(tier1) ? tier1.map((k) => String(k).toLowerCase()) : []
+  const tier1TaxonomyOverlap = tier1Lower.filter((k) => taxonomyTerms.has(k) || taxonomyTerms.has(k.replace(/[^a-z]/g, '')))
+  if (tier1TaxonomyOverlap.length > 0) {
+    errors.push(`tier1 keywords must be domain-specific, not taxonomy restatements — found ${tier1TaxonomyOverlap.join(', ')} (these are already in tags)`)
+  }
   if (state.templateFiles.length === 0) errors.push('no template files generated — proposer produced no file bodies')
   for (const f of state.templateFiles) {
     if (typeof f.body !== 'string' || f.body.length < 20) {
       errors.push(`file ${f.path} body <20 chars (stub)`)
+    }
+  }
+  // R3: structural fidelity checks derived from R2 judge patterns. These
+  // catch the common Goodhart-failures (build-passes-but-not-useful) before
+  // the build gate + fidelity judge ever run.
+  const byPath = Object.fromEntries(state.templateFiles.map((f) => [f.path, f.body]))
+  const surface = taxonomy?.surface
+  const language = taxonomy?.language
+  const pkg = byPath['package.json']
+  if (pkg && (language === 'typescript' || language === 'javascript')) {
+    try {
+      const parsed = JSON.parse(pkg) as { scripts?: Record<string, string>; dependencies?: Record<string, string>; devDependencies?: Record<string, string> }
+      const scripts = parsed.scripts ?? {}
+      if (surface === 'frontend' && !scripts['dev']) {
+        errors.push('package.json missing "dev" script — frontend scaffold must expose a dev server command (e.g. "vite")')
+      }
+      const allDeps = { ...(parsed.dependencies ?? {}), ...(parsed.devDependencies ?? {}) }
+      const tsVersion = allDeps['typescript']
+      if (tsVersion && /^\^?4\./.test(tsVersion)) {
+        errors.push(`typescript pinned to ${tsVersion} — use TypeScript 5.x for new scaffolds`)
+      }
+      if (surface === 'frontend') {
+        // A frontend scaffold should either depend on a UI framework or be a
+        // static HTML surface. Node-only deps signal a shape mismatch.
+        const uiDeps = ['react', 'vue', 'svelte', 'solid-js', 'preact', '@angular/core', 'astro']
+        const hasUiDep = uiDeps.some((d) => d in allDeps)
+        const hasHtml = 'index.html' in byPath
+        if (!hasUiDep && !hasHtml) {
+          errors.push('frontend surface but no UI framework dep and no index.html — shape mismatch with taxonomy')
+        }
+      }
+    } catch {
+      errors.push('package.json is not valid JSON')
+    }
+  }
+  // Env-var documentation: frontend/api/agent surfaces should ship either
+  // .env.example or mention env vars in README. The R2 judge flagged
+  // "no environment variables documented" on every shallow draft.
+  if (surface === 'frontend' || surface === 'api' || surface === 'agent') {
+    const hasEnv = '.env.example' in byPath
+    const readme = byPath['README.md'] ?? ''
+    const readmeMentionsEnv = /env(ironment)?|\.env|import\.meta\.env|process\.env/.test(readme)
+    if (!hasEnv && !readmeMentionsEnv) {
+      errors.push(`${surface} surface should document env vars — add .env.example or an "Environment" section to README.md`)
+    }
+  }
+  // Frontend mainfile shape: if surface=frontend and language=typescript/javascript,
+  // src/main.ts|tsx shouldn't import node-only modules like 'http'. That was
+  // the R2 smoking gun — description said frontend, main.ts shipped Node HTTP.
+  if (surface === 'frontend' && (language === 'typescript' || language === 'javascript')) {
+    for (const p of ['src/main.ts', 'src/main.tsx', 'src/index.ts', 'src/index.tsx']) {
+      const body = byPath[p]
+      if (!body) continue
+      if (/\bfrom\s+['"]http['"]/.test(body) || /require\(['"]http['"]\)/.test(body) || /createServer/.test(body)) {
+        errors.push(`${p} imports node:http / createServer — frontend surface must not ship a Node HTTP server in the UI entrypoint`)
+      }
     }
   }
   const fm = state.frameworkManifest
@@ -495,7 +651,7 @@ export async function proposeFamilyWithRLM(
   }
 
   const verify: VerifyFn<ProposalDraftState> = async (state) => {
-    const errors = validateDraftForRLM(state, input.id)
+    const errors = validateDraftForRLM(state, input.id, input.taxonomy)
     const pass = errors.length === 0
     const score = pass ? 1 : Math.max(0, 1 - errors.length / 10)
     const result: Verification = { pass, score, failingLayers: errors.slice(0, 5), details: errors }
@@ -524,14 +680,28 @@ export async function proposeFamilyWithRLM(
       confidence?: number
     }
     // Coerce minimally — agent-eval's coerceReview will re-validate.
+    // Override: if verification failed AND we have budget, the answer is
+    // always "keep trying." The reviewer's role is to DIRECT the next shot,
+    // not to decide whether the goal is achievable — that's the verifier's
+    // concern. R3 caught the LLM reviewer giving up at shot 1 because the
+    // draft "looked OK" despite the verifier flagging missing dev scripts.
+    const hasBudget = shot < maxShots
+    const shouldContinue = failures.length > 0 && hasBudget
+      ? true
+      : typeof raw.shouldContinue === 'boolean' ? raw.shouldContinue : hasBudget
     return {
       observations: String(raw.observations ?? `shot ${shot} produced ${failures.length} verification failures`),
       diagnosis: String(raw.diagnosis ?? 'reviewer returned no diagnosis'),
       nextShotInstruction: String(raw.nextShotInstruction ?? 'fix the verification failures in priority order'),
-      shouldContinue: typeof raw.shouldContinue === 'boolean' ? raw.shouldContinue : shot < maxShots,
+      shouldContinue,
       confidence: Number.isFinite(raw.confidence) ? Number(raw.confidence) : 0.5,
     }
   }
+
+  // R3: pre-seed reviewer memory with past fidelity-fail events for this id.
+  // Gives shot 1 the benefit of what the downstream fidelity judge flagged in
+  // prior sessions — the proposer stops repeating the same failure.
+  const priorFidelityEntries = loadPriorFidelityEntries(input.id)
 
   const initialState: ProposalDraftState = { manifest: null, frameworkManifest: null, templateFiles: [], reasoning: '' }
   const report = await runProposeReview<ProposalDraftState>({
@@ -540,6 +710,7 @@ export async function proposeFamilyWithRLM(
     propose,
     verify,
     review,
+    memory: inMemoryReviewStore(priorFidelityEntries),
     maxShots,
     scenarioId: 'family-proposer',
     projectId: input.id,

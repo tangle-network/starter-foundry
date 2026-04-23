@@ -1,8 +1,8 @@
 {
   "product": "starter-foundry",
-  "timestamp": "2026-04-23T20:48:57.522Z",
+  "timestamp": "2026-04-23T21:24:09.155Z",
   "coverage": "19/22 flows measured",
-  "aggregate": 0.528,
+  "aggregate": 0.527,
   "inputs": [
     {
       "path": ".evolve/buildout-analysis.json",
@@ -150,7 +150,7 @@
     },
     {
       "name": "proposal_promotion_rate",
-      "value": 0.0385,
+      "value": 0.0323,
       "target": 0.3,
       "status": "fail",
       "productValueClaim": "Fraction of proposed families/capabilities that passed all validation gates (schema+compose+build) and landed in registry/ over the last 30 days. When this moves, vertical expansion is working — new buildable surfaces per week without manual registry authoring.",

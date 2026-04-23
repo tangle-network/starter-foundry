@@ -3,11 +3,11 @@
   "peerFamilies": [
     "angular-ts",
     "astro-static",
+    "kyc-onboarding",
     "nextjs-ts",
-    "observable-notebook",
-    "phaser-game"
+    "observable-notebook"
   ],
   "mode": "llm-rlm",
-  "reasoning": "RLM 1 shot(s), verification pass=true, score=1.00. The provided family description and taxonomy information suggest a specific use case for building a portfolio hedging application with real user demand, utilizing TypeScript, Node, and a frontend surface, and requiring integration with polymarket-prediction. The generated output fields provide guidance on when to use this starter, the first steps to take, potential gotchas, architecture notes, relevant keywords, the primary entry point, and required package dependencies.",
-  "generatedAt": "2026-04-23T20:25:50.011Z"
+  "reasoning": "RLM 2 shot(s), verification pass=true, score=1.00. This starter is designed to address the specific needs of portfolio hedging applications with polymarket-prediction integration, providing a robust and scalable foundation for development.",
+  "generatedAt": "2026-04-23T21:23:21.798Z"
 }

@@ -33,8 +33,16 @@
       "target": "index.html"
     },
     {
-      "source": "files/src/main.ts",
-      "target": "src/main.ts"
+      "source": "files/src/main.tsx",
+      "target": "src/main.tsx"
+    },
+    {
+      "source": "files/src/App.tsx",
+      "target": "src/App.tsx"
+    },
+    {
+      "source": "files/.env.example",
+      "target": ".env.example"
     },
     {
       "source": "files/README.md",
@@ -61,67 +69,60 @@
   ],
   "contextHints": {
     "commands": [
-      "Initialize a new Node project",
-      "Set up a frontend framework compatible with TypeScript"
+      "Install required dependencies",
+      "Set up polymarket-prediction API keys",
+      "Configure frontend environment"
     ],
     "entrypoints": [
-      "index.ts"
+      "\"index.ts\""
     ],
     "preview": null,
     "extensionPoints": []
   },
   "keywords": [
-    "polymarket-portfolio-hedging",
-    "TypeScript",
-    "Node",
-    "frontend",
     "portfolio hedging",
-    "real user demand",
-    "polymarket-prediction",
-    "Angular",
-    "Astro",
-    "Next.js",
-    "Observable Framework",
-    "Phaser 3"
+    "polymarket",
+    "prediction",
+    "typescript",
+    "node",
+    "frontend",
+    "jest",
+    "API integration"
   ],
   "tieredKeywords": {
     "tier1": [
-      "polymarket-portfolio-hedging",
-      "TypeScript",
-      "Node",
-      "frontend",
-      "portfolio hedging"
+      "portfolio hedging",
+      "polymarket",
+      "prediction"
     ],
     "tier2": [
-      "real user demand",
-      "polymarket-prediction",
-      "Angular",
-      "Astro",
-      "Next.js",
-      "Observable Framework",
-      "Phaser 3"
+      "typescript",
+      "node",
+      "frontend",
+      "jest",
+      "API integration"
     ]
   },
   "buildHints": {
-    "whenToUse": "When building a portfolio hedging application with real user demand, utilizing TypeScript, Node, and a frontend surface, and requiring integration with polymarket-prediction.",
+    "whenToUse": "When building a portfolio hedging application with polymarket-prediction integration, using typescript, node, and frontend technologies.",
     "firstSteps": [
-      "Initialize a new Node project",
-      "Install required dependencies for polymarket-portfolio-hedging",
-      "Set up a frontend framework compatible with TypeScript"
+      "Install required dependencies",
+      "Set up polymarket-prediction API keys",
+      "Configure frontend environment"
     ],
     "gotchas": [
-      "Ensure compatibility between polymarket-portfolio-hedging and polymarket-prediction",
-      "Handle potential errors in real user demand signal processing",
-      "Optimize frontend performance for a seamless user experience"
+      "Ensure proper jest configuration",
+      "Handle potential API rate limits",
+      "Implement robust error handling"
     ],
     "architectureNotes": [
-      "Design a modular architecture to facilitate integration with polymarket-prediction",
-      "Implement a robust data processing pipeline for real user demand signals",
-      "Utilize TypeScript's type checking to ensure code quality and maintainability"
+      "Use typescript for robust code quality",
+      "Leverage node for backend functionality",
+      "Implement frontend with modern web technologies"
     ],
     "placeholders": [
       {
-        "path": "index.ts",
+        "path": "\"index.ts\"",
         "description": "Primary entrypoint agents must extend."
       }
     ]

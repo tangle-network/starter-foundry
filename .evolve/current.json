@@ -1,26 +1,28 @@
 {
   "mode": "evolve",
   "goal": "closed-loop generation flywheel — detect gap → RLM propose → promoter (including fidelity) validates → ship to registry",
-  "status": "evolve-round-2-shipped",
-  "round": 2,
+  "status": "evolve-round-3-shipped-infrastructure-metric-flat",
+  "round": 3,
   "generation": 6,
   "activePursuit": null,
   "lastPursuit": ".evolve/pursuits/2026-04-23-generation-flywheel.md",
-  "updatedAt": "2026-04-23T22:00:00Z",
+  "updatedAt": "2026-04-23T22:30:00Z",
+  "plateauClock": "1 of 2 (R3 flat; one more flat round triggers /pursue)",
   "priorGenerations": [
     { "n": 3, "pursuit": "measurement-freshness", "commit": "9b5aafd" },
     { "n": 5, "pursuit": "closed-loop-generation", "commits": ["52afc18", "ce931c6"] },
     { "n": 6, "pursuit": "generation-flywheel", "commit": "17347c1" }
   ],
-  "round1": "fallback-default + filesForTaxonomy prove → full_stack_proposal_rate null→1.00, llm_proposal_success_rate null→1.00, aggregate 0.407→0.495",
-  "round2": "fidelity gate (invokeMetaJudge between build-pass and registry-copy) + 5 plumbing bug-fixes + first shippable promote (kyc-onboarding patched). proposal_promotion_rate 0→0.05, proposed_family_first_ship_hours null→0.3h pass, aggregate 0.495→0.530",
-  "cumulativeGen6Delta": "+12.3pp (0.407 → 0.530)",
+  "gen6EvolveRounds": {
+    "r1": "fallback-default + filesForTaxonomy: aggregate 0.407→0.495 (+8.8pp)",
+    "r2": "fidelity gate + 5 plumbing fixes + first shippable promote: aggregate 0.495→0.530 (+3.5pp)",
+    "r3": "refinementHints plumbing + prescriptive slots + 5 structural checks + cross-session memory: aggregate 0.530→0.527 (-0.3pp). Infrastructure ADVANCE, target metric NO-MOVE. Scaffold quality objectively up (Node HTTP → React, TS4 → TS5, jest → vitest); judge threshold now limits on README richness."
+  },
   "shippedFamilies": ["kyc-onboarding"],
-  "gen7Seeds": [
-    "description-fidelity judge now live — feeds training signal back via issues[] for RLM reviewer consumption (Round 3)",
-    "tier1 keyword quality: proposer's hintsAuthor emits taxonomy restatements as tier1 → polluted routing. Gen 7 AxGEPA target.",
-    "workspace-shaped proposer — real demand is multi-lane, not single-family. Coverage-lift won't move without this. Architectural.",
-    "training corpus grew to 4 proposed + 1 shipped + 3 reverted — still below AxGEPA viability threshold (20+)"
-  ],
-  "handoff": "Round 3: wire fidelity-judge issues[] as RLM reviewer input so proposer self-corrects on the next shot. Target proposal_promotion_rate 0.05 → ≥0.3. If Round 3+4 plateau ≤0.02 → /pursue Gen 7 (AxGEPA on proposer + workspace-shaped generation)."
+  "cumulativeGen6Delta": "+12.0pp (0.407 → 0.527) over 3 evolve rounds",
+  "gen7Candidates": {
+    "A_exploit_r4": "tune judge threshold (accept borderline if overall≥0.8) + richer README slot. Cheap one-round test.",
+    "B_pursue_gen7": "AxGEPA on hintsAuthor + fileAuthor signatures with schema-pass + build-pass + fidelity-pass as composite reward. Needs 20+ outcomes; have ~6."
+  },
+  "handoff": "Governor should pick exploit-R4 (Option A) over pursue (Option B): one more cheap round tests the hypothesis 'proposer is good, judge is strict.' If R4 also plateaus → pursue trigger. Parallel: accumulate outcomes via nightly for Gen 7 GEPA viability."
 }

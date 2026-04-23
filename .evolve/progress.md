@@ -453,3 +453,58 @@ R3 auto-fixer is still the right tool to build — just not against a 1-failure 
 **Cumulative Gen 6 evolve: 0.407 → 0.530 (+12.3pp over two rounds).**
 
 **Handoff for Round 3:** target `proposal_promotion_rate` from 0.05 → 0.3. Leverage: the fidelity judge now ALSO serves as a training signal. Feed its "issues[]" list back into the next proposer shot as reviewer guidance (RLM already has this wiring — just needs to consume fidelity issues as memory). Expected: proposer self-corrects toward what the judge accepts, re-promote rate rises. If Round 3 plateaus ≤0.02 over 2 rounds → escalate to `/pursue` Gen 7 (description-fidelity training via AxGEPA + workspace-shaped proposer).
+
+## 2026-04-23 — /evolve Round 3 (fidelity feedback loop)
+
+**Goal:** proposal_promotion_rate 0.05 → ≥0.3 by feeding fidelity-judge `issues[]` into RLM reviewer memory so proposer self-corrects on shot 2+.
+
+**Phase 1.5 audit caught a real architectural gap:** the `fileAuthor` ax signature had no `refinementHints` input — reviewer directives reached `hintsAuthor` (manifest fields) but NOT the per-file generators. Result: file bodies were byte-identical across shots.
+
+**Cascade of 4 honest bugs + fixes surfaced by iterating:**
+1. Reviewer LLM returned `shouldContinue: false` on shot 1 despite verifier flagging failures — reviewer was grading, not directing. Fix: force `shouldContinue=true` whenever `verification fails AND shot < maxShots`. Role separation enforced.
+2. `fileAuthor` signature had no refinementHints input. Added.
+3. Ax rejected empty `refinementHints: []` as missing-required. Fix: sentinel `['(shot 1 — no prior reviewer directives)']`.
+4. Generic refinement hints insufficient — LLM's canned boilerplate (jest, TS 4.x, Node HTTP in frontend main) stronger than "add a dev script." Fix: prescriptive per-(surface,language) slots with exact schema requirements (scripts, deps, imports).
+
+**Structural fidelity checks added to `validateDraftForRLM`:**
+- frontend surface package.json missing `dev` script → fail
+- TypeScript version 4.x pinned → fail
+- frontend with no UI dep and no index.html (shape mismatch) → fail
+- env-doc-requiring surface missing .env.example AND no README env section → fail
+- frontend main.ts imports node:http or createServer → fail
+- tier1 keywords overlap taxonomy (language/runtime/surface) → fail (prevents "TypeScript/Node/Frontend" absorbing generic prompts)
+
+**Cross-session learning channel added:** `loadPriorFidelityEntries` reads past `event: 'fidelity-fail'` records from generation-impact.jsonl for this id, synthesizes them as `ReviewMemoryEntry` records passed as RLM pre-seed memory. Shot 1's reviewer sees what the downstream judge rejected before.
+
+**filesForTaxonomy expansion:** frontend now includes `.env.example` + `src/App.tsx`. API/agent surfaces get `.env.example`.
+
+**Before/after — scaffold quality (polymarket-portfolio-hedging):**
+| Artifact | R2 end | R3 end |
+|---|---|---|
+| package.json scripts | start/build/test (jest) | dev/build/preview/test (vitest) |
+| TypeScript version | ^4.9.4 | ^5.0.4 |
+| src/main.ts | Node `createServer` HTTP | React `createRoot` + App |
+| .env.example | missing | present with VITE_ prefixed keys |
+| fidelity verdict | 0.70 borderline | 0.76 borderline |
+
+**Metric moves (honest, across 3 R3 proposer iterations):**
+| Flow | R2 end | R3 end | Verdict |
+|---|---|---|---|
+| full_stack_proposal_rate | 1.00 | 1.00 | ceiling (pass) |
+| llm_proposal_success_rate | 1.00 | 1.00 | ceiling (pass) |
+| proposed_family_first_ship_hours | 0.3h (pass) | 0.3h (pass) | unchanged |
+| proposal_promotion_rate | 0.05 | 0.0323 | DROP (more fidelity-fail in denominator) |
+| coverage_lift_per_promote | 0 | 0 | architectural ceiling |
+| aggregate | 0.530 | 0.527 | flat (-0.3pp) |
+
+**R3 verdict on target metric: NO-MOVE. Infrastructure ADVANCE.**
+
+**Honest diagnosis:** the remaining gap is NOT plumbing — it's judge calibration + LLM prompt quality. The judge now critiques README richness and dependency-setup docs (semantic quality). The proposer's `hintsAuthor` + `fileAuthor` signatures were hand-authored and have no training signal. This is the textbook case for AxGEPA: we now have ~5-6 (proposal, fidelity-outcome) pairs accumulated — approaching the 20-pair viability threshold.
+
+**Plateau clock: 1 of 2.** R3 was <1% aggregate. If R4 also <1%, that's the plateau rule trigger → escalate to /pursue Gen 7 (AxGEPA on proposer signatures + judge calibration).
+
+**Handoff:**
+- Option A for R4 (exploit): tune judge threshold (accept `borderline` if `overall≥0.8`) + refine README slot to include explicit "Quickstart", "Environment", "Extension Points" sections. Cheap.
+- Option B for R4 (explore-light): /pursue Gen 7 AxGEPA training on hintsAuthor with schema-pass+build-pass+fidelity-pass as composite reward. Needs 20+ outcomes (we have ~6).
+
+Governor should pick. Recommend Option A (exploit) to push past plateau, accumulate another 5-10 outcomes, then Gen 7 GEPA becomes viable.

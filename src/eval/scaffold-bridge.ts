@@ -418,101 +418,142 @@ export interface ScaffoldMetaVerdict {
 }
 
 /**
- * Invoke the meta judge on a composed scaffold. Uses `createLLM` which
- * routes through router.tangle.tools when TANGLE_ROUTER_USER_KEY is set,
- * else falls back to a direct provider key. Returns a normalized verdict
- * or throws if the LLM response can't be parsed as the expected shape.
+ * Meta judge — Ax-structured scaffold quality assessment.
  *
- * Scoring convention: every dimension is 0..1, matching agent-eval's
- * `recordMetaScore(0..1)` contract. The `overall` field is the score
- * the caller hands to `session.recordMetaScore`.
+ * Uses AxSignature + AxGen so the output schema is enforced at the library
+ * layer, not via my hand-rolled regex-JSON-parse. Ax handles:
+ *   - retries on malformed output
+ *   - field-type coercion (number fields get numbers, not strings)
+ *   - structured error reporting when the LLM refuses schema compliance
+ *
+ * Routes through `createLLM` which uses router.tangle.tools when
+ * TANGLE_ROUTER_USER_KEY is set (preferred — centralized spend + governance),
+ * else falls back to direct provider keys.
  */
+
+// AxSignature DSL: '"<instruction>" input1:type, ... -> output1:type, ...'
+// Each field can have a ':string' / ':number' / ':string[]' / ':boolean' type
+// annotation. Ax coerces output into the declared type and retries if the
+// model returns something uncoercible.
+const META_JUDGE_SIGNATURE =
+  '"Grade a freshly-composed project scaffold on five rubric dimensions (0..1 each, 1=perfect). ' +
+  'Judge ONLY what is given — do not hallucinate files or deps missing from the file list. ' +
+  'correctness = imports resolve, build recipe plausible. ' +
+  'completeness = scaffold covers the prompt\'s stated surfaces. ' +
+  'idiomatic = layout matches the framework\'s canonical pattern. ' +
+  'productionReady = env vars documented, no secrets in source. ' +
+  'overScaffold = 1 if zero extraneous layers, lower if capabilities attached beyond what prompt justifies. ' +
+  'overall = weighted aggregate. verdict = pass | fail | borderline. issues = concise list of concrete defects." ' +
+  'userPrompt:string, family:string, layers:string, fileList:string, keyFiles:string -> ' +
+  'correctness:number, completeness:number, idiomatic:number, productionReady:number, overScaffold:number, ' +
+  'overall:number, verdict:string, issues:string[], rationale:string'
+
 export async function invokeMetaJudge(args: {
   userPrompt: string
   composedSpec: ComposeSpec
   snapshot: WorkspaceSnapshot
 }): Promise<ScaffoldMetaVerdict> {
   const { createLLM } = await import('../lib/llm.js')
-  const ai = createLLM({ model: 'anthropic/claude-sonnet-4-6' })
-  const prompt = buildScaffoldMetaPrompt(args)
-  const systemPrompt = [
-    'You are a senior staff engineer grading a freshly-composed project scaffold.',
-    'Judge ONLY what is given — do not hallucinate files or deps that aren\'t in the file list.',
-    'Return valid JSON exactly matching the requested schema. No markdown fences, no prose outside the JSON.',
-  ].join(' ')
+  const { ax } = await import('@ax-llm/ax')
+  const llm = createLLM({ model: 'anthropic/claude-sonnet-4-6' })
 
-  // Ax's unified chat() returns a structured response; we request JSON
-  // mode where the provider supports it, else parse from text content.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const res: any = await (ai as unknown as { chat: (req: unknown) => Promise<unknown> }).chat({
-    chatPrompt: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: prompt },
-    ],
-    modelConfig: { maxTokens: 1200, temperature: 0 },
-  })
-  const content: string = extractTextContent(res)
-  const parsed = safeParseVerdict(content)
-  if (!parsed) {
-    throw new Error(`meta judge returned unparseable output:\n${content.slice(0, 500)}`)
-  }
-  return parsed
-}
+  const judge = ax(META_JUDGE_SIGNATURE)
+  const paths = Object.keys(args.snapshot.files).sort()
+  const fileList = paths.slice(0, 80).join('\n') + (paths.length > 80 ? `\n[+${paths.length - 80} more]` : '')
+  const keyFiles = renderKeyFilesForSignature(args.snapshot)
 
-function extractTextContent(res: unknown): string {
-  // Ax shapes across providers: { results: [{ content }] } or { content } or
-  // plain string. Handle the common variants.
-  if (typeof res === 'string') return res
-  if (res && typeof res === 'object') {
-    const o = res as Record<string, unknown>
-    if (typeof o.content === 'string') return o.content
-    if (Array.isArray(o.results) && o.results[0] && typeof (o.results[0] as { content?: unknown }).content === 'string') {
-      return (o.results[0] as { content: string }).content
-    }
-    if (o.choices && Array.isArray(o.choices) && o.choices[0]) {
-      const msg = (o.choices[0] as { message?: { content?: unknown } }).message
-      if (msg && typeof msg.content === 'string') return msg.content
-    }
+  const raw = (await judge.forward(
+    llm,
+    {
+      userPrompt: args.userPrompt,
+      family: args.composedSpec.family ?? 'unknown',
+      layers: (args.composedSpec.layers ?? []).join(', ') || '(none)',
+      fileList,
+      keyFiles,
+    },
+    { stream: false },
+  )) as {
+    correctness?: number
+    completeness?: number
+    idiomatic?: number
+    productionReady?: number
+    overScaffold?: number
+    overall?: number
+    verdict?: string
+    issues?: unknown
+    rationale?: string
   }
-  return String(res)
-}
 
-function safeParseVerdict(text: string): ScaffoldMetaVerdict | null {
-  // Strip code fences if the LLM added them despite instructions.
-  const stripped = text.replace(/```json\s*/g, '').replace(/```\s*$/g, '').trim()
-  // Find the first balanced JSON object — models sometimes preface with
-  // reasoning despite system-prompt discipline.
-  const firstBrace = stripped.indexOf('{')
-  const lastBrace = stripped.lastIndexOf('}')
-  if (firstBrace < 0 || lastBrace <= firstBrace) return null
-  const candidate = stripped.slice(firstBrace, lastBrace + 1)
-  let obj: unknown
-  try {
-    obj = JSON.parse(candidate)
-  } catch {
-    return null
-  }
-  if (!obj || typeof obj !== 'object') return null
-  const o = obj as Record<string, unknown>
-  // Normalize. Be tolerant of "score out of 10" if the LLM ignored the
-  // 0..1 instruction — divide down. Don't silently accept out-of-range
-  // values; coerce to [0, 1].
   const num = (v: unknown, fallback = 0): number => {
     if (typeof v !== 'number' || Number.isNaN(v)) return fallback
-    if (v > 1 && v <= 10) return v / 10
+    if (v > 1 && v <= 10) return v / 10 // defensive: tolerate 0-10 scale drift
     return Math.max(0, Math.min(1, v))
   }
+  const issues = normalizeIssues(raw.issues)
+  const correctness = num(raw.correctness)
+  const completeness = num(raw.completeness)
+  const idiomatic = num(raw.idiomatic)
+  const productionReady = num(raw.productionReady)
+  const overScaffold = num(raw.overScaffold, 1)
+  const overallFallback = correctness * 0.3 + completeness * 0.3 + idiomatic * 0.2 + productionReady * 0.1 + overScaffold * 0.1
   const verdict: ScaffoldMetaVerdict['verdict'] =
-    o.verdict === 'pass' || o.verdict === 'fail' || o.verdict === 'borderline' ? o.verdict : 'borderline'
+    raw.verdict === 'pass' || raw.verdict === 'fail' || raw.verdict === 'borderline' ? raw.verdict : 'borderline'
+
   return {
-    correctness: num(o.correctness),
-    completeness: num(o.completeness),
-    idiomatic: num(o.idiomatic),
-    productionReady: num(o.productionReady),
-    overScaffold: num(o.overScaffold, 1),
-    overall: num(o.overall, num(o.correctness) * 0.3 + num(o.completeness) * 0.3 + num(o.idiomatic) * 0.2 + num(o.productionReady) * 0.1 + num(o.overScaffold, 1) * 0.1),
-    issues: Array.isArray(o.issues) ? (o.issues as ScaffoldMetaVerdict['issues']) : [],
+    correctness,
+    completeness,
+    idiomatic,
+    productionReady,
+    overScaffold,
+    overall: num(raw.overall, overallFallback),
+    issues,
     verdict,
-    rationale: typeof o.rationale === 'string' ? o.rationale : undefined,
+    rationale: raw.rationale,
   }
+}
+
+/**
+ * Normalize the LLM's `issues` output into our typed shape. The AxSignature
+ * declares issues:string[] (simple list of concerns). We then parse each
+ * line for a "dimension: severity: description" pattern; if it doesn't
+ * match, treat the whole line as a medium-severity unscoped issue. This
+ * lets the judge use free-form language while giving the scorecard
+ * consumer a structured shape.
+ */
+function normalizeIssues(raw: unknown): ScaffoldMetaVerdict['issues'] {
+  if (!Array.isArray(raw)) return []
+  const out: ScaffoldMetaVerdict['issues'] = []
+  for (const item of raw) {
+    if (typeof item === 'string') {
+      const m = item.match(/^\s*(\w[\w-]*)\s*:\s*(low|medium|high)\s*:\s*(.+)$/i)
+      if (m) {
+        out.push({ dimension: m[1]!, severity: m[2]!.toLowerCase() as 'low' | 'medium' | 'high', description: m[3]!.trim() })
+      } else {
+        out.push({ dimension: 'general', severity: 'medium', description: item.trim() })
+      }
+    } else if (item && typeof item === 'object') {
+      const o = item as Record<string, unknown>
+      const sev = (o.severity === 'low' || o.severity === 'high') ? o.severity : 'medium'
+      out.push({
+        dimension: typeof o.dimension === 'string' ? o.dimension : 'general',
+        severity: sev,
+        description: typeof o.description === 'string' ? o.description : JSON.stringify(o),
+      })
+    }
+  }
+  return out
+}
+
+function renderKeyFilesForSignature(snapshot: WorkspaceSnapshot): string {
+  const keyFiles = pickKeyFiles(snapshot)
+  const PROMPT_FILE_CAP = 4000
+  return keyFiles
+    .map((f) => {
+      const truncated = f.content.length > PROMPT_FILE_CAP
+      const body = truncated
+        ? `${f.content.slice(0, PROMPT_FILE_CAP)}\n[... ${f.content.length - PROMPT_FILE_CAP} more chars truncated for prompt — full content is in the snapshot ...]`
+        : f.content
+      return `### ${f.path}${truncated ? ' (truncated for prompt)' : ''}\n${body}`
+    })
+    .join('\n\n---\n\n')
 }

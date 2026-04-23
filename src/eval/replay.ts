@@ -80,6 +80,9 @@ export interface ReplayResult {
   remainingGapInstalls: string[]
   /** rewrittenFiles the current scaffold already provides (by relative path match). */
   preventedRewrites: string[]
+  /** Gen-3: raw rewrittenFiles paths from the captured trace — propagated so
+   * buildReport can emit topRewrittenFiles for scorecard consumption. */
+  rewrittenFiles: string[]
   /** Did planPrompt route to the same family the captured agent actually ended up building? */
   familyMatchHint: boolean | null
   observedOutcome: CapturedOutcome | null
@@ -110,6 +113,18 @@ export interface CounterfactualSummary {
   /** Lower-is-better per scorecard.json. Derived from remainingGapInstalls
    * by dividing across corpus and extrapolating per-buildout. */
   estimatedGapInstallsPerBuildout: number
+  /** Gen-3: cost rollup — present when captured outcomes include costUsd
+   * / tokenCount. Matches the shape of buildout-analysis.json's
+   * summary.costRollup so this report can substitute. */
+  costRollup?: {
+    sampleCount: number
+    meanCostUsd: number | null
+    meanTokens: number | null
+    totalCostUsd: number | null
+    totalTokens: number | null
+    meanCostOnPass: number | null
+    meanCostOnFail: number | null
+  }
 }
 
 export interface CounterfactualReport {
@@ -141,6 +156,14 @@ export interface CounterfactualReport {
   topPreventedInstalls: Array<{
     key: string
     timesPrevented: number
+  }>
+  /** Gen-3: rollup of rewritten-file counts — matches main buildout-analysis.json
+   * schema so scorecard can read from either source. */
+  topRewrittenFiles?: Array<{
+    file: string
+    timesRewritten: number
+    rewrittenOnPass: number
+    rewrittenOnFail: number
   }>
 }
 
@@ -274,6 +297,7 @@ export async function replayTrace(trace: CapturedTrace): Promise<ReplayResult> {
       preventedInstalls: [],
       remainingGapInstalls: normalizeAddedPackages(trace.addedPackages).filter(isNpmInstall).map(stripPmPrefix),
       preventedRewrites: [],
+      rewrittenFiles: trace.rewrittenFiles.map(relativePathTail),
       familyMatchHint: null,
       observedOutcome: trace.outcome,
     }
@@ -313,6 +337,9 @@ export async function replayTrace(trace: CapturedTrace): Promise<ReplayResult> {
     preventedInstalls,
     remainingGapInstalls,
     preventedRewrites,
+    // Gen-3: emit relative-path tails (not absolute tmp paths) so
+    // buildReport's rollup matches what buildout-analysis.json emits.
+    rewrittenFiles: trace.rewrittenFiles.map(relativePathTail),
     familyMatchHint: null,
     observedOutcome: trace.outcome,
   }
@@ -441,6 +468,53 @@ export function buildReport(
     .sort((a, b) => b.timesPrevented - a.timesPrevented)
     .slice(0, 20)
 
+  // Gen-3 schema harmonization: emit `topRewrittenFiles` and `costRollup`
+  // so this report can substitute for `.evolve/buildout-analysis.json`
+  // when the main file is stale. Both are derived from the same captured
+  // trace outcomes — the data is already here.
+  const rewriteHisto = new Map<string, { times: number; onPass: number; onFail: number }>()
+  for (const r of results) {
+    const isPass = r.observedOutcome?.allPass === true
+    for (const file of r.rewrittenFiles ?? []) {
+      const cur = rewriteHisto.get(file) ?? { times: 0, onPass: 0, onFail: 0 }
+      cur.times += 1
+      if (isPass) cur.onPass += 1
+      else cur.onFail += 1
+      rewriteHisto.set(file, cur)
+    }
+  }
+  const topRewrittenFiles = [...rewriteHisto.entries()]
+    .map(([file, v]) => ({
+      file,
+      timesRewritten: v.times,
+      rewrittenOnPass: v.onPass,
+      rewrittenOnFail: v.onFail,
+    }))
+    .sort((a, b) => b.timesRewritten - a.timesRewritten)
+    .slice(0, 20)
+
+  // Cost rollup — mean across outcomes that reported cost/tokens.
+  const costSamples = results
+    .map((r) => r.observedOutcome)
+    .filter((o): o is NonNullable<typeof o> => o != null)
+  const costValues = costSamples.map((o) => o.costUsd).filter((v): v is number => typeof v === 'number')
+  const tokenValues = costSamples.map((o) => o.tokenCount).filter((v): v is number => typeof v === 'number')
+  const costRollup = {
+    sampleCount: costValues.length,
+    meanCostUsd: costValues.length > 0 ? costValues.reduce((a, b) => a + b, 0) / costValues.length : null,
+    meanTokens: tokenValues.length > 0 ? tokenValues.reduce((a, b) => a + b, 0) / tokenValues.length : null,
+    totalCostUsd: costValues.length > 0 ? costValues.reduce((a, b) => a + b, 0) : null,
+    totalTokens: tokenValues.length > 0 ? tokenValues.reduce((a, b) => a + b, 0) : null,
+    meanCostOnPass: (() => {
+      const vals = costSamples.filter((o) => o.allPass).map((o) => o.costUsd).filter((v): v is number => typeof v === 'number')
+      return vals.length > 0 ? vals.reduce((a, b) => a + b, 0) / vals.length : null
+    })(),
+    meanCostOnFail: (() => {
+      const vals = costSamples.filter((o) => !o.allPass).map((o) => o.costUsd).filter((v): v is number => typeof v === 'number')
+      return vals.length > 0 ? vals.reduce((a, b) => a + b, 0) / vals.length : null
+    })(),
+  }
+
   return {
     schemaVersion: 1,
     generator: 'starter-foundry:replay-traces',
@@ -460,9 +534,15 @@ export function buildReport(
       totalRemainingGapInstalls,
       preventionRate,
       estimatedGapInstallsPerBuildout,
+      // Gen-3: cost rollup present on both this report and the main
+      // buildout-analysis.json. Fields match so scorecard can read either.
+      costRollup,
     },
     perScenario,
     topRemainingGapInstalls,
     topPreventedInstalls,
+    // Gen-3: top rewritten files — used by scorecard's top_file_rewrite_count
+    // flow. Matches main buildout-analysis.json schema.
+    topRewrittenFiles,
   }
 }

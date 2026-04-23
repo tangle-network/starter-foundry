@@ -2,5 +2,24 @@
 name = "{{projectName}}"
 version = "0.0.1"
 
+# Named address for module paths. `package` is a Move-valid identifier
+# regardless of the project name (projectName may contain hyphens — which
+# are legal in Cargo/npm package names but illegal in Move identifiers).
+# Users can rename `package` to anything Move-identifier-safe; then update
+# `module package::...` references in sources/.
 [addresses]
-{{projectName}} = "_"
+package = "_"
+
+# Dev addresses resolve the `_` placeholder during `aptos move compile --dev`
+# and `aptos move test --dev`. Real on-chain deploys pass --named-addresses
+# on the CLI (see scripts/publish.sh in your toolchain). 0xcafe is the
+# convention-standard Aptos dev placeholder.
+[dev-addresses]
+package = "0xcafe"
+
+# AptosFramework provides std (signer, vector, string, ...) and the
+# aptos_framework namespace (coin, account, event, timestamp). Pinned to
+# `mainnet` branch so the resolved versions match what's actually deployed.
+# First `aptos move compile` fetches this git dep (~30s cold, cached after).
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework", rev = "mainnet" }

@@ -1,5 +1,67 @@
 # Evolve Progress — starter-foundry routing quality
 
+## 2026-04-22 (evening) — Pursuit Gen 3: measurement freshness (scorecard self-heals)
+
+Pursuit: `.evolve/pursuits/2026-04-22-measurement-freshness.md`. Thesis: "the scorecard is self-fresh — it regenerates stale inputs at read time, so any `/governor` invocation reads honest data regardless of what the operator remembered." Gen 2 shipped the staleness gate (detection); Gen 3 closes the loop (auto-fix).
+
+**Changes shipped (9):**
+- `scripts/measure-refresh.mjs` — unified orchestrator. Runs only stages whose outputs are older than inputs. Idempotent. ~1s when clean, <10s worst case.
+- `scripts/refresh-scorecard.mjs` read-time self-heal — when `buildout-analysis.json` / `capability-gaps.json` / `buildout-analysis-internal.json` is stale at read time, auto-regen before continuing. Env-guarded via `STARTER_FOUNDRY_NO_SELF_HEAL=1`.
+- Counterfactual fallback — when main is stale and internal is fresh, read internal, mark flows with `source: 'counterfactual'` instead of `stale: true`.
+- `src/eval/replay.ts` schema extension — emits `topRewrittenFiles` + `costRollup` so internal analysis is drop-in compatible with main for scorecard reads.
+- `package.json` scripts — `measure:refresh`, `measure:check`, `setup:hooks`.
+- `scripts/hooks/pre-push.sh` + `scripts/install-git-hooks.mjs` — pre-push blocks stale pushes; clear bypass docs (`--no-verify`, per-clone config key).
+- `.github/workflows/nightly-measurement.yml` simplified — single `pnpm measure:refresh` call replaces manual stage chain.
+- `tests/measure-refresh.test.ts` + `tests/refresh-scorecard.test.ts` extensions — 5 new assertions (+633/633 pass).
+- `docs/MEASUREMENT.md` — freshness contract in one page.
+
+**Verified end-to-end:**
+- Touched source mtime forward → `measure:check` reported drift → `measure:refresh` cleaned it → second `measure:check` clean. Idempotent.
+- Backdated `buildout-analysis.json` by 1h → ran `refresh-scorecard.mjs` directly → self-heal log line fired → output mtime current → scorecard read fresh value.
+- Tests: 633/633 (+5 new, +0 regressions).
+- Diff audit: 0 CRITs, 0 HIGHs.
+
+**Expected impact:** time-to-fresh-scorecard after a VB sweep drops from "until operator remembers" (unbounded, historically multi-hour) to "next scorecard read or next push, whichever comes first" (≤1s read, pre-push enforcement).
+
+**Next:** operator merges PR #46 → next VB sweep → dispatch `/governor` for exploit/explore against self-fresh data.
+
+---
+
+## 2026-04-22 — Pursuit Gen 2: measurement integrity (scorecard as truth)
+
+Pursuit: `.evolve/pursuits/2026-04-22-measurement-integrity.md`. Thesis: "the scorecard is the governor's truth — every flow is either freshness-gated or self-regenerating, and every flow has a unit test pinning its computation." Rationale: three independent measurement distortions shipped undetected in one day (stale scorecard, stale capability-gaps, audit derivation bug), and without architectural guards the pattern would repeat every round.
+
+**Changes shipped (7):**
+- #1 Audit layer-id derivation — reads family `requires[]` first, then scans `registry/layers/framework/*/manifest.json` for `appliesTo` match, then falls back to `framework:${family}`. Fixes the 10/94 split-framework failures that had masked as "layer doesn't exist".
+- #2 Cold-toolchain retry — SIGTERM + specific download/compile signals in tail → retry once with 3× timeout. Real build failures still fail fast on first attempt.
+- #3 Input-staleness gate — every scorecard input records mtime alongside its value; flows whose input is older than the canonical `buildouts.jsonl` source are marked `stale: true` in output.
+- #4 Run-weighted median turns flow — complements scenario-mean-weighted. Both emitted so "which number is real" confusion is eliminated.
+- #5 Regenerate `.evolve/capability-gaps.json` — data refresh only. scaffold-gap 59→56, orchestration-install 46.
+- #6 `tests/refresh-scorecard.test.ts` — 4 tests pinning every flow's computation. Uses `STARTER_FOUNDRY_REPO_OVERRIDE` env for fixture isolation.
+- #7 `.github/workflows/scorecard-refresh.yml` — nightly 06:00 UTC. Opens PR only on drift. `scorecard-drift` label.
+
+**Baseline → result:**
+| Flow | Before | After |
+|---|---|---|
+| staleness manifest | not emitted | `stale.anyFlowStale: true`, `stale.buildout: true` |
+| inputs manifest | not emitted | 3 inputs with ISO 8601 mtimes |
+| run-weighted median turns | not emitted | 85 (vs scenario-mean 101 — gap revealed) |
+| scaffold_gap_installs | 59 (stale) | 56 (fresh) |
+| scaffold_audit_pass_rate | 0.851 (derivation-masked) | pending full rerun |
+
+**Tests:** 628/628 passing. **Diff audit:** 0 CRITs, 0 HIGHs. **Reversibility:** every change is additive; `git revert` clean.
+
+**Surprise:** the staleness gate's first emission caught `buildout-analysis.json` (14 hours behind source) — the exact file most-cited in prior research rounds. Validated the thesis.
+
+**Seeds for Gen 3 (if needed):**
+- ~6-8 smoke-compose failures that are NOT derivation (bevy-web, eleventy-static, expo-rn-rich, godot-web, hugo-static, move-package, observable-notebook, phaser-game, pixijs-game). Per-family root-cause.
+- `buildout-analysis.json` regen automation (currently manual).
+- `median_turns_per_buildout_run_weighted` target 40 vs current 85 (2× reduction).
+
+**Next:** surgical fixes — cross-chain-bridge scenarios (47/47 hit 165-turn cap = 27% of corpus, projected +11pp buildout_pass_rate if resolved).
+
+---
+
 ## 2026-04-21 — Evolve Round 2: codemirror cluster (15 gap-installs)
 
 Commit: `29d5ccc`. Continues R1's `scaffold_gap_installs` goal.

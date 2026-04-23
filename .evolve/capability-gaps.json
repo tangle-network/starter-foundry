@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-04-20T20:20:05.299Z",
+  "generatedAt": "2026-04-23T03:57:27.036Z",
   "processedEvents": 24,
   "totalAgentInstalls": 102,
   "breakdown": {
-    "scaffoldGap": 59,
-    "orchestration": 43
+    "scaffoldGap": 56,
+    "orchestration": 46
   },
   "topScaffoldGaps": [
     {
@@ -33,7 +33,7 @@
       "onPass": 0,
       "onFail": 4,
       "inScaffoldDeps": false,
-      "mapsToCapability": null,
+      "mapsToCapability": "capability:zk-browser",
       "concern": "scaffold-gap",
       "scenarios": [
         "zk-mixer-ui"
@@ -49,7 +49,7 @@
       "onPass": 0,
       "onFail": 4,
       "inScaffoldDeps": false,
-      "mapsToCapability": null,
+      "mapsToCapability": "capability:zk-browser",
       "concern": "scaffold-gap",
       "scenarios": [
         "zk-mixer-ui"
@@ -65,7 +65,7 @@
       "onPass": 3,
       "onFail": 0,
       "inScaffoldDeps": false,
-      "mapsToCapability": null,
+      "mapsToCapability": "capability:date-utils",
       "concern": "scaffold-gap",
       "scenarios": [
         "dao-proposals"
@@ -81,7 +81,7 @@
       "onPass": 3,
       "onFail": 0,
       "inScaffoldDeps": false,
-      "mapsToCapability": null,
+      "mapsToCapability": "capability:code-editor",
       "concern": "scaffold-gap",
       "scenarios": [
         "agent-trading"
@@ -97,7 +97,7 @@
       "onPass": 3,
       "onFail": 0,
       "inScaffoldDeps": false,
-      "mapsToCapability": null,
+      "mapsToCapability": "capability:code-editor",
       "concern": "scaffold-gap",
       "scenarios": [
         "agent-trading"
@@ -113,7 +113,7 @@
       "onPass": 3,
       "onFail": 0,
       "inScaffoldDeps": false,
-      "mapsToCapability": null,
+      "mapsToCapability": "capability:code-editor",
       "concern": "scaffold-gap",
       "scenarios": [
         "agent-trading"
@@ -129,7 +129,7 @@
       "onPass": 3,
       "onFail": 0,
       "inScaffoldDeps": false,
-      "mapsToCapability": null,
+      "mapsToCapability": "capability:code-editor",
       "concern": "scaffold-gap",
       "scenarios": [
         "agent-trading"
@@ -145,7 +145,7 @@
       "onPass": 3,
       "onFail": 0,
       "inScaffoldDeps": false,
-      "mapsToCapability": null,
+      "mapsToCapability": "capability:code-editor",
       "concern": "scaffold-gap",
       "scenarios": [
         "agent-trading"
@@ -161,7 +161,7 @@
       "onPass": 0,
       "onFail": 3,
       "inScaffoldDeps": false,
-      "mapsToCapability": null,
+      "mapsToCapability": "capability:zk-browser",
       "concern": "scaffold-gap",
       "scenarios": [
         "zk-mixer-ui"
@@ -181,24 +181,6 @@
       "concern": "scaffold-gap",
       "scenarios": [
         "dao-proposals"
-      ],
-      "sampleFamilies": [
-        "nextjs-ts",
-        "rust-service"
-      ]
-    },
-    {
-      "package": "vite",
-      "timesInstalled": 3,
-      "onPass": 1,
-      "onFail": 2,
-      "inScaffoldDeps": false,
-      "mapsToCapability": null,
-      "concern": "scaffold-gap",
-      "scenarios": [
-        "cross-chain-bridge",
-        "dex-swap",
-        "zk-mixer-ui"
       ],
       "sampleFamilies": [
         "nextjs-ts",
@@ -377,6 +359,24 @@
       ]
     },
     {
+      "package": "vite",
+      "timesInstalled": 3,
+      "onPass": 1,
+      "onFail": 2,
+      "inScaffoldDeps": true,
+      "mapsToCapability": null,
+      "concern": "orchestration",
+      "scenarios": [
+        "cross-chain-bridge",
+        "dex-swap",
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
       "package": "@types/node",
       "timesInstalled": 2,
       "onPass": 0,
@@ -411,6 +411,23 @@
   ],
   "topMissedCapabilities": [
     {
+      "capability": "capability:code-editor",
+      "totalTriggeringInstalls": 15,
+      "gapInstalls": 15,
+      "orchestrationInstalls": 0,
+      "distinctScenarios": 1,
+      "scenarios": [
+        "agent-trading"
+      ],
+      "packagesTriggering": [
+        "@codemirror/lang-javascript",
+        "@codemirror/state",
+        "@codemirror/theme-one-dark",
+        "@codemirror/view",
+        "codemirror"
+      ]
+    },
+    {
       "capability": "capability:tailwind",
       "totalTriggeringInstalls": 28,
       "gapInstalls": 14,
@@ -426,28 +443,56 @@
         "@tailwindcss/vite",
         "tailwindcss"
       ]
+    },
+    {
+      "capability": "capability:zk-browser",
+      "totalTriggeringInstalls": 11,
+      "gapInstalls": 11,
+      "orchestrationInstalls": 0,
+      "distinctScenarios": 1,
+      "scenarios": [
+        "zk-mixer-ui"
+      ],
+      "packagesTriggering": [
+        "circomlib",
+        "circomlibjs",
+        "snarkjs"
+      ]
+    },
+    {
+      "capability": "capability:date-utils",
+      "totalTriggeringInstalls": 3,
+      "gapInstalls": 3,
+      "orchestrationInstalls": 0,
+      "distinctScenarios": 1,
+      "scenarios": [
+        "dao-proposals"
+      ],
+      "packagesTriggering": [
+        "date-fns"
+      ]
     }
   ],
   "perScenarioGap": [
     {
       "scenarioId": "zk-mixer-ui",
-      "distinctGapPackages": 10,
-      "totalGapInstalls": 22,
+      "distinctGapPackages": 9,
+      "totalGapInstalls": 21,
       "gapPackages": [
         {
           "package": "snarkjs",
           "times": 4,
-          "capability": null
+          "capability": "capability:zk-browser"
         },
         {
           "package": "circomlibjs",
           "times": 4,
-          "capability": null
+          "capability": "capability:zk-browser"
         },
         {
           "package": "circomlib",
           "times": 3,
-          "capability": null
+          "capability": "capability:zk-browser"
         },
         {
           "package": "@zk-kit/incremental-merkle-tree",
@@ -478,11 +523,6 @@
           "package": "add",
           "times": 1,
           "capability": null
-        },
-        {
-          "package": "vite",
-          "times": 1,
-          "capability": null
         }
       ]
     },
@@ -499,27 +539,27 @@
         {
           "package": "@codemirror/view",
           "times": 3,
-          "capability": null
+          "capability": "capability:code-editor"
         },
         {
           "package": "@codemirror/state",
           "times": 3,
-          "capability": null
+          "capability": "capability:code-editor"
         },
         {
           "package": "@codemirror/lang-javascript",
           "times": 3,
-          "capability": null
+          "capability": "capability:code-editor"
         },
         {
           "package": "@codemirror/theme-one-dark",
           "times": 3,
-          "capability": null
+          "capability": "capability:code-editor"
         },
         {
           "package": "codemirror",
           "times": 3,
-          "capability": null
+          "capability": "capability:code-editor"
         }
       ]
     },
@@ -536,7 +576,7 @@
         {
           "package": "date-fns",
           "times": 3,
-          "capability": null
+          "capability": "capability:date-utils"
         },
         {
           "package": "react-router-dom",
@@ -547,18 +587,13 @@
     },
     {
       "scenarioId": "dex-swap",
-      "distinctGapPackages": 3,
-      "totalGapInstalls": 5,
+      "distinctGapPackages": 2,
+      "totalGapInstalls": 4,
       "gapPackages": [
         {
           "package": "@tailwindcss/vite",
           "times": 3,
           "capability": "capability:tailwind"
-        },
-        {
-          "package": "vite",
-          "times": 1,
-          "capability": null
         },
         {
           "package": "@vitejs/plugin-react",
@@ -574,18 +609,6 @@
       "gapPackages": [
         {
           "package": "axios",
-          "times": 1,
-          "capability": null
-        }
-      ]
-    },
-    {
-      "scenarioId": "cross-chain-bridge",
-      "distinctGapPackages": 1,
-      "totalGapInstalls": 1,
-      "gapPackages": [
-        {
-          "package": "vite",
           "times": 1,
           "capability": null
         }

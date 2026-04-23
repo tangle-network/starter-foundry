@@ -1,9 +1,7 @@
-module {{projectName}}::{{moduleName}}Tests {
-    use {{projectName}}::{{moduleName}};
-
-    #[test(account = @{{projectName}})]
+module package::{{moduleName}}Tests {
+    #[test(account = @package)]
     fun initializes_balance(account: signer) {
-        {{moduleName}}::initialize(&account);
-        assert!({{moduleName}}::balance(@{{projectName}}) == 0, 0);
+        package::{{moduleName}}::initialize(&account);
+        assert!(package::{{moduleName}}::balance(@package) == 0, 0);
     }
 }

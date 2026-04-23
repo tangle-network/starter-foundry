@@ -49,6 +49,10 @@
       "target": "src/components/ui/checkbox.tsx"
     },
     {
+      "source": "files/collapsible.tsx",
+      "target": "src/components/ui/collapsible.tsx"
+    },
+    {
       "source": "files/command.tsx",
       "target": "src/components/ui/command.tsx"
     },
@@ -71,6 +75,10 @@
     {
       "source": "files/label.tsx",
       "target": "src/components/ui/label.tsx"
+    },
+    {
+      "source": "files/popover.tsx",
+      "target": "src/components/ui/popover.tsx"
     },
     {
       "source": "files/progress.tsx",

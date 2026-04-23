@@ -209,3 +209,50 @@ test('llm: createLLM with fallback=true does not throw when any provider key exi
   const svc = mod.createLLM({ fallback: true })
   assert.ok(svc, 'createLLM({fallback}) must return a service')
 })
+
+// ── Round 2: fidelity gate ──────────────────────────────────────────
+
+test('promote-family-proposal: --skip-fidelity flag suppresses the fidelity gate', () => {
+  // A draft that would normally be fidelity-failed should still reach
+  // the promote step when fidelity is explicitly skipped. Prove the
+  // flag is honored by confirming the output does not mention fidelity.
+  const id = `test-fidelity-skip-${Math.random().toString(36).slice(2, 8)}`
+  const draftDir = join(REPO, '.evolve/family-proposals', id)
+  mkdirSync(join(draftDir, 'files'), { recursive: true })
+  // Deliberately thin but schema-valid — would fidelity-fail if judged.
+  writeFileSync(
+    join(draftDir, 'manifest.json'),
+    JSON.stringify({
+      id,
+      description: 'Thin scaffold used to assert --skip-fidelity suppresses the fidelity gate check',
+      tags: ['test'],
+      taxonomy: { language: 'typescript', runtime: 'node', surface: 'frontend' },
+      defaults: { projectType: 'frontend' },
+      files: [],
+    }, null, 2),
+  )
+  try {
+    const res = spawnSync('node', ['scripts/promote-family-proposal.mjs', '--id', id, '--no-pr', '--dry-run', '--skip-fidelity'], {
+      cwd: REPO,
+      encoding: 'utf8',
+    })
+    assert.equal(res.status, 0)
+    // schema passes (description ≥20, files array, etc.), compose may or may not
+    // succeed depending on environment, but we MUST NOT see fidelity-pass or
+    // fidelity-fail in the output — the flag suppresses that code path.
+    assert.doesNotMatch(res.stdout, /fidelity-pass|fidelity-fail/, 'fidelity gate should be skipped')
+  } finally {
+    rmSync(draftDir, { recursive: true, force: true })
+  }
+})
+
+test('promote-family-proposal: --fidelity-threshold flag parses numeric override', () => {
+  // Smoke: pass a clearly-out-of-range threshold and verify the flag is
+  // accepted without crashing script start. Does not require LLM.
+  const res = spawnSync('node', ['scripts/promote-family-proposal.mjs', '--id', 'nonexistent-xyz', '--no-pr', '--fidelity-threshold', '0.95'], {
+    cwd: REPO,
+    encoding: 'utf8',
+  })
+  assert.equal(res.status, 0)
+  assert.match(res.stdout, /no-draft|missing manifest/)
+})

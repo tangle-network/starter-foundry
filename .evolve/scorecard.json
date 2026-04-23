@@ -1,8 +1,8 @@
 {
   "product": "starter-foundry",
-  "timestamp": "2026-04-23T20:30:01.919Z",
-  "coverage": "18/22 flows measured",
-  "aggregate": 0.495,
+  "timestamp": "2026-04-23T20:48:57.522Z",
+  "coverage": "19/22 flows measured",
+  "aggregate": 0.528,
   "inputs": [
     {
       "path": ".evolve/buildout-analysis.json",
@@ -18,7 +18,7 @@
     },
     {
       "path": ".evolve/buildout-analysis-internal.json",
-      "mtime": "2026-04-23T05:41:22.617Z"
+      "mtime": "2026-04-23T20:48:56.924Z"
     },
     {
       "path": ".evolve/agent-eval/2026-04-23/three-layer-report.json",
@@ -126,7 +126,7 @@
     },
     {
       "name": "families",
-      "value": 97,
+      "value": 98,
       "target": 40,
       "status": "pass",
       "productValueClaim": "Number of distinct family archetypes the router can route to. Breadth = more prompts find a good home.",
@@ -150,7 +150,7 @@
     },
     {
       "name": "proposal_promotion_rate",
-      "value": 0,
+      "value": 0.0385,
       "target": 0.3,
       "status": "fail",
       "productValueClaim": "Fraction of proposed families/capabilities that passed all validation gates (schema+compose+build) and landed in registry/ over the last 30 days. When this moves, vertical expansion is working — new buildable surfaces per week without manual registry authoring.",
@@ -158,9 +158,9 @@
     },
     {
       "name": "proposed_family_first_ship_hours",
-      "value": null,
+      "value": 0.3,
       "target": 24,
-      "status": "unmeasured",
+      "status": "pass",
       "productValueClaim": "Median hours from proposal draft creation → registry promotion. Baseline was unbounded (drafts sat as TODOs indefinitely). Target 24h via nightly cron.",
       "direction": "lower-better"
     },

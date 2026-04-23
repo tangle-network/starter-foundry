@@ -369,10 +369,28 @@ const flows = [
     // A promote-reverted event means a prior 'promoted' was rolled back because
     // the scaffold, despite passing build, failed a human / fidelity review.
     // Subtract reverted ids from the promoted count so the rate reflects
-    // shippable promotes, not merely gate-passing ones.
-    const revertedIds = new Set(entries.filter((e) => e.event === 'promote-reverted').map((e) => String(e.id ?? '')))
+    // shippable promotes, not merely gate-passing ones. Match by id AND
+    // timestamp — a 'promoted' that happened AFTER a 'promote-reverted' for
+    // the same id is a fresh re-promote (R2 patch-and-resubmit workflow)
+    // and must not be subtracted.
+    const revertedByIdTs = new Map() // id → latest revert ts
+    for (const e of entries) {
+      if (e.event !== 'promote-reverted') continue
+      const id = String(e.id ?? '')
+      const ts = Date.parse(e.ts ?? '') || 0
+      if (!revertedByIdTs.has(id) || revertedByIdTs.get(id) < ts) revertedByIdTs.set(id, ts)
+    }
     const promoteAttempts = entries.filter((e) => e.event === 'promoted' || e.event === 'promote-failed')
-    const promoted = entries.filter((e) => e.event === 'promoted' && !revertedIds.has(String(e.id ?? '')))
+    const promoted = entries.filter((e) => {
+      if (e.event !== 'promoted') return false
+      const id = String(e.id ?? '')
+      const ts = Date.parse(e.ts ?? '') || 0
+      const revertTs = revertedByIdTs.get(id)
+      // If this promoted event is AT OR BEFORE the latest revert, it's stale.
+      // Promoted AFTER the revert = fresh re-promote, counts.
+      if (revertTs !== undefined && ts <= revertTs) return false
+      return true
+    })
     const promotionRate = promoteAttempts.length > 0 ? promoted.length / promoteAttempts.length : null
     const firstShipHours = promoted
       .map((e) => e.draftAgeHours)

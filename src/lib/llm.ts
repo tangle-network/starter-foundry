@@ -129,7 +129,22 @@ function buildFallbackChain(primary: LLMProvider, opts: LLMOptions): AxAIService
     // caller explicitly requested a specific provider — respect it, no fallback.
     return buildSingle(explicit, opts)
   }
-  const svcs = chain.map((p) => ({ provider: p, svc: buildSingle(p, { ...opts, provider: p, apiKey: undefined }) }))
+  // Fallback means "any provider, best effort" — strip opts.model so each
+  // provider gets its own DEFAULT_MODELS entry. Passing the primary's
+  // router-specific model name (e.g. "anthropic/claude-sonnet-4-6") to a
+  // direct OpenAI or Together endpoint 404s. The primary keeps its model
+  // when it's first in the chain.
+  const svcs = chain.map((p, i) => ({
+    provider: p,
+    svc: buildSingle(p, {
+      ...opts,
+      provider: p,
+      apiKey: undefined,
+      // Only preserve caller's model on the primary; fallback providers
+      // use their own defaults via DEFAULT_MODELS.
+      model: i === 0 ? opts.model : undefined,
+    }),
+  }))
   if (svcs.length === 0) throw new Error('no providers available for fallback chain')
   // Proxy through the primary for any method not explicitly handled, so we
   // don't have to mirror the full AxAIService interface.
@@ -138,9 +153,20 @@ function buildFallbackChain(primary: LLMProvider, opts: LLMOptions): AxAIService
       if (key === 'chat') {
         return async function (req: AxChatRequest, svcOptions?: Readonly<AxAIServiceOptions>): Promise<AxChatResponse> {
           let lastErr: unknown
-          for (const { provider, svc } of svcs) {
+          for (let i = 0; i < svcs.length; i++) {
+            const { provider, svc } = svcs[i]!
+            // Per-provider model rewrite. The primary chose a model name
+            // (set by Ax from its service config). When we fall over to a
+            // different provider that model name is wrong — e.g.,
+            // "anthropic/claude-sonnet-4-6" is a router-specific slug that
+            // Together and OpenAI don't recognize. Swap in the target
+            // provider's DEFAULT_MODELS entry for every fallback hop.
+            const modelForProvider = i === 0 ? req.model : DEFAULT_MODELS[provider]
+            const rewrittenReq = modelForProvider === req.model
+              ? req
+              : { ...req, model: modelForProvider }
             try {
-              return (await svc.chat(req, svcOptions)) as AxChatResponse
+              return (await svc.chat(rewrittenReq, svcOptions)) as AxChatResponse
             } catch (err) {
               lastErr = err
               if (!shouldFallback(err)) throw err

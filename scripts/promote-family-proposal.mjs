@@ -31,6 +31,7 @@ import { tmpdir } from 'node:os'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { InMemoryTraceStore, BuilderSession, SubprocessSandboxDriver, scoreProject } from '@tangle-network/agent-eval'
+import { snapshotScaffold, invokeMetaJudge } from '../dist/eval/scaffold-bridge.js'
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -39,6 +40,9 @@ const ID = (() => { const i = argv.indexOf('--id'); return i >= 0 ? argv[i + 1] 
 const ALL = argv.includes('--all')
 const DRY_RUN = argv.includes('--dry-run')
 const NO_PR = argv.includes('--no-pr')
+const SKIP_FIDELITY = argv.includes('--skip-fidelity')
+const ALLOW_BORDERLINE = argv.includes('--allow-borderline')
+const FIDELITY_THRESHOLD = Number((() => { const i = argv.indexOf('--fidelity-threshold'); return i >= 0 ? argv[i + 1] : '0.7' })()) || 0.7
 
 if (!ID && !ALL) {
   console.error('usage: promote-family-proposal.mjs --id <proposal-id> | --all [--dry-run] [--no-pr]')
@@ -193,7 +197,13 @@ async function promoteOne(id) {
   // run install + build in the composed scaffold dir. Scored via
   // three-layer-eval: kind='scaffold-only' (no runtime), complete when
   // meta (if available) + build both scored.
+  //
+  // Also snapshot the composed output BEFORE compose cleanup so Gate 4
+  // (fidelity) has the files to judge. Gate 4 runs after the finally
+  // block since it's a separate LLM call that shouldn't hold temp disk.
   let buildReport = null
+  let preTeardownSnapshot = null
+  let composedSpecForJudge = null
   try {
     const composedOutDir = join(composeTmp, 'out')
     if (!existsSync(composedOutDir)) throw new Error('compose output missing')
@@ -214,11 +224,63 @@ async function promoteOne(id) {
       return fail(id, 'compose-pass', `build failed: score=${(shipResult.result?.score ?? 0).toFixed(2)}`)
     }
     console.log(`  ✓ ${id} build-pass (score=${shipResult.result.score.toFixed(2)}, kind=${buildReport.kind})`)
+    // Snapshot BEFORE teardown — files vanish when compose tmp is rm'd.
+    try {
+      preTeardownSnapshot = snapshotScaffold(composedOutDir)
+      composedSpecForJudge = { family: id, layers: [`framework:${id}`] }
+    } catch (err) {
+      // Snapshot failure is not a gate failure — we just can't run fidelity.
+      console.error(`  ⚠ ${id} snapshot failed: ${err?.message ?? err} — fidelity skipped`)
+    }
   } catch (err) {
     writeFileSync(join(draftDir, 'validation-errors.json'), JSON.stringify({ gate: 'build', error: err?.message ?? String(err) }, null, 2))
     return fail(id, 'compose-pass', `build threw: ${err?.message ?? err}`)
   } finally {
     try { rmSync(composeTmp, { recursive: true, force: true }) } catch { /* noop */ }
+  }
+
+  // Gate 4 — fidelity. LLM-judges whether the scaffold actually matches
+  // its manifest description: imports resolve for the claimed framework,
+  // layout is idiomatic for the language/runtime, no obvious Goodhart
+  // failures like "description says frontend but main.ts is a Node HTTP
+  // server." Exists because Round 1 proved build-pass alone ships
+  // scaffolds that don't serve user demand — three drafts passed
+  // build, all three were reverted on human review. This gate catches
+  // them automatically pre-copy. Skip on --skip-fidelity (grace path
+  // when no LLM provider is configured).
+  if (!SKIP_FIDELITY && preTeardownSnapshot && composedSpecForJudge) {
+    try {
+      const manifest = loadJson(join(draftDir, 'manifest.json'))
+      const userPrompt = manifest?.description ?? `Scaffold for ${id}`
+      const verdict = await invokeMetaJudge({
+        userPrompt,
+        composedSpec: composedSpecForJudge,
+        snapshot: preTeardownSnapshot,
+      })
+      // Reject on: explicit fail, overall below threshold, OR borderline
+      // (unless --allow-borderline). Borderline is the judge's honest
+      // "I'm not confident" signal — should route to human review, not
+      // auto-promote. Round 1 proved that letting borderline-quality
+      // scaffolds land in registry/ ships Goodhart wins.
+      const rejectBorderline = !ALLOW_BORDERLINE && verdict.verdict === 'borderline'
+      if (verdict.verdict === 'fail' || verdict.overall < FIDELITY_THRESHOLD || rejectBorderline) {
+        writeFileSync(
+          join(draftDir, 'validation-errors.json'),
+          JSON.stringify({ gate: 'fidelity', verdict }, null, 2),
+        )
+        if (!DRY_RUN) logImpact({ event: 'fidelity-fail', id, overall: verdict.overall, verdict: verdict.verdict, topIssue: verdict.issues?.[0]?.description ?? null })
+        return fail(id, 'build-pass', `fidelity: overall=${verdict.overall.toFixed(2)} verdict=${verdict.verdict} — ${verdict.issues?.slice(0, 2).map((x) => x.description).join('; ') ?? 'no issues listed'}`)
+      }
+      console.log(`  ✓ ${id} fidelity-pass (overall=${verdict.overall.toFixed(2)}, verdict=${verdict.verdict})`)
+    } catch (err) {
+      // A judge-side error (LLM unavailable, 402, malformed output after
+      // retries) is NOT a gate failure. Log + skip, but record the miss
+      // so operators can see fidelity was non-blocking this run.
+      console.error(`  ⚠ ${id} fidelity judge unavailable: ${err?.message ?? err} — proceeding without gate`)
+      logImpact({ event: 'fidelity-unavailable', id, error: String(err?.message ?? err) })
+    }
+  } else if (SKIP_FIDELITY) {
+    console.log(`  · ${id} fidelity skipped (--skip-fidelity)`)
   }
 
   // All gates passed — promote.
@@ -368,6 +430,10 @@ function ok(id, gateReached, message, extra = {}) {
 
 function fail(id, gateReached, message) {
   logGovernor({ event: 'promote-outcome', id, gateReached, message })
-  logImpact({ event: 'promote-failed', id, gateReached, message })
+  // Dry-runs are dress rehearsals — don't pollute promotion_rate denominators.
+  // Every failed --dry-run was writing promote-failed and then (on earlier
+  // fidelity-fail path) fidelity-fail; both inflate the attempt count
+  // artificially and suppress the rate metric.
+  if (!DRY_RUN) logImpact({ event: 'promote-failed', id, gateReached, message })
   return { id, gateReached, message }
 }

@@ -455,7 +455,12 @@ export async function invokeMetaJudge(args: {
 }): Promise<ScaffoldMetaVerdict> {
   const { createLLM } = await import('../lib/llm.js')
   const { ax } = await import('@ax-llm/ax')
-  const llm = createLLM({ model: 'anthropic/claude-sonnet-4-6' })
+  // Don't pin a router-specific model slug like "anthropic/claude-sonnet-4-6" —
+  // it 404s on non-router providers in the fallback chain. createLLM() picks
+  // each provider's default (Claude Haiku on Anthropic, Llama 3.3 on Together,
+  // gpt-4o-mini on OpenAI, Haiku via router when the router key is present).
+  // Any of these are capable enough to run a 5-dimensional rubric judge.
+  const llm = createLLM()
 
   const judge = ax(META_JUDGE_SIGNATURE)
   const paths = Object.keys(args.snapshot.files).sort()

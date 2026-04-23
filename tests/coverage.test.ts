@@ -114,6 +114,7 @@ const FAMILY_PROMPTS: Record<string, string> = {
   "k12-edtech": "Build a K-12 edtech gradebook with FERPA-aligned audit logs and parent access controls",
   "flutter-app": "Build a Flutter dart mobile app with Material Design and Cupertino navigation",
   "kotlin-multiplatform": "Build a Kotlin Multiplatform app with Compose Multiplatform shared UI",
+  "kyc-onboarding": "Build a KYC onboarding flow with document verification and liveness check",
   "esp32-rust": "Build an ESP32 Rust firmware with esp-idf-svc WiFi scanner and xtensa target",
   "stm32-rust": "Build an STM32 Rust firmware with Embassy async bare metal and probe-rs",
   "ros2-node-py": "Build a ROS2 rclpy node publishing Twist messages on cmd_vel",

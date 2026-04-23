@@ -1,6 +1,6 @@
 {
   "product": "starter-foundry",
-  "timestamp": "2026-04-23T04:08:27.286Z",
+  "timestamp": "2026-04-23T05:18:48.934Z",
   "coverage": "13/14 flows measured",
   "aggregate": 0.455,
   "inputs": [
@@ -18,7 +18,7 @@
     },
     {
       "path": ".evolve/buildout-analysis-internal.json",
-      "mtime": "2026-04-23T04:08:11.142Z"
+      "mtime": "2026-04-23T05:18:25.354Z"
     }
   ],
   "sourceMtime": "2026-04-23T03:57:26.504Z",
@@ -122,7 +122,7 @@
     },
     {
       "name": "families",
-      "value": 94,
+      "value": 96,
       "target": 40,
       "status": "pass",
       "productValueClaim": "Number of distinct family archetypes the router can route to. Breadth = more prompts find a good home.",

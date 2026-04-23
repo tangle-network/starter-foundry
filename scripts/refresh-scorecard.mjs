@@ -370,6 +370,15 @@ const flows = [
     const proposedAttempts = entries.filter((e) => e.event === 'proposed' || e.event === 'proposed-failed')
     const proposedLLM = entries.filter((e) => e.event === 'proposed' && (e.mode === 'llm' || e.mode === 'llm-rlm'))
     const llmProposalRate = proposedAttempts.length > 0 ? proposedLLM.length / proposedAttempts.length : null
+    // Gen 6: full-stack proposal rate + capability promotion + coverage lift.
+    const fullStack = entries.filter((e) => e.event === 'proposed' && typeof e.templateFileCount === 'number' && e.templateFileCount >= 3)
+    const fullStackRate = proposedLLM.length > 0 ? fullStack.length / proposedLLM.length : null
+    const capAttempts = entries.filter((e) => e.event === 'capability-promoted' || e.event === 'capability-promote-failed')
+    const capPromoted = entries.filter((e) => e.event === 'capability-promoted')
+    const capRate = capAttempts.length > 0 ? capPromoted.length / capAttempts.length : null
+    const coverageEvents = entries.filter((e) => e.event === 'coverage-measured' && typeof e.liftRatio === 'number')
+    const lifts = coverageEvents.map((e) => e.liftRatio).sort((a, b) => a - b)
+    const medianLift = lifts.length > 0 ? lifts[Math.floor(lifts.length / 2)] : null
     return [
       {
         name: 'proposal_promotion_rate',
@@ -390,6 +399,27 @@ const flows = [
         value: llmProposalRate !== null ? Number(llmProposalRate.toFixed(4)) : null,
         target: 0.8,
         productValueClaim: 'Fraction of proposal attempts that produced an LLM-mode draft (vs falling back to deterministic TODO skeleton). Low → router/provider is unreachable or rate-limiting; deterministic mode cannot produce promotable drafts, so this gates the funnel.',
+        direction: 'higher-better',
+      },
+      {
+        name: 'full_stack_proposal_rate',
+        value: fullStackRate !== null ? Number(fullStackRate.toFixed(4)) : null,
+        target: 0.7,
+        productValueClaim: 'Fraction of LLM-mode proposals whose templateFiles.length ≥ 3. Bare-README drafts pass the build gate trivially but scaffold nothing useful. This flow catches the "too-minimal proposal" regression — Gen 6 Track A (filesForTaxonomy expansion) exists to lift it.',
+        direction: 'higher-better',
+      },
+      {
+        name: 'capability_promotion_rate',
+        value: capRate !== null ? Number(capRate.toFixed(4)) : null,
+        target: 0.4,
+        productValueClaim: 'Fraction of capability promotion attempts that passed all gates. Capabilities have lower validation bar than families (slot into existing), so this rate should exceed proposal_promotion_rate — parallel high-volume registry expansion.',
+        direction: 'higher-better',
+      },
+      {
+        name: 'coverage_lift_per_promote',
+        value: medianLift !== null ? Number(medianLift.toFixed(4)) : null,
+        target: 0.10,
+        productValueClaim: 'Median liftRatio from coverage-measured events — fraction of previously-unrouted buildout scenarios that now route somewhere after a promote. If this is 0, promotes are not absorbing demand; the registry is expanding without product effect.',
         direction: 'higher-better',
       },
     ]

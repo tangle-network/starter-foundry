@@ -1,75 +1,26 @@
 {
   "mode": "evolve",
-  "goal": "measurement freshness shipped — scorecard self-heals at read time + pre-push hook blocks stale pushes; next: exploit against self-fresh data after operator merges #46 + next VB sweep",
-  "status": "pursuit-gen3-shipped",
-  "round": 2,
-  "generation": 3,
+  "goal": "closed-loop generation flywheel — detect gap → RLM propose → promoter validates → measure coverage lift → each cycle teaches the next",
+  "status": "pursuit-gen6-shipped",
+  "round": 0,
+  "generation": 6,
   "activePursuit": null,
-  "lastPursuit": ".evolve/pursuits/2026-04-22-measurement-freshness.md",
-  "updatedAt": "2026-04-22T20:25:00Z",
-  "commit": "9b5aafd",
-  "priorCommits": ["29d5ccc", "b760e93", "77d4453", "0ff075c", "f972940"],
-  "baseline": {
-    "scaffoldAuditPassRate": 0.873,
-    "scaffoldAuditPassRateBefore": 0.851,
-    "scaffoldGapInstalls": 56,
-    "medianTurnsScenarioMean": 101,
-    "medianTurnsRunWeighted": 85,
-    "buildoutPassRate": 0.8497,
-    "testSuite": "628/628"
+  "lastPursuit": ".evolve/pursuits/2026-04-23-generation-flywheel.md",
+  "updatedAt": "2026-04-23T21:30:00Z",
+  "priorGenerations": [
+    { "n": 3, "pursuit": "measurement-freshness", "commit": "9b5aafd" },
+    { "n": 5, "pursuit": "closed-loop-generation", "commits": ["52afc18", "ce931c6"] }
+  ],
+  "gen6Tracks": {
+    "A": { "name": "filesForTaxonomy expansion", "status": "shipped", "file": "src/training/family_proposer/propose.ts" },
+    "B": { "name": "coverage-lift measurement", "status": "shipped", "file": "scripts/measure-coverage-lift.mjs", "baseline": "28/54 routed (51.9%), 3 unique families in workspace mode" },
+    "C": { "name": "capability proposer + promoter", "status": "shipped", "files": ["src/training/capability_proposer/propose.ts", "scripts/promote-capability-proposal.mjs"] },
+    "D": { "name": "multi-provider LLM fallback", "status": "shipped", "file": "src/lib/llm.ts", "fallbackOrder": ["together", "anthropic", "tangle-router", "google-gemini", "openai", "groq"] }
   },
-  "generation2Results": {
-    "pursuit": "measurement-integrity",
-    "thesis": "scorecard as the governor's truth — every flow freshness-gated + test-pinned",
-    "changesShipped": 7,
-    "filesChanged": [
-      "scripts/audit-scaffold-quality.mjs",
-      "scripts/refresh-scorecard.mjs",
-      "tests/refresh-scorecard.test.ts",
-      ".github/workflows/scorecard-refresh.yml"
-    ],
-    "architecturalWins": [
-      "staleness gate emits stale: true when input mtime < buildouts.jsonl source mtime",
-      "inputs manifest lists every JSON read with ISO 8601 mtime",
-      "run-weighted median turns (85) alongside scenario-mean-weighted (101) — both visible",
-      "4 unit tests pin every flow's computation",
-      "nightly drift-detect PR workflow"
-    ],
-    "testSuite": "628/628 (+4 new tests)",
-    "diffAudit": "0 CRITs, 0 HIGHs across ~320 LoC",
-    "measurementRecovery": {
-      "scaffoldAuditPassRate": "0.851 → 0.873 (partial rerun — derivation fix proven on split-framework families)",
-      "scaffoldGapInstalls": "59 → 56 (freshness-gated via Change #5 regen)",
-      "sourceMtime": "2026-04-22T18:17:22Z",
-      "staleness": { "buildout": true, "gaps": false, "audit": false }
-    },
-    "residualFailuresForGen3": [
-      "bevy-web (cargo)",
-      "eleventy-static (pnpm)",
-      "expo-rn-rich (pnpm)",
-      "godot-web (pnpm)",
-      "hugo-static (pnpm)",
-      "move-package (aptos)",
-      "observable-notebook (pnpm)",
-      "phaser-game (pnpm)",
-      "pixijs-game (pnpm)"
-    ]
-  },
-  "round2Results": {
-    "hypothesis": "codemirror + 4 sub-packages installed 15× on agent-trading scenarios because CODE_EDITOR_ARCHETYPE_SIGNALS didn't cover builder/strategy/rules/dsl phrasings",
-    "intervention": [
-      "CODE_EDITOR_ARCHETYPE_SIGNALS: +10 terms",
-      "capability:code-editor.tieredKeywords.archetypes: mirror the 10 new terms"
-    ],
-    "verified": "planPrompt on 'hl-builder code dashboard for hyperliquid' attaches capability:code-editor"
-  },
-  "round1Results": {
-    "hypothesis": "capability:tailwind.packageDeps empty → agents add tailwindcss themselves 14×",
-    "intervention": [
-      "capability:tailwind.packageDeps: tailwindcss + @tailwindcss/vite",
-      "capability:tailwind.appliesTo: +6 frontend families",
-      "REACT_FAMILIES (signals.ts): +2 for new React families"
-    ]
-  },
-  "handoff": "Gen 2 measurement integrity shipped. Scorecard is now defensible. Next: (a) surgical fix on cross-chain-bridge capability (27% of corpus hits 165-turn cap — projected +11pp buildout_pass_rate); (b) Gen 3 pursuit on residual 9 non-derivation audit failures if time permits; (c) evolve round on scaffold_gap_installs 56→≤10 using freshly-regenerated capability-gaps."
+  "gen6NewFlows": [
+    "full_stack_proposal_rate (target 0.7)",
+    "capability_promotion_rate (target 0.4)",
+    "coverage_lift_per_promote (target 0.10)"
+  ],
+  "handoff": "Gen 6 flywheel shipped. Next: (a) let nightly accumulate promotes so LLM flows materialize; (b) once 20+ (prompt, outcome) pairs exist in generation-impact.jsonl, run AxGEPA on hintsAuthor signature (Gen 7 candidate); (c) Gen 7 moonshot: embedding-based semantic routing replaces token-overlap gap detection + descriptive family metadata."
 }

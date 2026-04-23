@@ -25,6 +25,10 @@ package-lock.json
 .evolve/generation-impact.jsonl
 .evolve/family-proposals/*/validation-errors.json
 .evolve/family-proposals/*/promoted.json
+.evolve/capability-proposals/*/validation-errors.json
+.evolve/capability-proposals/*/promoted.json
+.evolve/coverage-baseline.json
+.evolve/coverage-baseline-*.json
 .evolve/visual-audit-baseline.json
 
 # Keep as committed evidence:

@@ -121,9 +121,19 @@ function slotForFile(filePath: string, runtime: string): string {
   if (filePath === 'vite.config.ts') return 'Vite config with es2022 + dev port'
   if (filePath === 'index.html') return 'HTML shell loading /src/main.ts'
   if (filePath === 'src/main.ts' || filePath === 'src/index.ts') return `main entrypoint for the ${runtime} starter`
+  if (filePath === 'src/cli.ts') return 'commander-based CLI entrypoint with --help surface'
+  if (filePath === 'src/agent.ts') return 'agent loop entrypoint — tool registry + chat step function'
+  if (filePath === 'src/runner.ts') return 'batch runner that iterates scenarios/ + writes results'
+  if (filePath === 'scenarios/example.ts') return 'example scenario file the harness picks up'
+  if (filePath === 'judges/example.ts') return 'example rubric judge returning {score, rationale}'
   if (filePath === 'docker-compose.yml') return 'docker compose with the primary service + volume'
   if (filePath === 'requirements.txt') return 'Python deps pinned to current major versions'
   if (filePath === 'pyproject.toml') return 'Python package metadata + deps'
+  if (filePath === 'Cargo.toml') return 'Rust crate manifest with pinned deps + binary target'
+  if (filePath === 'src/main.rs') return 'Rust binary entrypoint — tokio::main + startup wiring'
+  if (filePath === 'src/lib.rs') return 'Rust library entrypoint — public module re-exports'
+  if (filePath === 'go.mod') return 'Go module declaration with Go version + deps'
+  if (filePath === 'main.go') return 'Go binary entrypoint with main() and top-level wiring'
   if (filePath.endsWith('.mjs')) return 'Node validator asserting key files + deps structure'
   if (filePath === 'README.md') return 'Quickstart + agent-facing extension guide'
   return `${filePath} — agent-extensible entry file`
@@ -133,28 +143,67 @@ function filesForTaxonomy(taxonomy: { language: string; runtime: string; surface
   const lang = taxonomy.language
   const runtime = taxonomy.runtime
   const surface = taxonomy.surface
-  // Minimal file sets per common (lang, runtime, surface). Agent still edits
-  // the bodies — we just give the scaffolding list.
-  if (lang === 'typescript' && runtime === 'node' && surface === 'frontend') {
-    return ['package.json', 'tsconfig.json', 'vite.config.ts', 'index.html', 'src/main.ts'].map((p) => ({
-      path: p,
-      role: slotForFile(p, runtime),
-    }))
+  const validator = `validate-${runtime}.mjs`
+  const toFiles = (paths: string[]) => paths.map((p) => ({ path: p, role: slotForFile(p, runtime) }))
+
+  // TypeScript / Node / Bun / Deno / CF-Worker permutations
+  if (lang === 'typescript' || lang === 'javascript') {
+    if (surface === 'frontend') {
+      return toFiles(['package.json', 'tsconfig.json', 'vite.config.ts', 'index.html', 'src/main.ts', 'README.md', validator])
+    }
+    if (surface === 'api' || surface === 'inference') {
+      return toFiles(['package.json', 'tsconfig.json', 'src/index.ts', 'README.md', validator])
+    }
+    if (surface === 'cli') {
+      return toFiles(['package.json', 'tsconfig.json', 'src/cli.ts', 'src/index.ts', 'README.md', validator])
+    }
+    if (surface === 'agent') {
+      return toFiles(['package.json', 'tsconfig.json', 'src/agent.ts', 'src/index.ts', 'README.md', validator])
+    }
+    if (surface === 'tooling') {
+      // Eval/test-harness-shaped project: scenarios + judges + runner + validator.
+      return toFiles(['package.json', 'tsconfig.json', 'src/runner.ts', 'scenarios/example.ts', 'judges/example.ts', 'README.md', validator])
+    }
+    // Unknown TS surface: still give a real scaffold, not a bare README.
+    return toFiles(['package.json', 'tsconfig.json', 'src/index.ts', 'README.md', validator])
   }
-  if (lang === 'typescript' && (surface === 'api' || surface === 'inference')) {
-    return ['package.json', 'tsconfig.json', 'src/index.ts', `validate-${taxonomy.runtime}.mjs`].map((p) => ({
-      path: p,
-      role: slotForFile(p, runtime),
-    }))
-  }
+
+  // Python permutations
   if (lang === 'python') {
-    return ['requirements.txt', 'src/main.py', '.env.example', `validate-${taxonomy.runtime}.mjs`].map((p) => ({
-      path: p,
-      role: slotForFile(p, runtime),
-    }))
+    if (surface === 'api') {
+      return toFiles(['pyproject.toml', 'requirements.txt', 'src/main.py', '.env.example', 'README.md', validator])
+    }
+    if (surface === 'cli') {
+      return toFiles(['pyproject.toml', 'requirements.txt', 'src/cli.py', 'README.md', validator])
+    }
+    if (surface === 'agent') {
+      return toFiles(['pyproject.toml', 'requirements.txt', 'src/agent.py', 'src/main.py', 'README.md', validator])
+    }
+    // Default python surface
+    return toFiles(['pyproject.toml', 'requirements.txt', 'src/main.py', '.env.example', 'README.md', validator])
   }
-  // Generic fallback: just a README + validator, agent fills the rest.
-  return [{ path: 'README.md', role: slotForFile('README.md', runtime) }]
+
+  // Rust permutations
+  if (lang === 'rust') {
+    if (surface === 'api') {
+      return toFiles(['Cargo.toml', 'src/main.rs', 'README.md', validator])
+    }
+    if (surface === 'cli') {
+      return toFiles(['Cargo.toml', 'src/main.rs', 'src/lib.rs', 'README.md', validator])
+    }
+    return toFiles(['Cargo.toml', 'src/main.rs', 'README.md', validator])
+  }
+
+  // Go permutations
+  if (lang === 'go') {
+    if (surface === 'cli') {
+      return toFiles(['go.mod', 'main.go', 'README.md', validator])
+    }
+    return toFiles(['go.mod', 'main.go', 'README.md', validator])
+  }
+
+  // Unknown language — at least give README + validator so the scaffold compiles.
+  return toFiles(['README.md', validator])
 }
 
 async function proposeViaLLM(input: ProposeFamilyInput, peers: PeerSummary[]): Promise<FamilyProposal | null> {

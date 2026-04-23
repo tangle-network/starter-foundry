@@ -1,8 +1,8 @@
 {
   "product": "starter-foundry",
-  "timestamp": "2026-04-23T08:57:25.749Z",
-  "coverage": "15/18 flows measured",
-  "aggregate": 0.461,
+  "timestamp": "2026-04-23T20:21:28.032Z",
+  "coverage": "17/22 flows measured",
+  "aggregate": 0.407,
   "inputs": [
     {
       "path": ".evolve/buildout-analysis.json",
@@ -163,6 +163,38 @@
       "status": "unmeasured",
       "productValueClaim": "Median hours from proposal draft creation → registry promotion. Baseline was unbounded (drafts sat as TODOs indefinitely). Target 24h via nightly cron.",
       "direction": "lower-better"
+    },
+    {
+      "name": "llm_proposal_success_rate",
+      "value": null,
+      "target": 0.8,
+      "status": "unmeasured",
+      "productValueClaim": "Fraction of proposal attempts that produced an LLM-mode draft (vs falling back to deterministic TODO skeleton). Low → router/provider is unreachable or rate-limiting; deterministic mode cannot produce promotable drafts, so this gates the funnel.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "full_stack_proposal_rate",
+      "value": null,
+      "target": 0.7,
+      "status": "unmeasured",
+      "productValueClaim": "Fraction of LLM-mode proposals whose templateFiles.length ≥ 3. Bare-README drafts pass the build gate trivially but scaffold nothing useful. This flow catches the \"too-minimal proposal\" regression — Gen 6 Track A (filesForTaxonomy expansion) exists to lift it.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "capability_promotion_rate",
+      "value": 0,
+      "target": 0.4,
+      "status": "fail",
+      "productValueClaim": "Fraction of capability promotion attempts that passed all gates. Capabilities have lower validation bar than families (slot into existing), so this rate should exceed proposal_promotion_rate — parallel high-volume registry expansion.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "coverage_lift_per_promote",
+      "value": 0,
+      "target": 0.1,
+      "status": "fail",
+      "productValueClaim": "Median liftRatio from coverage-measured events — fraction of previously-unrouted buildout scenarios that now route somewhere after a promote. If this is 0, promotes are not absorbing demand; the registry is expanding without product effect.",
+      "direction": "higher-better"
     },
     {
       "name": "agent_eval_build_pass_rate",

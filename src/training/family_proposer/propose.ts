@@ -14,6 +14,13 @@ import { readFileSync, existsSync, readdirSync, writeFileSync, mkdirSync, statSy
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { ax } from '@ax-llm/ax'
+import {
+  runProposeReview,
+  type ProposeFn,
+  type VerifyFn,
+  type ReviewFn,
+  type Verification,
+} from '@tangle-network/agent-eval'
 import { createLLM, isLLMAvailable } from '../../lib/llm.js'
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..')
@@ -344,5 +351,212 @@ export async function proposeFamily(input: ProposeFamilyInput): Promise<FamilyPr
     if (!existsSync(keep)) writeFileSync(keep, '')
   }
 
+  return proposal
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// RLM variant — wraps proposeViaLLM in agent-eval's runProposeReview so
+// each draft is verified + critiqued + refined before disk-write. The
+// verifier runs the same schema checks as the downstream promoter so a
+// draft that passes the RLM loop is already close to promotable. The
+// reviewer is a separate LLM call that reads the verification and
+// directs the next proposer shot — it cannot downgrade the verifier.
+//
+// Shape of state carried across shots: the manifest + framework manifest
+// + rendered file bodies. This is what gets serialized to disk at the
+// end, identical to the single-shot path.
+//
+// On shots 2+, the reviewer's nextShotInstruction rides along as an
+// additional productCue so the proposer sees it explicitly. The LLM
+// re-generates from scratch each shot — we are not patching a
+// partial draft, we are guiding a fresh attempt. This keeps the
+// state model simple + the verification signal clean.
+
+interface ProposalDraftState {
+  manifest: Record<string, unknown> | null
+  frameworkManifest: Record<string, unknown> | null
+  templateFiles: Array<{ path: string; body: string }>
+  reasoning: string
+}
+
+const proposalReviewer = ax(
+  '"Direct the next shot of a registry-family proposer. You do NOT grade — the verifier already flagged the failures. Read the draft summary + failures + prior shots, identify the root cause (missing tier1 keywords? weak description? TODO bodies? wrong taxonomy fields?), and emit a concrete, actionable instruction for the next shot. Do not restate the failures. Direct the worker to fix them in order of blast radius." goal:string, currentDraftSummary:string, verificationFailures:string[], priorShotsMemory:string -> observations:string, diagnosis:string, nextShotInstruction:string, shouldContinue:boolean, confidence:number',
+)
+
+function validateDraftForRLM(state: ProposalDraftState, id: string): string[] {
+  const errors: string[] = []
+  const m = state.manifest
+  if (!m) return ['manifest is null']
+  if (m['id'] !== id) errors.push(`manifest.id=${String(m['id'])} but expected ${id}`)
+  const desc = typeof m['description'] === 'string' ? m['description'] : ''
+  if (!desc || desc.length < 20) errors.push('description missing or <20 chars')
+  if (!m['taxonomy']) errors.push('missing taxonomy')
+  const serialized = JSON.stringify(m)
+  if (serialized.includes('TODO:') || serialized.includes('TODO ')) {
+    errors.push('TODO placeholders present — proposer emitted a skeleton')
+  }
+  const tier1 = (m['tieredKeywords'] as Record<string, unknown> | undefined)?.['tier1']
+  if (!Array.isArray(tier1) || tier1.length < 3) errors.push('tieredKeywords.tier1 must have ≥3 entries')
+  if (state.templateFiles.length === 0) errors.push('no template files generated — proposer produced no file bodies')
+  for (const f of state.templateFiles) {
+    if (typeof f.body !== 'string' || f.body.length < 20) {
+      errors.push(`file ${f.path} body <20 chars (stub)`)
+    }
+  }
+  const fm = state.frameworkManifest
+  if (fm) {
+    const applies = fm['appliesTo']
+    if (!Array.isArray(applies) || !applies.includes(id)) {
+      errors.push('frameworkManifest.appliesTo must include family id')
+    }
+  }
+  return errors
+}
+
+export interface ProposeWithRLMOptions {
+  maxShots?: number
+}
+
+export async function proposeFamilyWithRLM(
+  input: ProposeFamilyInput,
+  opts: ProposeWithRLMOptions = {},
+): Promise<FamilyProposal | null> {
+  if (!isLLMAvailable()) return null
+  const peers = loadPeerSummaries(input.taxonomy, 5)
+  const llm = createLLM()
+  const maxShots = opts.maxShots ?? 3
+
+  const propose: ProposeFn<ProposalDraftState> = async ({ priorReview }) => {
+    const cues = priorReview?.nextShotInstruction
+      ? [...(input.productCues ?? []), `REVIEWER DIRECTIVE (shot refinement): ${priorReview.nextShotInstruction}`]
+      : (input.productCues ?? [])
+    const p = await proposeViaLLM({ ...input, productCues: cues }, peers)
+    if (!p) {
+      // Proposer failed entirely — return empty state so the verifier flags it.
+      return { state: { manifest: null, frameworkManifest: null, templateFiles: [], reasoning: '(proposer returned null)' } }
+    }
+    return {
+      state: {
+        manifest: p.manifest as Record<string, unknown>,
+        frameworkManifest: p.frameworkManifest as Record<string, unknown>,
+        templateFiles: p.templateFiles,
+        reasoning: p.reasoning,
+      },
+    }
+  }
+
+  const verify: VerifyFn<ProposalDraftState> = async (state) => {
+    const errors = validateDraftForRLM(state, input.id)
+    const pass = errors.length === 0
+    const score = pass ? 1 : Math.max(0, 1 - errors.length / 10)
+    const result: Verification = { pass, score, failingLayers: errors.slice(0, 5), details: errors }
+    return result
+  }
+
+  const review: ReviewFn<ProposalDraftState> = async ({ state, verification, memory, shot, goal }) => {
+    const failures = (verification.details as string[] | undefined) ?? []
+    const priorMem = memory
+      .map((m) => `shot ${m.shot} conf=${m.confidence.toFixed(2)} instr="${m.nextShotInstruction.slice(0, 200)}"`)
+      .join('\n') || '(none)'
+    const tier1 = (state.manifest?.['tieredKeywords'] as Record<string, unknown> | undefined)?.['tier1']
+    const tier1Len = Array.isArray(tier1) ? tier1.length : 0
+    const desc = typeof state.manifest?.['description'] === 'string' ? (state.manifest['description'] as string) : ''
+    const summary = `id=${String(state.manifest?.['id'])} desc="${desc.slice(0, 120)}" files=${state.templateFiles.length} tier1=${tier1Len}`
+    const raw = (await proposalReviewer.forward(llm, {
+      goal,
+      currentDraftSummary: summary,
+      verificationFailures: failures,
+      priorShotsMemory: priorMem,
+    })) as {
+      observations?: string
+      diagnosis?: string
+      nextShotInstruction?: string
+      shouldContinue?: boolean
+      confidence?: number
+    }
+    // Coerce minimally — agent-eval's coerceReview will re-validate.
+    return {
+      observations: String(raw.observations ?? `shot ${shot} produced ${failures.length} verification failures`),
+      diagnosis: String(raw.diagnosis ?? 'reviewer returned no diagnosis'),
+      nextShotInstruction: String(raw.nextShotInstruction ?? 'fix the verification failures in priority order'),
+      shouldContinue: typeof raw.shouldContinue === 'boolean' ? raw.shouldContinue : shot < maxShots,
+      confidence: Number.isFinite(raw.confidence) ? Number(raw.confidence) : 0.5,
+    }
+  }
+
+  const initialState: ProposalDraftState = { manifest: null, frameworkManifest: null, templateFiles: [], reasoning: '' }
+  const report = await runProposeReview<ProposalDraftState>({
+    goal: `Generate a complete, promotable family registry entry for ${input.id}: ${input.description}`,
+    initialState,
+    propose,
+    verify,
+    review,
+    maxShots,
+    scenarioId: 'family-proposer',
+    projectId: input.id,
+  })
+
+  const final = report.finalState
+  if (!final.manifest) {
+    console.error(`[propose-rlm] ${input.id}: all ${report.shots.length} shots produced no manifest`)
+    return null
+  }
+
+  return {
+    id: input.id,
+    proposalDir: join(PROPOSALS_DIR, input.id),
+    manifest: final.manifest,
+    frameworkManifest: final.frameworkManifest,
+    templateFiles: final.templateFiles,
+    peerFamilies: peers.map((p) => p.id),
+    mode: 'llm',
+    reasoning: `RLM ${report.shots.length} shot(s), verification pass=${report.finalVerification.pass}, score=${report.score.toFixed(2)}. ${final.reasoning}`,
+  }
+}
+
+/**
+ * Same disk-write semantics as proposeFamily, but drives the RLM loop.
+ * Writes .meta.json with shot telemetry for debuggability.
+ */
+export async function proposeFamilyWithRLMToDisk(
+  input: ProposeFamilyInput,
+  opts: ProposeWithRLMOptions = {},
+): Promise<FamilyProposal> {
+  const rlmProposal = await proposeFamilyWithRLM(input, opts)
+  const peers = loadPeerSummaries(input.taxonomy, 5)
+  const proposal = rlmProposal ?? proposeDeterministic(input, peers)
+
+  mkdirSync(proposal.proposalDir, { recursive: true })
+  writeFileSync(join(proposal.proposalDir, 'manifest.json'), JSON.stringify(proposal.manifest, null, 2) + '\n')
+  writeFileSync(
+    join(proposal.proposalDir, 'framework.manifest.json'),
+    JSON.stringify(proposal.frameworkManifest, null, 2) + '\n',
+  )
+  writeFileSync(
+    join(proposal.proposalDir, '.meta.json'),
+    JSON.stringify(
+      {
+        id: proposal.id,
+        peerFamilies: proposal.peerFamilies,
+        mode: proposal.mode === 'llm' ? 'llm-rlm' : proposal.mode,
+        reasoning: proposal.reasoning,
+        generatedAt: new Date().toISOString(),
+      },
+      null,
+      2,
+    ) + '\n',
+  )
+  for (const f of proposal.templateFiles) {
+    const abs = join(proposal.proposalDir, 'files', f.path)
+    mkdirSync(dirname(abs), { recursive: true })
+    writeFileSync(abs, f.body)
+  }
+  const filesDir = join(proposal.proposalDir, 'files')
+  mkdirSync(filesDir, { recursive: true })
+  const stat = statSync(filesDir)
+  if (stat.isDirectory()) {
+    const keep = join(filesDir, '.gitkeep')
+    if (!existsSync(keep)) writeFileSync(keep, '')
+  }
   return proposal
 }

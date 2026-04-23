@@ -366,6 +366,10 @@ const flows = [
       .filter((h) => typeof h === 'number')
     firstShipHours.sort((a, b) => a - b)
     const medianFirstShip = firstShipHours.length > 0 ? firstShipHours[Math.floor(firstShipHours.length / 2)] : null
+    // Upstream funnel — proposer attempts and LLM-mode success rate.
+    const proposedAttempts = entries.filter((e) => e.event === 'proposed' || e.event === 'proposed-failed')
+    const proposedLLM = entries.filter((e) => e.event === 'proposed' && (e.mode === 'llm' || e.mode === 'llm-rlm'))
+    const llmProposalRate = proposedAttempts.length > 0 ? proposedLLM.length / proposedAttempts.length : null
     return [
       {
         name: 'proposal_promotion_rate',
@@ -380,6 +384,13 @@ const flows = [
         target: 24,
         productValueClaim: 'Median hours from proposal draft creation → registry promotion. Baseline was unbounded (drafts sat as TODOs indefinitely). Target 24h via nightly cron.',
         direction: 'lower-better',
+      },
+      {
+        name: 'llm_proposal_success_rate',
+        value: llmProposalRate !== null ? Number(llmProposalRate.toFixed(4)) : null,
+        target: 0.8,
+        productValueClaim: 'Fraction of proposal attempts that produced an LLM-mode draft (vs falling back to deterministic TODO skeleton). Low → router/provider is unreachable or rate-limiting; deterministic mode cannot produce promotable drafts, so this gates the funnel.',
+        direction: 'higher-better',
       },
     ]
   })(),

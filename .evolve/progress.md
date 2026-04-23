@@ -632,3 +632,39 @@ Governor should escalate to `/pursue` Gen 7 with the workspace-shaped proposer t
 - Escalate to /pursue Gen 7 for the architectural `coverage_lift_per_promote` gap
 
 The honest signal: evolve has largely extracted its reachable gains on Gen 6. One more flat round → formal plateau → /pursue trigger.
+
+## 2026-04-23 — /multi-pursue Round 4 (Gen 7 architectural ceiling broken)
+
+**Trigger:** 6 evolve rounds couldn't move `coverage_lift_per_promote` off 0. R6 handoff named it "architectural, not evolve-reachable." Operator dispatched /multi-pursue.
+
+**Protocol:** 2 parallel subagent proposers in git worktrees, targeting `src/lib/prompt-planner.ts` from distinct architectural angles.
+
+**Variant A — tier1-first override:**
+Mechanism: pre-workspace intercept scanning every family's tier1 keywords for >=2 token matches in the prompt; if any family wins, route as single-starter instead of workspace. Protocol-lane guard preserves multi-lane workspace dispatch.
+Score: **coverage_lift=0.0**, routing_stability perfect, 618/621 suite (1 pre-existing unrelated failure).
+Finding: **mechanism works on live prompts** (verified synthetically: KYC/fraud/polymarket prompts correctly route to new families) BUT **mechanically bounded** — 26 of 54 buildout scenarios have `initialPrompt: null`. Router cannot route text that doesn't exist. Upstream trace-capture bug. Variant A dominated on coverage_lift but delivered the dominant secondary finding.
+
+**Variant B — partner-first routing:**
+Mechanism: when the buildout trace carries explicit `partnerGuess`, scan families matching partner via id/tags/keywords/tier1; if score>=2 on allowed surface (frontend/api/agent-service/fullstack/blueprint), wrap partner-aligned family in single-project workspace. Falls through to existing router otherwise.
+Scores: **coverage_lift=0.308 PASS** (3x target 0.10), routing_stability perfect (0 flipped, 0 lost, 8 gained), **688/688 suite**.
+Narrowing: first-pass implementation used implicit `inferPartner(text)` which regressed 19 tests; narrowed to explicit `partner` only + score>=2 threshold + surface allowlist.
+Newly routed: 7× tangle-network scenarios (legal-research-agent, llm-lora-composer, tax-agent-console, gtm-agent-outbound, voice-realtime-studio, training-job-launcher, retrieval-tuning-cockpit) → `agent-service-py`; `deno-llm-proxy` → `deno-edge`.
+
+**Why Variant B beat Variant A:** partner metadata is a routing signal that exists even when `initialPrompt` is null. Variant B routed around the null-prompt issue Variant A was mechanically bounded by.
+
+**Merged:** `518bf50` (cherry-picked Variant B commit).
+
+**Metric moves:**
+| Flow | pre-R4 | post-R4 |
+|---|---|---|
+| `coverage_lift_per_promote` | **0 FAIL** | **0.3077 PASS** |
+| aggregate | 0.553 | **0.603** |
+
+**Full Gen 6 + Gen 7 arc:** 0.407 (baseline) → 0.603 (now). **+19.6pp cumulative** across 7 rounds (6 evolve + 1 multi-pursue).
+
+**5/6 flows now PASS:** full_stack_proposal_rate, llm_proposal_success_rate, proposed_family_first_ship_hours, capability_promotion_rate, coverage_lift_per_promote. Only `proposal_promotion_rate` (0.0435/0.3) remains — and that one dilutes naturally as nightly runs accumulate more promotes in the 30-day window.
+
+**Gen 8 seeds:**
+1. Trace-capture bug — 26/54 buildouts have `initialPrompt: null`. Upstream fix unlocks Variant A's mechanism + compounds with B.
+2. Workspace-composable proposer — generates multi-project specs for workspace-classified prompts (the durable architectural fix beyond narrow-case partner routing).
+3. AxGEPA on hintsAuthor.keywordsTier1 — accumulated outcomes now sufficient for training.

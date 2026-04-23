@@ -1,31 +1,47 @@
 {
-  "mode": "evolve",
-  "goal": "closed-loop generation flywheel — capability pipeline now has nightly autonomy parallel to family pipeline",
-  "status": "evolve-round-6-shipped-infrastructure-autonomy",
-  "round": 6,
-  "generation": 6,
+  "mode": "multi-pursue",
+  "goal": "Gen 7 architectural ceiling — move coverage_lift_per_promote via router rebalance. CONVERGED R4.",
+  "status": "multi-pursue-round-4-converged-merged",
+  "round": 4,
+  "generation": 7,
   "activePursuit": null,
-  "lastPursuit": ".evolve/pursuits/2026-04-23-generation-flywheel.md",
-  "updatedAt": "2026-04-23T23:15:00Z",
-  "plateauClock": "1 of 2 (R6 flat — but intentional; shipped persistent infrastructure, not metric-moving outcomes)",
+  "lastPursuit": ".evolve/multi-pursue/round4-config.json",
+  "updatedAt": "2026-04-23T23:55:00Z",
   "priorGenerations": [
     { "n": 3, "pursuit": "measurement-freshness", "commit": "9b5aafd" },
     { "n": 5, "pursuit": "closed-loop-generation", "commits": ["52afc18", "ce931c6"] },
-    { "n": 6, "pursuit": "generation-flywheel", "commits": ["17347c1", "ceee7ee", "e2a1908", "dcf9bfc", "3c265e9", "78110b2"] }
+    { "n": 6, "pursuit": "generation-flywheel", "commits": ["17347c1", "ceee7ee", "e2a1908", "dcf9bfc", "3c265e9", "78110b2", "fe9cefd"] },
+    { "n": 7, "pursuit": "multi-pursue-r4-partner-first-router", "commit": "518bf50" }
   ],
-  "gen6EvolveRounds": {
-    "r1": "fallback-default + filesForTaxonomy: +8.8pp",
-    "r2": "fidelity gate + 5 plumbing + first shippable: +3.5pp",
-    "r3": "refinementHints + prescriptive slots + structural checks: flat",
-    "r4": "judge rubric calibration — 2 auto-promotes: +0.3pp",
-    "r5": "capability proposer — first measurable capability_promotion_rate: +2.3pp",
-    "r6": "capability gap-detector + driver + nightly cron wiring + 5 contract tests: flat (intentional — infrastructure only)"
+  "gen7Result": {
+    "thesis": "Coverage_lift_per_promote (single-family promotes not absorbing workspace-classified demand) is architectural — needs router-side restructuring, not more evolve tuning.",
+    "variants_dispatched": 2,
+    "variants_worktree_isolation": true,
+    "winner": "variant-B-partner-first",
+    "mechanism": "When buildout trace carries explicit partnerGuess, scan families matching partner via id/tags/keywords/tier1; if score>=2 on allowed surface, wrap partner-aligned family in single-project workspace. Falls through to existing router otherwise.",
+    "coverage_lift_move": "0 → 0.308 (3x target 0.10)",
+    "routing_stability": "perfect: 0 flipped, 0 lost, 8 gained",
+    "testSuite": "688/688",
+    "secondaryFinding": "Variant A (tier1-first override) exposed a root cause: 26 of 54 buildout scenarios have initialPrompt:null — the router can't route text that doesn't exist. Trace-capture bug escalated as Gen 8 seed. Variant A's mechanism works on live prompts (verified synthetically on KYC/fraud/polymarket) but is bounded by dataset shape."
   },
-  "cumulativeGen6Delta": "+14.6pp (0.407 → 0.553) over 6 evolve rounds",
-  "nightlyAutonomy": {
-    "families": "detect-family-gaps → propose-family-candidates → promote-family-proposal with fidelity gate",
-    "capabilities": "detect-capability-gaps → propose-capability-candidates → promote-capability-proposal (schema+compose+build)",
-    "expectedNightlyMoves": "0-3 new auto-promotes/night; over 30 days: 10-30 new registry entries"
+  "scorecardFlows": {
+    "pass": [
+      "full_stack_proposal_rate (1.00)",
+      "llm_proposal_success_rate (1.00)",
+      "proposed_family_first_ship_hours (0.1h)",
+      "capability_promotion_rate (0.6667)",
+      "coverage_lift_per_promote (0.3077) — Gen 7 unlock"
+    ],
+    "fail": [
+      "proposal_promotion_rate (0.0435/0.3) — 30-day denominator pollution, dilutes naturally as nightly runs"
+    ]
   },
-  "handoff": "R7 candidates: (a) wait for nightly to populate outcomes + measure real autonomous rate; (b) tackle proposal_promotion_rate denominator pollution via rolling-window tuning; (c) ESCALATE to /pursue Gen 7 for coverage_lift_per_promote architectural gap (workspace-shaped proposer). Recommend (a): one-day-pause evolve to let nightly deliver organic data, THEN governor re-picks. If operator wants immediate motion, (c) is the only remaining structurally-reachable gain."
+  "aggregateTrajectory": "0.407 (baseline) → 0.495 (R1) → 0.530 (R2) → 0.527 (R3) → 0.530 (R4) → 0.553 (R5) → 0.553 (R6) → 0.603 (Gen 7 R4)",
+  "cumulativeDelta": "+19.6pp over the full Gen 6 + Gen 7 arc (0.407 → 0.603)",
+  "gen8Seeds": [
+    "Trace-capture bug: 26/54 buildouts have initialPrompt:null. Upstream fix unlocks Variant A's mechanism + compounds with B.",
+    "Workspace-composable proposer: generates multi-project specs for workspace-classified demand — the durable architectural fix beyond narrow-case partner routing.",
+    "AxGEPA on hintsAuthor.keywordsTier1: accumulated proposer outcomes now sufficient for training."
+  ],
+  "handoff": "5/6 Gen 6 + Gen 7 flows pass. proposal_promotion_rate alone remains — but that one dilutes naturally as nightly runs accumulate. Next /governor pick should be /evolve (one round to validate nightly delivers autonomous lift) OR /pursue Gen 8 trace-capture if operator wants immediate motion. Multi-pursue has converged on this target."
 }

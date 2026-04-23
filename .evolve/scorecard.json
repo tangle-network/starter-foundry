@@ -1,8 +1,8 @@
 {
   "product": "starter-foundry",
-  "timestamp": "2026-04-23T07:24:05.189Z",
+  "timestamp": "2026-04-23T07:49:26.960Z",
   "coverage": "14/16 flows measured",
-  "aggregate": 0.483,
+  "aggregate": 0.473,
   "inputs": [
     {
       "path": ".evolve/buildout-analysis.json",
@@ -22,7 +22,7 @@
     },
     {
       "path": ".evolve/agent-eval/2026-04-23/three-layer-report.json",
-      "mtime": "2026-04-23T07:23:11.834Z"
+      "mtime": "2026-04-23T07:48:52.489Z"
     }
   ],
   "sourceMtime": "2026-04-23T03:57:26.504Z",
@@ -150,7 +150,7 @@
     },
     {
       "name": "agent_eval_build_pass_rate",
-      "value": 0.8,
+      "value": 0.6796,
       "target": 0.95,
       "status": "fail",
       "productValueClaim": "Fraction of composed scaffolds that pass install+build locally (mean build_score from agent-eval scaffold run). Regresses when a capability manifest changes break compose or a family's build recipe stops working — fast local signal, no VB sweep needed.",

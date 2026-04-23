@@ -1,23 +1,1043 @@
 {
   "summary": {
-    "timestamp": "2026-04-23T07:23:11.833Z",
-    "seedsEvaluated": 5,
-    "seedsTotal": 5,
+    "timestamp": "2026-04-23T07:48:52.485Z",
+    "seedsEvaluated": 103,
+    "seedsTotal": 103,
     "byKind": {
       "full": 0,
-      "scaffold-only": 5
+      "scaffold-only": 103
     },
     "complete": 0,
-    "meanBuildScore": 0.8,
+    "meanBuildScore": 0.6796116504854369,
     "meanMetaScore": null
   },
   "projects": [
     {
+      "projectId": "scaffold:agent-service-py",
+      "kind": "scaffold-only",
+      "builderRunId": "841c9eb8-8568-4db7-8f75-7a39aba5d784",
+      "metaScore": null,
+      "buildRunId": "ef22c4b1-ff1d-4bc9-b58f-e2c90d791f88",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:agent-service-rust",
+      "kind": "scaffold-only",
+      "builderRunId": "5d0aacd4-9c08-4fe7-a8af-86744e1c2794",
+      "metaScore": null,
+      "buildRunId": "2e9cfff2-e89e-4895-9acc-847c90197466",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:agent-service-ts",
+      "kind": "scaffold-only",
+      "builderRunId": "ce5dec6e-87a4-4892-b0cf-223aaaa8c7bd",
+      "metaScore": null,
+      "buildRunId": "026b5876-b0ba-4113-b72d-42091f6835dd",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:agent-swarm-ts",
+      "kind": "scaffold-only",
+      "builderRunId": "0c06f70d-d709-4ee2-9a1d-072c3b368882",
+      "metaScore": null,
+      "buildRunId": "0786a2cd-5831-4f5f-9e3d-95ca51590a5d",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:angular-ts",
+      "kind": "scaffold-only",
+      "builderRunId": "ca1fa5c4-9f86-4b12-9ea0-388d8e60e91f",
+      "metaScore": null,
+      "buildRunId": "0a01f7a8-786d-478a-917d-a89de0fcef37",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:api-service",
+      "kind": "scaffold-only",
+      "builderRunId": "681e3999-48df-4e2c-add9-859281978808",
+      "metaScore": null,
+      "buildRunId": "68701dd7-4458-4821-80d6-0ac0e9ed51aa",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:browser-extension-ts",
+      "kind": "scaffold-only",
+      "builderRunId": "2b8e4761-e673-4be6-b8e4-5141b9ec0944",
+      "metaScore": null,
+      "buildRunId": "b4ae300c-ab8e-4461-a68c-2b5e66ceba85",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:bun-http",
+      "kind": "scaffold-only",
+      "builderRunId": "2a41c178-6f56-4792-80d9-904e258a3248",
+      "metaScore": null,
+      "buildRunId": "9808025f-07ed-4058-abd6-7cf8b2e53c43",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:cli-ts",
+      "kind": "scaffold-only",
+      "builderRunId": "522e85ed-8a1b-4332-9405-d4a73056ddde",
+      "metaScore": null,
+      "buildRunId": "96be8ddd-6051-480d-97ff-d79320c5e579",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:cloudflare-worker-ts",
+      "kind": "scaffold-only",
+      "builderRunId": "1a7b0ea4-8093-4061-8f4f-3900b4a3b37f",
+      "metaScore": null,
+      "buildRunId": "f2c4907c-7276-493b-bf53-b6d48d97e99b",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:deno-edge",
+      "kind": "scaffold-only",
+      "builderRunId": "de5f3ce4-a4a0-4da3-b48f-f4d3c5d7999d",
+      "metaScore": null,
+      "buildRunId": "f71883c2-058e-4b53-8c7a-c09f0871912c",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:dspy-pipeline-py",
+      "kind": "scaffold-only",
+      "builderRunId": "66de622a-462a-4268-aece-5913fce16e81",
+      "metaScore": null,
+      "buildRunId": "0b76723e-e306-42aa-8912-c199f1e08013",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:eigenlayer-avs",
+      "kind": "scaffold-only",
+      "builderRunId": "33a6e645-fe9f-4caf-8837-66c7c78d9182",
+      "metaScore": null,
+      "buildRunId": "afb727a0-364c-44c7-b6ac-994f31abe70e",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:electron-desktop-ts",
+      "kind": "scaffold-only",
+      "builderRunId": "d50e4ebe-81de-4e04-87b8-94e258bf61ce",
+      "metaScore": null,
+      "buildRunId": "035b6370-0fa5-4020-adba-6e9778a72b1b",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:evm-infra-ts",
+      "kind": "scaffold-only",
+      "builderRunId": "0631f271-06e8-4fa7-b37f-b974260f152b",
+      "metaScore": null,
+      "buildRunId": "954c4018-5490-43aa-9ac0-a4450656a32a",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:expo-react-native-ts",
+      "kind": "scaffold-only",
+      "builderRunId": "07916fa7-d422-47ed-870c-b2bb6affb535",
+      "metaScore": null,
+      "buildRunId": "b04f70b9-3844-4b37-8260-a644098fcff7",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:fhenix-contracts",
+      "kind": "scaffold-only",
+      "builderRunId": "8b7bc58d-d638-4bd4-8ace-61b0fe839227",
+      "metaScore": null,
+      "buildRunId": "50f4a473-bb25-4015-9c02-21edbb3e4dc4",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:fhevm-contracts",
+      "kind": "scaffold-only",
+      "builderRunId": "752ad1ea-a155-44cf-bd9a-fdf334123d17",
+      "metaScore": null,
+      "buildRunId": "ed7ad30d-3d9e-4e51-85ea-968a47bc3182",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:forge-contracts",
+      "kind": "scaffold-only",
+      "builderRunId": "ead0ff7b-4bba-472f-937f-f0283705d05b",
+      "metaScore": null,
+      "buildRunId": "eba46828-535a-4db8-853e-86fd2071e829",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:frontend-static",
+      "kind": "scaffold-only",
+      "builderRunId": "35e9bb5a-a8a0-4b72-b2ec-b9795e2f6959",
+      "metaScore": null,
+      "buildRunId": "0bc31887-1a28-495c-9909-4c19958e4464",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:fullstack-ts",
+      "kind": "scaffold-only",
+      "builderRunId": "40030cb6-90c1-442a-9ad5-63076bb09d77",
+      "metaScore": null,
+      "buildRunId": "294fb63f-79ac-4322-9472-6d72cc5cdd99",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:go-api",
+      "kind": "scaffold-only",
+      "builderRunId": "44b87be4-a84f-4b38-ae68-c45fa0160ed7",
+      "metaScore": null,
+      "buildRunId": "ca313f30-ad5c-43d3-a695-0d1d7077d530",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:go-worker",
+      "kind": "scaffold-only",
+      "builderRunId": "2ac60d67-bcb2-40dd-a27e-ed8eb9e9a5be",
+      "metaScore": null,
+      "buildRunId": "6c6b57b7-7150-4ef3-932d-4c727c4bd864",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:hardhat-contracts",
+      "kind": "scaffold-only",
+      "builderRunId": "ae56820d-8162-4252-a2b3-3a5af161efbc",
+      "metaScore": null,
+      "buildRunId": "42c1a9c2-c2f2-4edd-93eb-836f9e922be2",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:mcp-server-ts",
+      "kind": "scaffold-only",
+      "builderRunId": "e1ca4294-1a54-4bad-960c-1c5bf13bf083",
+      "metaScore": null,
+      "buildRunId": "6b1059a4-4810-4b3b-b801-56b65b0798a1",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:move-contracts",
+      "kind": "scaffold-only",
+      "builderRunId": "0671d3b5-ac69-4716-bb75-cd9ae5519868",
+      "metaScore": null,
+      "buildRunId": "d9c73e16-afe2-444d-acc6-b99f89aa7bef",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:nextjs-ts",
+      "kind": "scaffold-only",
+      "builderRunId": "528bdf06-8676-42f7-aaea-dbe94ba95f92",
+      "metaScore": null,
+      "buildRunId": "1aadb95f-3a57-456c-9f35-fb514f714db0",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:playwright-worker",
+      "kind": "scaffold-only",
+      "builderRunId": "0be95dcd-368c-4568-91d5-ae8aecebc606",
+      "metaScore": null,
+      "buildRunId": "141ee48d-da58-43df-8f37-a896af90a9f8",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:python-api",
+      "kind": "scaffold-only",
+      "builderRunId": "ea1225c5-8eb3-4a45-8ced-432979b8ad6d",
+      "metaScore": null,
+      "buildRunId": "a28c3b5e-35c3-4399-b5e5-1e1411410b41",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:python-data-app",
+      "kind": "scaffold-only",
+      "builderRunId": "0ee53a4d-d145-4053-aab6-7453b7813542",
+      "metaScore": null,
+      "buildRunId": "601b1fbb-621f-4562-a11c-f65ff2efc7b5",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:python-worker",
+      "kind": "scaffold-only",
+      "builderRunId": "c22857b6-9b66-4f30-87fc-864215663aa1",
+      "metaScore": null,
+      "buildRunId": "bdd2ce3e-565a-4d28-a55d-1e860122daf9",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:react-vite-ts",
+      "kind": "scaffold-only",
+      "builderRunId": "14d2b0f0-f904-4e54-b244-7c63d6012223",
+      "metaScore": null,
+      "buildRunId": "728ae7a1-49ea-4f42-ab2e-162cd71321e7",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:remix-ts",
+      "kind": "scaffold-only",
+      "builderRunId": "ddd071c3-c89a-4dd3-b8a5-bda9ccc59429",
+      "metaScore": null,
+      "buildRunId": "dc1265ff-5b7d-4c44-ac79-e8bfff1de2d8",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:rust-service",
+      "kind": "scaffold-only",
+      "builderRunId": "a5e78668-f69e-45f6-906c-a6088845b172",
+      "metaScore": null,
+      "buildRunId": "6b1c9ab2-1a4f-4ee5-bff7-6d630c126082",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:solana-program",
+      "kind": "scaffold-only",
+      "builderRunId": "be829840-48c6-4166-b7f1-0d4d1c196751",
+      "metaScore": null,
+      "buildRunId": "0a72ec97-9510-4cb7-b37b-07e97edfa475",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:stylus-contracts",
+      "kind": "scaffold-only",
+      "builderRunId": "2deceef4-4a0a-4b5a-a663-5801a7004d2b",
+      "metaScore": null,
+      "buildRunId": "79658e12-8de3-4a18-b7a5-1a716e9007c0",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:sveltekit-ts",
+      "kind": "scaffold-only",
+      "builderRunId": "001999cf-106a-4585-8157-e0fd45817fa4",
+      "metaScore": null,
+      "buildRunId": "aead8f19-6fd9-4f8c-aa60-3068b37f1db8",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:tangle-blueprint",
+      "kind": "scaffold-only",
+      "builderRunId": "ae8ba7ea-45c3-45f4-ad51-77da699ab6fa",
+      "metaScore": null,
+      "buildRunId": "950c7a91-95e4-4864-9213-fba0a54cccb7",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:tauri-desktop",
+      "kind": "scaffold-only",
+      "builderRunId": "6dbb1e15-1df3-4409-b976-5179ff627809",
+      "metaScore": null,
+      "buildRunId": "7ccdddd7-d96b-4db1-bcd9-727697a87bae",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:vllm-server",
+      "kind": "scaffold-only",
+      "builderRunId": "e8067926-95de-4da4-a9aa-33a391b284da",
+      "metaScore": null,
+      "buildRunId": "27ac7348-f447-4386-8da7-fc14c66712c8",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
       "projectId": "scaffold:vue-ts",
       "kind": "scaffold-only",
-      "builderRunId": "62671c85-a574-429c-ba50-d431803ec180",
+      "builderRunId": "85871d85-d054-4deb-8fbf-49297243b999",
       "metaScore": null,
-      "buildRunId": "7aa512fc-3a2d-470e-ae10-a03fee1aa3c0",
+      "buildRunId": "771fd2ca-02b3-4286-b602-777d8d306149",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:wasm-rust",
+      "kind": "scaffold-only",
+      "builderRunId": "8ad4515f-3a7b-43c8-8199-09fe52f5edb1",
+      "metaScore": null,
+      "buildRunId": "5913de88-ff18-4099-9409-8485fa614cb1",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:worker-job",
+      "kind": "scaffold-only",
+      "builderRunId": "11cf42fa-3bb9-4357-ad93-98921b42ca3c",
+      "metaScore": null,
+      "buildRunId": "86ab91e4-b20b-4d33-bb60-87a41b80588f",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:x402-service",
+      "kind": "scaffold-only",
+      "builderRunId": "188582bb-3592-4140-a115-511e4e2ca5c6",
+      "metaScore": null,
+      "buildRunId": "6c84567a-c282-422c-9513-3ffd4af530e4",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:zk-prover-service",
+      "kind": "scaffold-only",
+      "builderRunId": "b38262a2-f71b-448f-8595-d00dd152e2a2",
+      "metaScore": null,
+      "buildRunId": "c4115cd5-bb07-4aad-8b7e-eaa172023efd",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:astro-static",
+      "kind": "scaffold-only",
+      "builderRunId": "48a7980a-56ea-42d0-aae6-2893d96aaaed",
+      "metaScore": null,
+      "buildRunId": "024c038e-0cc2-4895-ae92-ac54bbc531ea",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:threejs-game",
+      "kind": "scaffold-only",
+      "builderRunId": "e57ef50b-e3c0-4f0f-8073-b5daf598d6c3",
+      "metaScore": null,
+      "buildRunId": "380d7c25-736e-4aa1-b4a1-57761f5e6b2c",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:phaser-game",
+      "kind": "scaffold-only",
+      "builderRunId": "50a7d0d5-6b57-42ba-acd7-db9e2e4f7208",
+      "metaScore": null,
+      "buildRunId": "a699c997-3887-463d-82de-c79b00cec48a",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:pixijs-game",
+      "kind": "scaffold-only",
+      "builderRunId": "3f787763-d645-45be-bf98-5f50adf995a0",
+      "metaScore": null,
+      "buildRunId": "dc274c71-3335-43fb-8e6a-7db9be2fcca2",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:ollama-server",
+      "kind": "scaffold-only",
+      "builderRunId": "94e01871-0eea-4014-b388-48ba5ca17d77",
+      "metaScore": null,
+      "buildRunId": "3202a83b-61d3-41f4-a2f8-e4fe267ace36",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:aptos-move",
+      "kind": "scaffold-only",
+      "builderRunId": "ff3824e2-b37b-4df3-87b9-4a488815c2c1",
+      "metaScore": null,
+      "buildRunId": "4ceaa4f9-28f0-487d-9935-8e3bf4b92cf0",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:bevy-web",
+      "kind": "scaffold-only",
+      "builderRunId": "bde7b19e-51e2-44af-a55d-3aa5fb00730c",
+      "metaScore": null,
+      "buildRunId": "caee369e-1777-4ff1-aeb2-1721e270c2db",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:celestia-da",
+      "kind": "scaffold-only",
+      "builderRunId": "9577eef0-4605-44ee-9725-2ae7759ff2d7",
+      "metaScore": null,
+      "buildRunId": "10d3c7a3-f193-4352-b0b9-6bab912b1424",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:electron-native-os",
+      "kind": "scaffold-only",
+      "builderRunId": "f9b0f55b-4b71-46be-9c6b-1cc00bdf1301",
+      "metaScore": null,
+      "buildRunId": "0de8c8dd-66d6-4446-b228-5f656bbbaa6b",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:eleventy-static",
+      "kind": "scaffold-only",
+      "builderRunId": "ca7f68b9-7688-4c63-9325-8c3e82b67b12",
+      "metaScore": null,
+      "buildRunId": "8dd95c15-7814-4d09-9c63-9583a3a321c0",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:expo-rn-rich",
+      "kind": "scaffold-only",
+      "builderRunId": "94b19885-ceb8-4e62-94b3-e99a3b760d7d",
+      "metaScore": null,
+      "buildRunId": "8595af7b-7a53-4bf4-a25d-02bea41200f5",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:fintech-ledger-backend",
+      "kind": "scaffold-only",
+      "builderRunId": "4a00b888-0911-4edc-b04d-e302b6cf294c",
+      "metaScore": null,
+      "buildRunId": "daf88e94-d073-4ecd-ba47-1a0f1e4fc39b",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:godot-web",
+      "kind": "scaffold-only",
+      "builderRunId": "79e8b2af-597a-420d-9ce9-1cf7808f06b8",
+      "metaScore": null,
+      "buildRunId": "87a4c2e6-61ec-4fc4-b5a6-78e3bad0f987",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:healthcare-hipaa-backend",
+      "kind": "scaffold-only",
+      "builderRunId": "98079dd1-3e28-4399-8582-49007988ecb9",
+      "metaScore": null,
+      "buildRunId": "c5505c5b-61d1-44a5-8b43-f8ba7ddc2951",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:hls-origin",
+      "kind": "scaffold-only",
+      "builderRunId": "2cb03bf3-d144-4d38-88c0-c3f2225c07b3",
+      "metaScore": null,
+      "buildRunId": "248a5c0b-f51d-473b-88c6-90bd946664f8",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:hugo-static",
+      "kind": "scaffold-only",
+      "builderRunId": "ab260689-44ac-40c5-9430-a10e1ef6f371",
+      "metaScore": null,
+      "buildRunId": "ac322129-2c7c-49ff-b3dc-7fdc44496856",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:jupyter-book",
+      "kind": "scaffold-only",
+      "builderRunId": "6f0ef333-acb5-48b1-bcef-ed62680229ce",
+      "metaScore": null,
+      "buildRunId": "81650545-6cb4-4098-80b6-b19af1c09231",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:legal-case-mgmt",
+      "kind": "scaffold-only",
+      "builderRunId": "3c4955a8-93e9-4a9d-b5a6-53c56ce5b1dd",
+      "metaScore": null,
+      "buildRunId": "9b1e7de1-7590-4687-8392-bfd021dd75f5",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:livekit-sfu",
+      "kind": "scaffold-only",
+      "builderRunId": "aa602930-3c2a-4a9d-bced-e7c62e3329eb",
+      "metaScore": null,
+      "buildRunId": "105e9f6c-f620-4587-a9a5-d25568e3eef4",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:lora-training",
+      "kind": "scaffold-only",
+      "builderRunId": "4012cbf9-d2e9-4d71-b6a7-c62e51261007",
+      "metaScore": null,
+      "buildRunId": "ba2c7b4e-97b8-47e4-840f-30b25835571b",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:multimodal-agent",
+      "kind": "scaffold-only",
+      "builderRunId": "5dec0b40-ea57-4149-98e1-ec7ded63d664",
+      "metaScore": null,
+      "buildRunId": "2dfcf79d-a994-4804-a764-323458ea5384",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:observable-notebook",
+      "kind": "scaffold-only",
+      "builderRunId": "c67ab59f-5954-4956-8277-55e019cc2cc2",
+      "metaScore": null,
+      "buildRunId": "655c65bd-16d1-42a1-9b4c-f3614a870a87",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:rag-pipeline-py",
+      "kind": "scaffold-only",
+      "builderRunId": "63db5186-8c92-44f1-98b2-860fe69550a9",
+      "metaScore": null,
+      "buildRunId": "ff3a0e79-efe3-4e80-b480-2f7e17bdc179",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:realtime-audio-ts",
+      "kind": "scaffold-only",
+      "builderRunId": "9a220133-50e8-43cc-aa55-ea1f88406efa",
+      "metaScore": null,
+      "buildRunId": "698011c9-19c1-41cd-aac7-9a59fda57ae0",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:sglang-server",
+      "kind": "scaffold-only",
+      "builderRunId": "23caf11c-a2d7-4519-b7fa-6ddea8407bbf",
+      "metaScore": null,
+      "buildRunId": "c84cd815-d559-4974-89bc-0d0257e33ca1",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:skypilot-serving",
+      "kind": "scaffold-only",
+      "builderRunId": "b78a7714-fd1e-4db8-a9ea-a3b497938d54",
+      "metaScore": null,
+      "buildRunId": "54899a0d-3496-4939-a6fb-af3a5e5652de",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:streamlit-advanced",
+      "kind": "scaffold-only",
+      "builderRunId": "c00ff923-a12e-4d43-9db5-19da5a51de00",
+      "metaScore": null,
+      "buildRunId": "91320045-e01a-4303-a89e-63d064a3ff82",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:tauri-menubar",
+      "kind": "scaffold-only",
+      "builderRunId": "8f2cf05f-8032-42f1-95f5-b54a5b4b0ea0",
+      "metaScore": null,
+      "buildRunId": "5f11ba39-e9db-4b04-ae72-2300d17a7f6f",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:tauri-tray",
+      "kind": "scaffold-only",
+      "builderRunId": "08577774-7ed6-4f23-917a-e874a98d29a8",
+      "metaScore": null,
+      "buildRunId": "8c035ca7-a3ab-436a-afd9-0b9e6212bd25",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:tgi-server",
+      "kind": "scaffold-only",
+      "builderRunId": "3bbc7e39-4fb4-42e8-ae2c-8476744a466a",
+      "metaScore": null,
+      "buildRunId": "f54832b9-b194-4117-89ff-123b7d542b6d",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:triton-server",
+      "kind": "scaffold-only",
+      "builderRunId": "7c0d1080-fb98-470e-af8e-b814fd996cc8",
+      "metaScore": null,
+      "buildRunId": "145c1202-be00-4659-a70e-18b7eb2e753e",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:unity-web-proxy",
+      "kind": "scaffold-only",
+      "builderRunId": "d8710342-de79-4009-80a7-16414569b550",
+      "metaScore": null,
+      "buildRunId": "03e692db-3c12-49b3-816b-4be474b78621",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:vision-first-agent",
+      "kind": "scaffold-only",
+      "builderRunId": "6db8c0ef-a9f9-444e-b904-e4759e410686",
+      "metaScore": null,
+      "buildRunId": "a64cdd1f-0f9a-4525-9d61-43c018726b00",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:voice-first-agent",
+      "kind": "scaffold-only",
+      "builderRunId": "0b8cc39e-c738-4da5-ad3a-d1b67ef78f95",
+      "metaScore": null,
+      "buildRunId": "d253b8c2-3bbb-427c-9c58-d4c2857b2368",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:webgpu-inference",
+      "kind": "scaffold-only",
+      "builderRunId": "24151974-4299-4edf-bb81-0f2c2b3a90f0",
+      "metaScore": null,
+      "buildRunId": "897492aa-5ba7-4fcd-a798-4f83e560d534",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:webgpu-render",
+      "kind": "scaffold-only",
+      "builderRunId": "da4cd262-4bbb-427f-b6e1-e117589ad6b1",
+      "metaScore": null,
+      "buildRunId": "9c53b9f7-e4a9-4fee-8876-b8d9eed6b6b6",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:zola-static",
+      "kind": "scaffold-only",
+      "builderRunId": "26dc744e-33c2-400f-b9ba-85309f95e33e",
+      "metaScore": null,
+      "buildRunId": "35224926-5bbc-450e-85af-250239a0efa6",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:crm-backend",
+      "kind": "scaffold-only",
+      "builderRunId": "d7d2db98-30d5-47bd-8685-c4b3792e3ef5",
+      "metaScore": null,
+      "buildRunId": "8e5278d7-8475-4743-a24c-a048a80b3076",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:ecommerce-headless",
+      "kind": "scaffold-only",
+      "builderRunId": "2b88527b-2d05-41e3-ace4-cd4c1bfad463",
+      "metaScore": null,
+      "buildRunId": "342b8e89-b954-4229-afd7-e13de8c8f2a0",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:k12-edtech",
+      "kind": "scaffold-only",
+      "builderRunId": "c3488391-a637-4526-9b5b-3115b8a35f19",
+      "metaScore": null,
+      "buildRunId": "3f57409d-904c-44a8-b896-5a8201e32d14",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:flutter-app",
+      "kind": "scaffold-only",
+      "builderRunId": "f5cd90a6-f9fb-4285-a1f4-add8c820464b",
+      "metaScore": null,
+      "buildRunId": "a828599e-038e-4779-8066-a01ee1d88301",
       "buildScore": 1,
       "appRuntimeRunIds": [],
       "runtimeScore": null,
@@ -27,9 +1047,9 @@
     {
       "projectId": "scaffold:kotlin-multiplatform",
       "kind": "scaffold-only",
-      "builderRunId": "b89b2d82-24f4-43fa-8a54-15a113d8dd67",
+      "builderRunId": "f143d4f1-f493-4ef2-be39-c8dd9417108e",
       "metaScore": null,
-      "buildRunId": "5e1cd4f1-cdf6-4c9d-bf26-2bd3d9196ed9",
+      "buildRunId": "47606e61-34cf-4794-8543-724fad9b7e38",
       "buildScore": 1,
       "appRuntimeRunIds": [],
       "runtimeScore": null,
@@ -37,11 +1057,11 @@
       "complete": false
     },
     {
-      "projectId": "scaffold:solana-program",
+      "projectId": "scaffold:esp32-rust",
       "kind": "scaffold-only",
-      "builderRunId": "45cd5c6d-5719-4c53-b4a4-e840d8f4900e",
+      "builderRunId": "47fe688d-26fb-4cd2-bb5d-d1454b8164a7",
       "metaScore": null,
-      "buildRunId": "13f36daa-3f76-4517-ae53-fefb16e90ef1",
+      "buildRunId": "355e606b-d284-46f3-9257-f6a2bb4d7436",
       "buildScore": 0,
       "appRuntimeRunIds": [],
       "runtimeScore": null,
@@ -49,11 +1069,131 @@
       "complete": false
     },
     {
-      "projectId": "scaffold:threejs-game",
+      "projectId": "scaffold:stm32-rust",
       "kind": "scaffold-only",
-      "builderRunId": "4caa99b9-43ae-4fd9-8b1f-62f2f5971c2c",
+      "builderRunId": "e0a8de55-ea8b-4758-9e92-451357f3dccf",
       "metaScore": null,
-      "buildRunId": "9d00c401-37d6-44c8-98bf-0038a900a1c1",
+      "buildRunId": "3791a04c-4ce9-494a-9046-32212ecef4ff",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:ros2-node-py",
+      "kind": "scaffold-only",
+      "builderRunId": "ee60b969-e038-4bb3-bfce-e773983654d3",
+      "metaScore": null,
+      "buildRunId": "2d3aa6f4-d0fa-4f18-821b-c8f9f3e259ba",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:hipaa-compliance-pack",
+      "kind": "scaffold-only",
+      "builderRunId": "fe9c96d9-4547-4e63-b21a-86322d71ddd8",
+      "metaScore": null,
+      "buildRunId": "691f6f25-97f9-43f2-a11a-42b710291e2c",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:soc2-compliance-pack",
+      "kind": "scaffold-only",
+      "builderRunId": "a73e5b97-5e9d-47ee-8e52-5d8303f88db8",
+      "metaScore": null,
+      "buildRunId": "8bab3cc1-a0ae-49f5-92b9-c0519e74940a",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:pci-dss-compliance-pack",
+      "kind": "scaffold-only",
+      "builderRunId": "f9a8326d-777c-4d90-8a50-52461c086a8f",
+      "metaScore": null,
+      "buildRunId": "539b3c31-5681-4fda-b2af-3e7d4373c2ce",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:gdpr-compliance-pack",
+      "kind": "scaffold-only",
+      "builderRunId": "576d95d0-aaeb-4c6c-bbb0-0b15d685da10",
+      "metaScore": null,
+      "buildRunId": "27e91a0b-8c9a-4f10-8b92-d3a2d2190bc3",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:risczero-zkvm",
+      "kind": "scaffold-only",
+      "builderRunId": "b3f2bed1-0d47-44c0-9c15-30fec139a1fa",
+      "metaScore": null,
+      "buildRunId": "956e02fa-334b-4b12-9716-c95067b9a23a",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:sp1-zkvm",
+      "kind": "scaffold-only",
+      "builderRunId": "9e894cec-d98d-441b-8c2b-ba800289e008",
+      "metaScore": null,
+      "buildRunId": "2e5d47cf-5ec8-4a45-8432-e09eeb74f69e",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:arkworks-prover",
+      "kind": "scaffold-only",
+      "builderRunId": "791cb06e-9252-42d8-be6b-994c1d5a7470",
+      "metaScore": null,
+      "buildRunId": "a620b6bd-059a-4971-8cc9-1656c4425120",
+      "buildScore": 0,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:frontend+risczero",
+      "kind": "scaffold-only",
+      "builderRunId": "299e15ae-fb03-41c7-b8e9-887de6eac0eb",
+      "metaScore": null,
+      "buildRunId": "438472c7-d806-4f17-b25f-31c0fc476412",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:frontend+sp1",
+      "kind": "scaffold-only",
+      "builderRunId": "ab58f170-9c24-4e87-b0fe-1050aa865a1d",
+      "metaScore": null,
+      "buildRunId": "f8db6ea1-34d8-4312-9230-5b974fe33a1e",
       "buildScore": 1,
       "appRuntimeRunIds": [],
       "runtimeScore": null,
@@ -63,9 +1203,45 @@
     {
       "projectId": "scaffold:nextjs+arkworks",
       "kind": "scaffold-only",
-      "builderRunId": "29255395-1489-474f-a5ef-ad3801c42e5b",
+      "builderRunId": "8f6edd6a-8b0d-4532-b1ca-9fd8727761a5",
       "metaScore": null,
-      "buildRunId": "d46e5fdc-c859-4507-8a57-4df0f81de7d7",
+      "buildRunId": "04a753a6-6142-46bd-be2b-62b1a0ac03db",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:frontend+go+evm",
+      "kind": "scaffold-only",
+      "builderRunId": "5105e305-9a0b-4893-806f-24e7ca395a96",
+      "metaScore": null,
+      "buildRunId": "af65fc52-6e3d-476d-88a5-35c3bf10d712",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:frontend+agent",
+      "kind": "scaffold-only",
+      "builderRunId": "bae5cda1-1d1c-4a6e-a9f4-a504e920e252",
+      "metaScore": null,
+      "buildRunId": "a754ce49-af4a-4c22-9b61-98e11b8e9e14",
+      "buildScore": 1,
+      "appRuntimeRunIds": [],
+      "runtimeScore": null,
+      "runtimePassRate": null,
+      "complete": false
+    },
+    {
+      "projectId": "scaffold:frontend+tangle",
+      "kind": "scaffold-only",
+      "builderRunId": "43564f59-40a7-4bde-b65f-424c44842fb2",
+      "metaScore": null,
+      "buildRunId": "122fcff4-037d-4f6b-8d3d-d72439e71065",
       "buildScore": 1,
       "appRuntimeRunIds": [],
       "runtimeScore": null,
@@ -75,37 +1251,723 @@
   ],
   "runReports": [
     {
+      "seed": "agent-service-py",
+      "projectId": "scaffold:agent-service-py",
+      "wallMs": 758,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "agent-service-rust",
+      "projectId": "scaffold:agent-service-rust",
+      "wallMs": 841,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "agent-service-ts",
+      "projectId": "scaffold:agent-service-ts",
+      "wallMs": 11941,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "agent-swarm-ts",
+      "projectId": "scaffold:agent-swarm-ts",
+      "wallMs": 13405,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "angular-ts",
+      "projectId": "scaffold:angular-ts",
+      "wallMs": 15123,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "api-service",
+      "projectId": "scaffold:api-service",
+      "wallMs": 22843,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "browser-extension-ts",
+      "projectId": "scaffold:browser-extension-ts",
+      "wallMs": 29919,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "bun-http",
+      "projectId": "scaffold:bun-http",
+      "wallMs": 14572,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "cli-ts",
+      "projectId": "scaffold:cli-ts",
+      "wallMs": 15482,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "cloudflare-worker-ts",
+      "projectId": "scaffold:cloudflare-worker-ts",
+      "wallMs": 21368,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "deno-edge",
+      "projectId": "scaffold:deno-edge",
+      "wallMs": 17230,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "dspy-pipeline-py",
+      "projectId": "scaffold:dspy-pipeline-py",
+      "wallMs": 602,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "eigenlayer-avs",
+      "projectId": "scaffold:eigenlayer-avs",
+      "wallMs": 1158,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "electron-desktop-ts",
+      "projectId": "scaffold:electron-desktop-ts",
+      "wallMs": 11215,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "evm-infra-ts",
+      "projectId": "scaffold:evm-infra-ts",
+      "wallMs": 12471,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "expo-react-native-ts",
+      "projectId": "scaffold:expo-react-native-ts",
+      "wallMs": 11732,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "fhenix-contracts",
+      "projectId": "scaffold:fhenix-contracts",
+      "wallMs": 924,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "fhevm-contracts",
+      "projectId": "scaffold:fhevm-contracts",
+      "wallMs": 731,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "forge-contracts",
+      "projectId": "scaffold:forge-contracts",
+      "wallMs": 1675,
+      "structuralScore": 0.5,
+      "buildScore": 1
+    },
+    {
+      "seed": "frontend-static",
+      "projectId": "scaffold:frontend-static",
+      "wallMs": 11165,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "fullstack-ts",
+      "projectId": "scaffold:fullstack-ts",
+      "wallMs": 12759,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "go-api",
+      "projectId": "scaffold:go-api",
+      "wallMs": 961,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "go-worker",
+      "projectId": "scaffold:go-worker",
+      "wallMs": 948,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "hardhat-contracts",
+      "projectId": "scaffold:hardhat-contracts",
+      "wallMs": 1358,
+      "structuralScore": 0.75,
+      "buildScore": 1
+    },
+    {
+      "seed": "mcp-server-ts",
+      "projectId": "scaffold:mcp-server-ts",
+      "wallMs": 11718,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "move-contracts",
+      "projectId": "scaffold:move-contracts",
+      "wallMs": 1640,
+      "structuralScore": 0.5,
+      "buildScore": 0
+    },
+    {
+      "seed": "nextjs-ts",
+      "projectId": "scaffold:nextjs-ts",
+      "wallMs": 11883,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "playwright-worker",
+      "projectId": "scaffold:playwright-worker",
+      "wallMs": 12142,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "python-api",
+      "projectId": "scaffold:python-api",
+      "wallMs": 441,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "python-data-app",
+      "projectId": "scaffold:python-data-app",
+      "wallMs": 547,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "python-worker",
+      "projectId": "scaffold:python-worker",
+      "wallMs": 894,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "react-vite-ts",
+      "projectId": "scaffold:react-vite-ts",
+      "wallMs": 12915,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "remix-ts",
+      "projectId": "scaffold:remix-ts",
+      "wallMs": 20032,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "rust-service",
+      "projectId": "scaffold:rust-service",
+      "wallMs": 679,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "solana-program",
+      "projectId": "scaffold:solana-program",
+      "wallMs": 617,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "stylus-contracts",
+      "projectId": "scaffold:stylus-contracts",
+      "wallMs": 590,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "sveltekit-ts",
+      "projectId": "scaffold:sveltekit-ts",
+      "wallMs": 13088,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "tangle-blueprint",
+      "projectId": "scaffold:tangle-blueprint",
+      "wallMs": 776,
+      "structuralScore": 0.6363636363636364,
+      "buildScore": 0
+    },
+    {
+      "seed": "tauri-desktop",
+      "projectId": "scaffold:tauri-desktop",
+      "wallMs": 605,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "vllm-server",
+      "projectId": "scaffold:vllm-server",
+      "wallMs": 1248,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
       "seed": "vue-ts",
       "projectId": "scaffold:vue-ts",
-      "wallMs": 22798,
+      "wallMs": 11980,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "wasm-rust",
+      "projectId": "scaffold:wasm-rust",
+      "wallMs": 626,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "worker-job",
+      "projectId": "scaffold:worker-job",
+      "wallMs": 11082,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "x402-service",
+      "projectId": "scaffold:x402-service",
+      "wallMs": 11378,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "zk-prover-service",
+      "projectId": "scaffold:zk-prover-service",
+      "wallMs": 10982,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "astro-static",
+      "projectId": "scaffold:astro-static",
+      "wallMs": 11318,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "threejs-game",
+      "projectId": "scaffold:threejs-game",
+      "wallMs": 10264,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "phaser-game",
+      "projectId": "scaffold:phaser-game",
+      "wallMs": 10762,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "pixijs-game",
+      "projectId": "scaffold:pixijs-game",
+      "wallMs": 10150,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "ollama-server",
+      "projectId": "scaffold:ollama-server",
+      "wallMs": 11321,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "aptos-move",
+      "projectId": "scaffold:aptos-move",
+      "wallMs": 1086,
+      "structuralScore": 0.7777777777777778,
+      "buildScore": 0
+    },
+    {
+      "seed": "bevy-web",
+      "projectId": "scaffold:bevy-web",
+      "wallMs": 587,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "celestia-da",
+      "projectId": "scaffold:celestia-da",
+      "wallMs": 596,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "electron-native-os",
+      "projectId": "scaffold:electron-native-os",
+      "wallMs": 8610,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "eleventy-static",
+      "projectId": "scaffold:eleventy-static",
+      "wallMs": 8180,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "expo-rn-rich",
+      "projectId": "scaffold:expo-rn-rich",
+      "wallMs": 8103,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "fintech-ledger-backend",
+      "projectId": "scaffold:fintech-ledger-backend",
+      "wallMs": 8506,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "godot-web",
+      "projectId": "scaffold:godot-web",
+      "wallMs": 407,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "healthcare-hipaa-backend",
+      "projectId": "scaffold:healthcare-hipaa-backend",
+      "wallMs": 9405,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "hls-origin",
+      "projectId": "scaffold:hls-origin",
+      "wallMs": 9208,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "hugo-static",
+      "projectId": "scaffold:hugo-static",
+      "wallMs": 443,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "jupyter-book",
+      "projectId": "scaffold:jupyter-book",
+      "wallMs": 597,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "legal-case-mgmt",
+      "projectId": "scaffold:legal-case-mgmt",
+      "wallMs": 9744,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "livekit-sfu",
+      "projectId": "scaffold:livekit-sfu",
+      "wallMs": 9274,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "lora-training",
+      "projectId": "scaffold:lora-training",
+      "wallMs": 447,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "multimodal-agent",
+      "projectId": "scaffold:multimodal-agent",
+      "wallMs": 9003,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "observable-notebook",
+      "projectId": "scaffold:observable-notebook",
+      "wallMs": 7865,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "rag-pipeline-py",
+      "projectId": "scaffold:rag-pipeline-py",
+      "wallMs": 396,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "realtime-audio-ts",
+      "projectId": "scaffold:realtime-audio-ts",
+      "wallMs": 6675,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "sglang-server",
+      "projectId": "scaffold:sglang-server",
+      "wallMs": 372,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "skypilot-serving",
+      "projectId": "scaffold:skypilot-serving",
+      "wallMs": 455,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "streamlit-advanced",
+      "projectId": "scaffold:streamlit-advanced",
+      "wallMs": 527,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "tauri-menubar",
+      "projectId": "scaffold:tauri-menubar",
+      "wallMs": 6576,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "tauri-tray",
+      "projectId": "scaffold:tauri-tray",
+      "wallMs": 6596,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "tgi-server",
+      "projectId": "scaffold:tgi-server",
+      "wallMs": 382,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "triton-server",
+      "projectId": "scaffold:triton-server",
+      "wallMs": 505,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "unity-web-proxy",
+      "projectId": "scaffold:unity-web-proxy",
+      "wallMs": 7967,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "vision-first-agent",
+      "projectId": "scaffold:vision-first-agent",
+      "wallMs": 7325,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "voice-first-agent",
+      "projectId": "scaffold:voice-first-agent",
+      "wallMs": 7101,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "webgpu-inference",
+      "projectId": "scaffold:webgpu-inference",
+      "wallMs": 7093,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "webgpu-render",
+      "projectId": "scaffold:webgpu-render",
+      "wallMs": 6348,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "zola-static",
+      "projectId": "scaffold:zola-static",
+      "wallMs": 357,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "crm-backend",
+      "projectId": "scaffold:crm-backend",
+      "wallMs": 6671,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "ecommerce-headless",
+      "projectId": "scaffold:ecommerce-headless",
+      "wallMs": 6205,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "k12-edtech",
+      "projectId": "scaffold:k12-edtech",
+      "wallMs": 6744,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "flutter-app",
+      "projectId": "scaffold:flutter-app",
+      "wallMs": 364,
       "structuralScore": 1,
       "buildScore": 1
     },
     {
       "seed": "kotlin-multiplatform",
       "projectId": "scaffold:kotlin-multiplatform",
-      "wallMs": 431,
+      "wallMs": 495,
       "structuralScore": 1,
       "buildScore": 1
     },
     {
-      "seed": "solana-program",
-      "projectId": "scaffold:solana-program",
-      "wallMs": 899,
+      "seed": "esp32-rust",
+      "projectId": "scaffold:esp32-rust",
+      "wallMs": 769,
       "structuralScore": 1,
       "buildScore": 0
     },
     {
-      "seed": "threejs-game",
-      "projectId": "scaffold:threejs-game",
-      "wallMs": 18110,
+      "seed": "stm32-rust",
+      "projectId": "scaffold:stm32-rust",
+      "wallMs": 560,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "ros2-node-py",
+      "projectId": "scaffold:ros2-node-py",
+      "wallMs": 421,
+      "structuralScore": 0.5833333333333334,
+      "buildScore": 0
+    },
+    {
+      "seed": "hipaa-compliance-pack",
+      "projectId": "scaffold:hipaa-compliance-pack",
+      "wallMs": 5771,
+      "structuralScore": 0.8888888888888888,
+      "buildScore": 1
+    },
+    {
+      "seed": "soc2-compliance-pack",
+      "projectId": "scaffold:soc2-compliance-pack",
+      "wallMs": 7730,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "pci-dss-compliance-pack",
+      "projectId": "scaffold:pci-dss-compliance-pack",
+      "wallMs": 6541,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "gdpr-compliance-pack",
+      "projectId": "scaffold:gdpr-compliance-pack",
+      "wallMs": 6603,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "risczero-zkvm",
+      "projectId": "scaffold:risczero-zkvm",
+      "wallMs": 588,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "sp1-zkvm",
+      "projectId": "scaffold:sp1-zkvm",
+      "wallMs": 546,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "arkworks-prover",
+      "projectId": "scaffold:arkworks-prover",
+      "wallMs": 557,
+      "structuralScore": 1,
+      "buildScore": 0
+    },
+    {
+      "seed": "frontend+risczero",
+      "projectId": "scaffold:frontend+risczero",
+      "wallMs": 6846,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "frontend+sp1",
+      "projectId": "scaffold:frontend+sp1",
+      "wallMs": 6576,
       "structuralScore": 1,
       "buildScore": 1
     },
     {
       "seed": "nextjs+arkworks",
       "projectId": "scaffold:nextjs+arkworks",
-      "wallMs": 15828,
+      "wallMs": 6751,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "frontend+go+evm",
+      "projectId": "scaffold:frontend+go+evm",
+      "wallMs": 9733,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "frontend+agent",
+      "projectId": "scaffold:frontend+agent",
+      "wallMs": 9942,
+      "structuralScore": 1,
+      "buildScore": 1
+    },
+    {
+      "seed": "frontend+tangle",
+      "projectId": "scaffold:frontend+tangle",
+      "wallMs": 8336,
       "structuralScore": 1,
       "buildScore": 1
     }

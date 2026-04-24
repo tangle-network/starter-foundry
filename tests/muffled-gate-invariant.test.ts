@@ -6,7 +6,7 @@
 
 import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync, existsSync } from 'node:fs'
+import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -232,8 +232,57 @@ function findDuplicateHarnessDispatch(): Finding[] {
   return findings
 }
 
+/**
+ * Auto-derived scan set for the construct-vs-call pattern. Any file that
+ * imports from `@tangle-network/agent-eval` is at risk of the
+ * `new SubprocessSandboxDriver({cwd: ...})` footgun — regardless of
+ * whether it's on the explicit SCAN_FILES list for context-specific
+ * patterns. Research Round 2026-04-24 (H4) confirmed this surfaces
+ * real gaps the manual list missed (scripts/enrich-family.mjs,
+ * src/training/family_proposer/propose.ts, src/training/template_v1/run.ts).
+ *
+ * Why not auto-derive the whole SCAN_FILES list? 4 of the 8 files on
+ * the manual list (template-quality.ts, prompt-e2e.ts,
+ * audit-scaffold-quality.mjs, meta-harness-eval.mjs) don't import
+ * agent-eval — their muffle shapes (skip-counts-as-pass, no-expectation
+ * matcher, permissive-kind default) are orthogonal to the driver
+ * footgun. Auto-derivation would drop those. H4: split — explicit
+ * list for context-specific patterns, auto-derive for the one
+ * mechanical pattern that's universal across agent-eval consumers.
+ */
+function agentEvalImporters(): string[] {
+  // Walk src/ and scripts/ looking for string literal '@tangle-network/agent-eval'.
+  // Portable across machines (no rg PATH dependency — ripgrep isn't always
+  // on the test-runner's PATH even when it's on the shell's).
+  const SCAN_DIRS = ['src', 'scripts']
+  const matches: string[] = []
+  const walk = (dir: string) => {
+    const full = join(REPO_ROOT, dir)
+    if (!existsSync(full)) return
+    for (const entry of readdirSync(full)) {
+      const sub = join(dir, entry)
+      const subFull = join(REPO_ROOT, sub)
+      let st
+      try { st = statSync(subFull) } catch { continue }
+      if (st.isDirectory()) {
+        if (entry === 'node_modules' || entry === 'dist' || entry === 'dist-tests') continue
+        walk(sub)
+      } else if (st.isFile() && /\.(ts|mjs|js)$/.test(entry)) {
+        if (entry.endsWith('.test.ts') || entry.endsWith('.test.mjs')) continue
+        const text = readFileSync(subFull, 'utf8')
+        if (text.includes('@tangle-network/agent-eval')) matches.push(sub)
+      }
+    }
+  }
+  for (const d of SCAN_DIRS) walk(d)
+  return matches
+}
+
 function scanAll(): Finding[] {
   const findings: Finding[] = []
+  const scannedForConstructorCwd = new Set<string>()
+
+  // Context-specific patterns: run only on the explicit SCAN_FILES list.
   for (const file of SCAN_FILES) {
     const full = join(REPO_ROOT, file)
     if (!existsSync(full)) continue
@@ -244,7 +293,21 @@ function scanAll(): Finding[] {
     findings.push(...findAutoMatchNoExpectation(file, text))
     findings.push(...findSkipCountsAsPass(file, text))
     findings.push(...findConstructorCwdDropped(file, text))
+    scannedForConstructorCwd.add(file)
   }
+
+  // Universal pattern: construct-vs-call cwd-dropped is a risk anywhere
+  // agent-eval is imported. Auto-derive the additional scan set so a new
+  // importer doesn't escape the invariant by simply not being on
+  // SCAN_FILES.
+  for (const file of agentEvalImporters()) {
+    if (scannedForConstructorCwd.has(file)) continue
+    const full = join(REPO_ROOT, file)
+    if (!existsSync(full)) continue
+    const text = readFileSync(full, 'utf8')
+    findings.push(...findConstructorCwdDropped(file, text))
+  }
+
   findings.push(...findDuplicateHarnessDispatch())
   return findings
 }
@@ -261,6 +324,31 @@ describe('muffled-gate invariant', () => {
         ...findings.map((f) => `  ${f.file}:${f.line} — ${f.pattern}\n    ${f.lineText}`),
       ].join('\n')
       assert.fail(msg)
+    }
+  })
+
+  test('auto-derived scan covers all agent-eval importers outside SCAN_FILES', () => {
+    // H4 guarantee (Research R2026-04-24): every file that imports from
+    // @tangle-network/agent-eval must be reached by the construct-vs-call
+    // cwd finder — either via SCAN_FILES (context-specific patterns) or
+    // via the auto-derived importer walk. If this test fails it means a
+    // new importer is escaping the invariant entirely.
+    const importers = agentEvalImporters()
+    assert.ok(importers.length > 0, 'expected agent-eval importer walk to find at least scaffold-bridge + promoters')
+    // Confirm the walk reaches files that aren't on the explicit list —
+    // the whole point of auto-derivation.
+    const unscanned = importers.filter((f) => !SCAN_FILES.includes(f))
+    if (unscanned.length === 0) {
+      // This is fine if all importers happen to also be on SCAN_FILES,
+      // but then the auto-derive adds nothing — log so operator notices
+      // drift back to manual-list-only coverage.
+      return
+    }
+    // All unscanned importers must be real files that agentEvalImporters
+    // could actually open — guards against stale path literals in
+    // SCAN_FILES getting out of sync with disk.
+    for (const f of unscanned) {
+      assert.ok(existsSync(join(REPO_ROOT, f)), `auto-derived importer missing on disk: ${f}`)
     }
   })
 

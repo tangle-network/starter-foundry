@@ -179,6 +179,7 @@ const CAP_PROMPTS: Record<string, { prompt: string; family: string }> = {
   "capability:agent-slack": { prompt: "Build a Slack bot that answers questions using AI", family: "agent-service-ts" },
   "capability:agent-trading": { prompt: "Build an AI trading agent for crypto market analysis", family: "agent-service-ts" },
   "capability:agent-voice": { prompt: "Build a LiveKit voice agent for customer calls", family: "agent-service-ts" },
+  "capability:agent-eval": { prompt: "Build a TypeScript agent service with an agent eval harness and quality gate CI workflow", family: "agent-service-ts" },
   "capability:ai-agent-dashboard": { prompt: "Build an agent monitoring dashboard with run traces", family: "fullstack-ts" },
   "capability:ai-chat-ui": { prompt: "Build a Next.js chat app with streaming AI responses", family: "nextjs-ts" },
   "capability:ai-fine-tuning": { prompt: "Fine-tune a model using Unsloth on a Python agent service", family: "agent-service-py" },

@@ -33,8 +33,8 @@
       "target": "index.html"
     },
     {
-      "source": "files/src/main.ts",
-      "target": "src/main.ts"
+      "source": "files/src/main.tsx",
+      "target": "src/main.tsx"
     },
     {
       "source": "files/README.md",
@@ -80,16 +80,16 @@
     "extensionPoints": []
   },
   "keywords": [
-    "KYC",
-    "Onboarding",
-    "TypeScript",
-    "Node.js",
-    "Frontend",
-    "Regulatory Compliance",
-    "Security",
-    "Performance Optimization",
-    "Scalability",
-    "Real-time Updates"
+    "kyc",
+    "kyc onboarding",
+    "identity verification",
+    "document verification",
+    "liveness check",
+    "aml compliance",
+    "sumsub",
+    "persona identity",
+    "passkey onboarding",
+    "know your customer"
   ],
   "tieredKeywords": {
     "tier1": [

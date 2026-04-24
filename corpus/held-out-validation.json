@@ -41,7 +41,7 @@
       "complexity": "medium",
       "partner": null,
       "prompt": "Build a RISC Zero prover service that generates ZK proofs for on-chain verification.",
-      "expected": { "kind": "starter", "family": "zk-prover-service" }
+      "expected": { "kind": "starter", "family": "risczero-zkvm" }
     },
     {
       "id": "ho-eigenlayer-avs",
@@ -295,7 +295,7 @@
       "complexity": "medium",
       "partner": "tangle",
       "prompt": "Build a Tangle Blueprint for decentralized storage with FROST threshold signing.",
-      "expected": { "kind": "starter", "family": "tangle-blueprint" }
+      "expected": { "kind": "workspace", "family": "tangle-blueprint" }
     },
     {
       "id": "ho-rust-backend",

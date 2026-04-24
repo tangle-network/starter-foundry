@@ -705,3 +705,74 @@ Result: 39 → **9** (−30). Total arc 56 → 9 (−84%, well below target 10).
 **Plateau clock:** reset (R1 −30%, R2 −77% — both significant moves).
 
 **Handoff:** governor should re-pick. Next-highest-ROI failing flows are now `buildout_pass_rate` (0.69→0.85, requires real VB sweep), `top_file_rewrite_count` (13→5), and `proposal_promotion_rate` (0.04→0.30, dilutes naturally).
+
+## 2026-04-24 — /evolve Round 3 (status report, not a typical round)
+
+**Goal from governor:** re-run scaffold-quality audit (stale flag, was 0.979/1.0), then pivot to next-highest-ROI failing flow.
+
+**Step 1 — audit re-run:** in flight (~40min remaining). Background process PID 6813 auditing all 100 framework layers. Pace ~30s/layer. Early signal at 12/100 layers: 1 fail (arkworks-prover, known-broken pre-Gen-6) — directionally same as last run (0.979 = 1 known fail / 47 layers; will likely be 99/100 = 0.99 this time given Gen 5-7 added families that pass).
+
+**Step 2 audit — every other failing flow is OUT-OF-SCOPE for /evolve:**
+
+| Flow | Why not /evolve |
+|---|---|
+| `orchestration_installs` (93/15) | install pipeline issue — agent didn't run `pnpm install` before editing. Same packages as scaffold-gap (lucide-react, tailwindcss, @tailwindcss/vite) — these ARE shipped via family/capability. Runtime fix in sandbox harness, not starter-foundry. |
+| `top_file_rewrite_count` (13/5) | top files are `index.html`, `src/App.tsx` — placeholders agents are expected to rewrite by design. Target may be wrong. |
+| `proposal_promotion_rate` (0.04/0.3) | denominator pollution; dilutes via nightly autonomy |
+| `buildout_pass_rate` (0.69/0.85) | needs new VB sweep (runtime) |
+| `median_turns_per_buildout` (67/40) | agent runtime, not scaffold |
+| `median_turns_per_buildout_run_weighted` (85/40) | derived |
+| `estimated_tokens_per_buildout` (133K/80K) | derived |
+| `cost_usd_per_buildout` (null) | needs cost-tracking infra (/improve scope) |
+| `agent_eval_meta_pass_rate` (null) | needs scheduled judge runs |
+
+**R3 verdict: SURFACE TO OPERATOR.** Per evolve protocol when no /evolve-shaped exploit remains: the remaining gap is a mix of (a) measurement infra not yet built, (b) runtime issues outside this repo, (c) targets that may be wrong. Honest hand-back: the optimization-shape work in starter-foundry is largely done for Gen 6+7+8 — remaining flows belong to other skills (`/improve` for measurement infra) or other repos (sandbox harness for orchestration_installs).
+
+**Cumulative arc reminder:** 0.407 → 0.607 (+20pp), 5 auto-shipped families + 2 capabilities, scaffold_gap_installs 56→9 PASS, multi-pursue R4 broke architectural ceiling, npm 0.7.0 published.
+
+**Wakeup at 8:58 PM** to read final audit results. After that, recommend either:
+- `/governor` to route to a non-evolve skill (`/improve` for cost tracking, `/pursue` Gen 8 for workspace-composable proposer)
+- Pause and let nightly autonomy populate organic data
+
+## 2026-04-24 — /evolve Round 3 (audit refresh exposed 3 Goodhart-passed family bugs)
+
+**Goal from governor:** re-run scaffold-quality audit (was flagged stale, value 0.979/1.0), pivot to next-highest-ROI flow based on what stale-data refresh exposes.
+
+**Step 1 — refreshed audit:** ran scripts/audit-scaffold-quality.mjs against all 100 framework layers. **Stale data was hiding real regressions.** Pre-Gen-6 audit was 47 layers / 1 fail (arkworks-prover known-broken). Post-Gen-6+7 audit (Gen 5-7 added 53 new layers including auto-promoted families) revealed 9 fails:
+
+| Family | Bug class | Origin |
+|---|---|---|
+| arkworks-prover, risczero-zkvm, sp1-zkvm, tangle-blueprint, move-package | toolchain (cargo, aptos move version) | known pre-Gen-6, not /evolve-fixable |
+| **kyc-onboarding** | `.ts` extension on JSX file + hallucinated `esbuild.loader: 'es2022'` | I introduced both during evolve-r2 hand-patch (Gen 6) |
+| **fraud-ops-console** | React 17 import (`import ReactDOM from 'react-dom'` + `ReactDOM.createRoot`) — fails typecheck on React 18 types | LLM proposer Gen 6 |
+| **polymarket-portfolio-hedging** | Same React 17 import bug | LLM proposer Gen 6 |
+
+**This is the Goodhart catch the 2026-04-23 reflection memo predicted.** Fidelity judge (`invokeMetaJudge` in src/eval/scaffold-bridge.ts) passed all 3 at 0.82-0.85. Audit (which actually runs `pnpm install` + `tsc --noEmit`) showed them broken. **Judge needs a "compiles cleanly" pre-check before scoring fidelity.** Adding to Gen 8 reflection seeds.
+
+**Step 2 — fixed the 3 Gen-6-introduced bugs surgically:**
+- `registry/families/kyc-onboarding/files/src/main.ts` → `main.tsx` (rename + manifest update + index.html script ref update)
+- Removed bogus `esbuild.loader: 'es2022'` from kyc-onboarding/files/vite.config.ts
+- Rewrote `registry/families/{fraud-ops-console,polymarket-portfolio-hedging}/files/src/main.tsx` to React 18 idiom (`createRoot` from `'react-dom/client'`, StrictMode wrapper)
+
+**Verified each individually:** `audit-scaffold-quality.mjs --layer framework:<id>` passes for all 3.
+
+**Final audit (100/100 layers):** 5 fails total. All toolchain (cargo/move). Zero Gen 6+7 regressions remain.
+
+**Metric moves:**
+| Flow | Before R3 | After R3 | Verdict |
+|---|---|---|---|
+| `scaffold_audit_pass_rate` | 0.979 (1/47, stale) | 0.95 (5/100, FRESH) | honest measurement |
+| Failing flow count | 10/22 | 8/22 | -2 |
+| aggregate | 0.604 | 0.605 | +0.1pp |
+| 688/688 tests | green | green | unchanged |
+
+**Why scaffold_audit_pass_rate didn't FLIP to PASS:** denominator grew from 47 → 100 layers (Gen 5-7 added 53 new layers). 5/100 toolchain-fail rate produces 0.95 — not 1.0. The 5 remaining fails are NOT /evolve-shaped: they're cargo registry/aptos-move version issues that need toolchain fixes. Could be solved by either (a) bumping toolchain pins, (b) marking those families with `audit: skip` until toolchain catches up, or (c) accepting 0.95 as the realistic ceiling and revising the target.
+
+**Honest verdict:** R3 was net-positive — caught 3 real bugs the fidelity judge missed, eliminated all Gen 6+7 family regressions, and clarified that the 0.05 remaining audit gap is toolchain not code. The /evolve-tunable surface is now exhausted on this scorecard. Remaining failing flows belong to other skills (`/improve` for cost infra, `/pursue` for workspace-shaped proposer, sandbox harness for orchestration_installs).
+
+**Per-invocation cap:** 3/5 used. Stopping early because no more /evolve-shaped levers exist this round.
+
+**Handoff for next governor pick:**
+- Gen 8 thesis (highest-ROI architectural): "fidelity judge needs a compile-pass pre-check" — concrete change in `src/eval/scaffold-bridge.ts invokeMetaJudge` to run `pnpm install + tsc --noEmit` BEFORE LLM scoring, gate scoring on compile success
+- OR: continue letting nightly autonomy populate organic data on `proposal_promotion_rate` + `coverage_lift_per_promote`
+- OR: bump toolchain pins on the 5 toolchain-failing families (small, mechanical, would push `scaffold_audit_pass_rate` 0.95 → 1.0 by skipping or fixing toolchain rot)

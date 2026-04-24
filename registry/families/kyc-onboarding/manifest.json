@@ -80,16 +80,16 @@
     "extensionPoints": []
   },
   "keywords": [
-    "KYC",
-    "Onboarding",
-    "TypeScript",
-    "Node.js",
-    "Frontend",
-    "Regulatory Compliance",
-    "Security",
-    "Performance Optimization",
-    "Scalability",
-    "Real-time Updates"
+    "kyc",
+    "kyc onboarding",
+    "identity verification",
+    "document verification",
+    "liveness check",
+    "aml compliance",
+    "sumsub",
+    "persona identity",
+    "passkey onboarding",
+    "know your customer"
   ],
   "tieredKeywords": {
     "tier1": [

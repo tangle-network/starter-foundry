@@ -1,36 +1,22 @@
 {
   "mode": "evolve",
-  "goal": "Gen 8 compile-gate shipped — close the Goodhart loop where fidelity judge passes scaffolds the build would reject",
-  "status": "gen-8-shipped",
+  "goal": "Gen 8 compile-gate end-to-end validated — TS-error proposals now rejected at build-gate",
+  "status": "converged-round-0",
   "round": 0,
   "generation": 8,
   "activePursuit": null,
   "lastPursuit": ".evolve/pursuits/2026-04-24-compile-gate.md",
-  "updatedAt": "2026-04-24T03:30:00Z",
+  "updatedAt": "2026-04-24T05:30:00Z",
   "priorGenerations": [
     { "n": 6, "pursuit": "generation-flywheel", "commit": "17347c1" },
     { "n": 7, "pursuit": "multi-pursue-r4-partner-first-router", "commit": "518bf50" },
-    { "n": 8, "pursuit": "compile-gate", "commit": "pending" }
+    { "n": 8, "pursuit": "compile-gate", "commit": "07b54c3" },
+    { "n": "8b", "pursuit": "promoter-cwd-plumbing", "commit": "e3667bd" }
   ],
-  "gen8Result": {
-    "thesis": "Strict tsc --noEmit at the build gate + optional buildOutcome short-circuit in invokeMetaJudge — catches at proposal time the bugs that previously slipped through to audit time",
-    "filesChanged": 4,
-    "linesAdded": 184,
-    "linesDeleted": 7,
-    "newTests": 6,
-    "testTotal": "688 → 694",
-    "verifiedReplay": "kyc-onboarding pre-fix .ts JSX → strict gate rejects with TS1005 + TS1109",
-    "verifiedShortCircuit": "synthetic buildOutcome.passed=false → verdict='fail' with TS error preserved, no LLM call",
-    "phase15Gate": "passed (all-no, <300 LoC, single-purpose change)"
-  },
-  "scorecard": {
-    "aggregate": 0.605,
-    "note": "Gen 8 is process-quality not metric-quality — it shrinks the surface for future Goodhart bugs to land. Aggregate impact will materialize in next nightly autonomous proposer run when the strict gate rejects bad proposals at proposal time."
-  },
-  "gen9Seeds": [
-    "Audit other testCommands for muffled-gate pattern (rust uses || fallback chain that may also be too lenient)",
-    "Lift the audit script's typecheck step into the capability promoter so they share the harness shape",
-    "AxGEPA on META_JUDGE_SIGNATURE — now that compile-gate handles correctness, the LLM judge's job is purely subjective quality (clearer optimization target)"
-  ],
-  "handoff": "Run /evolve against the next nightly autonomous proposer run. Expected: any LLM-generated proposal with TS errors fails at the strict gate at proposal time, not audit time. End-to-end validates Gen 8 closure."
+  "gen8bResult": {
+    "thesis": "Gen 8's strict tsc --noEmit was silent no-op because promoter passed cwd to driver constructor (agent-eval 0.7.0 only reads config.cwd). Fix: spread cwd into HarnessConfig.",
+    "verified": "probe with verified TS2345 error pre-fix promoted at score=1.00; post-fix rejected at gate=compose-pass with build score=0.00 + full error in validation-errors.json. zk-mixer-ui draft (6 hallucinated imports) now correctly blocked.",
+    "testsAdded": 3,
+    "agentEvalPR": "tangle-network/agent-eval#4 — constructor-cwd fallback in SubprocessSandboxDriver"
+  }
 }

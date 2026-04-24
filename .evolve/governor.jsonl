@@ -443,3 +443,5 @@
 {"ts":"2026-04-24T04:49:05.111Z","source":"promote-capability-proposal","event":"promote-cap-outcome","id":"test-cap-phantom-family-zlyecu","gateReached":"schema-pass","message":"no appliesTo family has matching framework layer: definitely-nonexistent-family-xyz"}
 {"ts":"2026-04-24T04:49:07.627Z","source":"promote-family-proposal","event":"promote-outcome","id":"test-fidelity-skip-rosupg","gateReached":"schema-pass","message":"compose failed: Unknown layer framework:test-fidelity-skip-rosupg\n"}
 {"ts":"2026-04-24T04:49:07.746Z","source":"promote-family-proposal","event":"promote-outcome","id":"nonexistent-xyz","gateReached":"no-draft","message":"missing manifest at /Users/drew/webb/starter-foundry/.evolve/family-proposals/nonexistent-xyz"}
+{"ts":"2026-04-24T05:26:37.728Z","source":"promote-family-proposal","event":"promote-outcome","id":"bun-monolith","gateReached":"schema-fail","message":"schema: 1 errors"}
+{"ts":"2026-04-24T05:26:40.373Z","source":"promote-family-proposal","event":"promote-outcome","id":"zk-mixer-ui","gateReached":"compose-pass","message":"build failed: score=0.00"}

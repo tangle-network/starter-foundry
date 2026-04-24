@@ -1,0 +1,60 @@
+name: Agent eval
+
+# Runs the scaffold-level agent-eval harness on every PR + push.
+# Deterministic assertions are the contract. The optional LLM judge runs
+# only when TOGETHER_API_KEY is configured as a repo secret — its score is
+# recorded but does NOT gate the build (rubrics need calibration before
+# they can be load-bearing).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: eval-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  eval:
+    name: agent-eval
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: install
+        run: pnpm install --frozen-lockfile
+
+      - name: run agent-eval
+        env:
+          TOGETHER_API_KEY: ${{ secrets.TOGETHER_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node tests/eval/run-eval.mjs --threshold 0.7
+
+      - name: regression check against baseline
+        if: always()
+        run: |
+          if [ -f .evolve/eval/baseline.json ]; then
+            node scripts/eval-baseline.mjs --check --tolerance 0.02
+          else
+            echo "no baseline pinned — skipping regression check"
+          fi
+
+      - name: upload scorecard
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-eval-scorecard
+          path: .evolve/eval/
+          retention-days: 30

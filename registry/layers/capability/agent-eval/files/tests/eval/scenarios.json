@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "description": "Starter eval scenarios. Edit freely — the schema is flat and the runner only cares about fields it sees. Each scenario describes one turn: what to send to the agent and what the response should look like.",
+  "scenarios": [
+    {
+      "id": "smoke/health-ok",
+      "description": "Service is up and returns JSON on /health.",
+      "kind": "http-get",
+      "path": "/health",
+      "assert": {
+        "status": 200,
+        "jsonShape": { "status": ["string"] }
+      },
+      "weight": 1
+    },
+    {
+      "id": "behavior/handles-simple-task",
+      "description": "Agent accepts a plain-language task and returns a non-empty draft or reply.",
+      "kind": "http-post",
+      "path": "/run",
+      "body": { "task": "Summarize the benefits of evaluating agents continuously." },
+      "assert": {
+        "status": 200,
+        "jsonShape": { "draft": ["string", "null"], "messages": ["array", "undefined"] },
+        "minResponseChars": 40
+      },
+      "fallbackPath": "/",
+      "weight": 2
+    },
+    {
+      "id": "behavior/rejects-missing-task",
+      "description": "Agent input validation — missing task field returns 4xx, not 500 or silent success.",
+      "kind": "http-post",
+      "path": "/run",
+      "body": {},
+      "assert": {
+        "statusIn": [400, 422],
+        "requireJson": true
+      },
+      "fallbackPath": "/",
+      "fallbackAssert": {
+        "statusIn": [200, 400, 404, 405]
+      },
+      "weight": 1
+    }
+  ]
+}

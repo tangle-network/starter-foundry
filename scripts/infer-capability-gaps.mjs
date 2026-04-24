@@ -30,11 +30,18 @@ import { loadCapabilityMap } from '../dist/lib/capability-inferrer.js'
 import { planPrompt } from '../dist/lib/prompt-planner.js'
 
 const OUT = '.evolve/capability-gaps.json'
-const MAX_PROMPT_LEN = 2000
+// Bumped from 2000 → 4000 because real buildout prompts have ~3KB of
+// preamble (sidecar instructions, dev-server step, no-restart guidance)
+// before the actual user-ask. At 2000, the inferrer was matching only
+// preamble, missing every domain signal in the user's request body.
+// agent-trading scenario's `"strategy" editor (TypeScript snippet)` —
+// the trigger for capability:code-editor — sits at offset ~3000.
+const MAX_PROMPT_LEN = 4000
 // Resolve registry relative to this script so the tool works when invoked
 // from a tempdir (smoke test) or the repo root.
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const FAMILIES_DIR = join(REPO_ROOT, 'registry/families')
+const CAPABILITIES_DIR = join(REPO_ROOT, 'registry/layers/capability')
 
 if (!existsSync(DEFAULT_PATHS.buildoutsJsonl)) {
   console.error(`no buildouts file at ${DEFAULT_PATHS.buildoutsJsonl} — run scripts/run-buildout-pipeline.mjs first`)
@@ -71,6 +78,45 @@ function loadFamilyDeps() {
   return byFamily
 }
 
+// Preload each capability's packageDeps. Composer merges these into the
+// produced scaffold's package.json — so deps shipped via capability
+// packageDeps must NOT be classified as scaffold-gaps. Without this, the
+// metric inflates: capability:tailwind ships @tailwindcss/vite, the planner
+// attaches it to every React scenario, the composed scaffold contains the
+// dep, but the inferrer still flagged 14 installs as "gap." The fix is to
+// also union capability deps for whatever capabilities the planner attached.
+function loadCapabilityDeps() {
+  const byCapability = new Map()
+  if (!existsSync(CAPABILITIES_DIR)) return byCapability
+  for (const cap of readdirSync(CAPABILITIES_DIR)) {
+    if (cap.startsWith('.') || cap.startsWith('_')) continue
+    const mPath = join(CAPABILITIES_DIR, cap, 'manifest.json')
+    if (!existsSync(mPath)) continue
+    let m
+    try { m = JSON.parse(readFileSync(mPath, 'utf8')) } catch { continue }
+    const deps = new Set()
+    const pd = m.packageDeps ?? {}
+    for (const block of [pd.dependencies, pd.devDependencies, pd.peerDependencies, pd.optionalDependencies]) {
+      for (const name of Object.keys(block ?? {})) deps.add(name)
+    }
+    byCapability.set(cap, deps)
+  }
+  return byCapability
+}
+
+// Capabilities on the plan look like 'capability:tailwind' / 'capability:zk-browser'.
+// Strip the prefix to look up packageDeps.
+function planCapabilities(plan) {
+  const layers = plan.kind === 'starter'
+    ? (plan.spec.layers ?? [])
+    : plan.kind === 'workspace'
+    ? (plan.spec.projects ?? []).flatMap((p) => p.spec.layers ?? [])
+    : []
+  return layers
+    .filter((l) => typeof l === 'string' && l.startsWith('capability:'))
+    .map((l) => l.slice('capability:'.length))
+}
+
 function planFamilies(plan) {
   if (plan.kind === 'starter') return [plan.spec.family]
   if (plan.kind === 'workspace') {
@@ -87,6 +133,7 @@ function* iterBuildouts(path) {
 }
 
 const familyDeps = loadFamilyDeps()
+const capabilityDeps = loadCapabilityDeps()
 const capMap = loadCapabilityMap().mapping
 const buildouts = [...iterBuildouts(DEFAULT_PATHS.buildoutsJsonl)]
 
@@ -116,9 +163,18 @@ for (const e of buildouts) {
   if (families.length === 0) continue
 
   // Union of every dep the composed scaffold ships across all its projects.
+  // Includes BOTH family-level package.json deps AND capability packageDeps
+  // for whatever capabilities the planner attached. The latter is critical:
+  // without it, capability:tailwind shipping @tailwindcss/vite is invisible
+  // to the inferrer and gets misclassified as a scaffold gap.
   const shippedDeps = new Set()
   for (const f of families) {
     const deps = familyDeps.get(f)
+    if (deps) for (const d of deps) shippedDeps.add(d)
+  }
+  const capabilities = planCapabilities(plan)
+  for (const c of capabilities) {
+    const deps = capabilityDeps.get(c)
     if (deps) for (const d of deps) shippedDeps.add(d)
   }
 

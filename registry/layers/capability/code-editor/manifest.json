@@ -66,6 +66,7 @@
       "codemirror",
       "code dashboard",
       "strategy editor",
+      "\"strategy\" editor",
       "strategy builder",
       "script editor",
       "rules editor",
@@ -73,7 +74,17 @@
       "embedded editor",
       "policy editor",
       "workflow editor",
-      "expression editor"
+      "expression editor",
+      "typescript snippet",
+      "typescript snippet editor",
+      "algorithm editor",
+      "algo editor",
+      "algorithm playground",
+      "trading strategy",
+      "on-chain strategy",
+      "inline editor",
+      "code snippet editor",
+      "live editor"
     ]
   }
 }

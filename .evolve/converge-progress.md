@@ -2,37 +2,26 @@
 
 ## Target
 - **Branch**: main
-- **PR**: n/a (fix-on-main; PR #47 already merged with the break)
-- **Status**: IN_PROGRESS (round 3 pushed; awaiting CI)
+- **Status**: CONVERGED (2026-04-24T03:55Z)
 
-## Current State
-- **Last commit**: (round 3 push — npm dep + teardown of the sibling-clone hack)
-- **Last updated**: 2026-04-24T01:30:00Z
-- **Round**: 3
-
-## Workflow Status
-| Workflow | Job | Status | Since Round |
-|----------|-----|--------|-------------|
-| CI | build + test | GREEN at round 2 (86b6f50) | 2 |
-| CI | matrix-eval | running at round 2 | 2 |
+## Final State
+- **Last commit**: 567a01e
+- **build + test**: SUCCESS
+- **router matrix eval**: SUCCESS
 
 ## Round History
-| Round | Commit | Fixed | Remaining | Timestamp |
-|-------|--------|-------|-----------|-----------|
-| 1 | f2340b4 | `link:../agent-eval` typecheck break via composite action + sibling clone | 11 trace-dependent tests | 2026-04-24T01:05Z |
-| 2 | 86b6f50 | Seed `.evolve/traces/buildouts.jsonl` from `tests/fixtures/` via pretest hook | — (build+test green; matrix-eval running) | 2026-04-24T01:15Z |
-| 3 | (round 3) | Agent-eval 0.7.0 published to npm — swap `link:../agent-eval` → `^0.7.0`, tear down the sibling-clone composite action + remove its `uses:` references from all 6 workflows | awaiting CI | 2026-04-24T01:30Z |
+| Round | Commit | Fix | Outcome |
+|-------|--------|-----|---------|
+| 1 | f2340b4 | composite action clone+build agent-eval as sibling | superseded by R3 |
+| 2 | 86b6f50 | `tests/fixtures/buildouts.jsonl` + `scripts/ensure-test-fixtures.mjs` + pretest hook | green contribution — unblocked 11 trace-dependent tests |
+| 3 | 224d141 → dcad3d3 (PR #49) | `package.json` `link:../agent-eval` → `^0.7.0`; strip sibling-clone composite action from all 6 workflows | green contribution — removes tech debt, enables blueprint-agent consumers |
+| 4 | 03574ff | `tests/refresh-scorecard.test.ts` — explicit utimesSync on internal.json to defeat CI mtime race | unblocked build+test |
+| 5 | 98b0b2b → da5d227 → 57e26ce → 567a01e (PRs #50, #51, v0.7.0 tag) | scaffold_gap_installs 56→9 + React 18 `.tsx` + router signals.ts — incidentally fixed all 5 matrix-eval regressions | fully green |
 
-## Completed Fixes
-- [x] **Round 1**: composite action `.github/actions/setup-agent-eval` clones+builds the sibling agent-eval at pinned SHA `c696bfd`. Wired into all 6 workflows.
-- [x] **Round 2**: added `tests/fixtures/buildouts.jsonl` (5 synthetic entries, valid schema v3) + `scripts/ensure-test-fixtures.mjs` (copies fixture to `.evolve/traces/buildouts.jsonl` if absent). Wired into `pretest`. Local 688/688, CI build+test GREEN.
-- [x] **Round 3**: superseded round 1. `@tangle-network/agent-eval@0.7.0` now on npm registry with all required exports (runProposeReview, inMemoryReviewStore, jsonlReviewStore, createLlmReviewer, ProposeFn, VerifyFn, ReviewFn, Verification, ReviewMemoryEntry verified via `npm pack`). Switched `package.json` to `"^0.7.0"`, regenerated `pnpm-lock.yaml`, deleted `.github/actions/setup-agent-eval/` + stripped its `uses:` line from 6 workflows. No more sibling-checkout dance; fresh clones + CI both work via `pnpm install`. Round 2's fixture is kept (still needed on any machine without mined session history). Local 688/688.
-
-## Remaining Failures
-(awaiting round-3 CI result)
-
-## Blocked / Needs Human
-- none
+## Lessons
+- `link:../file` specifiers break in every consumer that doesn't replicate the developer's checkout layout. Publishing to npm early removes a whole class of setup friction.
+- Test fixtures for machine-local integration tests (here: Claude Code session-history-mined files) need explicit fixtures + auto-seed, not "everyone has the data."
+- Node's `utimesSync(path, secondsFloat)` can preserve sub-second precision but write-time default mtimes from `writeFileSync` can tie or trail. Tests comparing mtimes should explicitly set both sides.
 
 ## Pre-existing on Base Branch
-- `publish.yml` uses `npm install` + `prepublishOnly: tsc` — previously had the same `link:` issue. After round 3 it's also fixed (the link specifier is gone).
+- None remaining.

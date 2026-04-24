@@ -308,4 +308,39 @@ describe('promote-family-proposal harness: strict TS gate', () => {
     assert.doesNotMatch(testCmd, /\|\| true/, `capability testCommand must not swallow with || true — got: ${testCmd}`)
     assert.match(testCmd, /tsc\s+--noEmit/, `capability testCommand must run tsc --noEmit — got: ${testCmd}`)
   })
+
+  test('promoter passes cwd via harness config, not driver constructor (Gen 8b fix)', async () => {
+    // SubprocessSandboxDriver.exec reads cwd from per-call HarnessConfig, NOT
+    // from the constructor. Pre-Gen-8b the promoter set cwd on the driver
+    // (silently dropped) so testCommand ran in the wrong dir — strict gate
+    // checked starter-foundry's tsc instead of the composed scaffold's.
+    // Regression guard: the harness assignment must spread cwd into the
+    // harness object, not pass it to the driver.
+    const { readFileSync } = await import('node:fs')
+    const promoter = readFileSync('scripts/promote-family-proposal.mjs', 'utf8')
+    // Should NOT pass cwd to the driver constructor
+    assert.doesNotMatch(
+      promoter,
+      /new SubprocessSandboxDriver\(\s*\{[^}]*cwd/,
+      'cwd must NOT be passed to SubprocessSandboxDriver constructor (silently dropped)',
+    )
+    // Should spread cwd into the harness config
+    assert.match(
+      promoter,
+      /harnessConfig\s*=\s*\{[\s\S]*\.\.\.harnessConfigForFamily[\s\S]*cwd:\s*composedOutDir/,
+      'harnessConfig must include cwd: composedOutDir so the test command runs in the composed scaffold',
+    )
+
+    const cap = readFileSync('scripts/promote-capability-proposal.mjs', 'utf8')
+    assert.doesNotMatch(
+      cap,
+      /new SubprocessSandboxDriver\(\s*\{[^}]*cwd/,
+      'capability promoter: cwd must NOT be passed to SubprocessSandboxDriver constructor',
+    )
+    assert.match(
+      cap,
+      /harnessConfig\s*=\s*\{[\s\S]*\.\.\.harnessConfigForFamily[\s\S]*cwd:\s*composedOutDir/,
+      'capability promoter: harnessConfig must include cwd: composedOutDir',
+    )
+  })
 })

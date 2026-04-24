@@ -148,9 +148,11 @@ async function promoteOne(id) {
   let buildReport = null
   try {
     const family = loadJson(join(draftDir, 'manifest.json')) || manifest
-    const harnessConfig = harnessConfigForFamily(family)
+    // Same Gen-8b cwd-on-harness fix as promote-family-proposal: SubprocessSandboxDriver
+    // exec reads cwd from harness config per-call, NOT from the constructor.
+    const harnessConfig = { ...harnessConfigForFamily(family), cwd: composedOutDir }
     const store = new InMemoryTraceStore()
-    const driver = new SubprocessSandboxDriver({ cwd: composedOutDir })
+    const driver = new SubprocessSandboxDriver()
     const session = new BuilderSession(store, { projectId: `promote-cap:${id}` }, driver)
     await session.startChat()
     const shipResult = await session.ship({ harness: harnessConfig })

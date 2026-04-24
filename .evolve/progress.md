@@ -803,3 +803,36 @@ Result: 39 → **9** (−30). Total arc 56 → 9 (−84%, well below target 10).
 **Cumulative arc reminder:** 0.407 (Gen 6 baseline) → 0.605 (post-Gen-8 measurement). Gen 8 is process-quality not metric-quality — it shrinks the surface for future Goodhart bugs to land.
 
 **Handoff:** run `/evolve` against the next nightly autonomous proposer run. Expected: any LLM-generated proposal with TS errors fails at the strict gate (caught at proposal time, not audit time). Test the Gen 8 closure end-to-end.
+
+## 2026-04-24 — /evolve Round 0 post-Gen-8 (end-to-end validation caught Gen 8b cwd bug)
+
+**Goal:** validate Gen 8 strict-gate end-to-end against a real broken proposal (governor handoff).
+
+**Phase 1.5 audit:** built a synthetic regression fixture `.evolve/family-proposals/test-strict-gate-react17/` that recreates fraud-ops-console's pre-fix React 17 import (`import ReactDOM from 'react-dom'`). Strict gate SHOULD reject this at build phase.
+
+**First run: strict gate FALSELY PASSED the broken fixture.** verdict='build-pass score=1.00'. Manual repro in tempdir showed `pnpm exec tsc --noEmit` correctly exits 2 with TS2339, but `BuilderSession.ship` returned `passed: true exit: 0`. The gate said pass; the actual command would fail.
+
+**Root cause (investigated agent-eval source directly):** `SubprocessSandboxDriver.exec` reads `cwd` from per-call `HarnessConfig`, NOT from the constructor. The promoter passed `cwd` to the constructor (`new SubprocessSandboxDriver({ cwd: composedOutDir })`) — silently dropped. Test command ran in starter-foundry's working dir, where `tsc --noEmit` always passes. The strict gate from Gen 8 had been running in the wrong directory all along — it never actually checked the composed scaffold.
+
+**Bug class:** signature mismatch silently absorbed because TypeScript driver constructor takes `any` (no parameter typing). Same shape as Gen 8's diagnosis — "the gate that's supposed to fail-loud was muffled" — except this time the muffling was upstream library API misuse, not local `|| true`.
+
+**Fix (Gen 8b):**
+```diff
+- const harnessConfig = harnessConfigForFamily(family)
+- const driver = new SubprocessSandboxDriver({ cwd: composedOutDir })
++ const harnessConfig = { ...harnessConfigForFamily(family), cwd: composedOutDir }
++ const driver = new SubprocessSandboxDriver()
+```
+Same fix applied to capability promoter.
+
+**Re-run:** strict gate now correctly REJECTS the broken React 17 fixture at build phase with `TS2339: Property 'createRoot' does not exist on type 'typeof import("react-dom")'`. End-to-end validated.
+
+**Regression guard added:** new test in `tests/scaffold-bridge.test.ts` asserts neither promoter passes `cwd` to the driver constructor AND both spread `cwd` into the harness config. Future PRs cannot re-introduce this exact muffling.
+
+**Tests: 694/694 → 695/695 (+1 cwd-regression-guard).**
+
+**Verdict: ADVANCE.** Gen 8 was incomplete on its own (false-pass on the validation set). Gen 8b closes the loop properly.
+
+**Lesson saved to memory:** "construct-vs-call cwd silently dropped" — when calling a library where the constructor takes `any`, verify the parameter is actually consumed by checking the source. Pattern: `new Driver({ x })` may silently drop `x` if `Driver.exec(phase, cmd, config)` reads only `config.x`.
+
+**Handoff:** ship Gen 8b as a fix-up to PR #52 OR as a follow-up PR. Then run /evolve again against next nightly autonomous proposer run for the real end-to-end validation that was originally blocked.

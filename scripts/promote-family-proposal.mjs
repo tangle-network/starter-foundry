@@ -208,9 +208,15 @@ async function promoteOne(id) {
     const composedOutDir = join(composeTmp, 'out')
     if (!existsSync(composedOutDir)) throw new Error('compose output missing')
     const family = loadJson(join(draftDir, 'manifest.json'))
-    const harnessConfig = harnessConfigForFamily(family)
+    // CRITICAL: SubprocessSandboxDriver.exec reads cwd from the per-call
+    // HarnessConfig, not the constructor. Pre-Gen-8b we passed cwd to the
+    // constructor (silently ignored) and the testCommand ran in
+    // starter-foundry's working dir — where `tsc --noEmit` always passes.
+    // That's why the strict gate from Gen 8 didn't actually catch broken
+    // scaffolds in end-to-end testing. Set cwd on the harness instead.
+    const harnessConfig = { ...harnessConfigForFamily(family), cwd: composedOutDir }
     const store = new InMemoryTraceStore()
-    const driver = new SubprocessSandboxDriver({ cwd: composedOutDir })
+    const driver = new SubprocessSandboxDriver()
     const session = new BuilderSession(store, { projectId: `promote:${id}` }, driver)
     await session.startChat()
     const shipResult = await session.ship({ harness: harnessConfig })

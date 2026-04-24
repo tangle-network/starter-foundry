@@ -1,8 +1,8 @@
 {
   "product": "starter-foundry",
-  "timestamp": "2026-04-24T01:33:32.892Z",
+  "timestamp": "2026-04-24T02:32:16.416Z",
   "coverage": "20/22 flows measured",
-  "aggregate": 0.607,
+  "aggregate": 0.605,
   "inputs": [
     {
       "path": ".evolve/buildout-analysis.json",
@@ -10,15 +10,15 @@
     },
     {
       "path": ".evolve/capability-gaps.json",
-      "mtime": "2026-04-24T01:31:36.747Z"
+      "mtime": "2026-04-24T01:39:25.144Z"
     },
     {
       "path": ".evolve/scaffold-quality-audit.json",
-      "mtime": "2026-04-22T21:41:02.886Z"
+      "mtime": "2026-04-24T02:31:44.030Z"
     },
     {
       "path": ".evolve/buildout-analysis-internal.json",
-      "mtime": "2026-04-24T01:33:32.363Z"
+      "mtime": "2026-04-24T02:32:15.879Z"
     },
     {
       "path": ".evolve/agent-eval/2026-04-23/three-layer-report.json",
@@ -27,10 +27,10 @@
   ],
   "sourceMtime": "2026-04-23T03:57:26.504Z",
   "stale": {
-    "anyFlowStale": true,
+    "anyFlowStale": false,
     "buildout": false,
     "gaps": false,
-    "audit": true
+    "audit": false
   },
   "buildoutSource": "historical",
   "flows": [
@@ -52,12 +52,11 @@
     },
     {
       "name": "scaffold_audit_pass_rate",
-      "value": 0.9787234042553191,
+      "value": 0.95,
       "target": 1,
       "status": "fail",
       "productValueClaim": "Fraction of framework layers where pnpm install + tsc noEmit succeeds on a freshly composed scaffold. A failure here means agents fight install errors on turn 1.",
-      "direction": "higher-better",
-      "stale": true
+      "direction": "higher-better"
     },
     {
       "name": "scaffold_gap_installs",
@@ -150,7 +149,7 @@
     },
     {
       "name": "proposal_promotion_rate",
-      "value": 0.038,
+      "value": 0.0361,
       "target": 0.3,
       "status": "fail",
       "productValueClaim": "Fraction of proposed families/capabilities that passed all validation gates (schema+compose+build) and landed in registry/ over the last 30 days. When this moves, vertical expansion is working — new buildable surfaces per week without manual registry authoring.",

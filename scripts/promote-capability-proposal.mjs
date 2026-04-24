@@ -25,6 +25,7 @@ import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { InMemoryTraceStore, BuilderSession, SubprocessSandboxDriver, scoreProject } from '@tangle-network/agent-eval'
 import { HARNESS_CONFIGS } from '../dist/eval/scaffold-bridge.js'
+import { checkDeclaredDepUsed, checkScaffoldRuns, checkEvalScores } from '../dist/lib/promoter-gates.js'
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const argv = process.argv.slice(2)
@@ -94,6 +95,7 @@ async function promoteOne(id) {
   }
   const composeTmp = mkdtempSync(join(tmpdir(), `promote-cap-${id}-`))
   let composedOutDir = null
+  let composedLayers = []
   try {
     // Stage the capability into the real registry temporarily.
     mkdirSync(dirname(registryCapDir), { recursive: true })
@@ -140,6 +142,7 @@ async function promoteOne(id) {
       return fail(id, 'schema-pass', `compose failed: ${composeRes.stderr.slice(-300)}`)
     }
     composedOutDir = join(composeTmp, 'out')
+    composedLayers = [`framework:${targetFamily}`, `capability:${id}`]
     console.log(`  ✓ ${id} compose-pass (on ${targetFamily})`)
   } finally {
     try { rmSync(registryCapDir, { recursive: true, force: true }) } catch { /* noop */ }
@@ -167,6 +170,18 @@ async function promoteOne(id) {
       return fail(id, 'compose-pass', `build failed: score=${(shipResult.result?.score ?? 0).toFixed(2)}`)
     }
     console.log(`  ✓ ${id} build-pass (score=${shipResult.result.score.toFixed(2)})`)
+
+    // ── Gen 9 dogfood gates (declared-dep-used / scaffold-runs / eval-scores).
+    // These run AFTER build-pass on the composed scaffold, before we
+    // commit the capability to registry/. See src/lib/promoter-gates.ts.
+    const dogfoodOutcome = await runDogfoodGates({
+      id,
+      draftDir,
+      composedOutDir,
+      manifest,
+      composedLayers,
+    })
+    if (dogfoodOutcome.failure) return dogfoodOutcome.failure
   } catch (err) {
     writeFileSync(join(draftDir, 'validation-errors.json'), JSON.stringify({ gate: 'build', error: err?.message ?? String(err) }, null, 2))
     return fail(id, 'compose-pass', `build threw: ${err?.message ?? err}`)
@@ -259,4 +274,51 @@ function fail(id, gateReached, message) {
   logGovernor({ event: 'promote-cap-outcome', id, gateReached, message })
   logImpact({ event: 'capability-promote-failed', id, gateReached, message })
   return { id, gateReached, message }
+}
+
+/**
+ * Run the Gen 9 dogfood gates on an already-built composed scaffold.
+ * Mirrors the family-promoter helper. See src/lib/promoter-gates.ts
+ * for each gate's semantics.
+ */
+async function runDogfoodGates({ id, draftDir, composedOutDir, manifest, composedLayers }) {
+  const depUsed = checkDeclaredDepUsed({ manifest, composedDir: composedOutDir })
+  if (depUsed.status === 'fail') {
+    writeFileSync(join(draftDir, 'validation-errors.json'), JSON.stringify(depUsed, null, 2))
+    return { failure: fail(id, 'declared-dep-used', depUsed.message ?? `unused deps: ${(depUsed.unusedDeps ?? []).join(', ')}`) }
+  }
+  console.log(`  ${depUsed.status === 'pass' ? '✓' : '·'} ${id} declared-dep-used: ${depUsed.status}${depUsed.status === 'skipped' ? ` (${depUsed.reason})` : ''}`)
+
+  const composesAgentEval = composedLayers.some((l) => l === 'capability:agent-eval' || l.endsWith(':agent-eval'))
+  const runsResult = await checkScaffoldRuns({
+    composedDir: composedOutDir,
+    manifest,
+    options: { keepProcess: composesAgentEval },
+  })
+  if (runsResult.status === 'fail') {
+    writeFileSync(join(draftDir, 'validation-errors.json'), JSON.stringify({ ...runsResult, process: undefined }, null, 2))
+    return { failure: fail(id, 'scaffold-runs', runsResult.message ?? runsResult.reason ?? 'scaffold failed to boot') }
+  }
+  console.log(`  ${runsResult.status === 'pass' ? '✓' : '·'} ${id} scaffold-runs: ${runsResult.status}${runsResult.status === 'skipped' ? ` (${runsResult.reason})` : ''}`)
+
+  try {
+    if (runsResult.status === 'pass' && composesAgentEval && runsResult.port) {
+      const evalResult = await checkEvalScores({
+        composedDir: composedOutDir,
+        manifest,
+        composedLayers,
+        options: { port: runsResult.port },
+      })
+      if (evalResult.status === 'fail') {
+        writeFileSync(join(draftDir, 'validation-errors.json'), JSON.stringify(evalResult, null, 2))
+        return { failure: fail(id, 'eval-scores', evalResult.message ?? evalResult.reason ?? 'eval scores below threshold') }
+      }
+      console.log(`  ${evalResult.status === 'pass' ? '✓' : '·'} ${id} eval-scores: ${evalResult.status}${evalResult.status === 'skipped' ? ` (${evalResult.reason})` : ''}`)
+    }
+  } finally {
+    if (runsResult.status === 'pass' && runsResult.process) {
+      try { runsResult.process.kill() } catch { /* noop */ }
+    }
+  }
+  return { failure: null }
 }

@@ -75,18 +75,35 @@ stale worktrees                  = removed
 
 ## To resume on a remote runner
 
+**⚠ CRITICAL — agent-eval must be on branch `feat/three-layer-scaffold-only`.**
+
+`package.json` has `"@tangle-network/agent-eval": "link:../agent-eval"`. starter-foundry's `src/training/*/propose.ts` imports `runProposeReview`, `inMemoryReviewStore`, `jsonlReviewStore`, `createLlmReviewer`, and types (`ProposeFn`, `VerifyFn`, `ReviewFn`, `Verification`, `ReviewMemoryEntry`) that were added to agent-eval in commit `c696bfd` on the `feat/three-layer-scaffold-only` branch. Those symbols are NOT on agent-eval's `main` — checking out agent-eval's main will make `pnpm test` fail with TS2305 "has no exported member" errors.
+
 ```bash
 # On the remote machine — single-shot setup
-git clone <origin> starter-foundry && cd starter-foundry
+# 1. Clone AGENT-EVAL FIRST as a sibling (starter-foundry links to ../agent-eval)
+cd ~/code   # or wherever, as long as both repos are siblings
+git clone https://github.com/tangle-network/agent-eval.git
+cd agent-eval
+git checkout feat/three-layer-scaffold-only   # MUST be this branch, not main
+pnpm install --frozen-lockfile
+pnpm build                                    # writes dist/ that starter-foundry links against
+cd ..
+
+# 2. Clone starter-foundry as sibling of agent-eval
+git clone https://github.com/tangle-network/starter-foundry.git
+cd starter-foundry
 git checkout feat/emit-cache-warm-list
 pnpm install --frozen-lockfile
 pnpm build
-pnpm test                              # expect 688/688
+pnpm test                                     # expect 688/688
 
-# Verify scorecard is intact
+# 3. Verify scorecard is intact
 node scripts/refresh-scorecard.mjs
-cat .evolve/scorecard.json | jq '.aggregate'   # expect 0.603
+cat .evolve/scorecard.json | jq '.aggregate' # expect 0.603
 ```
+
+The agent-eval commit providing the imports: https://github.com/tangle-network/agent-eval/commit/c696bfd (exports propose-review + steering + judge-runner + optimization-loop; 319/319 tests green at that commit).
 
 Secrets needed: `~/company/devops/secrets/agent-state.env` (Together API key is load-bearing — router is unfunded per the R3 HTTP 402 experience; OpenAI rate-limits at 429 and Gemini 400s on the judge signature). Multi-provider fallback in `src/lib/llm.ts` is default-on since R1 so the pipeline survives any single provider failure.
 

@@ -44,6 +44,9 @@ interface CorpusResult {
   confidence: string
   route: Route
   routeOk: boolean
+  // Gen 9: explicit flag so routeAccuracy excludes no-expectation
+  // scenarios (e.g. vibecoder) rather than counting them as auto-pass.
+  hasExpectation: boolean
   validationOk: boolean
   primaryArtifactHit: boolean
   validationEvidence: ValidationEvidence
@@ -145,10 +148,17 @@ async function loadWorkspaceValidationEvidence(
   }
 }
 
-function matchesExpectation(result: { kind: 'starter' | 'workspace'; route: Route }, expected?: CorpusExpected): boolean {
-  if (!expected) return true
+function matchesExpectation(
+  result: { kind: 'starter' | 'workspace'; route: Route },
+  expected?: CorpusExpected,
+): { matched: boolean; hasExpectation: boolean } {
+  // Previously `if (!expected) return true` silently inflated routeAccuracy
+  // for corpora without expectations (vibecoder). The three-valued shape
+  // forces the summary layer to exclude no-expectation scenarios from the
+  // accuracy denominator rather than treating them as auto-pass.
+  if (!expected) return { matched: true, hasExpectation: false }
 
-  if (expected.kind !== result.kind) return false
+  if (expected.kind !== result.kind) return { matched: false, hasExpectation: true }
 
   if (expected.kind === 'starter') {
     const route = result.route as StarterRoute
@@ -156,7 +166,7 @@ function matchesExpectation(result: { kind: 'starter' | 'workspace'; route: Rout
     const sameSlots = Object.entries(expected.slots ?? {}).every(
       ([slotName, layerId]) => route.slots[slotName] === layerId,
     )
-    return sameFamily && sameSlots
+    return { matched: sameFamily && sameSlots, hasExpectation: true }
   }
 
   const route = result.route as WorkspaceRoute
@@ -165,7 +175,7 @@ function matchesExpectation(result: { kind: 'starter' | 'workspace'; route: Rout
   const sameFamilies = Object.entries(expected.projectFamilies ?? {}).every(
     ([projectId, family]) => route.projectFamilies[projectId] === family,
   )
-  return samePrimary && sameProjects && sameFamilies
+  return { matched: samePrimary && sameProjects && sameFamilies, hasExpectation: true }
 }
 
 export async function runPromptCorpus({
@@ -235,7 +245,8 @@ export async function runPromptCorpus({
           ? await loadStarterValidationEvidence(benchmarkRunDir)
           : await loadWorkspaceValidationEvidence(benchmarkRunDir, plan)
 
-      const routeOk = matchesExpectation({ kind: plan.kind, route }, scenario.expected)
+      const match = matchesExpectation({ kind: plan.kind, route }, scenario.expected)
+      const routeOk = match.matched
       const validationOk = benchmark.summary.passRate === 1
       const primaryArtifactHit = benchmark.summary.primaryArtifactHitRate === 1
 
@@ -248,6 +259,7 @@ export async function runPromptCorpus({
         confidence: plan.confidence,
         route,
         routeOk,
+        hasExpectation: match.hasExpectation,
         validationOk,
         primaryArtifactHit,
         validationEvidence,
@@ -268,7 +280,14 @@ export async function runPromptCorpus({
       results,
       summary: {
         passRate: results.filter((result) => result.ok).length / results.length,
-        routeAccuracy: results.filter((result) => result.routeOk).length / results.length,
+        // routeAccuracy denominator excludes no-expectation scenarios —
+        // previously silent-passed via `if (!expected) return true` in the
+        // matcher (Gen 9 muffled-gate audit).
+        routeAccuracy: (() => {
+          const checkable = results.filter((r) => r.hasExpectation)
+          if (checkable.length === 0) return 1
+          return checkable.filter((r) => r.routeOk).length / checkable.length
+        })(),
         validationPassRate: results.filter((result) => result.validationOk).length / results.length,
         primaryArtifactHitRate: results.filter((result) => result.primaryArtifactHit).length / results.length,
       },

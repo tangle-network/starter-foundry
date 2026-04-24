@@ -4,7 +4,7 @@
 
 import { describe, test } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, writeFileSync, mkdirSync, rmSync } from 'node:fs'
+import { mkdtempSync, writeFileSync, mkdirSync, rmSync, realpathSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import {
@@ -51,9 +51,15 @@ describe('scaffold-bridge: makeHarnessConfig language dispatch', () => {
     const h = makeHarnessConfig(fakeComponents({ family: { taxonomy: { language: 'solidity', surface: 'contracts' } } }))
     assert.match(h.testCommand!, /forge build/)
   })
-  test('unknown language → no-op test (never block eval)', () => {
-    const h = makeHarnessConfig(fakeComponents({ family: { taxonomy: { language: 'zig', surface: 'firmware' } } }))
-    assert.equal(h.testCommand, 'true')
+  test('unknown language → throws (never silent-pass)', () => {
+    // Gen 9: the previous `testCommand: 'true'` fallback silently passed
+    // every family whose language wasn't in the dispatch. Throwing forces
+    // the caller to explicitly add the language to HARNESS_CONFIGS with
+    // a strict command before proposing a scaffold against it.
+    assert.throws(
+      () => makeHarnessConfig(fakeComponents({ family: { taxonomy: { language: 'zig', surface: 'firmware' } } })),
+      /unsupported taxonomy\.language/,
+    )
   })
 })
 
@@ -286,27 +292,29 @@ describe('scaffold-bridge: invokeMetaJudge compile-gate', () => {
 // ─────────────────────────────────────────────────────────────────────
 
 describe('promote-family-proposal harness: strict TS gate', () => {
-  test('typescript family testCommand is strict tsc --noEmit (no `|| true` swallow)', async () => {
-    // The bug this guards against: harnessConfigForFamily(typescript) used
-    // to set testCommand: 'pnpm run validate || pnpm run build || true',
-    // which swallowed every typecheck error. Verify only the testCommand
-    // value, not surrounding comments (which may legitimately reference
-    // the old shape for documentation).
-    const { readFileSync } = await import('node:fs')
-    const promoter = readFileSync('scripts/promote-family-proposal.mjs', 'utf8')
-    const tsReturn = promoter.match(/case 'typescript':[\s\S]+?return\s*\{[^}]+\}/)![0]
-    const testCmd = tsReturn.match(/testCommand:\s*'([^']+)'/)![1]!
+  test('typescript family testCommand is strict tsc --noEmit (via HARNESS_CONFIGS)', async () => {
+    // Gen 9 dedup: the promoters no longer carry their own per-language
+    // switch. Source of truth is HARNESS_CONFIGS in scaffold-bridge.ts;
+    // verify it directly.
+    const mod = await import('../dist/eval/scaffold-bridge.js')
+    const testCmd = mod.HARNESS_CONFIGS.typescript!.testCommand as string
     assert.doesNotMatch(testCmd, /\|\| true/, `testCommand must not swallow with || true — got: ${testCmd}`)
     assert.match(testCmd, /tsc\s+--noEmit/, `testCommand must run tsc --noEmit — got: ${testCmd}`)
   })
 
-  test('capability promoter has the same strict TS gate', async () => {
+  test('capability promoter uses HARNESS_CONFIGS (no parallel switch)', async () => {
     const { readFileSync } = await import('node:fs')
     const cap = readFileSync('scripts/promote-capability-proposal.mjs', 'utf8')
-    const tsReturn = cap.match(/case 'typescript':[\s\S]+?return\s*\{[^}]+\}/)![0]
-    const testCmd = tsReturn.match(/testCommand:\s*'([^']+)'/)![1]!
-    assert.doesNotMatch(testCmd, /\|\| true/, `capability testCommand must not swallow with || true — got: ${testCmd}`)
-    assert.match(testCmd, /tsc\s+--noEmit/, `capability testCommand must run tsc --noEmit — got: ${testCmd}`)
+    assert.match(
+      cap,
+      /HARNESS_CONFIGS/,
+      'promote-capability-proposal.mjs must import HARNESS_CONFIGS — source of truth is scaffold-bridge.ts',
+    )
+    assert.doesNotMatch(
+      cap,
+      /case\s+['"]typescript['"]\s*:[\s\S]+?testCommand/,
+      'capability promoter must not redeclare its own language→command switch (Gen 9 dedup)',
+    )
   })
 
   test('promoter passes cwd via harness config, not driver constructor (Gen 8b fix)', async () => {
@@ -353,7 +361,10 @@ describe('promote-family-proposal harness: strict TS gate', () => {
     // a tmpdir catches that immediately.
     const { InMemoryTraceStore, BuilderSession, SubprocessSandboxDriver } =
       await import('@tangle-network/agent-eval')
-    const dir = mkdtempSync(join(tmpdir(), 'harness-cwd-behavioral-'))
+    // macOS tmpdir is a symlink (/var/folders → /private/var/folders); `pwd`
+    // in bash follows it, so compare against the resolved realpath or the
+    // test fails on Darwin while passing on Linux.
+    const dir = realpathSync(mkdtempSync(join(tmpdir(), 'harness-cwd-behavioral-')))
     try {
       const store = new InMemoryTraceStore()
       const driver = new SubprocessSandboxDriver()

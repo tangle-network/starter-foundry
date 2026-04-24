@@ -140,7 +140,12 @@ for (const seed of selected) {
       return
     }
 
-    const driver = new SubprocessSandboxDriver({ cwd: prep.scaffoldDir })
+    // cwd is baked into prep.harness by prepareScaffoldForEval. Do NOT
+    // pass it to the driver constructor — SubprocessSandboxDriver.exec
+    // reads cwd from the per-call HarnessConfig (agent-eval@0.7.0), so a
+    // constructor arg is silently dropped. That was the Gen 8b promoter
+    // bug and it lived here in the runtime path until Round 0 post-Gen-9.
+    const driver = new SubprocessSandboxDriver()
     const session = new BuilderSession(store, { projectId }, driver)
     await session.startChat()
 

@@ -1,5 +1,123 @@
 # Evolve Progress — starter-foundry routing quality
 
+## 2026-04-24 — Evolve Round 0 post-Gen-9: runtime-path validation (KEEP)
+
+**Goal:** verify that Gen 9's runtime-eval muffled-gate closure (PR #54)
+takes effect at proposal time.
+
+**Finding:** Gen 9 did NOT close the runtime path — only the promoter
+path (via Gen 8b). The runtime eval script
+`scripts/agent-eval-scaffold.mjs:143` still passed cwd to the
+SubprocessSandboxDriver constructor (silently dropped per Gen 8b
+findings), so a scaffold with a deliberate TS error silent-passed the
+runtime eval at `exitCode=0`. Confirmed with a synthetic probe
+(TS2322 string-as-number assignment, shipped through the same
+BuilderSession + harness path the runtime uses).
+
+**Root cause:** Gen 9's invariant scanner did NOT include
+`scripts/agent-eval-scaffold.mjs` in its scan list, and did not have a
+pattern for the construct-vs-call dropped-arg shape. The Gen 9 PR
+thesis ("one source of truth + invariant") was correct, but the Phase
+1.5 audit missed this file — it fixed source-code locations and
+promoter paths but didn't walk the runtime entry point.
+
+**Fix shape (structural, matches Gen 9 thesis):**
+- `prepareScaffoldForEval` now returns a harness with `cwd:
+  scaffoldDir` baked in. Callers can't forget — the construct-vs-call
+  seam doesn't exist at this layer.
+- `scripts/agent-eval-scaffold.mjs` driver takes no cwd arg.
+- Invariant scanner adds `findConstructorCwdDropped` catching
+  `new SubprocessSandboxDriver({cwd:...})` anywhere in scanned files
+  + adds `scripts/agent-eval-scaffold.mjs` to the scan list.
+- New invariant test asserts `prepareScaffoldForEval` returns a
+  harness with cwd baked in (source-grep).
+
+**Verified:**
+- Probe pre-fix: `passed=true exitCode=0` for TS-error scaffold.
+- Probe post-fix: `passed=false exitCode=2` with `TS2322: Type
+  'string' is not assignable to type 'number'` in stdout.
+- Planted-regression: restoring the cwd-in-constructor shape in
+  `agent-eval-scaffold.mjs` fails the invariant with exact file:line.
+- 701/701 tests pass (was 700 after Gen 9 merge; +1 new invariant
+  test).
+
+**Verdict:** KEEP. This is the structural closure Gen 9's PR body
+promised — now actually true for the runtime path, not just the
+promoter path. Round 1 can dispatch `/reflect` to capture the lesson
+(Phase 1.5 audit must walk entry-point scripts, not just lib/ + test
+files) and then move on.
+
+**Seeds for Round 1:**
+- Audit other entry-point scripts (propose-*-candidates.mjs,
+  audit-scaffold-quality.mjs) for the same construct-vs-call pattern
+  in *any* agent-eval API, not just cwd.
+- Extend the invariant scanner to include all scripts that import from
+  `@tangle-network/agent-eval`, derived automatically rather than
+  maintained by hand.
+
+---
+
+## 2026-04-24 — Pursuit Gen 9: structural muffled-gate audit
+
+Pursuit: `.evolve/pursuits/2026-04-24-muffled-gate-audit.md`. Thesis:
+"replace the case-by-case muffled-gate fix pattern with a structural
+invariant — one source-of-truth `HARNESS_CONFIGS` table + code-grep
+invariant test that mechanically fails CI on any new muffled gate."
+Prior Gen 8b fix caught one muffler in the promoters; audit found
+3 more live (runtime `makeHarnessConfig`, unknown-language default,
+held-out `expected.kind` default) plus 2 bonus shapes (skip-counts-as-pass,
+no-expectation-auto-matches). Gen 9 closes all of them AND adds the
+invariant scanner that prevents re-introduction.
+
+**Changes shipped (7 code files + 2 new, 5 tests added):**
+- `src/eval/scaffold-bridge.ts` — `HARNESS_CONFIGS` table exported
+  as single source of truth. TS entry strict (`tsc --noEmit`), unknown
+  language throws, per-language muffle-ok annotations for legitimate
+  best-effort setup commands.
+- `scripts/promote-family-proposal.mjs` + `scripts/promote-capability-proposal.mjs`
+  — both import `HARNESS_CONFIGS` and delete their own parallel
+  switch. No more drift surface.
+- `scripts/meta-harness-eval.mjs` — held-out `expectedKind ?? 'starter'`
+  → `?? null` (matcher already handles null correctly); actual-workspace
+  derivation `?? 'workspace'` kept with `muffle-ok:` annotation
+  explaining it's the sentinel for multi-project workspaces, not an
+  expected-kind default.
+- `src/lib/template-quality.ts` — `phaseOk` returns three-valued
+  (`true | false | 'skipped' | null`); skip → 0.5 credit at aggregate
+  instead of 1.0 silent pass.
+- `src/lib/prompt-e2e.ts` — `matchesExpectation` returns
+  `{matched, hasExpectation}`; `routeAccuracy` denominator excludes
+  no-expectation scenarios.
+- `tests/muffled-gate-invariant.test.ts` — NEW. 5 pattern scanners
+  + 3 structural assertions + HARNESS_CONFIGS round-trip checks.
+- `.evolve/patterns/muffled-gate.md` — NEW. Names the pattern, lists
+  10 canonical instances (7 fixed by Gen 9 + 3 pre-Gen-9), documents
+  the `muffle-ok:` escape hatch, tells future proposers what to avoid.
+- `tests/scaffold-bridge.test.ts` — refactored Gen 8 strict-testCommand
+  regression tests to assert the new HARNESS_CONFIGS source-of-truth
+  shape; updated "unknown language" test to assert throw.
+
+**Verified end-to-end:**
+- 699/699 tests pass (was 694, +5: 4 new invariant tests + unknown-language throw).
+- Build clean.
+- Planted regression: restored `|| true` to `HARNESS_CONFIGS.typescript.testCommand`
+  → invariant test IMMEDIATELY fails with exact file:line + pattern
+  name. Restored.
+- Grep sweep: 0 un-annotated muffled-gate patterns in scanned paths
+  (down from 7 at Gen 8b close).
+
+**Expected impact:** this is a process-quality generation, not a
+metric-moving one. Its cash-out is in the NEXT autonomous proposer
+run — bad proposals that survived the Gen 8b partial-fix (promoter-only)
+now fail loud at the RUNTIME eval path too. Any new muffled gate
+added by a future proposer fails CI before merge.
+
+**Next:** dispatch `/evolve` against the next nightly proposer run.
+Measure rejection-rate delta and validate that the runtime-eval
+closure takes effect.
+
+---
+
 ## 2026-04-22 (evening) — Pursuit Gen 3: measurement freshness (scorecard self-heals)
 
 Pursuit: `.evolve/pursuits/2026-04-22-measurement-freshness.md`. Thesis: "the scorecard is self-fresh — it regenerates stale inputs at read time, so any `/governor` invocation reads honest data regardless of what the operator remembered." Gen 2 shipped the staleness gate (detection); Gen 3 closes the loop (auto-fix).

@@ -9,7 +9,6 @@ export default defineConfig({
     port: 3000
   },
   esbuild: {
-    loader: 'es2022',
     target: 'es2022'
   }
 })

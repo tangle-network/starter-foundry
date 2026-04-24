@@ -1,47 +1,36 @@
 {
-  "mode": "multi-pursue",
-  "goal": "Gen 7 architectural ceiling — move coverage_lift_per_promote via router rebalance. CONVERGED R4.",
-  "status": "multi-pursue-round-4-converged-merged",
-  "round": 4,
-  "generation": 7,
+  "mode": "evolve",
+  "goal": "Gen 8 compile-gate shipped — close the Goodhart loop where fidelity judge passes scaffolds the build would reject",
+  "status": "gen-8-shipped",
+  "round": 0,
+  "generation": 8,
   "activePursuit": null,
-  "lastPursuit": ".evolve/multi-pursue/round4-config.json",
-  "updatedAt": "2026-04-23T23:55:00Z",
+  "lastPursuit": ".evolve/pursuits/2026-04-24-compile-gate.md",
+  "updatedAt": "2026-04-24T03:30:00Z",
   "priorGenerations": [
-    { "n": 3, "pursuit": "measurement-freshness", "commit": "9b5aafd" },
-    { "n": 5, "pursuit": "closed-loop-generation", "commits": ["52afc18", "ce931c6"] },
-    { "n": 6, "pursuit": "generation-flywheel", "commits": ["17347c1", "ceee7ee", "e2a1908", "dcf9bfc", "3c265e9", "78110b2", "fe9cefd"] },
-    { "n": 7, "pursuit": "multi-pursue-r4-partner-first-router", "commit": "518bf50" }
+    { "n": 6, "pursuit": "generation-flywheel", "commit": "17347c1" },
+    { "n": 7, "pursuit": "multi-pursue-r4-partner-first-router", "commit": "518bf50" },
+    { "n": 8, "pursuit": "compile-gate", "commit": "pending" }
   ],
-  "gen7Result": {
-    "thesis": "Coverage_lift_per_promote (single-family promotes not absorbing workspace-classified demand) is architectural — needs router-side restructuring, not more evolve tuning.",
-    "variants_dispatched": 2,
-    "variants_worktree_isolation": true,
-    "winner": "variant-B-partner-first",
-    "mechanism": "When buildout trace carries explicit partnerGuess, scan families matching partner via id/tags/keywords/tier1; if score>=2 on allowed surface, wrap partner-aligned family in single-project workspace. Falls through to existing router otherwise.",
-    "coverage_lift_move": "0 → 0.308 (3x target 0.10)",
-    "routing_stability": "perfect: 0 flipped, 0 lost, 8 gained",
-    "testSuite": "688/688",
-    "secondaryFinding": "Variant A (tier1-first override) exposed a root cause: 26 of 54 buildout scenarios have initialPrompt:null — the router can't route text that doesn't exist. Trace-capture bug escalated as Gen 8 seed. Variant A's mechanism works on live prompts (verified synthetically on KYC/fraud/polymarket) but is bounded by dataset shape."
+  "gen8Result": {
+    "thesis": "Strict tsc --noEmit at the build gate + optional buildOutcome short-circuit in invokeMetaJudge — catches at proposal time the bugs that previously slipped through to audit time",
+    "filesChanged": 4,
+    "linesAdded": 184,
+    "linesDeleted": 7,
+    "newTests": 6,
+    "testTotal": "688 → 694",
+    "verifiedReplay": "kyc-onboarding pre-fix .ts JSX → strict gate rejects with TS1005 + TS1109",
+    "verifiedShortCircuit": "synthetic buildOutcome.passed=false → verdict='fail' with TS error preserved, no LLM call",
+    "phase15Gate": "passed (all-no, <300 LoC, single-purpose change)"
   },
-  "scorecardFlows": {
-    "pass": [
-      "full_stack_proposal_rate (1.00)",
-      "llm_proposal_success_rate (1.00)",
-      "proposed_family_first_ship_hours (0.1h)",
-      "capability_promotion_rate (0.6667)",
-      "coverage_lift_per_promote (0.3077) — Gen 7 unlock"
-    ],
-    "fail": [
-      "proposal_promotion_rate (0.0435/0.3) — 30-day denominator pollution, dilutes naturally as nightly runs"
-    ]
+  "scorecard": {
+    "aggregate": 0.605,
+    "note": "Gen 8 is process-quality not metric-quality — it shrinks the surface for future Goodhart bugs to land. Aggregate impact will materialize in next nightly autonomous proposer run when the strict gate rejects bad proposals at proposal time."
   },
-  "aggregateTrajectory": "0.407 (baseline) → 0.495 (R1) → 0.530 (R2) → 0.527 (R3) → 0.530 (R4) → 0.553 (R5) → 0.553 (R6) → 0.603 (Gen 7 R4)",
-  "cumulativeDelta": "+19.6pp over the full Gen 6 + Gen 7 arc (0.407 → 0.603)",
-  "gen8Seeds": [
-    "Trace-capture bug: 26/54 buildouts have initialPrompt:null. Upstream fix unlocks Variant A's mechanism + compounds with B.",
-    "Workspace-composable proposer: generates multi-project specs for workspace-classified demand — the durable architectural fix beyond narrow-case partner routing.",
-    "AxGEPA on hintsAuthor.keywordsTier1: accumulated proposer outcomes now sufficient for training."
+  "gen9Seeds": [
+    "Audit other testCommands for muffled-gate pattern (rust uses || fallback chain that may also be too lenient)",
+    "Lift the audit script's typecheck step into the capability promoter so they share the harness shape",
+    "AxGEPA on META_JUDGE_SIGNATURE — now that compile-gate handles correctness, the LLM judge's job is purely subjective quality (clearer optimization target)"
   ],
-  "handoff": "5/6 Gen 6 + Gen 7 flows pass. proposal_promotion_rate alone remains — but that one dilutes naturally as nightly runs accumulate. Next /governor pick should be /evolve (one round to validate nightly delivers autonomous lift) OR /pursue Gen 8 trace-capture if operator wants immediate motion. Multi-pursue has converged on this target."
+  "handoff": "Run /evolve against the next nightly autonomous proposer run. Expected: any LLM-generated proposal with TS errors fails at the strict gate at proposal time, not audit time. End-to-end validates Gen 8 closure."
 }

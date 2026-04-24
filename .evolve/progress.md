@@ -776,3 +776,30 @@ Result: 39 → **9** (−30). Total arc 56 → 9 (−84%, well below target 10).
 - Gen 8 thesis (highest-ROI architectural): "fidelity judge needs a compile-pass pre-check" — concrete change in `src/eval/scaffold-bridge.ts invokeMetaJudge` to run `pnpm install + tsc --noEmit` BEFORE LLM scoring, gate scoring on compile success
 - OR: continue letting nightly autonomy populate organic data on `proposal_promotion_rate` + `coverage_lift_per_promote`
 - OR: bump toolchain pins on the 5 toolchain-failing families (small, mechanical, would push `scaffold_audit_pass_rate` 0.95 → 1.0 by skipping or fixing toolchain rot)
+
+## 2026-04-24 — /pursue Gen 8 (compile-gate close-the-Goodhart-loop)
+
+**Trigger:** governor re-dispatched /pursue after first dispatch was preempted by PR #51 work. Thesis: insert compile-pass pre-check into invokeMetaJudge before LLM scoring.
+
+**Phase 0 audit found root cause was simpler than thesis:** the build gate ALREADY existed in promote-family-proposal.mjs (and capability variant), but `harnessConfigForFamily(typescript)` used `pnpm run validate || pnpm run build || true` — the `|| true` swallowed every typecheck error. All 3 of PR #51's bugs passed THIS gate, then passed the fidelity judge at 0.82-0.85, then shipped to registry. Caught only at audit time.
+
+**Two-line architectural fix:**
+1. Drop `|| true` in TypeScript harness for both promoters (family + capability)
+2. Use `pnpm exec tsc --noEmit` directly (strict, fail-loud)
+
+**Plus defensive judge enhancement:**
+3. Add optional `buildOutcome` param to `invokeMetaJudge` — when `passed: false`, return `verdict='fail'` immediately without LLM call. Cites failed phase + stderr tail. Defensive (existing flow exits before judge on build-fail) but useful for future agentic harnesses that don't gate.
+
+**Verified:**
+- Synthetic short-circuit test: passes (verdict='fail', 0 LLM calls, TS error preserved in issue description)
+- Real replay of kyc-onboarding pre-fix state in tempdir: `tsc --noEmit` rejects with TS1005 (the bug) and TS1109 (downstream)
+- 6 new tests (4 short-circuit + 2 harness regression guards). 0 regressions in existing 688.
+- 694/694 tests pass
+
+**Diff size:** 4 source files, 184 insertions / 7 deletions. Phase 1.5 gate: passed (all-no).
+
+**Verdict: ADVANCE.**
+
+**Cumulative arc reminder:** 0.407 (Gen 6 baseline) → 0.605 (post-Gen-8 measurement). Gen 8 is process-quality not metric-quality — it shrinks the surface for future Goodhart bugs to land.
+
+**Handoff:** run `/evolve` against the next nightly autonomous proposer run. Expected: any LLM-generated proposal with TS errors fails at the strict gate (caught at proposal time, not audit time). Test the Gen 8 closure end-to-end.

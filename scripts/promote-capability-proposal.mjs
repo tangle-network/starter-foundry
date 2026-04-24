@@ -237,7 +237,11 @@ function harnessConfigForFamily(familyManifest) {
   switch (language) {
     case 'typescript':
     case 'javascript':
-      return { setupCommand: 'pnpm install --prefer-offline', testCommand: 'pnpm run validate || pnpm run build || true', timeoutMs: 180_000 }
+      // Strict tsc — same fix as promote-family-proposal.mjs (Gen 8). Capability
+      // composes onto an existing family; if the composed scaffold doesn't
+      // typecheck, the capability is the regression source. Failing loud here
+      // catches it at proposal time instead of audit time.
+      return { setupCommand: 'pnpm install --prefer-offline', testCommand: 'pnpm exec tsc --noEmit', timeoutMs: 180_000 }
     case 'rust':
       return { setupCommand: 'cargo fetch', testCommand: 'cargo check --workspace || cargo check', timeoutMs: 300_000 }
     case 'go':

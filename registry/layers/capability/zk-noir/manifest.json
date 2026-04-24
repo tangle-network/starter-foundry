@@ -1,0 +1,72 @@
+{
+  "id": "zk-noir",
+  "description": "Aztec Noir \u2014 high-level DSL for writing ZK circuits (Rust-like syntax, compiles to ACIR for Barretenberg backend). Supports UltraHonk (fast, modern), Groth16 (compact, on-chain), Plonk. Best DX of the Rust-family ZK frameworks for small-to-medium circuits. Use when prompt names Noir / Aztec / nargo / Barretenberg, or when you want high-level-DSL productivity over raw primitives.",
+  "appliesTo": [
+    "react-vite-ts",
+    "nextjs-ts",
+    "fullstack-ts",
+    "remix-ts"
+  ],
+  "files": [
+    {
+      "source": "files/circuits/main.nr",
+      "target": "circuits/src/main.nr"
+    },
+    {
+      "source": "files/circuits/Nargo.toml",
+      "target": "circuits/Nargo.toml"
+    },
+    {
+      "source": "files/prover.ts",
+      "target": "src/lib/noir-prover.ts"
+    },
+    {
+      "source": "files/noir-notes.md",
+      "target": "docs/noir-notes.md"
+    }
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "@noir-lang/noir_js": "^1.0.0",
+      "@noir-lang/backend_barretenberg": "^1.0.0"
+    }
+  },
+  "keywords": [
+    "noir",
+    "aztec noir",
+    "barretenberg",
+    "nargo",
+    "ultrahonk",
+    "honk prover"
+  ],
+  "capabilityRequires": [],
+  "buildHints": {
+    "whenToUse": "Attach for products with small-to-medium ZK circuits where the DSL's ergonomics beat writing raw R1CS. Excellent for verifier-side browser/Node proving \u2014 bundle stays manageable because Barretenberg wasm is <5MB. For huge circuits where performance dominates, reach for SP1/RISC Zero instead.",
+    "firstSteps": [
+      "Install nargo: `curl -L https://raw.githubusercontent.com/noir-lang/noirup/main/install | bash && noirup`",
+      "In circuits/: `nargo check` validates, `nargo compile` produces target/circuit.json (ACIR)",
+      "JS side: `import { Noir } from '@noir-lang/noir_js'; const noir = new Noir(circuit); await noir.execute(inputs)`",
+      "Proving: `import { BarretenbergBackend } from '@noir-lang/backend_barretenberg'`; `backend.generateProof()`"
+    ],
+    "gotchas": [
+      "Noir version pinning matters \u2014 the @noir-lang/noir_js version must match the nargo compiler you compiled with. Mismatches produce cryptic 'unknown opcode' errors.",
+      "Browser Barretenberg ships as WASM \u2014 first-load cost is ~3-5MB. Lazy-load behind a user-triggered action, not on page-mount.",
+      "Field arithmetic is mod BN254; large u64/u128 values need to stay under ~2^254."
+    ]
+  },
+  "tieredKeywords": {
+    "archetypes": [
+      "noir",
+      "aztec noir",
+      "barretenberg",
+      "nargo",
+      "ultrahonk",
+      "honk prover",
+      "aztec noir circuit",
+      "build a noir program",
+      "noir zk app",
+      "nargo new",
+      "ultrahonk verifier"
+    ]
+  }
+}

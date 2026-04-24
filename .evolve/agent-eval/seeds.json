@@ -1,0 +1,420 @@
+{
+  "$schema": "agent-eval-seeds/v1",
+  "description": "Canonical prompts per family for scaffold-wide eval. One prompt per family, seeded from tests/coverage.test.ts FAMILY_PROMPTS — the same prompts that already prove the family ROUTES correctly. Evaluating these confirms the family also COMPOSES + BUILDS + JUDGES cleanly.\n\nWorkspace prompts (multi-project) live in a separate workspaces array below; keep families-vs-workspaces partitioned so sampling can draw from each pool independently.",
+  "families": [
+    {
+      "family": "agent-service-py",
+      "prompt": "Build a Python agent service using PydanticAI"
+    },
+    {
+      "family": "agent-service-rust",
+      "prompt": "Build a Rust AI agent using rig"
+    },
+    {
+      "family": "agent-service-ts",
+      "prompt": "Build an AI agent service in TypeScript"
+    },
+    {
+      "family": "agent-swarm-ts",
+      "prompt": "Build a LangGraph-js typescript multi-agent swarm with supervisor and specialist worker agents"
+    },
+    {
+      "family": "angular-ts",
+      "prompt": "Build an Angular app with standalone components"
+    },
+    {
+      "family": "api-service",
+      "prompt": "Build a Node.js API with health endpoint"
+    },
+    {
+      "family": "browser-extension-ts",
+      "prompt": "Build a Chrome extension with popup"
+    },
+    {
+      "family": "bun-http",
+      "prompt": "Build a Bun HTTP API using Bun.serve"
+    },
+    {
+      "family": "cli-ts",
+      "prompt": "Build a TypeScript CLI tool"
+    },
+    {
+      "family": "cloudflare-worker-ts",
+      "prompt": "Build a Cloudflare Worker edge API"
+    },
+    {
+      "family": "deno-edge",
+      "prompt": "Build a Deno HTTP API using Deno.serve with Deno Deploy target"
+    },
+    {
+      "family": "dspy-pipeline-py",
+      "prompt": "Build a DSPy text classification pipeline"
+    },
+    {
+      "family": "eigenlayer-avs",
+      "prompt": "Build an EigenLayer AVS for oracle data"
+    },
+    {
+      "family": "electron-desktop-ts",
+      "prompt": "Build an Electron desktop app"
+    },
+    {
+      "family": "evm-infra-ts",
+      "prompt": "Build a viem block monitor with gas tracking"
+    },
+    {
+      "family": "expo-react-native-ts",
+      "prompt": "Build an Expo React Native mobile app"
+    },
+    {
+      "family": "fhenix-contracts",
+      "prompt": "Build a Fhenix CoFHE encrypted contract"
+    },
+    {
+      "family": "fhevm-contracts",
+      "prompt": "Build a Zama fhEVM confidential contract"
+    },
+    {
+      "family": "forge-contracts",
+      "prompt": "Build a Foundry ERC20 contract in Solidity"
+    },
+    {
+      "family": "frontend-static",
+      "prompt": "Build a static landing page website"
+    },
+    {
+      "family": "fullstack-ts",
+      "prompt": "Build a fullstack SaaS admin dashboard"
+    },
+    {
+      "family": "go-api",
+      "prompt": "Build a Go REST API with Postgres"
+    },
+    {
+      "family": "go-worker",
+      "prompt": "Build a Go worker for cron reconciliations"
+    },
+    {
+      "family": "hardhat-contracts",
+      "prompt": "Build a Hardhat TypeScript project for X Layer"
+    },
+    {
+      "family": "mcp-server-ts",
+      "prompt": "Build an MCP server for database tools"
+    },
+    {
+      "family": "move-contracts",
+      "prompt": "Build a Sui Move treasury module"
+    },
+    {
+      "family": "nextjs-ts",
+      "prompt": "Build a Next.js app with App Router"
+    },
+    {
+      "family": "playwright-worker",
+      "prompt": "Build a Playwright web scraper"
+    },
+    {
+      "family": "python-api",
+      "prompt": "Build a FastAPI backend service"
+    },
+    {
+      "family": "python-data-app",
+      "prompt": "Build a Streamlit analytics dashboard"
+    },
+    {
+      "family": "python-worker",
+      "prompt": "Build a Python Celery worker for async jobs"
+    },
+    {
+      "family": "react-vite-ts",
+      "prompt": "Build a React Vite single page app"
+    },
+    {
+      "family": "remix-ts",
+      "prompt": "Build a Remix app with nested routes"
+    },
+    {
+      "family": "rust-service",
+      "prompt": "Build a Rust Axum HTTP service"
+    },
+    {
+      "family": "solana-program",
+      "prompt": "Build a Solana program with Anchor"
+    },
+    {
+      "family": "stylus-contracts",
+      "prompt": "Build an Arbitrum Stylus Rust contract"
+    },
+    {
+      "family": "sveltekit-ts",
+      "prompt": "Build a SvelteKit app with SSR"
+    },
+    {
+      "family": "tangle-blueprint",
+      "prompt": "Build a Tangle Blueprint for oracle data"
+    },
+    {
+      "family": "tauri-desktop",
+      "prompt": "Build a Tauri desktop app"
+    },
+    {
+      "family": "vllm-server",
+      "prompt": "Build a self-hosted LLM inference server using vLLM with OpenAI-compatible endpoints"
+    },
+    {
+      "family": "vue-ts",
+      "prompt": "Build a Vue 3 app with Composition API"
+    },
+    {
+      "family": "wasm-rust",
+      "prompt": "Build a Rust + WASM browser image processor using wasm-bindgen"
+    },
+    {
+      "family": "worker-job",
+      "prompt": "Build a trading bot worker"
+    },
+    {
+      "family": "x402-service",
+      "prompt": "Build an x402 pay-per-request API"
+    },
+    {
+      "family": "zk-prover-service",
+      "prompt": "Build a RISC Zero ZK prover service"
+    },
+    {
+      "family": "astro-static",
+      "prompt": "Build an Astro static site with islands architecture"
+    },
+    {
+      "family": "threejs-game",
+      "prompt": "Build a Three.js WebGL 3D scene with a rotating gltf model"
+    },
+    {
+      "family": "phaser-game",
+      "prompt": "Build a Phaser 3 2D arcade game with a bouncing sprite"
+    },
+    {
+      "family": "pixijs-game",
+      "prompt": "Build a Pixi.js v8 interactive canvas with 2D WebGPU rendering"
+    },
+    {
+      "family": "ollama-server",
+      "prompt": "Build an Ollama local LLM server with a gguf model"
+    },
+    {
+      "family": "aptos-move",
+      "prompt": "Build an Aptos Move module with aptos_framework imports"
+    },
+    {
+      "family": "bevy-web",
+      "prompt": "Build a Bevy Rust web game compiled to WASM via Trunk"
+    },
+    {
+      "family": "celestia-da",
+      "prompt": "Build a Celestia data availability light node with blob submit"
+    },
+    {
+      "family": "electron-native-os",
+      "prompt": "Build an Electron app with native OS integration, deep links, and OS notifications"
+    },
+    {
+      "family": "eleventy-static",
+      "prompt": "Build an Eleventy static blog with Nunjucks layouts"
+    },
+    {
+      "family": "expo-rn-rich",
+      "prompt": "Build an Expo React Native app with Skia and Reanimated animations"
+    },
+    {
+      "family": "fintech-ledger-backend",
+      "prompt": "Build a fintech double-entry ledger backend with debits and credits"
+    },
+    {
+      "family": "godot-web",
+      "prompt": "Build a Godot 4 web game with HTML5 export"
+    },
+    {
+      "family": "healthcare-hipaa-backend",
+      "prompt": "Build a HIPAA-compliant healthcare backend for patient records with PHI audit logging"
+    },
+    {
+      "family": "hls-origin",
+      "prompt": "Build an HLS live streaming origin server with RTMP ingest and m3u8 output"
+    },
+    {
+      "family": "hugo-static",
+      "prompt": "Build a Hugo static site with TOML config and layouts"
+    },
+    {
+      "family": "jupyter-book",
+      "prompt": "Build a Jupyter Book documentation site with executable MyST code cells"
+    },
+    {
+      "family": "legal-case-mgmt",
+      "prompt": "Build a legal case management SaaS for matter and attorney timekeeping"
+    },
+    {
+      "family": "livekit-sfu",
+      "prompt": "Build a LiveKit WebRTC SFU for video conferencing rooms"
+    },
+    {
+      "family": "lora-training",
+      "prompt": "Build a LoRA fine-tuning starter with PEFT and bitsandbytes QLoRA"
+    },
+    {
+      "family": "multimodal-agent",
+      "prompt": "Build a multimodal agent client that accepts text, image, and audio input"
+    },
+    {
+      "family": "observable-notebook",
+      "prompt": "Build an Observable Framework notebook with Plot charts"
+    },
+    {
+      "family": "rag-pipeline-py",
+      "prompt": "Build a Python RAG pipeline with Chroma and sentence-transformers"
+    },
+    {
+      "family": "realtime-audio-ts",
+      "prompt": "Build a realtime audio visualization with WebAudio analyser and WebRTC peer connection"
+    },
+    {
+      "family": "sglang-server",
+      "prompt": "Build an SGLang inference server with radix attention and constrained generation"
+    },
+    {
+      "family": "skypilot-serving",
+      "prompt": "Build a SkyPilot multi-cloud LLM serving deployment with sky serve"
+    },
+    {
+      "family": "streamlit-advanced",
+      "prompt": "Build a multipage Streamlit dashboard with caching and Plotly charts"
+    },
+    {
+      "family": "tauri-menubar",
+      "prompt": "Build a Tauri macOS menubar app with a floating popover panel"
+    },
+    {
+      "family": "tauri-tray",
+      "prompt": "Build a Tauri system tray daemon app with no main window"
+    },
+    {
+      "family": "tgi-server",
+      "prompt": "Build a HuggingFace Text Generation Inference server with CUDA"
+    },
+    {
+      "family": "triton-server",
+      "prompt": "Build an NVIDIA Triton inference server with a model repository"
+    },
+    {
+      "family": "unity-web-proxy",
+      "prompt": "Build a Unity WebGL export hosting proxy with batch-mode build scripts"
+    },
+    {
+      "family": "vision-first-agent",
+      "prompt": "Build a vision-first camera agent that captures frames for visual QA"
+    },
+    {
+      "family": "voice-first-agent",
+      "prompt": "Build a voice-first conversational agent with browser mic and speech to text"
+    },
+    {
+      "family": "webgpu-inference",
+      "prompt": "Build a WebGPU browser compute pipeline for WGSL matmul inference"
+    },
+    {
+      "family": "webgpu-render",
+      "prompt": "Build a raw WebGPU graphics renderer with WGSL vertex and fragment shaders"
+    },
+    {
+      "family": "zola-static",
+      "prompt": "Build a Zola static site with Rust SASS pipeline and Tera templates"
+    },
+    {
+      "family": "crm-backend",
+      "prompt": "Build a sales CRM backend with deals pipeline and won amount reporting"
+    },
+    {
+      "family": "ecommerce-headless",
+      "prompt": "Build a headless commerce backend with cart checkout and Stripe payment intent webhooks"
+    },
+    {
+      "family": "k12-edtech",
+      "prompt": "Build a K-12 edtech gradebook with FERPA-aligned audit logs and parent access controls"
+    },
+    {
+      "family": "flutter-app",
+      "prompt": "Build a Flutter dart mobile app with Material Design and Cupertino navigation"
+    },
+    {
+      "family": "kotlin-multiplatform",
+      "prompt": "Build a Kotlin Multiplatform app with Compose Multiplatform shared UI"
+    },
+    {
+      "family": "esp32-rust",
+      "prompt": "Build an ESP32 Rust firmware with esp-idf-svc WiFi scanner and xtensa target"
+    },
+    {
+      "family": "stm32-rust",
+      "prompt": "Build an STM32 Rust firmware with Embassy async bare metal and probe-rs"
+    },
+    {
+      "family": "ros2-node-py",
+      "prompt": "Build a ROS2 rclpy node publishing Twist messages on cmd_vel"
+    },
+    {
+      "family": "hipaa-compliance-pack",
+      "prompt": "Add a HIPAA-compliant compliance pack with PHI audit trail and BAA template"
+    },
+    {
+      "family": "soc2-compliance-pack",
+      "prompt": "Add a SOC 2 Type II compliance pack with change management and incident response playbook"
+    },
+    {
+      "family": "pci-dss-compliance-pack",
+      "prompt": "Add a PCI-DSS 4.0 compliance pack with PAN redaction and Stripe tokenization helpers"
+    },
+    {
+      "family": "gdpr-compliance-pack",
+      "prompt": "Add a GDPR-compliant consent management pack with data subject rights endpoints"
+    },
+    {
+      "family": "risczero-zkvm",
+      "prompt": "Build a RISC Zero zkVM prover service that proves Rust programs and uses the Bonsai proving network"
+    },
+    {
+      "family": "sp1-zkvm",
+      "prompt": "Build a Succinct SP1 zkVM with the Succinct prover network and an on-chain SP1 Gnark verifier"
+    },
+    {
+      "family": "arkworks-prover",
+      "prompt": "Build a custom SNARK circuit from scratch with arkworks hand-rolled r1cs for a research-grade zk proof"
+    }
+  ],
+  "workspaces": [
+    {
+      "id": "frontend+risczero",
+      "prompt": "Build a React Vite frontend and a RISC Zero prover service"
+    },
+    {
+      "id": "frontend+sp1",
+      "prompt": "Build a Next.js app and an SP1 zkVM prover backend"
+    },
+    {
+      "id": "nextjs+arkworks",
+      "prompt": "Build a Next.js app and an arkworks-based zk proof service"
+    },
+    {
+      "id": "frontend+go+evm",
+      "prompt": "Build a fullstack React frontend with a Go API and a Solidity ERC20 contract"
+    },
+    {
+      "id": "frontend+agent",
+      "prompt": "Build a React dashboard with an AI agent service for customer support"
+    },
+    {
+      "id": "frontend+tangle",
+      "prompt": "Build a React frontend for a Tangle Blueprint oracle network with price feeds"
+    }
+  ]
+}

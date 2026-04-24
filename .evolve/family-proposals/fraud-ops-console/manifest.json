@@ -1,0 +1,140 @@
+{
+  "id": "fraud-ops-console",
+  "description": "fraud-ops-console starter — derived from 3× real demand signal. Taxonomy guess: typescript/node/frontend.",
+  "tags": [
+    "node",
+    "frontend",
+    "typescript"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "frontend"
+  },
+  "defaults": {
+    "projectType": "frontend",
+    "serviceName": "starter-foundry-fraud-ops-console"
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/vite.config.ts",
+      "target": "vite.config.ts"
+    },
+    {
+      "source": "files/index.html",
+      "target": "index.html"
+    },
+    {
+      "source": "files/src/main.tsx",
+      "target": "src/main.tsx"
+    },
+    {
+      "source": "files/src/App.tsx",
+      "target": "src/App.tsx"
+    },
+    {
+      "source": "files/.env.example",
+      "target": ".env.example"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/validate-node.mjs",
+      "target": "validate-node.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "package.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "tsconfig.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "vite.config.ts"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "Initialize a new project with the fraud-ops-console starter",
+      "Install required dependencies",
+      "Configure the project structure"
+    ],
+    "entrypoints": [
+      "index.ts"
+    ],
+    "preview": null,
+    "extensionPoints": []
+  },
+  "keywords": [
+    "fraud detection",
+    "risk management",
+    "compliance",
+    "frontend",
+    "typescript",
+    "nodejs",
+    "security",
+    "regulations",
+    "data-driven",
+    "modular architecture",
+    "performance",
+    "scalability"
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "fraud detection",
+      "risk management",
+      "compliance",
+      "frontend",
+      "typescript",
+      "nodejs"
+    ],
+    "tier2": [
+      "security",
+      "regulations",
+      "data-driven",
+      "modular architecture",
+      "performance",
+      "scalability"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "When building a frontend application for fraud operations, such as fraud detection, risk management, or compliance, and requiring a TypeScript and Node.js runtime.",
+    "firstSteps": [
+      "Initialize a new project with the fraud-ops-console starter",
+      "Install required dependencies",
+      "Configure the project structure",
+      "Implement fraud detection and risk management features",
+      "Add a 'dev' script to the package.json file"
+    ],
+    "gotchas": [
+      "Ensure proper handling of sensitive data and compliance with regulations",
+      "Implement robust security measures to prevent fraud and unauthorized access",
+      "Monitor and update dependencies to prevent vulnerabilities"
+    ],
+    "architectureNotes": [
+      "Use a modular architecture to separate concerns and improve maintainability",
+      "Implement a data-driven approach to fraud detection and risk management",
+      "Utilize Node.js and TypeScript to leverage their performance and security benefits"
+    ],
+    "placeholders": [
+      {
+        "path": "index.ts",
+        "description": "Primary entrypoint agents must extend."
+      }
+    ]
+  }
+}

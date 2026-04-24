@@ -547,7 +547,21 @@ export function chooseApiFamily(text: string): FamilyChoice {
     return { family: 'agent-swarm-ts', layers: ['framework:agent-swarm-ts'], path: 'apps/swarm' }
   }
   if (detectLane(text, 'agent')) return chooseAgentFamily(text)
-  if (detectLane(text, 'zk')) return { family: 'zk-prover-service', layers: ['framework:zk-prover-service'], path: 'apps/prover' }
+  if (detectLane(text, 'zk')) {
+    // Dispatch to the specific zkVM family when the prompt names one; else
+    // the generic zk-prover-service. Mirrors prompt-planner.ts workspace
+    // branch — keep the two in sync.
+    if (text.includes('risc zero') || text.includes('risc0') || text.includes('risczero') || text.includes('bonsai')) {
+      return { family: 'risczero-zkvm', layers: ['framework:risczero-zkvm'], path: 'apps/prover' }
+    }
+    if (text.includes('sp1') || text.includes('succinct')) {
+      return { family: 'sp1-zkvm', layers: ['framework:sp1-zkvm'], path: 'apps/prover' }
+    }
+    if (text.includes('arkworks') || text.includes('hand-rolled r1cs') || text.includes('custom snark circuit')) {
+      return { family: 'arkworks-prover', layers: ['framework:arkworks-prover'], path: 'apps/prover' }
+    }
+    return { family: 'zk-prover-service', layers: ['framework:zk-prover-service'], path: 'apps/prover' }
+  }
   if (detectLane(text, 'evm-infra')) return { family: 'evm-infra-ts', layers: ['framework:evm-infra-ts'], path: 'apps/api' }
 
   if (hasAny(text, ['cloudflare', 'durable object', 'edge api', 'edge function', 'hono edge'])) {

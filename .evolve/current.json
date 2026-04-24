@@ -1,75 +1,47 @@
 {
-  "mode": "evolve",
-  "goal": "measurement freshness shipped — scorecard self-heals at read time + pre-push hook blocks stale pushes; next: exploit against self-fresh data after operator merges #46 + next VB sweep",
-  "status": "pursuit-gen3-shipped",
-  "round": 2,
-  "generation": 3,
+  "mode": "multi-pursue",
+  "goal": "Gen 7 architectural ceiling — move coverage_lift_per_promote via router rebalance. CONVERGED R4.",
+  "status": "multi-pursue-round-4-converged-merged",
+  "round": 4,
+  "generation": 7,
   "activePursuit": null,
-  "lastPursuit": ".evolve/pursuits/2026-04-22-measurement-freshness.md",
-  "updatedAt": "2026-04-22T20:25:00Z",
-  "commit": "9b5aafd",
-  "priorCommits": ["29d5ccc", "b760e93", "77d4453", "0ff075c", "f972940"],
-  "baseline": {
-    "scaffoldAuditPassRate": 0.873,
-    "scaffoldAuditPassRateBefore": 0.851,
-    "scaffoldGapInstalls": 56,
-    "medianTurnsScenarioMean": 101,
-    "medianTurnsRunWeighted": 85,
-    "buildoutPassRate": 0.8497,
-    "testSuite": "628/628"
+  "lastPursuit": ".evolve/multi-pursue/round4-config.json",
+  "updatedAt": "2026-04-23T23:55:00Z",
+  "priorGenerations": [
+    { "n": 3, "pursuit": "measurement-freshness", "commit": "9b5aafd" },
+    { "n": 5, "pursuit": "closed-loop-generation", "commits": ["52afc18", "ce931c6"] },
+    { "n": 6, "pursuit": "generation-flywheel", "commits": ["17347c1", "ceee7ee", "e2a1908", "dcf9bfc", "3c265e9", "78110b2", "fe9cefd"] },
+    { "n": 7, "pursuit": "multi-pursue-r4-partner-first-router", "commit": "518bf50" }
+  ],
+  "gen7Result": {
+    "thesis": "Coverage_lift_per_promote (single-family promotes not absorbing workspace-classified demand) is architectural — needs router-side restructuring, not more evolve tuning.",
+    "variants_dispatched": 2,
+    "variants_worktree_isolation": true,
+    "winner": "variant-B-partner-first",
+    "mechanism": "When buildout trace carries explicit partnerGuess, scan families matching partner via id/tags/keywords/tier1; if score>=2 on allowed surface, wrap partner-aligned family in single-project workspace. Falls through to existing router otherwise.",
+    "coverage_lift_move": "0 → 0.308 (3x target 0.10)",
+    "routing_stability": "perfect: 0 flipped, 0 lost, 8 gained",
+    "testSuite": "688/688",
+    "secondaryFinding": "Variant A (tier1-first override) exposed a root cause: 26 of 54 buildout scenarios have initialPrompt:null — the router can't route text that doesn't exist. Trace-capture bug escalated as Gen 8 seed. Variant A's mechanism works on live prompts (verified synthetically on KYC/fraud/polymarket) but is bounded by dataset shape."
   },
-  "generation2Results": {
-    "pursuit": "measurement-integrity",
-    "thesis": "scorecard as the governor's truth — every flow freshness-gated + test-pinned",
-    "changesShipped": 7,
-    "filesChanged": [
-      "scripts/audit-scaffold-quality.mjs",
-      "scripts/refresh-scorecard.mjs",
-      "tests/refresh-scorecard.test.ts",
-      ".github/workflows/scorecard-refresh.yml"
+  "scorecardFlows": {
+    "pass": [
+      "full_stack_proposal_rate (1.00)",
+      "llm_proposal_success_rate (1.00)",
+      "proposed_family_first_ship_hours (0.1h)",
+      "capability_promotion_rate (0.6667)",
+      "coverage_lift_per_promote (0.3077) — Gen 7 unlock"
     ],
-    "architecturalWins": [
-      "staleness gate emits stale: true when input mtime < buildouts.jsonl source mtime",
-      "inputs manifest lists every JSON read with ISO 8601 mtime",
-      "run-weighted median turns (85) alongside scenario-mean-weighted (101) — both visible",
-      "4 unit tests pin every flow's computation",
-      "nightly drift-detect PR workflow"
-    ],
-    "testSuite": "628/628 (+4 new tests)",
-    "diffAudit": "0 CRITs, 0 HIGHs across ~320 LoC",
-    "measurementRecovery": {
-      "scaffoldAuditPassRate": "0.851 → 0.873 (partial rerun — derivation fix proven on split-framework families)",
-      "scaffoldGapInstalls": "59 → 56 (freshness-gated via Change #5 regen)",
-      "sourceMtime": "2026-04-22T18:17:22Z",
-      "staleness": { "buildout": true, "gaps": false, "audit": false }
-    },
-    "residualFailuresForGen3": [
-      "bevy-web (cargo)",
-      "eleventy-static (pnpm)",
-      "expo-rn-rich (pnpm)",
-      "godot-web (pnpm)",
-      "hugo-static (pnpm)",
-      "move-package (aptos)",
-      "observable-notebook (pnpm)",
-      "phaser-game (pnpm)",
-      "pixijs-game (pnpm)"
+    "fail": [
+      "proposal_promotion_rate (0.0435/0.3) — 30-day denominator pollution, dilutes naturally as nightly runs"
     ]
   },
-  "round2Results": {
-    "hypothesis": "codemirror + 4 sub-packages installed 15× on agent-trading scenarios because CODE_EDITOR_ARCHETYPE_SIGNALS didn't cover builder/strategy/rules/dsl phrasings",
-    "intervention": [
-      "CODE_EDITOR_ARCHETYPE_SIGNALS: +10 terms",
-      "capability:code-editor.tieredKeywords.archetypes: mirror the 10 new terms"
-    ],
-    "verified": "planPrompt on 'hl-builder code dashboard for hyperliquid' attaches capability:code-editor"
-  },
-  "round1Results": {
-    "hypothesis": "capability:tailwind.packageDeps empty → agents add tailwindcss themselves 14×",
-    "intervention": [
-      "capability:tailwind.packageDeps: tailwindcss + @tailwindcss/vite",
-      "capability:tailwind.appliesTo: +6 frontend families",
-      "REACT_FAMILIES (signals.ts): +2 for new React families"
-    ]
-  },
-  "handoff": "Gen 2 measurement integrity shipped. Scorecard is now defensible. Next: (a) surgical fix on cross-chain-bridge capability (27% of corpus hits 165-turn cap — projected +11pp buildout_pass_rate); (b) Gen 3 pursuit on residual 9 non-derivation audit failures if time permits; (c) evolve round on scaffold_gap_installs 56→≤10 using freshly-regenerated capability-gaps."
+  "aggregateTrajectory": "0.407 (baseline) → 0.495 (R1) → 0.530 (R2) → 0.527 (R3) → 0.530 (R4) → 0.553 (R5) → 0.553 (R6) → 0.603 (Gen 7 R4)",
+  "cumulativeDelta": "+19.6pp over the full Gen 6 + Gen 7 arc (0.407 → 0.603)",
+  "gen8Seeds": [
+    "Trace-capture bug: 26/54 buildouts have initialPrompt:null. Upstream fix unlocks Variant A's mechanism + compounds with B.",
+    "Workspace-composable proposer: generates multi-project specs for workspace-classified demand — the durable architectural fix beyond narrow-case partner routing.",
+    "AxGEPA on hintsAuthor.keywordsTier1: accumulated proposer outcomes now sufficient for training."
+  ],
+  "handoff": "5/6 Gen 6 + Gen 7 flows pass. proposal_promotion_rate alone remains — but that one dilutes naturally as nightly runs accumulate. Next /governor pick should be /evolve (one round to validate nightly delivers autonomous lift) OR /pursue Gen 8 trace-capture if operator wants immediate motion. Multi-pursue has converged on this target."
 }

@@ -1,0 +1,84 @@
+{
+  "id": "arkworks-prover",
+  "description": "Arkworks primitive-layer ZK prover — Rust binary crate for hand-rolled R1CS circuits. Pick your curve (BN254 default), pick your proof system (Groth16 default), build constraints by hand. Use when higher-level frameworks (Noir / SP1 / RISC Zero) are too coarse — custom curves, research circuits, novel proof systems.",
+  "tags": [
+    "zk",
+    "rust",
+    "arkworks",
+    "r1cs",
+    "groth16",
+    "primitives",
+    "research"
+  ],
+  "taxonomy": {
+    "language": "rust",
+    "runtime": "native",
+    "surface": "zk-library"
+  },
+  "slots": {},
+  "defaults": {
+    "projectType": "zk-library"
+  },
+  "files": [
+    {
+      "source": "files/Cargo.toml",
+      "target": "Cargo.toml"
+    },
+    {
+      "source": "files/rust-toolchain.toml",
+      "target": "rust-toolchain.toml"
+    },
+    {
+      "source": "files/src/main.rs",
+      "target": "src/main.rs"
+    },
+    {
+      "source": "files/src/circuit.rs",
+      "target": "src/circuit.rs"
+    },
+    {
+      "source": "files/src/prover.rs",
+      "target": "src/prover.rs"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/validate-arkworks.mjs",
+      "target": "validate-arkworks.mjs"
+    }
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "arkworks",
+      "ark-works",
+      "ark-ff",
+      "ark-bn254",
+      "ark-relations",
+      "ark-groth16"
+    ],
+    "tier2": [
+      "custom r1cs",
+      "hand-rolled r1cs",
+      "arkworks zk primitive",
+      "build a snark circuit from scratch",
+      "custom snark circuit",
+      "research-grade zk proof",
+      "novel proof system",
+      "custom curve proof"
+    ],
+    "archetypes": [
+      "hand-rolled snark circuit",
+      "research zk construction",
+      "novel proof system in rust",
+      "custom curve zk prover"
+    ]
+  },
+  "validationChecks": [
+    { "type": "file-exists", "path": "Cargo.toml" },
+    { "type": "file-exists", "path": "src/main.rs" },
+    { "type": "file-exists", "path": "src/circuit.rs" },
+    { "type": "file-exists", "path": "src/prover.rs" }
+  ]
+}

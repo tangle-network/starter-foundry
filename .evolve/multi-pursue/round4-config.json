@@ -1,0 +1,32 @@
+{
+  "mode": "multi-pursue",
+  "round": 4,
+  "priorRoundArchive": ".evolve/multi-pursue/config.json (R3 — self-healing scaffold-quality, converged at no-signal 2026-04-20)",
+  "pursuit": "Gen 7 workspace-vs-starter router — move coverage_lift_per_promote (single-family promotes don't absorb workspace-classified demand)",
+  "base": {
+    "commit": "fe9cefd",
+    "branch": "feat/emit-cache-warm-list",
+    "note": "Gen 6 evolve shipped 5 auto-promotes + nightly autonomy; coverage_lift_per_promote stays 0 because workspace router dispatches generic [nextjs-ts, api-service] for most real user prompts, bypassing newly-promoted domain-specific families (kyc-onboarding, fraud-ops-console, polymarket-portfolio-hedging)."
+  },
+  "harnessPath": "src/lib/prompt-planner.ts",
+  "harnessPathRationale": "Single highest-blast-radius file for routing. Workspace-vs-starter decision lives in planWorkspacePrompt vs planSingleStarter. Variants will conflict on this file → worktree isolation per multi-pursue protocol.",
+  "evalCommand": "node scripts/measure-coverage-lift.mjs --compare .evolve/coverage-baseline.json --new-family '<variant-id>'",
+  "validateCommand": "pnpm build && pnpm test",
+  "dimensions": [
+    "coverage_lift_per_promote",
+    "routing_stability",
+    "test_suite_pass"
+  ],
+  "dimensionClaims": {
+    "coverage_lift_per_promote": "Fraction of previously-unrouted buildout scenarios that now route to a domain-specific family. If this moves, registry expansion ABSORBS demand instead of accumulating unused entries. Target 0.10 (≥2.6 of 26 unrouted scenarios).",
+    "routing_stability": "Count of previously-routed scenarios whose family choice FLIPPED or was LOST. Regressions destroy trust in routing determinism. Hard floor: 0 flipped-to-worse, 0 lost-routes on the 28 currently-routed scenarios.",
+    "test_suite_pass": "Full test suite must stay 100% green. Routing changes frequently regress coverage.test.ts which pins specific prompts → specific families. Target 688/688 (current suite size)."
+  },
+  "constraints": [
+    "Variants MUST edit src/lib/prompt-planner.ts or its direct collaborators (src/lib/planner/*.ts, src/lib/keywords.ts).",
+    "Variants MUST NOT regress routing_stability — any lost route or flipped-to-worse route auto-rejects the variant.",
+    "Variants MUST preserve backward-compatible workspace mode for multi-lane prompts (mcp+dspy+zk workspace dispatch).",
+    "No LLM calls introduced in the hot path. The router must remain synchronous + deterministic."
+  ],
+  "discoveredAt": "2026-04-23T23:30:00Z"
+}

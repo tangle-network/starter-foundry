@@ -1,0 +1,127 @@
+{
+  "id": "zk-mixer-ui",
+  "description": "zk-mixer-ui starter — derived from 8× real demand signal (partner: ethereum-l1). Taxonomy guess: typescript/node/agent.",
+  "tags": [
+    "node",
+    "agent",
+    "typescript"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "agent"
+  },
+  "defaults": {
+    "projectType": "agent",
+    "serviceName": "starter-foundry-zk-mixer-ui"
+  },
+  "files": [
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/src/agent.ts",
+      "target": "src/agent.ts"
+    },
+    {
+      "source": "files/src/index.ts",
+      "target": "src/index.ts"
+    },
+    {
+      "source": "files/.env.example",
+      "target": ".env.example"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/validate-node.mjs",
+      "target": "validate-node.mjs"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "package.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "tsconfig.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/agent.ts"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "Initialize a new project with the zk-mixer-ui starter",
+      "Configure the agent to interact with the Ethereum network"
+    ],
+    "entrypoints": [
+      "index.ts"
+    ],
+    "preview": null,
+    "extensionPoints": []
+  },
+  "keywords": [
+    "zero-knowledge",
+    "mixer",
+    "ethereum",
+    "l1",
+    "typescript",
+    "node",
+    "privacy",
+    "security",
+    "blockchain",
+    "cryptocurrency",
+    "decentralized applications"
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "zero-knowledge",
+      "mixer",
+      "ethereum",
+      "l1",
+      "typescript",
+      "node"
+    ],
+    "tier2": [
+      "privacy",
+      "security",
+      "blockchain",
+      "cryptocurrency",
+      "decentralized applications"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "Use zk-mixer-ui when building applications that require zero-knowledge proof-based mixing functionality, particularly in Ethereum L1 environments.",
+    "firstSteps": [
+      "Initialize a new project with the zk-mixer-ui starter",
+      "Install required dependencies for zero-knowledge proofs and Ethereum L1 integration",
+      "Configure the agent to interact with the Ethereum network"
+    ],
+    "gotchas": [
+      "Ensure proper handling of private keys and sensitive data",
+      "Be aware of potential gas costs and optimization strategies for Ethereum L1 transactions",
+      "Implement robust error handling for zero-knowledge proof verification"
+    ],
+    "architectureNotes": [
+      "The zk-mixer-ui starter uses a TypeScript and Node.js stack",
+      "It interacts with the Ethereum L1 network through a configured agent",
+      "Zero-knowledge proofs are used to ensure secure and private transactions"
+    ],
+    "placeholders": [
+      {
+        "path": "index.ts",
+        "description": "Primary entrypoint agents must extend."
+      }
+    ]
+  }
+}

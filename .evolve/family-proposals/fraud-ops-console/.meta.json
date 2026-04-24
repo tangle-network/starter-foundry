@@ -1,0 +1,13 @@
+{
+  "id": "fraud-ops-console",
+  "peerFamilies": [
+    "angular-ts",
+    "astro-static",
+    "kyc-onboarding",
+    "nextjs-ts",
+    "observable-notebook"
+  ],
+  "mode": "llm-rlm",
+  "reasoning": "RLM 2 shot(s), verification pass=false, score=0.90. The fraud-ops-console starter is designed for building frontend applications related to fraud operations, and its taxonomy guess of typescript/node/frontend suggests a focus on performance, security, and scalability. The presence of real user demand and the reviewer directive to replace tier1 keywords with domain-specific keywords related to fraud operations further supports this reasoning.",
+  "generatedAt": "2026-04-23T21:31:02.638Z"
+}

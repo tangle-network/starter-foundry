@@ -1,0 +1,8 @@
+{
+  "id": "polymarket-portfolio-hedging",
+  "description": "node framework layer for polymarket-portfolio-hedging.",
+  "appliesTo": [
+    "polymarket-portfolio-hedging"
+  ],
+  "files": []
+}

@@ -1,0 +1,38 @@
+{
+  "mode": "multi-pursue",
+  "round": 5,
+  "priorRoundArchive": ".evolve/multi-pursue/round4-config.json (R4 converged on partner-first routing; Variant A retained as dominated with upstream-bug diagnostic)",
+  "pursuit": "Gen 8 — compound gains on coverage_lift_per_promote via orthogonal-file proposers. R4 landed partner-first routing (0.308 lift via partnerGuess signal); R5 unlocks the two complementary unmoved surfaces.",
+  "base": {
+    "commit": "b622d1e",
+    "branch": "feat/emit-cache-warm-list",
+    "note": "Post-R4 partner-first routing merged (518bf50) + reflection persisted (b622d1e). coverage_lift=0.308, 5/6 Gen 6+7 flows pass. Two orthogonal gaps remain: (1) 20/54 scenarios have null initialPrompt (Variant A's tier1-first mechanism is bounded by missing data, not code), (2) workspace-classified prompts without partner still get hardcoded [nextjs-ts, api-service]."
+  },
+  "harnessPaths": {
+    "proposerA": "scripts/mine-buildout-sessions.mjs (findInitialPrompt function + callers)",
+    "proposerB": "src/lib/planner/projects.ts (buildWorkspacePromptPlan + collectServiceProjects) OR src/lib/prompt-planner.ts"
+  },
+  "harnessPathRationale": "R4 taught us orthogonal-file proposers compose cleanly. Proposer A fixes the upstream data (trace capture); Proposer B fixes downstream composition. Both are necessary for compound lift — A unlocks the data, B exploits it for workspace-shaped demand.",
+  "evalCommand": "pnpm build && node scripts/measure-coverage-lift.mjs --compare .evolve/coverage-baseline.json --new-family '<variant-id>'",
+  "validateCommand": "pnpm build && pnpm test",
+  "dimensions": [
+    "coverage_lift_per_promote",
+    "scenarios_with_prompt",
+    "routing_stability",
+    "test_suite_pass"
+  ],
+  "dimensionClaims": {
+    "coverage_lift_per_promote": "Fraction of previously-unrouted buildout scenarios that now route to a domain-specific family. Already at 0.308 after R4. Target 0.45 via compound lift.",
+    "scenarios_with_prompt": "Count of buildout scenarios where at least one record carries non-null initialPrompt. Was 34/54. If proposer A fixes findInitialPrompt, expect 50+/54. This is Proposer A's direct unlock metric.",
+    "routing_stability": "Count of previously-routed scenarios whose family choice flipped or was lost. Hard floor: 0 flipped-to-worse, 0 lost.",
+    "test_suite_pass": "Full test suite must stay 100% green. Target 688/688 (current)."
+  },
+  "constraints": [
+    "Proposer A MUST edit scripts/mine-buildout-sessions.mjs (or related miner code). MUST NOT edit router code.",
+    "Proposer B MUST edit src/lib/planner/* or src/lib/prompt-planner.ts. MUST NOT edit the miner.",
+    "Both: do NOT regress routing_stability on currently-routed scenarios.",
+    "Both: preserve backward-compat — existing partner-first mechanism from R4 (commit 518bf50) must keep routing its 8 gained scenarios.",
+    "No new LLM calls in router hot path."
+  ],
+  "discoveredAt": "2026-04-24T00:10:00Z"
+}

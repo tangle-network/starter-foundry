@@ -114,6 +114,9 @@ const FAMILY_PROMPTS: Record<string, string> = {
   "k12-edtech": "Build a K-12 edtech gradebook with FERPA-aligned audit logs and parent access controls",
   "flutter-app": "Build a Flutter dart mobile app with Material Design and Cupertino navigation",
   "kotlin-multiplatform": "Build a Kotlin Multiplatform app with Compose Multiplatform shared UI",
+  "kyc-onboarding": "Build a KYC onboarding flow with document verification and liveness check",
+  "fraud-ops-console": "Build a fraud ops console with risk scoring dashboard and alert triage",
+  "polymarket-portfolio-hedging": "Build a Polymarket portfolio hedging dashboard with prediction market positions",
   "esp32-rust": "Build an ESP32 Rust firmware with esp-idf-svc WiFi scanner and xtensa target",
   "stm32-rust": "Build an STM32 Rust firmware with Embassy async bare metal and probe-rs",
   "ros2-node-py": "Build a ROS2 rclpy node publishing Twist messages on cmd_vel",
@@ -121,6 +124,9 @@ const FAMILY_PROMPTS: Record<string, string> = {
   "soc2-compliance-pack": "Add a SOC 2 Type II compliance pack with change management and incident response playbook",
   "pci-dss-compliance-pack": "Add a PCI-DSS 4.0 compliance pack with PAN redaction and Stripe tokenization helpers",
   "gdpr-compliance-pack": "Add a GDPR-compliant consent management pack with data subject rights endpoints",
+  "risczero-zkvm": "Build a RISC Zero zkVM prover service that proves Rust programs and uses the Bonsai proving network",
+  "sp1-zkvm": "Build a Succinct SP1 zkVM with the Succinct prover network and an on-chain SP1 Gnark verifier",
+  "arkworks-prover": "Build a custom SNARK circuit from scratch with arkworks hand-rolled r1cs for a research-grade zk proof",
 };
 
 for (const [family, prompt] of Object.entries(FAMILY_PROMPTS)) {
@@ -192,6 +198,8 @@ const CAP_PROMPTS: Record<string, { prompt: string; family: string }> = {
   "capability:evm-layerzero-oft": { prompt: "Build a LayerZero OFT bridge token", family: "forge-contracts" },
   "capability:evm-protocol-api": { prompt: "Build an indexer API for EVM protocol events", family: "api-service" },
   "capability:evm-wallet-dashboard": { prompt: "Build a wallet balance multicall dashboard", family: "evm-infra-ts" },
+  "capability:evm-nft-mint-page": { prompt: "Build a React NFT mint page with wallet connect and mint button for an EVM contract", family: "react-vite-ts" },
+  "capability:passkey-onboarding": { prompt: "Build a React app with WebAuthn passkey registration and biometric sign-in flow", family: "react-vite-ts" },
   "capability:fhe-private-token": { prompt: "Build a Fhenix private token with encrypted balances", family: "fhenix-contracts" },
   "capability:fhe-private-voting": { prompt: "Build a Fhenix encrypted voting contract with secret ballot", family: "fhenix-contracts" },
   "capability:fhe-sealed-auction": { prompt: "Build a Fhenix blind auction with sealed bid encryption", family: "fhenix-contracts" },
@@ -261,6 +269,9 @@ const CAP_PROMPTS: Record<string, { prompt: string; family: string }> = {
   "capability:tangle-remote-provider": { prompt: "Build a Tangle blueprint that wraps the OpenAI API as a remote provider with credential injection", family: "tangle-blueprint" },
   "capability:tangle-x402": { prompt: "Build a Tangle blueprint with x402 per-call payment gating in USDC", family: "tangle-blueprint" },
   "capability:tangle-mpp": { prompt: "Build a Tangle blueprint with MPP machine payments protocol for agent-to-agent delegation and budget caps", family: "tangle-blueprint" },
+  "capability:routing": { prompt: "Build a DAO UI with a proposal list and proposal detail view — nested routes with deep linking", family: "react-vite-ts" },
+  "capability:zk-noir": { prompt: "Build an Aztec Noir circuit app with a Barretenberg backend and nargo", family: "react-vite-ts" },
+  "capability:zk-gnark": { prompt: "Build a Go API that uses ConsenSys gnark for zk proofs and a Groth16 prover", family: "go-api" },
 };
 
 for (const [capId, config] of Object.entries(CAP_PROMPTS)) {

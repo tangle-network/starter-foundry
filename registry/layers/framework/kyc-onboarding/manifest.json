@@ -1,0 +1,8 @@
+{
+  "id": "kyc-onboarding",
+  "description": "node framework layer for kyc-onboarding.",
+  "appliesTo": [
+    "kyc-onboarding"
+  ],
+  "files": []
+}

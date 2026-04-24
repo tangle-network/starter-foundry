@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "generator": "starter-foundry:replay-traces",
-  "registryCommit": "e484a39",
+  "registryCommit": "3c265e9",
   "summary": {
-    "generatedAt": "2026-04-23T05:18:25.347Z",
+    "generatedAt": "2026-04-23T21:53:09.937Z",
     "totalBuildouts": 192,
     "withOutcome": 114,
     "passRate": 0.8245614035087719,
@@ -26,10 +26,10 @@
       "tangle-blueprints-mpc"
     ],
     "totalHistoricalInstalls": 102,
-    "totalPreventedInstalls": 0,
-    "totalRemainingGapInstalls": 102,
-    "preventionRate": 0,
-    "estimatedGapInstallsPerBuildout": 0.53125,
+    "totalPreventedInstalls": 75,
+    "totalRemainingGapInstalls": 27,
+    "preventionRate": 0.7352941176470589,
+    "estimatedGapInstallsPerBuildout": 0.140625,
     "costRollup": {
       "sampleCount": 0,
       "meanCostUsd": null,
@@ -43,36 +43,6 @@
   "perScenario": [
     {
       "partner": "ethereum-l1",
-      "scenarioId": "zk-mixer-ui",
-      "total": 8,
-      "withOutcome": 8,
-      "pass": 0,
-      "passRate": 0,
-      "meanScore": 0.782,
-      "meanWallMs": 2225928,
-      "meanTurns": 138,
-      "totalHistoricalInstalls": 28,
-      "totalPreventedInstalls": 0,
-      "totalRemainingGapInstalls": 28,
-      "preventionRate": 0
-    },
-    {
-      "partner": "ethereum-l1",
-      "scenarioId": "dao-proposals",
-      "total": 10,
-      "withOutcome": 10,
-      "pass": 10,
-      "passRate": 1,
-      "meanScore": 0.9640000000000002,
-      "meanWallMs": 393548,
-      "meanTurns": 33,
-      "totalHistoricalInstalls": 27,
-      "totalPreventedInstalls": 0,
-      "totalRemainingGapInstalls": 27,
-      "preventionRate": 0
-    },
-    {
-      "partner": "ethereum-l1",
       "scenarioId": "agent-trading",
       "total": 9,
       "withOutcome": 9,
@@ -82,9 +52,24 @@
       "meanWallMs": 380282,
       "meanTurns": 42,
       "totalHistoricalInstalls": 25,
-      "totalPreventedInstalls": 0,
-      "totalRemainingGapInstalls": 25,
-      "preventionRate": 0
+      "totalPreventedInstalls": 9,
+      "totalRemainingGapInstalls": 16,
+      "preventionRate": 0.36
+    },
+    {
+      "partner": "ethereum-l1",
+      "scenarioId": "zk-mixer-ui",
+      "total": 8,
+      "withOutcome": 8,
+      "pass": 0,
+      "passRate": 0,
+      "meanScore": 0.782,
+      "meanWallMs": 2225928,
+      "meanTurns": 138,
+      "totalHistoricalInstalls": 28,
+      "totalPreventedInstalls": 21,
+      "totalRemainingGapInstalls": 7,
+      "preventionRate": 0.75
     },
     {
       "partner": "ethereum-l1",
@@ -97,24 +82,9 @@
       "meanWallMs": 750351,
       "meanTurns": 46,
       "totalHistoricalInstalls": 14,
-      "totalPreventedInstalls": 0,
-      "totalRemainingGapInstalls": 14,
-      "preventionRate": 0
-    },
-    {
-      "partner": "ethereum-l1",
-      "scenarioId": "cross-chain-bridge",
-      "total": 47,
-      "withOutcome": 47,
-      "pass": 47,
-      "passRate": 1,
-      "meanScore": 0.9399999999999997,
-      "meanWallMs": 1597995,
-      "meanTurns": 165,
-      "totalHistoricalInstalls": 7,
-      "totalPreventedInstalls": 0,
-      "totalRemainingGapInstalls": 7,
-      "preventionRate": 0
+      "totalPreventedInstalls": 12,
+      "totalRemainingGapInstalls": 2,
+      "preventionRate": 0.8571428571428571
     },
     {
       "partner": "ethereum-l1",
@@ -130,6 +100,21 @@
       "totalPreventedInstalls": 0,
       "totalRemainingGapInstalls": 1,
       "preventionRate": 0
+    },
+    {
+      "partner": "ethereum-l1",
+      "scenarioId": "cross-chain-bridge",
+      "total": 47,
+      "withOutcome": 47,
+      "pass": 47,
+      "passRate": 1,
+      "meanScore": 0.9399999999999997,
+      "meanWallMs": 1597995,
+      "meanTurns": 165,
+      "totalHistoricalInstalls": 7,
+      "totalPreventedInstalls": 6,
+      "totalRemainingGapInstalls": 1,
+      "preventionRate": 0.8571428571428571
     },
     {
       "partner": "arbitrum-stylus",
@@ -280,6 +265,21 @@
       "totalPreventedInstalls": 0,
       "totalRemainingGapInstalls": 0,
       "preventionRate": 0
+    },
+    {
+      "partner": "ethereum-l1",
+      "scenarioId": "dao-proposals",
+      "total": 10,
+      "withOutcome": 10,
+      "pass": 10,
+      "passRate": 1,
+      "meanScore": 0.9640000000000002,
+      "meanWallMs": 393548,
+      "meanTurns": 33,
+      "totalHistoricalInstalls": 27,
+      "totalPreventedInstalls": 27,
+      "totalRemainingGapInstalls": 0,
+      "preventionRate": 1
     },
     {
       "partner": "fhenix-fhe",
@@ -554,48 +554,6 @@
   ],
   "topRemainingGapInstalls": [
     {
-      "key": "lucide-react",
-      "timesRemaining": 17,
-      "remainingOnPass": 12,
-      "remainingOnFail": 5
-    },
-    {
-      "key": "tailwindcss",
-      "timesRemaining": 14,
-      "remainingOnPass": 9,
-      "remainingOnFail": 5
-    },
-    {
-      "key": "@tailwindcss/vite",
-      "timesRemaining": 14,
-      "remainingOnPass": 9,
-      "remainingOnFail": 5
-    },
-    {
-      "key": "clsx",
-      "timesRemaining": 9,
-      "remainingOnPass": 6,
-      "remainingOnFail": 3
-    },
-    {
-      "key": "snarkjs",
-      "timesRemaining": 4,
-      "remainingOnPass": 0,
-      "remainingOnFail": 4
-    },
-    {
-      "key": "circomlibjs",
-      "timesRemaining": 4,
-      "remainingOnPass": 0,
-      "remainingOnFail": 4
-    },
-    {
-      "key": "date-fns",
-      "timesRemaining": 3,
-      "remainingOnPass": 3,
-      "remainingOnFail": 0
-    },
-    {
       "key": "@codemirror/view",
       "timesRemaining": 3,
       "remainingOnPass": 3,
@@ -626,33 +584,9 @@
       "remainingOnFail": 0
     },
     {
-      "key": "circomlib",
-      "timesRemaining": 3,
-      "remainingOnPass": 0,
-      "remainingOnFail": 3
-    },
-    {
-      "key": "react-router-dom",
-      "timesRemaining": 3,
-      "remainingOnPass": 3,
-      "remainingOnFail": 0
-    },
-    {
       "key": "vite",
       "timesRemaining": 3,
       "remainingOnPass": 1,
-      "remainingOnFail": 2
-    },
-    {
-      "key": "@zk-kit/incremental-merkle-tree",
-      "timesRemaining": 2,
-      "remainingOnPass": 0,
-      "remainingOnFail": 2
-    },
-    {
-      "key": "ethers",
-      "timesRemaining": 2,
-      "remainingOnPass": 0,
       "remainingOnFail": 2
     },
     {
@@ -672,9 +606,78 @@
       "timesRemaining": 1,
       "remainingOnPass": 1,
       "remainingOnFail": 0
+    },
+    {
+      "key": "next",
+      "timesRemaining": 1,
+      "remainingOnPass": 1,
+      "remainingOnFail": 0
+    },
+    {
+      "key": "@vitejs/plugin-react",
+      "timesRemaining": 1,
+      "remainingOnPass": 0,
+      "remainingOnFail": 1
+    },
+    {
+      "key": "pnpm",
+      "timesRemaining": 1,
+      "remainingOnPass": 0,
+      "remainingOnFail": 1
+    },
+    {
+      "key": "add",
+      "timesRemaining": 1,
+      "remainingOnPass": 0,
+      "remainingOnFail": 1
     }
   ],
-  "topPreventedInstalls": [],
+  "topPreventedInstalls": [
+    {
+      "key": "lucide-react",
+      "timesPrevented": 17
+    },
+    {
+      "key": "tailwindcss",
+      "timesPrevented": 14
+    },
+    {
+      "key": "@tailwindcss/vite",
+      "timesPrevented": 14
+    },
+    {
+      "key": "clsx",
+      "timesPrevented": 9
+    },
+    {
+      "key": "snarkjs",
+      "timesPrevented": 4
+    },
+    {
+      "key": "circomlibjs",
+      "timesPrevented": 4
+    },
+    {
+      "key": "date-fns",
+      "timesPrevented": 3
+    },
+    {
+      "key": "circomlib",
+      "timesPrevented": 3
+    },
+    {
+      "key": "react-router-dom",
+      "timesPrevented": 3
+    },
+    {
+      "key": "@zk-kit/incremental-merkle-tree",
+      "timesPrevented": 2
+    },
+    {
+      "key": "ethers",
+      "timesPrevented": 2
+    }
+  ],
   "topRewrittenFiles": [
     {
       "file": "src/App.tsx",

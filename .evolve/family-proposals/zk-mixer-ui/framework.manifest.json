@@ -1,0 +1,8 @@
+{
+  "id": "zk-mixer-ui",
+  "description": "node framework layer for zk-mixer-ui.",
+  "appliesTo": [
+    "zk-mixer-ui"
+  ],
+  "files": []
+}

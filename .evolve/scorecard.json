@@ -1,8 +1,8 @@
 {
   "product": "starter-foundry",
-  "timestamp": "2026-04-23T05:18:48.934Z",
-  "coverage": "13/14 flows measured",
-  "aggregate": 0.455,
+  "timestamp": "2026-04-23T22:30:05.951Z",
+  "coverage": "20/22 flows measured",
+  "aggregate": 0.603,
   "inputs": [
     {
       "path": ".evolve/buildout-analysis.json",
@@ -18,7 +18,11 @@
     },
     {
       "path": ".evolve/buildout-analysis-internal.json",
-      "mtime": "2026-04-23T05:18:25.354Z"
+      "mtime": "2026-04-23T21:53:09.939Z"
+    },
+    {
+      "path": ".evolve/agent-eval/2026-04-23/three-layer-report.json",
+      "mtime": "2026-04-23T08:17:31.974Z"
     }
   ],
   "sourceMtime": "2026-04-23T03:57:26.504Z",
@@ -122,7 +126,7 @@
     },
     {
       "name": "families",
-      "value": 96,
+      "value": 100,
       "target": 40,
       "status": "pass",
       "productValueClaim": "Number of distinct family archetypes the router can route to. Breadth = more prompts find a good home.",
@@ -130,7 +134,7 @@
     },
     {
       "name": "capability_layers",
-      "value": 104,
+      "value": 109,
       "target": 50,
       "status": "pass",
       "productValueClaim": "Distinct capability layers available for attachment. Each one is a bundle of deps + files + context agents get for free.",
@@ -142,6 +146,70 @@
       "target": 10,
       "status": "pass",
       "productValueClaim": "Partner packs — ecosystem-specific biases + config. More partners = more prompts get routed with SDK/addresses pre-wired.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "proposal_promotion_rate",
+      "value": 0.0435,
+      "target": 0.3,
+      "status": "fail",
+      "productValueClaim": "Fraction of proposed families/capabilities that passed all validation gates (schema+compose+build) and landed in registry/ over the last 30 days. When this moves, vertical expansion is working — new buildable surfaces per week without manual registry authoring.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "proposed_family_first_ship_hours",
+      "value": 0.1,
+      "target": 24,
+      "status": "pass",
+      "productValueClaim": "Median hours from proposal draft creation → registry promotion. Baseline was unbounded (drafts sat as TODOs indefinitely). Target 24h via nightly cron.",
+      "direction": "lower-better"
+    },
+    {
+      "name": "llm_proposal_success_rate",
+      "value": 1,
+      "target": 0.8,
+      "status": "pass",
+      "productValueClaim": "Fraction of proposal attempts that produced an LLM-mode draft (vs falling back to deterministic TODO skeleton). Low → router/provider is unreachable or rate-limiting; deterministic mode cannot produce promotable drafts, so this gates the funnel.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "full_stack_proposal_rate",
+      "value": 1,
+      "target": 0.7,
+      "status": "pass",
+      "productValueClaim": "Fraction of LLM-mode proposals whose templateFiles.length ≥ 3. Bare-README drafts pass the build gate trivially but scaffold nothing useful. This flow catches the \"too-minimal proposal\" regression — Gen 6 Track A (filesForTaxonomy expansion) exists to lift it.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "capability_promotion_rate",
+      "value": 0.6667,
+      "target": 0.4,
+      "status": "pass",
+      "productValueClaim": "Fraction of capability promotion attempts that passed all gates. Capabilities have lower validation bar than families (slot into existing), so this rate should exceed proposal_promotion_rate — parallel high-volume registry expansion.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "coverage_lift_per_promote",
+      "value": 0.3077,
+      "target": 0.1,
+      "status": "pass",
+      "productValueClaim": "Median liftRatio from coverage-measured events — fraction of previously-unrouted buildout scenarios that now route somewhere after a promote. If this is 0, promotes are not absorbing demand; the registry is expanding without product effect.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "agent_eval_build_pass_rate",
+      "value": 1,
+      "target": 0.95,
+      "status": "pass",
+      "productValueClaim": "Fraction of composed scaffolds that pass install+build locally (mean build_score from agent-eval scaffold run). Regresses when a capability manifest changes break compose or a family's build recipe stops working — fast local signal, no VB sweep needed.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "agent_eval_meta_pass_rate",
+      "value": null,
+      "target": 0.85,
+      "status": "unmeasured",
+      "productValueClaim": "Mean LLM-judge meta_score on scaffold quality — correctness + completeness + idiomatic layout + production-readiness per the scaffold rubric. Null when judge disabled (--no-judge) or no runs yet.",
       "direction": "higher-better"
     }
   ]

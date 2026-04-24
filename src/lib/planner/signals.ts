@@ -356,6 +356,11 @@ export const CODE_EDITOR_ARCHETYPE_SIGNALS = [
 // tracking. Triggers capability:date-utils attachment on web-producing
 // families. Kept narrow: "dashboard" isn't date-heavy, but "scheduling
 // dashboard" is.
+//
+// Governance/DAO phrasings surface here because every proposal UI shows
+// "ends at", "voting period", "pending → active → executed" — all
+// time-relative renders that need date-fns. Observed in dao-proposals
+// scenarios (3× date-fns install cluster, 2026-04-22 trace corpus).
 export const DATE_HEAVY_ARCHETYPE_SIGNALS = [
   'calendar',
   'scheduling',
@@ -371,6 +376,16 @@ export const DATE_HEAVY_ARCHETYPE_SIGNALS = [
   'reminders',
   'due date',
   'time tracking',
+  // Governance archetypes — proposals have state transitions on timelines,
+  // voting periods with "ends at" relative rendering, execution queues.
+  'dao',
+  'governance',
+  'proposal',
+  'voting period',
+  'quorum',
+  'governor bravo',
+  'on-chain governance',
+  'snapshot vote',
 ]
 
 // Browser-native ZK: products where proofs are generated client-side
@@ -409,6 +424,61 @@ export const AUTH_ARCHETYPE_SIGNALS = [
   'share tax returns',
   'patient portal',
   'secure login',
+]
+
+// Multi-page archetypes — products that have more than one view, needing a
+// client-side router on Vite/Electron/Tauri hosts (Next.js / Remix /
+// SvelteKit have file-based routers and don't get this capability).
+// Observed in dao-proposals (3× react-router-dom install cluster) +
+// expected in any list-detail pattern.
+export const ROUTING_ARCHETYPE_SIGNALS = [
+  'proposal list',
+  'proposal detail',
+  'list and detail',
+  'multi-page',
+  'nested routes',
+  'nested layouts',
+  'dashboard with pages',
+  'admin panel with pages',
+  'portal with multiple views',
+  'navigation menu',
+  'deep linking',
+  'route params',
+  'url params',
+  'tabs with pages',
+]
+
+// ZK circuit DSLs / frameworks that LAYER onto existing families. zkVMs
+// themselves (RISC Zero, SP1, Arkworks) are separate families — they
+// route through planPrompt's family selection, not via capability signals.
+//
+// Naming: all end in _ARCHETYPE_SIGNALS so signal-manifest parity test
+// catches any drift between these arrays and the capability manifests'
+// tieredKeywords.archetypes lists.
+export const ZK_NOIR_ARCHETYPE_SIGNALS = [
+  'noir',
+  'aztec noir',
+  'barretenberg',
+  'nargo',
+  'ultrahonk',
+  'honk prover',
+  'aztec noir circuit',
+  'build a noir program',
+  'noir zk app',
+  'nargo new',
+  'ultrahonk verifier',
+]
+export const ZK_GNARK_ARCHETYPE_SIGNALS = [
+  'gnark',
+  'consensys gnark',
+  'gnark circuit',
+  'groth16 gnark',
+  'plonk gnark',
+  'gnark prover in go',
+  'consensys gnark circuit',
+  'gnark groth16 service',
+  'zk rollup sequencer in go',
+  'go-native zk proof',
 ]
 
 // Single-surface families that never become workspaces.

@@ -1,0 +1,23 @@
+[workspace]
+resolver = "2"
+members = ["host", "methods"]
+exclude = ["methods/guest"]  # guest is built by risc0-build, not as a workspace member
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[workspace.dependencies]
+risc0-zkvm = "2.1"
+serde = { version = "1", features = ["derive"] }
+bincode = "1.3"
+
+[profile.release]
+lto = true
+codegen-units = 1
+
+# Release-mode optimizations that keep proof generation fast without
+# blowing up binary size.
+[profile.dev]
+opt-level = 0

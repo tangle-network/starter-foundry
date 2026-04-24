@@ -1,0 +1,13 @@
+{
+  "id": "zk-mixer-ui",
+  "peerFamilies": [
+    "agent-swarm-ts",
+    "angular-ts",
+    "astro-static",
+    "cli-ts",
+    "crm-backend"
+  ],
+  "mode": "llm-rlm",
+  "reasoning": "RLM 2 shot(s), verification pass=false, score=0.90. The zk-mixer-ui starter is designed for building applications that require zero-knowledge proof-based mixing functionality, particularly in Ethereum L1 environments. The starter uses a TypeScript and Node.js stack and interacts with the Ethereum network through a configured agent. The primary entrypoint is index.ts, and the required package dependencies include @ethereumjs/tx, @ethersproject/contracts, typescript, and @types/node.",
+  "generatedAt": "2026-04-23T21:32:30.878Z"
+}

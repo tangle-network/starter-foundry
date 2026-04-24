@@ -1,81 +1,51 @@
 {
-  "schemaVersion": 1,
-  "round": 3,
+  "schemaVersion": 2,
+  "round": 4,
+  "target": "coverage_lift_per_promote (Gen 7 architectural ceiling from 6-round evolve plateau)",
   "baseline": {
-    "name": "baseline-d652883",
-    "commit": "d652883",
-    "note": "Post-R2 seed fixes. 5/37 framework layers still failing local audit (14% broken). Seeded 7 labeled training examples via manual fixes across R1+R2.",
+    "name": "gen6-evolve-r6",
+    "commit": "fe9cefd",
     "scores": {
-      "coverageRate": 0,
-      "regressionRate": 0,
-      "trainingValueScore": 0,
-      "codeSimplicity": "N/A",
-      "humanOversightCost": "full-manual",
-      "scaffoldAuditPassRate": "32/37 = 0.865",
-      "remainingBroken": [
-        "expo-react-native-ts (RN moduleResolution)",
-        "fhenix-contracts (cargo install)",
-        "fhevm-contracts (cargo install)",
-        "react-vite-ts (@tailwindcss/vite resolution)",
-        "tangle-blueprint (rustc 1.91 bump)"
-      ]
+      "coverage_lift_per_promote": 0.0,
+      "routing_stability": { "flipped": 0, "lost": 0, "gained": 0 },
+      "test_suite_pass": "688/688"
     },
-    "seedFixes": [
-      {
-        "family": "cli-ts",
-        "cause": "missing typescript+@types/node devDep",
-        "commit": "87cd1a5"
-      },
-      {
-        "family": "electron-desktop-ts",
-        "cause": "missing typescript+@types/node devDep",
-        "commit": "87cd1a5"
-      },
-      {
-        "family": "expo-react-native-ts",
-        "cause": "missing typescript+@types/react (still broken \u2014 RN issue is deeper)",
-        "commit": "87cd1a5"
-      },
-      {
-        "family": "fullstack-ts",
-        "cause": "missing typescript+@types/node devDep",
-        "commit": "87cd1a5"
-      },
-      {
-        "family": "tauri-desktop",
-        "cause": "missing typescript+@types/node devDep",
-        "commit": "87cd1a5"
-      },
-      {
-        "family": "nextjs-ts",
-        "cause": "missing typescript+@types/node devDep",
-        "commit": "d652883"
-      },
-      {
-        "family": "hardhat-contracts",
-        "cause": "missing typescript+@types/node devDep",
-        "commit": "d652883"
-      },
-      {
-        "family": "browser-extension-ts",
-        "cause": "missing typescript+@types/node+@types/chrome",
-        "commit": "d652883"
-      },
-      {
-        "family": "react-vite-ts",
-        "cause": "added typescript+@types/node (still broken \u2014 @tailwindcss/vite resolution is separate)",
-        "commit": "d652883"
-      }
-    ],
-    "recordedAt": "2026-04-20T04:00:00Z"
+    "note": "Post-evolve-r6 baseline. 28 of 54 buildout scenarios routed; 26 unrouted."
   },
-  "frontier": [],
-  "round3Outcome": {
-    "status": "pursuit-converged-signal-exhausted",
-    "recordedAt": "2026-04-20T19:25:00Z",
-    "finding": "R3 target was 5 broken layers; 4 fixed manually via PRs #9-#12 before R3 variants executed. 1 remains: tangle-blueprint cargo install (Rust toolchain / blueprint-macros version). Single-failure state is degenerate for 3-proposer evolution (coverage is binary).",
-    "recommendation": "Do not build variant_{g,h,i} against 1 failure. Either (a) fix tangle-blueprint directly (manual \u2014 would contradict reflection), (b) pivot multi-pursue to a signal-rich surface (template rewrites \u2014 buildout-analysis shows 10+ files with rewrite counts \u22653), or (c) defer the auto-fixer until a new batch of failures accumulates naturally from buildout telemetry.",
-    "auditSnapshot": "36/37 framework layers pass (tangle-blueprint install-phase fail; 3 layers skipped as non-audited). Was 25/37 at R3 baseline.",
-    "cumulativeManualDelta": "+12 layers fixed between R3 dispatch and now, across 4 PRs"
-  }
+  "paretoFrontier": [
+    {
+      "name": "variant-B-partner-first",
+      "commit": "518bf50",
+      "worktreeCommit": "951408c9c4b67527dd3d096de0857f845d1c27de",
+      "mechanism": "Partner-first routing — when explicit partnerGuess is passed, scan families matching partner via id/tags/keywords/tier1; if score>=2 on allowed surface, wrap partner-aligned family in single-project workspace. Preserves multi-lane workspace + fallthrough on no partner.",
+      "scores": {
+        "coverage_lift_per_promote": 0.308,
+        "routing_stability": { "flipped": 0, "lost": 0, "gained": 8 },
+        "test_suite_pass": "688/688"
+      },
+      "dominates": ["variant-A-tier1-first", "baseline"],
+      "mergedAt": "2026-04-23T23:45:00Z",
+      "status": "merged-to-main"
+    },
+    {
+      "name": "variant-A-tier1-first",
+      "commit": "2d31982 (worktree only)",
+      "mechanism": "Pre-workspace intercept scanning family tier1 keywords for >=2 token matches. Protocol-lane guard preserves multi-lane workspace.",
+      "scores": {
+        "coverage_lift_per_promote": 0.0,
+        "routing_stability": { "flipped": 0, "lost": 0, "gained": 0 },
+        "test_suite_pass": "618/621 (1 pre-existing failure)"
+      },
+      "dominatedBy": ["variant-B-partner-first"],
+      "status": "not-merged",
+      "retainedFor": "architectural documentation — the mechanism works on live prompts but is mechanically bounded by 26 of 54 scenarios having initialPrompt:null. Escalated as Gen 8 trace-capture fix."
+    }
+  ],
+  "convergedAt": "2026-04-23T23:50:00Z",
+  "convergenceCriterion": "Frontier winner exceeded coverage_lift_per_promote target by 3x (0.308 vs 0.10) with perfect routing_stability. No further iteration needed.",
+  "gen8Seeds": [
+    "Trace-capture bug: .evolve/traces/buildouts.jsonl rows 27-54 have initialPrompt:null. Fix upstream in emit-buildout-event or the session-recorder. Would unlock Variant A's mechanism and compound with Variant B.",
+    "Workspace-composable proposer: the original Gen 7 thesis. Variant B handled this narrow case via partner signal, but real multi-lane demand still gets generic [nextjs-ts, api-service]. A proposer that generates multi-project workspace specs for workspace-classified prompts remains the durable architectural fix.",
+    "AxGEPA on hintsAuthor.keywordsTier1: still the clearest training signal from accumulated proposer outcomes."
+  ]
 }

@@ -31,7 +31,7 @@ import { tmpdir } from 'node:os'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { InMemoryTraceStore, BuilderSession, SubprocessSandboxDriver, scoreProject } from '@tangle-network/agent-eval'
-import { snapshotScaffold, invokeMetaJudge } from '../dist/eval/scaffold-bridge.js'
+import { snapshotScaffold, invokeMetaJudge, HARNESS_CONFIGS } from '../dist/eval/scaffold-bridge.js'
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -390,31 +390,20 @@ function validateProposalSchema(draftDir, id) {
 }
 
 function harnessConfigForFamily(familyManifest) {
+  // Single source of truth: HARNESS_CONFIGS from scaffold-bridge. Gen 9
+  // centralized the per-language dispatch to eliminate the drift surface
+  // where Gen 8b had to fix three copies of the same table and silently
+  // missed the runtime one (see .evolve/patterns/muffled-gate.md).
   const language = familyManifest?.taxonomy?.language ?? 'unknown'
-  switch (language) {
-    case 'typescript':
-    case 'javascript':
-      // Strict: tsc --noEmit fails loud on type errors. The previous `|| true`
-      // suffix swallowed every failure — three Gen 6 scaffolds (kyc-onboarding
-      // .ts JSX, fraud-ops + polymarket React 17 imports, kyc esbuild.loader
-      // hallucination) all passed this gate AND the fidelity judge, then
-      // shipped to registry/. Caught only at audit time. Gen 8 closes that
-      // loop by failing the gate at proposal time. PR #51 fixed the bugs;
-      // this fix prevents the class.
-      return { setupCommand: 'pnpm install --prefer-offline', testCommand: 'pnpm exec tsc --noEmit', timeoutMs: 180_000 }
-    case 'rust':
-      return { setupCommand: 'cargo fetch', testCommand: 'cargo check --workspace || cargo check', timeoutMs: 300_000 }
-    case 'go':
-      return { setupCommand: 'go mod tidy', testCommand: 'go build ./... && go vet ./...', timeoutMs: 180_000 }
-    case 'python':
-      return { setupCommand: '[ -f requirements.txt ] && pip install -r requirements.txt || true', testCommand: 'python -m compileall -q .', timeoutMs: 120_000 }
-    case 'solidity':
-      return { setupCommand: 'forge install --no-git || true', testCommand: 'forge build', timeoutMs: 180_000 }
-    case 'move':
-      return { setupCommand: '', testCommand: 'aptos move compile --dev', timeoutMs: 300_000 }
-    default:
-      return { setupCommand: '', testCommand: 'true', timeoutMs: 60_000 }
+  const config = HARNESS_CONFIGS[language]
+  if (!config) {
+    throw new Error(
+      `harnessConfigForFamily: unsupported taxonomy.language '${language}' for family ` +
+      `${familyManifest?.id ?? '<unknown>'}. Add it to HARNESS_CONFIGS in ` +
+      `src/eval/scaffold-bridge.ts (strict, fail-loud testCommand) before promoting.`,
+    )
   }
+  return config
 }
 
 function tryOpenPR(id, buildReport) {

@@ -24,6 +24,7 @@ import { tmpdir } from 'node:os'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { InMemoryTraceStore, BuilderSession, SubprocessSandboxDriver, scoreProject } from '@tangle-network/agent-eval'
+import { HARNESS_CONFIGS } from '../dist/eval/scaffold-bridge.js'
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const argv = process.argv.slice(2)
@@ -235,24 +236,19 @@ function validateCapabilitySchema(draftDir, id, manifest) {
 }
 
 function harnessConfigForFamily(familyManifest) {
+  // Single source of truth: HARNESS_CONFIGS from scaffold-bridge. See
+  // .evolve/patterns/muffled-gate.md for the history of three parallel
+  // copies drifting and Gen 8b missing the runtime copy.
   const language = familyManifest?.taxonomy?.language ?? 'unknown'
-  switch (language) {
-    case 'typescript':
-    case 'javascript':
-      // Strict tsc — same fix as promote-family-proposal.mjs (Gen 8). Capability
-      // composes onto an existing family; if the composed scaffold doesn't
-      // typecheck, the capability is the regression source. Failing loud here
-      // catches it at proposal time instead of audit time.
-      return { setupCommand: 'pnpm install --prefer-offline', testCommand: 'pnpm exec tsc --noEmit', timeoutMs: 180_000 }
-    case 'rust':
-      return { setupCommand: 'cargo fetch', testCommand: 'cargo check --workspace || cargo check', timeoutMs: 300_000 }
-    case 'go':
-      return { setupCommand: 'go mod tidy', testCommand: 'go build ./... && go vet ./...', timeoutMs: 180_000 }
-    case 'python':
-      return { setupCommand: '[ -f requirements.txt ] && pip install -r requirements.txt || true', testCommand: 'python -m compileall -q .', timeoutMs: 120_000 }
-    default:
-      return { setupCommand: '', testCommand: 'true', timeoutMs: 60_000 }
+  const config = HARNESS_CONFIGS[language]
+  if (!config) {
+    throw new Error(
+      `harnessConfigForFamily: unsupported taxonomy.language '${language}' for family ` +
+      `${familyManifest?.id ?? '<unknown>'}. Add it to HARNESS_CONFIGS in ` +
+      `src/eval/scaffold-bridge.ts (strict, fail-loud testCommand) before promoting.`,
+    )
   }
+  return config
 }
 
 function ok(id, gateReached, message, extra = {}) {

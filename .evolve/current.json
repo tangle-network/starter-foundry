@@ -1,22 +1,43 @@
 {
   "mode": "evolve",
-  "goal": "Gen 8 compile-gate end-to-end validated — TS-error proposals now rejected at build-gate",
-  "status": "converged-round-0",
+  "goal": "Gen 9 muffled-gate audit shipped — structural guard replaces point-fixes",
+  "status": "gen-9-shipped",
   "round": 0,
-  "generation": 8,
+  "generation": 9,
   "activePursuit": null,
-  "lastPursuit": ".evolve/pursuits/2026-04-24-compile-gate.md",
-  "updatedAt": "2026-04-24T05:30:00Z",
+  "lastPursuit": ".evolve/pursuits/2026-04-24-muffled-gate-audit.md",
+  "updatedAt": "2026-04-24T06:15:00Z",
   "priorGenerations": [
     { "n": 6, "pursuit": "generation-flywheel", "commit": "17347c1" },
     { "n": 7, "pursuit": "multi-pursue-r4-partner-first-router", "commit": "518bf50" },
     { "n": 8, "pursuit": "compile-gate", "commit": "07b54c3" },
-    { "n": "8b", "pursuit": "promoter-cwd-plumbing", "commit": "e3667bd" }
+    { "n": "8b", "pursuit": "promoter-cwd-plumbing", "commit": "8419c8a" },
+    { "n": 9, "pursuit": "muffled-gate-audit", "commit": "pending" }
   ],
   "gen8bResult": {
     "thesis": "Gen 8's strict tsc --noEmit was silent no-op because promoter passed cwd to driver constructor (agent-eval 0.7.0 only reads config.cwd). Fix: spread cwd into HarnessConfig.",
     "verified": "probe with verified TS2345 error pre-fix promoted at score=1.00; post-fix rejected at gate=compose-pass with build score=0.00 + full error in validation-errors.json. zk-mixer-ui draft (6 hallucinated imports) now correctly blocked.",
     "testsAdded": 3,
     "agentEvalPR": "tangle-network/agent-eval#4 — constructor-cwd fallback in SubprocessSandboxDriver"
-  }
+  },
+  "gen9Result": {
+    "thesis": "Replace the case-by-case muffled-gate fix pattern with a structural invariant — one source-of-truth HARNESS_CONFIGS table + code-grep invariant test that mechanically fails CI on any new muffled gate in scanned files",
+    "filesChanged": 7,
+    "filesAdded": 2,
+    "testsAdded": 4,
+    "testTotal": "694 → 700 (with Gen 8b behavioral guard from main)",
+    "liveMuffledGates": "7 → 0 (5 fixed, 2 annotated with muffle-ok:)",
+    "regressionGuardProven": "restoring `|| true` in HARNESS_CONFIGS.typescript.testCommand immediately fails invariant with exact file:line",
+    "phase15Gate": "one yes (>5 files) — adversarial review completed, 5 perspectives, 0 blocks"
+  },
+  "scorecard": {
+    "aggregate": 0.605,
+    "note": "Gen 9 is structural, not metric-moving. Its cash-out is in the NEXT autonomous proposer run — bad proposals that would have silent-passed the runtime eval now fail loud at proposal time. /evolve Round 0 will measure the rejection rate delta."
+  },
+  "gen10Seeds": [
+    "Expand invariant scanner to catch the general default-missing-to-permissive pattern (not just 'starter'/'workspace' literals)",
+    "Moonshot revisit: dependently-typed gate AST if Gen 10 reveals the regex invariant is leaky",
+    "Apply pattern-document convention to other recurring anti-patterns (shipped-but-unwired, construct-vs-call)"
+  ],
+  "handoff": "Run /evolve against the next nightly autonomous proposer run. Expected: runtime-eval muffled-gate bugs that survived Gen 8b (promoter-only fix) now fail at proposal time."
 }

@@ -58,12 +58,16 @@ function loadCorpora() {
 
   const scenarios = []
   for (const s of held.scenarios) {
+    // expectedKind: explicit null when the scenario declares no kind
+    // expectation. The matcher at line 176 treats null as "no check".
+    // Previous `?? 'starter'` default silently misclassified
+    // workspace-expected scenarios as starter (PR #51 bug class).
     scenarios.push({
       id: s.id,
       corpus: 'held-out',
       prompt: s.prompt,
       partner: s.partner ?? null,
-      expectedKind: s.expected?.kind ?? 'starter',
+      expectedKind: s.expected?.kind ?? null,
       expectedFamily: s.expected?.family ?? null,
       expectedCapabilities: s.expected?.capabilities ?? [],
     })
@@ -121,7 +125,7 @@ function extractActual(plan) {
     const singleProjectFamily = projects.length === 1 ? projects[0]?.spec?.family ?? null : null
     return {
       kind: 'workspace',
-      family: singleProjectFamily ?? 'workspace',
+      family: singleProjectFamily ?? 'workspace', // muffle-ok: this derives the ACTUAL workspace family for scoring, not an expected-kind default — the literal 'workspace' is the sentinel for multi-project workspaces
       capabilities: projects.flatMap((p) => p.spec?.layers ?? p.layers ?? []),
     }
   }

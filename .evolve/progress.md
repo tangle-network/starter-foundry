@@ -1,5 +1,66 @@
 # Evolve Progress — starter-foundry routing quality
 
+## 2026-04-24 — Pursuit Gen 9: structural muffled-gate audit
+
+Pursuit: `.evolve/pursuits/2026-04-24-muffled-gate-audit.md`. Thesis:
+"replace the case-by-case muffled-gate fix pattern with a structural
+invariant — one source-of-truth `HARNESS_CONFIGS` table + code-grep
+invariant test that mechanically fails CI on any new muffled gate."
+Prior Gen 8b fix caught one muffler in the promoters; audit found
+3 more live (runtime `makeHarnessConfig`, unknown-language default,
+held-out `expected.kind` default) plus 2 bonus shapes (skip-counts-as-pass,
+no-expectation-auto-matches). Gen 9 closes all of them AND adds the
+invariant scanner that prevents re-introduction.
+
+**Changes shipped (7 code files + 2 new, 5 tests added):**
+- `src/eval/scaffold-bridge.ts` — `HARNESS_CONFIGS` table exported
+  as single source of truth. TS entry strict (`tsc --noEmit`), unknown
+  language throws, per-language muffle-ok annotations for legitimate
+  best-effort setup commands.
+- `scripts/promote-family-proposal.mjs` + `scripts/promote-capability-proposal.mjs`
+  — both import `HARNESS_CONFIGS` and delete their own parallel
+  switch. No more drift surface.
+- `scripts/meta-harness-eval.mjs` — held-out `expectedKind ?? 'starter'`
+  → `?? null` (matcher already handles null correctly); actual-workspace
+  derivation `?? 'workspace'` kept with `muffle-ok:` annotation
+  explaining it's the sentinel for multi-project workspaces, not an
+  expected-kind default.
+- `src/lib/template-quality.ts` — `phaseOk` returns three-valued
+  (`true | false | 'skipped' | null`); skip → 0.5 credit at aggregate
+  instead of 1.0 silent pass.
+- `src/lib/prompt-e2e.ts` — `matchesExpectation` returns
+  `{matched, hasExpectation}`; `routeAccuracy` denominator excludes
+  no-expectation scenarios.
+- `tests/muffled-gate-invariant.test.ts` — NEW. 5 pattern scanners
+  + 3 structural assertions + HARNESS_CONFIGS round-trip checks.
+- `.evolve/patterns/muffled-gate.md` — NEW. Names the pattern, lists
+  10 canonical instances (7 fixed by Gen 9 + 3 pre-Gen-9), documents
+  the `muffle-ok:` escape hatch, tells future proposers what to avoid.
+- `tests/scaffold-bridge.test.ts` — refactored Gen 8 strict-testCommand
+  regression tests to assert the new HARNESS_CONFIGS source-of-truth
+  shape; updated "unknown language" test to assert throw.
+
+**Verified end-to-end:**
+- 699/699 tests pass (was 694, +5: 4 new invariant tests + unknown-language throw).
+- Build clean.
+- Planted regression: restored `|| true` to `HARNESS_CONFIGS.typescript.testCommand`
+  → invariant test IMMEDIATELY fails with exact file:line + pattern
+  name. Restored.
+- Grep sweep: 0 un-annotated muffled-gate patterns in scanned paths
+  (down from 7 at Gen 8b close).
+
+**Expected impact:** this is a process-quality generation, not a
+metric-moving one. Its cash-out is in the NEXT autonomous proposer
+run — bad proposals that survived the Gen 8b partial-fix (promoter-only)
+now fail loud at the RUNTIME eval path too. Any new muffled gate
+added by a future proposer fails CI before merge.
+
+**Next:** dispatch `/evolve` against the next nightly proposer run.
+Measure rejection-rate delta and validate that the runtime-eval
+closure takes effect.
+
+---
+
 ## 2026-04-22 (evening) — Pursuit Gen 3: measurement freshness (scorecard self-heals)
 
 Pursuit: `.evolve/pursuits/2026-04-22-measurement-freshness.md`. Thesis: "the scorecard is self-fresh — it regenerates stale inputs at read time, so any `/governor` invocation reads honest data regardless of what the operator remembered." Gen 2 shipped the staleness gate (detection); Gen 3 closes the loop (auto-fix).

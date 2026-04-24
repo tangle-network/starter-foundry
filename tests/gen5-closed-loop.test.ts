@@ -43,6 +43,7 @@ test('detect-family-gaps: --min-count filters low-demand scenarios', () => {
   const res = spawnSync('node', [GAP_SCRIPT, '--json', '--top', '50', '--min-count', '3'], {
     cwd: REPO,
     encoding: 'utf8',
+    env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
   })
   assert.equal(res.status, 0)
   const parsed = JSON.parse(res.stdout) as { candidates: Array<{ occurrences: number }> }
@@ -89,6 +90,7 @@ test('promote-family-proposal: rejects manifest with TODO placeholders at schema
     const res = spawnSync('node', [PROMOTE_SCRIPT, '--id', fixtureId, '--no-pr'], {
       cwd: REPO,
       encoding: 'utf8',
+      env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
     })
     assert.equal(res.status, 0, `promoter should exit 0 on schema reject (not crash): ${res.stderr}`)
     assert.match(res.stdout, /schema-fail/, 'output must mention schema-fail gate')
@@ -128,6 +130,7 @@ test('promote-family-proposal: rejects manifest.id mismatch at schema gate', () 
     const res = spawnSync('node', [PROMOTE_SCRIPT, '--id', fixtureId, '--no-pr'], {
       cwd: REPO,
       encoding: 'utf8',
+      env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
     })
     assert.equal(res.status, 0)
     const errPath = join(draftDir, 'validation-errors.json')
@@ -146,6 +149,7 @@ test('promote-family-proposal: --all scans existing drafts without error', () =>
   const res = spawnSync('node', [PROMOTE_SCRIPT, '--all', '--no-pr', '--dry-run'], {
     cwd: REPO,
     encoding: 'utf8',
+    env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
   })
   assert.equal(res.status, 0, `--all should exit 0: ${res.stderr}`)
   assert.match(res.stdout, /promotion summary/, 'must print summary line')
@@ -155,6 +159,7 @@ test('promote-family-proposal: missing draft dir exits cleanly with informative 
   const res = spawnSync('node', [PROMOTE_SCRIPT, '--id', 'definitely-nonexistent-draft-xyz123', '--no-pr'], {
     cwd: REPO,
     encoding: 'utf8',
+    env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
   })
   assert.equal(res.status, 0)
   assert.match(res.stdout, /no-draft|missing manifest/, 'must report missing manifest')

@@ -1,8 +1,8 @@
 {
   "product": "starter-foundry",
-  "timestamp": "2026-04-24T03:56:49.070Z",
+  "timestamp": "2026-04-24T19:19:58.334Z",
   "coverage": "20/22 flows measured",
-  "aggregate": 0.605,
+  "aggregate": 0.649,
   "inputs": [
     {
       "path": ".evolve/buildout-analysis.json",
@@ -18,7 +18,7 @@
     },
     {
       "path": ".evolve/buildout-analysis-internal.json",
-      "mtime": "2026-04-24T03:56:48.537Z"
+      "mtime": "2026-04-24T19:19:57.771Z"
     },
     {
       "path": ".evolve/agent-eval/2026-04-23/three-layer-report.json",
@@ -133,7 +133,7 @@
     },
     {
       "name": "capability_layers",
-      "value": 109,
+      "value": 110,
       "target": 50,
       "status": "pass",
       "productValueClaim": "Distinct capability layers available for attachment. Each one is a bundle of deps + files + context agents get for free.",
@@ -149,9 +149,9 @@
     },
     {
       "name": "proposal_promotion_rate",
-      "value": 0.0337,
+      "value": 0.75,
       "target": 0.3,
-      "status": "fail",
+      "status": "pass",
       "productValueClaim": "Fraction of proposed families/capabilities that passed all validation gates (schema+compose+build) and landed in registry/ over the last 30 days. When this moves, vertical expansion is working — new buildable surfaces per week without manual registry authoring.",
       "direction": "higher-better"
     },

@@ -56,6 +56,9 @@ function logGovernor(entry) {
   try { appendFileSync(governorLog, JSON.stringify({ ts: new Date().toISOString(), source: 'promote-capability-proposal', ...entry }) + '\n') } catch { /* noop */ }
 }
 function logImpact(entry) {
+  // Test runs pollute generation-impact.jsonl with fixture-driven
+  // failures. Same no-op discipline as promote-family-proposal.
+  if (process.env.STARTER_FOUNDRY_SYNTHETIC_RUN === '1') return
   try { appendFileSync(impactLog, JSON.stringify({ ts: new Date().toISOString(), ...entry }) + '\n') } catch { /* noop */ }
 }
 

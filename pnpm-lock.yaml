@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@tangle-network/agent-eval': link:../agent-eval
-
 importers:
 
   .:
@@ -22,8 +19,8 @@ importers:
         version: 0.4.2(typescript@5.9.3)(zod@4.3.6)
     devDependencies:
       '@tangle-network/agent-eval':
-        specifier: link:../agent-eval
-        version: link:../agent-eval
+        specifier: ^0.7.2
+        version: 0.7.2(typescript@5.9.3)(zod@4.3.6)
       '@types/node':
         specifier: ^20.0.0
         version: 20.19.39
@@ -514,6 +511,10 @@ packages:
   '@scure/bip39@2.2.0':
     resolution: {integrity: sha512-T/Bj/YvYMNkIPq6EENO6/rcs2e7qTNuyoUXf0KBFDmp0ZDu0H2X4Lq6yC3i0c8PcWkov5EbW+yQZZbdMmk154A==}
 
+  '@tangle-network/agent-eval@0.7.2':
+    resolution: {integrity: sha512-2n5ftzFI0j8Upe75z1nhS8LlgYYmbq7b9w9kIr73q//GRDsiKyVLRzosbTU21UWtsZWvjba87dCvinNIvaoFbQ==}
+    engines: {node: '>=20'}
+
   '@tangle-network/sandbox@0.0.3':
     resolution: {integrity: sha512-GWZVIGrZtg2YpTUP8x0AC9HU6xVu862cv3X0zheijcyCujMnlyFBNerohWPh9U4rS5Linm+/f4RZrYOeQXuaYw==}
     peerDependencies:
@@ -521,6 +522,11 @@ packages:
     peerDependenciesMeta:
       viem:
         optional: true
+
+  '@tangle-network/tcloud@0.2.0':
+    resolution: {integrity: sha512-OeD2Cm2Y8ISIiBRL3kZyZyeRDZy5leBn5D3KfLgGxPTtz69uQt78UbJokNl5T1Hk8Jsh5BXtp18oZN93qdK1PA==}
+    engines: {node: '>=18'}
+    hasBin: true
 
   '@tangle-network/tcloud@0.4.2':
     resolution: {integrity: sha512-+rP/5sKJX/wzEx2hZDupcEZ3N961CAPOSgc9DnTQdQ4Jdgsu0xYYubfOKSQc10N7Pqcjdb5oywbqPwTly6veMw==}
@@ -1142,9 +1148,31 @@ snapshots:
       '@noble/hashes': 2.2.0
       '@scure/base': 2.2.0
 
+  '@tangle-network/agent-eval@0.7.2(typescript@5.9.3)(zod@4.3.6)':
+    dependencies:
+      '@ax-llm/ax': 19.0.45(zod@4.3.6)
+      '@tangle-network/tcloud': 0.2.0(typescript@5.9.3)(zod@4.3.6)
+    transitivePeerDependencies:
+      - bufferutil
+      - typescript
+      - utf-8-validate
+      - zod
+
   '@tangle-network/sandbox@0.0.3(viem@2.48.4(typescript@5.9.3)(zod@4.3.6))':
     optionalDependencies:
       viem: 2.48.4(typescript@5.9.3)(zod@4.3.6)
+
+  '@tangle-network/tcloud@0.2.0(typescript@5.9.3)(zod@4.3.6)':
+    dependencies:
+      '@scure/bip32': 2.2.0
+      '@scure/bip39': 2.2.0
+      commander: 13.1.0
+      viem: 2.48.4(typescript@5.9.3)(zod@4.3.6)
+    transitivePeerDependencies:
+      - bufferutil
+      - typescript
+      - utf-8-validate
+      - zod
 
   '@tangle-network/tcloud@0.4.2(typescript@5.9.3)(zod@4.3.6)':
     dependencies:

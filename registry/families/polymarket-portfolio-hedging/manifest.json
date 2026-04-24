@@ -80,12 +80,13 @@
     "extensionPoints": []
   },
   "keywords": [
-    "hedging strategies",
-    "portfolio optimization",
-    "risk management",
-    "financial modeling",
-    "market analysis",
-    "investment planning"
+    "polymarket",
+    "prediction market",
+    "prediction market hedging",
+    "portfolio hedging",
+    "event contract portfolio",
+    "event contract hedging",
+    "polymarket portfolio"
   ],
   "tieredKeywords": {
     "tier1": [

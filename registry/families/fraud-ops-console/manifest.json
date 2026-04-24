@@ -81,17 +81,15 @@
   },
   "keywords": [
     "fraud detection",
-    "risk management",
-    "compliance",
-    "frontend",
-    "typescript",
-    "nodejs",
-    "security",
-    "regulations",
-    "data-driven",
-    "modular architecture",
-    "performance",
-    "scalability"
+    "fraud ops",
+    "fraud ops console",
+    "risk scoring dashboard",
+    "alert triage",
+    "kyc alerts",
+    "fraud alerts",
+    "aml monitoring",
+    "transaction risk scoring",
+    "chargeback ops"
   ],
   "tieredKeywords": {
     "tier1": [
@@ -101,12 +99,10 @@
       "kyc alerts"
     ],
     "tier2": [
-      "security",
-      "regulations",
-      "data-driven",
-      "modular architecture",
-      "performance",
-      "scalability"
+      "alert triage",
+      "aml monitoring",
+      "chargeback ops",
+      "transaction risk scoring"
     ]
   },
   "buildHints": {

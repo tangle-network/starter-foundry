@@ -69,12 +69,18 @@ function loadCorpora() {
     })
   }
   for (const s of ideas) {
+    // ideasai uses expectedFamily as the discriminator: literal "workspace"
+    // sentinel means multi-lane composition; anything else is a single-family
+    // starter. The hard-coded kind:'starter' here misclassified workspace
+    // scenarios as starter-shaped, which broke after Gen 7 partner-first
+    // routing started wrapping single-project workspaces (commit 518bf50).
+    const expectedKind = s.expectedFamily === 'workspace' ? 'workspace' : 'starter'
     scenarios.push({
       id: s.id,
       corpus: 'ideasai',
       prompt: s.prompt,
       partner: null,
-      expectedKind: 'starter',
+      expectedKind,
       expectedFamily: s.expectedFamily,
       expectedCapabilities: s.expectedCapabilities ?? [],
     })
@@ -106,10 +112,17 @@ function extractActual(plan) {
     }
   }
   if (plan.kind === 'workspace') {
+    // When the workspace has exactly one project (e.g. partner-first wrapped
+    // a single family — the post-Gen-7 routing pattern from commit 518bf50),
+    // surface its family as the actualFamily so fixtures can specify the
+    // expected family rather than the literal string "workspace". Multi-
+    // project workspaces still report "workspace" as the family sentinel.
+    const projects = plan.spec?.projects ?? []
+    const singleProjectFamily = projects.length === 1 ? projects[0]?.spec?.family ?? null : null
     return {
       kind: 'workspace',
-      family: 'workspace',
-      capabilities: (plan.spec?.projects ?? []).flatMap((p) => p.spec?.layers ?? p.layers ?? []),
+      family: singleProjectFamily ?? 'workspace',
+      capabilities: projects.flatMap((p) => p.spec?.layers ?? p.layers ?? []),
     }
   }
   return { kind: plan.kind ?? null, family: null, capabilities: [] }

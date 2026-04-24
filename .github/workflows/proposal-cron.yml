@@ -40,6 +40,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
+      - uses: ./.github/actions/setup-agent-eval
       - name: install
         run: pnpm install --frozen-lockfile
       - name: build
@@ -92,6 +93,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
+      - uses: ./.github/actions/setup-agent-eval
       - name: install
         run: pnpm install --frozen-lockfile
       - name: build
@@ -140,6 +142,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
+      - uses: ./.github/actions/setup-agent-eval
       - name: install
         run: pnpm install --frozen-lockfile
       - name: build

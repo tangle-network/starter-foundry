@@ -25,6 +25,9 @@ const SCAN_FILES = [
   'scripts/promote-capability-proposal.mjs',
   'scripts/audit-scaffold-quality.mjs',
   'scripts/meta-harness-eval.mjs',
+  // Round 0 post-Gen-9: runtime scaffold-eval path had the construct-vs-call
+  // cwd bug (same shape as Gen 8b promoter fix). Added to the scan list.
+  'scripts/agent-eval-scaffold.mjs',
 ]
 
 interface Finding {
@@ -161,6 +164,36 @@ function findSkipCountsAsPass(file: string, text: string): Finding[] {
 }
 
 /**
+ * `new SubprocessSandboxDriver({ cwd: ... })` — the construct-vs-call
+ * cwd bug. agent-eval@0.7.0's driver reads cwd from the per-call
+ * HarnessConfig, not the constructor, so the constructor arg is
+ * silently dropped. Gen 8b fixed this in the promoters; Round 0
+ * post-Gen-9 found it still live in the runtime eval path. This finder
+ * catches re-introductions anywhere in the scanned files.
+ */
+function findConstructorCwdDropped(file: string, text: string): Finding[] {
+  const findings: Finding[] = []
+  const lines = text.split('\n')
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]!
+    if (line.includes('muffle-ok:')) continue
+    const codePart = line.replace(/\/\/.*$/, '').replace(/^\s*\*.*$/, '')
+    if (!codePart.trim()) continue
+    if (/new\s+SubprocessSandboxDriver\s*\(\s*\{[^}]*cwd\s*:/.test(codePart)) {
+      findings.push({
+        file,
+        line: i + 1,
+        lineText: line.trim(),
+        pattern:
+          'construct-vs-call cwd dropped (new SubprocessSandboxDriver({cwd}) — ' +
+          'driver reads cwd from HarnessConfig, not constructor; constructor arg is silently dropped)',
+      })
+    }
+  }
+  return findings
+}
+
+/**
  * Duplicate `harnessConfigForFamily` function bodies. Gen 9 moved
  * the per-language dispatch table to `HARNESS_CONFIGS` in
  * scaffold-bridge.ts — the promoters import it. A re-introduction
@@ -210,6 +243,7 @@ function scanAll(): Finding[] {
     findings.push(...findPermissiveKindDefault(file, text))
     findings.push(...findAutoMatchNoExpectation(file, text))
     findings.push(...findSkipCountsAsPass(file, text))
+    findings.push(...findConstructorCwdDropped(file, text))
   }
   findings.push(...findDuplicateHarnessDispatch())
   return findings
@@ -269,6 +303,21 @@ describe('muffled-gate invariant', () => {
       () => mod.makeHarnessConfig(fake as never),
       /unsupported taxonomy\.language/,
       'makeHarnessConfig must throw for unknown languages, not return a silent-pass testCommand',
+    )
+  })
+
+  test('prepareScaffoldForEval bakes cwd into the returned harness (Round 0 post-Gen-9)', async () => {
+    // Round 0 found the runtime eval path silent-passed a TS-error scaffold
+    // because scripts/agent-eval-scaffold.mjs passed cwd to the
+    // SubprocessSandboxDriver constructor (silently dropped) and the
+    // harness returned by prepareScaffoldForEval lacked cwd. Guard: the
+    // harness itself must carry cwd so callers can't forget.
+    const { readFileSync } = await import('node:fs')
+    const src = readFileSync(join(REPO_ROOT, 'src/eval/scaffold-bridge.ts'), 'utf8')
+    assert.match(
+      src,
+      /const\s+harness\s*=\s*\{\s*\.\.\.makeHarnessConfig\([^)]*\)\s*,\s*cwd\s*:\s*scaffoldDir\s*\}/,
+      'prepareScaffoldForEval must return a harness with cwd: scaffoldDir baked in (muffled-gate closure)',
     )
   })
 

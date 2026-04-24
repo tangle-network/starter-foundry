@@ -403,7 +403,15 @@ export async function prepareScaffoldForEval(args: {
   }
 
   const snapshot = snapshotScaffold(scaffoldDir)
-  const harness = makeHarnessConfig(args.components)
+  // cwd MUST be baked into the harness at preparation time. agent-eval's
+  // SubprocessSandboxDriver.exec reads cwd from the per-call HarnessConfig,
+  // NOT from the driver constructor (see agent-eval@0.7.0 — Gen 8b bug).
+  // Returning the harness without cwd forces every caller to remember to
+  // spread it in, and historical evidence says that fails — the runtime
+  // eval path in scripts/agent-eval-scaffold.mjs (pre-Round-0) had the
+  // same construct-vs-call bug Gen 8b fixed in the promoters. Bake it in
+  // here so the muffled gate is structurally impossible at this seam.
+  const harness = { ...makeHarnessConfig(args.components), cwd: scaffoldDir }
   const assertions = manifestComplianceAssertions(args.components)
 
   return {

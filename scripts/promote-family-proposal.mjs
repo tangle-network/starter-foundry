@@ -32,6 +32,7 @@ import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { InMemoryTraceStore, BuilderSession, SubprocessSandboxDriver, scoreProject } from '@tangle-network/agent-eval'
 import { snapshotScaffold, invokeMetaJudge, HARNESS_CONFIGS } from '../dist/eval/scaffold-bridge.js'
+import { checkDeclaredDepUsed, checkScaffoldRuns, checkEvalScores } from '../dist/lib/promoter-gates.js'
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -238,6 +239,20 @@ async function promoteOne(id) {
       // Snapshot failure is not a gate failure — we just can't run fidelity.
       console.error(`  ⚠ ${id} snapshot failed: ${err?.message ?? err} — fidelity skipped`)
     }
+
+    // ── Gen 9 dogfood gates (declared-dep-used / scaffold-runs / eval-scores).
+    // These run AFTER build-pass and BEFORE fidelity. They catch the
+    // class of bug a compile-gate can't: declared-but-unused deps,
+    // scaffolds that compile but don't boot, and "ships with eval"
+    // capabilities whose own eval would fail. See src/lib/promoter-gates.ts.
+    const dogfoodOutcome = await runDogfoodGates({
+      id,
+      draftDir,
+      composedOutDir,
+      manifest: family,
+      composedLayers: [`framework:${id}`],
+    })
+    if (dogfoodOutcome.failure) return dogfoodOutcome.failure
   } catch (err) {
     writeFileSync(join(draftDir, 'validation-errors.json'), JSON.stringify({ gate: 'build', error: err?.message ?? String(err) }, null, 2))
     return fail(id, 'compose-pass', `build threw: ${err?.message ?? err}`)
@@ -442,4 +457,62 @@ function fail(id, gateReached, message) {
   // artificially and suppress the rate metric.
   if (!DRY_RUN) logImpact({ event: 'promote-failed', id, gateReached, message })
   return { id, gateReached, message }
+}
+
+/**
+ * Run the Gen 9 dogfood gates (declared-dep-used / scaffold-runs /
+ * eval-scores) on an already-built composed scaffold. Returns
+ * `{ failure }` where `failure` is a fail() return value if any gate
+ * tripped, else `{ failure: null }`.
+ *
+ * Gate 2 keeps the process running so gate 3 can reuse it; the process
+ * is SIGTERM'd before returning regardless of outcome.
+ */
+async function runDogfoodGates({ id, draftDir, composedOutDir, manifest, composedLayers }) {
+  // Gate 1: declared-dep-used. Structural — no subprocess.
+  const depUsed = checkDeclaredDepUsed({ manifest, composedDir: composedOutDir })
+  if (depUsed.status === 'fail') {
+    writeFileSync(join(draftDir, 'validation-errors.json'), JSON.stringify(depUsed, null, 2))
+    return { failure: fail(id, 'declared-dep-used', depUsed.message ?? `unused deps: ${(depUsed.unusedDeps ?? []).join(', ')}`) }
+  }
+  console.log(`  ${depUsed.status === 'pass' ? '✓' : '·'} ${id} declared-dep-used: ${depUsed.status}${depUsed.status === 'skipped' ? ` (${depUsed.reason})` : ''}`)
+
+  // Gate 2: scaffold-runs. Boots the agent if the scaffold declares `start`.
+  const composesAgentEval = composedLayers.some((l) => l === 'capability:agent-eval' || l.endsWith(':agent-eval'))
+  const runsResult = await checkScaffoldRuns({
+    composedDir: composedOutDir,
+    manifest,
+    options: { keepProcess: composesAgentEval },
+  })
+  if (runsResult.status === 'fail') {
+    writeFileSync(join(draftDir, 'validation-errors.json'), JSON.stringify({ ...runsResult, process: undefined }, null, 2))
+    return { failure: fail(id, 'scaffold-runs', runsResult.message ?? runsResult.reason ?? 'scaffold failed to boot') }
+  }
+  console.log(`  ${runsResult.status === 'pass' ? '✓' : '·'} ${id} scaffold-runs: ${runsResult.status}${runsResult.status === 'skipped' ? ` (${runsResult.reason})` : ''}`)
+
+  // Gate 3: eval-scores. Only if the scaffold composed capability:agent-eval
+  // AND gate 2 handed back a live process.
+  try {
+    if (runsResult.status === 'pass' && composesAgentEval && runsResult.port) {
+      const evalResult = await checkEvalScores({
+        composedDir: composedOutDir,
+        manifest,
+        composedLayers,
+        options: { port: runsResult.port },
+      })
+      if (evalResult.status === 'fail') {
+        writeFileSync(join(draftDir, 'validation-errors.json'), JSON.stringify(evalResult, null, 2))
+        return { failure: fail(id, 'eval-scores', evalResult.message ?? evalResult.reason ?? 'eval scores below threshold') }
+      }
+      console.log(`  ${evalResult.status === 'pass' ? '✓' : '·'} ${id} eval-scores: ${evalResult.status}${evalResult.status === 'skipped' ? ` (${evalResult.reason})` : ''}`)
+    }
+  } finally {
+    // Always SIGTERM the gate-2 process before leaving the dogfood block —
+    // gate 3 (if it ran) is done; any other path means we shouldn't hold
+    // the port either way.
+    if (runsResult.status === 'pass' && runsResult.process) {
+      try { runsResult.process.kill() } catch { /* noop */ }
+    }
+  }
+  return { failure: null }
 }

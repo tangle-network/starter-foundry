@@ -77,20 +77,41 @@ patterns fail the test.
 
 ## Scan scope
 
-The invariant scanner reads:
+Split coverage (H4 from Research R2026-04-24):
 
-- `src/eval/**` — eval-path source
+**Explicit SCAN_FILES** — context-specific patterns (fallback-to-pass,
+permissive defaults, skip-counts-as-pass, no-expectation auto-match,
+duplicate-harness-dispatch):
+
+- `src/eval/scaffold-bridge.ts`
 - `src/lib/template-quality.ts` — quality scorer
 - `src/lib/prompt-e2e.ts` — corpus runner
 - `scripts/promote-family-proposal.mjs`
 - `scripts/promote-capability-proposal.mjs`
 - `scripts/audit-scaffold-quality.mjs`
 - `scripts/meta-harness-eval.mjs`
+- `scripts/agent-eval-scaffold.mjs`
 
-New eval-like files must be added to the scanner's root list (see
-`tests/muffled-gate-invariant.test.ts`). A proposer that adds a new
-gate-adjacent file is expected to add it to the scan list in the same
-change.
+New gate-adjacent files with the above pattern shapes must be added
+to SCAN_FILES in the same change that introduces them.
+
+**Auto-derived importer walk** — the construct-vs-call cwd pattern
+(`new SubprocessSandboxDriver({cwd:...})`) is universal to any
+`@tangle-network/agent-eval` consumer, so the scanner walks `src/` +
+`scripts/` at test time looking for the string literal
+`'@tangle-network/agent-eval'` and scans the result set with
+`findConstructorCwdDropped` in addition to SCAN_FILES. This means a
+new importer CANNOT silently escape the invariant — even if a
+contributor forgets to add it to SCAN_FILES, the construct-vs-call
+finder still runs against it.
+
+Research H4 confirmed why the two sets are split: 4 of 8 SCAN_FILES
+files (template-quality, prompt-e2e, audit, meta-harness-eval) don't
+import agent-eval but host orthogonal muffle shapes; 4 agent-eval
+importers (enrich-family, training/capability_proposer,
+training/family_proposer, training/template_v1) don't host the
+context-specific patterns. Pure auto-derivation drops the first
+group; manual-list-only drops the second. The split covers both.
 
 ## For future proposers
 

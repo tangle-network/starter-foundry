@@ -75,6 +75,13 @@ function logGovernor(entry) {
   try { appendFileSync(governorLog, JSON.stringify({ ts: new Date().toISOString(), source: 'promote-family-proposal', ...entry }) + '\n') } catch { /* noop */ }
 }
 function logImpact(entry) {
+  // Test runs of the promoter pollute generation-impact.jsonl with
+  // fixture-driven failures ("missing manifest", "schema errors" on
+  // intentionally-broken drafts, idempotency retries on known-good drafts).
+  // That polluted denominator tanks proposal_promotion_rate from the real
+  // ~54% to a scorecard-visible ~3.4%. Tests set STARTER_FOUNDRY_SYNTHETIC_RUN=1
+  // to no-op this write; production runs don't.
+  if (process.env.STARTER_FOUNDRY_SYNTHETIC_RUN === '1') return
   try { appendFileSync(impactLog, JSON.stringify({ ts: new Date().toISOString(), ...entry }) + '\n') } catch { /* noop */ }
 }
 

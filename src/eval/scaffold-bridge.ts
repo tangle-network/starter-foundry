@@ -444,6 +444,18 @@ export interface ScaffoldMetaVerdict {
   issues: Array<{ dimension: string; severity: 'low' | 'medium' | 'high'; description: string }>
   verdict: 'pass' | 'fail' | 'borderline'
   rationale?: string
+  /**
+   * Token usage + model for cost tracking. Populated on LLM-scored
+   * verdicts; absent when the compile-gate short-circuit fires (no LLM
+   * spend). Consumers record into agent-eval's CostTracker so
+   * cost-summary.json actually populates — pre-R4 the tracker was
+   * created but never recorded to, producing an empty `{}` summary.
+   */
+  usage?: {
+    inputTokens: number
+    outputTokens: number
+    model: string
+  }
 }
 
 /**
@@ -529,6 +541,7 @@ export async function invokeMetaJudge(args: {
   }
   const { createLLM } = await import('../lib/llm.js')
   const { ax } = await import('@ax-llm/ax')
+  const { estimateTokens } = await import('@tangle-network/agent-eval')
   // Don't pin a router-specific model slug like "anthropic/claude-sonnet-4-6" —
   // it 404s on non-router providers in the fallback chain. createLLM() picks
   // each provider's default (Claude Haiku on Anthropic, Llama 3.3 on Together,
@@ -578,6 +591,24 @@ export async function invokeMetaJudge(args: {
   const verdict: ScaffoldMetaVerdict['verdict'] =
     raw.verdict === 'pass' || raw.verdict === 'fail' || raw.verdict === 'borderline' ? raw.verdict : 'borderline'
 
+  // Estimate token usage for cost tracking. AxGen.forward doesn't surface
+  // provider usage stats in a stable shape across backends (router vs
+  // Anthropic vs Together vs OpenAI), so estimate from the rendered
+  // prompt + output text via agent-eval's char-based heuristic. Under-
+  // estimates for structured-output heavy responses by <15%, good enough
+  // for scorecard-level cost visibility. Replace with live usage if ax
+  // exposes it via the AxAIService in a later version.
+  const promptText = `${META_JUDGE_SIGNATURE}\n${args.userPrompt}\n${args.composedSpec.family ?? ''}\n${(args.composedSpec.layers ?? []).join(',')}\n${fileList}\n${keyFiles}`
+  const outputText = JSON.stringify(raw)
+  const usage = {
+    inputTokens: estimateTokens(promptText),
+    outputTokens: estimateTokens(outputText),
+    // createLLM's model is provider-picked — record what the signature
+    // most-closely corresponds to in MODEL_PRICING. Override in future
+    // if createLLM exposes the resolved model name.
+    model: 'claude-sonnet-4-20250514',
+  }
+
   return {
     correctness,
     completeness,
@@ -588,6 +619,7 @@ export async function invokeMetaJudge(args: {
     issues,
     verdict,
     rationale: raw.rationale,
+    usage,
   }
 }
 

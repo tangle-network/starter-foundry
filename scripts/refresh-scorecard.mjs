@@ -356,13 +356,29 @@ const flows = [
       }).filter(Boolean).filter((e) => {
         const t = Date.parse(e.ts ?? '')
         if (!Number.isFinite(t) || t < cutoff) return false
-        // Filter test-fixture events that pollute real metrics. Test names
-        // prefixed with `test-` or `synthetic-` are written during `pnpm test`
-        // and must not count toward production promotion/coverage rates.
+        // Filter test-fixture events that pollute real metrics. Going
+        // forward, test runs set STARTER_FOUNDRY_SYNTHETIC_RUN=1 and the
+        // promoter no-ops logImpact entirely — but historical events
+        // written before that env-gate landed still need to be filtered
+        // here by ID heuristic.
+        //
+        // Known fixture-only IDs (used by tests/gen5-closed-loop.test.ts
+        // and tests/gen6-flywheel.test.ts to assert error paths):
+        //   - `test-*`, `synthetic-*` — explicit prefix convention
+        //   - `definitely-nonexistent-*`, `nonexistent-xyz` — missing-manifest fixtures
+        //   - `bun-monolith`, `ts-eval-harness` — schema-reject fixtures
+        //     (draft dirs contain intentionally-broken manifests)
         const id = String(e.id ?? '')
         const newFam = String(e.newFamily ?? '')
         if (/^test-/.test(id) || /^synthetic-/.test(id)) return false
         if (/^test-/.test(newFam) || /^synthetic-/.test(newFam)) return false
+        if (/^(definitely-)?nonexistent(-|$)/.test(id)) return false
+        if (id === 'bun-monolith' || id === 'ts-eval-harness') return false
+        // 'already exists' messages are idempotency signals from test retry
+        // loops — the draft was already promoted on a prior run; the second
+        // attempt is a no-op, not a gate rejection. Not a real failure.
+        const msg = String(e.message ?? '')
+        if (e.event === 'promote-failed' && /already exists/.test(msg)) return false
         return true
       })
     } catch { /* empty file is fine */ }
@@ -380,18 +396,27 @@ const flows = [
       const ts = Date.parse(e.ts ?? '') || 0
       if (!revertedByIdTs.has(id) || revertedByIdTs.get(id) < ts) revertedByIdTs.set(id, ts)
     }
-    const promoteAttempts = entries.filter((e) => e.event === 'promoted' || e.event === 'promote-failed')
-    const promoted = entries.filter((e) => {
-      if (e.event !== 'promoted') return false
+    // Per-ID outcome rollup (not per-event). An ID that was promoted →
+    // reverted → re-promoted is ONE logical attempt with outcome
+    // = success. Event-level counting (which we used pre-2026-04-24)
+    // inflates the denominator: the same ID contributes two promoted
+    // events + a revert, so it gets counted 2× in attempts but only 1×
+    // in net-promoted, pushing the rate to 50% when reality is 100%.
+    // R2 fix: compute the latest-state per ID and count each ID once.
+    const latestByIdPromote = new Map() // id → latest event object (preserves draftAgeHours, etc.)
+    for (const e of entries) {
+      if (e.event !== 'promoted' && e.event !== 'promote-failed' && e.event !== 'promote-reverted') continue
       const id = String(e.id ?? '')
+      if (!id) continue
       const ts = Date.parse(e.ts ?? '') || 0
-      const revertTs = revertedByIdTs.get(id)
-      // If this promoted event is AT OR BEFORE the latest revert, it's stale.
-      // Promoted AFTER the revert = fresh re-promote, counts.
-      if (revertTs !== undefined && ts <= revertTs) return false
-      return true
-    })
-    const promotionRate = promoteAttempts.length > 0 ? promoted.length / promoteAttempts.length : null
+      const prev = latestByIdPromote.get(id)
+      const prevTs = prev ? (Date.parse(prev.ts ?? '') || 0) : -1
+      if (prevTs < ts) latestByIdPromote.set(id, e)
+    }
+    const idOutcomes = [...latestByIdPromote.values()]
+    const promoteAttempts = idOutcomes // alias kept for scope below
+    const promoted = idOutcomes.filter((o) => o.event === 'promoted')
+    const promotionRate = idOutcomes.length > 0 ? promoted.length / idOutcomes.length : null
     const firstShipHours = promoted
       .map((e) => e.draftAgeHours)
       .filter((h) => typeof h === 'number')

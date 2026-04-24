@@ -52,6 +52,7 @@ test('measure-coverage-lift: --baseline writes snapshot with expected shape', ()
     const res = spawnSync('node', ['scripts/measure-coverage-lift.mjs', '--baseline', '--out', tmpOut], {
       cwd: REPO,
       encoding: 'utf8',
+      env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
     })
     assert.equal(res.status, 0, `--baseline failed: ${res.stderr}`)
     assert.ok(existsSync(tmpOut), 'baseline file not written')
@@ -80,6 +81,7 @@ test('measure-coverage-lift: --compare writes coverage-measured event on unchang
     const res = spawnSync('node', ['scripts/measure-coverage-lift.mjs', '--compare', baseline, '--new-family', 'synthetic-test-family'], {
       cwd: REPO,
       encoding: 'utf8',
+      env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
     })
     assert.equal(res.status, 0, `--compare failed: ${res.stderr}`)
     // Same router state → liftRatio should be 0 (no new routes gained)
@@ -117,6 +119,7 @@ test('promote-capability-proposal: rejects manifest without appliesTo at schema 
     const res = spawnSync('node', ['scripts/promote-capability-proposal.mjs', '--id', id], {
       cwd: REPO,
       encoding: 'utf8',
+      env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
     })
     assert.equal(res.status, 0, `should exit 0 on schema reject: ${res.stderr}`)
     assert.match(res.stdout, /schema-fail/, 'must report schema-fail')
@@ -147,6 +150,7 @@ test('promote-capability-proposal: rejects TODO placeholders', () => {
     const res = spawnSync('node', ['scripts/promote-capability-proposal.mjs', '--id', id], {
       cwd: REPO,
       encoding: 'utf8',
+      env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
     })
     assert.equal(res.status, 0)
     assert.match(res.stdout, /schema-fail/)
@@ -174,6 +178,7 @@ test('promote-capability-proposal: rejects appliesTo pointing to non-existent fa
     const res = spawnSync('node', ['scripts/promote-capability-proposal.mjs', '--id', id], {
       cwd: REPO,
       encoding: 'utf8',
+      env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
     })
     assert.equal(res.status, 0)
     // Schema passes (appliesTo is non-empty), compose fails (no family exists)
@@ -235,6 +240,7 @@ test('promote-family-proposal: --skip-fidelity flag suppresses the fidelity gate
     const res = spawnSync('node', ['scripts/promote-family-proposal.mjs', '--id', id, '--no-pr', '--dry-run', '--skip-fidelity'], {
       cwd: REPO,
       encoding: 'utf8',
+      env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
     })
     assert.equal(res.status, 0)
     // schema passes (description ≥20, files array, etc.), compose may or may not
@@ -252,6 +258,7 @@ test('promote-family-proposal: --fidelity-threshold flag parses numeric override
   const res = spawnSync('node', ['scripts/promote-family-proposal.mjs', '--id', 'nonexistent-xyz', '--no-pr', '--fidelity-threshold', '0.95'], {
     cwd: REPO,
     encoding: 'utf8',
+    env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
   })
   assert.equal(res.status, 0)
   assert.match(res.stdout, /no-draft|missing manifest/)

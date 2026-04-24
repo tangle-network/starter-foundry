@@ -194,6 +194,22 @@ for (const seed of selected) {
           verdict.overall,
           `verdict=${verdict.verdict}; issues=${verdict.issues.length}`,
         )
+        // Record into CostTracker so cost-summary.json actually populates.
+        // Pre-R4 the tracker was created at line 105 but never written to;
+        // the end-of-run `.getSummary?.()` was also the wrong name (actual
+        // method is `.summary()`), and optional chaining silent-failed to
+        // an empty object. Now verdict.usage carries estimated token counts
+        // from invokeMetaJudge, recorded per scenario.
+        if (verdict.usage) {
+          costTracker.record({
+            scenarioId: seed.id,
+            model: verdict.usage.model,
+            inputTokens: verdict.usage.inputTokens,
+            outputTokens: verdict.usage.outputTokens,
+            tags: { phase: 'meta-judge' },
+          })
+          costTracker.markOutcome(seed.id, verdict.verdict === 'pass')
+        }
         appendFileSync(tracesPath, JSON.stringify({
           seed: seed.id,
           projectId,
@@ -208,6 +224,7 @@ for (const seed of selected) {
             overScaffold: verdict.overScaffold,
           },
           issues: verdict.issues,
+          usage: verdict.usage ?? null,
         }) + '\n')
       } catch (err) {
         const msg = err?.message?.slice(0, 500) ?? String(err)
@@ -249,7 +266,9 @@ const summary = {
   meanMetaScore: meanOf(threeLayer, (r) => r.metaScore),
 }
 writeFileSync(reportPath, JSON.stringify({ summary, projects: threeLayer, runReports }, null, 2))
-writeFileSync(costSummaryPath, JSON.stringify(costTracker.getSummary?.() ?? {}, null, 2))
+// Method is `.summary()`, not `.getSummary()` — pre-R4 the optional
+// chaining silent-failed and wrote `{}`. Explicit call now.
+writeFileSync(costSummaryPath, JSON.stringify(costTracker.summary(), null, 2))
 
 if (!QUIET) {
   console.log(`\n━━━━ agent-eval-scaffold summary ━━━━`)

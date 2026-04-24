@@ -150,6 +150,30 @@ async function mergeMediaManifests(outDir: string): Promise<MediaSlot[]> {
   return merged.slots
 }
 
+/**
+ * Read the composed project's package.json (after mergeLayerPackageDeps)
+ * and return the sorted union of dependencies + devDependencies keys.
+ * Used by AGENTS.md/CLAUDE.md to tell the agent WHAT IS ALREADY INSTALLED
+ * so it doesn't waste turns running `pnpm add lucide-react` on a scaffold
+ * that already ships lucide-react. Returns [] for non-JS scaffolds.
+ */
+async function readPreinstalledPackages(outDir: string): Promise<string[]> {
+  const pkgPath = path.join(outDir, 'package.json')
+  try {
+    const pkg = JSON.parse(await fs.readFile(pkgPath, 'utf8')) as {
+      dependencies?: Record<string, string>
+      devDependencies?: Record<string, string>
+    }
+    const deps = new Set<string>([
+      ...Object.keys(pkg.dependencies ?? {}),
+      ...Object.keys(pkg.devDependencies ?? {}),
+    ])
+    return [...deps].sort()
+  } catch {
+    return []
+  }
+}
+
 // Merge each applied layer's declared packageDeps into the composed
 // package.json. Runs after every file is written so the family's package.json
 // is on disk; we read it, merge, write back. No-op if the family has no
@@ -219,6 +243,15 @@ async function composeStarterInner(spec: ComposeSpec, outDir: string): Promise<C
 
   await mergeLayerPackageDeps(outDir, components.layers)
 
+  // Read the final package.json (after merge) so AGENTS.md can list the
+  // pre-installed deps for the agent. This closes the efficiency gap
+  // where agents re-install already-present packages (lucide-react,
+  // tailwindcss, clsx, etc.) because nothing in the scaffold docs told
+  // them those were already there. Evolve R3 (post-Gen-9) diagnosis:
+  // 54+ redundant installs in the 30-day window concentrate on 4
+  // packages that every react-vite-ts scaffold ships.
+  const preinstalledPackages = await readPreinstalledPackages(outDir)
+
   const composeReport = {
     spec,
     components: {
@@ -240,7 +273,7 @@ async function composeStarterInner(spec: ComposeSpec, outDir: string): Promise<C
   const mediaSlots = await mergeMediaManifests(outDir)
 
   // Generate AGENTS.md — per-project agent instructions (OpenCode, Codex, etc.)
-  const agentsMd = buildAgentsMd(spec, components, composeReport.contextHints, mediaSlots)
+  const agentsMd = buildAgentsMd(spec, components, composeReport.contextHints, mediaSlots, preinstalledPackages)
   await fs.writeFile(path.join(outDir, 'AGENTS.md'), `${agentsMd}\n`, 'utf8')
 
   // Generate CLAUDE.md — Claude Code specific instructions (same content, different filename)
@@ -318,6 +351,7 @@ function buildAgentsMd(
   components: ResolvedComponents,
   contextHints: ReturnType<typeof collectContextHints>,
   mediaSlots: MediaSlot[] = [],
+  preinstalledPackages: string[] = [],
 ): string {
   const buildPlan = generateBuildPlan(spec, components)
   const lines: string[] = [
@@ -390,6 +424,26 @@ function buildAgentsMd(
       '## Key files',
       '',
       contextHints.entrypoints.map((e) => `- \`${e}\``).join('\n'),
+      '',
+    )
+  }
+
+  // Pre-installed packages — closes the efficiency gap where agents run
+  // `pnpm add lucide-react` on scaffolds that already ship lucide-react.
+  // Evolve R3 diagnosis: the top 4 redundant installs (lucide-react,
+  // tailwindcss, @tailwindcss/vite, clsx) each ship in react-vite-ts's
+  // package.json, yet appear 9-17× in .evolve/buildout-analysis.json's
+  // topAddedPackages — agents installed them anyway because nothing told
+  // them the scaffold already had them.
+  if (preinstalledPackages.length > 0) {
+    lines.push(
+      '## Pre-installed packages — do NOT re-install',
+      '',
+      'These are already in `package.json` (the sidecar\'s ensure-dev-server auto-installed them on first call). If you need any of these, **import them** — do not run `pnpm add`, `pnpm install <name>`, `npm install <name>`, or equivalent. Re-installing a present package burns turns and tokens for zero gain.',
+      '',
+      preinstalledPackages.map((p) => `- \`${p}\``).join('\n'),
+      '',
+      'If you need a package that is NOT on this list, THEN you may add it — but check this list first.',
       '',
     )
   }

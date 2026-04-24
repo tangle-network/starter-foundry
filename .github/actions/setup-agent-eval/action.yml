@@ -1,0 +1,45 @@
+name: Setup agent-eval sibling
+description: >
+  Clones tangle-network/agent-eval into ${GITHUB_WORKSPACE}/../agent-eval so that
+  starter-foundry's package.json specifier "@tangle-network/agent-eval":
+  "link:../agent-eval" resolves to a real, built package. Pnpm installs +
+  builds agent-eval so dist/ exists before starter-foundry's own install runs.
+
+inputs:
+  ref:
+    description: >
+      git ref in tangle-network/agent-eval to check out. Pinned by default to
+      the tip of feat/three-layer-scaffold-only at the time starter-foundry
+      adopted the propose-review/reviewer-store/judge-runner exports.
+    required: false
+    default: c696bfdc589f9bf3bea283a1049d3993a887b6da
+
+runs:
+  using: composite
+  steps:
+    - name: clone agent-eval as sibling
+      shell: bash
+      run: |
+        set -euo pipefail
+        SIBLING="${GITHUB_WORKSPACE}/../agent-eval"
+        if [ -d "$SIBLING/.git" ]; then
+          echo "agent-eval already cloned at $SIBLING; fetching + checking out ref"
+          cd "$SIBLING"
+          git fetch --tags origin
+        else
+          git clone https://github.com/tangle-network/agent-eval.git "$SIBLING"
+          cd "$SIBLING"
+        fi
+        git checkout "${{ inputs.ref }}"
+        echo "agent-eval at: $(git rev-parse HEAD)"
+
+    - name: install + build agent-eval
+      shell: bash
+      working-directory: ${{ github.workspace }}/../agent-eval
+      run: |
+        set -euo pipefail
+        pnpm install --frozen-lockfile
+        pnpm build
+        test -f dist/index.js
+        test -f dist/index.d.ts
+        echo "agent-eval dist/ populated"

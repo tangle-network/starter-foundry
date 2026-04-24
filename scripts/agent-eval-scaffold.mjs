@@ -195,21 +195,10 @@ for (const seed of selected) {
           `verdict=${verdict.verdict}; issues=${verdict.issues.length}`,
         )
         // Record into CostTracker so cost-summary.json actually populates.
-        // Pre-R4 the tracker was created at line 105 but never written to;
-        // the end-of-run `.getSummary?.()` was also the wrong name (actual
-        // method is `.summary()`), and optional chaining silent-failed to
-        // an empty object. Now verdict.usage carries estimated token counts
-        // from invokeMetaJudge, recorded per scenario.
-        if (verdict.usage) {
-          costTracker.record({
-            scenarioId: seed.id,
-            model: verdict.usage.model,
-            inputTokens: verdict.usage.inputTokens,
-            outputTokens: verdict.usage.outputTokens,
-            tags: { phase: 'meta-judge' },
-          })
-          costTracker.markOutcome(seed.id, verdict.verdict === 'pass')
-        }
+        // Uses agent-eval 0.7.2's recordVerdict helper — one call instead
+        // of record + markOutcome. No-ops if verdict.usage is absent
+        // (e.g. compile-gate short-circuit — no LLM spend to track).
+        costTracker.recordVerdict(verdict, seed.id, { phase: 'meta-judge' })
         appendFileSync(tracesPath, JSON.stringify({
           seed: seed.id,
           projectId,

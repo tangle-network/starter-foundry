@@ -33,17 +33,11 @@ describe('agent-eval-scaffold cost tracking', () => {
   test('agent-eval-scaffold.mjs records into costTracker and writes real summary', () => {
     const src = readFileSync(join(REPO, 'scripts/agent-eval-scaffold.mjs'), 'utf8')
 
-    // Must call record with the right shape (scenarioId + model + inputTokens + outputTokens).
+    // Must call recordVerdict (0.7.2 helper — one call replaces record + markOutcome).
     assert.match(
       src,
-      /costTracker\.record\(\{[\s\S]{0,200}scenarioId/,
-      'agent-eval-scaffold must call costTracker.record() with scenarioId — otherwise cost-summary.json stays empty',
-    )
-    // markOutcome so cost-per-completed-task is meaningful.
-    assert.match(
-      src,
-      /costTracker\.markOutcome\(/,
-      'agent-eval-scaffold must call costTracker.markOutcome() so cost-per-completed-task rolls up',
+      /costTracker\.recordVerdict\(/,
+      'agent-eval-scaffold must call costTracker.recordVerdict(verdict, seedId, tags) — otherwise cost-summary.json stays empty',
     )
     // End-of-run must call .summary(), not .getSummary?.() which silent-fails.
     assert.match(

@@ -205,8 +205,9 @@ describe('refresh-scorecard', () => {
       // Internal analysis is fresh + has a different pass rate (0.99) so we
       // can tell which source the scorecard read from.
       mkdirSync(join(dir, '.evolve'), { recursive: true })
+      const internalPath = join(dir, '.evolve/buildout-analysis-internal.json')
       writeFileSync(
-        join(dir, '.evolve/buildout-analysis-internal.json'),
+        internalPath,
         JSON.stringify({
           schemaVersion: 1,
           generator: 'starter-foundry:replay-traces',
@@ -214,6 +215,15 @@ describe('refresh-scorecard', () => {
           perScenario: [],
         }),
       )
+      // Force internal's mtime unambiguously ahead of source (buildouts.jsonl
+      // was touched to `now` inside writeFixture). Without this, CI runners
+      // on fast filesystems can land internal's write-time mtime equal to
+      // (or occasionally below, sub-ms) the explicit utimesSync'd source,
+      // and the scorecard's `mtime(internal) >= SOURCE_MTIME` gate flips
+      // false. The real-world counterfactual path always runs minutes after
+      // source, so this reflects production reality.
+      const futureSec = (Date.now() + 60_000) / 1000
+      utimesSync(internalPath, futureSec, futureSec)
       const res = runScorecardIn(dir)
       assert.equal(res.code, 0, res.stdout)
       const out = JSON.parse(readFileSync(join(dir, '.evolve/scorecard.json'), 'utf8'))

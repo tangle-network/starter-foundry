@@ -340,6 +340,161 @@ const flows = [
     target: 10,
     productValueClaim: 'Partner packs — ecosystem-specific biases + config. More partners = more prompts get routed with SDK/addresses pre-wired.',
   },
+  // ── Gen 5: closed-loop generation flows ────────────────────────
+  // Read .evolve/generation-impact.jsonl — one entry per proposal
+  // lifecycle event (promoted / promote-failed). Compute a rolling
+  // 30-day window so a stale spike doesn't mask a recent stall.
+  ...(() => {
+    const impactLog = join(REPO, '.evolve/generation-impact.jsonl')
+    if (!existsSync(impactLog)) return []
+    const windowMs = 30 * 24 * 3_600_000
+    const cutoff = Date.now() - windowMs
+    let entries = []
+    try {
+      entries = readFileSync(impactLog, 'utf8').split('\n').filter(Boolean).map((l) => {
+        try { return JSON.parse(l) } catch { return null }
+      }).filter(Boolean).filter((e) => {
+        const t = Date.parse(e.ts ?? '')
+        if (!Number.isFinite(t) || t < cutoff) return false
+        // Filter test-fixture events that pollute real metrics. Test names
+        // prefixed with `test-` or `synthetic-` are written during `pnpm test`
+        // and must not count toward production promotion/coverage rates.
+        const id = String(e.id ?? '')
+        const newFam = String(e.newFamily ?? '')
+        if (/^test-/.test(id) || /^synthetic-/.test(id)) return false
+        if (/^test-/.test(newFam) || /^synthetic-/.test(newFam)) return false
+        return true
+      })
+    } catch { /* empty file is fine */ }
+    // A promote-reverted event means a prior 'promoted' was rolled back because
+    // the scaffold, despite passing build, failed a human / fidelity review.
+    // Subtract reverted ids from the promoted count so the rate reflects
+    // shippable promotes, not merely gate-passing ones. Match by id AND
+    // timestamp — a 'promoted' that happened AFTER a 'promote-reverted' for
+    // the same id is a fresh re-promote (R2 patch-and-resubmit workflow)
+    // and must not be subtracted.
+    const revertedByIdTs = new Map() // id → latest revert ts
+    for (const e of entries) {
+      if (e.event !== 'promote-reverted') continue
+      const id = String(e.id ?? '')
+      const ts = Date.parse(e.ts ?? '') || 0
+      if (!revertedByIdTs.has(id) || revertedByIdTs.get(id) < ts) revertedByIdTs.set(id, ts)
+    }
+    const promoteAttempts = entries.filter((e) => e.event === 'promoted' || e.event === 'promote-failed')
+    const promoted = entries.filter((e) => {
+      if (e.event !== 'promoted') return false
+      const id = String(e.id ?? '')
+      const ts = Date.parse(e.ts ?? '') || 0
+      const revertTs = revertedByIdTs.get(id)
+      // If this promoted event is AT OR BEFORE the latest revert, it's stale.
+      // Promoted AFTER the revert = fresh re-promote, counts.
+      if (revertTs !== undefined && ts <= revertTs) return false
+      return true
+    })
+    const promotionRate = promoteAttempts.length > 0 ? promoted.length / promoteAttempts.length : null
+    const firstShipHours = promoted
+      .map((e) => e.draftAgeHours)
+      .filter((h) => typeof h === 'number')
+    firstShipHours.sort((a, b) => a - b)
+    const medianFirstShip = firstShipHours.length > 0 ? firstShipHours[Math.floor(firstShipHours.length / 2)] : null
+    // Upstream funnel — proposer attempts and LLM-mode success rate.
+    const proposedAttempts = entries.filter((e) => e.event === 'proposed' || e.event === 'proposed-failed')
+    const proposedLLM = entries.filter((e) => e.event === 'proposed' && (e.mode === 'llm' || e.mode === 'llm-rlm'))
+    const llmProposalRate = proposedAttempts.length > 0 ? proposedLLM.length / proposedAttempts.length : null
+    // Gen 6: full-stack proposal rate + capability promotion + coverage lift.
+    const fullStack = entries.filter((e) => e.event === 'proposed' && typeof e.templateFileCount === 'number' && e.templateFileCount >= 3)
+    const fullStackRate = proposedLLM.length > 0 ? fullStack.length / proposedLLM.length : null
+    const capAttempts = entries.filter((e) => e.event === 'capability-promoted' || e.event === 'capability-promote-failed')
+    const capPromoted = entries.filter((e) => e.event === 'capability-promoted')
+    const capRate = capAttempts.length > 0 ? capPromoted.length / capAttempts.length : null
+    const coverageEvents = entries.filter((e) => e.event === 'coverage-measured' && typeof e.liftRatio === 'number')
+    const lifts = coverageEvents.map((e) => e.liftRatio).sort((a, b) => a - b)
+    const medianLift = lifts.length > 0 ? lifts[Math.floor(lifts.length / 2)] : null
+    return [
+      {
+        name: 'proposal_promotion_rate',
+        value: promotionRate !== null ? Number(promotionRate.toFixed(4)) : null,
+        target: 0.3,
+        productValueClaim: 'Fraction of proposed families/capabilities that passed all validation gates (schema+compose+build) and landed in registry/ over the last 30 days. When this moves, vertical expansion is working — new buildable surfaces per week without manual registry authoring.',
+        direction: 'higher-better',
+      },
+      {
+        name: 'proposed_family_first_ship_hours',
+        value: medianFirstShip !== null ? Number(medianFirstShip.toFixed(1)) : null,
+        target: 24,
+        productValueClaim: 'Median hours from proposal draft creation → registry promotion. Baseline was unbounded (drafts sat as TODOs indefinitely). Target 24h via nightly cron.',
+        direction: 'lower-better',
+      },
+      {
+        name: 'llm_proposal_success_rate',
+        value: llmProposalRate !== null ? Number(llmProposalRate.toFixed(4)) : null,
+        target: 0.8,
+        productValueClaim: 'Fraction of proposal attempts that produced an LLM-mode draft (vs falling back to deterministic TODO skeleton). Low → router/provider is unreachable or rate-limiting; deterministic mode cannot produce promotable drafts, so this gates the funnel.',
+        direction: 'higher-better',
+      },
+      {
+        name: 'full_stack_proposal_rate',
+        value: fullStackRate !== null ? Number(fullStackRate.toFixed(4)) : null,
+        target: 0.7,
+        productValueClaim: 'Fraction of LLM-mode proposals whose templateFiles.length ≥ 3. Bare-README drafts pass the build gate trivially but scaffold nothing useful. This flow catches the "too-minimal proposal" regression — Gen 6 Track A (filesForTaxonomy expansion) exists to lift it.',
+        direction: 'higher-better',
+      },
+      {
+        name: 'capability_promotion_rate',
+        value: capRate !== null ? Number(capRate.toFixed(4)) : null,
+        target: 0.4,
+        productValueClaim: 'Fraction of capability promotion attempts that passed all gates. Capabilities have lower validation bar than families (slot into existing), so this rate should exceed proposal_promotion_rate — parallel high-volume registry expansion.',
+        direction: 'higher-better',
+      },
+      {
+        name: 'coverage_lift_per_promote',
+        value: medianLift !== null ? Number(medianLift.toFixed(4)) : null,
+        target: 0.10,
+        productValueClaim: 'Median liftRatio from coverage-measured events — fraction of previously-unrouted buildout scenarios that now route somewhere after a promote. If this is 0, promotes are not absorbing demand; the registry is expanding without product effect.',
+        direction: 'higher-better',
+      },
+    ]
+  })(),
+  // ── Gen 4: agent-eval scaffold flow ────────────────────────────
+  // Reads the most-recent three-layer-report.json from
+  // .evolve/agent-eval/<YYYY-MM-DD>/. Mean build_score across all
+  // scaffold-only projects from the last run. Governor uses this to
+  // detect scaffold regressions without waiting for a VB sweep —
+  // compose + install + build is a fast local signal.
+  ...(() => {
+    const agentEvalRoot = join(REPO, '.evolve/agent-eval')
+    if (!existsSync(agentEvalRoot)) return []
+    let latestReport = null
+    try {
+      const days = readdirSync(agentEvalRoot).filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d)).sort()
+      for (let i = days.length - 1; i >= 0; i -= 1) {
+        const p = join(agentEvalRoot, days[i], 'three-layer-report.json')
+        if (existsSync(p)) {
+          latestReport = readJson(p)
+          break
+        }
+      }
+    } catch { /* noop */ }
+    if (!latestReport) return []
+    const meanBuild = latestReport.summary?.meanBuildScore
+    const meanMeta = latestReport.summary?.meanMetaScore
+    return [
+      {
+        name: 'agent_eval_build_pass_rate',
+        value: typeof meanBuild === 'number' ? Number(meanBuild.toFixed(4)) : null,
+        target: 0.95,
+        productValueClaim: 'Fraction of composed scaffolds that pass install+build locally (mean build_score from agent-eval scaffold run). Regresses when a capability manifest changes break compose or a family\'s build recipe stops working — fast local signal, no VB sweep needed.',
+        direction: 'higher-better',
+      },
+      {
+        name: 'agent_eval_meta_pass_rate',
+        value: typeof meanMeta === 'number' ? Number(meanMeta.toFixed(4)) : null,
+        target: 0.85,
+        productValueClaim: 'Mean LLM-judge meta_score on scaffold quality — correctness + completeness + idiomatic layout + production-readiness per the scaffold rubric. Null when judge disabled (--no-judge) or no runs yet.',
+        direction: 'higher-better',
+      },
+    ]
+  })(),
 ]
 
 const aggregate = (() => {

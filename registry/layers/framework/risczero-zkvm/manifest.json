@@ -1,0 +1,6 @@
+{
+  "id": "risczero-zkvm",
+  "description": "Framework layer for risczero-zkvm — content ships from the family scaffold (registry/families/risczero-zkvm/files/). This layer is the scaffold declaration that selectStarter emits.",
+  "appliesTo": ["risczero-zkvm"],
+  "files": []
+}

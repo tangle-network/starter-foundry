@@ -1,0 +1,66 @@
+{
+  "id": "routing",
+  "description": "Client-side routing for multi-page React apps via react-router-dom \u2014 pages, nested layouts, URL params, programmatic navigation. For any product that has more than a single view and lives in a non-framework (Vite) React setup. Next.js / Remix / SvelteKit have their own file-based routers and don't need this.",
+  "appliesTo": [
+    "react-vite-ts",
+    "electron-desktop-ts",
+    "electron-native-os",
+    "tauri-desktop",
+    "browser-extension-ts"
+  ],
+  "files": [
+    {
+      "source": "files/router.tsx",
+      "target": "src/router.tsx"
+    },
+    {
+      "source": "files/routing-notes.md",
+      "target": "docs/routing-notes.md"
+    }
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "react-router-dom": "^7.1.0"
+    }
+  },
+  "keywords": [
+    "routing",
+    "routes",
+    "navigation",
+    "react router",
+    "multi-page",
+    "url params",
+    "nested layouts"
+  ],
+  "buildHints": {
+    "whenToUse": "Attach on react-vite-ts (or any non-framework React host) when the product has multiple pages \u2014 proposal list + detail, dashboard + settings, any /foo + /foo/:id pattern. Skip on Next.js / Remix / SvelteKit / Astro (they have file-based routers).",
+    "firstSteps": [
+      "Define routes in src/router.tsx (createBrowserRouter pattern)",
+      "Mount <RouterProvider /> in main.tsx instead of <App />",
+      "Use <Link>/<NavLink> for navigation \u2014 never <a href> for internal routes",
+      "useParams() in child routes for URL-driven state"
+    ],
+    "gotchas": [
+      "react-router-dom v7 merged with remix-run/react-router \u2014 APIs are stable but import paths shifted slightly from v6.",
+      "SSR + v7 needs explicit data loaders; client-only apps (Vite SPA) stay with createBrowserRouter."
+    ]
+  },
+  "tieredKeywords": {
+    "archetypes": [
+      "proposal list",
+      "proposal detail",
+      "list and detail",
+      "multi-page",
+      "nested routes",
+      "nested layouts",
+      "dashboard with pages",
+      "admin panel with pages",
+      "portal with multiple views",
+      "navigation menu",
+      "deep linking",
+      "route params",
+      "url params",
+      "tabs with pages"
+    ]
+  }
+}

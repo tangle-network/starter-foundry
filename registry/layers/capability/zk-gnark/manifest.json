@@ -1,0 +1,63 @@
+{
+  "id": "zk-gnark",
+  "description": "ConsenSys gnark — Go-native ZK framework. Supports Groth16, Plonk (with/without KZG), and custom constraints. Best fit when the backend is Go (services, indexers, aggregators) and you want circuits + prover in the same binary. Use when prompt names gnark / ConsenSys gnark / wants a Go-based ZK service.",
+  "appliesTo": [
+    "go-api",
+    "go-worker"
+  ],
+  "files": [
+    {
+      "source": "files/circuit.go",
+      "target": "circuit.go"
+    },
+    {
+      "source": "files/prover.go",
+      "target": "prover.go"
+    },
+    {
+      "source": "files/gnark-notes.md",
+      "target": "docs/gnark-notes.md"
+    }
+  ],
+  "packageDeps": {
+    "dependencies": {}
+  },
+  "keywords": [
+    "gnark",
+    "consensys gnark",
+    "gnark circuit",
+    "groth16 gnark",
+    "plonk gnark"
+  ],
+  "capabilityRequires": [],
+  "buildHints": {
+    "whenToUse": "Attach on Go backends (go-api, go-worker) that need to generate or verify ZK proofs server-side. Strongest fit for ZK-rollup sequencers, on-chain-proof aggregators, and systems where the prover is infra rather than a user-facing component.",
+    "firstSteps": [
+      "go get github.com/consensys/gnark@v0.13.0 github.com/consensys/gnark-crypto@v0.14.0",
+      "go mod tidy",
+      "Define circuit as a struct implementing frontend.Circuit (Define method)",
+      "Compile + setup: `r1cs, _ := frontend.Compile(...)`, `pk, vk, _ := groth16.Setup(r1cs)`",
+      "Prove: `proof, _ := groth16.Prove(r1cs, pk, witness)`",
+      "Verify: `groth16.Verify(proof, vk, publicWitness)` — returns nil on success"
+    ],
+    "gotchas": [
+      "Witness struct fields match circuit struct fields by NAME, not order. Renaming in one but not the other → silent witness-mismatch.",
+      "`api.AssertIsEqual` is the assertion primitive — not Go's `!=`. Using bare comparisons doesn't constrain.",
+      "Groth16 needs per-circuit trusted setup. For production, load pk/vk from files you generated with a ceremony; only regenerate for dev."
+    ]
+  },
+  "tieredKeywords": {
+    "archetypes": [
+      "gnark",
+      "consensys gnark",
+      "gnark circuit",
+      "groth16 gnark",
+      "plonk gnark",
+      "gnark prover in go",
+      "consensys gnark circuit",
+      "gnark groth16 service",
+      "zk rollup sequencer in go",
+      "go-native zk proof"
+    ]
+  }
+}

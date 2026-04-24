@@ -46,6 +46,25 @@ jobs:
         # dependent stages still run against whatever data exists, and
         # downstream steps handle empty cases.
 
+      - name: agent-eval scaffold structural sweep (Gen-4)
+        run: pnpm eval:scaffold:structural || true
+        # Composes every family + workspace seed and runs install+build in
+        # SubprocessSandboxDriver. Structural-only (no LLM judge) to keep
+        # nightly cost at zero. Writes .evolve/agent-eval/<date>/
+        # three-layer-report.json which the next refresh-scorecard step
+        # reads for agent_eval_build_pass_rate + agent_eval_meta_pass_rate
+        # flows. '|| true' so a local-toolchain-missing failure (anchor,
+        # aptos, nargo) doesn't tank the whole nightly; per-seed results
+        # still persist and tell us which families compile in CI.
+        timeout-minutes: 45
+
+      - name: refresh scorecard post-agent-eval
+        run: node scripts/refresh-scorecard.mjs
+        # Re-run scorecard so the new agent_eval_* flows pick up the
+        # just-landed three-layer-report.json. measure-refresh above
+        # runs BEFORE eval:scaffold; this second refresh captures the
+        # eval's fresh output.
+
       - name: pareto + heatmap + lint-delta reports
         run: |
           node scripts/pareto-report.mjs || true

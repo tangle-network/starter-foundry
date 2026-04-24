@@ -1,0 +1,8 @@
+{
+  "id": "fraud-ops-console",
+  "description": "node framework layer for fraud-ops-console.",
+  "appliesTo": [
+    "fraud-ops-console"
+  ],
+  "files": []
+}

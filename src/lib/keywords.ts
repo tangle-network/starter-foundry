@@ -185,9 +185,23 @@ export const LANE_ROUTES: LaneRoute[] = [
   },
   {
     id: 'zk',
+    // Lane matches any prompt whose primary project is a ZK-prover-shaped
+    // service. Dispatched downstream (chooseApiFamily / collectServiceProjects)
+    // to the specific zkVM family when an explicit framework name is present,
+    // or to the generic zk-prover-service otherwise.
+    //
+    // Does NOT include Noir or gnark — those are capabilities that layer
+    // onto a parent family (react-vite-ts / go-api), not standalone projects.
     keywords: [
       'risc zero',
+      'risczero',
+      'risc0',
+      'bonsai',
       'sp1',
+      'succinct',
+      'arkworks',
+      'hand-rolled r1cs',
+      'custom snark circuit',
       'circom',
       'snarkjs',
       'zk prover',

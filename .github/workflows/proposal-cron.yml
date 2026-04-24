@@ -26,7 +26,7 @@ concurrency:
 
 jobs:
   capabilities:
-    name: propose capabilities
+    name: propose + promote capabilities (demand-driven RLM)
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -44,15 +44,41 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: build
         run: pnpm build
-      - name: propose capabilities from unmapped clusters
-        run: node scripts/propose-capabilities.mjs --out .evolve/proposals/capabilities.json
-      - name: open PRs for high-confidence capability proposals
+      - name: package-cluster-based capability proposals (legacy — no RLM)
+        # Original capability proposer that mines npm-dep clusters in
+        # buildout traces. Kept alongside the RLM flow because the two
+        # catch different gaps (packages-together vs. feature-mentions).
+        run: node scripts/propose-capabilities.mjs --out .evolve/proposals/capabilities.json || true
+      - name: detect capability gaps + run RLM proposer on top-3 candidates
+        env:
+          TANGLE_ROUTER_USER_KEY: ${{ secrets.TANGLE_ROUTER_USER_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TOGETHER_API_KEY: ${{ secrets.TOGETHER_API_KEY }}
+        # Demand-driven: detect-capability-gaps finds scenario tokens no
+        # existing capability keyword covers, pipes candidates into the
+        # RLM capability proposer. Failing is non-fatal — the promoter
+        # rejects any TODO drafts at the schema gate downstream.
+        run: |
+          node scripts/detect-capability-gaps.mjs --json --top 3 \
+            | node scripts/propose-capability-candidates.mjs --max-shots 2 \
+            || true
+      - name: promote capability drafts that pass schema + compose + build
+        run: node scripts/promote-capability-proposal.mjs --all || true
+      - name: open PRs for promoted capabilities + package-cluster proposals
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node scripts/open-proposal-prs.mjs --kind capability --min-confidence 0.75 || true
+      - name: upload generation-impact log as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: generation-impact-capabilities-${{ github.run_id }}
+          path: .evolve/generation-impact.jsonl
+          if-no-files-found: ignore
+          retention-days: 30
 
   families:
-    name: propose families
+    name: propose + promote families (demand-driven RLM)
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -70,12 +96,34 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: build
         run: pnpm build
-      - name: propose family scaffolds from mis-routed clusters
-        run: node scripts/propose-family.mjs --out .evolve/family-proposals/ || true
-      - name: open PRs for new families
+      - name: detect gaps + run RLM proposer on top-3 candidates
+        env:
+          TANGLE_ROUTER_USER_KEY: ${{ secrets.TANGLE_ROUTER_USER_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        # Demand-driven: detect-family-gaps pipes JSON candidates into the
+        # RLM proposer. Failing the proposer (LLM unavailable, rate limit)
+        # should not fail the job — downstream promoter will reject any
+        # deterministic TODO drafts at the schema gate.
+        run: |
+          node scripts/detect-family-gaps.mjs --json --top 3 \
+            | node scripts/propose-family-candidates.mjs --max-shots 2 \
+            || true
+      - name: promote drafts that pass schema + compose + build gates
+        run: node scripts/promote-family-proposal.mjs --all --no-pr || true
+      - name: open PRs for promoted families (human review)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # promote-family-proposal.mjs writes promoted.json sentinel in each
+        # draft dir on success; open-proposal-prs.mjs consumes that.
         run: node scripts/open-proposal-prs.mjs --kind family --min-confidence 0.75 || true
+      - name: upload generation-impact log as artifact (for inspection)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: generation-impact-${{ github.run_id }}
+          path: .evolve/generation-impact.jsonl
+          if-no-files-found: ignore
+          retention-days: 30
 
   template-candidates:
     name: open template candidate PRs

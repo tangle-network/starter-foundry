@@ -17,7 +17,7 @@
 // and run `pnpm promote:family-proposal <id>` (implementation pending) or
 // manually `mv` into registry/ after inspection.
 
-import { proposeFamily } from '../dist/training/family_proposer/propose.js'
+import { proposeFamily, proposeFamilyWithRLMToDisk } from '../dist/training/family_proposer/propose.js'
 
 function arg(flag, fallback) {
   const i = process.argv.indexOf(flag)
@@ -37,9 +37,11 @@ const language = arg('--language', 'typescript')
 const runtime = arg('--runtime', 'node')
 const surface = arg('--surface', 'frontend')
 const cues = args('--cues')
+const rlm = process.argv.includes('--rlm')
+const maxShots = Number(arg('--max-shots', '3')) || 3
 
 if (!id || !/^[a-z][a-z0-9-]*$/.test(id)) {
-  console.error('usage: --id <kebab> --description "..." [--language ...] [--runtime ...] [--surface ...] [--cues "..."]')
+  console.error('usage: --id <kebab> --description "..." [--language ...] [--runtime ...] [--surface ...] [--cues "..."] [--rlm] [--max-shots N]')
   process.exit(2)
 }
 if (!description) {
@@ -47,12 +49,15 @@ if (!description) {
   process.exit(2)
 }
 
-const proposal = await proposeFamily({
+const proposeInput = {
   id,
   description,
   taxonomy: { language, runtime, surface },
   productCues: cues.length > 0 ? cues : undefined,
-})
+}
+const proposal = rlm
+  ? await proposeFamilyWithRLMToDisk(proposeInput, { maxShots })
+  : await proposeFamily(proposeInput)
 
 console.log('')
 console.log(`✓ proposal emitted → ${proposal.proposalDir}`)

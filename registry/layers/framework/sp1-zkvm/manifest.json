@@ -1,0 +1,6 @@
+{
+  "id": "sp1-zkvm",
+  "description": "Framework layer for sp1-zkvm — content ships from the family scaffold (registry/families/sp1-zkvm/files/). This layer is the scaffold declaration that selectStarter emits.",
+  "appliesTo": ["sp1-zkvm"],
+  "files": []
+}

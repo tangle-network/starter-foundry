@@ -109,6 +109,18 @@ async function rewritePromptImpl({
   const canonical = (raw.canonicalPrompt ?? '').trim()
   if (!canonical) return null
 
+  // Post-audit guardrail — the signature promises "MUST be longer and more
+  // specific than the input", but models sometimes compress instead. If the
+  // expansion came back shorter, the rewriter has regressed the signal the
+  // router needs. Reject the result and let the caller fall back to the raw
+  // prompt rather than silently handing the router a degraded input.
+  //
+  // Use a 90% heuristic: allow trivial re-ordering (punctuation, casing) but
+  // reject anything meaningfully shorter than the input.
+  if (canonical.length < prompt.length * 0.9) {
+    return null
+  }
+
   const confidence = normalizeConfidence(raw.confidence)
 
   inMemLRU.set(key, canonical)

@@ -29,7 +29,7 @@
     "date range"
   ],
   "buildHints": {
-    "whenToUse": "Attach when the product renders, schedules, or reasons about dates. Import from 'date-fns' — the tree-shakeable per-function API keeps bundle size down.",
+    "whenToUse": "Attach when the product renders, schedules, or reasons about dates. Import from 'date-fns' \u2014 the tree-shakeable per-function API keeps bundle size down.",
     "firstSteps": [
       "import { format, formatDistanceToNow, addDays } from 'date-fns'",
       "Pick locale on demand via 'date-fns/locale/en-US' (etc.) for i18n"
@@ -50,7 +50,15 @@
       "event scheduler",
       "reminders",
       "due date",
-      "time tracking"
+      "time tracking",
+      "dao",
+      "governance",
+      "proposal",
+      "voting period",
+      "quorum",
+      "governor bravo",
+      "on-chain governance",
+      "snapshot vote"
     ]
   }
 }

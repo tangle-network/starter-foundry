@@ -252,10 +252,14 @@ async function promoteOne(id) {
     try {
       const manifest = loadJson(join(draftDir, 'manifest.json'))
       const userPrompt = manifest?.description ?? `Scaffold for ${id}`
+      // Pass buildOutcome=passed so the judge can short-circuit if a future
+      // refactor calls invokeMetaJudge with a failed build (defensive — current
+      // flow exits at line 219 on build-fail, so this branch always sees pass).
       const verdict = await invokeMetaJudge({
         userPrompt,
         composedSpec: composedSpecForJudge,
         snapshot: preTeardownSnapshot,
+        buildOutcome: { passed: true, phase: 'build' },
       })
       // Reject on: explicit fail, overall below threshold, OR borderline
       // (unless --allow-borderline). Borderline is the judge's honest
@@ -384,7 +388,14 @@ function harnessConfigForFamily(familyManifest) {
   switch (language) {
     case 'typescript':
     case 'javascript':
-      return { setupCommand: 'pnpm install --prefer-offline', testCommand: 'pnpm run validate || pnpm run build || true', timeoutMs: 180_000 }
+      // Strict: tsc --noEmit fails loud on type errors. The previous `|| true`
+      // suffix swallowed every failure — three Gen 6 scaffolds (kyc-onboarding
+      // .ts JSX, fraud-ops + polymarket React 17 imports, kyc esbuild.loader
+      // hallucination) all passed this gate AND the fidelity judge, then
+      // shipped to registry/. Caught only at audit time. Gen 8 closes that
+      // loop by failing the gate at proposal time. PR #51 fixed the bugs;
+      // this fix prevents the class.
+      return { setupCommand: 'pnpm install --prefer-offline', testCommand: 'pnpm exec tsc --noEmit', timeoutMs: 180_000 }
     case 'rust':
       return { setupCommand: 'cargo fetch', testCommand: 'cargo check --workspace || cargo check', timeoutMs: 300_000 }
     case 'go':

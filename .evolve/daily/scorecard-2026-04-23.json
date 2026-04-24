@@ -1,0 +1,148 @@
+{
+  "product": "starter-foundry",
+  "timestamp": "2026-04-23T05:18:48.934Z",
+  "coverage": "13/14 flows measured",
+  "aggregate": 0.455,
+  "inputs": [
+    {
+      "path": ".evolve/buildout-analysis.json",
+      "mtime": "2026-04-23T04:07:25.580Z"
+    },
+    {
+      "path": ".evolve/capability-gaps.json",
+      "mtime": "2026-04-23T04:07:25.580Z"
+    },
+    {
+      "path": ".evolve/scaffold-quality-audit.json",
+      "mtime": "2026-04-22T21:41:02.886Z"
+    },
+    {
+      "path": ".evolve/buildout-analysis-internal.json",
+      "mtime": "2026-04-23T05:18:25.354Z"
+    }
+  ],
+  "sourceMtime": "2026-04-23T03:57:26.504Z",
+  "stale": {
+    "anyFlowStale": true,
+    "buildout": false,
+    "gaps": false,
+    "audit": true
+  },
+  "buildoutSource": "historical",
+  "flows": [
+    {
+      "name": "route_accuracy_held_out",
+      "value": 1,
+      "target": 1,
+      "status": "pass",
+      "productValueClaim": "Every prompt in the held-out corpus routes to the expected family. If this slips, agents start on the wrong scaffold and burn turns pivoting.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "buildout_pass_rate",
+      "value": 0.6933962264150944,
+      "target": 0.85,
+      "status": "fail",
+      "productValueClaim": "Fraction of VB-run agent sessions whose composed scaffold reaches a working state. Directly = user sees something that works.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "scaffold_audit_pass_rate",
+      "value": 0.9787234042553191,
+      "target": 1,
+      "status": "fail",
+      "productValueClaim": "Fraction of framework layers where pnpm install + tsc noEmit succeeds on a freshly composed scaffold. A failure here means agents fight install errors on turn 1.",
+      "direction": "higher-better",
+      "stale": true
+    },
+    {
+      "name": "scaffold_gap_installs",
+      "value": 56,
+      "target": 10,
+      "status": "fail",
+      "productValueClaim": "Count of agent installs that map to packages NO family ships. Each one is a turn of agent work the scaffold should have avoided. Lower = less wasted setup.",
+      "direction": "lower-better"
+    },
+    {
+      "name": "top_file_rewrite_count",
+      "value": 13,
+      "target": 5,
+      "status": "fail",
+      "productValueClaim": "Rewrite count for the most-rewritten file in the corpus. High number = scaffold shipped a template agents systematically replace. Lower = tokens spent on features instead of setup.",
+      "direction": "lower-better"
+    },
+    {
+      "name": "median_turns_per_buildout",
+      "value": 67,
+      "target": 40,
+      "status": "fail",
+      "productValueClaim": "Median number of agent turns per buildout session. Fewer turns = agent reaches working preview faster = less user wait + fewer tokens spent on setup that could go to features.",
+      "direction": "lower-better",
+      "notes": "scenario-mean-weighted — unweighted by run count per scenario"
+    },
+    {
+      "name": "median_turns_per_buildout_run_weighted",
+      "value": 85,
+      "target": 40,
+      "status": "fail",
+      "productValueClaim": "Run-weighted median agent turns. Matches what a random user experiences, since high-frequency scenarios dominate the distribution. Complement to the scenario-mean-weighted metric — both must pass for the corpus to be healthy.",
+      "direction": "lower-better"
+    },
+    {
+      "name": "median_wall_seconds_per_buildout",
+      "value": 528.6,
+      "target": 600,
+      "status": "pass",
+      "productValueClaim": "Median wall-time per buildout session in seconds. Faster = user sees working product sooner = lower abandon rate.",
+      "direction": "lower-better"
+    },
+    {
+      "name": "orchestration_installs",
+      "value": 46,
+      "target": 15,
+      "status": "fail",
+      "productValueClaim": "Count of redundant agent installs when the scaffold already ships the package. Each one is a sign that the consumer pipeline isn't running install before handing the scaffold to the agent — informs blueprint-agent orchestration, not our scaffold.",
+      "direction": "lower-better"
+    },
+    {
+      "name": "estimated_tokens_per_buildout",
+      "value": 133200,
+      "target": 80000,
+      "status": "fail",
+      "productValueClaim": "Median tokens spent per buildout (real when emitBuildoutEvent supplies tokenCount, proxy from turns otherwise). Fewer tokens = lower cost per user session + lower LLM API cost for consumers.",
+      "direction": "lower-better"
+    },
+    {
+      "name": "cost_usd_per_buildout",
+      "value": null,
+      "target": 0.5,
+      "status": "unmeasured",
+      "productValueClaim": "Mean $ cost per scaffold buildout. Catches regressions where a change doubles token spend even if pass rate stays flat. Drives the ROI conversation on every future capability — is the delta on pass rate worth $X more per user?",
+      "direction": "lower-better"
+    },
+    {
+      "name": "families",
+      "value": 96,
+      "target": 40,
+      "status": "pass",
+      "productValueClaim": "Number of distinct family archetypes the router can route to. Breadth = more prompts find a good home.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "capability_layers",
+      "value": 104,
+      "target": 50,
+      "status": "pass",
+      "productValueClaim": "Distinct capability layers available for attachment. Each one is a bundle of deps + files + context agents get for free.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "partners",
+      "value": 19,
+      "target": 10,
+      "status": "pass",
+      "productValueClaim": "Partner packs — ecosystem-specific biases + config. More partners = more prompts get routed with SDK/addresses pre-wired.",
+      "direction": "higher-better"
+    }
+  ]
+}

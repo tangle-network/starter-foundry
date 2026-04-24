@@ -4,7 +4,7 @@
 
 import { describe, test } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, writeFileSync, mkdirSync, rmSync } from 'node:fs'
+import { mkdtempSync, writeFileSync, mkdirSync, rmSync, realpathSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import {
@@ -361,7 +361,10 @@ describe('promote-family-proposal harness: strict TS gate', () => {
     // a tmpdir catches that immediately.
     const { InMemoryTraceStore, BuilderSession, SubprocessSandboxDriver } =
       await import('@tangle-network/agent-eval')
-    const dir = mkdtempSync(join(tmpdir(), 'harness-cwd-behavioral-'))
+    // macOS tmpdir is a symlink (/var/folders → /private/var/folders); `pwd`
+    // in bash follows it, so compare against the resolved realpath or the
+    // test fails on Darwin while passing on Linux.
+    const dir = realpathSync(mkdtempSync(join(tmpdir(), 'harness-cwd-behavioral-')))
     try {
       const store = new InMemoryTraceStore()
       const driver = new SubprocessSandboxDriver()

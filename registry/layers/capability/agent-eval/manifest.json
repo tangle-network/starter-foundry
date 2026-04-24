@@ -1,0 +1,73 @@
+{
+  "id": "agent-eval",
+  "description": "Ships a reproducible agent-eval harness into the scaffold: starter scenarios, a deterministic + optional LLM-judge runner that talks to the agent over HTTP, a baseline/regression workflow, and a CI gate. Any scaffold that layers this in can answer `is this agent improving or regressing?` from minute zero, no separate eval repo to bootstrap.",
+  "appliesTo": [
+    "agent-service-ts",
+    "agent-swarm-ts",
+    "multimodal-agent",
+    "voice-first-agent",
+    "vision-first-agent"
+  ],
+  "defaults": {
+    "evalPort": "3100",
+    "evalThreshold": "0.7"
+  },
+  "packageDeps": {
+    "dependencies": {
+      "@tangle-network/agent-eval": "^0.7.0"
+    }
+  },
+  "files": [
+    {
+      "source": "files/tests/eval/scenarios.json",
+      "target": "tests/eval/scenarios.json"
+    },
+    {
+      "source": "files/tests/eval/run-eval.mjs",
+      "target": "tests/eval/run-eval.mjs"
+    },
+    {
+      "source": "files/tests/eval/judge.mjs",
+      "target": "tests/eval/judge.mjs"
+    },
+    {
+      "source": "files/tests/eval/README.md",
+      "target": "tests/eval/README.md"
+    },
+    {
+      "source": "files/.github/workflows/eval.yml",
+      "target": ".github/workflows/eval.yml"
+    },
+    {
+      "source": "files/scripts/eval-baseline.mjs",
+      "target": "scripts/eval-baseline.mjs"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "node tests/eval/run-eval.mjs",
+      "node scripts/eval-baseline.mjs --write"
+    ],
+    "extensionPoints": [
+      "tests/eval/scenarios.json",
+      "tests/eval/judge.mjs"
+    ]
+  },
+  "keywords": [
+    "agent eval",
+    "agent evaluation",
+    "eval harness",
+    "llm judge",
+    "llm as judge",
+    "quality gate",
+    "agent quality",
+    "scoring pipeline",
+    "benchmark agent",
+    "eval integrated",
+    "measurable agent"
+  ],
+  "tieredKeywords": {
+    "tier1": ["agent eval", "eval harness", "quality gate"],
+    "tier2": ["llm judge", "scoring pipeline", "benchmark agent", "eval integrated"]
+  }
+}

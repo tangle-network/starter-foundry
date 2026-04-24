@@ -1,5 +1,62 @@
 # Evolve Progress — starter-foundry routing quality
 
+## 2026-04-24 — Evolve Round 0 post-Gen-9: runtime-path validation (KEEP)
+
+**Goal:** verify that Gen 9's runtime-eval muffled-gate closure (PR #54)
+takes effect at proposal time.
+
+**Finding:** Gen 9 did NOT close the runtime path — only the promoter
+path (via Gen 8b). The runtime eval script
+`scripts/agent-eval-scaffold.mjs:143` still passed cwd to the
+SubprocessSandboxDriver constructor (silently dropped per Gen 8b
+findings), so a scaffold with a deliberate TS error silent-passed the
+runtime eval at `exitCode=0`. Confirmed with a synthetic probe
+(TS2322 string-as-number assignment, shipped through the same
+BuilderSession + harness path the runtime uses).
+
+**Root cause:** Gen 9's invariant scanner did NOT include
+`scripts/agent-eval-scaffold.mjs` in its scan list, and did not have a
+pattern for the construct-vs-call dropped-arg shape. The Gen 9 PR
+thesis ("one source of truth + invariant") was correct, but the Phase
+1.5 audit missed this file — it fixed source-code locations and
+promoter paths but didn't walk the runtime entry point.
+
+**Fix shape (structural, matches Gen 9 thesis):**
+- `prepareScaffoldForEval` now returns a harness with `cwd:
+  scaffoldDir` baked in. Callers can't forget — the construct-vs-call
+  seam doesn't exist at this layer.
+- `scripts/agent-eval-scaffold.mjs` driver takes no cwd arg.
+- Invariant scanner adds `findConstructorCwdDropped` catching
+  `new SubprocessSandboxDriver({cwd:...})` anywhere in scanned files
+  + adds `scripts/agent-eval-scaffold.mjs` to the scan list.
+- New invariant test asserts `prepareScaffoldForEval` returns a
+  harness with cwd baked in (source-grep).
+
+**Verified:**
+- Probe pre-fix: `passed=true exitCode=0` for TS-error scaffold.
+- Probe post-fix: `passed=false exitCode=2` with `TS2322: Type
+  'string' is not assignable to type 'number'` in stdout.
+- Planted-regression: restoring the cwd-in-constructor shape in
+  `agent-eval-scaffold.mjs` fails the invariant with exact file:line.
+- 701/701 tests pass (was 700 after Gen 9 merge; +1 new invariant
+  test).
+
+**Verdict:** KEEP. This is the structural closure Gen 9's PR body
+promised — now actually true for the runtime path, not just the
+promoter path. Round 1 can dispatch `/reflect` to capture the lesson
+(Phase 1.5 audit must walk entry-point scripts, not just lib/ + test
+files) and then move on.
+
+**Seeds for Round 1:**
+- Audit other entry-point scripts (propose-*-candidates.mjs,
+  audit-scaffold-quality.mjs) for the same construct-vs-call pattern
+  in *any* agent-eval API, not just cwd.
+- Extend the invariant scanner to include all scripts that import from
+  `@tangle-network/agent-eval`, derived automatically rather than
+  maintained by hand.
+
+---
+
 ## 2026-04-24 — Pursuit Gen 9: structural muffled-gate audit
 
 Pursuit: `.evolve/pursuits/2026-04-24-muffled-gate-audit.md`. Thesis:

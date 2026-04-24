@@ -1,8 +1,15 @@
 {
   "mode": "evolve",
   "goal": "Gen 9 muffled-gate audit shipped — structural guard replaces point-fixes",
-  "status": "gen-9-shipped",
-  "round": 0,
+  "status": "round-0-closed-runtime-path",
+  "round": 1,
+  "round0Result": {
+    "finding": "Runtime scaffold-eval path (scripts/agent-eval-scaffold.mjs) had the same construct-vs-call cwd bug Gen 8b fixed in the promoters. Gen 9's invariant didn't scan this file.",
+    "probe": "synthetic TS-error scaffold shipped via prepareScaffoldForEval → BuilderSession. Pre-fix: passed=true exitCode=0. Post-fix: passed=false exitCode=2 with TS2322 in stdout.",
+    "fixShape": "structural — prepareScaffoldForEval bakes cwd into returned harness; scripts/agent-eval-scaffold.mjs driver takes no cwd; invariant scanner gains findConstructorCwdDropped + scripts/agent-eval-scaffold.mjs in scan list.",
+    "testsAdded": 1,
+    "testTotal": "700 → 701"
+  },
   "generation": 9,
   "activePursuit": null,
   "lastPursuit": ".evolve/pursuits/2026-04-24-muffled-gate-audit.md",

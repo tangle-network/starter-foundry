@@ -343,4 +343,42 @@ describe('promote-family-proposal harness: strict TS gate', () => {
       'capability promoter: harnessConfig must include cwd: composedOutDir',
     )
   })
+
+  test('agent-eval driver end-to-end: HarnessConfig.cwd is actually honored at spawn time (Gen 8b behavioral)', async () => {
+    // Source-grep guards above defend against regressions in the *fix shape*.
+    // This test defends against regressions in the *semantics we rely on*:
+    // if a future agent-eval release starts ignoring config.cwd (or honoring
+    // the constructor arg instead), the source-grep tests still pass but the
+    // compile-gate silently runs in the wrong dir again. A real spawn against
+    // a tmpdir catches that immediately.
+    const { InMemoryTraceStore, BuilderSession, SubprocessSandboxDriver } =
+      await import('@tangle-network/agent-eval')
+    const dir = mkdtempSync(join(tmpdir(), 'harness-cwd-behavioral-'))
+    try {
+      const store = new InMemoryTraceStore()
+      const driver = new SubprocessSandboxDriver()
+      const session = new BuilderSession(store, { projectId: 'gen8b-behavioral' }, driver)
+      await session.startChat()
+      const shipResult = await session.ship({
+        harness: {
+          setupCommand: 'true',
+          // Exits 0 iff the subprocess runs in `dir`. If HarnessConfig.cwd
+          // is dropped and spawn inherits the Node cwd (starter-foundry),
+          // this exits 1 → passed=false and the assertion fails loud.
+          testCommand: `test "$(pwd)" = "${dir}"`,
+          cwd: dir,
+          timeoutMs: 10_000,
+        },
+      })
+      await session.endChat({ pass: shipResult.result?.passed ?? false, score: shipResult.result?.score ?? 0 })
+      assert.equal(
+        shipResult.result?.passed,
+        true,
+        `HarnessConfig.cwd was not honored — subprocess exited in wrong dir. ` +
+          `exitCode=${shipResult.result?.test?.exitCode}, stderr=${shipResult.result?.test?.stderr ?? ''}`,
+      )
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  })
 })

@@ -3,6 +3,8 @@
 **Named in:** Gen 9 (2026-04-24)
 **Enforced by:** `tests/muffled-gate-invariant.test.ts`
 **Escape hatch:** `// muffle-ok: <reason>` inline annotation
+**Sibling pattern:** [lying-metric.md](lying-metric.md) — same shape
+(silent failure), different layer (measurement vs gating)
 
 ## Shape
 

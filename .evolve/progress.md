@@ -1,5 +1,39 @@
 # Evolve Progress — starter-foundry routing quality
 
+## 2026-04-24 (evening) — R2 → R3 → C arc (3 PRs post-Gen-9, 1 measured + 2 projected)
+
+Three rounds dispatched via `/governor` → `/evolve` after Gen 9's structural audit landed:
+
+- **R2** — `proposal_promotion_rate` 0.034 → **0.75** (measured, +71pp). Diagnosed in `.evolve/generation-impact.jsonl`: 108 of 114 "failures" were test-fixture events, and 4 reverted-then-re-promoted ids were double-counted. Fix: `STARTER_FOUNDRY_SYNTHETIC_RUN=1` env gate on tests + per-id-outcome counting in `refresh-scorecard.mjs`. Merged as PR #59.
+- **R3** — agent efficiency cluster (5 correlated flows). Diagnosed from `buildout-analysis.json` topAddedPackages: 54+ redundant installs of already-shipped deps (`lucide-react` 17×, `tailwindcss` 14×, `@tailwindcss/vite` 14×, `clsx` 9×, ZK deps). Fix: `buildAgentsMd` now renders a "Pre-installed packages — do NOT re-install" section from the merged `package.json`. Projected. Merged as PR #60.
+- **C** — cost-tracker wiring (direct fix via governor surface). Diagnosed from empty `.evolve/agent-eval/2026-04-23/cost-summary.json`: two bugs — `costTracker.getSummary?.() ?? {}` silent-failed (method is `.summary()`), and `.record()` was never called. Fix: `invokeMetaJudge` now returns `usage` field; `agent-eval-scaffold.mjs` records per-seed + calls correct `.summary()` method. Merged as PR #61.
+
+**Tests added:** +9 regression guards (3 per round). Total 733/733.
+
+**Patterns named:** two lying-metric instances this arc (R2 fixture pollution, C silent-fail summary). Documented in `.evolve/patterns/lying-metric.md` — sibling to `muffled-gate.md`, same shape (silent failure) in measurement layer instead of gate layer.
+
+**Handoff:** three PRs landed, only R2 has measured effect. R3 + C need fresh VB sweep + agent-eval run with LLM creds. Scorecard aggregate unchanged (0.649) until fresh measurement lands.
+
+**Full reflection:** `.evolve/reflections/2026-04-24-r2-r3-c-arc.md`.
+
+---
+
+## 2026-04-24 — R1 post-Gen-9 buildout diagnosis (merged as PR #56)
+
+(Folded in from `.evolve/progress-r1-buildout-diagnosis.md`, deleted in cleanup.)
+
+**Target:** `buildout_pass_rate` 0.693 → 0.85.
+
+**Diagnosis:** 65 failing buildouts split: 34 pipeline-init zero-turn (VB session never started, out of scope) + 31 scaffold-side. Highest ROI cluster: `dex-swap/ethereum-l1` = 14 runs all fail on `lint` layer at score 0.868, while `nft-mint-page/ethereum-l1` (same workspace shape: `react-vite-ts + forge-contracts`) passes 16/16.
+
+**Root cause** (found in `.evolve/traces/session-traces.jsonl` after operator redirect): the `lint` layer is `forge lint` (Foundry Solidity), not ESLint. Warnings: `unsafe-typecast` in test fixtures, `mixed-case-variable`, `screaming-snake-case-immutable`. forge-foundation + tangle-blueprint `foundry.toml` files had no `[lint]` section, so forge-lint ran default-strict.
+
+**Fix** (PR #56): add `[lint] severity = ['high', 'med', 'gas']; ignore = ['test/**/*', 'script/**/*']` to both framework layers. Keeps real bug classes, drops naming-convention noise, ignores fixture casts.
+
+**Projected:** +14 passes / 212 outcomes = +6.6pp on buildout_pass_rate. Real effect measured in next VB sweep.
+
+---
+
 ## 2026-04-24 — Evolve Round 0 post-Gen-9: runtime-path validation (KEEP)
 
 **Goal:** verify that Gen 9's runtime-eval muffled-gate closure (PR #54)

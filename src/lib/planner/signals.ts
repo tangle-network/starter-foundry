@@ -342,6 +342,7 @@ export const CODE_EDITOR_ARCHETYPE_SIGNALS = [
   'codemirror',
   'code dashboard',
   'strategy editor',
+  '"strategy" editor',
   'strategy builder',
   'script editor',
   'rules editor',
@@ -350,6 +351,20 @@ export const CODE_EDITOR_ARCHETYPE_SIGNALS = [
   'policy editor',
   'workflow editor',
   'expression editor',
+  // Trading-bot / quant phrasings — agent-trading scenario shipped
+  // codemirror 5x because the "TypeScript snippet" editor surface wasn't
+  // recognized as needing capability:code-editor. Add the realistic
+  // domain language so future trading/algorithm/strategy prompts attach.
+  'typescript snippet',
+  'typescript snippet editor',
+  'algorithm editor',
+  'algo editor',
+  'algorithm playground',
+  'trading strategy',
+  'on-chain strategy',
+  'inline editor',
+  'code snippet editor',
+  'live editor',
 ]
 
 // Date-heavy products — scheduling, calendar, timeline, booking, deadline

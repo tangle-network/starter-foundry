@@ -456,7 +456,48 @@ export async function invokeMetaJudge(args: {
   userPrompt: string
   composedSpec: ComposeSpec
   snapshot: WorkspaceSnapshot
+  /**
+   * Optional outcome of the upstream build/typecheck phase. When present and
+   * `passed === false`, the judge short-circuits to verdict='fail' WITHOUT
+   * spending an LLM call — the scaffold cannot be useful if it doesn't
+   * compile, regardless of how the rubric scores its layout. Carries the
+   * failing phase + stderr tail into the issues array so reviewers see the
+   * concrete failure (e.g. "typecheck: TS2339: createRoot does not exist").
+   *
+   * Gen 8 closure: PR #51 shipped 3 bugs (kyc-onboarding .ts JSX,
+   * fraud-ops/polymarket React 17 imports) that all passed the existing
+   * fidelity judge at 0.82-0.85 because the LLM judge cannot reliably
+   * detect compile-time defects from text. The build gate that should
+   * have caught them was muffled by `|| true`. This parameter lets the
+   * judge hard-gate on compile success when the caller already ran the
+   * build (the promoter does), without re-running the build itself.
+   */
+  buildOutcome?: { passed: boolean; phase?: string; stderr?: string; stdout?: string }
 }): Promise<ScaffoldMetaVerdict> {
+  // Compile-gate short-circuit. If the caller already ran the build and it
+  // failed, return fail immediately. Saves the LLM call AND closes the
+  // Goodhart loop where fidelity passes scaffolds the build would reject.
+  if (args.buildOutcome && args.buildOutcome.passed === false) {
+    const phase = args.buildOutcome.phase ?? 'build'
+    const stderrTail = (args.buildOutcome.stderr ?? args.buildOutcome.stdout ?? '').slice(-500)
+    return {
+      correctness: 0,
+      completeness: 0,
+      idiomatic: 0,
+      productionReady: 0,
+      overScaffold: 0,
+      overall: 0,
+      issues: [
+        {
+          dimension: 'correctness',
+          severity: 'high',
+          description: `${phase} failed: ${stderrTail.replace(/\s+/g, ' ').trim().slice(0, 400)}`,
+        },
+      ],
+      verdict: 'fail',
+      rationale: `Build/typecheck failed at ${phase} — scaffold cannot run. LLM scoring skipped (compile-gate).`,
+    }
+  }
   const { createLLM } = await import('../lib/llm.js')
   const { ax } = await import('@ax-llm/ax')
   // Don't pin a router-specific model slug like "anthropic/claude-sonnet-4-6" —

@@ -12,6 +12,7 @@ import {
   manifestComplianceAssertions,
   snapshotScaffold,
   buildScaffoldMetaPrompt,
+  invokeMetaJudge,
 } from '../dist/eval/scaffold-bridge.js'
 
 function fakeComponents(overrides: { family?: any; layers?: any[] } = {}) {
@@ -197,5 +198,114 @@ describe('scaffold-bridge: buildScaffoldMetaPrompt', () => {
     })
     assert.match(prompt, /empty scaffold/)
     assert.ok(prompt.length > 100)
+  })
+})
+
+// ─────────────────────────────────────────────────────────────────────
+// Gen 8 — compile-gate short-circuit in invokeMetaJudge
+// ─────────────────────────────────────────────────────────────────────
+
+describe('scaffold-bridge: invokeMetaJudge compile-gate', () => {
+  test('buildOutcome.passed=false short-circuits to verdict=fail without LLM call', async () => {
+    const result = await invokeMetaJudge({
+      userPrompt: 'kyc onboarding starter',
+      composedSpec: { family: 'kyc-onboarding', layers: ['framework:kyc-onboarding'], projectName: 't' } as any,
+      snapshot: { files: { 'src/main.ts': 'import x from y' }, rows: {}, kv: {} },
+      buildOutcome: { passed: false, phase: 'typecheck', stderr: "src/main.ts(1,10): error TS1005: '>' expected." },
+    })
+    assert.equal(result.verdict, 'fail')
+    assert.equal(result.overall, 0)
+    assert.equal(result.issues.length, 1)
+    assert.equal(result.issues[0]!.dimension, 'correctness')
+    assert.equal(result.issues[0]!.severity, 'high')
+    assert.match(result.issues[0]!.description, /typecheck failed/)
+    assert.match(result.issues[0]!.description, /TS1005/)
+    assert.match(result.rationale ?? '', /compile-gate/)
+  })
+
+  test('buildOutcome.passed=false includes stderr tail in issue description', async () => {
+    // Use a realistic-sized stderr (~300 chars) — under the 500-char tail
+    // limit so the actual error survives. Real tsc stderr is usually <1KB.
+    const stderr = 'src/main.tsx(7,25): error TS2339: Property \'createRoot\' does not exist on type \'typeof import("...")\''
+    const result = await invokeMetaJudge({
+      userPrompt: 'fraud-ops React 17 regression',
+      composedSpec: { family: 'fraud-ops-console', layers: [], projectName: 't' } as any,
+      snapshot: { files: {}, rows: {}, kv: {} },
+      buildOutcome: { passed: false, phase: 'typecheck', stderr },
+    })
+    assert.equal(result.verdict, 'fail')
+    assert.match(result.issues[0]!.description, /TS2339|createRoot/)
+  })
+
+  test('buildOutcome.passed=true falls through to LLM scoring (no short-circuit)', async () => {
+    // We can't run the LLM in this test environment without keys/budget, so
+    // verify the short-circuit path is NOT taken by ensuring the function
+    // does not return immediately. We expect it to throw or hang on the LLM
+    // call — the test passes if the synchronous short-circuit branch was
+    // skipped. Using a Promise.race with a tiny timeout to avoid hanging.
+    const judgePromise = invokeMetaJudge({
+      userPrompt: 'frontend scaffold',
+      composedSpec: { family: 'react-vite-ts', layers: [], projectName: 't' } as any,
+      snapshot: { files: { 'package.json': '{}' }, rows: {}, kv: {} },
+      buildOutcome: { passed: true, phase: 'build' },
+    }).catch((e) => ({ error: String(e?.message ?? e) }))
+
+    const winner = await Promise.race([
+      judgePromise,
+      new Promise((resolve) => setTimeout(() => resolve({ timedOut: true }), 200)),
+    ])
+    // Either timed out (LLM call started, no key) or errored (also LLM-path).
+    // What it MUST NOT be: a verdict='fail' with rationale mentioning compile-gate.
+    if ((winner as any).verdict === 'fail' && /compile-gate/.test(String((winner as any).rationale ?? ''))) {
+      assert.fail('short-circuit fired when buildOutcome.passed=true')
+    }
+  })
+
+  test('omitted buildOutcome falls through to LLM scoring (backward-compat)', async () => {
+    // Existing callers don't pass buildOutcome. Ensure the new parameter is
+    // truly optional and the function doesn't short-circuit when absent.
+    const judgePromise = invokeMetaJudge({
+      userPrompt: 'backward-compat caller',
+      composedSpec: { family: 'react-vite-ts', layers: [], projectName: 't' } as any,
+      snapshot: { files: { 'package.json': '{}' }, rows: {}, kv: {} },
+    }).catch((e) => ({ error: String(e?.message ?? e) }))
+
+    const winner = await Promise.race([
+      judgePromise,
+      new Promise((resolve) => setTimeout(() => resolve({ timedOut: true }), 200)),
+    ])
+    if ((winner as any).verdict === 'fail' && /compile-gate/.test(String((winner as any).rationale ?? ''))) {
+      assert.fail('short-circuit fired when buildOutcome was omitted')
+    }
+  })
+})
+
+// ─────────────────────────────────────────────────────────────────────
+// Gen 8 — strict TS testCommand in promote-family-proposal harness
+// (regression guard: PR#51's 3 bugs MUST fail the new gate)
+// ─────────────────────────────────────────────────────────────────────
+
+describe('promote-family-proposal harness: strict TS gate', () => {
+  test('typescript family testCommand is strict tsc --noEmit (no `|| true` swallow)', async () => {
+    // The bug this guards against: harnessConfigForFamily(typescript) used
+    // to set testCommand: 'pnpm run validate || pnpm run build || true',
+    // which swallowed every typecheck error. Verify only the testCommand
+    // value, not surrounding comments (which may legitimately reference
+    // the old shape for documentation).
+    const { readFileSync } = await import('node:fs')
+    const promoter = readFileSync('scripts/promote-family-proposal.mjs', 'utf8')
+    const tsReturn = promoter.match(/case 'typescript':[\s\S]+?return\s*\{[^}]+\}/)![0]
+    const testCmd = tsReturn.match(/testCommand:\s*'([^']+)'/)![1]!
+    assert.doesNotMatch(testCmd, /\|\| true/, `testCommand must not swallow with || true — got: ${testCmd}`)
+    assert.match(testCmd, /tsc\s+--noEmit/, `testCommand must run tsc --noEmit — got: ${testCmd}`)
+  })
+
+  test('capability promoter has the same strict TS gate', async () => {
+    const { readFileSync } = await import('node:fs')
+    const cap = readFileSync('scripts/promote-capability-proposal.mjs', 'utf8')
+    const tsReturn = cap.match(/case 'typescript':[\s\S]+?return\s*\{[^}]+\}/)![0]
+    const testCmd = tsReturn.match(/testCommand:\s*'([^']+)'/)![1]!
+    assert.doesNotMatch(testCmd, /\|\| true/, `capability testCommand must not swallow with || true — got: ${testCmd}`)
+    assert.match(testCmd, /tsc\s+--noEmit/, `capability testCommand must run tsc --noEmit — got: ${testCmd}`)
   })
 })

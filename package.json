@@ -109,6 +109,7 @@
     "@tangle-network/tcloud": "^0.4.2"
   },
   "optionalDependencies": {
-    "@opentelemetry/api": "^1.9.0"
+    "@opentelemetry/api": "^1.9.0",
+    "@tangle-network/tcloud-agent": "link:../tcloud/packages/tcloud-agent"
   }
 }

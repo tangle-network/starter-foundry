@@ -668,3 +668,40 @@ Newly routed: 7× tangle-network scenarios (legal-research-agent, llm-lora-compo
 1. Trace-capture bug — 26/54 buildouts have `initialPrompt: null`. Upstream fix unlocks Variant A's mechanism + compounds with B.
 2. Workspace-composable proposer — generates multi-project specs for workspace-classified prompts (the durable architectural fix beyond narrow-case partner routing).
 3. AxGEPA on hintsAuthor.keywordsTier1 — accumulated outcomes now sufficient for training.
+
+## 2026-04-24 — /evolve Round 1+2 (scaffold_gap_installs measurement honesty + signal extension)
+
+**Goal:** scaffold_gap_installs 56 → ≤10 via capability:packageDeps fixes from counterfactual replay clusters.
+
+**Phase 1.5 audit caught two bugs:**
+
+1. **Inferrer was lying.** `scripts/infer-capability-gaps.mjs` `loadFamilyDeps()` only loaded family-level deps; ignored capability `packageDeps` that the composer merges in. So `capability:tailwind` shipping `@tailwindcss/vite` (verified by composing agent-trading + reading produced package.json) was invisible — the inferrer flagged 14 installs as "scaffold-gap" when the dep was actually being shipped via the attached capability.
+2. **Inferrer truncated to 2000 chars.** Real buildout prompts have ~3KB of preamble (sidecar instructions, dev-server step, no-restart guidance). The 2000-char window matched only preamble. agent-trading's `"strategy" editor (TypeScript snippet)` — the trigger for `capability:code-editor` — sat at offset ~3000.
+
+**R1 fix (measurement honesty):** added `loadCapabilityDeps()` that scans `registry/layers/capability/*/manifest.json` for packageDeps; added `planCapabilities()` to extract attached `capability:*` layers from the plan; union both into `shippedDeps`. Result: 56 → **39** (−17).
+
+**R2 fix (signal extension):**
+- Added 10 new entries to `CODE_EDITOR_ARCHETYPE_SIGNALS` covering quoted variant (`"strategy" editor`) and trading-bot/quant phrasings (`typescript snippet`, `algorithm editor`, `trading strategy`, `inline editor`, etc.).
+- Mirrored to `capability:code-editor.tieredKeywords.archetypes` (signal/manifest sync test enforces this).
+- Bumped `MAX_PROMPT_LEN` 2000 → 4000 so the inferrer sees actual user-asks.
+
+Result: 39 → **9** (−30). Total arc 56 → 9 (−84%, well below target 10).
+
+**Verified end-to-end:**
+- `planPrompt(agent-trading-prompt)` now returns `capability:code-editor` in layers (was missing before).
+- `composeStarter(agent-trading-spec)` produces a package.json containing all 5 codemirror packages.
+- 688/688 tests green.
+
+**Metric moves:**
+| Flow | Before | After | Verdict |
+|---|---|---|---|
+| `scaffold_gap_installs` | **56 FAIL** | **9 PASS** | unlocked (target 10) |
+| aggregate | 0.603 | 0.607 | +0.4pp |
+
+**Cumulative Gen 6 + Gen 7 + Gen 8 R1+R2: aggregate 0.407 → 0.607 (+20pp), 6/22 failing flows → 5/22.**
+
+**Remaining gap:** the 9 leftover scaffold-gap installs are mostly noise (`pnpm`, `add` parsed as packages) plus 3× `react-router-dom` in dao-proposals (legitimately unmapped — no capability ships routing yet) and 2× `vite-plugin-node-polyfills` in zk-mixer-ui (capability:zk-browser candidate). Both are R3/R4 candidates if pushing further.
+
+**Plateau clock:** reset (R1 −30%, R2 −77% — both significant moves).
+
+**Handoff:** governor should re-pick. Next-highest-ROI failing flows are now `buildout_pass_rate` (0.69→0.85, requires real VB sweep), `top_file_rewrite_count` (13→5), and `proposal_promotion_rate` (0.04→0.30, dilutes naturally).

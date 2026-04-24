@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "generator": "starter-foundry:replay-traces",
-  "registryCommit": "3c265e9",
+  "registryCommit": "dcad3d3",
   "summary": {
-    "generatedAt": "2026-04-23T21:53:09.937Z",
+    "generatedAt": "2026-04-24T01:33:32.360Z",
     "totalBuildouts": 192,
     "withOutcome": 114,
     "passRate": 0.8245614035087719,
@@ -26,10 +26,10 @@
       "tangle-blueprints-mpc"
     ],
     "totalHistoricalInstalls": 102,
-    "totalPreventedInstalls": 75,
-    "totalRemainingGapInstalls": 27,
-    "preventionRate": 0.7352941176470589,
-    "estimatedGapInstallsPerBuildout": 0.140625,
+    "totalPreventedInstalls": 90,
+    "totalRemainingGapInstalls": 12,
+    "preventionRate": 0.8823529411764706,
+    "estimatedGapInstallsPerBuildout": 0.0625,
     "costRollup": {
       "sampleCount": 0,
       "meanCostUsd": null,
@@ -41,21 +41,6 @@
     }
   },
   "perScenario": [
-    {
-      "partner": "ethereum-l1",
-      "scenarioId": "agent-trading",
-      "total": 9,
-      "withOutcome": 9,
-      "pass": 9,
-      "passRate": 1,
-      "meanScore": 0.967,
-      "meanWallMs": 380282,
-      "meanTurns": 42,
-      "totalHistoricalInstalls": 25,
-      "totalPreventedInstalls": 9,
-      "totalRemainingGapInstalls": 16,
-      "preventionRate": 0.36
-    },
     {
       "partner": "ethereum-l1",
       "scenarioId": "zk-mixer-ui",
@@ -100,6 +85,21 @@
       "totalPreventedInstalls": 0,
       "totalRemainingGapInstalls": 1,
       "preventionRate": 0
+    },
+    {
+      "partner": "ethereum-l1",
+      "scenarioId": "agent-trading",
+      "total": 9,
+      "withOutcome": 9,
+      "pass": 9,
+      "passRate": 1,
+      "meanScore": 0.967,
+      "meanWallMs": 380282,
+      "meanTurns": 42,
+      "totalHistoricalInstalls": 25,
+      "totalPreventedInstalls": 24,
+      "totalRemainingGapInstalls": 1,
+      "preventionRate": 0.96
     },
     {
       "partner": "ethereum-l1",
@@ -554,36 +554,6 @@
   ],
   "topRemainingGapInstalls": [
     {
-      "key": "@codemirror/view",
-      "timesRemaining": 3,
-      "remainingOnPass": 3,
-      "remainingOnFail": 0
-    },
-    {
-      "key": "@codemirror/state",
-      "timesRemaining": 3,
-      "remainingOnPass": 3,
-      "remainingOnFail": 0
-    },
-    {
-      "key": "@codemirror/lang-javascript",
-      "timesRemaining": 3,
-      "remainingOnPass": 3,
-      "remainingOnFail": 0
-    },
-    {
-      "key": "@codemirror/theme-one-dark",
-      "timesRemaining": 3,
-      "remainingOnPass": 3,
-      "remainingOnFail": 0
-    },
-    {
-      "key": "codemirror",
-      "timesRemaining": 3,
-      "remainingOnPass": 3,
-      "remainingOnFail": 0
-    },
-    {
       "key": "vite",
       "timesRemaining": 3,
       "remainingOnPass": 1,
@@ -659,6 +629,26 @@
     },
     {
       "key": "date-fns",
+      "timesPrevented": 3
+    },
+    {
+      "key": "@codemirror/view",
+      "timesPrevented": 3
+    },
+    {
+      "key": "@codemirror/state",
+      "timesPrevented": 3
+    },
+    {
+      "key": "@codemirror/lang-javascript",
+      "timesPrevented": 3
+    },
+    {
+      "key": "@codemirror/theme-one-dark",
+      "timesPrevented": 3
+    },
+    {
+      "key": "codemirror",
       "timesPrevented": 3
     },
     {

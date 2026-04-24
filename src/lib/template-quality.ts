@@ -76,10 +76,15 @@ const WEIGHTS = {
   freshness: 0.05,
 } as const
 
-function phaseOk(audit: AuditReport, name: string): boolean | null {
+function phaseOk(audit: AuditReport, name: string): true | false | 'skipped' | null {
+  // Three-valued return distinguishes "phase ran and passed" from "phase
+  // was skipped" (e.g. no-tsconfig) so callers can price skips explicitly
+  // rather than getting silent-pass credit. Previous `if (p.skipped) return true`
+  // let families game typecheckOk*0.15 of the quality score by omitting
+  // tsconfig — the muffled-gate shape Gen 9 closes.
   const p = audit.phases?.find((ph) => ph.phase === name)
   if (!p) return null
-  if (p.skipped) return true  // skip-clean (e.g., no-tsconfig) counts as ok
+  if (p.skipped) return 'skipped'
   return p.ok === true
 }
 
@@ -110,9 +115,18 @@ export function scoreVersion(input: ScoreInput): QualityScore {
 
   // Build: if phase absent (not run), give full credit so the bar isn't
   // retroactively applied to v1 snapshots that predated --build.
-  const buildComponent = buildOk === null ? 1 : buildOk ? 1 : 0
-  const tscComponent = tscOk === null ? 0 : tscOk ? 1 : 0
-  const installComponent = installOk === null ? 0 : installOk ? 1 : 0
+  // Skipped phase gets partial credit (0.5), matching validationScore's
+  // treatment of `skipped: 'none-declared'`. Gen 9 split silent-pass
+  // (previously skipped→1.0) from real pass so families can't inflate
+  // quality by omitting their tsconfig.
+  const phaseCredit = (v: true | false | 'skipped' | null, absentCredit: number): number => {
+    if (v === null) return absentCredit
+    if (v === 'skipped') return 0.5
+    return v ? 1 : 0
+  }
+  const buildComponent = phaseCredit(buildOk, 1)
+  const tscComponent = phaseCredit(tscOk, 0)
+  const installComponent = phaseCredit(installOk, 0)
 
   const richness = Math.min(1, fileCount / 10)
 

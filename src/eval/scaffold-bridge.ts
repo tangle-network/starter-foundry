@@ -27,73 +27,94 @@ import type { ComposeSpec, ResolvedComponents } from '../types.js'
 // ──────────────────────────────────────────────────────────────────
 
 /**
+ * Per-language harness config table. Single source of truth — the
+ * promoters (scripts/promote-family-proposal.mjs,
+ * scripts/promote-capability-proposal.mjs) import this table rather
+ * than redefining it. Gen 8b shipped when only two of three copies
+ * got the strict-gate fix; centralizing removes the drift surface.
+ *
+ * Keys are `taxonomy.language` values. New languages must be added
+ * here — `makeHarnessConfig` THROWS on unknown languages rather than
+ * silently returning a no-op (which was the muffled-gate shape where
+ * a Zig family silent-passed the build phase).
+ *
+ * `muffle-ok:` annotations mark places where a non-strict command
+ * is intentional and documented.
+ */
+export const HARNESS_CONFIGS: Record<string, HarnessConfig> = {
+  typescript: {
+    setupCommand: 'pnpm install --prefer-offline',
+    // Strict: tsc --noEmit fails loud on type errors. The previous
+    // `pnpm run validate || pnpm run build || true` swallowed exit
+    // codes and silent-passed broken React 17 / .ts-JSX scaffolds —
+    // the Gen 8 Goodhart bug that triggered the compile-gate work.
+    testCommand: 'pnpm exec tsc --noEmit',
+    timeoutMs: 180_000,
+  },
+  javascript: {
+    setupCommand: 'pnpm install --prefer-offline',
+    // No tsc for JS; fall back to the build script. If a family lacks
+    // a build script it must declare a validationCheck instead.
+    testCommand: 'pnpm run build',
+    timeoutMs: 180_000,
+  },
+  rust: {
+    setupCommand: 'cargo fetch',
+    // muffle-ok: `|| cargo check` is a narrower-scope retry for
+    // non-workspace crates, not a pass-through. Both branches still
+    // fail-loud on type errors.
+    testCommand: 'cargo check --workspace || cargo check',
+    timeoutMs: 300_000,
+  },
+  go: {
+    setupCommand: 'go mod tidy',
+    testCommand: 'go build ./... && go vet ./...',
+    timeoutMs: 180_000,
+  },
+  python: {
+    // muffle-ok: setup is best-effort — if requirements.txt is
+    // absent, skip install. The testCommand (compileall) still
+    // fail-louds on syntax errors regardless of install outcome.
+    setupCommand: '[ -f requirements.txt ] && pip install -r requirements.txt || true', // muffle-ok: best-effort install; compileall is the real gate
+    testCommand: 'python -m compileall -q .',
+    timeoutMs: 120_000,
+  },
+  solidity: {
+    // muffle-ok: forge install is best-effort; if deps are vendored
+    // it may not be needed. `forge build` is the real gate.
+    setupCommand: 'forge install --no-git || true', // muffle-ok: setup is best-effort; forge build is the real gate
+    testCommand: 'forge build',
+    timeoutMs: 180_000,
+  },
+  move: {
+    setupCommand: '',
+    testCommand: 'aptos move compile --dev',
+    timeoutMs: 300_000,
+  },
+}
+
+/**
  * Build the harness config for a family based on its taxonomy.language.
  * The resolved setup/test commands run inside the composed tempdir, so
  * the agent-eval SandboxHarness can subprocess-invoke them.
  *
- * Keep this table in sync with the registry's families — when a new
- * language surface lands (e.g. a Zig family), add a dispatch here.
+ * Throws on unknown language — the previous fallback (`testCommand:
+ * 'true'`) silent-passed any family whose language wasn't in the
+ * dispatch, which is the muffled-gate shape Gen 9 closes. Callers
+ * that want to tolerate unknown languages must handle the throw
+ * explicitly.
  */
 export function makeHarnessConfig(components: ResolvedComponents): HarnessConfig {
   const language = components.family.taxonomy?.language ?? 'unknown'
-  const surface = components.family.taxonomy?.surface ?? 'unknown'
-
-  switch (language) {
-    case 'typescript':
-    case 'javascript':
-      // pnpm for the foundry-native JS projects. `--frozen-lockfile` off:
-      // composed scaffolds don't carry a pnpm-lock.yaml; fresh install.
-      return {
-        setupCommand: 'pnpm install --prefer-offline',
-        testCommand: surface === 'contracts'
-          ? 'pnpm run validate || pnpm run build || true'
-          : 'pnpm run validate || pnpm run build || true',
-        timeoutMs: 180_000,
-      }
-    case 'rust':
-      // Cargo workspace handling — `cargo check` is far cheaper than
-      // `cargo build --release` and catches the same class of errors
-      // (resolve + typecheck). Users running real builds can override.
-      return {
-        setupCommand: 'cargo fetch',
-        testCommand: 'cargo check --workspace || cargo check',
-        timeoutMs: 300_000,
-      }
-    case 'go':
-      return {
-        setupCommand: 'go mod tidy',
-        testCommand: 'go build ./... && go vet ./...',
-        timeoutMs: 180_000,
-      }
-    case 'python':
-      return {
-        // pip install -e would need a venv; most python starters ship a
-        // requirements.txt or pyproject.toml. Use a light import smoke.
-        setupCommand: '[ -f requirements.txt ] && pip install -r requirements.txt || true',
-        testCommand: 'python -m compileall -q .',
-        timeoutMs: 120_000,
-      }
-    case 'solidity':
-      return {
-        setupCommand: 'forge install --no-git || true',
-        testCommand: 'forge build',
-        timeoutMs: 180_000,
-      }
-    case 'move':
-      return {
-        setupCommand: '',
-        testCommand: 'aptos move compile --dev',
-        timeoutMs: 300_000,
-      }
-    default:
-      // Unknown language — run only the family's `validate-*` script if
-      // present. Never block the eval; return a no-op test.
-      return {
-        setupCommand: '',
-        testCommand: 'true',
-        timeoutMs: 60_000,
-      }
+  const config = HARNESS_CONFIGS[language]
+  if (!config) {
+    throw new Error(
+      `makeHarnessConfig: unsupported taxonomy.language '${language}'. ` +
+      `Add it to HARNESS_CONFIGS in src/eval/scaffold-bridge.ts with a ` +
+      `strict (fail-loud) testCommand before composing a scaffold for it.`,
+    )
   }
+  return config
 }
 
 // ──────────────────────────────────────────────────────────────────
@@ -382,7 +403,15 @@ export async function prepareScaffoldForEval(args: {
   }
 
   const snapshot = snapshotScaffold(scaffoldDir)
-  const harness = makeHarnessConfig(args.components)
+  // cwd MUST be baked into the harness at preparation time. agent-eval's
+  // SubprocessSandboxDriver.exec reads cwd from the per-call HarnessConfig,
+  // NOT from the driver constructor (see agent-eval@0.7.0 — Gen 8b bug).
+  // Returning the harness without cwd forces every caller to remember to
+  // spread it in, and historical evidence says that fails — the runtime
+  // eval path in scripts/agent-eval-scaffold.mjs (pre-Round-0) had the
+  // same construct-vs-call bug Gen 8b fixed in the promoters. Bake it in
+  // here so the muffled gate is structurally impossible at this seam.
+  const harness = { ...makeHarnessConfig(args.components), cwd: scaffoldDir }
   const assertions = manifestComplianceAssertions(args.components)
 
   return {

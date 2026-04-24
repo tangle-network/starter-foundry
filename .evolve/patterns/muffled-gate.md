@@ -1,10 +1,9 @@
 # Pattern: Muffled Gate
 
 **Named in:** Gen 9 (2026-04-24)
-**Enforced by:** `tests/muffled-gate-invariant.test.ts`
+**Enforced by:** `tests/muffled-gate-invariant.test.ts` (gating layer) +
+`tests/proposal-rate-measurement.test.ts` + `tests/agent-eval-cost-tracking.test.ts` (measurement layer)
 **Escape hatch:** `// muffle-ok: <reason>` inline annotation
-**Sibling pattern:** [lying-metric.md](lying-metric.md) — same shape
-(silent failure), different layer (measurement vs gating)
 
 ## Shape
 
@@ -131,3 +130,29 @@ a proposal and returns pass/fail):
 
 If any answer reveals a muffle, fix it before merging. The invariant
 test catches #1, #3, #4, #5 mechanically; #2 needs human review.
+
+## Measurement-layer variant
+
+Same shape in a different layer. A gate that fails silently ships bad
+code; a METRIC that fails silently points optimization at the wrong
+thing. R2-C arc (2026-04-24) fixed 4 instances:
+
+| Sub-shape | Location | Closed in |
+|---|---|---|
+| Denominator pollution | `proposal_promotion_rate` — test-fixture events counted as real failures (108/114) | PR #59: `STARTER_FOUNDRY_SYNTHETIC_RUN=1` env gate + fixture-id filter |
+| Event-level double-counting | Same metric — reverted-then-re-promoted ids counted 2× | PR #59: `latestByIdPromote` — unique id outcomes |
+| Silent-fail aggregator | `costTracker.getSummary?.() ?? {}` — method name typo, optional chain silent-returns undefined | PR #61: `.summary()` correct name |
+| Never recorded | `costTracker` created but `.record()` never called | PR #61: record per-seed from `invokeMetaJudge.usage` |
+
+Honest-null flows (deliberately unmeasured, documented in
+`refresh-scorecard.mjs`): `cost_usd_per_buildout`,
+`agent_eval_meta_pass_rate`. These are RED on the scorecard because
+target > null, but the null is the signal, not a bug. Document-and-
+leave is correct; fabricating a number is the actual failure mode.
+
+Rules for measurement flows (complementing the gate checklist):
+- Probe the raw data before trusting the aggregate.
+- Ratios dedupe by entity, not event.
+- Test runs must not write to production logs (env-gate at write time).
+- Optional chains on required method calls are lying by default — call
+  directly and let the error fire.

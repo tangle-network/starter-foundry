@@ -15,3 +15,11 @@ remappings_version = false
 
 [dependencies]
 tnt-core = "0.10.6"
+
+# forge lint — match forge-foundation's ruleset so blueprint scaffolds
+# don't trip the VB "lint" layer on info-severity naming conventions.
+# See registry/layers/framework/forge-foundation/files/foundry.toml for
+# the shipped-incident rationale (R1: 14/14 dex-swap failures).
+[lint]
+severity = ["high", "med", "gas"]
+ignore = ["contracts/test/**/*", "contracts/script/**/*"]

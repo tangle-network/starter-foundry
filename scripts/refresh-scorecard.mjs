@@ -520,6 +520,29 @@ const flows = [
       },
     ]
   })(),
+  // Consumer-feedback flow — fraction of consumer (BA / vibecoder) failures
+  // attributable to SF (routing-error + scaffold-gap) vs agent-error /
+  // unknown. Null when no consumer has plugged in yet. Lower is better:
+  // when the consumer fails, we want it to be the agent's fault, not
+  // ours. Read from .evolve/vb-feedback/latest.json — written by
+  // scripts/consume-vb-feedback.mjs against any consumer source.
+  ...(() => {
+    const fbPath = join(REPO, '.evolve/vb-feedback/latest.json')
+    if (!existsSync(fbPath)) return []
+    let fb
+    try { fb = JSON.parse(readFileSync(fbPath, 'utf8')) } catch { return [] }
+    return [
+      {
+        name: 'consumer_scaffold_attributable_rate',
+        value: typeof fb.scaffoldAttributableRate === 'number'
+          ? Number(fb.scaffoldAttributableRate.toFixed(4))
+          : null,
+        target: 0.20,
+        productValueClaim: 'Of all consumer-side (e.g. blueprint-agent) leaf failures, the fraction whose root cause was SF (routing-error or scaffold-gap) rather than agent-side. Lower means SF is a smaller part of the consumer\'s failure surface — the right product direction.',
+        direction: 'lower-better',
+      },
+    ]
+  })(),
 ]
 
 const aggregate = (() => {

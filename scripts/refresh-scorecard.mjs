@@ -543,6 +543,67 @@ const flows = [
       },
     ]
   })(),
+  // Gen 10: judge-fleet flow — fraction of recent agent-eval scaffold runs
+  // where ALL fleet judges (compiler + test + lint + security) verdicted
+  // pass. Stricter than mean meta-score: a single Goodharted judge can't
+  // inflate this. Null until a fleet run lands in three-layer-report.json.
+  ...(() => {
+    const reportDirsRoot = join(REPO, '.evolve/agent-eval')
+    if (!existsSync(reportDirsRoot)) return []
+    const dirs = readdirSync(reportDirsRoot)
+      .filter((d) => /^\d{4}-\d{2}-\d{2}/.test(d))
+      .sort()
+      .reverse()
+    if (dirs.length === 0) return []
+    const reportPath = join(reportDirsRoot, dirs[0], 'three-layer-report.json')
+    if (!existsSync(reportPath)) return []
+    let report
+    try { report = JSON.parse(readFileSync(reportPath, 'utf8')) } catch { return [] }
+    const projects = report.projects ?? []
+    const withFleet = projects.filter((p) => Array.isArray(p.fleetByJudge))
+    if (withFleet.length === 0) return [{
+      name: 'judge_fleet_unanimous_pass_rate',
+      value: null,
+      target: 0.85,
+      productValueClaim: 'Fraction of agent-eval scaffold runs where every fleet judge (compiler + test + lint + security) verdicted pass. Null until a fleet-mode run produces a report. Stricter than mean meta-score — orthogonal validation no single judge can Goodhart.',
+      direction: 'higher-better',
+    }]
+    const allPass = withFleet.filter((p) => p.fleetByJudge.length > 0 && p.fleetByJudge.every((j) => j.passed)).length
+    return [{
+      name: 'judge_fleet_unanimous_pass_rate',
+      value: Number((allPass / withFleet.length).toFixed(4)),
+      target: 0.85,
+      productValueClaim: 'Fraction of agent-eval scaffold runs where every fleet judge (compiler + test + lint + security) verdicted pass. Stricter than mean meta-score — orthogonal validation no single judge can Goodhart.',
+      direction: 'higher-better',
+    }]
+  })(),
+  // Gen 10: auto-dispatched fix PR rate — fraction of dispatch-fix actions
+  // (from auto-loop.jsonl) that successfully passed gates and would have
+  // opened a PR vs ones that parked. Higher = agent's fix proposals
+  // surviving the validation gates. Null until 5+ dispatches have run
+  // (small N noise).
+  ...(() => {
+    const logPath = join(REPO, '.evolve/auto-loop.jsonl')
+    if (!existsSync(logPath)) return []
+    const lines = readFileSync(logPath, 'utf8').trim().split('\n')
+    const dispatches = lines.map((l) => { try { return JSON.parse(l) } catch { return null } })
+      .filter((e) => e && e.action === 'dispatch-fix' && e.outcome)
+    if (dispatches.length < 5) return [{
+      name: 'auto_dispatched_fix_pr_rate',
+      value: null,
+      target: 0.50,
+      productValueClaim: 'Fraction of agent-dispatched scaffold-fix attempts that pass all validation gates (schema + compose + judge fleet + sandbox harness) and would open a PR. Null until ≥5 dispatches recorded — avoid false signal from small N.',
+      direction: 'higher-better',
+    }]
+    const succeeded = dispatches.filter((e) => e.outcome.success === true).length
+    return [{
+      name: 'auto_dispatched_fix_pr_rate',
+      value: Number((succeeded / dispatches.length).toFixed(4)),
+      target: 0.50,
+      productValueClaim: 'Fraction of agent-dispatched scaffold-fix attempts that pass all validation gates (schema + compose + judge fleet + sandbox harness) and would open a PR. Higher = agent fix proposals surviving the validation surface; expected baseline ~0.5 because gates correctly reject half.',
+      direction: 'higher-better',
+    }]
+  })(),
 ]
 
 const aggregate = (() => {

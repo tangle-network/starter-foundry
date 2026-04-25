@@ -6,12 +6,15 @@
 // schedule; each run makes at most one change OR surfaces a clear
 // "needs-operator" reason.
 //
-// Actions it can take autonomously (no LLM required):
+// Actions it can take autonomously:
 //   - refresh-scorecard       (always safe; reruns the measurement derivation)
 //   - probe-red-flow          (greps local traces for new signal on a RED flow)
 //   - probe-vb-feedback       (reads consumer's VB output, attributes failures
 //                              to scaffold-side vs agent-side — see
 //                              scripts/consume-vb-feedback.mjs)
+//   - dispatch-fix            (Gen 10: agent dispatch against top SF-attributable
+//                              cluster — gated on SF_AUTO_DISPATCH=1, rate-limited
+//                              to once per hour, hard $/iter/wall budget)
 //   - park                    (no new signal; write a parked record, exit)
 //
 // Actions it NEVER takes (needs operator):
@@ -130,11 +133,54 @@ function decide() {
     }
   }
 
+  // Gen 10: dispatch-fix — agent-driven cluster fix. Conditions: opt-in
+  // env, fresh consumer feedback exists, SF-attributable rate above
+  // target, ≥1 cluster has ≥3 failures, and at least 1 hour since last
+  // dispatch (rate-limit). Defaults default-off because each dispatch
+  // spends LLM budget; operator opts in explicitly.
+  const dispatchAllowed = process.env.SF_AUTO_DISPATCH === '1'
+  if (dispatchAllowed && existsSync(VB_FEEDBACK_LATEST)) {
+    const fb = (() => {
+      try { return JSON.parse(readFileSync(VB_FEEDBACK_LATEST, 'utf8')) } catch { return null }
+    })()
+    if (fb && typeof fb.scaffoldAttributableRate === 'number') {
+      const targetFlow = card?.flows?.find((f) => f.name === 'consumer_scaffold_attributable_rate')
+      const target = targetFlow?.target ?? 0.20
+      const above = fb.scaffoldAttributableRate > target
+      const clusters = [
+        ...Object.entries(fb.topScaffoldGaps ?? {}),
+        ...Object.entries(fb.topRoutingErrors ?? {}),
+      ]
+      const topClusterCount = clusters.length > 0 ? Math.max(...clusters.map(([, n]) => Number(n))) : 0
+      const lastDispatch = lastDispatchTs()
+      const hoursSinceLast = (Date.now() - lastDispatch) / 3_600_000
+      if (above && topClusterCount >= 3 && hoursSinceLast >= 1) {
+        return {
+          action: 'dispatch-fix',
+          reason: `attributable=${(fb.scaffoldAttributableRate * 100).toFixed(1)}% > ${(target * 100).toFixed(0)}%, top cluster has ${topClusterCount} failures, ${hoursSinceLast.toFixed(1)}h since last dispatch`,
+          target: 'top-cluster',
+        }
+      }
+    }
+  }
+
   return {
     action: 'probe-red-flow',
     reason: `${reds.length} RED flows, fresh data (${ageH.toFixed(1)}h)`,
     target: reds[0].name,
   }
+}
+
+function lastDispatchTs() {
+  if (!existsSync(LOG)) return 0
+  const lines = readFileSync(LOG, 'utf8').trim().split('\n').slice(-50)
+  for (let i = lines.length - 1; i >= 0; i--) {
+    try {
+      const e = JSON.parse(lines[i])
+      if (e.action === 'dispatch-fix') return Date.parse(e.ts) || 0
+    } catch { /* skip */ }
+  }
+  return 0
 }
 
 // ── actions ──────────────────────────────────────────────────────────
@@ -177,6 +223,28 @@ function probeRedFlow(flowName) {
   }
 }
 
+function dispatchFix() {
+  // Gate: only proceed when opt-in env is set. The decide() guard
+  // already checks this; defense in depth.
+  if (process.env.SF_AUTO_DISPATCH !== '1') {
+    return { success: false, error: 'SF_AUTO_DISPATCH not set; refusing to spend LLM budget without explicit opt-in' }
+  }
+  try {
+    const out = execSync('node scripts/dispatch-scaffold-fix.mjs', {
+      cwd: REPO,
+      encoding: 'utf8',
+      timeout: 11 * 60_000, // dispatch budget is 10min wall; +1min slack
+      env: { ...process.env, SF_AUTO_DISPATCH: '1' },
+    })
+    // Last line is JSON outcome from dispatch-scaffold-fix.
+    const lastJson = out.trim().split('\n').reverse().find((l) => l.startsWith('{')) ?? '{}'
+    const outcome = JSON.parse(lastJson)
+    return { success: outcome.success === true, ...outcome }
+  } catch (err) {
+    return { success: false, error: String(err.message ?? err).slice(0, 500) }
+  }
+}
+
 function probeVbFeedback() {
   // Delegate to consume-vb-feedback.mjs; capture stdout summary line +
   // read the resulting latest.json for structured output.
@@ -213,6 +281,8 @@ async function main() {
     entry.outcome = probeRedFlow(decision.target)
   } else if (decision.action === 'probe-vb-feedback') {
     entry.outcome = probeVbFeedback()
+  } else if (decision.action === 'dispatch-fix') {
+    entry.outcome = dispatchFix()
   } else if (decision.action === 'park') {
     entry.outcome = { success: true, parked: true }
   }

@@ -1,13 +1,16 @@
 # CHANGELOG
 
-## v0.7.1 (2026-04-24, @ 910d4a2)
+## v0.7.2 (2026-04-25, @ 1f504fc)
 
 **Generated range:** `v0.7.0..HEAD`
 
 ### New capabilities
 - `capability:agent-eval` — Ships a reproducible agent-eval harness into the scaffold: starter scenarios, a deterministic + optional LLM-judge runner that talks to the 
 
-### Commits (30)
+### Commits (33)
+- feat(gen10): agentic-dispatch closed loop — judge fleet + dispatch + auto-loop wiring (#70) (1f504fc)
+- feat(consume-vb-feedback): augment any vibecoder — first scaffold-side attribution loop (#69) (c8322b6)
+- chore: bump to 0.7.1 — agent-eval 0.7.2 consumption + Gen 8-9 arc (#68) (6c58533)
 - refactor: consume agent-eval 0.7.2 primitives (−342 net lines) (#67) (910d4a2)
 - feat(auto-loop): headless governor — one decision per invocation, cron-friendly (#66) (19ee723)
 - chore(cleanup): finish the cut PR #64 missed — progress.md 990→48 + muffled-gate §Measurement (#65) (dce2ce9)

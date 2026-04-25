@@ -47,6 +47,12 @@ const CONSUMER = arg('consumer', 'unknown')
 const SINCE_GEN = Number(arg('since-gen', '0'))
 const DRY_RUN = process.argv.includes('--dry-run')
 const QUIET = process.argv.includes('--quiet')
+// Gen 10: when heuristic returns `unknown`, optionally fall through to a
+// brief LLM verdict. Costly per-session, so off by default. Set
+// SF_VB_LLM_FALLBACK=1 to enable. The fallback asks createLlmReviewer for a
+// scaffold-vs-agent verdict on JUST the unknown sessions; pass/scaffold-
+// gap/agent-error still come from the heuristic (cheap, deterministic).
+const LLM_FALLBACK = process.env.SF_VB_LLM_FALLBACK === '1'
 
 if (!SOURCE) {
   console.error('Usage: consume-vb-feedback --source <path> [--consumer <name>] [--since-gen N] [--dry-run]')
@@ -87,6 +93,51 @@ function listSessions(root) {
   return sessions
 }
 
+// ── LLM fallback for unknown bucket (Gen 10) ─────────────────────────
+
+let _llmReviewer = null
+
+async function llmVerdictForUnknown(session, scaffold, verifyShots) {
+  if (!LLM_FALLBACK) return null
+  if (!_llmReviewer) {
+    try {
+      const { createLlmReviewer } = await import('@tangle-network/agent-eval')
+      const { createLLM } = await import('../dist/lib/llm.js')
+      const llm = createLLM()
+      _llmReviewer = createLlmReviewer({
+        llm,
+        rubric: 'Classify a single coding-agent session as scaffold-side or agent-side fault. ' +
+          'Output JSON: { "verdict": "scaffold-gap" | "agent-error" | "pass" | "unknown", "reason": "<short>" }. ' +
+          'pass = the session succeeded. scaffold-gap = the SF scaffold provided wrong/missing content forcing rewrite. ' +
+          'agent-error = SF scaffold was sound; the coding agent broke it. unknown = signal genuinely insufficient.',
+      })
+    } catch {
+      return null // LLM not available; honest-skip
+    }
+  }
+  try {
+    const verdict = await _llmReviewer.review({
+      input: JSON.stringify({
+        leafId: session.leafId,
+        verticalId: session.verticalId,
+        outcome: session.outcome,
+        scaffold,
+        verifyShotsSummary: verifyShots.map((v) => ({
+          allPass: v?.allPass,
+          layers: (v?.layers ?? []).map((l) => ({ layer: l.layer, status: l.status, findings: (l.findings ?? []).slice(0, 3) })),
+        })),
+      }),
+    })
+    if (typeof verdict === 'object' && verdict?.verdict) {
+      const valid = ['scaffold-gap', 'agent-error', 'pass', 'unknown']
+      if (valid.includes(verdict.verdict)) return verdict
+    }
+    return null
+  } catch {
+    return null
+  }
+}
+
 // ── attribution ──────────────────────────────────────────────────────
 
 /**
@@ -119,7 +170,7 @@ function listSessions(root) {
  *
  *   6. anything else → agent-error (scaffold composed, agent broke it)
  */
-function attribute(sessionDir) {
+async function attribute(sessionDir) {
   const manifest = readJson(join(sessionDir, 'manifest.json'))
   if (!manifest) return null
 
@@ -170,6 +221,16 @@ function attribute(sessionDir) {
     }
   }
 
+  // Gen 10: optionally consult LLM reviewer for sessions that landed in
+  // `unknown`. Heuristic-first, agent-only-on-edge-case.
+  if (attribution === 'unknown' && LLM_FALLBACK) {
+    const v = await llmVerdictForUnknown(manifest, scaffold, verifyShots)
+    if (v && v.verdict !== 'unknown') {
+      attribution = v.verdict
+      signals.push(`llm-fallback: ${v.reason}`)
+    }
+  }
+
   return {
     leafId: manifest.leafId,
     verticalId: manifest.verticalId,
@@ -199,7 +260,7 @@ if (!QUIET) console.error(`scanning ${sessions.length} session dirs under ${SOUR
 
 const results = []
 for (const dir of sessions) {
-  const r = attribute(dir)
+  const r = await attribute(dir)
   if (!r) continue
   if (r.generation < SINCE_GEN) continue
   results.push(r)

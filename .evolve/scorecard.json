@@ -1,8 +1,8 @@
 {
   "product": "starter-foundry",
-  "timestamp": "2026-04-24T19:19:58.334Z",
-  "coverage": "20/22 flows measured",
-  "aggregate": 0.649,
+  "timestamp": "2026-04-25T02:44:59.912Z",
+  "coverage": "21/25 flows measured",
+  "aggregate": 0.618,
   "inputs": [
     {
       "path": ".evolve/buildout-analysis.json",
@@ -18,7 +18,7 @@
     },
     {
       "path": ".evolve/buildout-analysis-internal.json",
-      "mtime": "2026-04-24T19:19:57.771Z"
+      "mtime": "2026-04-24T20:18:10.870Z"
     },
     {
       "path": ".evolve/agent-eval/2026-04-23/three-layer-report.json",
@@ -209,6 +209,30 @@
       "target": 0.85,
       "status": "unmeasured",
       "productValueClaim": "Mean LLM-judge meta_score on scaffold quality — correctness + completeness + idiomatic layout + production-readiness per the scaffold rubric. Null when judge disabled (--no-judge) or no runs yet.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "consumer_scaffold_attributable_rate",
+      "value": 0.7674,
+      "target": 0.2,
+      "status": "fail",
+      "productValueClaim": "Of all consumer-side (e.g. blueprint-agent) leaf failures, the fraction whose root cause was SF (routing-error or scaffold-gap) rather than agent-side. Lower means SF is a smaller part of the consumer's failure surface — the right product direction.",
+      "direction": "lower-better"
+    },
+    {
+      "name": "judge_fleet_unanimous_pass_rate",
+      "value": null,
+      "target": 0.85,
+      "status": "unmeasured",
+      "productValueClaim": "Fraction of agent-eval scaffold runs where every fleet judge (compiler + test + lint + security) verdicted pass. Null until a fleet-mode run produces a report. Stricter than mean meta-score — orthogonal validation no single judge can Goodhart.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "auto_dispatched_fix_pr_rate",
+      "value": null,
+      "target": 0.5,
+      "status": "unmeasured",
+      "productValueClaim": "Fraction of agent-dispatched scaffold-fix attempts that pass all validation gates (schema + compose + judge fleet + sandbox harness) and would open a PR. Null until ≥5 dispatches recorded — avoid false signal from small N.",
       "direction": "higher-better"
     }
   ]

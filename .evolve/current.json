@@ -1,57 +1,35 @@
 {
   "mode": "evolve",
-  "goal": "buildout_pass_rate 0.693 → 0.85",
-  "status": "r1-diagnosed-blocked",
-  "round": 1,
-  "r1Result": {
-    "verdict": "PARTIAL/BLOCKED",
-    "finding": "65 failing buildouts split: 34 VB-pipeline zero-turn (out of scope) + 31 scaffold-side (in scope). Top cluster: dex-swap/ethereum-l1 = 14 runs all fail on lint layer at blendedScore=0.868. Same workspace shape (react-vite-ts+forge-contracts) as nft-mint-page/ethereum-l1 which passes 16/16 — so it's content-shape, not scaffold, specific to DEX swap patterns.",
-    "blocker": "Lint layer is defined on VB side; starter-foundry only has failing-layer names, no stderr. Shipping a guessed ESLint rule without the error string = permutation debugging (CLAUDE.md forbids >2 speculative commits).",
-    "handoff": "Either (a) re-measure with fresh VB sweep post-Gen-9 (buildout data is 4 days stale, Gen 9+R0 structural fixes may already have moved numbers), or (b) share one dex-swap/ethereum-l1/lint stderr tail so Round 2 can target, or (c) pivot to zk-mixer-ui/ethereum-l1/semantic (+3.8pp ROI, registry-side fixable locally).",
-    "diagnosisDoc": ".evolve/progress-r1-buildout-diagnosis.md"
-  },
-  "round0Result": {
-    "finding": "Runtime scaffold-eval path (scripts/agent-eval-scaffold.mjs) had the same construct-vs-call cwd bug Gen 8b fixed in the promoters. Gen 9's invariant didn't scan this file.",
-    "probe": "synthetic TS-error scaffold shipped via prepareScaffoldForEval → BuilderSession. Pre-fix: passed=true exitCode=0. Post-fix: passed=false exitCode=2 with TS2322 in stdout.",
-    "fixShape": "structural — prepareScaffoldForEval bakes cwd into returned harness; scripts/agent-eval-scaffold.mjs driver takes no cwd; invariant scanner gains findConstructorCwdDropped + scripts/agent-eval-scaffold.mjs in scan list.",
-    "testsAdded": 1,
-    "testTotal": "700 → 701"
-  },
-  "generation": 9,
+  "goal": "Gen 10 agentic-dispatch shipped — judge fleet + dispatch-scaffold-fix + auto-loop closure",
+  "status": "gen-10-shipped",
+  "round": 0,
+  "generation": 10,
   "activePursuit": null,
-  "lastPursuit": ".evolve/pursuits/2026-04-24-muffled-gate-audit.md",
-  "updatedAt": "2026-04-24T06:15:00Z",
+  "lastPursuit": ".evolve/pursuits/2026-04-25-gen10-agentic-dispatch.md",
+  "updatedAt": "2026-04-25T02:30:00Z",
   "priorGenerations": [
-    { "n": 6, "pursuit": "generation-flywheel", "commit": "17347c1" },
-    { "n": 7, "pursuit": "multi-pursue-r4-partner-first-router", "commit": "518bf50" },
     { "n": 8, "pursuit": "compile-gate", "commit": "07b54c3" },
     { "n": "8b", "pursuit": "promoter-cwd-plumbing", "commit": "8419c8a" },
-    { "n": 9, "pursuit": "muffled-gate-audit", "commit": "pending" }
+    { "n": 9, "pursuit": "muffled-gate-audit", "commit": "2e5551a" },
+    { "n": 10, "pursuit": "agentic-dispatch", "commit": "pending" }
   ],
-  "gen8bResult": {
-    "thesis": "Gen 8's strict tsc --noEmit was silent no-op because promoter passed cwd to driver constructor (agent-eval 0.7.0 only reads config.cwd). Fix: spread cwd into HarnessConfig.",
-    "verified": "probe with verified TS2345 error pre-fix promoted at score=1.00; post-fix rejected at gate=compose-pass with build score=0.00 + full error in validation-errors.json. zk-mixer-ui draft (6 hallucinated imports) now correctly blocked.",
-    "testsAdded": 3,
-    "agentEvalPR": "tangle-network/agent-eval#4 — constructor-cwd fallback in SubprocessSandboxDriver"
-  },
-  "gen9Result": {
-    "thesis": "Replace the case-by-case muffled-gate fix pattern with a structural invariant — one source-of-truth HARNESS_CONFIGS table + code-grep invariant test that mechanically fails CI on any new muffled gate in scanned files",
-    "filesChanged": 7,
-    "filesAdded": 2,
-    "testsAdded": 4,
-    "testTotal": "694 → 700 (with Gen 8b behavioral guard from main)",
-    "liveMuffledGates": "7 → 0 (5 fixed, 2 annotated with muffle-ok:)",
-    "regressionGuardProven": "restoring `|| true` in HARNESS_CONFIGS.typescript.testCommand immediately fails invariant with exact file:line",
-    "phase15Gate": "one yes (>5 files) — adversarial review completed, 5 perspectives, 0 blocks"
+  "gen10Result": {
+    "thesis": "SF transitions from heuristic-driven to agent-dispatch-driven loop. Three coordinated changes: judge fleet replaces single judge, agent dispatches fixes against consumer-feedback clusters, auto-loop wires it.",
+    "changes": [
+      "src/eval/scaffold-bridge.ts: invokeJudgeFleet (compiler+test+linter+security parallel) — orthogonal validation",
+      "scripts/dispatch-scaffold-fix.mjs: agentic loop closure via tcloud-agent, gated on SF_AUTO_DISPATCH=1",
+      "scripts/auto-loop.mjs: dispatch-fix action with rate-limit + budget",
+      "scripts/consume-vb-feedback.mjs: optional LLM fallback for unknown bucket (SF_VB_LLM_FALLBACK=1)",
+      "scripts/refresh-scorecard.mjs: judge_fleet_unanimous_pass_rate + auto_dispatched_fix_pr_rate flows",
+      "Deleted 4 truly-orphan scripts: mine-template-rewrites, relabel-corpus, variant_b-collect-traces, variant_b-flow"
+    ],
+    "scorecardFlowsAdded": ["judge_fleet_unanimous_pass_rate", "auto_dispatched_fix_pr_rate"],
+    "envGates": ["SF_AUTO_DISPATCH=1 to enable agent dispatch", "SF_VB_LLM_FALLBACK=1 to enable LLM unknown-bucket fallback"],
+    "phase15Gate": "BLOCKING — adversarial review completed, 5 perspectives, 0 blocks"
   },
   "scorecard": {
-    "aggregate": 0.605,
-    "note": "Gen 9 is structural, not metric-moving. Its cash-out is in the NEXT autonomous proposer run — bad proposals that would have silent-passed the runtime eval now fail loud at proposal time. /evolve Round 0 will measure the rejection rate delta."
+    "aggregate": "see .evolve/scorecard.json",
+    "note": "Gen 10 is architectural — adds two new flows, doesn't move existing ones until first dispatch run lands. Real measurement requires SF_AUTO_DISPATCH=1 + tcloud creds + agent-eval scaffold run with --judge-fleet."
   },
-  "gen10Seeds": [
-    "Expand invariant scanner to catch the general default-missing-to-permissive pattern (not just 'starter'/'workspace' literals)",
-    "Moonshot revisit: dependently-typed gate AST if Gen 10 reveals the regex invariant is leaky",
-    "Apply pattern-document convention to other recurring anti-patterns (shipped-but-unwired, construct-vs-call)"
-  ],
-  "handoff": "Run /evolve against the next nightly autonomous proposer run. Expected: runtime-eval muffled-gate bugs that survived Gen 8b (promoter-only fix) now fail at proposal time."
+  "handoff": "Run /evolve targeting consumer_scaffold_attributable_rate (current 0.77, target 0.20) by enabling SF_AUTO_DISPATCH=1 and running auto-loop on a cron. Each dispatch attacks the top SF-attributable cluster; success measured by auto_dispatched_fix_pr_rate over time."
 }

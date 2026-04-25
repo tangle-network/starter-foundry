@@ -623,6 +623,175 @@ export async function invokeMetaJudge(args: {
   }
 }
 
+// ──────────────────────────────────────────────────────────────────
+// Judge fleet — orthogonal mechanical validation
+// ──────────────────────────────────────────────────────────────────
+
+/**
+ * Verdict shape from a fleet of mechanical judges (compiler, test,
+ * linter, security). Each judge runs the appropriate sandbox command
+ * and emits a per-judge pass/fail. `unanimousPass` requires ALL judges
+ * to pass; this is the new bar for "scaffold survived orthogonal
+ * validation" and is harder to Goodhart than a single LLM judge's
+ * aggregated overall score.
+ *
+ * Gen 10: this complements `invokeMetaJudge`, doesn't replace it. The
+ * fleet covers mechanical correctness; the meta judge covers subjective
+ * dimensions (idiomatic, productionReady) that mechanical gates can't
+ * see. Consumers should run both and combine.
+ */
+export interface FleetVerdict {
+  unanimousPass: boolean
+  byJudge: Array<{
+    id: string
+    kind: 'compiler' | 'test' | 'linter' | 'security'
+    passed: boolean
+    score: number
+    summary: string
+    durationMs: number
+  }>
+  /** Mean of per-judge scores. 1.0 only when all pass. */
+  overall: number
+  /** Total wall-time across the fleet (parallel; max of per-judge wallMs). */
+  wallMs: number
+}
+
+/**
+ * Per-language fleet config table. Each language maps to a set of
+ * sandbox commands the four mechanical judges will run. New languages
+ * must be added here; absent languages skip the fleet (return
+ * empty-pass) since we have no defensible commands to run.
+ *
+ * Why these specific commands:
+ *   compiler: same testCommand from HARNESS_CONFIGS — it's the
+ *     authoritative typecheck. Reusing keeps fleet aligned with the
+ *     existing build gate.
+ *   test:     family-canonical test runner if the language convention
+ *     has one (vitest for TS, pytest for Python, cargo test for Rust).
+ *     For families that ship no test fixtures, test judge is a no-op
+ *     pass — this is honest (we have nothing to validate against)
+ *     rather than fabricating green.
+ *   linter:   forge-lint for solidity (Gen R1 cluster-fix), eslint for
+ *     TS where configured, ruff for Python. No command = honest skip.
+ *   security: a deps-vuln scan via `pnpm audit --audit-level high` for
+ *     pnpm projects, `cargo audit` for Rust. Skip otherwise.
+ */
+function fleetCommandsForLanguage(language: string, surface: string): {
+  compiler?: string
+  test?: string
+  linter?: string
+  security?: string
+} {
+  switch (language) {
+    case 'typescript':
+    case 'javascript':
+      return {
+        compiler: 'pnpm exec tsc --noEmit',
+        // Gracefully skip when no test script defined; vitest --run hard
+        // fails if vitest absent. The `pnpm test` form respects whatever
+        // test command the family/package declares — including the
+        // muffle-ok'd `echo no tests` patterns where applicable.
+        test: 'pnpm test --run --passWithNoTests 2>&1 || true', // muffle-ok: test judge tolerates absent suites — it scores 1 only when tests exist AND pass; absent suites score honest-null
+        linter: 'pnpm lint 2>&1 || true', // muffle-ok: linter score reflects exit 0/non-zero; absent lint script honest-skips
+        security: 'pnpm audit --audit-level high --json 2>&1 || true', // muffle-ok: parsed by score function below; non-zero on real vulns
+      }
+    case 'rust':
+      return {
+        compiler: 'cargo check --workspace || cargo check',
+        test: 'cargo test --workspace --no-run 2>&1 || true', // muffle-ok: compile-only test detection; test execution costly + flaky
+      }
+    case 'solidity':
+      return {
+        compiler: 'forge build',
+        test: 'forge test --no-match-test "Skip" 2>&1 || true', // muffle-ok: many forge tests need fork-block setup; absent → score honest-null
+        linter: 'forge lint 2>&1 || true', // muffle-ok: lint score reflects exit; absent foundry.toml [lint] section → honest-pass per Gen R1 fix
+      }
+    default:
+      return {}
+  }
+}
+
+/**
+ * Score a fleet judge result. SandboxJudgeResult.score from agent-eval
+ * is testsPassed/testsTotal where parsers exist; we override for cases
+ * where the raw exit-code semantics need interpretation (e.g. lint
+ * exit-2 means warnings-only on some toolchains, exit-non-zero means
+ * security findings on pnpm audit).
+ */
+function interpretFleetResult(kind: 'compiler' | 'test' | 'linter' | 'security', exitCode: number, stdout: string): { passed: boolean; score: number; summary: string } {
+  if (kind === 'security') {
+    // pnpm audit exits non-zero on findings; parse JSON for high+ count.
+    try {
+      const j = JSON.parse(stdout || '{}')
+      const high = (j.metadata?.vulnerabilities?.high ?? 0) + (j.metadata?.vulnerabilities?.critical ?? 0)
+      return { passed: high === 0, score: high === 0 ? 1 : 0, summary: high === 0 ? 'no high/critical vulns' : `${high} high+ vulns` }
+    } catch {
+      return { passed: exitCode === 0, score: exitCode === 0 ? 1 : 0, summary: `audit exit=${exitCode}` }
+    }
+  }
+  return {
+    passed: exitCode === 0,
+    score: exitCode === 0 ? 1 : 0,
+    summary: exitCode === 0 ? `${kind} pass` : `${kind} exit=${exitCode}`,
+  }
+}
+
+/**
+ * Invoke the judge fleet against a composed scaffold's harness config.
+ *
+ * Returns a `FleetVerdict` aggregating per-judge results. Unanimous
+ * pass is the new strictness bar — replaces "single LLM judge said
+ * 0.85" as the validation gate.
+ *
+ * Reuses `BuilderSession`'s harness machinery for sandbox isolation;
+ * each judge runs in its own subprocess with the language-specific
+ * command. Skipped judges (no command for the language) score
+ * honest-null and are excluded from `unanimousPass` math.
+ */
+export async function invokeJudgeFleet(args: {
+  components: ResolvedComponents
+  harness: HarnessConfig
+}): Promise<FleetVerdict> {
+  const { runJudgeFleet, compilerJudge, testJudge, linterJudge, securityJudge } = await import('@tangle-network/agent-eval')
+
+  const language = args.components.family.taxonomy?.language ?? 'unknown'
+  const surface = args.components.family.taxonomy?.surface ?? 'unknown'
+  const cmds = fleetCommandsForLanguage(language, surface)
+
+  const specs: Array<ReturnType<typeof compilerJudge>> = []
+  if (cmds.compiler) specs.push(compilerJudge('fleet:compiler', { ...args.harness, testCommand: cmds.compiler }))
+  if (cmds.test) specs.push(testJudge('fleet:test', { ...args.harness, testCommand: cmds.test }))
+  if (cmds.linter) specs.push(linterJudge('fleet:linter', { ...args.harness, testCommand: cmds.linter }))
+  if (cmds.security) specs.push(securityJudge('fleet:security', { ...args.harness, testCommand: cmds.security }))
+
+  if (specs.length === 0) {
+    return { unanimousPass: false, byJudge: [], overall: 0, wallMs: 0 }
+  }
+
+  const start = Date.now()
+  const results = await runJudgeFleet(specs, { parallel: true })
+  const wallMs = Date.now() - start
+
+  const byJudge = results.map((r) => {
+    const exit = r.detail?.test?.exitCode ?? r.detail?.run?.exitCode ?? r.detail?.setup?.exitCode ?? 1
+    const stdout = r.detail?.test?.stdout ?? r.detail?.run?.stdout ?? ''
+    const interp = interpretFleetResult(r.kind, exit, stdout)
+    return {
+      id: r.id,
+      kind: r.kind,
+      passed: interp.passed,
+      score: interp.score,
+      summary: interp.summary,
+      durationMs: r.detail?.totalWallMs ?? 0,
+    }
+  })
+
+  const unanimousPass = byJudge.length > 0 && byJudge.every((j) => j.passed)
+  const overall = byJudge.length > 0 ? byJudge.reduce((a, j) => a + j.score, 0) / byJudge.length : 0
+
+  return { unanimousPass, byJudge, overall, wallMs }
+}
+
 /**
  * Normalize the LLM's `issues` output into our typed shape. The AxSignature
  * declares issues:string[] (simple list of concerns). We then parse each

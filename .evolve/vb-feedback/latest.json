@@ -1,0 +1,26 @@
+{
+  "consumer": "blueprint-agent",
+  "source": "/Users/drew/webb/blueprint-agent/scripts/experiments/results/sessions",
+  "generatedAt": "2026-04-25T02:44:45.148Z",
+  "sinceGen": 40,
+  "totalSessions": 75,
+  "buckets": {
+    "pass": 32,
+    "routing-error": 32,
+    "scaffold-gap": 1,
+    "agent-error": 10,
+    "unknown": 0
+  },
+  "scaffoldAttributableNonPass": 33,
+  "totalNonPass": 43,
+  "scaffoldAttributableRate": 0.7674,
+  "topScaffoldGaps": {
+    "remix-ts/ai-agents-mixed": 1
+  },
+  "topRoutingErrors": {
+    "swe-bench-verified": 5,
+    "ai-agents-mixed": 1,
+    "base-defi": 11,
+    "ethereum-l1": 15
+  }
+}

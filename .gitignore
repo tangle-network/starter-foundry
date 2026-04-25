@@ -54,3 +54,11 @@ report/
 .evolve/evolve-branch.run.log
 .evolve/evolve-retry.run.log
 .evolve/evolve-v2*.run.log
+
+# Gen 10: per-run agent-eval artifacts. latest.json is the rolled-up
+# truth; per-run jsonl/json are local working data. .evolve/ is
+# already gitignored partly (.evolve/pursuits/) but vb-feedback was
+# not, so add it explicitly.
+.evolve/vb-feedback/*-2*.json
+.evolve/vb-feedback/*-2*.jsonl
+.evolve/auto-loop.jsonl

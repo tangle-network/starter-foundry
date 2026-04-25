@@ -1,71 +1,48 @@
 # CHANGELOG
 
-## v0.5.4 (2026-04-20, @ 134b0a6)
+## v0.7.1 (2026-04-24, @ 910d4a2)
 
-**Generated range:** `HEAD~30..HEAD`
-
-### New families
-- `agent-swarm-ts` — Multi-agent swarm family — supervisor/worker orchestration with shared state, tool-routing, and handoff protocols. Based on LangGraph state 
-- `bun-http` — Bun HTTP API starter using Bun.serve() — zero-transpile TS, native Bun runtime, instant cold start.
-- `deno-edge` — Deno runtime HTTP API starter using Deno.serve — zero-transpile TS, secure-by-default permissions, Deno Deploy-compatible.
-- `vllm-server` — vLLM-based LLM inference server with OpenAI-compatible endpoints. Production-shape model serving — PagedAttention memory, continuous batchin
-- `wasm-rust` — Rust-compiled-to-WASM starter with wasm-bindgen bindings and a Vite frontend that loads + calls the module. For compute-heavy browser work (
+**Generated range:** `v0.7.0..HEAD`
 
 ### New capabilities
-- `capability:banking-baas` — Banking-as-a-Service integration — account opening, ACH transfers, card issuance, ledger management. Ships provider-neutral wrappers for Uni
-- `capability:code-editor` — Browser code editor using CodeMirror 6 — syntax highlighting, theming, line numbers, autocomplete. For AI coding assistants, markdown editor
-- `capability:date-utils` — date-fns for date parsing, formatting, arithmetic, and relative time. Tree-shakeable, locale-ready. For any product that displays, schedules
-- `capability:stripe-checkout-onetime` — Stripe Checkout for one-time purchases — hosted or embedded checkout session for single-purchase products (courses, digital downloads, event
-- `capability:stripe-connect` — Stripe Connect — multi-party / marketplace payments. Onboard connected accounts (Express or Custom), route charges to sellers, handle platfo
-- `capability:stripe-metered` — Stripe usage-based billing via Billing Meters — report events as they happen, Stripe aggregates and bills on your cadence. For AI products (
-- `capability:tangle-gpu-provider` — GPU blueprint capability — operators declare GPU resource requirements (CUDA compute capability, VRAM, count). Jobs run on GPU-enabled opera
-- `capability:tangle-mpp` — MPP (Machine Payments Protocol) capability for tangle-blueprint — agent-to-agent payment rails with delegation, budget caps, and spend attes
-- `capability:tangle-remote-provider` — Remote provider blueprint capability — the blueprint calls out to external services (LLM providers, RPC endpoints, SaaS APIs) with credentia
-- `capability:tangle-tee` — TEE (Trusted Execution Environment) blueprint capability — operators run jobs inside an enclave (Intel TDX / AWS Nitro / Phala dStack) and p
-- `capability:tangle-x402` — x402 payments capability for tangle-blueprint — each job dispatch carries an x402 payment, operators verify signature + amount before execut
-- `capability:zk-browser` — Client-side ZK proof generation — snarkjs + circomlibjs + circomlib, a zkProof helper, and notes on hosting the proving key. For browser-nat
-
-### New partners
-- `chainlink` — Partner pack for Chainlink — price feeds, VRF, Automation, CCIP cross-chain messaging. Biases frontend + contract scaffolds toward the Chain
-- `sui` — Partner pack for Sui — Move-based L1 with object-centric model, parallel execution, zkLogin. Biases toward Sui Move contracts + the @mysten/
-- `tempo` — Partner pack for Tempo — Paradigm's payments-optimized L1 with sub-second settlement, high throughput, EVM-compatible. Biases toward payment
+- `capability:agent-eval` — Ships a reproducible agent-eval harness into the scaffold: starter scenarios, a deterministic + optional LLM-judge runner that talks to the 
 
 ### Commits (30)
-- feat(template_v1): full harvest→synthesize→judge→audit→run pipeline (134b0a6)
-- feat: S+ tier infrastructure — 9 pursuits wired, auto-improvement loop live (cdfa356)
-- feat(agent-context): Placeholders + firstSteps + gotchas in AGENTS.md (66b1705)
-- feat: 3 partners + stripe breakdown + banking-baas + agent-swarm + tangle expansion + RLM idea-seeds (#25) (ca7f16d)
-- feat: close slate — deno-edge + vllm-server families, code-editor + date-utils capabilities, packageDeps migration (#24) (db8f10e)
-- feat(capability:zk-browser): close top scaffold gap (snarkjs 4×/4× fail on zk-mixer-ui) (#19) (dc52e89)
-- feat(bun-http): new family — Bun runtime HTTP APIs (#20) (0570d99)
-- chore(families): version sweep — latest stable minors across 10 families (#21) (f699ee7)
-- feat(wasm-rust): new family — Rust-to-WASM with Vite frontend (#22) (dfb8060)
-- feat(sdk): emitBuildoutEvent — programmatic telemetry ingestion entrypoint (#23) (4b286c3)
-- fix(capability-gaps): rewrite detector — 0 → 102 classified agent installs (#17) (36f05ce)
-- fix(forge-foundation): trim foundry.toml to what agents actually keep (kills 100% rewrite rate) (#18) (7fbf2e7)
-- fix(compose+families): 3 blueprint-agent findings (#1 vite pins + #2 workspace auto-dispatch + #3 partner scrub) (#16) (6bc180d)
-- fix(capability-inferrer): prune generic SDK mappings (kills zk-mixer-ui false positive) (#14) (d7f5840)
-- chore: sync pnpm-lock.yaml — unblocks CI (#15) (8ffb64f)
-- multi-pursue R3 pivot: signal collapse (36/37 audit pass) (#13) (c697a58)
-- fix(react-vite-ts): minimal App.tsx skeleton (kills 12× rewrite signal) (#12) (d6a82b7)
-- release(0.5.4): planner module split + deep-clean (f571edc)
-- deep-clean: remove 3 dead fns + tighten exports + knip config (#11) (1667386)
-- feat(tier1): router fix (-87% capability gaps) + tangle toolchain + foundry defaults + integration docs (#10) (1ea624b)
-- feat(buildout-pipeline): mine 133 sessions → router + template bug signal (#9) (84d9388)
-- fix(scaffolds): 4 broken registry templates — audit 86.5% → 97.3% (#8) (6596856)
-- fix(audit): capture stdout + stderr for every scaffold-quality phase (#7) (3dd6dd6)
-- multi-pursue R2: corpus relabel (+17.7pp Jaccard) + session-trace collector (#6) (aa33acc)
-- feat(rlm): gated LLM rewriter + product brief + multi-pursue training infra (#5) (1cea736)
-- Meta-harness Gen 1: -47% p95, +27pp ideasai capHit (#4) (7906bc1)
-- chore: pnpm i (9119d4e)
-- feat(agent-context): numbered steps instead of prose wall (#3) (2efa1fa)
-- release(0.5.3): grant packages:write + idempotent publish steps (b0afb41)
-- release(0.5.2): also publish to GitHub Packages (5507bfb)
+- refactor: consume agent-eval 0.7.2 primitives (−342 net lines) (#67) (910d4a2)
+- feat(auto-loop): headless governor — one decision per invocation, cron-friendly (#66) (19ee723)
+- chore(cleanup): finish the cut PR #64 missed — progress.md 990→48 + muffled-gate §Measurement (#65) (dce2ce9)
+- fix(measurement): proposal_promotion_rate 0.034 → 0.75 (metric was lying, not proposer) (#59) (58fd377)
+- feat(compose): AGENTS.md lists pre-installed packages — kills redundant-install waste (#60) (184ec05)
+- chore(cleanup): real consolidation — -1883 net lines, no new prose (#64) (2baa193)
+- chore(housekeeping): consolidate .evolve/ — patterns + progress + restored reflections (#63) (34fbb6a)
+- feat(proposer): agentic dispatch via TCloud.agent() — self-verifies vs promoter gates (#62) (7e11b6b)
+- fix(cost-tracker): wire CostTracker.record + fix .summary() method name — cost-summary.json populates (#61) (27c1f77)
+- fix(invariant): auto-derive agent-eval importer scan — closes Gen-9-style miss mechanically (#58) (2785761)
+- feat(gen9): promoter dogfood gates — declared-dep-used, scaffold-runs, eval-scores (#57) (79fbd36)
+- fix(forge-lint): drop info-severity + ignore test/script — closes dex-swap lint cluster (+6.6pp) (#56) (87b8f52)
+- feat(capability:agent-eval): reproducible eval harness any agentic scaffold layers in (#55) (2b92bdd)
+- feat(gen9): structural muffled-gate audit — 7 live → 0, invariant prevents re-intro (#54) (2e5551a)
+- docs: add CLAUDE.md — unconditional rule against Co-Authored-By trailers in commits/PRs (3193f8b)
+- chore(evolve): round-0 result — Gen 8 compile-gate validated end-to-end after Gen 8b fix (5d204d3)
+- test(gen8b): behavioral guard — real spawn confirms HarnessConfig.cwd is honored (00a2a19)
+- fix(gen8b): promoter cwd silently dropped — strict gate ran in wrong dir (#53) (8419c8a)
+- feat(gen8): compile-gate — strict tsc + judge short-circuit close the Goodhart loop (#52) (4c9ed30)
+- chore(converge): mark CONVERGED — main fully green on 567a01e (7ac92e9)
+- fix(registry): React 18 idiom + .tsx extensions on 3 Gen 6 families (#51) (2de2f66)
+- chore: bump to 0.7.0 — Gen 5-7 closed-loop generation + agent-eval ^0.7.0 + scaffold-gap measurement honesty (c6effeb)
+- fix(measurement): scaffold_gap_installs 56→9 — capability deps + signal extension (#50) (4c3607a)
+- fix(tests): force internal.json mtime ahead of source in counterfactual fallback test (3985c6f)
+- chore(deps): pin @tangle-network/agent-eval ^0.7.0 (off link:) (#49) (ab8405e)
+- fix(ci): switch @tangle-network/agent-eval to npm ^0.7.0, remove sibling-clone workaround (04c29fe)
+- fix(ci): seed .evolve/traces/buildouts.jsonl from tests/fixtures/ when mined data absent (99d67d0)
+- chore: remove SPEC-design-personalization-v2.md — shipped + superseded (5ed2f58)
+- fix(ci): setup agent-eval sibling before install so @tangle-network/agent-eval resolves (706eb14)
+- chore(cleanup): remove 5 already-promoted proposal drafts from .evolve/ (3aa711c)
 
 ### Registry state at HEAD
-- families: 45
-- capabilities: 103
-- partners: 9
+- families: 100
+- capabilities: 110
+- partners: 19
 
 ### Consumer action items
 - Ensure your bench container has the toolchains any new families require (e.g. `bun`, `deno`, `wasm-pack`, `vllm`).

@@ -7,9 +7,12 @@
 // "needs-operator" reason.
 //
 // Actions it can take autonomously (no LLM required):
-//   - refresh-scorecard (always safe; reruns the measurement derivation)
-//   - probe-red-flow   (greps local traces for new signal on a RED flow)
-//   - park             (no new signal; write a parked record, exit)
+//   - refresh-scorecard       (always safe; reruns the measurement derivation)
+//   - probe-red-flow          (greps local traces for new signal on a RED flow)
+//   - probe-vb-feedback       (reads consumer's VB output, attributes failures
+//                              to scaffold-side vs agent-side — see
+//                              scripts/consume-vb-feedback.mjs)
+//   - park                    (no new signal; write a parked record, exit)
 //
 // Actions it NEVER takes (needs operator):
 //   - schema/code changes, PR creation, LLM calls with spend
@@ -26,6 +29,13 @@ const LOG = join(REPO, '.evolve/auto-loop.jsonl')
 const SCORECARD = join(REPO, '.evolve/scorecard.json')
 const GOVERNOR_LOG = join(REPO, '.evolve/governor.jsonl')
 const BUILDOUTS = join(REPO, '.evolve/traces/buildouts.jsonl')
+const VB_FEEDBACK_LATEST = join(REPO, '.evolve/vb-feedback/latest.json')
+// Default consumer source. Override at runtime if other consumers
+// expose verticalbench-shaped output. The contract is the directory
+// shape, not the path.
+const VB_DEFAULT_SOURCE = process.env.VB_FEEDBACK_SOURCE
+  ?? join(REPO, '../blueprint-agent/scripts/experiments/results/sessions')
+const VB_DEFAULT_CONSUMER = process.env.VB_FEEDBACK_CONSUMER ?? 'blueprint-agent'
 
 function emit(entry) {
   appendFileSync(LOG, JSON.stringify({ ts: new Date().toISOString(), ...entry }) + '\n')
@@ -103,6 +113,23 @@ function decide() {
     }
   }
 
+  // VB feedback freshness check: if the consumer's session dir exists
+  // and has new data since the last probe, surface it. This is the
+  // "augment any vibecoder consumer" path.
+  if (existsSync(VB_DEFAULT_SOURCE)) {
+    const lastProbe = existsSync(VB_FEEDBACK_LATEST)
+      ? statSync(VB_FEEDBACK_LATEST).mtimeMs
+      : 0
+    const sourceM = statSync(VB_DEFAULT_SOURCE).mtimeMs
+    if (sourceM > lastProbe) {
+      return {
+        action: 'probe-vb-feedback',
+        reason: `consumer ${VB_DEFAULT_CONSUMER} has new sessions (mtime ${new Date(sourceM).toISOString().slice(0, 19)} > last probe)`,
+        target: VB_DEFAULT_CONSUMER,
+      }
+    }
+  }
+
   return {
     action: 'probe-red-flow',
     reason: `${reds.length} RED flows, fresh data (${ageH.toFixed(1)}h)`,
@@ -150,6 +177,30 @@ function probeRedFlow(flowName) {
   }
 }
 
+function probeVbFeedback() {
+  // Delegate to consume-vb-feedback.mjs; capture stdout summary line +
+  // read the resulting latest.json for structured output.
+  try {
+    const out = execSync(
+      `node scripts/consume-vb-feedback.mjs --source "${VB_DEFAULT_SOURCE}" --consumer "${VB_DEFAULT_CONSUMER}" --quiet`,
+      { cwd: REPO, encoding: 'utf8', timeout: 60_000 },
+    )
+    const summary = existsSync(VB_FEEDBACK_LATEST)
+      ? JSON.parse(readFileSync(VB_FEEDBACK_LATEST, 'utf8'))
+      : null
+    return {
+      success: true,
+      summaryLine: out.trim().split('\n').pop(),
+      buckets: summary?.buckets,
+      scaffoldAttributableRate: summary?.scaffoldAttributableRate,
+      topRoutingErrors: summary?.topRoutingErrors,
+      topScaffoldGaps: summary?.topScaffoldGaps,
+    }
+  } catch (err) {
+    return { success: false, error: String(err.message ?? err).slice(0, 500) }
+  }
+}
+
 // ── main ─────────────────────────────────────────────────────────────
 
 async function main() {
@@ -160,6 +211,8 @@ async function main() {
     entry.outcome = refreshScorecard()
   } else if (decision.action === 'probe-red-flow') {
     entry.outcome = probeRedFlow(decision.target)
+  } else if (decision.action === 'probe-vb-feedback') {
+    entry.outcome = probeVbFeedback()
   } else if (decision.action === 'park') {
     entry.outcome = { success: true, parked: true }
   }
@@ -173,6 +226,9 @@ async function main() {
     entry.outcome?.success === false ? `error=${entry.outcome.error}` : null,
     entry.outcome?.redCount != null ? `red=${entry.outcome.redCount}` : null,
     entry.outcome?.totalFailing != null ? `failing=${entry.outcome.totalFailing}` : null,
+    entry.outcome?.scaffoldAttributableRate != null
+      ? `sfAttribRate=${(entry.outcome.scaffoldAttributableRate * 100).toFixed(1)}%`
+      : null,
   ].filter(Boolean).join(' ')
   console.log(summary)
   if (decision.needsOperator) process.exit(2)

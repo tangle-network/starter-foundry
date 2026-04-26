@@ -1,0 +1,170 @@
+{
+  "id": "agent-runtime-cmo-advisor-ts",
+  "description": "CMO-level marketing strategy advisor bundle. Works alongside an operator on positioning, ICP, and channel-experiment design — not a replacement for hands-on board-level diligence. Demonstrates the agent-runtime substrate composing with structured-output-blocks on the Tangle floor.",
+  "tags": [
+    "agent-runtime",
+    "marketing-strategy",
+    "advisory-agent",
+    "cmo",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-cmo-advisor",
+    "agentName": "cmo-advisor",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "positioning",
+          "channel-experiment",
+          "icp-research"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "positioning-strategy",
+      "channel-experiment-design",
+      "icp-research"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "schedule": [
+      {
+        "id": "scheduled-1",
+        "cron": "0 14 * * 1",
+        "capability": "positioning-strategy"
+      }
+    ],
+    "outboundDomains": [
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/positioning-canvas.md",
+      "target": "methodology/positioning-canvas.md"
+    },
+    {
+      "source": "files/methodology/channel-experiment-design.md",
+      "target": "methodology/channel-experiment-design.md"
+    },
+    {
+      "source": "files/methodology/icp-deep-dive.md",
+      "target": "methodology/icp-deep-dive.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "system-prompt.md"
+    },
+    {
+      "type": "file-exists",
+      "path": "methodology/index.json"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "system-prompt.md"
+    },
+    {
+      "type": "methodology-index-valid",
+      "path": "methodology/index.json"
+    },
+    {
+      "type": "schedule-valid",
+      "path": "manifest.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "keywords": [
+    "cmo",
+    "marketing-strategy",
+    "positioning",
+    "go-to-market",
+    "icp",
+    "channel-mix"
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "cmo-advisor",
+      "cmo advisor",
+      "marketing-strategy-agent",
+      "marketing strategy agent",
+      "growth-strategist",
+      "growth strategist",
+      "marketing strategy"
+    ],
+    "tier2": [
+      "positioning",
+      "go-to-market",
+      "go to market",
+      "ICP",
+      "channel-mix",
+      "channel mix",
+      "lifecycle-marketing",
+      "lifecycle marketing"
+    ],
+    "tier3": [
+      "cmo",
+      "marketing"
+    ],
+    "archetypes": [
+      "agent-in-sandbox",
+      "advisory-agent"
+    ]
+  }
+}

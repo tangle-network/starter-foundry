@@ -9,7 +9,7 @@ import {
   seededRng,
   buildLockFile,
   verifyLockMatches,
-} from '../dist/lib/reproducibility.js'
+} from '../dist/lib/eval/reproducibility.js'
 import type { ComposeSpec } from '../dist/types.js'
 
 const sampleSpec: ComposeSpec = {

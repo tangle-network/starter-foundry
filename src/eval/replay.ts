@@ -11,6 +11,7 @@
 
 import fs from 'node:fs/promises'
 import path from 'node:path'
+
 import { planPrompt } from '../lib/prompt-planner.js'
 import { resolveComponents } from '../lib/registry.js'
 import type { PromptPlan, ResolvedComponents } from '../types.js'
@@ -132,7 +133,7 @@ export interface CounterfactualReport {
   generator: 'starter-foundry:replay-traces'
   registryCommit: string
   summary: CounterfactualSummary
-  perScenario: Array<{
+  perScenario: {
     partner: string | null
     scenarioId: string
     total: number
@@ -146,25 +147,25 @@ export interface CounterfactualReport {
     totalPreventedInstalls: number
     totalRemainingGapInstalls: number
     preventionRate: number
-  }>
-  topRemainingGapInstalls: Array<{
+  }[]
+  topRemainingGapInstalls: {
     key: string
     timesRemaining: number
     remainingOnPass: number
     remainingOnFail: number
-  }>
-  topPreventedInstalls: Array<{
+  }[]
+  topPreventedInstalls: {
     key: string
     timesPrevented: number
-  }>
+  }[]
   /** Gen-3: rollup of rewritten-file counts — matches main buildout-analysis.json
    * schema so scorecard can read from either source. */
-  topRewrittenFiles?: Array<{
+  topRewrittenFiles?: {
     file: string
     timesRewritten: number
     rewrittenOnPass: number
     rewrittenOnFail: number
-  }>
+  }[]
 }
 
 // ---- extraction helpers ----
@@ -178,15 +179,11 @@ export function userRequestFromInitialPrompt(initialPrompt: string): string {
   const rest = initialPrompt.slice(idx + marker.length)
   // Trim trailing boilerplate like "Make targeted edits..." that appears
   // on many traces. Cut at the first blank-line-preceded closing instruction.
-  const cutPatterns = [
-    /\n\nMake targeted edits/,
-    /\n\nDo NOT recreate/,
-    /\n\nProduction-shape/,
-  ]
+  const cutPatterns = [/\n\nMake targeted edits/, /\n\nDo NOT recreate/, /\n\nProduction-shape/]
   let end = rest.length
   for (const re of cutPatterns) {
     const m = rest.match(re)
-    if (m && m.index !== undefined && m.index < end) end = m.index
+    if (m?.index !== undefined && m.index < end) end = m.index
   }
   return rest.slice(0, end).trim()
 }
@@ -196,17 +193,26 @@ export function userRequestFromInitialPrompt(initialPrompt: string): string {
  * so we can compare against captured addedPackages. */
 function effectiveDepNames(components: ResolvedComponents): string[] {
   const names = new Set<string>()
-  const include = (pd?: { dependencies?: Record<string, string>; devDependencies?: Record<string, string> }) => {
+  const include = (pd?: {
+    dependencies?: Record<string, string>
+    devDependencies?: Record<string, string>
+  }) => {
     if (!pd) return
     for (const k of Object.keys(pd.dependencies ?? {})) names.add(k)
     for (const k of Object.keys(pd.devDependencies ?? {})) names.add(k)
   }
-  include((components.family as { packageDeps?: unknown }).packageDeps as Parameters<typeof include>[0])
+  include(
+    (components.family as { packageDeps?: unknown }).packageDeps as Parameters<typeof include>[0],
+  )
   for (const layer of components.layers) {
     include((layer as { packageDeps?: unknown }).packageDeps as Parameters<typeof include>[0])
   }
   if (components.partner) {
-    include((components.partner as { packageDeps?: unknown }).packageDeps as Parameters<typeof include>[0])
+    include(
+      (components.partner as { packageDeps?: unknown }).packageDeps as Parameters<
+        typeof include
+      >[0],
+    )
   }
   return [...names].sort()
 }
@@ -221,7 +227,12 @@ function stripPmPrefix(name: string): string {
 /** Only npm-ecosystem installs are comparable against package.json-level packageDeps.
  * cargo/go/pip installs are real signals but live in a different dep surface. */
 function isNpmInstall(name: string): boolean {
-  return name.startsWith('pnpm:') || name.startsWith('npm:') || name.startsWith('yarn:') || name.startsWith('bun:')
+  return (
+    name.startsWith('pnpm:') ||
+    name.startsWith('npm:') ||
+    name.startsWith('yarn:') ||
+    name.startsWith('bun:')
+  )
 }
 
 /** Relative-path match between captured rewrittenFiles (absolute tmp paths)
@@ -244,10 +255,10 @@ export async function replayTrace(trace: CapturedTrace): Promise<ReplayResult> {
   const userRequest = userRequestFromInitialPrompt(trace.initialPrompt)
   let plan: PromptPlan
   let components: ResolvedComponents
-  let scaffoldDeps: string[] = []
+  let scaffoldDeps: string[]
   let newFamily = 'ERR'
-  let newLayers: string[] = []
-  let newPartner: string | null = null
+  let newLayers: string[]
+  let newPartner: string | null
 
   try {
     plan = await planPrompt({ prompt: userRequest, partner: trace.partnerGuess })
@@ -295,7 +306,9 @@ export async function replayTrace(trace: CapturedTrace): Promise<ReplayResult> {
       newPartner: null,
       scaffoldDeps: [],
       preventedInstalls: [],
-      remainingGapInstalls: normalizeAddedPackages(trace.addedPackages).filter(isNpmInstall).map(stripPmPrefix),
+      remainingGapInstalls: normalizeAddedPackages(trace.addedPackages)
+        .filter(isNpmInstall)
+        .map(stripPmPrefix),
       preventedRewrites: [],
       rewrittenFiles: trace.rewrittenFiles.map(relativePathTail),
       familyMatchHint: null,
@@ -303,7 +316,9 @@ export async function replayTrace(trace: CapturedTrace): Promise<ReplayResult> {
     }
   }
 
-  const npmInstalls = normalizeAddedPackages(trace.addedPackages).filter(isNpmInstall).map(stripPmPrefix)
+  const npmInstalls = normalizeAddedPackages(trace.addedPackages)
+    .filter(isNpmInstall)
+    .map(stripPmPrefix)
   const scaffoldDepSet = new Set(scaffoldDeps)
   const preventedInstalls: string[] = []
   const remainingGapInstalls: string[] = []
@@ -370,10 +385,7 @@ export async function loadTraces(tracesDir: string): Promise<CapturedTrace[]> {
 
 // ---- aggregate report ----
 
-export function buildReport(
-  results: ReplayResult[],
-  registryCommit: string,
-): CounterfactualReport {
+export function buildReport(results: ReplayResult[], registryCommit: string): CounterfactualReport {
   const total = results.length
   const withOutcome = results.filter((r) => r.observedOutcome != null).length
   const passing = results.filter((r) => r.observedOutcome?.allPass === true).length
@@ -384,15 +396,21 @@ export function buildReport(
       : 0
 
   const distinctScenarios = new Set(results.map((r) => r.scenarioId)).size
-  const distinctPartners = [...new Set(results.map((r) => r.partner).filter((p): p is string => !!p))].sort()
+  const distinctPartners = [
+    ...new Set(results.map((r) => r.partner).filter((p): p is string => !!p)),
+  ].sort()
 
   const totalHistoricalInstalls = results.reduce(
     (sum, r) => sum + r.preventedInstalls.length + r.remainingGapInstalls.length,
     0,
   )
   const totalPreventedInstalls = results.reduce((sum, r) => sum + r.preventedInstalls.length, 0)
-  const totalRemainingGapInstalls = results.reduce((sum, r) => sum + r.remainingGapInstalls.length, 0)
-  const preventionRate = totalHistoricalInstalls > 0 ? totalPreventedInstalls / totalHistoricalInstalls : 0
+  const totalRemainingGapInstalls = results.reduce(
+    (sum, r) => sum + r.remainingGapInstalls.length,
+    0,
+  )
+  const preventionRate =
+    totalHistoricalInstalls > 0 ? totalPreventedInstalls / totalHistoricalInstalls : 0
   const estimatedGapInstallsPerBuildout = total > 0 ? totalRemainingGapInstalls / total : 0
 
   // per-scenario rollup
@@ -403,41 +421,47 @@ export function buildReport(
     list.push(r)
     byScenario.set(key, list)
   }
-  const perScenario = [...byScenario.entries()].map(([, list]) => {
-    const sTotal = list.length
-    const sWithOutcome = list.filter((r) => r.observedOutcome != null).length
-    const sPass = list.filter((r) => r.observedOutcome?.allPass === true).length
-    const sMeanScore = sWithOutcome > 0
-      ? list.reduce((sum, r) => sum + (r.observedOutcome?.blendedScore ?? 0), 0) / sWithOutcome
-      : 0
-    const sMeanWall = sWithOutcome > 0
-      ? list.reduce((sum, r) => sum + (r.observedOutcome?.wallMs ?? 0), 0) / sWithOutcome
-      : 0
-    const sMeanTurns = sWithOutcome > 0
-      ? list.reduce((sum, r) => sum + (r.observedOutcome?.toolCallsTotal ?? 0), 0) / sWithOutcome
-      : 0
-    const sHistoricalInstalls = list.reduce(
-      (sum, r) => sum + r.preventedInstalls.length + r.remainingGapInstalls.length,
-      0,
-    )
-    const sPrevented = list.reduce((sum, r) => sum + r.preventedInstalls.length, 0)
-    const sRemaining = list.reduce((sum, r) => sum + r.remainingGapInstalls.length, 0)
-    return {
-      partner: list[0].partner,
-      scenarioId: list[0].scenarioId,
-      total: sTotal,
-      withOutcome: sWithOutcome,
-      pass: sPass,
-      passRate: sWithOutcome > 0 ? sPass / sWithOutcome : 0,
-      meanScore: sMeanScore,
-      meanWallMs: sMeanWall,
-      meanTurns: sMeanTurns,
-      totalHistoricalInstalls: sHistoricalInstalls,
-      totalPreventedInstalls: sPrevented,
-      totalRemainingGapInstalls: sRemaining,
-      preventionRate: sHistoricalInstalls > 0 ? sPrevented / sHistoricalInstalls : 0,
-    }
-  }).sort((a, b) => b.totalRemainingGapInstalls - a.totalRemainingGapInstalls)
+  const perScenario = [...byScenario.entries()]
+    .map(([, list]) => {
+      const sTotal = list.length
+      const sWithOutcome = list.filter((r) => r.observedOutcome != null).length
+      const sPass = list.filter((r) => r.observedOutcome?.allPass === true).length
+      const sMeanScore =
+        sWithOutcome > 0
+          ? list.reduce((sum, r) => sum + (r.observedOutcome?.blendedScore ?? 0), 0) / sWithOutcome
+          : 0
+      const sMeanWall =
+        sWithOutcome > 0
+          ? list.reduce((sum, r) => sum + (r.observedOutcome?.wallMs ?? 0), 0) / sWithOutcome
+          : 0
+      const sMeanTurns =
+        sWithOutcome > 0
+          ? list.reduce((sum, r) => sum + (r.observedOutcome?.toolCallsTotal ?? 0), 0) /
+            sWithOutcome
+          : 0
+      const sHistoricalInstalls = list.reduce(
+        (sum, r) => sum + r.preventedInstalls.length + r.remainingGapInstalls.length,
+        0,
+      )
+      const sPrevented = list.reduce((sum, r) => sum + r.preventedInstalls.length, 0)
+      const sRemaining = list.reduce((sum, r) => sum + r.remainingGapInstalls.length, 0)
+      return {
+        partner: list[0].partner,
+        scenarioId: list[0].scenarioId,
+        total: sTotal,
+        withOutcome: sWithOutcome,
+        pass: sPass,
+        passRate: sWithOutcome > 0 ? sPass / sWithOutcome : 0,
+        meanScore: sMeanScore,
+        meanWallMs: sMeanWall,
+        meanTurns: sMeanTurns,
+        totalHistoricalInstalls: sHistoricalInstalls,
+        totalPreventedInstalls: sPrevented,
+        totalRemainingGapInstalls: sRemaining,
+        preventionRate: sHistoricalInstalls > 0 ? sPrevented / sHistoricalInstalls : 0,
+      }
+    })
+    .sort((a, b) => b.totalRemainingGapInstalls - a.totalRemainingGapInstalls)
 
   // top remaining gaps — these are the intervention targets for the next round
   const remainingHisto = new Map<string, { times: number; onPass: number; onFail: number }>()
@@ -452,7 +476,12 @@ export function buildReport(
     }
   }
   const topRemainingGapInstalls = [...remainingHisto.entries()]
-    .map(([key, v]) => ({ key, timesRemaining: v.times, remainingOnPass: v.onPass, remainingOnFail: v.onFail }))
+    .map(([key, v]) => ({
+      key,
+      timesRemaining: v.times,
+      remainingOnPass: v.onPass,
+      remainingOnFail: v.onFail,
+    }))
     .sort((a, b) => b.timesRemaining - a.timesRemaining)
     .slice(0, 20)
 
@@ -497,20 +526,32 @@ export function buildReport(
   const costSamples = results
     .map((r) => r.observedOutcome)
     .filter((o): o is NonNullable<typeof o> => o != null)
-  const costValues = costSamples.map((o) => o.costUsd).filter((v): v is number => typeof v === 'number')
-  const tokenValues = costSamples.map((o) => o.tokenCount).filter((v): v is number => typeof v === 'number')
+  const costValues = costSamples
+    .map((o) => o.costUsd)
+    .filter((v): v is number => typeof v === 'number')
+  const tokenValues = costSamples
+    .map((o) => o.tokenCount)
+    .filter((v): v is number => typeof v === 'number')
   const costRollup = {
     sampleCount: costValues.length,
-    meanCostUsd: costValues.length > 0 ? costValues.reduce((a, b) => a + b, 0) / costValues.length : null,
-    meanTokens: tokenValues.length > 0 ? tokenValues.reduce((a, b) => a + b, 0) / tokenValues.length : null,
+    meanCostUsd:
+      costValues.length > 0 ? costValues.reduce((a, b) => a + b, 0) / costValues.length : null,
+    meanTokens:
+      tokenValues.length > 0 ? tokenValues.reduce((a, b) => a + b, 0) / tokenValues.length : null,
     totalCostUsd: costValues.length > 0 ? costValues.reduce((a, b) => a + b, 0) : null,
     totalTokens: tokenValues.length > 0 ? tokenValues.reduce((a, b) => a + b, 0) : null,
     meanCostOnPass: (() => {
-      const vals = costSamples.filter((o) => o.allPass).map((o) => o.costUsd).filter((v): v is number => typeof v === 'number')
+      const vals = costSamples
+        .filter((o) => o.allPass)
+        .map((o) => o.costUsd)
+        .filter((v): v is number => typeof v === 'number')
       return vals.length > 0 ? vals.reduce((a, b) => a + b, 0) / vals.length : null
     })(),
     meanCostOnFail: (() => {
-      const vals = costSamples.filter((o) => !o.allPass).map((o) => o.costUsd).filter((v): v is number => typeof v === 'number')
+      const vals = costSamples
+        .filter((o) => !o.allPass)
+        .map((o) => o.costUsd)
+        .filter((v): v is number => typeof v === 'number')
       return vals.length > 0 ? vals.reduce((a, b) => a + b, 0) / vals.length : null
     })(),
   }

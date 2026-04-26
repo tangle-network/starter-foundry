@@ -1,4 +1,4 @@
-// Regression guard for scripts/auto-loop.mjs. Asserts the decision logic
+// Regression guard for scripts/auto-loop.ts. Asserts the decision logic
 // picks the right action for each state shape without actually mutating
 // the real .evolve/ directory (tests run with REPO_ROOT override if the
 // script supports it; otherwise read-only assertions on the production
@@ -13,7 +13,7 @@ import { spawnSync } from 'node:child_process'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const REPO = join(__dirname, '..')
-const SCRIPT = join(REPO, 'scripts/auto-loop.mjs')
+const SCRIPT = join(REPO, 'scripts/auto-loop.ts')
 const LOG = join(REPO, '.evolve/auto-loop.jsonl')
 
 describe('auto-loop runner', () => {

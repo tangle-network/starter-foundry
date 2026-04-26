@@ -1,0 +1,163 @@
+{
+  "id": "agent-runtime-legal-counsel-ts",
+  "description": "In-house-counsel reference agent — drafts redlines, runs contract review checklists (NDA, MSA), flags asymmetric provisions and binding-decision moments. Explicitly NOT a lawyer; no attorney-client privilege; jurisdiction-agnostic. Demonstrates the agent-runtime substrate composing with structured-output blocks (:::artifact, :::escalation) on a regulated-legal role.",
+  "tags": [
+    "agent-runtime",
+    "legal",
+    "contract-review",
+    "regulated-domain",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-legal-counsel",
+    "agentName": "legal-counsel",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "redline",
+          "checklist",
+          "escalation"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "contract-redline",
+      "nda-review",
+      "msa-review",
+      "escalation-protocol"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "notLawyer": true,
+    "attorneyClientPrivilege": false,
+    "outboundDomains": [
+      "api.tangle.tools",
+      "law.cornell.edu"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/contract-redline-protocol.md",
+      "target": "methodology/contract-redline-protocol.md"
+    },
+    {
+      "source": "files/methodology/nda-checklist.md",
+      "target": "methodology/nda-checklist.md"
+    },
+    {
+      "source": "files/methodology/msa-checklist.md",
+      "target": "methodology/msa-checklist.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "system-prompt.md"
+    },
+    {
+      "type": "file-exists",
+      "path": "methodology/index.json"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "system-prompt.md"
+    },
+    {
+      "type": "methodology-index-valid",
+      "path": "methodology/index.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "keywords": [
+    "legal",
+    "contract",
+    "nda",
+    "msa",
+    "redline",
+    "in-house-counsel"
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "legal-counsel",
+      "legal counsel",
+      "contract-review-agent",
+      "contract review agent",
+      "in-house-counsel",
+      "in house counsel",
+      "contract redline"
+    ],
+    "tier2": [
+      "NDA",
+      "MSA",
+      "SLA",
+      "indemnification",
+      "limitation-of-liability",
+      "IP-assignment",
+      "contract review"
+    ],
+    "tier3": [
+      "redline",
+      "legal"
+    ],
+    "archetypes": [
+      "agent-in-sandbox",
+      "advisory-agent",
+      "regulated-legal"
+    ]
+  }
+}

@@ -7,9 +7,9 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import test from 'node:test'
 import { generatePrompts, persistBatch } from '../dist/lib/synthetic/index.js'
-import { abDecide } from '../dist/lib/ab.js'
+import { abDecide } from '../dist/lib/eval/ab.js'
 import { scanDirectory } from '../dist/lib/safety/secret-scan.js'
-import { generateSbom } from '../dist/lib/sbom.js'
+import { generateSbom } from '../dist/lib/eval/sbom.js'
 import { createTempDir, removeDir } from '../dist/lib/fs.js'
 
 test('synthetic: generatePrompts returns bounded N batch with deterministic fallback', async () => {
@@ -52,7 +52,10 @@ test('ab: abDecide is stable across calls for the same key', () => {
     rampPct: 100,
     startedAt: '2026-04-01T00:00:00Z',
     stoppedAt: null,
-    variants: [{ id: 'a', weight: 1 }, { id: 'b', weight: 1 }],
+    variants: [
+      { id: 'a', weight: 1 },
+      { id: 'b', weight: 1 },
+    ],
     controlVariantId: 'a',
     primaryMetric: 'pass_rate',
   }
@@ -85,12 +88,15 @@ test('ab: ramp excludes users below the threshold', () => {
 test('secret-scan: detects AWS keys + OpenAI secrets + private-key blocks', async () => {
   const dir = await createTempDir('sf-secret-scan')
   try {
-    await fs.writeFile(path.join(dir, 'bad.ts'), [
-      'const aws = "AKIAIOSFODNN7EXAMPLE"',
-      'const gh = "ghp_' + 'x'.repeat(36) + '"',
-      'const openai = "sk-proj-' + 'a'.repeat(50) + '"',
-      '// just normal code',
-    ].join('\n'))
+    await fs.writeFile(
+      path.join(dir, 'bad.ts'),
+      [
+        'const aws = "AKIAIOSFODNN7EXAMPLE"',
+        'const gh = "ghp_' + 'x'.repeat(36) + '"',
+        'const openai = "sk-proj-' + 'a'.repeat(50) + '"',
+        '// just normal code',
+      ].join('\n'),
+    )
     const matches = await scanDirectory(dir)
     const kinds = new Set(matches.map((m) => m.kind))
     assert.ok(kinds.has('aws-access-key'), `expected aws-access-key, got: ${[...kinds].join(',')}`)
@@ -116,10 +122,17 @@ test('secret-scan: clean scaffold returns empty matches', async () => {
 test('sbom: generates CycloneDX 1.5 shape from a package.json', async () => {
   const dir = await createTempDir('sf-sbom-test')
   try {
-    await fs.writeFile(path.join(dir, 'package.json'), JSON.stringify({
-      name: 'test',
-      dependencies: { 'lodash': '4.17.21', 'react': '19.2.0' },
-    }, null, 2))
+    await fs.writeFile(
+      path.join(dir, 'package.json'),
+      JSON.stringify(
+        {
+          name: 'test',
+          dependencies: { lodash: '4.17.21', react: '19.2.0' },
+        },
+        null,
+        2,
+      ),
+    )
     const sbom = await generateSbom(dir, 'test')
     assert.ok(sbom !== null)
     assert.equal(sbom!.bomFormat, 'CycloneDX')

@@ -14,12 +14,20 @@
 // lives in starter-foundry except the composition adapter + family
 // dispatch table.
 
-import { readFileSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
-import { tmpdir } from 'node:os'
 import { spawnSync } from 'node:child_process'
+import { readFileSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+
 import { fileExists } from '@tangle-network/agent-eval'
-import type { HarnessConfig, JudgeFn, WorkspaceAssertion, WorkspaceSnapshot, SandboxDriver } from '@tangle-network/agent-eval'
+import type {
+  HarnessConfig,
+  JudgeFn,
+  WorkspaceAssertion,
+  WorkspaceSnapshot,
+  SandboxDriver,
+} from '@tangle-network/agent-eval'
+
 import type { ComposeSpec, ResolvedComponents } from '../types.js'
 
 // ──────────────────────────────────────────────────────────────────
@@ -28,8 +36,8 @@ import type { ComposeSpec, ResolvedComponents } from '../types.js'
 
 /**
  * Per-language harness config table. Single source of truth — the
- * promoters (scripts/promote-family-proposal.mjs,
- * scripts/promote-capability-proposal.mjs) import this table rather
+ * promoters (scripts/promote-family-proposal.ts,
+ * scripts/promote-capability-proposal.ts) import this table rather
  * than redefining it. Gen 8b shipped when only two of three copies
  * got the strict-gate fix; centralizing removes the drift surface.
  *
@@ -91,6 +99,22 @@ export const HARNESS_CONFIGS: Record<string, HarnessConfig> = {
     testCommand: 'aptos move compile --dev',
     timeoutMs: 300_000,
   },
+  // Gen 11: agent-runtime bundles. The artifact is a system-prompt + templates
+  // tree, not buildable code. The "build" gate is a structural check via
+  // scripts/agent-runtime-bundle-check.ts that asserts:
+  //   - system-prompt.md has valid YAML frontmatter
+  //   - templates/index.json entries all resolve to files
+  //   - wrangler.toml cron exprs are syntactically valid + ≤60×/hour
+  //   - no symlinks pointing outside the bundle dir
+  //   - no >10MB files (anti-bomb)
+  // The script exits 1 on bundle defect, 2 on its own crash (so the harness
+  // can distinguish "checker broke" from "bundle broke").
+  // Verified by tests/agent-runtime-bundle-check.test.ts.
+  markdown: {
+    setupCommand: '',
+    testCommand: 'tsx scripts/agent-runtime-bundle-check.ts .',
+    timeoutMs: 30_000,
+  },
 }
 
 /**
@@ -110,8 +134,8 @@ export function makeHarnessConfig(components: ResolvedComponents): HarnessConfig
   if (!config) {
     throw new Error(
       `makeHarnessConfig: unsupported taxonomy.language '${language}'. ` +
-      `Add it to HARNESS_CONFIGS in src/eval/scaffold-bridge.ts with a ` +
-      `strict (fail-loud) testCommand before composing a scaffold for it.`,
+        `Add it to HARNESS_CONFIGS in src/eval/scaffold-bridge.ts with a ` +
+        `strict (fail-loud) testCommand before composing a scaffold for it.`,
     )
   }
   return config
@@ -172,12 +196,30 @@ export function snapshotScaffold(scaffoldDir: string): WorkspaceSnapshot {
   const blobs: Record<string, { size: number; hash?: string; mimeType?: string }> = {}
   const res = spawnSync(
     'find',
-    [scaffoldDir, '-type', 'f', '-not', '-path', '*/node_modules/*', '-not', '-path', '*/target/*', '-not', '-path', '*/.git/*', '-not', '-path', '*/dist/*'],
+    [
+      scaffoldDir,
+      '-type',
+      'f',
+      '-not',
+      '-path',
+      '*/node_modules/*',
+      '-not',
+      '-path',
+      '*/target/*',
+      '-not',
+      '-path',
+      '*/.git/*',
+      '-not',
+      '-path',
+      '*/dist/*',
+    ],
     { encoding: 'utf8' },
   )
   if (res.status === 0) {
     for (const absPath of res.stdout.trim().split('\n').filter(Boolean)) {
-      const relPath = absPath.startsWith(scaffoldDir + '/') ? absPath.slice(scaffoldDir.length + 1) : absPath
+      const relPath = absPath.startsWith(scaffoldDir + '/')
+        ? absPath.slice(scaffoldDir.length + 1)
+        : absPath
       try {
         const buf = readFileSync(absPath)
         if (isProbablyText(buf)) {
@@ -224,16 +266,24 @@ function isProbablyText(buf: Buffer): boolean {
 function guessMimeType(path: string): string | undefined {
   const ext = path.toLowerCase().split('.').pop() ?? ''
   switch (ext) {
-    case 'wasm': return 'application/wasm'
-    case 'zkey': return 'application/octet-stream+zkey'
-    case 'png': return 'image/png'
+    case 'wasm':
+      return 'application/wasm'
+    case 'zkey':
+      return 'application/octet-stream+zkey'
+    case 'png':
+      return 'image/png'
     case 'jpg':
-    case 'jpeg': return 'image/jpeg'
-    case 'webp': return 'image/webp'
+    case 'jpeg':
+      return 'image/jpeg'
+    case 'webp':
+      return 'image/webp'
     case 'woff':
-    case 'woff2': return 'font/woff2'
-    case 'pdf': return 'application/pdf'
-    default: return undefined
+    case 'woff2':
+      return 'font/woff2'
+    case 'pdf':
+      return 'application/pdf'
+    default:
+      return undefined
   }
 }
 
@@ -307,9 +357,9 @@ export function buildScaffoldMetaPrompt(args: {
     '',
     '1. **correctness**    — do imports resolve? Is the build recipe plausible? Any obvious typos or broken references?',
     '2. **completeness**   — does the scaffold cover the prompt\'s stated surfaces? (if prompt says "ZK prover + frontend", do both exist?)',
-    '3. **idiomatic**      — does the layout match the framework\'s canonical pattern? (risczero has methods/guest+host; SP1 has program/+script/)',
+    "3. **idiomatic**      — does the layout match the framework's canonical pattern? (risczero has methods/guest+host; SP1 has program/+script/)",
     '4. **production-ready** — are env vars documented? secrets NOT in source? build caching hints present?',
-    '5. **over-scaffold**  — score 1 if ZERO layers are extraneous; lower if capabilities are attached that the prompt doesn\'t justify.',
+    "5. **over-scaffold**  — score 1 if ZERO layers are extraneous; lower if capabilities are attached that the prompt doesn't justify.",
     '',
     '## Output',
     '',
@@ -334,7 +384,7 @@ export function buildScaffoldMetaPrompt(args: {
  * want to ship the entire scaffold into the prompt (token explosion);
  * instead surface the files that carry the scaffold's signal.
  */
-function pickKeyFiles(snapshot: WorkspaceSnapshot): Array<{ path: string; content: string }> {
+function pickKeyFiles(snapshot: WorkspaceSnapshot): { path: string; content: string }[] {
   const priorities = [
     /^package\.json$/,
     /^Cargo\.toml$/,
@@ -353,7 +403,7 @@ function pickKeyFiles(snapshot: WorkspaceSnapshot): Array<{ path: string; conten
     /^host\/src\/main\.rs$/,
   ]
   const paths = Object.keys(snapshot.files)
-  const out: Array<{ path: string; content: string }> = []
+  const out: { path: string; content: string }[] = []
   for (const pattern of priorities) {
     const match = paths.find((p) => pattern.test(p))
     if (match) out.push({ path: match, content: snapshot.files[match] })
@@ -393,10 +443,14 @@ export async function prepareScaffoldForEval(args: {
   const specPath = join(scaffoldDir, 'spec.json')
   const { writeFileSync } = await import('node:fs')
   writeFileSync(specPath, JSON.stringify(args.spec))
-  const res = spawnSync('node', ['dist/cli.js', 'compose', '--spec', specPath, '--out', scaffoldDir, '--json'], {
-    cwd: process.cwd(),
-    encoding: 'utf8',
-  })
+  const res = spawnSync(
+    'node',
+    ['dist/cli.js', 'compose', '--spec', specPath, '--out', scaffoldDir, '--json'],
+    {
+      cwd: process.cwd(),
+      encoding: 'utf8',
+    },
+  )
   if (res.status !== 0) {
     rmSync(scaffoldDir, { recursive: true, force: true })
     throw new Error(`compose failed (exit ${res.status}): ${res.stderr.slice(-500)}`)
@@ -408,7 +462,7 @@ export async function prepareScaffoldForEval(args: {
   // NOT from the driver constructor (see agent-eval@0.7.0 — Gen 8b bug).
   // Returning the harness without cwd forces every caller to remember to
   // spread it in, and historical evidence says that fails — the runtime
-  // eval path in scripts/agent-eval-scaffold.mjs (pre-Round-0) had the
+  // eval path in scripts/agent-eval-scaffold.ts (pre-Round-0) had the
   // same construct-vs-call bug Gen 8b fixed in the promoters. Bake it in
   // here so the muffled gate is structurally impossible at this seam.
   const harness = { ...makeHarnessConfig(args.components), cwd: scaffoldDir }
@@ -420,7 +474,11 @@ export async function prepareScaffoldForEval(args: {
     snapshot,
     assertions,
     cleanup: () => {
-      try { rmSync(scaffoldDir, { recursive: true, force: true }) } catch { /* noop */ }
+      try {
+        rmSync(scaffoldDir, { recursive: true, force: true })
+      } catch {
+        /* noop */
+      }
     },
   }
 }
@@ -441,7 +499,7 @@ export interface ScaffoldMetaVerdict {
   productionReady: number
   overScaffold: number
   overall: number
-  issues: Array<{ dimension: string; severity: 'low' | 'medium' | 'high'; description: string }>
+  issues: { dimension: string; severity: 'low' | 'medium' | 'high'; description: string }[]
   verdict: 'pass' | 'fail' | 'borderline'
   rationale?: string
   /**
@@ -480,11 +538,11 @@ const META_JUDGE_SIGNATURE =
   '"Grade a freshly-composed project STARTER SCAFFOLD on five rubric dimensions (0..1 each, 1=perfect). ' +
   'CRITICAL CALIBRATION: a starter scaffold is a SKELETON the agent extends. ' +
   'Do NOT penalize for missing business logic, missing API client implementations, or missing domain-specific code. ' +
-  'The scaffold\'s job is to give the agent a buildable floor — extension is the agent\'s job. ' +
+  "The scaffold's job is to give the agent a buildable floor — extension is the agent's job. " +
   'Judge ONLY what is given; do not hallucinate missing files. ' +
   'correctness = imports resolve, build recipe plausible, no obvious taxonomy/implementation mismatches (e.g. frontend surface with Node HTTP server in main.ts). ' +
   'completeness = scaffold has the expected slot files for its (language, runtime, surface) — e.g. frontend TS needs package.json + vite.config + index.html + entrypoint + README. Does NOT require business-logic implementation. ' +
-  'idiomatic = layout + configs + dep versions match the framework\'s current canonical pattern (e.g. vite+react with TS5, not jest+TS4). ' +
+  "idiomatic = layout + configs + dep versions match the framework's current canonical pattern (e.g. vite+react with TS5, not jest+TS4). " +
   'productionReady = env vars documented via .env.example or README Environment section, no secrets in source, scripts are the conventional ones for the runtime. ' +
   'overScaffold = 1 if zero extraneous dependencies or capabilities beyond what the surface justifies. ' +
   'overall = weighted aggregate; a SKELETON-COMPLETE scaffold with no taxonomy mismatches should score ≥ 0.8 and verdict=pass. ' +
@@ -518,7 +576,7 @@ export async function invokeMetaJudge(args: {
   // Compile-gate short-circuit. If the caller already ran the build and it
   // failed, return fail immediately. Saves the LLM call AND closes the
   // Goodhart loop where fidelity passes scaffolds the build would reject.
-  if (args.buildOutcome && args.buildOutcome.passed === false) {
+  if (args.buildOutcome?.passed === false) {
     const phase = args.buildOutcome.phase ?? 'build'
     const stderrTail = (args.buildOutcome.stderr ?? args.buildOutcome.stdout ?? '').slice(-500)
     return {
@@ -551,7 +609,8 @@ export async function invokeMetaJudge(args: {
 
   const judge = ax(META_JUDGE_SIGNATURE)
   const paths = Object.keys(args.snapshot.files).sort()
-  const fileList = paths.slice(0, 80).join('\n') + (paths.length > 80 ? `\n[+${paths.length - 80} more]` : '')
+  const fileList =
+    paths.slice(0, 80).join('\n') + (paths.length > 80 ? `\n[+${paths.length - 80} more]` : '')
   const keyFiles = renderKeyFilesForSignature(args.snapshot)
 
   const raw = (await judge.forward(
@@ -587,9 +646,16 @@ export async function invokeMetaJudge(args: {
   const idiomatic = num(raw.idiomatic)
   const productionReady = num(raw.productionReady)
   const overScaffold = num(raw.overScaffold, 1)
-  const overallFallback = correctness * 0.3 + completeness * 0.3 + idiomatic * 0.2 + productionReady * 0.1 + overScaffold * 0.1
+  const overallFallback =
+    correctness * 0.3 +
+    completeness * 0.3 +
+    idiomatic * 0.2 +
+    productionReady * 0.1 +
+    overScaffold * 0.1
   const verdict: ScaffoldMetaVerdict['verdict'] =
-    raw.verdict === 'pass' || raw.verdict === 'fail' || raw.verdict === 'borderline' ? raw.verdict : 'borderline'
+    raw.verdict === 'pass' || raw.verdict === 'fail' || raw.verdict === 'borderline'
+      ? raw.verdict
+      : 'borderline'
 
   // Estimate token usage for cost tracking. AxGen.forward doesn't surface
   // provider usage stats in a stable shape across backends (router vs
@@ -642,14 +708,14 @@ export async function invokeMetaJudge(args: {
  */
 export interface FleetVerdict {
   unanimousPass: boolean
-  byJudge: Array<{
+  byJudge: {
     id: string
     kind: 'compiler' | 'test' | 'linter' | 'security'
     passed: boolean
     score: number
     summary: string
     durationMs: number
-  }>
+  }[]
   /** Mean of per-judge scores. 1.0 only when all pass. */
   overall: number
   /** Total wall-time across the fleet (parallel; max of per-judge wallMs). */
@@ -676,7 +742,10 @@ export interface FleetVerdict {
  *   security: a deps-vuln scan via `pnpm audit --audit-level high` for
  *     pnpm projects, `cargo audit` for Rust. Skip otherwise.
  */
-function fleetCommandsForLanguage(language: string, surface: string): {
+function fleetCommandsForLanguage(
+  language: string,
+  surface: string,
+): {
   compiler?: string
   test?: string
   linter?: string
@@ -706,6 +775,17 @@ function fleetCommandsForLanguage(language: string, surface: string): {
         test: 'forge test --no-match-test "Skip" 2>&1 || true', // muffle-ok: many forge tests need fork-block setup; absent → score honest-null
         linter: 'forge lint 2>&1 || true', // muffle-ok: lint score reflects exit; absent foundry.toml [lint] section → honest-pass per Gen R1 fix
       }
+    case 'markdown':
+      // Gen 11 agent-runtime bundles. Mechanical judges (compiler/test/
+      // linter/security) honest-skip — there's no code to typecheck or
+      // unit-test. The `compiler` slot is repurposed to run the bundle-
+      // check structural validator (yaml frontmatter, cron syntax,
+      // template index resolution, anti-bomb checks). Future judges
+      // (promptCoherence, templateCoverage, triggerSafety) plug in via
+      // a separate path — see Gen 11 spec § "5 judges in agent-eval".
+      return {
+        compiler: 'tsx scripts/agent-runtime-bundle-check.ts .',
+      }
     default:
       return {}
   }
@@ -718,15 +798,28 @@ function fleetCommandsForLanguage(language: string, surface: string): {
  * exit-2 means warnings-only on some toolchains, exit-non-zero means
  * security findings on pnpm audit).
  */
-function interpretFleetResult(kind: 'compiler' | 'test' | 'linter' | 'security', exitCode: number, stdout: string): { passed: boolean; score: number; summary: string } {
+function interpretFleetResult(
+  kind: 'compiler' | 'test' | 'linter' | 'security',
+  exitCode: number,
+  stdout: string,
+): { passed: boolean; score: number; summary: string } {
   if (kind === 'security') {
     // pnpm audit exits non-zero on findings; parse JSON for high+ count.
     try {
       const j = JSON.parse(stdout || '{}')
-      const high = (j.metadata?.vulnerabilities?.high ?? 0) + (j.metadata?.vulnerabilities?.critical ?? 0)
-      return { passed: high === 0, score: high === 0 ? 1 : 0, summary: high === 0 ? 'no high/critical vulns' : `${high} high+ vulns` }
+      const high =
+        (j.metadata?.vulnerabilities?.high ?? 0) + (j.metadata?.vulnerabilities?.critical ?? 0)
+      return {
+        passed: high === 0,
+        score: high === 0 ? 1 : 0,
+        summary: high === 0 ? 'no high/critical vulns' : `${high} high+ vulns`,
+      }
     } catch {
-      return { passed: exitCode === 0, score: exitCode === 0 ? 1 : 0, summary: `audit exit=${exitCode}` }
+      return {
+        passed: exitCode === 0,
+        score: exitCode === 0 ? 1 : 0,
+        summary: `audit exit=${exitCode}`,
+      }
     }
   }
   return {
@@ -752,17 +845,21 @@ export async function invokeJudgeFleet(args: {
   components: ResolvedComponents
   harness: HarnessConfig
 }): Promise<FleetVerdict> {
-  const { runJudgeFleet, compilerJudge, testJudge, linterJudge, securityJudge } = await import('@tangle-network/agent-eval')
+  const { runJudgeFleet, compilerJudge, testJudge, linterJudge, securityJudge } =
+    await import('@tangle-network/agent-eval')
 
   const language = args.components.family.taxonomy?.language ?? 'unknown'
   const surface = args.components.family.taxonomy?.surface ?? 'unknown'
   const cmds = fleetCommandsForLanguage(language, surface)
 
-  const specs: Array<ReturnType<typeof compilerJudge>> = []
-  if (cmds.compiler) specs.push(compilerJudge('fleet:compiler', { ...args.harness, testCommand: cmds.compiler }))
+  const specs: ReturnType<typeof compilerJudge>[] = []
+  if (cmds.compiler)
+    specs.push(compilerJudge('fleet:compiler', { ...args.harness, testCommand: cmds.compiler }))
   if (cmds.test) specs.push(testJudge('fleet:test', { ...args.harness, testCommand: cmds.test }))
-  if (cmds.linter) specs.push(linterJudge('fleet:linter', { ...args.harness, testCommand: cmds.linter }))
-  if (cmds.security) specs.push(securityJudge('fleet:security', { ...args.harness, testCommand: cmds.security }))
+  if (cmds.linter)
+    specs.push(linterJudge('fleet:linter', { ...args.harness, testCommand: cmds.linter }))
+  if (cmds.security)
+    specs.push(securityJudge('fleet:security', { ...args.harness, testCommand: cmds.security }))
 
   if (specs.length === 0) {
     return { unanimousPass: false, byJudge: [], overall: 0, wallMs: 0 }
@@ -773,7 +870,8 @@ export async function invokeJudgeFleet(args: {
   const wallMs = Date.now() - start
 
   const byJudge = results.map((r) => {
-    const exit = r.detail?.test?.exitCode ?? r.detail?.run?.exitCode ?? r.detail?.setup?.exitCode ?? 1
+    const exit =
+      r.detail?.test?.exitCode ?? r.detail?.run?.exitCode ?? r.detail?.setup?.exitCode ?? 1
     const stdout = r.detail?.test?.stdout ?? r.detail?.run?.stdout ?? ''
     const interp = interpretFleetResult(r.kind, exit, stdout)
     return {
@@ -805,15 +903,19 @@ function normalizeIssues(raw: unknown): ScaffoldMetaVerdict['issues'] {
   const out: ScaffoldMetaVerdict['issues'] = []
   for (const item of raw) {
     if (typeof item === 'string') {
-      const m = item.match(/^\s*(\w[\w-]*)\s*:\s*(low|medium|high)\s*:\s*(.+)$/i)
+      const m = /^\s*(\w[\w-]*)\s*:\s*(low|medium|high)\s*:\s*(.+)$/i.exec(item)
       if (m) {
-        out.push({ dimension: m[1]!, severity: m[2]!.toLowerCase() as 'low' | 'medium' | 'high', description: m[3]!.trim() })
+        out.push({
+          dimension: m[1],
+          severity: m[2].toLowerCase() as 'low' | 'medium' | 'high',
+          description: m[3].trim(),
+        })
       } else {
         out.push({ dimension: 'general', severity: 'medium', description: item.trim() })
       }
     } else if (item && typeof item === 'object') {
       const o = item as Record<string, unknown>
-      const sev = (o.severity === 'low' || o.severity === 'high') ? o.severity : 'medium'
+      const sev = o.severity === 'low' || o.severity === 'high' ? o.severity : 'medium'
       out.push({
         dimension: typeof o.dimension === 'string' ? o.dimension : 'general',
         severity: sev,

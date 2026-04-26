@@ -2,7 +2,9 @@ import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { performance } from 'node:perf_hooks'
+
 import { ax } from '@ax-llm/ax'
+
 import { createLLM, isLLMAvailable } from './llm.js'
 
 const CACHE_DIR = '.evolve'
@@ -45,7 +47,10 @@ export function __setTestBrief(fn: BriefFn | null): void {
 }
 
 function hashKey(prompt: string, partner: string | null): string {
-  return createHash('sha1').update(`brief::${prompt}::${partner ?? ''}`).digest('hex').slice(0, 16)
+  return createHash('sha1')
+    .update(`brief::${prompt}::${partner ?? ''}`)
+    .digest('hex')
+    .slice(0, 16)
 }
 
 async function loadDiskCache(): Promise<Map<string, ProductBrief>> {

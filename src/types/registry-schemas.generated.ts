@@ -1,6 +1,6 @@
-// AUTO-GENERATED from registry/_schemas/*.json by scripts/gen-types-from-schemas.mjs.
+// AUTO-GENERATED from registry/_schemas/*.json by scripts/gen-types-from-schemas.ts.
 // Do not edit by hand — re-run the generator after schema changes.
-// `pnpm test` enforces this file is in sync via scripts/gen-types-from-schemas.mjs --check.
+// `pnpm test` enforces this file is in sync via scripts/gen-types-from-schemas.ts --check.
 
 /* eslint-disable */
 export interface Buildhints {
@@ -33,13 +33,14 @@ export interface Family {
   "default"?: string
 }>
   "requires"?: Array<string>
+  "includes"?: Array<string>
   "defaults"?: Record<string, unknown>
   "files"?: Array<{
   "source": string
   "target": string
 }>
   "validationChecks"?: Array<{
-  "type": "file-exists" | "node-syntax" | "http-start" | "command-success" | "python-compile"
+  "type": "file-exists" | "node-syntax" | "http-start" | "command-success" | "python-compile" | "prompt-frontmatter-valid" | "cron-syntax-valid" | "template-index-valid"
   "path"?: string
   "command"?: Array<string>
   "expect"?: string
@@ -97,6 +98,9 @@ export interface Layer {
   "dependencies"?: Record<string, string>
   "devDependencies"?: Record<string, string>
 }
+  "provides"?: Array<string>
+  "requires"?: Array<string>
+  "conflictsWith"?: Array<string>
 }
 
 export interface Partner {

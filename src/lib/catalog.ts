@@ -4,14 +4,14 @@ const plannedFamilies: unknown[] = []
 
 export async function buildCatalog(): Promise<{
   schemaVersion: 1
-  implemented: Array<{
+  implemented: {
     id: string
     status: 'implemented'
     language?: string
     runtime?: string
     surface?: string
     description: string
-  }>
+  }[]
   planned: unknown[]
   capabilityThemes: string[]
   databaseTargets: string[]

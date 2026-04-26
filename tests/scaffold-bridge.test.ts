@@ -304,11 +304,11 @@ describe('promote-family-proposal harness: strict TS gate', () => {
 
   test('capability promoter uses HARNESS_CONFIGS (no parallel switch)', async () => {
     const { readFileSync } = await import('node:fs')
-    const cap = readFileSync('scripts/promote-capability-proposal.mjs', 'utf8')
+    const cap = readFileSync('scripts/promote-capability-proposal.ts', 'utf8')
     assert.match(
       cap,
       /HARNESS_CONFIGS/,
-      'promote-capability-proposal.mjs must import HARNESS_CONFIGS — source of truth is scaffold-bridge.ts',
+      'promote-capability-proposal.ts must import HARNESS_CONFIGS — source of truth is scaffold-bridge.ts',
     )
     assert.doesNotMatch(
       cap,
@@ -325,7 +325,7 @@ describe('promote-family-proposal harness: strict TS gate', () => {
     // Regression guard: the harness assignment must spread cwd into the
     // harness object, not pass it to the driver.
     const { readFileSync } = await import('node:fs')
-    const promoter = readFileSync('scripts/promote-family-proposal.mjs', 'utf8')
+    const promoter = readFileSync('scripts/promote-family-proposal.ts', 'utf8')
     // Should NOT pass cwd to the driver constructor
     assert.doesNotMatch(
       promoter,
@@ -339,7 +339,7 @@ describe('promote-family-proposal harness: strict TS gate', () => {
       'harnessConfig must include cwd: composedOutDir so the test command runs in the composed scaffold',
     )
 
-    const cap = readFileSync('scripts/promote-capability-proposal.mjs', 'utf8')
+    const cap = readFileSync('scripts/promote-capability-proposal.ts', 'utf8')
     assert.doesNotMatch(
       cap,
       /new SubprocessSandboxDriver\(\s*\{[^}]*cwd/,

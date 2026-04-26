@@ -1,11 +1,13 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
+
+import type { ComposeSpec } from '../types.js'
+
 import { evaluateAgents } from './agent-runners.js'
-import { createAuditBundle } from './audit.js'
-import { benchmarkStarter } from './benchmark.js'
+import { createAuditBundle } from './eval/audit.js'
+import { benchmarkStarter } from './eval/benchmark.js'
 import { createTempDir, runTar, sanitizePackageName, writeJson } from './fs.js'
 import { validateStarter } from './validate.js'
-import type { ComposeSpec } from '../types.js'
 
 export async function createRelease({
   spec,
@@ -27,18 +29,23 @@ export async function createRelease({
 }> {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
   const baseDir =
-    outDir ?? (await createTempDir(`starter-foundry-release-${sanitizePackageName(spec.projectName)}`))
+    outDir ??
+    (await createTempDir(`starter-foundry-release-${sanitizePackageName(spec.projectName)}`))
   const releaseDir = path.join(baseDir, `${sanitizePackageName(spec.projectName)}-${timestamp}`)
 
   await fs.mkdir(releaseDir, { recursive: true })
 
   const audit = await createAuditBundle({ spec, outDir: releaseDir })
-  const agentEvaluation =
-    agents?.length ? await evaluateAgents({ spec, outDir: releaseDir, agents }) : null
+  const agentEvaluation = agents?.length
+    ? await evaluateAgents({ spec, outDir: releaseDir, agents })
+    : null
   const validation = await validateStarter({ spec, outDir: releaseDir })
   const benchmark = await benchmarkStarter({ spec, runs: benchmarkRuns, outDir: releaseDir })
 
-  const archivePath = path.join(baseDir, `${sanitizePackageName(spec.projectName)}-${timestamp}.tar.gz`)
+  const archivePath = path.join(
+    baseDir,
+    `${sanitizePackageName(spec.projectName)}-${timestamp}.tar.gz`,
+  )
   const archived = await runTar(releaseDir, archivePath)
   const releasePath = path.join(releaseDir, '.starter-foundry', 'release.json')
 

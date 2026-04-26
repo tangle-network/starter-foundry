@@ -1,0 +1,83 @@
+{
+  "id": "sandbox-app-ts",
+  "description": "React + Vite + sandbox-ui scaffold for a non-agent workspace app on Tangle sandbox SDK. Workspace-first layout with editor / file-tree / terminal panes. Use this when you're building on the sandbox SDK but the app isn't agent-chat-driven (code editor, audit tool, collaborative doc, file browser, REPL frontend).",
+  "tags": [
+    "sandbox-app",
+    "react",
+    "vite",
+    "typescript",
+    "sandbox-ui",
+    "workspace",
+    "editor"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "sandbox-app"
+  },
+  "includes": [
+    "ui-adapter:blocks-renderer"
+  ],
+  "defaults": {
+    "projectType": "sandbox-app",
+    "appName": "my-sandbox-app",
+    "appKind": "editor",
+    "sandboxApiUrl": "https://api.tangle.tools",
+    "port": 4174
+  },
+  "files": [
+    { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/index.html", "target": "index.html" },
+    { "source": "files/vite.config.ts", "target": "vite.config.ts" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/tailwind.config.cjs", "target": "tailwind.config.cjs" },
+    { "source": "files/postcss.config.cjs", "target": "postcss.config.cjs" },
+    { "source": "files/README.md", "target": "README.md" },
+    { "source": "files/src/main.tsx", "target": "src/main.tsx" },
+    { "source": "files/src/App.tsx", "target": "src/App.tsx" },
+    { "source": "files/src/index.css", "target": "src/index.css" },
+    { "source": "files/src/lib/sandbox-client.ts", "target": "src/lib/sandbox-client.ts" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "package.json" },
+    { "type": "file-exists", "path": "index.html" },
+    { "type": "file-exists", "path": "vite.config.ts" },
+    { "type": "file-exists", "path": "tsconfig.json" },
+    { "type": "file-exists", "path": "src/main.tsx" },
+    { "type": "file-exists", "path": "src/App.tsx" },
+    { "type": "file-exists", "path": "src/lib/sandbox-client.ts" }
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "sandbox-app",
+      "sandbox app",
+      "sandbox workspace",
+      "sandbox editor"
+    ],
+    "tier2": [
+      "code editor app",
+      "collaborative document",
+      "file browser",
+      "tangle sandbox app",
+      "non-agent app",
+      "audit tool"
+    ],
+    "archetypes": [
+      "sandbox-app",
+      "workspace-first-app"
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pnpm dev",
+      "pnpm build"
+    ],
+    "entrypoints": [
+      "src/App.tsx"
+    ],
+    "extensionPoints": [
+      "src/App.tsx",
+      "src/lib/sandbox-client.ts"
+    ]
+  }
+}

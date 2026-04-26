@@ -1,0 +1,81 @@
+{
+  "id": "agent-with-ui-ts",
+  "description": "React + Vite + sandbox-ui scaffold for a single agent-runtime bundle. Wires `@tangle-network/sandbox-sdk` session events into `SandboxWorkbench`'s chat + artifact surface, with a built-in :::output-block parser (via agent-output/blocks-renderer). NOTE: src/lib/parse-blocks.ts and src/lib/blocks-to-artifacts.tsx are provided by the ui-adapter:blocks-renderer layer at compose time — they are NOT duplicated in this family's files[] but ARE asserted by validationChecks because the layer composes them in.",
+  "tags": [
+    "agent-ui",
+    "react",
+    "vite",
+    "typescript",
+    "sandbox-ui",
+    "agent-runtime"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "agent-runtime-ui"
+  },
+  "includes": [
+    "ui-adapter:blocks-renderer"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-ui",
+    "agentName": "my-agent",
+    "agentBundleFamily": "agent-runtime-research",
+    "sandboxApiUrl": "https://api.tangle.tools",
+    "port": 4174
+  },
+  "files": [
+    { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/index.html", "target": "index.html" },
+    { "source": "files/vite.config.ts", "target": "vite.config.ts" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/tailwind.config.cjs", "target": "tailwind.config.cjs" },
+    { "source": "files/postcss.config.cjs", "target": "postcss.config.cjs" },
+    { "source": "files/README.md", "target": "README.md" },
+    { "source": "files/src/main.tsx", "target": "src/main.tsx" },
+    { "source": "files/src/App.tsx", "target": "src/App.tsx" },
+    { "source": "files/src/index.css", "target": "src/index.css" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "package.json" },
+    { "type": "file-exists", "path": "index.html" },
+    { "type": "file-exists", "path": "vite.config.ts" },
+    { "type": "file-exists", "path": "tsconfig.json" },
+    { "type": "file-exists", "path": "src/main.tsx" },
+    { "type": "file-exists", "path": "src/App.tsx" },
+    { "type": "file-exists", "path": "src/lib/parse-blocks.ts" },
+    { "type": "file-exists", "path": "src/lib/blocks-to-artifacts.tsx" }
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "agent-with-ui",
+      "agent ui",
+      "agent dashboard",
+      "single-agent app"
+    ],
+    "tier2": [
+      "chat surface",
+      "artifact pane",
+      "sandbox-ui",
+      "tangle sandbox",
+      "react agent app"
+    ],
+    "archetypes": [
+      "agent-with-ui",
+      "single-agent-app"
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pnpm dev",
+      "pnpm build"
+    ],
+    "entrypoints": [
+      "src/App.tsx"
+    ],
+    "extensionPoints": [
+      "src/App.tsx",
+      "src/lib/blocks-to-artifacts.tsx"
+    ]
+  }
+}

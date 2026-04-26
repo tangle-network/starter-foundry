@@ -16,7 +16,7 @@ import type { ComposeResult } from '../types.js'
  * scaffold contains layout layers that ship a personalize.css.
  */
 export const PERSONALIZATION_CSS_INSTRUCTION =
-  'Before adding features, open src/personalize.css (or app/personalize.css for Next.js) and rewrite it with a color palette that fits the user\'s product. Use HSL CSS custom properties on :root and .dark — see the existing content for format. The cascade overrides Tailwind v4 @theme defaults.'
+  "Before adding features, open src/personalize.css (or app/personalize.css for Next.js) and rewrite it with a color palette that fits the user's product. Use HSL CSS custom properties on :root and .dark — see the existing content for format. The cascade overrides Tailwind v4 @theme defaults."
 
 /**
  * Tells an agent how to use the personalize.json mechanism — single source of
@@ -39,8 +39,7 @@ export const PERSONALIZATION_JSON_INSTRUCTION =
  * Combined personalization instruction. Use this when injecting scaffold
  * context unless you have a reason to use one mechanism but not the other.
  */
-export const PERSONALIZATION_INSTRUCTION =
-  `${PERSONALIZATION_JSON_INSTRUCTION} ${PERSONALIZATION_CSS_INSTRUCTION}`
+export const PERSONALIZATION_INSTRUCTION = `${PERSONALIZATION_JSON_INSTRUCTION} ${PERSONALIZATION_CSS_INSTRUCTION}`
 
 /**
  * Tells the agent to start the dev server via the runtime's
@@ -81,7 +80,7 @@ const DEV_SERVER_STEP =
   '   Env vars are pre-set. Do NOT run pnpm/npm install or dev commands directly — they bypass runtime tracking.'
 
 const PERSONALIZE_STEP =
-  '2. **Personalize for the user\'s product:**\n' +
+  "2. **Personalize for the user's product:**\n" +
   '   - Rewrite `personalize.json` (workspace root or `src/`) — brand name, tagline, hero copy, features. This is the single highest-leverage edit.\n' +
   '   - Rewrite `personalize.css` (`src/` or `app/`) — HSL color palette on `:root` and `.dark` that fits the product.'
 
@@ -91,8 +90,8 @@ const BUILD_STEP_COMPOSED = (family: string) =>
   '   Use shadcn/ui components from `src/components/ui/` instead of raw HTML.'
 
 const BUILD_STEP_CURATED =
-  '3. **Read AGENTS.md** if present, then implement the user\'s request.\n' +
-  '   Edit existing files — don\'t recreate them. Use shadcn/ui components if available.'
+  "3. **Read AGENTS.md** if present, then implement the user's request.\n" +
+  "   Edit existing files — don't recreate them. Use shadcn/ui components if available."
 
 const VERIFY_STEP =
   '4. **Screenshot the preview.** Fix anything broken or unstyled before responding.'

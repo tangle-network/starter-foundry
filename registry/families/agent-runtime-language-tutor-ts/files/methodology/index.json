@@ -1,0 +1,27 @@
+{
+  "entries": [
+    {
+      "id": "daily-conversation-prompt",
+      "capability": "daily-conversation-prompt",
+      "path": "./daily-conversation-prompt.md",
+      "tags": ["methodology", "comprehensible-input", "voice", "daily"],
+      "version": "0.1.0",
+      "providedBy": "agent-tools/phony-voice"
+    },
+    {
+      "id": "vocabulary-drill",
+      "capability": "vocabulary-drill",
+      "path": "./vocabulary-drill.md",
+      "tags": ["methodology", "spaced-repetition", "anki", "srs"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "shadowing-protocol",
+      "capability": "shadowing-protocol",
+      "path": "./shadowing-protocol.md",
+      "tags": ["protocol", "shadowing", "pronunciation", "voice"],
+      "version": "0.1.0",
+      "providedBy": "agent-tools/phony-voice"
+    }
+  ]
+}

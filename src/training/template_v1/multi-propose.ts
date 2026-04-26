@@ -3,8 +3,8 @@
 // too close, flag for human review.
 
 import type { HarvestSummary } from './harvest.js'
-import { synthesize, type SynthesizeResult } from './synthesize.js'
 import { judge, type JudgeResult } from './judge.js'
+import { synthesize, type SynthesizeResult } from './synthesize.js'
 
 interface MultiProposeInput {
   templatePath: string
@@ -19,7 +19,7 @@ interface MultiProposeInput {
 
 export interface MultiProposeResult {
   winner: { candidate: SynthesizeResult; score: JudgeResult }
-  runnerUps: Array<{ candidate: SynthesizeResult; score: JudgeResult }>
+  runnerUps: { candidate: SynthesizeResult; score: JudgeResult }[]
   needsHumanTieBreak: boolean
   proposerCount: number
 }
@@ -48,9 +48,11 @@ export async function multiPropose(input: MultiProposeInput): Promise<MultiPropo
   }))
 
   judged.sort((a, b) => b.score.score - a.score.score)
-  const winner = judged[0]!
+  const winner = judged[0]
   const runnerUps = judged.slice(1)
-  const tie = runnerUps[0] && Math.abs(winner.score.score - runnerUps[0].score.score) < (input.tieThreshold ?? 0.05)
+  const tie =
+    runnerUps[0] &&
+    Math.abs(winner.score.score - runnerUps[0].score.score) < (input.tieThreshold ?? 0.05)
 
   return {
     winner,

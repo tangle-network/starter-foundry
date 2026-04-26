@@ -1,6 +1,7 @@
 import { spawn } from 'node:child_process'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+
 import { readJson } from './fs.js'
 
 interface FattenResult {
@@ -14,20 +15,37 @@ interface FattenResult {
 
 interface FattenWorkspaceResult {
   outDir: string
-  projects: Array<{ path: string; result: FattenResult }>
+  projects: { path: string; result: FattenResult }[]
   durationMs: number
 }
 
-function run(command: string, cwd: string, timeoutMs = 120000): Promise<{ ok: boolean; stdout: string; stderr: string }> {
+function run(
+  command: string,
+  cwd: string,
+  timeoutMs = 120000,
+): Promise<{ ok: boolean; stdout: string; stderr: string }> {
   return new Promise((resolve) => {
     const child = spawn('sh', ['-c', command], { cwd, stdio: ['ignore', 'pipe', 'pipe'] })
     let stdout = ''
     let stderr = ''
-    const timer = setTimeout(() => { child.kill('SIGTERM'); resolve({ ok: false, stdout, stderr: `${stderr}\ntimeout after ${timeoutMs}ms` }) }, timeoutMs)
-    child.stdout?.on('data', (chunk: Buffer) => { stdout += chunk.toString() })
-    child.stderr?.on('data', (chunk: Buffer) => { stderr += chunk.toString() })
-    child.on('close', (code) => { clearTimeout(timer); resolve({ ok: code === 0, stdout, stderr }) })
-    child.on('error', (err) => { clearTimeout(timer); resolve({ ok: false, stdout, stderr: err.message }) })
+    const timer = setTimeout(() => {
+      child.kill('SIGTERM')
+      resolve({ ok: false, stdout, stderr: `${stderr}\ntimeout after ${timeoutMs}ms` })
+    }, timeoutMs)
+    child.stdout?.on('data', (chunk: Buffer) => {
+      stdout += chunk.toString()
+    })
+    child.stderr?.on('data', (chunk: Buffer) => {
+      stderr += chunk.toString()
+    })
+    child.on('close', (code) => {
+      clearTimeout(timer)
+      resolve({ ok: code === 0, stdout, stderr })
+    })
+    child.on('error', (err) => {
+      clearTimeout(timer)
+      resolve({ ok: false, stdout, stderr: err.message })
+    })
   })
 }
 
@@ -56,8 +74,12 @@ export async function fattenStarter(outDir: string): Promise<FattenResult> {
   // Check if there's a package.json with dependencies
   const pkgPath = path.join(outDir, 'package.json')
   try {
-    const pkg = await readJson<{ dependencies?: Record<string, string>; devDependencies?: Record<string, string> }>(pkgPath)
-    const depCount = Object.keys(pkg.dependencies ?? {}).length + Object.keys(pkg.devDependencies ?? {}).length
+    const pkg = await readJson<{
+      dependencies?: Record<string, string>
+      devDependencies?: Record<string, string>
+    }>(pkgPath)
+    const depCount =
+      Object.keys(pkg.dependencies ?? {}).length + Object.keys(pkg.devDependencies ?? {}).length
     result.hadDeps = depCount > 0
   } catch {
     result.durationMs = Math.round(performance.now() - start)
@@ -70,7 +92,10 @@ export async function fattenStarter(outDir: string): Promise<FattenResult> {
   }
 
   // Step 1: Install dependencies
-  const install = await run('pnpm install --frozen-lockfile 2>/dev/null || pnpm install --no-frozen-lockfile', outDir)
+  const install = await run(
+    'pnpm install --frozen-lockfile 2>/dev/null || pnpm install --no-frozen-lockfile',
+    outDir,
+  )
   result.installed = install.ok
 
   if (!result.installed) {
@@ -79,8 +104,15 @@ export async function fattenStarter(outDir: string): Promise<FattenResult> {
   }
 
   // Step 2: Pre-bundle Vite dependencies (creates node_modules/.vite/)
-  const hasViteConfig = await fs.access(path.join(outDir, 'vite.config.ts')).then(() => true).catch(() => false)
-    || await fs.access(path.join(outDir, 'vite.config.js')).then(() => true).catch(() => false)
+  const hasViteConfig =
+    (await fs
+      .access(path.join(outDir, 'vite.config.ts'))
+      .then(() => true)
+      .catch(() => false)) ||
+    (await fs
+      .access(path.join(outDir, 'vite.config.js'))
+      .then(() => true)
+      .catch(() => false))
 
   if (hasViteConfig) {
     const viteOptimize = await run('npx vite optimize', outDir, 30000)
@@ -88,9 +120,19 @@ export async function fattenStarter(outDir: string): Promise<FattenResult> {
   }
 
   // Step 3: Pre-build (creates dist/ or .next/)
-  const hasNextConfig = await fs.access(path.join(outDir, 'next.config.ts')).then(() => true).catch(() => false)
-    || await fs.access(path.join(outDir, 'next.config.js')).then(() => true).catch(() => false)
-    || await fs.access(path.join(outDir, 'next.config.mjs')).then(() => true).catch(() => false)
+  const hasNextConfig =
+    (await fs
+      .access(path.join(outDir, 'next.config.ts'))
+      .then(() => true)
+      .catch(() => false)) ||
+    (await fs
+      .access(path.join(outDir, 'next.config.js'))
+      .then(() => true)
+      .catch(() => false)) ||
+    (await fs
+      .access(path.join(outDir, 'next.config.mjs'))
+      .then(() => true)
+      .catch(() => false))
 
   if (hasNextConfig) {
     const build = await run('npx next build', outDir, 60000)
@@ -115,7 +157,7 @@ export async function fattenWorkspace(outDir: string): Promise<FattenWorkspaceRe
   // Check for workspace report to find project paths
   const reportPath = path.join(outDir, '.starter-foundry', 'workspace-report.json')
   try {
-    const report = await readJson<{ projects: Array<{ path: string }> }>(reportPath)
+    const report = await readJson<{ projects: { path: string }[] }>(reportPath)
     for (const project of report.projects) {
       const projectDir = path.join(outDir, project.path)
       const result = await fattenStarter(projectDir)

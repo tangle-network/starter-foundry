@@ -4,7 +4,9 @@
 
 import fs from 'node:fs/promises'
 import { dirname, join } from 'node:path'
+
 import { ensureDir } from '../fs.js'
+
 import type { BrandKit } from './index.js'
 
 export const RTL_LOCALES = new Set(['ar', 'he', 'fa', 'ur'])
@@ -12,26 +14,56 @@ export const RTL_LOCALES = new Set(['ar', 'he', 'fa', 'ur'])
 export type LocalePack = Record<string, string>
 
 export function isRtl(locale: string): boolean {
-  return RTL_LOCALES.has(locale.split('-')[0]!.toLowerCase())
+  return RTL_LOCALES.has(locale.split('-')[0].toLowerCase())
 }
 
 // Minimal translation table per locale — the hero strings are brand-specific
 // (substituted from the kit); common UI strings are hand-translated for the
 // small baseline set. Real products extend via their own translation flow.
 const COMMON_STRINGS: Record<string, Record<string, string>> = {
-  en: { get_started: 'Get started', learn_more: 'Learn more', sign_in: 'Sign in', sign_out: 'Sign out' },
-  es: { get_started: 'Comenzar', learn_more: 'Saber más', sign_in: 'Iniciar sesión', sign_out: 'Cerrar sesión' },
-  fr: { get_started: 'Commencer', learn_more: 'En savoir plus', sign_in: 'Se connecter', sign_out: 'Se déconnecter' },
-  de: { get_started: 'Loslegen', learn_more: 'Mehr erfahren', sign_in: 'Anmelden', sign_out: 'Abmelden' },
-  ja: { get_started: 'はじめる', learn_more: '詳細を見る', sign_in: 'サインイン', sign_out: 'サインアウト' },
-  ar: { get_started: 'ابدأ', learn_more: 'اعرف المزيد', sign_in: 'تسجيل الدخول', sign_out: 'تسجيل الخروج' },
+  en: {
+    get_started: 'Get started',
+    learn_more: 'Learn more',
+    sign_in: 'Sign in',
+    sign_out: 'Sign out',
+  },
+  es: {
+    get_started: 'Comenzar',
+    learn_more: 'Saber más',
+    sign_in: 'Iniciar sesión',
+    sign_out: 'Cerrar sesión',
+  },
+  fr: {
+    get_started: 'Commencer',
+    learn_more: 'En savoir plus',
+    sign_in: 'Se connecter',
+    sign_out: 'Se déconnecter',
+  },
+  de: {
+    get_started: 'Loslegen',
+    learn_more: 'Mehr erfahren',
+    sign_in: 'Anmelden',
+    sign_out: 'Abmelden',
+  },
+  ja: {
+    get_started: 'はじめる',
+    learn_more: '詳細を見る',
+    sign_in: 'サインイン',
+    sign_out: 'サインアウト',
+  },
+  ar: {
+    get_started: 'ابدأ',
+    learn_more: 'اعرف المزيد',
+    sign_in: 'تسجيل الدخول',
+    sign_out: 'تسجيل الخروج',
+  },
   he: { get_started: 'התחל', learn_more: 'למידע נוסף', sign_in: 'כניסה', sign_out: 'יציאה' },
   pt: { get_started: 'Começar', learn_more: 'Saiba mais', sign_in: 'Entrar', sign_out: 'Sair' },
   zh: { get_started: '开始', learn_more: '了解更多', sign_in: '登录', sign_out: '登出' },
 }
 
 export function generateLocalePack(kit: BrandKit, locale: string): LocalePack {
-  const base = COMMON_STRINGS[locale] ?? COMMON_STRINGS['en']!
+  const base = COMMON_STRINGS[locale] ?? COMMON_STRINGS.en
   return {
     ...base,
     brand_name: kit.brandName,
@@ -43,12 +75,12 @@ export function generateLocalePack(kit: BrandKit, locale: string): LocalePack {
 
 export interface I18nEmitResult {
   locales: string[]
-  files: Array<{ path: string; body: string }>
+  files: { path: string; body: string }[]
   rtlEnabled: boolean
 }
 
 export function buildI18nFiles(kit: BrandKit, locales: string[]): I18nEmitResult {
-  const files: Array<{ path: string; body: string }> = []
+  const files: { path: string; body: string }[] = []
   const rtlEnabled = locales.some((l) => isRtl(l))
 
   for (const locale of locales) {
@@ -108,7 +140,11 @@ html[dir="rtl"] .reverse-on-rtl { flex-direction: row-reverse; }
   return { locales, files, rtlEnabled }
 }
 
-export async function emitI18n(kit: BrandKit, outDir: string, locales: string[]): Promise<I18nEmitResult> {
+export async function emitI18n(
+  kit: BrandKit,
+  outDir: string,
+  locales: string[],
+): Promise<I18nEmitResult> {
   const result = buildI18nFiles(kit, locales)
   for (const f of result.files) {
     const abs = join(outDir, f.path)

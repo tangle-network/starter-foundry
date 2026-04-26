@@ -8,6 +8,7 @@
 
 import { mkdir, writeFile, access } from 'node:fs/promises'
 import path from 'node:path'
+
 import type { RankedCandidate } from './rank.js'
 
 export interface PromoteInput {
@@ -19,7 +20,7 @@ export interface PromoteInput {
 
 export interface PromoteOutput {
   promoted: string[]
-  skipped: Array<{ id: string; reason: string }>
+  skipped: { id: string; reason: string }[]
 }
 
 async function exists(p: string): Promise<boolean> {
@@ -33,7 +34,7 @@ async function exists(p: string): Promise<boolean> {
 
 export async function promoteNode(input: PromoteInput): Promise<PromoteOutput> {
   const promoted: string[] = []
-  const skipped: Array<{ id: string; reason: string }> = []
+  const skipped: { id: string; reason: string }[] = []
   const max = input.maxPromotions ?? 8
 
   const candidates = input.ranked.filter((c) => c.score.promotable).slice(0, max)

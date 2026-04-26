@@ -28,6 +28,7 @@
 // layer strings. No family/kind routing changes.
 
 import { hasAny } from '../keywords.js'
+
 import {
   ADMIN_ARCHETYPE_SIGNALS,
   AI_PRODUCT_PHRASES,
@@ -62,7 +63,15 @@ function isAiProductPrompt(text: string): boolean {
 // Chatbot-style product — prompt describes a bot/assistant product even when
 // the word "AI" doesn't appear (e.g. "customer support chatbot for Shopify").
 function isChatbotStyleProduct(text: string): boolean {
-  return hasAny(text, ['chatbot', 'chat bot', 'slack bot', 'discord bot', 'support bot', 'voice bot', 'phone agent'])
+  return hasAny(text, [
+    'chatbot',
+    'chat bot',
+    'slack bot',
+    'discord bot',
+    'support bot',
+    'voice bot',
+    'phone agent',
+  ])
 }
 
 export function inferImplicitCapabilities(
@@ -110,8 +119,7 @@ export function inferImplicitCapabilities(
   const isLandingOnly =
     hasAny(text, ['landing page', 'marketing page', 'blog']) &&
     !hasAny(text, ['dashboard', 'admin', 'app', 'saas', 'portal', 'panel'])
-  const shouldDashboard =
-    !chatArchetype && !isLandingOnly && !has('capability:layout-dashboard')
+  const shouldDashboard = !chatArchetype && !isLandingOnly && !has('capability:layout-dashboard')
   if (shouldDashboard) {
     out.push('capability:layout-dashboard')
   }
@@ -158,7 +166,11 @@ export function inferImplicitCapabilities(
   // file-based routers and are correctly excluded by ROUTING_FAMILIES.
   // Observed: dao-proposals installed react-router-dom 3× because no
   // capability declared the dep.
-  if (ROUTING_FAMILIES.has(family) && hasAny(text, ROUTING_ARCHETYPE_SIGNALS) && !has('capability:routing')) {
+  if (
+    ROUTING_FAMILIES.has(family) &&
+    hasAny(text, ROUTING_ARCHETYPE_SIGNALS) &&
+    !has('capability:routing')
+  ) {
     out.push('capability:routing')
   }
 

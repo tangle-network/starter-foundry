@@ -6,8 +6,8 @@ import { spawnSync } from 'node:child_process'
 import { tmpdir } from 'node:os'
 
 const REPO = process.cwd()
-const GAP_SCRIPT = join(REPO, 'scripts/detect-family-gaps.mjs')
-const PROMOTE_SCRIPT = join(REPO, 'scripts/promote-family-proposal.mjs')
+const GAP_SCRIPT = join(REPO, 'scripts/detect-family-gaps.ts')
+const PROMOTE_SCRIPT = join(REPO, 'scripts/promote-family-proposal.ts')
 
 // ── gap detector contract tests ─────────────────────────────────────
 

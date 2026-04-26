@@ -41,6 +41,10 @@
       "target": "script/Cargo.toml"
     },
     {
+      "source": "files/script/build.rs",
+      "target": "script/build.rs"
+    },
+    {
       "source": "files/script/main.rs",
       "target": "script/src/main.rs"
     },

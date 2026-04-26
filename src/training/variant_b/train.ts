@@ -1,6 +1,6 @@
 // Public entrypoint: runTrainingLoop({ corpusPath, outPath })
 //
-// Contract (see scripts/multi-pursue-eval.mjs):
+// Contract (see scripts/multi-pursue-eval.ts):
 //   - Read corpusPath (defaults to corpus/ideasai-prompts.json)
 //   - Synthesize traces via the collect node
 //   - Run the train node, which compiles AxMiPRO on the brief signature
@@ -11,6 +11,7 @@
 // paying for generate/judge/rank/promote.
 
 import { createLLM } from '../../lib/llm.js'
+
 import { collectNode } from './nodes/collect.js'
 import { trainNode } from './nodes/train.js'
 import type { SerializedOptimizedProgram } from './nodes/train.js'

@@ -11,16 +11,16 @@ import type { AxAIService } from '@ax-llm/ax'
 
 import { collectNode } from './nodes/collect.js'
 import type { CollectInput, CollectOutput } from './nodes/collect.js'
-import { trainNode } from './nodes/train.js'
-import type { TrainInput, TrainOutput } from './nodes/train.js'
 import { generateNode } from './nodes/generate.js'
 import type { GenerateInput, GenerateOutput } from './nodes/generate.js'
 import { judgeNode } from './nodes/judge.js'
 import type { JudgeInput, JudgeOutput } from './nodes/judge.js'
-import { rankNode } from './nodes/rank.js'
-import type { RankInput, RankOutput } from './nodes/rank.js'
 import { promoteNode } from './nodes/promote.js'
 import type { PromoteInput, PromoteOutput } from './nodes/promote.js'
+import { rankNode } from './nodes/rank.js'
+import type { RankInput, RankOutput } from './nodes/rank.js'
+import type { TrainInput, TrainOutput } from './nodes/train.js'
+import { trainNode } from './nodes/train.js'
 
 interface FlowInput {
   corpusPath: string

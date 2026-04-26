@@ -1,0 +1,28 @@
+{
+  "entries": [
+    {
+      "id": "husbandry-reference",
+      "capability": "husbandry-reference",
+      "path": "./husbandry-reference.md",
+      "tags": ["methodology", "general-information", "husbandry"],
+      "version": "0.1.0",
+      "retrieved": "2026-04-25"
+    },
+    {
+      "id": "vaccination-framework",
+      "capability": "vaccination-framework",
+      "path": "./vaccination-framework.md",
+      "tags": ["methodology", "vaccination", "framework", "aaha", "aafp"],
+      "version": "0.1.0",
+      "retrieved": "2026-04-25"
+    },
+    {
+      "id": "emergency-triage",
+      "capability": "emergency-triage",
+      "path": "./emergency-triage.md",
+      "tags": ["safety", "escalation", "mandatory", "load-bearing"],
+      "version": "0.1.0",
+      "retrieved": "2026-04-25"
+    }
+  ]
+}

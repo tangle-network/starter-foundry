@@ -1,9 +1,11 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "entry": [
-    "scripts/**/*.mjs",
+    "scripts/**/*.ts",
     "tests/**/*.test.ts",
-    "src/training/variant_b/train.ts",
+    "src/training/**/run*.ts",
+    "src/training/**/train.ts",
+    "src/training/**/flow.ts",
     "src/training/variant_b/brief-loader.ts",
     "src/training/variant_b/generate.ts",
     "src/training/variant_b/judge.ts",
@@ -14,10 +16,11 @@
   ],
   "project": [
     "src/**/*.ts",
-    "scripts/**/*.mjs",
+    "scripts/**/*.ts",
     "tests/**/*.test.ts"
   ],
   "ignore": [
-    "registry/**"
+    "registry/**",
+    "src/types/registry-schemas.generated.ts"
   ]
 }

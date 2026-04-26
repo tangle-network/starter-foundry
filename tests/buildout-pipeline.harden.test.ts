@@ -15,9 +15,9 @@ import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 
 const REPO = resolve(import.meta.dirname, '..')
-const MINE = join(REPO, 'scripts/mine-buildout-sessions.mjs')
-const JOIN = join(REPO, 'scripts/join-buildout-outcomes.mjs')
-const ANALYZE = join(REPO, 'scripts/analyze-buildouts.mjs')
+const MINE = join(REPO, 'scripts/mine-buildout-sessions.ts')
+const JOIN = join(REPO, 'scripts/join-buildout-outcomes.ts')
+const ANALYZE = join(REPO, 'scripts/analyze-buildouts.ts')
 
 function run(cmd: string, args: string[], cwd: string): SpawnSyncReturns<string> {
   return spawnSync(cmd, args, {

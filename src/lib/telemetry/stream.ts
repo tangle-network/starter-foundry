@@ -122,7 +122,9 @@ export function createTelemetryStream(options: TelemetryStreamOptions): Telemetr
     if (!events.length) return true
     const batchId = `${now()}-${Math.random().toString(36).slice(2, 10)}`
     const controller = new AbortController()
-    const tid = setTimeout(() => controller.abort(), timeoutMs)
+    const tid = setTimeout(() => {
+      controller.abort()
+    }, timeoutMs)
     try {
       const headers: Record<string, string> = { 'content-type': 'application/json' }
       if (options.authToken) headers.authorization = `Bearer ${options.authToken}`
@@ -190,4 +192,3 @@ export function createTelemetryStream(options: TelemetryStreamOptions): Telemetr
     pendingCount: () => pending.length,
   }
 }
-

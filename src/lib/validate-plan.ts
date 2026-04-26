@@ -12,8 +12,9 @@
 // Does NOT check: file-render outcomes, validation-check command success.
 // Those require the compose step to actually run.
 
-import { loadRegistry } from './registry.js'
 import type { ComposeSpec, WorkspaceSpec } from '../types.js'
+
+import { loadRegistry } from './registry.js'
 
 export interface PlanValidationIssue {
   path: string
@@ -67,7 +68,10 @@ export async function validatePlan(
     for (const [slotName, selection] of Object.entries(s.slots ?? {})) {
       const slotConfig = family.slots?.[slotName]
       if (!slotConfig) {
-        issues.push({ path: `${path}.slots.${slotName}`, message: `family "${s.family}" has no slot "${slotName}"` })
+        issues.push({
+          path: `${path}.slots.${slotName}`,
+          message: `family "${s.family}" has no slot "${slotName}"`,
+        })
         continue
       }
       if (Array.isArray(slotConfig.options) && !slotConfig.options.includes(selection)) {
@@ -81,11 +85,11 @@ export async function validatePlan(
 
   if ('projects' in spec) {
     for (let i = 0; i < spec.projects.length; i++) {
-      const project = spec.projects[i]!
+      const project = spec.projects[i]
       check(project.spec, `projects[${i}]`)
     }
   } else {
-    check(spec as ComposeSpec, 'spec')
+    check(spec, 'spec')
   }
 
   return { ok: issues.length === 0, issues }

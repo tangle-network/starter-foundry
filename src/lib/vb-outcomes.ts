@@ -32,7 +32,7 @@ export interface VBExecutionTrace {
     toolCallSuccesses: number
     toolCallFailures: number
     filesTouchedCount: number
-    bashCommandsTop: Array<{ cmd: string; count: number }>
+    bashCommandsTop: { cmd: string; count: number }[]
     sessionDir: string
   }
 }
@@ -52,9 +52,7 @@ interface ScenarioOutcome {
 }
 
 /** Load every VB trace file from the traces directory. */
-export async function loadVBTraces(
-  tracesDir: string = '.evolve/traces',
-): Promise<VBExecutionTrace[]> {
+export async function loadVBTraces(tracesDir = '.evolve/traces'): Promise<VBExecutionTrace[]> {
   let entries: string[]
   try {
     entries = await fs.readdir(tracesDir)

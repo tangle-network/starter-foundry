@@ -68,8 +68,9 @@ const ROUTER_API_BASE = 'https://router.tangle.tools/api'
 
 /** True when at least one dispatch path has the env it needs. */
 function isBridgeAvailable(): boolean {
-  const direct = process.env['CLI_BRIDGE_URL'] && process.env['CLI_BRIDGE_BEARER']
-  const router = (process.env['TCLOUD_API_KEY'] ?? process.env['TANGLE_API_KEY']) && process.env['BRIDGE_UNLOCK']
+  const direct = process.env.CLI_BRIDGE_URL && process.env.CLI_BRIDGE_BEARER
+  const router =
+    (process.env.TCLOUD_API_KEY ?? process.env.TANGLE_API_KEY) && process.env.BRIDGE_UNLOCK
   return Boolean(direct || router)
 }
 
@@ -83,15 +84,15 @@ function isBridgeAvailable(): boolean {
 interface DirectBridgeSession {
   ask(message: string): Promise<string>
   stream(message: string): AsyncGenerator<string>
-  turn(messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>): Promise<string>
+  turn(messages: { role: 'system' | 'user' | 'assistant'; content: string }[]): Promise<string>
   withResume(newResume: string): DirectBridgeSession
   readonly model: string
   readonly resume: string
 }
 
 function createDirectBridge(opts: BridgeOptions): DirectBridgeSession {
-  const baseURL = process.env['CLI_BRIDGE_URL']!.replace(/\/+$/, '') + '/v1'
-  const bearer = process.env['CLI_BRIDGE_BEARER']!
+  const baseURL = process.env.CLI_BRIDGE_URL!.replace(/\/+$/, '') + '/v1'
+  const bearer = process.env.CLI_BRIDGE_BEARER!
   const harness = opts.harness ?? 'kimi-code'
   const model = opts.model ?? DEFAULT_MODELS[harness]
   const fullModel = `${harness}/${model}`
@@ -103,8 +104,12 @@ function createDirectBridge(opts: BridgeOptions): DirectBridgeSession {
 
   function build(resume: string): DirectBridgeSession {
     return {
-      get model() { return fullModel },
-      get resume() { return resume },
+      get model() {
+        return fullModel
+      },
+      get resume() {
+        return resume
+      },
       async ask(message: string): Promise<string> {
         const result = await tcloud.chat({
           model: fullModel,
@@ -136,7 +141,9 @@ function createDirectBridge(opts: BridgeOptions): DirectBridgeSession {
         })
         return result.choices[0]?.message?.content ?? ''
       },
-      withResume(newResume: string) { return build(newResume) },
+      withResume(newResume: string) {
+        return build(newResume)
+      },
     }
   }
 
@@ -144,10 +151,10 @@ function createDirectBridge(opts: BridgeOptions): DirectBridgeSession {
 }
 
 export function createBridge(opts: BridgeOptions): BridgeSession | DirectBridgeSession {
-  const directUrl = process.env['CLI_BRIDGE_URL']
-  const directBearer = process.env['CLI_BRIDGE_BEARER']
-  const apiKey = process.env['TCLOUD_API_KEY'] ?? process.env['TANGLE_API_KEY']
-  const unlock = process.env['BRIDGE_UNLOCK']
+  const directUrl = process.env.CLI_BRIDGE_URL
+  const directBearer = process.env.CLI_BRIDGE_BEARER
+  const apiKey = process.env.TCLOUD_API_KEY ?? process.env.TANGLE_API_KEY
+  const unlock = process.env.BRIDGE_UNLOCK
 
   // Path 1: direct local. Cleanest path when both are set and we don't
   // also have router creds — skip the router entirely.
@@ -173,9 +180,8 @@ export function createBridge(opts: BridgeOptions): BridgeSession | DirectBridgeS
 
   // Path 2: BYOB-via-router. Reminder: directUrl must be reachable
   // FROM the router box (public tunnel for laptop dev).
-  const byobCfg = directUrl && directBearer
-    ? { bridgeUrl: directUrl, bridgeBearer: directBearer }
-    : {}
+  const byobCfg =
+    directUrl && directBearer ? { bridgeUrl: directUrl, bridgeBearer: directBearer } : {}
 
   return tcloud.bridge({ harness, model, unlock, resume: opts.resume, ...byobCfg })
 }

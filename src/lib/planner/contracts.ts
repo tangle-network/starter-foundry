@@ -10,6 +10,7 @@
 // Pure functions — no I/O, no mutation.
 
 import { hasAny, matchesKeyword } from '../keywords.js'
+
 import { detectEvmDeployPattern, detectHardhatExplicit } from './detectors.js'
 
 interface AgentFamilyChoice {
@@ -29,12 +30,25 @@ export function buildEvmContractLayers(text: string): string[] {
 
   if (
     !hardhatExplicit &&
-    hasAny(text, ['layerzero', 'oft', 'bridge tokens', 'sendtokens script', 'omnichain fungible token'])
+    hasAny(text, [
+      'layerzero',
+      'oft',
+      'bridge tokens',
+      'sendtokens script',
+      'omnichain fungible token',
+    ])
   ) {
     layers.push('capability:evm-layerzero-oft')
   } else if (
     !hardhatExplicit &&
-    hasAny(text, ['erc-4337', 'erc4337', 'bundler', 'permissionless.js', 'gasless mint', 'account abstraction'])
+    hasAny(text, [
+      'erc-4337',
+      'erc4337',
+      'bundler',
+      'permissionless.js',
+      'gasless mint',
+      'account abstraction',
+    ])
   ) {
     layers.push('capability:evm-account-abstraction')
   }
@@ -43,8 +57,10 @@ export function buildEvmContractLayers(text: string): string[] {
 }
 
 export function buildEvmContractVariables(text: string): Record<string, string> {
-  if (hasAny(text, ['layerzero', 'oft', 'omnichain fungible token'])) return { contractName: 'OmnichainToken' }
-  if (hasAny(text, ['erc721', 'erc-721', 'nft collection', 'gasless mint'])) return { contractName: 'GaslessCollectible' }
+  if (hasAny(text, ['layerzero', 'oft', 'omnichain fungible token']))
+    return { contractName: 'OmnichainToken' }
+  if (hasAny(text, ['erc721', 'erc-721', 'nft collection', 'gasless mint']))
+    return { contractName: 'GaslessCollectible' }
   if (hasAny(text, ['erc20', 'erc-20', 'sample erc20'])) return { contractName: 'XLayerToken' }
   return { contractName: 'Counter' }
 }
@@ -52,17 +68,48 @@ export function buildEvmContractVariables(text: string): Record<string, string> 
 export function buildSolanaProgramLayers(text: string): string[] {
   const layers = ['framework:solana-native-rust']
 
-  if (hasAny(text, ['perpetual', 'futures', 'funding rate', 'liquidation', 'insurance fund', 'cross-collateral'])) {
+  if (
+    hasAny(text, [
+      'perpetual',
+      'futures',
+      'funding rate',
+      'liquidation',
+      'insurance fund',
+      'cross-collateral',
+    ])
+  ) {
     layers.push('capability:solana-perps')
-  } else if (hasAny(text, ['concentrated liquidity', 'tick-based liquidity', 'swap router', 'position nft'])) {
+  } else if (
+    hasAny(text, ['concentrated liquidity', 'tick-based liquidity', 'swap router', 'position nft'])
+  ) {
     layers.push('capability:solana-amm')
-  } else if (hasAny(text, ['nft marketplace', 'compressed nfts', 'royalty enforcement', 'bundle sales'])) {
+  } else if (
+    hasAny(text, ['nft marketplace', 'compressed nfts', 'royalty enforcement', 'bundle sales'])
+  ) {
     layers.push('capability:solana-nft')
-  } else if (hasAny(text, ['launchpad', 'fair launches', 'dutch auction', 'bonding curve', 'claim portal'])) {
+  } else if (
+    hasAny(text, ['launchpad', 'fair launches', 'dutch auction', 'bonding curve', 'claim portal'])
+  ) {
     layers.push('capability:solana-launchpad')
-  } else if (hasAny(text, ['staking platform', 'veToken', 'rewards dashboard', 'auto-compound', 'validator delegation'])) {
+  } else if (
+    hasAny(text, [
+      'staking platform',
+      'veToken',
+      'rewards dashboard',
+      'auto-compound',
+      'validator delegation',
+    ])
+  ) {
     layers.push('capability:solana-staking')
-  } else if (hasAny(text, ['prediction market', 'binary (yes/no)', 'switchboard oracle', 'scalar', 'categorical'])) {
+  } else if (
+    hasAny(text, [
+      'prediction market',
+      'binary (yes/no)',
+      'switchboard oracle',
+      'scalar',
+      'categorical',
+    ])
+  ) {
     layers.push('capability:solana-prediction')
   }
 
@@ -71,11 +118,16 @@ export function buildSolanaProgramLayers(text: string): string[] {
 
 export function buildSolanaProgramVariables(text: string): Record<string, string> {
   if (hasAny(text, ['perpetual', 'futures'])) return { instructionName: 'InitializePerpMarket' }
-  if (hasAny(text, ['concentrated liquidity', 'amm dex', 'swap router'])) return { instructionName: 'InitializePool' }
-  if (hasAny(text, ['nft marketplace', 'compressed nfts'])) return { instructionName: 'CreateListing' }
-  if (hasAny(text, ['launchpad', 'fair launches', 'bonding curve'])) return { instructionName: 'CreateLaunch' }
-  if (hasAny(text, ['staking platform', 'veToken', 'auto-compound'])) return { instructionName: 'InitializeStakePool' }
-  if (hasAny(text, ['prediction market', 'scalar', 'categorical'])) return { instructionName: 'CreateMarket' }
+  if (hasAny(text, ['concentrated liquidity', 'amm dex', 'swap router']))
+    return { instructionName: 'InitializePool' }
+  if (hasAny(text, ['nft marketplace', 'compressed nfts']))
+    return { instructionName: 'CreateListing' }
+  if (hasAny(text, ['launchpad', 'fair launches', 'bonding curve']))
+    return { instructionName: 'CreateLaunch' }
+  if (hasAny(text, ['staking platform', 'veToken', 'auto-compound']))
+    return { instructionName: 'InitializeStakePool' }
+  if (hasAny(text, ['prediction market', 'scalar', 'categorical']))
+    return { instructionName: 'CreateMarket' }
   return { instructionName: 'InitializeTreasury' }
 }
 
@@ -92,7 +144,19 @@ export function chooseAgentFamily(text: string): AgentFamilyChoice {
   }
 
   if (
-    hasAny(text, ['python', 'fastapi', 'pydanticai', 'crewai', 'autogen', 'agno', 'llamaindex', 'agentkit', 'python agent', 'unsloth', 'qlora'])
+    hasAny(text, [
+      'python',
+      'fastapi',
+      'pydanticai',
+      'crewai',
+      'autogen',
+      'agno',
+      'llamaindex',
+      'agentkit',
+      'python agent',
+      'unsloth',
+      'qlora',
+    ])
   ) {
     let agentLibrary = 'pydanticai'
     if (text.includes('crewai')) agentLibrary = 'crewai'

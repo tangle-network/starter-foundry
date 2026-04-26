@@ -5,8 +5,10 @@
 
 import { readFile, readdir } from 'node:fs/promises'
 import path from 'node:path'
+
 import { ax } from '@ax-llm/ax'
 import type { AxAIService } from '@ax-llm/ax'
+
 import type { Trace } from './collect.js'
 
 export interface ArchetypeCandidate {
@@ -42,7 +44,10 @@ async function loadExistingArchetypes(registryRoot: string): Promise<string[]> {
   }
 }
 
-async function loadCapabilityKeywords(registryRoot: string, existing: string[]): Promise<Map<string, string[]>> {
+async function loadCapabilityKeywords(
+  registryRoot: string,
+  existing: string[],
+): Promise<Map<string, string[]>> {
   const out = new Map<string, string[]>()
   for (const id of existing) {
     try {
@@ -65,8 +70,8 @@ function mineCandidatesFromTraces(traces: Trace[], existingIds: Set<string>): Ar
     const caps = t.expectedCapabilities
     for (let i = 0; i < caps.length; i++) {
       for (let j = i + 1; j < caps.length; j++) {
-        const a = caps[i]!
-        const b = caps[j]!
+        const a = caps[i]
+        const b = caps[j]
         const key = a < b ? `${a}|${b}` : `${b}|${a}`
         const [l, r] = key.split('|') as [string, string]
         if (!cooccur.has(l)) cooccur.set(l, new Map())
@@ -85,7 +90,10 @@ function mineCandidatesFromTraces(traces: Trace[], existingIds: Set<string>): Ar
       const keywords = new Set<string>()
       for (const t of traces) {
         if (t.expectedCapabilities.includes(l) && t.expectedCapabilities.includes(r)) {
-          for (const w of t.prompt.toLowerCase().split(/\W+/).filter((w) => w.length >= 4)) {
+          for (const w of t.prompt
+            .toLowerCase()
+            .split(/\W+/)
+            .filter((w) => w.length >= 4)) {
             keywords.add(w)
           }
         }
@@ -120,7 +128,10 @@ function mineCandidatesFromTraces(traces: Trace[], existingIds: Set<string>): Ar
     const keywords = new Set<string>()
     for (const t of traces) {
       if (t.expectedCapabilities.includes(cap)) {
-        for (const w of t.prompt.toLowerCase().split(/\W+/).filter((w) => w.length >= 4)) {
+        for (const w of t.prompt
+          .toLowerCase()
+          .split(/\W+/)
+          .filter((w) => w.length >= 4)) {
           keywords.add(w)
         }
       }
@@ -163,7 +174,10 @@ export async function generateNode(input: GenerateInput): Promise<GenerateOutput
       if (!t.actualCapabilities.includes(cap)) missByCap.set(cap, (missByCap.get(cap) ?? 0) + 1)
     }
   }
-  const topGaps = [...missByCap.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([c]) => c)
+  const topGaps = [...missByCap.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([c]) => c)
   const problemPrompts = input.traces
     .filter((t) => t.capabilityHit < 0.5 && t.corpus === 'ideasai')
     .slice(0, 8)
@@ -196,7 +210,9 @@ export async function generateNode(input: GenerateInput): Promise<GenerateOutput
             description: raw.description ?? '',
             family: raw.family ?? 'fullstack-ts',
             capabilities: validCaps,
-            promptKeywords: (raw.promptKeywords ?? []).filter((w) => typeof w === 'string' && w.length > 2),
+            promptKeywords: (raw.promptKeywords ?? []).filter(
+              (w) => typeof w === 'string' && w.length > 2,
+            ),
             rationale: raw.rationale ?? '',
             source: 'llm-proposed',
           })

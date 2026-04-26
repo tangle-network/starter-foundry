@@ -44,7 +44,7 @@ export function getLastKnownGoodVersion(): string | null {
   const rollbacks = readRollbacks()
   if (rollbacks.length === 0) return null
   // `toTag` is the version rolled to; strip the leading "v" if present.
-  const last = rollbacks[rollbacks.length - 1]!
+  const last = rollbacks[rollbacks.length - 1]
   return last.toTag.replace(/^v/, '')
 }
 

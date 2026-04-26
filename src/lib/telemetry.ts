@@ -21,10 +21,11 @@ export interface RouteEvent {
   prompt: string
   kind: 'starter' | 'workspace'
   family: string
-  confidence: 'high' | 'medium' | 'low'
+  confidence: 'high' | 'medium' | 'low' | 'unknown'
   capabilities: string[]
   fallbackUsed: boolean
   durationMs: number
+  routingRisk?: 'safe' | 'fallback-product' | 'fallback-static' | 'unrouteable'
 }
 
 export interface ComposeEvent {
@@ -58,12 +59,18 @@ type EventHandler<T> = (event: T) => void
 
 const handlers: { [K in keyof TelemetryEvents]?: EventHandler<TelemetryEvents[K]>[] } = {}
 
-export function on<K extends keyof TelemetryEvents>(event: K, handler: EventHandler<TelemetryEvents[K]>): void {
+export function on<K extends keyof TelemetryEvents>(
+  event: K,
+  handler: EventHandler<TelemetryEvents[K]>,
+): void {
   if (!handlers[event]) handlers[event] = []
   handlers[event]!.push(handler)
 }
 
-export function off<K extends keyof TelemetryEvents>(event: K, handler: EventHandler<TelemetryEvents[K]>): void {
+export function off<K extends keyof TelemetryEvents>(
+  event: K,
+  handler: EventHandler<TelemetryEvents[K]>,
+): void {
   const list = handlers[event]
   if (!list) return
   const idx = list.indexOf(handler)
@@ -111,8 +118,14 @@ function getOtel(): OtelApi | null {
   if (otelResolved) return otelApi
   otelResolved = true
   try {
-    // Dynamic require — no-op if @opentelemetry/api not installed
-    otelApi = require('@opentelemetry/api') as OtelApi
+    // Dynamic require via createRequire — no-op if @opentelemetry/api not installed.
+    // Native require() isn't allowed in ES modules; createRequire bridges it
+    // for the same "optional dep" semantics. Static import avoided because
+    // the dep is in optionalDependencies and may not be installed at runtime.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const nodeModule = require('node:module') as { createRequire: (url: string) => NodeJS.Require }
+    const localRequire = nodeModule.createRequire(import.meta.url)
+    otelApi = localRequire('@opentelemetry/api') as OtelApi
   } catch {
     otelApi = null
   }
@@ -149,7 +162,10 @@ function failSpan(span: OtelSpan | null, error: string): void {
 
 // --- Convenience: timed operation ---
 
-export async function traced<T>(name: string, fn: () => Promise<T>): Promise<{ result: T; durationMs: number }> {
+export async function traced<T>(
+  name: string,
+  fn: () => Promise<T>,
+): Promise<{ result: T; durationMs: number }> {
   const span = startSpan(name)
   const start = performance.now()
   try {

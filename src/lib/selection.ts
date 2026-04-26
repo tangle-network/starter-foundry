@@ -1,10 +1,12 @@
 import { createHash } from 'node:crypto'
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
+
+import type { SelectionResult, Confidence, ComposeSpec, Registry, RoutingRisk } from '../types.js'
+
 import { fuzzyKeywordScore } from './keywords.js'
 import { loadRegistry } from './registry.js'
 import { semanticMatch, isSemanticRouterReady } from './semantic-router.js'
-import type { SelectionResult, Confidence, ComposeSpec, Registry } from '../types.js'
 
 const TEMPLATE_LIBRARY_DIR = '.evolve/template-library'
 
@@ -48,7 +50,7 @@ export function selectTemplateVersion(
     return null
   }
 
-  const diverseServe = opts.envDiverseServe ?? process.env['STARTER_FOUNDRY_DIVERSE_SERVE']
+  const diverseServe = opts.envDiverseServe ?? process.env.STARTER_FOUNDRY_DIVERSE_SERVE
   if (diverseServe !== '1' && diverseServe !== 'true') return idx.current
 
   const candidates = idx.topN?.length ? idx.topN : [idx.current]
@@ -58,7 +60,7 @@ export function selectTemplateVersion(
   // Same seed → same pick; different seeds spread uniformly across topN.
   const hash = createHash('sha256').update(seed).digest()
   const bucket = hash.readUInt32BE(0) % candidates.length
-  return candidates[bucket]!
+  return candidates[bucket]
 }
 
 const TIER_WEIGHTS = { tier1: 4, tier2: 2, tier3: 1, archetypes: 3 } as const
@@ -105,10 +107,7 @@ interface SelectionIndex {
  */
 function isMultiWord(keyword: string): boolean {
   return (
-    keyword.includes(' ') ||
-    keyword.includes('.') ||
-    keyword.includes('/') ||
-    keyword.includes('-')
+    keyword.includes(' ') || keyword.includes('.') || keyword.includes('/') || keyword.includes('-')
   )
 }
 
@@ -148,9 +147,14 @@ function buildIndex(registry: Registry): SelectionIndex {
     // family's broad boost term ("aptos", "qlora") outscored the proper sibling
     // family on off-topic prompts. Specialty-family overrides for distinctive
     // phrases live in prompt-planner.ts instead.
-    const boost = (family.scoring as { boost?: Record<string, number> } | undefined)?.boost ?? {}
+    const boost = family.scoring?.boost ?? {}
 
-    for (const tier of ['tier1', 'tier2', 'tier3', 'archetypes'] as const satisfies readonly Tier[]) {
+    for (const tier of [
+      'tier1',
+      'tier2',
+      'tier3',
+      'archetypes',
+    ] as const satisfies readonly Tier[]) {
       const weight = TIER_WEIGHTS[tier]
       const list = tk[tier]
       if (!list?.length) continue
@@ -224,6 +228,52 @@ function tokenize(lower: string): Set<string> {
     if (part) tokens.add(part)
   }
   return tokens
+}
+
+/**
+ * Detect "technical identifier" shape: a kebab-case cluster of ≥2 hyphen-
+ * separated tokens with no spaces and no natural-language verbs/articles.
+ * This is what BA's H1 canonical-scaffold catalog feeds in (compiler-lexer-dfa,
+ * algo-suffix-array-sais, todo-asyncstorage, godot-character-movement). Such
+ * prompts that score 0 against all family keywords are UNROUTEABLE — refusing
+ * to silently degrade is the resilient behavior.
+ *
+ * Returns true ONLY when ALL hold:
+ *   - No whitespace (a real prompt has at least one space)
+ *   - At least 2 hyphens (rules out single words like `bot` or `agent`)
+ *   - All characters are [a-z0-9-] (no punctuation, no digits-only)
+ *   - No natural-language stopwords (a, an, the, of, for, with, my, your)
+ */
+export function isTechnicalIdShape(prompt: string): boolean {
+  const trimmed = prompt.trim()
+  if (trimmed.length === 0) return false
+  if (/\s/.test(trimmed)) return false
+  const lower = trimmed.toLowerCase()
+  if (!/^[a-z][a-z0-9-]*$/.test(lower)) return false
+  const hyphens = (lower.match(/-/g) ?? []).length
+  if (hyphens < 2) return false
+  // No stopwords as standalone tokens — defends against rare natural-language
+  // hyphenations like "state-of-the-art".
+  const tokens = lower.split('-')
+  const stopwords = new Set([
+    'a',
+    'an',
+    'the',
+    'of',
+    'for',
+    'with',
+    'my',
+    'your',
+    'and',
+    'or',
+    'to',
+    'in',
+    'on',
+  ])
+  for (const t of tokens) {
+    if (stopwords.has(t)) return false
+  }
+  return true
 }
 
 let cachedRegistry: Registry | null = null
@@ -315,7 +365,7 @@ export async function selectStarter({
   candidates.sort((left, right) => right.score - left.score)
 
   // Fuzzy fallback: when exact matching found nothing, try Levenshtein distance ≤ 1
-  if (candidates[0]!.score === 0) {
+  if (candidates[0].score === 0) {
     for (const candidate of candidates) {
       const familyManifest = registry.families.get(candidate.family)
       if (!familyManifest) continue
@@ -334,41 +384,82 @@ export async function selectStarter({
   // Only fires when the semantic router has been initialized (optional).
   // Semantic fallback only fires when keywords found NOTHING (score 0).
   // This prevents the embedding from overriding confident keyword matches.
-  if (candidates[0]!.score === 0 && isSemanticRouterReady()) {
+  if (candidates[0].score === 0 && isSemanticRouterReady()) {
     const match = await semanticMatch(prompt)
     if (match && match.score > 0.55) {
       const semanticCandidate = candidates.find((c) => c.family === match.familyId)
       if (semanticCandidate) {
         // Boost the semantically-matched candidate so it wins
         semanticCandidate.score = Math.max(semanticCandidate.score, 8)
-        semanticCandidate.reasons = [`semantic match: ${match.familyId} (${Math.round(match.score * 100)}% similarity)`]
+        semanticCandidate.reasons = [
+          `semantic match: ${match.familyId} (${Math.round(match.score * 100)}% similarity)`,
+        ]
         candidates.sort((left, right) => right.score - left.score)
       }
     }
   }
 
-  const winner = candidates[0]!
+  const winner = candidates[0]
 
-  // Smart default: when no family scores, infer from prompt shape.
-  // Product descriptions ("build a X with Y") → fullstack-ts (needs backend).
-  // Static content requests → frontend-static.
+  // Resilient fallback (Gen 11.5 — replaces the silent frontend-static default).
+  // When no family scores, classify the prompt shape:
+  //   1. Product description ("build a X with Y") → fullstack-ts (safe to default)
+  //   2. Static content request ("landing page", "portfolio") → frontend-static
+  //   3. Technical identifier (kebab-case noun cluster, no verbs) → UNROUTEABLE.
+  //      Refuse to silently degrade — the BA / caller has to disambiguate.
+  //      Memory: 2026-04-25 BA H1 sweep had compiler-lexer-dfa,
+  //      algo-suffix-array-sais bucketed as frontend-static + industry:saas.
+  //      That's the muffled-gate pattern in routing form: a "fallback" that
+  //      always-passes hides real coverage gaps.
   let defaultFamily = 'frontend-static'
   let defaultLayers = ['framework:web-static']
-  if (winner.score === 0) {
+  let routingRisk: RoutingRisk
+  let fallbackReason = ''
+  let confidence: Confidence
+  if (winner.score > 0) {
+    confidence = winner.score > 6 ? 'high' : 'medium'
+    routingRisk = 'safe'
+  } else {
     const lower = prompt.toLowerCase()
-    const describesProduct = /\b(build|create|make|ship|launch|want|need|develop)\b/.test(lower) &&
-      /\b(app|tool|platform|system|tracker|manager|dashboard|portal|service|bot|agent|clone|saas|mvp|product|store|storefront|shop|marketplace|builder|generator|assistant|analyzer|monitor|finder|scheduler|planner|viewer|editor|player|reader|browser|client|studio|hub|suite|kit|board|library|checker|gallery|frontend|engine|workflow|inbox|scorer|splitter|compiler|canvas|sequencer|tester|formatter|validator|log|logger|maker|community|list|test|quiz|scanner|scorecard|analytics|knowledge base|companion|advisor|tutor|optimizer|space|network|aggregator|launchpad|exchange)\b/.test(lower)
-    const isStaticContent = /\b(landing page|portfolio|cv site|personal site|restaurant website|conference website)\b/.test(lower) && !/\b(ai|builder|generator|dynamic)\b/.test(lower)
-    if (describesProduct && !isStaticContent) {
+    const describesProduct =
+      /\b(build|create|make|ship|launch|want|need|develop)\b/.test(lower) &&
+      /\b(app|tool|platform|system|tracker|manager|dashboard|portal|service|bot|agent|clone|saas|mvp|product|store|storefront|shop|marketplace|builder|generator|assistant|analyzer|monitor|finder|scheduler|planner|viewer|editor|player|reader|browser|client|studio|hub|suite|kit|board|library|checker|gallery|frontend|engine|workflow|inbox|scorer|splitter|compiler|canvas|sequencer|tester|formatter|validator|log|logger|maker|community|list|test|quiz|scanner|scorecard|analytics|knowledge base|companion|advisor|tutor|optimizer|space|network|aggregator|launchpad|exchange)\b/.test(
+        lower,
+      )
+    const isStaticContent =
+      /\b(landing page|portfolio|cv site|personal site|restaurant website|conference website)\b/.test(
+        lower,
+      ) && !/\b(ai|builder|generator|dynamic)\b/.test(lower)
+    const isTechnicalIdentifier = isTechnicalIdShape(prompt)
+    if (isTechnicalIdentifier) {
+      // Refuse to silently route — caller must disambiguate.
+      confidence = 'unknown'
+      routingRisk = 'unrouteable'
+      defaultFamily = 'frontend-static' // placeholder spec; caller should NOT use without checking routingRisk
+      defaultLayers = ['framework:web-static']
+      fallbackReason =
+        `unrouteable: prompt "${prompt}" looks like a technical identifier (kebab-case noun cluster) ` +
+        `and matched zero family keywords. Refusing to silently degrade to frontend-static. ` +
+        `Caller must disambiguate — add tier1/tier2 keywords to the closest family, ` +
+        `extend the registry with a new family, or pass a natural-language prompt instead.`
+    } else if (describesProduct && !isStaticContent) {
+      confidence = 'low'
+      routingRisk = 'fallback-product'
       defaultFamily = 'fullstack-ts'
       const fwLayers = index.frameworkLayers.get('fullstack-ts') ?? []
       defaultLayers = fwLayers.length > 0 ? fwLayers : ['framework:fullstack-node-ts']
+      fallbackReason =
+        'no confident match; prompt shape suggests a product description, defaulting to fullstack-ts'
+    } else {
+      confidence = 'low'
+      routingRisk = 'fallback-static'
+      fallbackReason =
+        'no confident match; defaulting to frontend-static (historical fallback — review if this looks wrong)'
     }
   }
 
   const family = winner.score > 0 ? winner.family : defaultFamily
   const layers = winner.score > 0 ? winner.layers : defaultLayers
-  const confidence: Confidence = winner.score > 6 ? 'high' : winner.score > 0 ? 'medium' : 'low'
   const spec: ComposeSpec = {
     projectName: partner ? `${partner}-starter` : 'generated-starter',
     family,
@@ -385,7 +476,10 @@ export async function selectStarter({
 
   if (
     partner === 'coinbase' &&
-    (family === 'react-vite-ts' || family === 'nextjs-ts' || family === 'fullstack-ts' || family === 'x402-service')
+    (family === 'react-vite-ts' ||
+      family === 'nextjs-ts' ||
+      family === 'fullstack-ts' ||
+      family === 'x402-service')
   ) {
     spec.layers = [...new Set([...layers, 'capability:chart-widget'])]
     spec.variables = { ...spec.variables, headline: 'Ship a Coinbase-ready product surface' }
@@ -395,6 +489,7 @@ export async function selectStarter({
     confidence,
     spec,
     fallbackUsed: winner.score === 0,
-    reasons: winner.score > 0 ? winner.reasons : ['no confident match, using default frontend family'],
+    reasons: winner.score > 0 ? winner.reasons : [fallbackReason],
+    routingRisk,
   }
 }

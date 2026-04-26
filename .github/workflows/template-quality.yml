@@ -11,7 +11,7 @@ name: Template-quality sweep
 
 on:
   schedule:
-    - cron: '0 9 * * 2'  # Tuesday 09:00 UTC (day after cve-sweep)
+    - cron: '0 9 * * 2' # Tuesday 09:00 UTC (day after cve-sweep)
   workflow_dispatch:
     inputs:
       top_n:
@@ -46,7 +46,6 @@ jobs:
           node-version: '22'
           cache: 'pnpm'
 
-
       - name: install
         run: pnpm install --frozen-lockfile
 
@@ -54,17 +53,17 @@ jobs:
         run: pnpm build
 
       - name: refresh buildout analysis
-        run: node scripts/run-buildout-pipeline.mjs
+        run: pnpm exec tsx scripts/run-buildout-pipeline.ts
 
       - name: refresh family-pass-rate trend
-        run: node scripts/family-pass-rate-trend.mjs
+        run: pnpm exec tsx scripts/family-pass-rate-trend.ts
 
       - name: sweep top-N templates
         env:
           TANGLE_ROUTER_USER_KEY: ${{ secrets.TANGLE_ROUTER_USER_KEY }}
         run: |
           TOP_N="${{ inputs.top_n || '5' }}"
-          node scripts/template-quality-sweep.mjs --top "$TOP_N"
+          pnpm exec tsx scripts/template-quality-sweep.ts --top "$TOP_N"
 
       - name: upload sweep artifact
         uses: actions/upload-artifact@v4
@@ -85,10 +84,10 @@ jobs:
         if: ${{ !inputs.dry_run }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node scripts/open-template-prs.mjs
+        run: pnpm exec tsx scripts/open-template-prs.ts
 
       - name: watch for post-promotion regressions
         if: ${{ !inputs.dry_run }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node scripts/template-regression-watcher.mjs --open-pr || true
+        run: pnpm exec tsx scripts/template-regression-watcher.ts --open-pr || true

@@ -31,12 +31,11 @@ jobs:
         with:
           version: stable
 
-
       - name: install
         run: pnpm install --frozen-lockfile
 
       - name: validate registry manifests (schemas + keyword overlap + dangling appliesTo)
-        run: node scripts/validate-registry.mjs
+        run: pnpm exec tsx scripts/validate-registry.ts
 
       - name: measurement delta (only when registry/ changes)
         if: github.event_name == 'pull_request'
@@ -48,8 +47,8 @@ jobs:
             exit 0
           fi
           pnpm build
-          node scripts/refresh-scorecard.mjs
-          node scripts/pr-measurement-delta.mjs --base origin/main --out .evolve/pr-delta.md || echo "⚠ regressions detected; see PR comment"
+          pnpm exec tsx scripts/refresh-scorecard.ts
+          pnpm exec tsx scripts/pr-measurement-delta.ts --base origin/main --out .evolve/pr-delta.md || echo "⚠ regressions detected; see PR comment"
           cat .evolve/pr-delta.md
         continue-on-error: true
 
@@ -79,7 +78,6 @@ jobs:
           node-version: '22'
           cache: 'pnpm'
 
-
       - name: install
         run: pnpm install --frozen-lockfile
 
@@ -88,7 +86,7 @@ jobs:
 
       - name: matrix eval (brief path no-ops without API key — measures deterministic baseline)
         run: |
-          node scripts/meta-harness-eval.mjs \
+          pnpm exec tsx scripts/meta-harness-eval.ts \
             --out .evolve/meta-harness/runs/ci-baseline.jsonl \
             --label ci-baseline
 

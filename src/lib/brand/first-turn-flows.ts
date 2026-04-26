@@ -42,7 +42,7 @@ const FLOWS: FirstTurnFlow[] = [
       'Define matters, parties, documents, time_entries, invoices, billing_rates schema.',
       'Make documents content-addressed (sha256 over blob) + immutable — no UPDATE on documents table.',
       'Time entries: integer minutes + ISO-8601 workedAt timestamp; ban float hours.',
-      'Billing-rate resolver: time-bounded rate_history lookup at each entry\'s workedAt.',
+      "Billing-rate resolver: time-bounded rate_history lookup at each entry's workedAt.",
       'Invoice draft generator: aggregates unbilled time_entries, resolves rate, emits per-matter PDF.',
       'Attorney-client privilege: gate document access by matter_id ∈ user.accessible_matters.',
     ],
@@ -78,7 +78,7 @@ const FLOWS: FirstTurnFlow[] = [
       'Define contacts, companies, deals, activities, stages, pipelines, deal_stage_history schema.',
       'Deal amounts in integer cents + per-row currency code (no locale ambiguity).',
       'Stage transitions log to deal_stage_history — never mutate deal.stage without the audit row.',
-      'Activity-timestamp is source of truth for lastTouched; don\'t denormalize onto the contact.',
+      "Activity-timestamp is source of truth for lastTouched; don't denormalize onto the contact.",
       'Pipeline-value report: SUM(amount * stage.probability) GROUP BY stage.',
       'Deduplication: contact email + company domain as natural keys; offer a merge UI instead of blocking.',
     ],
@@ -104,7 +104,9 @@ export function firstTurnFlowForIndustry(industry: string | undefined): string[]
 
 export function firstTurnFlowForFamily(family: string, industry?: string): string[] {
   // Prefer industry-specific when the family matches; otherwise fall back.
-  const byIndustry = industry ? FLOWS.find((f) => f.industry === industry.toLowerCase() && f.appliesTo.includes(family)) : null
+  const byIndustry = industry
+    ? FLOWS.find((f) => f.industry === industry.toLowerCase() && f.appliesTo.includes(family))
+    : null
   if (byIndustry) return byIndustry.steps
   const byFamily = FLOWS.find((f) => f.appliesTo.includes(family))
   return byFamily?.steps ?? []

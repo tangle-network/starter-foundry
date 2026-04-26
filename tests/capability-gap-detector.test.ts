@@ -1,4 +1,4 @@
-// Regression tests for scripts/infer-capability-gaps.mjs (rewritten in
+// Regression tests for scripts/infer-capability-gaps.ts (rewritten in
 // response to blueprint-agent bug report #4, 2026-04-20). The detector
 // must classify agent-added packages as either scaffold-gap (package not
 // in family deps → real gap in registry) or orchestration (package in

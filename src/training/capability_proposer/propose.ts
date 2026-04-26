@@ -16,6 +16,7 @@
 import { existsSync, readFileSync, readdirSync, mkdirSync, writeFileSync, statSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+
 import { ax } from '@ax-llm/ax'
 import {
   runProposeReview,
@@ -24,6 +25,7 @@ import {
   type ReviewFn,
   type Verification,
 } from '@tangle-network/agent-eval'
+
 import { createLLM, isLLMAvailable } from '../../lib/llm.js'
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..')
@@ -43,7 +45,7 @@ export interface CapabilityProposal {
   id: string
   proposalDir: string
   manifest: Record<string, unknown>
-  templateFiles: Array<{ path: string; body: string }>
+  templateFiles: { path: string; body: string }[]
   peerCapabilities: string[]
   mode: 'llm' | 'llm-rlm' | 'deterministic'
   reasoning: string
@@ -77,7 +79,9 @@ function loadPeerCapabilities(appliesTo: string[], limit: number): PeerSummary[]
         appliesTo: m.appliesTo ?? [],
         keywords: m.keywords ?? [],
       })
-    } catch { /* skip */ }
+    } catch {
+      /* skip */
+    }
   }
   // Rank by appliesTo overlap with the target — closest analogs first.
   return rows
@@ -97,12 +101,14 @@ const fileAuthor = ax(
 
 function slotForFile(filePath: string): string {
   if (filePath.endsWith('.json')) return 'configuration or data JSON the capability wires in'
-  if (filePath.endsWith('.md')) return 'capability documentation — when to use, extension points, gotchas'
-  if (filePath.endsWith('.ts') || filePath.endsWith('.tsx')) return 'TypeScript source — a component, route, or handler the capability drops in'
+  if (filePath.endsWith('.md'))
+    return 'capability documentation — when to use, extension points, gotchas'
+  if (filePath.endsWith('.ts') || filePath.endsWith('.tsx'))
+    return 'TypeScript source — a component, route, or handler the capability drops in'
   return `${filePath} — slot file for the capability`
 }
 
-function slotFilesForCapability(input: ProposeCapabilityInput): Array<{ path: string; role: string }> {
+function slotFilesForCapability(input: ProposeCapabilityInput): { path: string; role: string }[] {
   const explicit = input.slotFiles ?? []
   if (explicit.length > 0) return explicit.map((p) => ({ path: p, role: slotForFile(p) }))
   // Default: one config json + one markdown doc. Agent extends from there.
@@ -112,7 +118,10 @@ function slotFilesForCapability(input: ProposeCapabilityInput): Array<{ path: st
   ]
 }
 
-async function proposeViaLLM(input: ProposeCapabilityInput, peers: PeerSummary[]): Promise<CapabilityProposal | null> {
+async function proposeViaLLM(
+  input: ProposeCapabilityInput,
+  peers: PeerSummary[],
+): Promise<CapabilityProposal | null> {
   if (!isLLMAvailable()) return null
   const llm = createLLM({ fallback: true })
   const peerSummary = peers
@@ -136,7 +145,7 @@ async function proposeViaLLM(input: ProposeCapabilityInput, peers: PeerSummary[]
       defaultsJson?: string
       reasoning?: string
     }
-    const templateFiles: Array<{ path: string; body: string }> = []
+    const templateFiles: { path: string; body: string }[] = []
     for (const f of slotFiles) {
       try {
         const body = (await fileAuthor.forward(llm, {
@@ -157,10 +166,13 @@ async function proposeViaLLM(input: ProposeCapabilityInput, peers: PeerSummary[]
     let parsedDefaults: Record<string, unknown> = {}
     try {
       parsedDefaults = JSON.parse(hints.defaultsJson ?? '{}') as Record<string, unknown>
-    } catch { /* tolerate bad JSON; defaults are optional */ }
+    } catch {
+      /* tolerate bad JSON; defaults are optional */
+    }
     const manifest = {
       id: input.id,
-      description: input.description.length >= 20 ? input.description : `${input.description} — capability`,
+      description:
+        input.description.length >= 20 ? input.description : `${input.description} — capability`,
       appliesTo: input.appliesTo,
       defaults: parsedDefaults,
       files: templateFiles.map((f) => ({ source: `files/${f.path}`, target: f.path })),
@@ -192,7 +204,10 @@ async function proposeViaLLM(input: ProposeCapabilityInput, peers: PeerSummary[]
   }
 }
 
-function proposeDeterministic(input: ProposeCapabilityInput, peers: PeerSummary[]): CapabilityProposal {
+function proposeDeterministic(
+  input: ProposeCapabilityInput,
+  peers: PeerSummary[],
+): CapabilityProposal {
   const manifest = {
     id: input.id,
     description: `${input.description} — capability (regenerate before shipping)`,
@@ -203,7 +218,12 @@ function proposeDeterministic(input: ProposeCapabilityInput, peers: PeerSummary[
     capabilityRequires: [],
     keywords: [input.id],
     tieredKeywords: { tier1: [input.id], tier2: [] },
-    buildHints: { whenToUse: `TODO: when to use ${input.id}. Peers: ${peers.slice(0, 3).map((p) => p.id).join(', ')}` },
+    buildHints: {
+      whenToUse: `TODO: when to use ${input.id}. Peers: ${peers
+        .slice(0, 3)
+        .map((p) => p.id)
+        .join(', ')}`,
+    },
   }
   return {
     id: input.id,
@@ -218,28 +238,35 @@ function proposeDeterministic(input: ProposeCapabilityInput, peers: PeerSummary[
 
 interface CapabilityDraftState {
   manifest: Record<string, unknown> | null
-  templateFiles: Array<{ path: string; body: string }>
+  templateFiles: { path: string; body: string }[]
   reasoning: string
 }
 
-function validateCapabilityDraft(state: CapabilityDraftState, id: string, appliesTo: string[]): string[] {
+function validateCapabilityDraft(
+  state: CapabilityDraftState,
+  id: string,
+  appliesTo: string[],
+): string[] {
   const errors: string[] = []
   const m = state.manifest
   if (!m) return ['manifest is null']
-  if (m['id'] !== id) errors.push(`id mismatch: manifest.id=${String(m['id'])} but expected ${id}`)
-  const desc = typeof m['description'] === 'string' ? m['description'] : ''
+  if (m.id !== id) errors.push(`id mismatch: manifest.id=${String(m.id)} but expected ${id}`)
+  const desc = typeof m.description === 'string' ? m.description : ''
   if (!desc || desc.length < 20) errors.push('description missing or <20 chars')
-  const applies = m['appliesTo']
-  if (!Array.isArray(applies) || applies.length === 0) errors.push('appliesTo must be non-empty array')
+  const applies = m.appliesTo
+  if (!Array.isArray(applies) || applies.length === 0)
+    errors.push('appliesTo must be non-empty array')
   else {
     for (const fam of appliesTo) {
       if (!applies.includes(fam)) errors.push(`appliesTo must include ${fam}`)
     }
   }
   const serialized = JSON.stringify(m)
-  if (serialized.includes('TODO:') || serialized.includes('TODO ')) errors.push('TODO placeholders present')
-  const tier1 = (m['tieredKeywords'] as Record<string, unknown> | undefined)?.['tier1']
-  if (!Array.isArray(tier1) || tier1.length < 2) errors.push('tieredKeywords.tier1 must have ≥2 entries')
+  if (serialized.includes('TODO:') || serialized.includes('TODO '))
+    errors.push('TODO placeholders present')
+  const tier1 = (m.tieredKeywords as Record<string, unknown> | undefined)?.tier1
+  if (!Array.isArray(tier1) || tier1.length < 2)
+    errors.push('tieredKeywords.tier1 must have ≥2 entries')
   if (state.templateFiles.length === 0) errors.push('no template files generated')
   for (const f of state.templateFiles) {
     if (typeof f.body !== 'string' || f.body.length < 20) {
@@ -257,7 +284,7 @@ export interface ProposeCapabilityOptions {
   maxShots?: number
 }
 
-export async function proposeCapabilityWithRLM(
+async function proposeCapabilityWithRLM(
   input: ProposeCapabilityInput,
   opts: ProposeCapabilityOptions = {},
 ): Promise<CapabilityProposal | null> {
@@ -274,7 +301,9 @@ export async function proposeCapabilityWithRLM(
     if (!p) {
       return { state: { manifest: null, templateFiles: [], reasoning: '(proposer returned null)' } }
     }
-    return { state: { manifest: p.manifest, templateFiles: p.templateFiles, reasoning: p.reasoning } }
+    return {
+      state: { manifest: p.manifest, templateFiles: p.templateFiles, reasoning: p.reasoning },
+    }
   }
 
   const verify: VerifyFn<CapabilityDraftState> = async (state) => {
@@ -285,16 +314,26 @@ export async function proposeCapabilityWithRLM(
     return result
   }
 
-  const review: ReviewFn<CapabilityDraftState> = async ({ state, verification, memory, shot, goal }) => {
+  const review: ReviewFn<CapabilityDraftState> = async ({
+    state,
+    verification,
+    memory,
+    shot,
+    goal,
+  }) => {
     const failures = (verification.details as string[] | undefined) ?? []
-    const priorMem = memory
-      .map((m) => `shot ${m.shot} conf=${m.confidence.toFixed(2)} instr="${m.nextShotInstruction.slice(0, 200)}"`)
-      .join('\n') || '(none)'
-    const tier1 = (state.manifest?.['tieredKeywords'] as Record<string, unknown> | undefined)?.['tier1']
+    const priorMem =
+      memory
+        .map(
+          (m) =>
+            `shot ${m.shot} conf=${m.confidence.toFixed(2)} instr="${m.nextShotInstruction.slice(0, 200)}"`,
+        )
+        .join('\n') || '(none)'
+    const tier1 = (state.manifest?.tieredKeywords as Record<string, unknown> | undefined)?.tier1
     const tier1Len = Array.isArray(tier1) ? tier1.length : 0
-    const desc = typeof state.manifest?.['description'] === 'string' ? (state.manifest['description'] as string) : ''
-    const applies = state.manifest?.['appliesTo']
-    const summary = `id=${String(state.manifest?.['id'])} desc="${desc.slice(0, 120)}" applies=${Array.isArray(applies) ? applies.join(',') : '?'} files=${state.templateFiles.length} tier1=${tier1Len}`
+    const desc = typeof state.manifest?.description === 'string' ? state.manifest.description : ''
+    const applies = state.manifest?.appliesTo
+    const summary = `id=${String(state.manifest?.id)} desc="${desc.slice(0, 120)}" applies=${Array.isArray(applies) ? applies.join(',') : '?'} files=${state.templateFiles.length} tier1=${tier1Len}`
     const raw = (await capabilityReviewer.forward(llm, {
       goal,
       currentDraftSummary: summary,
@@ -311,7 +350,8 @@ export async function proposeCapabilityWithRLM(
       observations: String(raw.observations ?? `shot ${shot} had ${failures.length} failures`),
       diagnosis: String(raw.diagnosis ?? 'no diagnosis'),
       nextShotInstruction: String(raw.nextShotInstruction ?? 'fix failures'),
-      shouldContinue: typeof raw.shouldContinue === 'boolean' ? raw.shouldContinue : shot < maxShots,
+      shouldContinue:
+        typeof raw.shouldContinue === 'boolean' ? raw.shouldContinue : shot < maxShots,
       confidence: Number.isFinite(raw.confidence) ? Number(raw.confidence) : 0.5,
     }
   }
@@ -350,7 +390,10 @@ export async function proposeCapabilityWithRLMToDisk(
   const proposal = rlmProposal ?? proposeDeterministic(input, peers)
 
   mkdirSync(proposal.proposalDir, { recursive: true })
-  writeFileSync(join(proposal.proposalDir, 'manifest.json'), JSON.stringify(proposal.manifest, null, 2) + '\n')
+  writeFileSync(
+    join(proposal.proposalDir, 'manifest.json'),
+    JSON.stringify(proposal.manifest, null, 2) + '\n',
+  )
   writeFileSync(
     join(proposal.proposalDir, '.meta.json'),
     JSON.stringify(

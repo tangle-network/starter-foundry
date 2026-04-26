@@ -13,36 +13,36 @@ interface ReviewerRoute {
 
 export function selectReviewerRoute(overrideModel?: string | null): ReviewerRoute | null {
   const env = process.env
-  if (env['ANTHROPIC_API_KEY']) {
+  if (env.ANTHROPIC_API_KEY) {
     return {
       url: 'https://api.anthropic.com/v1/messages',
       model: overrideModel ?? 'claude-sonnet-4-6',
       style: 'anthropic',
       headers: {
-        'x-api-key': env['ANTHROPIC_API_KEY'],
+        'x-api-key': env.ANTHROPIC_API_KEY,
         'anthropic-version': '2023-06-01',
         'content-type': 'application/json',
       },
     }
   }
-  if (env['GROQ_API_KEY']) {
+  if (env.GROQ_API_KEY) {
     return {
       url: 'https://api.groq.com/openai/v1/chat/completions',
       model: overrideModel ?? 'llama-3.3-70b-versatile',
       style: 'openai',
       headers: {
-        Authorization: `Bearer ${env['GROQ_API_KEY']}`,
+        Authorization: `Bearer ${env.GROQ_API_KEY}`,
         'content-type': 'application/json',
       },
     }
   }
-  if (env['TANGLE_ROUTER_USER_KEY']) {
+  if (env.TANGLE_ROUTER_USER_KEY) {
     return {
       url: 'https://router.tangle.tools/v1/chat/completions',
       model: overrideModel ?? 'llama-3.1-8b-instant',
       style: 'openai',
       headers: {
-        Authorization: `Bearer ${env['TANGLE_ROUTER_USER_KEY']}`,
+        Authorization: `Bearer ${env.TANGLE_ROUTER_USER_KEY}`,
         'content-type': 'application/json',
       },
     }
@@ -59,7 +59,12 @@ export async function reviewerJsonCall(
       ? {
           model: route.model,
           system: req.system,
-          messages: [{ role: 'user', content: `${req.user}\n\nReturn JSON only. No prose outside the object.` }],
+          messages: [
+            {
+              role: 'user',
+              content: `${req.user}\n\nReturn JSON only. No prose outside the object.`,
+            },
+          ],
           max_tokens: 2048,
           temperature: 0.2,
         }
@@ -83,13 +88,13 @@ export async function reviewerJsonCall(
     throw new Error(`reviewer ${res.status}: ${text.slice(0, 400)}`)
   }
   const json = (await res.json()) as Record<string, unknown>
-  const content =
-    route.style === 'anthropic'
-      ? extractAnthropicText(json)
-      : extractOpenAIText(json)
+  const content = route.style === 'anthropic' ? extractAnthropicText(json) : extractOpenAIText(json)
   if (typeof content !== 'string') throw new Error('reviewer returned no text content')
   // Strip fenced code blocks that sonnet sometimes wraps around JSON despite instruction.
-  const stripped = content.trim().replace(/^```(?:json)?\s*/, '').replace(/```\s*$/, '')
+  const stripped = content
+    .trim()
+    .replace(/^```(?:json)?\s*/, '')
+    .replace(/```\s*$/, '')
   return JSON.parse(stripped) as unknown
 }
 
@@ -98,7 +103,7 @@ interface AnthropicContentBlock {
   text?: string
 }
 function extractAnthropicText(json: Record<string, unknown>): string | undefined {
-  const content = json['content']
+  const content = json.content
   if (!Array.isArray(content)) return undefined
   for (const block of content as AnthropicContentBlock[]) {
     if (block.type === 'text' && typeof block.text === 'string') return block.text
@@ -110,7 +115,7 @@ interface OpenAIChoice {
   message?: { content?: string }
 }
 function extractOpenAIText(json: Record<string, unknown>): string | undefined {
-  const choices = json['choices']
+  const choices = json.choices
   if (!Array.isArray(choices)) return undefined
   const first = choices[0] as OpenAIChoice | undefined
   return first?.message?.content

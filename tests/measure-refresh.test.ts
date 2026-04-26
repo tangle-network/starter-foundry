@@ -1,4 +1,4 @@
-// Integration tests for scripts/measure-refresh.mjs.
+// Integration tests for scripts/measure-refresh.ts.
 //
 // Verifies the orchestrator:
 //   - detects drift when source is newer than any stage's output
@@ -14,7 +14,7 @@ import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const REPO = resolve(fileURLToPath(new URL('../', import.meta.url)))
-const SCRIPT = 'scripts/measure-refresh.mjs'
+const SCRIPT = 'scripts/measure-refresh.ts'
 
 // These tests exercise the *real* repo's measure-refresh flow against the
 // *real* scripts + data, because the orchestrator's value proposition is

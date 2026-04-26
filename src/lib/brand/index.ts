@@ -7,8 +7,9 @@
 // Deterministic fallback → industry-preset palette from registry/layers/
 // industry/*/files/personalize.css, voice = "neutral", typography = Inter.
 
-import { createLLM, isLLMAvailable } from '../llm.js'
 import { ax } from '@ax-llm/ax'
+
+import { createLLM, isLLMAvailable } from '../llm.js'
 
 export interface BrandKit {
   brandName: string
@@ -38,19 +39,50 @@ function deterministicBrand(prompt: string, industry?: string): BrandKit {
     .split(/[^a-zA-Z0-9]+/)
     .filter((w) => w.length >= 4 && w.length <= 16 && !/^(build|create|scaffold|make)$/i.test(w))
     .slice(0, 2)
-  const brandName = words.length > 0
-    ? words.map((w) => w[0]!.toUpperCase() + w.slice(1).toLowerCase()).join('') || 'Starter'
-    : 'Starter'
+  const brandName =
+    words.length > 0
+      ? words.map((w) => w[0].toUpperCase() + w.slice(1).toLowerCase()).join('') || 'Starter'
+      : 'Starter'
 
   // Industry-driven palette presets.
   const palettes: Record<string, BrandKit['palette']> = {
-    fitness: { primary: '142 71% 45%', secondary: '142 40% 94%', accent: '30 90% 55%', background: '0 0% 100%', foreground: '142 80% 10%' },
-    fintech: { primary: '220 90% 56%', secondary: '220 14% 96%', accent: '160 60% 45%', background: '0 0% 100%', foreground: '224 71% 4%' },
-    healthcare: { primary: '196 80% 45%', secondary: '196 30% 96%', accent: '340 75% 55%', background: '0 0% 100%', foreground: '196 60% 10%' },
-    crypto: { primary: '263 70% 50%', secondary: '263 30% 96%', accent: '30 90% 55%', background: '263 15% 8%', foreground: '263 20% 94%' },
-    default: { primary: '220 90% 56%', secondary: '220 14% 96%', accent: '160 60% 45%', background: '0 0% 100%', foreground: '224 71% 4%' },
+    fitness: {
+      primary: '142 71% 45%',
+      secondary: '142 40% 94%',
+      accent: '30 90% 55%',
+      background: '0 0% 100%',
+      foreground: '142 80% 10%',
+    },
+    fintech: {
+      primary: '220 90% 56%',
+      secondary: '220 14% 96%',
+      accent: '160 60% 45%',
+      background: '0 0% 100%',
+      foreground: '224 71% 4%',
+    },
+    healthcare: {
+      primary: '196 80% 45%',
+      secondary: '196 30% 96%',
+      accent: '340 75% 55%',
+      background: '0 0% 100%',
+      foreground: '196 60% 10%',
+    },
+    crypto: {
+      primary: '263 70% 50%',
+      secondary: '263 30% 96%',
+      accent: '30 90% 55%',
+      background: '263 15% 8%',
+      foreground: '263 20% 94%',
+    },
+    default: {
+      primary: '220 90% 56%',
+      secondary: '220 14% 96%',
+      accent: '160 60% 45%',
+      background: '0 0% 100%',
+      foreground: '224 71% 4%',
+    },
   }
-  const palette = palettes[industry ?? 'default'] ?? palettes.default!
+  const palette = palettes[industry ?? 'default'] ?? palettes.default
 
   return {
     brandName,
@@ -59,12 +91,18 @@ function deterministicBrand(prompt: string, industry?: string): BrandKit {
     heroSubheadline: `A ${industry ?? 'production-ready'} starter the agent will make yours on turn 1.`,
     voice: 'neutral',
     palette,
-    typography: { sans: 'Inter, ui-sans-serif, system-ui, sans-serif', mono: 'JetBrains Mono, ui-monospace, monospace' },
+    typography: {
+      sans: 'Inter, ui-sans-serif, system-ui, sans-serif',
+      mono: 'JetBrains Mono, ui-monospace, monospace',
+    },
     source: 'deterministic',
   }
 }
 
-export async function generateBrand(args: { prompt: string; industry?: string }): Promise<BrandKit> {
+export async function generateBrand(args: {
+  prompt: string
+  industry?: string
+}): Promise<BrandKit> {
   if (!isLLMAvailable()) return deterministicBrand(args.prompt, args.industry)
   try {
     const llm = createLLM()
@@ -87,7 +125,9 @@ export async function generateBrand(args: { prompt: string; industry?: string })
       tagline: raw.tagline || fallback.tagline,
       heroHeadline: raw.heroHeadline || fallback.heroHeadline,
       heroSubheadline: raw.heroSubheadline || fallback.heroSubheadline,
-      voice: (['formal', 'casual', 'technical', 'playful', 'neutral'].includes(raw.voice ?? '') ? raw.voice : 'neutral') as BrandKit['voice'],
+      voice: (['formal', 'casual', 'technical', 'playful', 'neutral'].includes(raw.voice ?? '')
+        ? raw.voice
+        : 'neutral') as BrandKit['voice'],
       palette: {
         primary: triplets[0] ?? fallback.palette.primary,
         secondary: triplets[1] ?? fallback.palette.secondary,

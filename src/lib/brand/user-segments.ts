@@ -8,28 +8,61 @@ import { hasAny } from '../keywords.js'
 export type UserSegment = 'power-user' | 'smb' | 'enterprise'
 
 const ENTERPRISE_SIGNALS = [
-  'saml', 'sso', 'okta', 'azure ad', 'entra id',
-  'audit log', 'audit trail', 'role hierarchy', 'rbac',
-  'compliance', 'soc2', 'iso 27001', 'fedramp', 'hipaa baa',
-  'department', 'org chart', 'organization hierarchy',
-  'seat-based pricing', 'per-seat licensing', 'contract terms',
-  'dpa', 'bcp', 'procurement',
+  'saml',
+  'sso',
+  'okta',
+  'azure ad',
+  'entra id',
+  'audit log',
+  'audit trail',
+  'role hierarchy',
+  'rbac',
+  'compliance',
+  'soc2',
+  'iso 27001',
+  'fedramp',
+  'hipaa baa',
+  'department',
+  'org chart',
+  'organization hierarchy',
+  'seat-based pricing',
+  'per-seat licensing',
+  'contract terms',
+  'dpa',
+  'bcp',
+  'procurement',
 ]
 
 const SMB_SIGNALS = [
-  'small business', 'smb', 'smb saas',
-  'single owner', 'solo founder',
-  'stripe checkout', 'stripe subscription',
-  'team management', 'simple crm', 'invoice customers',
-  'onboarding flow', 'quick setup',
+  'small business',
+  'smb',
+  'smb saas',
+  'single owner',
+  'solo founder',
+  'stripe checkout',
+  'stripe subscription',
+  'team management',
+  'simple crm',
+  'invoice customers',
+  'onboarding flow',
+  'quick setup',
 ]
 
 const POWER_USER_SIGNALS = [
-  'keyboard shortcut', 'cli', 'vim keybinding', 'hotkey',
-  'dense layout', 'command palette', 'quick switcher',
-  'power user', 'advanced user', 'expert mode',
-  'macro', 'scripting',
-  'ide-like', 'editor-first',
+  'keyboard shortcut',
+  'cli',
+  'vim keybinding',
+  'hotkey',
+  'dense layout',
+  'command palette',
+  'quick switcher',
+  'power user',
+  'advanced user',
+  'expert mode',
+  'macro',
+  'scripting',
+  'ide-like',
+  'editor-first',
 ]
 
 export function inferSegment(prompt: string): UserSegment | null {
@@ -39,10 +72,13 @@ export function inferSegment(prompt: string): UserSegment | null {
   return null
 }
 
-export const SEGMENT_DEFAULTS: Record<UserSegment, {
-  headline: string
-  steps: string[]
-}> = {
+export const SEGMENT_DEFAULTS: Record<
+  UserSegment,
+  {
+    headline: string
+    steps: string[]
+  }
+> = {
   'power-user': {
     headline: 'Build for fluency',
     steps: [

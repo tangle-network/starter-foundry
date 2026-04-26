@@ -13,8 +13,9 @@
 // so downstream processors can weight it lower than real data, or segregate
 // during eval. Real agent traces always outrank synthetic.
 
-import { createLLM, isLLMAvailable } from '../llm.js'
 import { ax } from '@ax-llm/ax'
+
+import { createLLM, isLLMAvailable } from '../llm.js'
 
 export interface SyntheticPrompt {
   id: string
@@ -61,9 +62,7 @@ const promptGenerator = ax(
  * Falls back to a deterministic template-combination if no LLM key is
  * present, so tests + CI can run offline.
  */
-export async function generatePrompts(
-  options: GenerateOptions,
-): Promise<SyntheticBatch> {
+export async function generatePrompts(options: GenerateOptions): Promise<SyntheticBatch> {
   const count = options.count ?? 5
   const caps = options.expectedCapabilities ?? []
   const archetype = options.archetype ?? ''
@@ -83,7 +82,9 @@ export async function generatePrompts(
         archetype,
         count,
       })) as { prompts?: string[] }
-      prompts = Array.isArray(out.prompts) ? out.prompts.filter((p) => typeof p === 'string' && p.length > 20) : []
+      prompts = Array.isArray(out.prompts)
+        ? out.prompts.filter((p) => typeof p === 'string' && p.length > 20)
+        : []
     } catch {
       // Fall through to deterministic.
     }

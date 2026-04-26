@@ -17,22 +17,37 @@
     "agent-runtime-business-partner-ts",
     "agent-runtime-language-tutor-ts",
     "agent-runtime-veterinarian-ts",
-    "agent-runtime-relationship-coach-ts",
-    "agent-runtime-friend-ts",
-    "agent-runtime-team-marketing"
+    "agent-runtime-relationship-coach-ts"
   ],
-  "provides": ["output:blocks-grammar"],
+  "provides": [
+    "output:blocks-grammar"
+  ],
   "defaults": {
     "structuredOutputBlocks": true,
-    "blockTypes": ["proposal", "filing", "artifact", "screener-result", "escalation", "survey"]
+    "blockTypes": [
+      "proposal",
+      "filing",
+      "artifact",
+      "screener-result",
+      "escalation",
+      "survey"
+    ]
   },
   "files": [
-    { "source": "files/lib/blocks.ts", "target": "src/lib/blocks.ts" }
+    {
+      "source": "files/lib/blocks.ts",
+      "target": "src/lib/blocks.ts"
+    }
   ],
   "validationChecks": [
-    { "type": "file-exists", "path": "src/lib/blocks.ts" }
+    {
+      "type": "file-exists",
+      "path": "src/lib/blocks.ts"
+    }
   ],
   "contextHints": {
-    "extensionPoints": ["src/lib/blocks.ts"]
+    "extensionPoints": [
+      "src/lib/blocks.ts"
+    ]
   }
 }

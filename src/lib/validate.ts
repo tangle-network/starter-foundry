@@ -287,7 +287,9 @@ async function runAgentsMdCheck(
   try {
     raw = await readFile(filePath, 'utf8')
   } catch (error) {
-    throw new Error(`agents-md-valid: cannot read ${check.path}: ${(error as Error).message}`, { cause: error })
+    throw new Error(`agents-md-valid: cannot read ${check.path}: ${(error as Error).message}`, {
+      cause: error,
+    })
   }
   if (!raw.startsWith('---\n') && !raw.startsWith('---\r\n')) {
     throw new Error(`agents-md-valid: ${check.path} missing YAML frontmatter`)
@@ -300,7 +302,7 @@ async function runAgentsMdCheck(
   for (const line of block.split('\n')) {
     if (!line.trim() || line.startsWith('#')) continue
     const m = /^([a-zA-Z][a-zA-Z0-9_-]*):/.exec(line)
-    if (m) keys.push(m[1]!)
+    if (m && m[1]) keys.push(m[1])
   }
   const missing = required.filter((k) => !keys.includes(k))
   if (missing.length) {
@@ -310,9 +312,11 @@ async function runAgentsMdCheck(
   // OR an explicit "no tools" disclaimer. This is the cheap signal that the
   // bundle author actually thought about what the agent does.
   const body = raw.slice(closeIdx + 4)
-  const sections = [...body.matchAll(/^##\s+(.+)$/gm)].map((m) => m[1]!.trim())
+  const sections = [...body.matchAll(/^##\s+(.+)$/gm)].map((m) => (m[1] ?? '').trim())
   if (sections.length < 2) {
-    throw new Error(`agents-md-valid: ${check.path} has fewer than 2 ## sections (need at least Role + How you work)`)
+    throw new Error(
+      `agents-md-valid: ${check.path} has fewer than 2 ## sections (need at least Role + How you work)`,
+    )
   }
   return { frontmatterKeys: keys, sections }
 }
@@ -329,20 +333,27 @@ async function runMethodologyIndexCheck(
   try {
     raw = await readFile(indexPath, 'utf8')
   } catch (error) {
-    throw new Error(`methodology-index-valid: cannot read ${check.path}: ${(error as Error).message}`, { cause: error })
+    throw new Error(
+      `methodology-index-valid: cannot read ${check.path}: ${(error as Error).message}`,
+      { cause: error },
+    )
   }
   let parsed: unknown
   try {
     parsed = JSON.parse(raw)
   } catch (error) {
-    throw new Error(`methodology-index-valid: ${check.path} is not valid JSON: ${(error as Error).message}`, { cause: error })
+    throw new Error(
+      `methodology-index-valid: ${check.path} is not valid JSON: ${(error as Error).message}`,
+      { cause: error },
+    )
   }
   const entries: { id?: string; path?: string; providedBy?: string }[] = Array.isArray(parsed)
     ? (parsed as { id?: string; path?: string; providedBy?: string }[])
     : Array.isArray((parsed as { entries?: unknown[] }).entries)
       ? (parsed as { entries: { id?: string; path?: string; providedBy?: string }[] }).entries
       : []
-  if (entries.length === 0) throw new Error(`methodology-index-valid: ${check.path} has zero entries`)
+  if (entries.length === 0)
+    throw new Error(`methodology-index-valid: ${check.path} has zero entries`)
   const indexDir = path.dirname(indexPath)
   const missing: string[] = []
   for (const entry of entries) {
@@ -358,7 +369,9 @@ async function runMethodologyIndexCheck(
     if (!(await fileExists(target))) missing.push(entry.path)
   }
   if (missing.length > 0) {
-    throw new Error(`methodology-index-valid: ${missing.length} dangling entries: ${missing.slice(0, 5).join(', ')}`)
+    throw new Error(
+      `methodology-index-valid: ${missing.length} dangling entries: ${missing.slice(0, 5).join(', ')}`,
+    )
   }
   return { entries: entries.length, missing }
 }
@@ -375,13 +388,22 @@ async function runScheduleCheck(
   try {
     raw = await readFile(manifestPath, 'utf8')
   } catch (error) {
-    throw new Error(`schedule-valid: cannot read ${manifestPath}: ${(error as Error).message}`, { cause: error })
+    throw new Error(`schedule-valid: cannot read ${manifestPath}: ${(error as Error).message}`, {
+      cause: error,
+    })
   }
-  let parsed: { defaults?: { schedule?: Array<{ id?: string; cron?: string; capability?: string }>; declaredCapabilities?: string[] } }
+  let parsed: {
+    defaults?: {
+      schedule?: { id?: string; cron?: string; capability?: string }[]
+      declaredCapabilities?: string[]
+    }
+  }
   try {
     parsed = JSON.parse(raw)
   } catch (error) {
-    throw new Error(`schedule-valid: ${manifestPath} not JSON: ${(error as Error).message}`, { cause: error })
+    throw new Error(`schedule-valid: ${manifestPath} not JSON: ${(error as Error).message}`, {
+      cause: error,
+    })
   }
   const sched = parsed.defaults?.schedule ?? []
   if (sched.length === 0) {
@@ -393,15 +415,20 @@ async function runScheduleCheck(
   const seenIds = new Set<string>()
   for (const trigger of sched) {
     if (!trigger.id) throw new Error(`schedule-valid: trigger missing 'id'`)
-    if (seenIds.has(trigger.id)) throw new Error(`schedule-valid: duplicate schedule id '${trigger.id}'`)
+    if (seenIds.has(trigger.id))
+      throw new Error(`schedule-valid: duplicate schedule id '${trigger.id}'`)
     seenIds.add(trigger.id)
     if (!trigger.cron) throw new Error(`schedule-valid: trigger '${trigger.id}' missing cron`)
-    if (!trigger.capability) throw new Error(`schedule-valid: trigger '${trigger.id}' missing capability`)
+    if (!trigger.capability)
+      throw new Error(`schedule-valid: trigger '${trigger.id}' missing capability`)
     if (declaredCaps.size > 0 && !declaredCaps.has(trigger.capability)) {
-      throw new Error(`schedule-valid: trigger '${trigger.id}' capability '${trigger.capability}' not in declaredCapabilities`)
+      throw new Error(
+        `schedule-valid: trigger '${trigger.id}' capability '${trigger.capability}' not in declaredCapabilities`,
+      )
     }
     const fph = maxFiresPerHour(trigger.cron)
-    if (fph > 60) throw new Error(`schedule-valid: trigger '${trigger.id}' fires ${fph}×/hour (>60 cap)`)
+    if (fph > 60)
+      throw new Error(`schedule-valid: trigger '${trigger.id}' fires ${fph}×/hour (>60 cap)`)
     if (fph > worst) worst = fph
   }
   return { schedules: sched.length, maxFiresPerHour: worst }

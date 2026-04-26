@@ -22,11 +22,13 @@ import { fileURLToPath } from 'node:url'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = join(__dirname, '..')
 
-// Dynamic import because the helper lib ships as .mjs; tsc doesn't need
-// to see its types, node resolves the .mjs at runtime.
-const libPath = join(REPO_ROOT, 'scripts/_lib/agentic-proposer.mjs')
+// Dynamic import via tsx because the helper lib lives at scripts/_lib/
+// which is outside the src/ rootDir compiled by tsc. tsx programmatic API
+// loads the .ts at runtime without requiring a separate compile step.
+import { tsImport } from 'tsx/esm/api'
+const libPath = join(REPO_ROOT, 'scripts/_lib/agentic-proposer.ts')
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const lib: any = await import(libPath)
+const lib: any = await tsImport(libPath, import.meta.url)
 
 function scratch(prefix = 'agentic-proposer-test-'): string {
   return mkdtempSync(join(tmpdir(), prefix))
@@ -62,7 +64,10 @@ describe('buildCapabilityBrief', () => {
     //   - completion-criterion names match the promoter gates
     assert.ok(brief.includes('agent-slack'), 'brief must mention the capability id')
     assert.ok(brief.includes('Ships a Slack integration'), 'brief must include the description')
-    assert.ok(brief.includes('/home/drew/code/agent-eval/src/'), 'agent-eval library source path must be present')
+    assert.ok(
+      brief.includes('/home/drew/code/agent-eval/src/'),
+      'agent-eval library source path must be present',
+    )
     assert.ok(brief.includes('agent-mastra'), 'peer capability must be listed')
     assert.ok(brief.includes('declared-dep-used'), 'declared-dep-used criterion must be named')
     assert.ok(brief.includes('scaffold-runs'), 'scaffold-runs criterion must be named')
@@ -112,33 +117,55 @@ describe('buildCapabilityCriteria — wrapping promoter gates', () => {
       })
       const schemaValid = criteria.find((c: { name: string }) => c.name === 'schema-valid')
       assert.ok(schemaValid, 'schema-valid criterion must be present')
-      const out = await schemaValid.check({ workspaceDir: dir, iteration: 1, lastMessage: '', transcript: [] })
+      const out = await schemaValid.check({
+        workspaceDir: dir,
+        iteration: 1,
+        lastMessage: '',
+        transcript: [],
+      })
       assert.equal(out.ok, false)
       assert.match(out.reason ?? '', /manifest\.json/i)
-    } finally { rmSync(dir, { recursive: true, force: true }) }
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
   })
 
   test('schema-valid passes on well-formed manifest with no TODOs', async () => {
     const dir = scratch()
     try {
-      writeFileSync(join(dir, 'manifest.json'), JSON.stringify({
-        id: 'foo', appliesTo: ['agent-service-ts'], packageDeps: { dependencies: {} },
-      }))
+      writeFileSync(
+        join(dir, 'manifest.json'),
+        JSON.stringify({
+          id: 'foo',
+          appliesTo: ['agent-service-ts'],
+          packageDeps: { dependencies: {} },
+        }),
+      )
       const criteria = lib.buildCapabilityCriteria({
         gates: await import(join(REPO_ROOT, 'dist/lib/promoter-gates.js')),
         candidate: { id: 'foo', appliesTo: ['agent-service-ts'] },
         fullBoot: false,
       })
       const schemaValid = criteria.find((c: { name: string }) => c.name === 'schema-valid')
-      const out = await schemaValid.check({ workspaceDir: dir, iteration: 1, lastMessage: '', transcript: [] })
+      const out = await schemaValid.check({
+        workspaceDir: dir,
+        iteration: 1,
+        lastMessage: '',
+        transcript: [],
+      })
       assert.equal(out.ok, true, `expected pass, got: ${JSON.stringify(out)}`)
-    } finally { rmSync(dir, { recursive: true, force: true }) }
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
   })
 
   test('schema-valid fails when any emitted file contains TODO/FIXME', async () => {
     const dir = scratch()
     try {
-      writeFileSync(join(dir, 'manifest.json'), JSON.stringify({ id: 'foo', appliesTo: ['agent-service-ts'] }))
+      writeFileSync(
+        join(dir, 'manifest.json'),
+        JSON.stringify({ id: 'foo', appliesTo: ['agent-service-ts'] }),
+      )
       mkdirSync(join(dir, 'files'), { recursive: true })
       writeFileSync(join(dir, 'files/index.ts'), 'export const x = 1\n// TODO: finish this\n')
       const criteria = lib.buildCapabilityCriteria({
@@ -147,10 +174,17 @@ describe('buildCapabilityCriteria — wrapping promoter gates', () => {
         fullBoot: false,
       })
       const schemaValid = criteria.find((c: { name: string }) => c.name === 'schema-valid')
-      const out = await schemaValid.check({ workspaceDir: dir, iteration: 1, lastMessage: '', transcript: [] })
+      const out = await schemaValid.check({
+        workspaceDir: dir,
+        iteration: 1,
+        lastMessage: '',
+        transcript: [],
+      })
       assert.equal(out.ok, false)
       assert.match(out.reason ?? '', /TODO|FIXME/)
-    } finally { rmSync(dir, { recursive: true, force: true }) }
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
   })
 
   test('declared-dep-used translates gates.fail to {ok:false, reason}', async () => {
@@ -176,10 +210,17 @@ describe('buildCapabilityCriteria — wrapping promoter gates', () => {
         fullBoot: false,
       })
       const declared = criteria.find((c: { name: string }) => c.name === 'declared-dep-used')
-      const out = await declared.check({ workspaceDir: dir, iteration: 1, lastMessage: '', transcript: [] })
+      const out = await declared.check({
+        workspaceDir: dir,
+        iteration: 1,
+        lastMessage: '',
+        transcript: [],
+      })
       assert.equal(out.ok, false)
       assert.match(out.reason ?? '', /unused-pkg/)
-    } finally { rmSync(dir, { recursive: true, force: true }) }
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
   })
 
   test('declared-dep-used translates gates.pass to {ok:true}', async () => {
@@ -201,9 +242,16 @@ describe('buildCapabilityCriteria — wrapping promoter gates', () => {
         fullBoot: false,
       })
       const declared = criteria.find((c: { name: string }) => c.name === 'declared-dep-used')
-      const out = await declared.check({ workspaceDir: dir, iteration: 1, lastMessage: '', transcript: [] })
+      const out = await declared.check({
+        workspaceDir: dir,
+        iteration: 1,
+        lastMessage: '',
+        transcript: [],
+      })
       assert.equal(out.ok, true, `expected pass, got: ${JSON.stringify(out)}`)
-    } finally { rmSync(dir, { recursive: true, force: true }) }
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
   })
 
   test('declared-dep-used treats skipped (no-package-deps) as ok:true', async () => {
@@ -212,16 +260,26 @@ describe('buildCapabilityCriteria — wrapping promoter gates', () => {
       // No packageDeps declared — promoter gate returns skipped, and we
       // pass it through as ok:true because the gate explicitly chose not
       // to apply. This matches the promoter's "skipped ≠ failure" rule.
-      writeFileSync(join(dir, 'manifest.json'), JSON.stringify({ id: 'foo', appliesTo: ['agent-service-ts'] }))
+      writeFileSync(
+        join(dir, 'manifest.json'),
+        JSON.stringify({ id: 'foo', appliesTo: ['agent-service-ts'] }),
+      )
       const criteria = lib.buildCapabilityCriteria({
         gates: await import(join(REPO_ROOT, 'dist/lib/promoter-gates.js')),
         candidate: { id: 'foo', appliesTo: ['agent-service-ts'] },
         fullBoot: false,
       })
       const declared = criteria.find((c: { name: string }) => c.name === 'declared-dep-used')
-      const out = await declared.check({ workspaceDir: dir, iteration: 1, lastMessage: '', transcript: [] })
+      const out = await declared.check({
+        workspaceDir: dir,
+        iteration: 1,
+        lastMessage: '',
+        transcript: [],
+      })
       assert.equal(out.ok, true, `expected pass (skipped → ok), got: ${JSON.stringify(out)}`)
-    } finally { rmSync(dir, { recursive: true, force: true }) }
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
   })
 
   test('without --full-boot, scaffold-runs + eval-scores are omitted (fast path)', async () => {
@@ -245,7 +303,10 @@ describe('buildCapabilityCriteria — wrapping promoter gates', () => {
     assert.ok(names.includes('declared-dep-used'))
     assert.ok(names.includes('scaffold-runs'))
     // appliesTo contains 'agent-service-ts' → surface is agent → eval-scores on.
-    assert.ok(names.includes('eval-scores'), `expected eval-scores present, got: ${names.join(',')}`)
+    assert.ok(
+      names.includes('eval-scores'),
+      `expected eval-scores present, got: ${names.join(',')}`,
+    )
   })
 })
 
@@ -259,7 +320,9 @@ describe('workspace + blocker helpers', () => {
     try {
       assert.ok(existsSync(dir), 'scratch dir must exist')
       assert.ok(dir.startsWith(tmpdir()), 'scratch must live under os tmpdir')
-    } finally { rmSync(dir, { recursive: true, force: true }) }
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
   })
 
   test('commitDraft copies the scratch into dest and preserves files', () => {
@@ -302,7 +365,9 @@ describe('workspace + blocker helpers', () => {
       assert.match(body, /verdict: blocked/)
       assert.match(body, /blockedBy: declared-dep-used/)
       assert.match(body, /stuck on unused-pkg/)
-    } finally { rmSync(dir, { recursive: true, force: true }) }
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
   })
 })
 
@@ -396,14 +461,17 @@ describe('end-to-end agentic smoke', { skip: !E2E_ENABLED }, () => {
         brief,
         profile,
         criteria,
-        budget: { iterations: 2, wallSec: 120, usd: 0.50 },
+        budget: { iterations: 2, wallSec: 120, usd: 0.5 },
         workspaceDir: scratchDir,
         unlock: process.env.BRIDGE_UNLOCK,
       })
 
       if (result.verdict === 'verified') {
         lib.commitDraft({ scratchDir, destDir: join(destDir, 'draft') })
-        assert.ok(existsSync(join(destDir, 'draft', 'manifest.json')), 'verified run must land manifest.json')
+        assert.ok(
+          existsSync(join(destDir, 'draft', 'manifest.json')),
+          'verified run must land manifest.json',
+        )
       } else {
         lib.writeBlocker({ destDir, result })
         assert.ok(existsSync(join(destDir, 'blocker.md')), 'non-verified run must write blocker.md')

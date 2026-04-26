@@ -12,13 +12,7 @@
 // Output: .evolve/family-proposals/<id>/{manifest.json, files/...}
 //         .evolve/batch-generate-agent-runtime/<ts>/report.json
 
-import {
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  readdirSync,
-  writeFileSync,
-} from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -100,12 +94,16 @@ function buildPrompt(entry: SeedEntry, peers: string): { system: string; user: s
     `TIER1: ${entry.tier1Keywords.join(', ')}`,
     entry.tier2Keywords?.length ? `TIER2: ${entry.tier2Keywords.join(', ')}` : '',
     entry.archetypes?.length ? `ARCHETYPES: ${entry.archetypes.join(', ')}` : '',
-    entry.templates?.length ? `TEMPLATES (real methodology, not stubs): ${entry.templates.join(', ')}` : '',
+    entry.templates?.length
+      ? `TEMPLATES (real methodology, not stubs): ${entry.templates.join(', ')}`
+      : '',
     `CRON: ${entry.cron ?? 'none — omit [triggers] block from wrangler.toml AND omit cron-syntax-valid from validationChecks'}`,
     '',
     'PEER BUNDLES (pattern-match these EXACTLY):',
     peers,
-  ].filter(Boolean).join('\n')
+  ]
+    .filter(Boolean)
+    .join('\n')
 
   return { system, user }
 }
@@ -115,17 +113,23 @@ function pickPeers(excludeId: string, n: number): string {
     .filter((d) => d.startsWith('agent-runtime-') && d !== excludeId)
     .sort()
     .slice(0, n)
-  return peers.map((p) => {
-    const sections: string[] = [`### ${p}`]
-    for (const f of ['manifest.json', 'files/system-prompt.md', 'files/templates/index.json']) {
-      const path = join(FAMILIES_DIR, p, f)
-      if (existsSync(path)) sections.push(`${f}:\n${readFileSync(path, 'utf8')}`)
-    }
-    return sections.join('\n\n')
-  }).join('\n\n────────────\n\n')
+  return peers
+    .map((p) => {
+      const sections: string[] = [`### ${p}`]
+      for (const f of ['manifest.json', 'files/system-prompt.md', 'files/templates/index.json']) {
+        const path = join(FAMILIES_DIR, p, f)
+        if (existsSync(path)) sections.push(`${f}:\n${readFileSync(path, 'utf8')}`)
+      }
+      return sections.join('\n\n')
+    })
+    .join('\n\n────────────\n\n')
 }
 
-async function generate(client: TCloud, entry: SeedEntry, retryOnce: boolean): Promise<EntryResult> {
+async function generate(
+  client: TCloud,
+  entry: SeedEntry,
+  retryOnce: boolean,
+): Promise<EntryResult> {
   const t0 = Date.now()
   const { system, user } = buildPrompt(entry, pickPeers(entry.familyId, 3))
   const proposalDir = join(PROPOSALS_DIR, entry.familyId)
@@ -137,7 +141,10 @@ async function generate(client: TCloud, entry: SeedEntry, retryOnce: boolean): P
   for (let attempt = 1; attempt <= attempts; attempt++) {
     try {
       const completion = await client.chat({
-        messages: [{ role: 'system', content: system }, { role: 'user', content: user }],
+        messages: [
+          { role: 'system', content: system },
+          { role: 'user', content: user },
+        ],
         model: MODEL,
         temperature: 0.2,
         responseFormat: { type: 'json_object' },
@@ -148,7 +155,10 @@ async function generate(client: TCloud, entry: SeedEntry, retryOnce: boolean): P
         throw new Error('envelope missing manifest or files[]')
       }
 
-      writeFileSync(join(proposalDir, 'manifest.json'), JSON.stringify(env.manifest, null, 2) + '\n')
+      writeFileSync(
+        join(proposalDir, 'manifest.json'),
+        JSON.stringify(env.manifest, null, 2) + '\n',
+      )
       for (const f of env.files) {
         const abs = join(proposalDir, 'files', f.path)
         mkdirSync(dirname(abs), { recursive: true })
@@ -162,14 +172,23 @@ async function generate(client: TCloud, entry: SeedEntry, retryOnce: boolean): P
       })
 
       if (validation.ok && validation.checks.length > 0) {
-        return { familyId: entry.familyId, ok: true, iterations: attempt, durationMs: Date.now() - t0 }
+        return {
+          familyId: entry.familyId,
+          ok: true,
+          iterations: attempt,
+          durationMs: Date.now() - t0,
+        }
       }
-      lastErr = validation.checks.length === 0
-        ? 'manifest declared no validationChecks'
-        : validation.checks
-            .filter((c) => !c.ok)
-            .map((c) => `${c.check.type}${('path' in c.check && c.check.path) ? ' ' + c.check.path : ''}`)
-            .join('; ')
+      lastErr =
+        validation.checks.length === 0
+          ? 'manifest declared no validationChecks'
+          : validation.checks
+              .filter((c) => !c.ok)
+              .map(
+                (c) =>
+                  `${c.check.type}${'path' in c.check && c.check.path ? ' ' + c.check.path : ''}`,
+              )
+              .join('; ')
     } catch (err) {
       lastErr = err instanceof Error ? err.message : String(err)
     }
@@ -196,6 +215,10 @@ async function main() {
   let entries = seedList.entries
   if (opts.tranche !== undefined) entries = entries.filter((e) => e.tranche === opts.tranche)
   entries = entries.filter((e) => !existsSync(join(FAMILIES_DIR, e.familyId)))
+  // Resume-friendly: skip entries that already have a written proposal
+  // manifest. The operator can `rm -rf .evolve/family-proposals/<id>`
+  // to force regeneration.
+  entries = entries.filter((e) => !existsSync(join(PROPOSALS_DIR, e.familyId, 'manifest.json')))
   if (opts.limit !== undefined) entries = entries.slice(0, opts.limit)
 
   console.log(`[batch] ${entries.length} entries · model=${MODEL} · retry-once=${opts.retryOnce}`)

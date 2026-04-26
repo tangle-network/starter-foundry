@@ -63,7 +63,7 @@ export function isLLMAvailable(): boolean {
   return detectProvider() !== null
 }
 
-function availableProviders(): LLMProvider[] {
+export function availableProviders(): LLMProvider[] {
   const explicit = process.env.STARTER_FOUNDRY_LLM_PROVIDER as LLMProvider | undefined
   const all: LLMProvider[] = [
     ...(explicit ? [explicit] : []),

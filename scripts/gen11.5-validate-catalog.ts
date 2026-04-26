@@ -4,7 +4,7 @@
 // summary + per-bundle detail. Used to gate Stream B catalog growth:
 // no commit lands a bundle that doesn't pass all its declared checks.
 
-import { mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs'
+import { copyFileSync, existsSync, mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -42,6 +42,12 @@ async function validateBundle(family: string): Promise<PerBundleResult> {
     const reportPath = join(dir, '.starter-foundry/compose-report.json')
     const report = JSON.parse(readFileSync(reportPath, 'utf8')) as {
       validationChecks: Parameters<typeof validateComposedDir>[0]['checks']
+    }
+    // Some validators (schedule-valid) read the manifest from the composed dir.
+    // The composer doesn't write the manifest there by default, so copy it in.
+    const familyManifest = join(FAMILIES, family, 'manifest.json')
+    if (!existsSync(join(dir, 'manifest.json'))) {
+      copyFileSync(familyManifest, join(dir, 'manifest.json'))
     }
     const validation = await validateComposedDir({
       composedDir: dir,
@@ -95,7 +101,9 @@ async function main(): Promise<void> {
   }
 
   console.log('─'.repeat(72))
-  const fullPass = results.filter((r) => r.composed && r.passedChecks === r.totalChecks && r.totalChecks > 0)
+  const fullPass = results.filter(
+    (r) => r.composed && r.passedChecks === r.totalChecks && r.totalChecks > 0,
+  )
   console.log(`Summary: ${fullPass.length}/${results.length} bundles passed all gates`)
   console.log('')
   if (fullPass.length === results.length) {

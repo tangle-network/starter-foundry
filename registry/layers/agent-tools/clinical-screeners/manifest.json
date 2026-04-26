@@ -3,28 +3,58 @@
   "slot": "agent-tools",
   "description": "Validated clinical screeners (PHQ-9, GAD-7, AUDIT-C) for therapy / coaching / mental-health bundles. Includes mandatory escalation-to-real-clinician disclaimer and crisis-language detection. NEVER treat agent output as clinical advice; always pair with the escalation contract.",
   "appliesTo": [
-    "agent-runtime-therapist-ts",
-    "agent-runtime-life-coach-ts",
-    "agent-runtime-friend-ts"
+    "agent-runtime-therapist-ts"
   ],
-  "provides": ["screener:phq9", "screener:gad7", "screener:audit-c", "safety:crisis-escalation"],
-  "requires": ["tangle:base"],
+  "provides": [
+    "screener:phq9",
+    "screener:gad7",
+    "screener:audit-c",
+    "safety:crisis-escalation"
+  ],
+  "requires": [
+    "tangle:base"
+  ],
   "defaults": {
     "clinicalScreeners": true,
-    "screeners": ["phq-9", "gad-7", "audit-c"],
+    "screeners": [
+      "phq-9",
+      "gad-7",
+      "audit-c"
+    ],
     "escalationRequired": true
   },
   "files": [
-    { "source": "files/lib/tools/screeners.ts", "target": "src/lib/tools/screeners.ts" },
-    { "source": "files/templates/screener-phq9.md", "target": "templates/screener-phq9.md" },
-    { "source": "files/templates/screener-gad7.md", "target": "templates/screener-gad7.md" },
-    { "source": "files/templates/escalation-protocol.md", "target": "templates/escalation-protocol.md" }
+    {
+      "source": "files/lib/tools/screeners.ts",
+      "target": "src/lib/tools/screeners.ts"
+    },
+    {
+      "source": "files/templates/screener-phq9.md",
+      "target": "templates/screener-phq9.md"
+    },
+    {
+      "source": "files/templates/screener-gad7.md",
+      "target": "templates/screener-gad7.md"
+    },
+    {
+      "source": "files/templates/escalation-protocol.md",
+      "target": "templates/escalation-protocol.md"
+    }
   ],
   "validationChecks": [
-    { "type": "file-exists", "path": "src/lib/tools/screeners.ts" },
-    { "type": "file-exists", "path": "templates/escalation-protocol.md" }
+    {
+      "type": "file-exists",
+      "path": "src/lib/tools/screeners.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "templates/escalation-protocol.md"
+    }
   ],
   "contextHints": {
-    "extensionPoints": ["templates/screener-*.md", "src/lib/tools/screeners.ts"]
+    "extensionPoints": [
+      "templates/screener-*.md",
+      "src/lib/tools/screeners.ts"
+    ]
   }
 }

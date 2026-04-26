@@ -51,7 +51,7 @@
         "type": "object",
         "required": ["type"],
         "properties": {
-          "type": { "enum": ["file-exists", "node-syntax", "http-start", "command-success", "python-compile", "prompt-frontmatter-valid", "cron-syntax-valid", "template-index-valid"] },
+          "type": { "enum": ["file-exists", "node-syntax", "http-start", "command-success", "python-compile", "prompt-frontmatter-valid", "cron-syntax-valid", "template-index-valid", "agents-md-valid", "methodology-index-valid", "schedule-valid"] },
           "path": { "type": "string" },
           "command": { "type": "array", "items": { "type": "string" } },
           "expect": { "type": "string" },

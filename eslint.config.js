@@ -25,6 +25,13 @@ export default tseslint.config(
       // dynamic shapes that lint false-flags. Tests still run through
       // the typechecker via `pnpm test`.
       'tests/**',
+      // Scripts live outside src/ rootDir and aren't part of the main
+      // tsconfig project; they're invoked via `pnpm exec tsx`. The
+      // typescript-eslint projectService cannot parse them without a
+      // dedicated tsconfig, and they have their own runtime contract.
+      'scripts/**',
+      'vscode-extension/**',
+      'eslint.config.js',
     ],
   },
   eslint.configs.recommended,
@@ -45,11 +52,14 @@ export default tseslint.config(
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-misused-promises': 'error',
       '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
-      '@typescript-eslint/no-unused-vars': ['warn', {
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_',
-        caughtErrorsIgnorePattern: '^_',
-      }],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
       'no-useless-assignment': 'error',
       'import-x/no-cycle': 'error',
       'import-x/no-self-import': 'error',
@@ -57,7 +67,10 @@ export default tseslint.config(
       // ─── STYLISTIC-STRICT — warn (clean up incrementally, don't block commits) ───
       '@typescript-eslint/no-non-null-assertion': 'warn',
       '@typescript-eslint/no-unnecessary-condition': 'warn',
-      '@typescript-eslint/restrict-template-expressions': ['warn', { allowNumber: true, allowBoolean: true, allowNullish: true }],
+      '@typescript-eslint/restrict-template-expressions': [
+        'warn',
+        { allowNumber: true, allowBoolean: true, allowNullish: true },
+      ],
       '@typescript-eslint/prefer-nullish-coalescing': 'warn',
       '@typescript-eslint/prefer-optional-chain': 'warn',
       '@typescript-eslint/prefer-for-of': 'warn',
@@ -76,11 +89,14 @@ export default tseslint.config(
       '@typescript-eslint/return-await': 'warn',
 
       // Import order is style — warn, autofixable
-      'import-x/order': ['warn', {
-        groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
-        'newlines-between': 'always',
-        alphabetize: { order: 'asc', caseInsensitive: true },
-      }],
+      'import-x/order': [
+        'warn',
+        {
+          groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
+          'newlines-between': 'always',
+          alphabetize: { order: 'asc', caseInsensitive: true },
+        },
+      ],
 
       // No console in src — warn level (scripts override below)
       'no-console': ['warn', { allow: ['warn', 'error'] }],

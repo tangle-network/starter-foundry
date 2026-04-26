@@ -17,11 +17,14 @@
     "agent-runtime-business-partner-ts",
     "agent-runtime-language-tutor-ts",
     "agent-runtime-veterinarian-ts",
-    "agent-runtime-relationship-coach-ts",
-    "agent-runtime-friend-ts",
-    "agent-runtime-team-marketing"
+    "agent-runtime-relationship-coach-ts"
   ],
-  "provides": ["tangle:base", "tangle:sandbox", "tangle:tcloud", "tangle:router"],
+  "provides": [
+    "tangle:base",
+    "tangle:sandbox",
+    "tangle:tcloud",
+    "tangle:router"
+  ],
   "defaults": {
     "tangleBase": true,
     "llmRouterUrl": "https://router.tangle.tools",
@@ -31,14 +34,25 @@
     "tcloudSdk": "@tangle-network/tcloud"
   },
   "files": [
-    { "source": "files/lib/tangle.ts", "target": "src/lib/tangle.ts" }
+    {
+      "source": "files/lib/tangle.ts",
+      "target": "src/lib/tangle.ts"
+    }
   ],
   "validationChecks": [
-    { "type": "file-exists", "path": "src/lib/tangle.ts" }
+    {
+      "type": "file-exists",
+      "path": "src/lib/tangle.ts"
+    }
   ],
   "contextHints": {
     "commands": [],
-    "entrypoints": ["src/lib/tangle.ts"],
-    "extensionPoints": ["src/lib/tools/", "templates/"]
+    "entrypoints": [
+      "src/lib/tangle.ts"
+    ],
+    "extensionPoints": [
+      "src/lib/tools/",
+      "templates/"
+    ]
   }
 }

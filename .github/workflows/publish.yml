@@ -46,11 +46,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Install deps from public npm — @tangle-network/agent-eval and
+      # @tangle-network/tcloud-agent live on npmjs.org. Switching the
+      # default registry to GH Packages here would 404 on those.
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          registry-url: https://npm.pkg.github.com
-          scope: '@tangle-network'
+          registry-url: https://registry.npmjs.org
 
       - name: Install
         run: npm install
@@ -77,6 +79,16 @@ jobs:
         run: |
           npm pack
           ls -la *.tgz
+
+      # Switch the default registry + auth to GH Packages only for the
+      # publish step. Done after install so dep resolution from
+      # npmjs.org isn't disturbed.
+      - name: Configure Node for GitHub Packages
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://npm.pkg.github.com
+          scope: '@tangle-network'
 
       - name: Publish to GitHub Packages
         # Idempotent on retry: skip if the version is already on gh

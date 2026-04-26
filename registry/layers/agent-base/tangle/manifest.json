@@ -16,6 +16,8 @@
     "agent-runtime-novelist-coach-ts",
     "agent-runtime-business-partner-ts",
     "agent-runtime-language-tutor-ts",
+    "agent-runtime-veterinarian-ts",
+    "agent-runtime-relationship-coach-ts",
     "agent-runtime-friend-ts",
     "agent-runtime-team-marketing"
   ],

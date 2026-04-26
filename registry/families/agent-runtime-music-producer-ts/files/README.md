@@ -1,60 +1,60 @@
 # music-producer
 
-Voice-first creative music-producer agent bundle. **Collaborator, not
-override.** Listens first, reflects what it heard, then suggests one
-or two practical next moves on arrangement, mix, or mastering — and
-gets out of the artist's way.
+Senior music producer + senior staff engineer who builds tools to help producers. Ships actual CLIs (LUFS / true-peak analysis, A/B vs reference, stem extraction, arrangement-map, reference-finder) and uses them to give specific, measured feedback. Practitioner first; tool-builder when the measurement doesn't exist yet.
 
-## What this bundle is
+## Tools shipped
 
-An agent's filesystem: a system prompt + arrangement-review +
-mix-feedback + weekly-listening templates + Cloudflare Worker shell +
-Tangle Sandbox SDK + `@ph0ny/sdk` for voice. Runs in a per-user
-Tangle sandbox; LLM calls go through `router.tangle.tools`.
+```
+tools/
+  analyze-audio.sh      LUFS / true-peak / LRA / 3-band RMS / stereo correlation, JSON
+  compare-tracks.sh     A/B candidate vs reference; deltas + verdicts
+  extract-stems.sh      vocals / drums / bass / other via demucs
+  arrangement-map.py    section detection (intro/build/drop/break/outro) + tempo
+  find-references.sh    canonical reference tracks via MusicBrainz
+```
 
-## How a sandbox spawns it
+5 domain tools. The agent also has Read/Write/Edit/Glob/Grep/Bash/WebFetch generic. Total ≤20. Build new tools when needed; delete ones you stop using.
 
-1. Sandbox mounts `/agent` with this bundle's content.
-2. Agent reads `system-prompt.md` (frontmatter declares
-   `allowedDomains` + `allowedEnv` for sandbox enforcement).
-3. By default the agent runs in listening mode — asks the artist
-   what they're working on, what they've already tried, what they
-   want.
-4. On the artist's prompt it switches to `arrangement-review` or
-   `mix-feedback`, loading the matching template as the methodology
-   source of truth.
-5. The daily cron (`0 16 * * *`, afternoon listening prompt) emits
-   the `weekly-listening-prompt` flow — picks reference tracks across
-   genres and invites a voice-dictation listening log.
+## Methodology guides
 
-## Domain capabilities
+```
+methodology/
+  mix-feedback.md         a pass on a candidate mix using the tools
+  arrangement-review.md   structure / energy / density review
+  listening-prompt.md     daily voice-driven listening prompt (cron)
+```
 
-- `arrangement-review` — section structure, tension/release,
-  density mapping, energy curve, contrast principle. Methodology in
-  `templates/arrangement-review.md`.
-- `mix-feedback` — reference-track A/B, frequency masking, dynamic
-  range / LUFS targets, stereo-field analysis, common pathologies.
-  Methodology in `templates/mix-feedback-protocol.md`.
-- `weekly-listening-protocol` — cron-driven listening practice;
-  picks 3 reference tracks, invites voice-dictation listening notes,
-  captures as `:::artifact`.
+Each guide is a tool-using procedure, not a prose protocol. The agent runs the tools, gets numbers, talks to the artist about specific moments using timestamps + measurements.
+
+## How the agent works
+
+1. **Listen first, measure second, talk third.** No suggestions before listening + running the analyzer.
+2. **Build before you advise.** If the measurement the artist needs doesn't exist, the agent writes a new tool under `tools/`, runs it, then talks. New tools are small, single-purpose, JSON output.
+3. **Reference-driven.** Every mix call is anchored to a real record via `find-references.sh`.
+4. **One or two notes per pass.** Walls of fixes are demoralizing. Pick the change with the most leverage.
 
 ## Voice mode
 
-When deployed with the `agent-tools/phony-voice` layer stacked, the
-bundle exposes voice STT/TTS via `@ph0ny/sdk` (the only public phony
-package). Voice mode is the *intended* operating mode — the artist
-stays at the DAW, dictates listening notes, gets responses through
-their monitors. Internal phony packages are NOT shipped.
+Stacked with `agent-tools/phony-voice` (only public `@ph0ny/sdk` package). Voice is the intended operating mode — the artist stays at the DAW, dictates listening notes, gets responses through monitors. Listening-prompt cron runs at `0 16 * * *` afternoon by default.
 
-## Extension Points
+## Required tooling on the host
 
-- `system-prompt.md` — adjust the role / refusal rules / output
-  blocks. Re-run `prompt-frontmatter-valid` after edits.
-- `templates/arrangement-review.md` — refine arrangement-review
-  methodology (e.g. add a beat-grid analysis step for hip-hop).
-- `templates/mix-feedback-protocol.md` — refine mix methodology
-  (e.g. swap streaming LUFS targets for vinyl-aware values).
-- `defaults.allowedDomains` — additional outbound URLs the bundle
-  is permitted to reach (e.g. a reference-track service). Anything
-  outside this list is sandbox-blocked.
+- `ffmpeg` (analyze-audio, compare-tracks)
+- `jq` (compare-tracks output formatting; falls back to raw JSON if absent)
+- `python3` + `librosa` + `numpy` (arrangement-map)
+- `demucs` (extract-stems; falls back with a clear install message)
+
+The Tangle sandbox image should bake these in. If a tool is missing, the script returns a clean JSON error pointing to the install command — no silent failure.
+
+## Bright lines
+
+- The agent does NOT claim commercial-release readiness. That's the mastering engineer's call. Surfaces the handoff explicitly.
+- The agent does NOT reproduce copyrighted lyrics or melodies verbatim. References shape and structure, builds new content.
+
+That's the entire risk surface. No other refusal pattern.
+
+## Extension points
+
+- `tools/` — add a new CLI when a measurement you want doesn't exist. Keep it small, single-purpose, JSON.
+- `methodology/<new-procedure>.md` — add a methodology guide that uses the existing tools (or motivates a new one). Register in `methodology/index.json`.
+- `system-prompt.md` — adjust role tone, never the bright-line escalation.

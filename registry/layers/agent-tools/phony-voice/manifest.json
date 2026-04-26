@@ -8,6 +8,7 @@
     "agent-runtime-music-producer-ts",
     "agent-runtime-fitness-coach-ts",
     "agent-runtime-language-tutor-ts",
+    "agent-runtime-relationship-coach-ts",
     "agent-runtime-friend-ts",
     "agent-runtime-business-partner-ts"
   ],

@@ -15,47 +15,124 @@
   },
   "includes": [
     "agent-base:tangle",
+    "agent-base:secure",
     "agent-tools:phony-voice",
     "agent-output:blocks"
   ],
   "defaults": {
     "projectType": "agent-runtime-fitness-coach",
     "agentName": "fitness-coach",
-    "allowedDomains": ["api.tangle.tools"],
-    "allowedEnv": ["TANGLE_ROUTER_KEY", "PHONY_API_KEY"],
-    "publicVars": ["AGENT_NAME"],
-    "routes": [
-      { "path": "/api/chat", "auth": "bearer", "callsTools": ["voice-stt", "voice-tts", "weekly-program", "form-check", "deload"] },
-      { "path": "/api/health", "auth": "none", "callsTools": [] }
+    "publicVars": [
+      "AGENT_NAME"
     ],
-    "declaredCapabilities": ["weekly-program", "form-check-protocol", "deload-prompt"],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "voice-stt",
+          "voice-tts",
+          "weekly-program",
+          "form-check",
+          "deload"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "weekly-program",
+      "form-check-protocol",
+      "deload-prompt"
+    ],
     "runtime": {
       "sandbox": "tangle",
       "noNewPrivileges": true,
       "capDrop": "ALL"
-    }
+    },
+    "schedule": [
+      {
+        "id": "scheduled-1",
+        "cron": "0 14 * * *",
+        "capability": "weekly-program"
+      }
+    ],
+    "outboundDomains": [
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY",
+      "PHONY_API_KEY"
+    ]
   },
   "files": [
-    { "source": "files/system-prompt.md", "target": "system-prompt.md" },
-    { "source": "files/templates/index.json", "target": "templates/index.json" },
-    { "source": "files/templates/weekly-program.md", "target": "templates/weekly-program.md" },
-    { "source": "files/templates/form-check-protocol.md", "target": "templates/form-check-protocol.md" },
-    { "source": "files/templates/deload-prompt.md", "target": "templates/deload-prompt.md" },
-    { "source": "files/wrangler.toml", "target": "wrangler.toml" },
-    { "source": "files/README.md", "target": "README.md" }
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/weekly-program.md",
+      "target": "methodology/weekly-program.md"
+    },
+    {
+      "source": "files/methodology/form-check-protocol.md",
+      "target": "methodology/form-check-protocol.md"
+    },
+    {
+      "source": "files/methodology/deload-prompt.md",
+      "target": "methodology/deload-prompt.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
   ],
   "validationChecks": [
-    { "type": "file-exists", "path": "system-prompt.md" },
-    { "type": "file-exists", "path": "templates/index.json" },
-    { "type": "file-exists", "path": "wrangler.toml" },
-    { "type": "prompt-frontmatter-valid", "path": "system-prompt.md" },
-    { "type": "template-index-valid", "path": "templates/index.json" },
-    { "type": "cron-syntax-valid", "path": "wrangler.toml" }
+    {
+      "type": "file-exists",
+      "path": "system-prompt.md"
+    },
+    {
+      "type": "file-exists",
+      "path": "methodology/index.json"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "system-prompt.md"
+    },
+    {
+      "type": "methodology-index-valid",
+      "path": "methodology/index.json"
+    },
+    {
+      "type": "schedule-valid",
+      "path": "manifest.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "TOOLS.md"
+    }
   ],
   "contextHints": {
     "commands": [],
-    "entrypoints": ["system-prompt.md"],
-    "extensionPoints": ["templates/", "src/lib/tools/"]
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
   },
   "keywords": [
     "fitness-coach",
@@ -89,7 +166,14 @@
       "periodization",
       "form check"
     ],
-    "tier3": ["coaching agent", "trainer agent"],
-    "archetypes": ["agent-in-sandbox", "coaching-agent", "voice-first"]
+    "tier3": [
+      "coaching agent",
+      "trainer agent"
+    ],
+    "archetypes": [
+      "agent-in-sandbox",
+      "coaching-agent",
+      "voice-first"
+    ]
   }
 }

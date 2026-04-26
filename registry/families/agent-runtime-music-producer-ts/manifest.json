@@ -1,12 +1,12 @@
 {
   "id": "agent-runtime-music-producer-ts",
-  "description": "Voice-first creative music-producer agent bundle — a collaborative mixing / mastering / arrangement coach who listens before suggesting and never overrides the artist's vision. Demonstrates the agent-runtime substrate composing with phony-voice + structured-output-blocks on the Tangle floor.",
+  "description": "Senior music producer + senior staff engineer who builds tools to help producers. Markdown-only bundle: AGENTS.md role + TOOLS.md intent + methodology/ guides. Inherits security primitives from agent-base:secure. Operator materializes domain audio tools (LUFS analysis, A/B vs reference, stem extraction) when the deployment needs them.",
   "tags": [
     "agent-runtime",
     "music-production",
-    "creative-agent",
+    "practitioner-with-tools",
     "voice-first",
-    "cloudflare-worker"
+    "markdown-only"
   ],
   "taxonomy": {
     "language": "markdown",
@@ -15,60 +15,55 @@
   },
   "includes": [
     "agent-base:tangle",
+    "agent-base:secure",
     "agent-tools:phony-voice",
     "agent-output:blocks"
   ],
   "defaults": {
     "projectType": "agent-runtime-music-producer",
     "agentName": "music-producer",
-    "allowedDomains": ["api.tangle.tools"],
-    "allowedEnv": ["TANGLE_ROUTER_KEY", "PHONY_API_KEY"],
+    "outboundDomains": ["api.tangle.tools", "musicbrainz.org"],
+    "secrets": ["TANGLE_ROUTER_KEY", "PHONY_API_KEY"],
     "publicVars": ["AGENT_NAME"],
-    "routes": [
-      { "path": "/api/chat", "auth": "bearer", "callsTools": ["voice-stt", "voice-tts", "arrangement-review", "mix-feedback"] },
-      { "path": "/api/health", "auth": "none", "callsTools": [] }
+    "schedule": [
+      { "id": "afternoon-listening-prompt", "cron": "0 16 * * *", "capability": "listening-prompt" }
     ],
-    "declaredCapabilities": ["arrangement-review", "mix-feedback", "weekly-listening-protocol"],
-    "runtime": {
-      "sandbox": "tangle",
-      "noNewPrivileges": true,
-      "capDrop": "ALL"
-    }
+    "declaredCapabilities": ["arrangement-review", "mix-feedback", "listening-prompt"],
+    "creativeCollaborator": true,
+    "overridesArtist": false
   },
   "files": [
     { "source": "files/system-prompt.md", "target": "system-prompt.md" },
-    { "source": "files/templates/index.json", "target": "templates/index.json" },
-    { "source": "files/templates/arrangement-review.md", "target": "templates/arrangement-review.md" },
-    { "source": "files/templates/mix-feedback-protocol.md", "target": "templates/mix-feedback-protocol.md" },
-    { "source": "files/templates/weekly-listening-prompt.md", "target": "templates/weekly-listening-prompt.md" },
-    { "source": "files/wrangler.toml", "target": "wrangler.toml" },
-    { "source": "files/README.md", "target": "README.md" }
+    { "source": "files/TOOLS.md", "target": "TOOLS.md" },
+    { "source": "files/README.md", "target": "README.md" },
+    { "source": "files/methodology/index.json", "target": "methodology/index.json" },
+    { "source": "files/methodology/mix-feedback.md", "target": "methodology/mix-feedback.md" },
+    { "source": "files/methodology/arrangement-review.md", "target": "methodology/arrangement-review.md" },
+    { "source": "files/methodology/listening-prompt.md", "target": "methodology/listening-prompt.md" }
   ],
   "validationChecks": [
-    { "type": "file-exists", "path": "system-prompt.md" },
-    { "type": "file-exists", "path": "templates/index.json" },
-    { "type": "file-exists", "path": "wrangler.toml" },
-    { "type": "prompt-frontmatter-valid", "path": "system-prompt.md" },
-    { "type": "template-index-valid", "path": "templates/index.json" },
-    { "type": "cron-syntax-valid", "path": "wrangler.toml" }
+    { "type": "agents-md-valid", "path": "system-prompt.md" },
+    { "type": "file-exists", "path": "TOOLS.md" },
+    { "type": "file-exists", "path": "README.md" },
+    { "type": "methodology-index-valid", "path": "methodology/index.json" },
+    { "type": "schedule-valid", "path": "manifest.json" }
   ],
   "contextHints": {
     "commands": [],
     "entrypoints": ["system-prompt.md"],
-    "extensionPoints": ["templates/", "src/lib/tools/"]
+    "extensionPoints": ["methodology/", "TOOLS.md"]
   },
   "keywords": [
     "music-producer",
     "mixing",
     "mastering",
     "arrangement",
-    "DAW",
-    "voice"
+    "DAW"
   ],
   "tieredKeywords": {
     "tier1": ["music-producer", "music producer", "music-production-agent", "music production agent", "creative-director-music", "music production"],
     "tier2": ["mixing", "mastering", "arrangement", "DAW", "sample-pack", "stem-separation", "mix feedback"],
     "tier3": ["music"],
-    "archetypes": ["agent-in-sandbox", "creative-agent", "voice-first"]
+    "archetypes": ["agent-in-sandbox", "creative-agent", "voice-first", "practitioner-with-tools"]
   }
 }

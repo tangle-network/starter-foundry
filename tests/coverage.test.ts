@@ -143,6 +143,8 @@ const FAMILY_PROMPTS: Record<string, string> = {
   "agent-with-ui-ts": "Build an agent-with-ui single-agent app with sandbox-ui chat surface and artifact pane",
   "orchestrator-with-ui-ts": "Build an orchestrator-with-ui-ts agent fleet manager scaffold using sandbox-ui dashboard primitives",
   "sandbox-app-ts": "Build a sandbox-app sandbox workspace on tangle sandbox SDK with editor, file tree, and terminal",
+  "agent-runtime-veterinarian-ts": "Build a vet-agent veterinarian agent for pet-health husbandry-reference, vaccination-framework, and emergency-triage (not a licensed DVM)",
+  "agent-runtime-relationship-coach-ts": "Build a relationship-coach-agent couples coach for communication skills, conflict-resolution, and DV-aware escalation (not a couples therapist)",
 };
 
 for (const [family, prompt] of Object.entries(FAMILY_PROMPTS)) {

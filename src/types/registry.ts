@@ -17,6 +17,9 @@ export type ValidationCheckType =
   | 'prompt-frontmatter-valid'
   | 'cron-syntax-valid'
   | 'template-index-valid'
+  | 'agents-md-valid'
+  | 'methodology-index-valid'
+  | 'schedule-valid'
 
 export interface ValidationCheck {
   type: ValidationCheckType

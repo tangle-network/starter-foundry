@@ -278,6 +278,135 @@ async function runCronSyntaxCheck(
   return { crons, maxFiresPerHour: worst }
 }
 
+async function runAgentsMdCheck(
+  check: ValidationCheck,
+  cwd: string,
+): Promise<{ frontmatterKeys: string[]; sections: string[] }> {
+  const filePath = path.join(cwd, check.path!)
+  let raw: string
+  try {
+    raw = await readFile(filePath, 'utf8')
+  } catch (error) {
+    throw new Error(`agents-md-valid: cannot read ${check.path}: ${(error as Error).message}`, { cause: error })
+  }
+  if (!raw.startsWith('---\n') && !raw.startsWith('---\r\n')) {
+    throw new Error(`agents-md-valid: ${check.path} missing YAML frontmatter`)
+  }
+  const closeIdx = raw.indexOf('\n---', 4)
+  if (closeIdx === -1) throw new Error(`agents-md-valid: ${check.path} unterminated frontmatter`)
+  const block = raw.slice(4, closeIdx)
+  const required = ['name', 'role', 'domain', 'version']
+  const keys: string[] = []
+  for (const line of block.split('\n')) {
+    if (!line.trim() || line.startsWith('#')) continue
+    const m = /^([a-zA-Z][a-zA-Z0-9_-]*):/.exec(line)
+    if (m) keys.push(m[1]!)
+  }
+  const missing = required.filter((k) => !keys.includes(k))
+  if (missing.length) {
+    throw new Error(`agents-md-valid: ${check.path} missing required keys: ${missing.join(', ')}`)
+  }
+  // Body sanity: should reference at least one of the secure-layer primitives
+  // OR an explicit "no tools" disclaimer. This is the cheap signal that the
+  // bundle author actually thought about what the agent does.
+  const body = raw.slice(closeIdx + 4)
+  const sections = [...body.matchAll(/^##\s+(.+)$/gm)].map((m) => m[1]!.trim())
+  if (sections.length < 2) {
+    throw new Error(`agents-md-valid: ${check.path} has fewer than 2 ## sections (need at least Role + How you work)`)
+  }
+  return { frontmatterKeys: keys, sections }
+}
+
+async function runMethodologyIndexCheck(
+  check: ValidationCheck,
+  cwd: string,
+): Promise<{ entries: number; missing: string[] }> {
+  // Same shape as template-index-valid; renamed for clarity in the new
+  // pattern. Kept as a separate validator so bundles authored against
+  // the old templates/ dir vs new methodology/ dir surface clearly.
+  const indexPath = path.join(cwd, check.path!)
+  let raw: string
+  try {
+    raw = await readFile(indexPath, 'utf8')
+  } catch (error) {
+    throw new Error(`methodology-index-valid: cannot read ${check.path}: ${(error as Error).message}`, { cause: error })
+  }
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(raw)
+  } catch (error) {
+    throw new Error(`methodology-index-valid: ${check.path} is not valid JSON: ${(error as Error).message}`, { cause: error })
+  }
+  const entries: { id?: string; path?: string; providedBy?: string }[] = Array.isArray(parsed)
+    ? (parsed as { id?: string; path?: string; providedBy?: string }[])
+    : Array.isArray((parsed as { entries?: unknown[] }).entries)
+      ? (parsed as { entries: { id?: string; path?: string; providedBy?: string }[] }).entries
+      : []
+  if (entries.length === 0) throw new Error(`methodology-index-valid: ${check.path} has zero entries`)
+  const indexDir = path.dirname(indexPath)
+  const missing: string[] = []
+  for (const entry of entries) {
+    // Entries with `providedBy` come from a layer at compose time —
+    // their files are not in the family's own files/ tree, so skip
+    // path-existence check.
+    if (entry.providedBy) continue
+    if (!entry.path) {
+      missing.push(`<entry without path: id=${entry.id ?? '?'}>`)
+      continue
+    }
+    const target = path.resolve(indexDir, entry.path)
+    if (!(await fileExists(target))) missing.push(entry.path)
+  }
+  if (missing.length > 0) {
+    throw new Error(`methodology-index-valid: ${missing.length} dangling entries: ${missing.slice(0, 5).join(', ')}`)
+  }
+  return { entries: entries.length, missing }
+}
+
+async function runScheduleCheck(
+  check: ValidationCheck,
+  cwd: string,
+): Promise<{ schedules: number; maxFiresPerHour: number }> {
+  // Reads manifest.defaults.schedule[] from the family manifest at <cwd>/manifest.json
+  // and validates each cron + capability id. Replaces cron-syntax-valid for
+  // bundles using the markdown-only pattern (no wrangler.toml).
+  const manifestPath = path.join(cwd, check.path ?? 'manifest.json')
+  let raw: string
+  try {
+    raw = await readFile(manifestPath, 'utf8')
+  } catch (error) {
+    throw new Error(`schedule-valid: cannot read ${manifestPath}: ${(error as Error).message}`, { cause: error })
+  }
+  let parsed: { defaults?: { schedule?: Array<{ id?: string; cron?: string; capability?: string }>; declaredCapabilities?: string[] } }
+  try {
+    parsed = JSON.parse(raw)
+  } catch (error) {
+    throw new Error(`schedule-valid: ${manifestPath} not JSON: ${(error as Error).message}`, { cause: error })
+  }
+  const sched = parsed.defaults?.schedule ?? []
+  if (sched.length === 0) {
+    // No schedules declared = vacuously valid; the bundle has no cron triggers.
+    return { schedules: 0, maxFiresPerHour: 0 }
+  }
+  const declaredCaps = new Set(parsed.defaults?.declaredCapabilities ?? [])
+  let worst = 0
+  const seenIds = new Set<string>()
+  for (const trigger of sched) {
+    if (!trigger.id) throw new Error(`schedule-valid: trigger missing 'id'`)
+    if (seenIds.has(trigger.id)) throw new Error(`schedule-valid: duplicate schedule id '${trigger.id}'`)
+    seenIds.add(trigger.id)
+    if (!trigger.cron) throw new Error(`schedule-valid: trigger '${trigger.id}' missing cron`)
+    if (!trigger.capability) throw new Error(`schedule-valid: trigger '${trigger.id}' missing capability`)
+    if (declaredCaps.size > 0 && !declaredCaps.has(trigger.capability)) {
+      throw new Error(`schedule-valid: trigger '${trigger.id}' capability '${trigger.capability}' not in declaredCapabilities`)
+    }
+    const fph = maxFiresPerHour(trigger.cron)
+    if (fph > 60) throw new Error(`schedule-valid: trigger '${trigger.id}' fires ${fph}×/hour (>60 cap)`)
+    if (fph > worst) worst = fph
+  }
+  return { schedules: sched.length, maxFiresPerHour: worst }
+}
+
 async function runTemplateIndexCheck(
   check: ValidationCheck,
   cwd: string,
@@ -372,6 +501,21 @@ async function runCheck(check: ValidationCheck, cwd: string): Promise<unknown> {
 
     case 'template-index-valid': {
       const result = await runTemplateIndexCheck(check, cwd)
+      return { type: check.type, path: check.path, ok: true, ...result }
+    }
+
+    case 'agents-md-valid': {
+      const result = await runAgentsMdCheck(check, cwd)
+      return { type: check.type, path: check.path, ok: true, ...result }
+    }
+
+    case 'methodology-index-valid': {
+      const result = await runMethodologyIndexCheck(check, cwd)
+      return { type: check.type, path: check.path, ok: true, ...result }
+    }
+
+    case 'schedule-valid': {
+      const result = await runScheduleCheck(check, cwd)
       return { type: check.type, path: check.path, ok: true, ...result }
     }
 

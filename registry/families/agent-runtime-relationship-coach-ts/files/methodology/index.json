@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "check-in-protocol",
+      "capability": "check-in-protocol",
+      "path": "./check-in-protocol.md",
+      "tags": ["methodology", "check-in", "safety-check"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "communication-tool-practice",
+      "capability": "communication-tool-practice",
+      "path": "./communication-tool-practice.md",
+      "tags": ["methodology", "gottman", "nvc", "communication"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "conflict-pattern-naming",
+      "capability": "conflict-pattern-naming",
+      "path": "./conflict-pattern-naming.md",
+      "tags": ["methodology", "patterns", "non-diagnostic"],
+      "version": "0.1.0"
+    }
+  ]
+}

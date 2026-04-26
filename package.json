@@ -3,14 +3,13 @@
   "version": "0.8.0",
   "description": "Deterministic project scaffold engine for AI coding platforms",
   "type": "module",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "repository": {
     "type": "git",
     "url": "https://github.com/tangle-network/starter-foundry.git"
   },
   "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://npm.pkg.github.com"
   },
   "exports": {
     ".": "./dist/lib/index.js",

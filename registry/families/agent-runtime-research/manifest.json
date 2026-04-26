@@ -161,8 +161,7 @@
       "draft"
     ],
     "tier3": [
-      "agent",
-      "assistant"
+      "agent"
     ],
     "archetypes": [
       "agent-in-sandbox"

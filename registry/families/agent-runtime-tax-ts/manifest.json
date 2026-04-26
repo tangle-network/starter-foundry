@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-tax-ts",
-  "description": "Tax-prep agent bundle — drafts filings, tracks deadlines, never substitutes for a CPA. Demonstrates the agent-runtime substrate composing on a regulated-domain role with structured-output blocks (:::filing, :::deadline, :::question) and a strict refusal contract.",
+  "description": "Tax-prep agent bundle \u2014 drafts filings, tracks deadlines, never substitutes for a CPA. Demonstrates the agent-runtime substrate composing on a regulated-domain role with structured-output blocks (:::filing, :::deadline, :::question) and a strict refusal contract.",
   "tags": [
     "agent-runtime",
     "tax",
@@ -159,10 +159,8 @@
       "estimated-tax"
     ],
     "tier3": [
-      "tax",
       "filing",
-      "deadline",
-      "cpa"
+      "deadline"
     ],
     "archetypes": [
       "agent-in-sandbox",

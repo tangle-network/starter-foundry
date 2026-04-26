@@ -13,7 +13,20 @@ import { requireSecret } from './secrets.js'
 
 const SIGNATURE_HEADER = 'x-tangle-signature'
 const TIMESTAMP_HEADER = 'x-tangle-timestamp'
+const SENDER_HEADER = 'x-tangle-sender'
 const REPLAY_WINDOW_MS = 5 * 60_000
+
+// H4 fix: case-insensitive header lookup. Different runtimes normalize
+// differently (Hono → lowercase, raw http.IncomingMessage → preserves case,
+// CF Workers → lowercase). Build a one-shot lowercase view at function
+// entry so downstream lookups are deterministic.
+function lowercaseHeaders(headers: Record<string, string>): Record<string, string> {
+  const out: Record<string, string> = {}
+  for (const k of Object.keys(headers)) {
+    out[k.toLowerCase()] = headers[k]!
+  }
+  return out
+}
 
 export interface WebhookSpec<TBody = unknown> {
   path: string
@@ -49,8 +62,9 @@ export interface WebhookResponse {
 }
 
 async function dispatchOne(spec: WebhookSpec, req: WebhookRequest): Promise<WebhookResponse> {
-  const sig = req.headers[SIGNATURE_HEADER]
-  const tsHeader = req.headers[TIMESTAMP_HEADER]
+  const headers = lowercaseHeaders(req.headers)
+  const sig = headers[SIGNATURE_HEADER]
+  const tsHeader = headers[TIMESTAMP_HEADER]
   if (!sig || !tsHeader) {
     audit.log({ event: 'webhook.in.reject', target: req.path, payload: { reason: 'missing-headers' } })
     return { status: 401, body: 'missing signature/timestamp' }
@@ -87,7 +101,7 @@ async function dispatchOne(spec: WebhookSpec, req: WebhookRequest): Promise<Webh
     }
   }
 
-  const sender = req.headers['x-tangle-sender'] ?? 'unknown'
+  const sender = headers[SENDER_HEADER] ?? 'unknown'
   audit.log({ event: 'webhook.in.accept', target: req.path, payload: { sender, bytes: req.rawBody.length } })
   try {
     await spec.handler(body, { sender, receivedAt: Date.now() })

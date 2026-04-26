@@ -28,25 +28,34 @@ let cached: AgentIdentity | null = null
 
 function fromEnv(): AgentIdentity {
   const raw = process.env.TANGLE_AGENT_IDENTITY_JSON
-  if (!raw) {
-    // In dev/test, fall back to a synthetic identity. Production
-    // gateways MUST inject a real signed identity.
-    if (process.env.NODE_ENV !== 'production') {
-      const now = Date.now()
-      return {
-        agentId: process.env.AGENT_NAME ?? 'dev-agent',
-        sessionId: `dev-${now}`,
-        deployerId: 'dev-deployer',
-        signedAt: now,
-        expiresAt: now + 3600_000,
-        capabilities: ['sensitive-fs'],
-        publicKey: 'dev-pubkey',
-        signature: 'dev-signature',
-      }
-    }
-    throw new Error('TANGLE_AGENT_IDENTITY_JSON missing — gateway did not inject identity')
+  if (raw) return JSON.parse(raw) as AgentIdentity
+
+  // Fail-closed: missing identity is a hard error in EVERY environment by
+  // default. Dev fallback requires explicit SF_DEV_IDENTITY_OPTIN=1 — that
+  // flag is the audit-trail of "yes, I deliberately ran without a real
+  // identity." This closes the H3 muffled-gate where misconfigured prod
+  // (forgot NODE_ENV=production) silently granted sensitive-fs.
+  if (process.env.SF_DEV_IDENTITY_OPTIN !== '1') {
+    throw new Error(
+      'TANGLE_AGENT_IDENTITY_JSON missing and SF_DEV_IDENTITY_OPTIN!=1 — ' +
+        'the gateway must inject a signed identity in any non-dev environment. ' +
+        'For local dev/test, set SF_DEV_IDENTITY_OPTIN=1 explicitly.',
+    )
   }
-  return JSON.parse(raw) as AgentIdentity
+  // Explicit dev opt-in. Synthetic identity has NO sensitive-fs capability;
+  // tests that need it must set TANGLE_AGENT_IDENTITY_JSON to a synthetic
+  // envelope with the capability they need (which is itself an audit signal).
+  const now = Date.now()
+  return {
+    agentId: process.env.AGENT_NAME ?? 'dev-agent',
+    sessionId: `dev-${now}`,
+    deployerId: 'dev-deployer',
+    signedAt: now,
+    expiresAt: now + 3600_000,
+    capabilities: [],
+    publicKey: 'dev-pubkey',
+    signature: 'dev-signature',
+  }
 }
 
 function load(): AgentIdentity {

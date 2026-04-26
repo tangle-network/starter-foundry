@@ -12,13 +12,28 @@ import { join, normalize, relative, resolve } from 'node:path'
 import { audit } from './audit.js'
 import { identity } from './identity.js'
 
-const WORKSPACE_ROOT = process.env.AGENT_WORKSPACE_ROOT ?? '/workspace'
+// Read env at call time so tests can configure per-test workspace roots.
+// In production this is set once at process start.
+function workspaceRoot(): string {
+  return process.env.AGENT_WORKSPACE_ROOT ?? '/workspace'
+}
+
 const SENSITIVE_PREFIX = 'sensitive/'
 
+// H2 fix: freeze the resolved agent root on first call. After that, mutating
+// process.env.TANGLE_AGENT_IDENTITY_JSON does NOT change which workspace this
+// process can see. The one-agent-per-process invariant is enforced here.
+// If the agent's identity changes mid-process (rotation), tests can call
+// `workspace._resetForTest()` — outside of tests, the workspace root is
+// frozen for the lifetime of the process.
+let frozenRoot: string | null = null
+
 function agentRoot(): string {
+  if (frozenRoot !== null) return frozenRoot
   const id = identity.current().agentId
-  const root = resolve(WORKSPACE_ROOT, id)
+  const root = resolve(workspaceRoot(), id)
   mkdirSync(root, { recursive: true })
+  frozenRoot = root
   return root
 }
 
@@ -97,5 +112,12 @@ export const workspace = {
     const abs = resolveSafe(rel)
     mkdirSync(join(abs, '..'), { recursive: true })
     writeFileSync(abs, content)
+  },
+
+  /** TEST-ONLY — release the frozen root so the next agentRoot() re-reads
+   * identity. Production code should never call this; the one-agent-per-
+   * process invariant is the whole point of freezing. */
+  _resetForTest(): void {
+    frozenRoot = null
   },
 }

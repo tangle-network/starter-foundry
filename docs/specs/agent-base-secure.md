@@ -1,104 +1,95 @@
-# `agent-base:secure` — security floor for every agent-runtime bundle
+# `agent-base:secure` — shared security primitives for agent-runtime bundles
 
-> Status: spec, pre-impl
-> Owner: starter-foundry
-> Threat model: untrusted multi-tenant agent runtime; the layer's primitives are the trust boundary every bundle inherits
+| | |
+|---|---|
+| **Status** | shipped, post-audit revision |
+| **Owner** | starter-foundry |
+| **Threat model** | untrusted bundle code running inside a Tangle sandbox; the layer is in-process logic atop the OS sandbox + gateway TLS |
 
-## Why this exists
+## What this layer actually is
 
-Every agent — therapist, doctor, music producer, recruiter, vet — has the same infrastructure needs:
-secrets, files, schedules, webhooks, identity, audit. Without a shared layer:
-- Each bundle re-implements the same 7 primitives, often half-right
-- Security audits scale O(N×primitives) instead of O(primitives)
-- A vulnerability in one bundle's secret-handling fix isn't applied to the other 49
+A small set of in-process TypeScript primitives every agent-runtime bundle inherits via `includes: ["agent-base:secure"]`. The primitives sit on top of two layers we trust:
 
-`agent-base:secure` is the trust boundary. Every primitive is secure by default — opt-out is explicit and logged.
+1. **OS sandbox** (sandbox-sdk): process isolation, `noNewPrivileges`, `capDrop:ALL`, network-egress whitelist
+2. **Tangle gateway**: TLS termination, request routing, identity verification, rate limits
 
-## What MUST be secure (non-negotiable)
+This layer adds: HMAC verification on agent-to-agent traffic, an append-only signed audit log, a workspace sandboxing wrapper, a typed identity passthrough, a dotenvx secrets façade, and a schedule-handler registry. **It is NOT a replacement for the OS sandbox or the gateway. It is a thin in-process layer that makes them easier to use correctly.**
 
-These are the seven primitives. Each ships as a small TS module under `src/lib/secure/`. Composes with `agent-base:tangle` and `agent-output:blocks`.
+## Honest guarantees per primitive
 
-| # | Primitive | Surface | Security guarantee |
-|---|---|---|---|
-| 1 | **secrets** | `loadSecret(name)` / `requireSecret(name)` | Encrypted at rest via dotenvx (`.env.encrypted`). Decryption requires the deployer's private key (env: `DOTENV_PRIVATE_KEY`). Never logged. Memoized per-process; cleared on `secrets.purge()`. Read events go to audit log. |
-| 2 | **workspace** | `workspace.read(path)` / `workspace.write(path, content)` / `workspace.list(prefix)` | All paths sandboxed under `/workspace/<agent-id>/`. Path-traversal rejected. `/workspace/<agent-id>/sensitive/` enforces additional ACL (read requires explicit capability). Disk quota enforced. Every write is audit-logged with content-hash. |
-| 3 | **webhook-in** | `defineWebhook({ path, schema, handler })` → mounted at `/webhooks/<bundle>/<path>` | HMAC-SHA256 signed (`X-Tangle-Signature` header), 5-min replay window via signed timestamp, schema-validated body. Reject-loud on signature/timestamp/schema fail. Successful deliveries audit-logged with sender identity + payload hash. |
-| 4 | **webhook-out** | `webhook.send(target, payload, { sign, retry })` | HMAC-signed by the agent's identity. Retries on 5xx with exponential backoff (max 3). Circuit breaker per target (open after 5 consecutive failures, 60s cooldown). Outbound URL whitelist enforced from `manifest.defaults.allowedDomains`. Every send audit-logged. |
-| 5 | **schedule** | declared in `manifest.defaults.schedule.{ id, cron, capability, atLeastOnce? }` | Trigger executes with the agent's signed identity. At-least-once delivery option. Failures retried per backoff policy. Every fire audit-logged with trigger-id + capability + outcome. Replaces wrangler.toml `[triggers]`. |
-| 6 | **identity** | `identity.current()` returns `{ agentId, sessionId, deployerId, signedAt, expiresAt }` | Every agent has an ephemeral signed identity (Ed25519). Cross-agent calls require valid signature + identity claim. TTL ≤ 1 hour, auto-rotated. Rotation event audit-logged. The agent CANNOT forge another agent's identity. |
-| 7 | **audit** | `audit.log({ event, actor, target, payload? })` | Append-only log per agent, signed per-line. Stored under `/workspace/<agent-id>/.audit/` with daily rotation. Replay-resistant via per-line monotonic sequence. The agent CANNOT delete or rewrite past audit lines. Operator can export the chain for compliance review. |
+Each row reports what the code actually does (line refs to `files/lib/secure/*.ts`). Anything not in the "Guarantee" column is NOT guaranteed.
 
-## What MUST NOT be in scope (explicit non-guarantees)
-
-The layer does not:
-- Replace network-layer sandbox enforcement (sandbox-sdk's `noNewPrivileges` + `capDrop` + `allowedDomains` still enforce at the OS level — the layer is in-process logic)
-- Implement encryption-in-transit (TLS terminates at the Tangle gateway; this layer assumes that holds)
-- Provide cross-bundle PII redaction (each bundle is responsible for its own data minimization; layer provides storage zones, not classifiers)
-- Resist malicious agent code (the agent's own code paths can `process.exit`, exhaust the disk quota, or burn LLM credits — those are operator policy concerns, not layer concerns)
-- Provide multi-region replication or backup (storage layer is single-region; backup is an operator responsibility)
+| Primitive | Guarantee | NOT guaranteed |
+|---|---|---|
+| **secrets** | dotenvx-encrypted at rest (real crypto, dotenvx does it). Refuses to return values that look like un-decrypted ciphertext (H1 fix). `SecureString` returns `[REDACTED]` from `toString()`/`toJSON()`. Reveal call audit-logs. `clearCache()` drops cached references. | Memory-shred of `SecureString` instances already handed out (call-site holds a reference). Defense against an author who deliberately calls `unsafeReveal()` then logs the raw string. |
+| **workspace** | Path-traversal check via `path.relative()` against agent root. Agent root **frozen at first call** (H2 fix) — mutating env after that does not change effective root. Sensitive-zone (`/sensitive/`) requires `'sensitive-fs'` capability on the agent's identity. | OS-level FS isolation (the sandbox does that). Disk-quota enforcement (operator/runtime concern; not implemented). |
+| **webhook-in** | HMAC-SHA256 + `timingSafeEqual`, 5-min replay window via signed timestamp inside MAC scope, schema validation runs after MAC verify, case-insensitive header lookup (H4 fix). | Per-nonce replay dedup within the 5-min window (would require a seen-nonce store). Constant-time secret-name lookup (LOW finding, deferred). |
+| **webhook-out** | HMAC-SHA256 outbound signature, retry with exponential backoff (max 3), circuit breaker per host (open after 5 failures, 60s cooldown), outbound-URL whitelist via `allowedDomains`. | Egress block if the bundle bypasses this function and calls `fetch()` directly (the OS sandbox's `allowedDomains` is the actual boundary). |
+| **schedule** | Capability-handler registry with cron-syntax validation. | At-least-once delivery (runtime concern; not implemented). Retry policy on handler failure (runtime concern; not implemented). The runtime dispatcher must call `schedule._fire()`; the layer is wiring, not a scheduler. |
+| **identity** | Typed envelope `{ agentId, sessionId, deployerId, signedAt, expiresAt, capabilities, publicKey, signature }` injected via `TANGLE_AGENT_IDENTITY_JSON`. **Fail-closed when missing** (H3 fix) — requires explicit `SF_DEV_IDENTITY_OPTIN=1` for dev fallback, and dev fallback grants no capabilities. | Ed25519 signature verification in-process (the gateway is the trust boundary; in-process `verify()` only checks expiry + presence of signature). Cross-agent call non-forgeability (depends on the gateway honoring its identity contract). |
+| **audit** | SHA256 hash chain with **canonical JSON** (M1 fix — keys sorted before hash so chain integrity is stable across V8 versions and clones). `verifyDay()` detects after-the-fact tampering. **Fail-closed actor resolution** (M2 fix). | Real-time write prevention (the agent's process can `unlinkSync` or `writeFileSync` over the log; chain detects, doesn't prevent). Cross-host replication (operator must export the chain off-host for compliance review). |
 
 ## Threat model
 
-Adversaries the layer defends against:
-1. **Malicious incoming webhook** — defended by HMAC + replay-window + schema validation. An attacker without the shared secret cannot inject events.
-2. **Cross-agent data leak** — defended by workspace ACL. Agent B cannot read Agent A's `/workspace/A/`.
-3. **Replay of legitimate webhook traffic** — defended by signed timestamp inside HMAC scope.
-4. **Identity forgery / agent-impersonation** — defended by Ed25519 signed identity + per-call signature.
-5. **Audit-log tampering** — defended by per-line signing + monotonic sequence; tampering is detectable.
-6. **Secret exfiltration via logs** — defended by `loadSecret()` returning a `SecureString` that throws on `.toString()`/JSON serialization without explicit `unsafeReveal()` (which is itself audit-logged).
+**Defends against:**
+1. Webhook spoofing across agent-to-agent traffic (HMAC + replay window)
+2. Workspace path-traversal from a buggy bundle
+3. Misconfigured production silently granting privileged access (H3 fail-closed pattern across identity + audit + secrets)
+4. Returning ciphertext as plaintext when dotenvx didn't decrypt (H1)
+5. Audit-log tampering becoming undetectable (chain + canonical JSON)
 
-Adversaries the layer does NOT defend against:
-- A compromised Tangle gateway (TLS + signing happens upstream of the agent runtime)
-- A compromised host kernel (out of scope; sandbox-sdk handles host-level isolation)
+**Does NOT defend against:**
+- Compromised gateway (TLS terminates upstream; we trust it)
+- Compromised host kernel (sandbox-sdk handles host-level isolation)
+- Bundle author who deliberately reveals secrets via `unsafeReveal()` then logs them (audit logs the reveal; operator policy)
 - Side-channel attacks (timing, cache) — out of scope
-- An operator who deliberately bypasses the layer (non-goal — the layer exists to make secure the easy default; operators with admin keys can do anything)
+- Operator who sets `SF_DEV_IDENTITY_OPTIN=1` in production (explicit opt-in is the audit signal; if it's wrong, the operator chose wrong)
+- Agent code that calls `node:fs`, `node:http`, etc. directly to bypass the layer (the OS sandbox is the actual enforcement)
 
-## Operator responsibilities (what the layer does NOT do for you)
+## Operator responsibilities
 
 When you deploy a bundle that includes `agent-base:secure`:
-1. Provision a deployer Ed25519 keypair and store the private key in `DOTENV_PRIVATE_KEY` (the layer reads from env)
-2. Encrypt your secrets via `dotenvx encrypt .env --key <pubkey>` before checkin — never check in plaintext
-3. Choose your workspace storage backend (Tangle sandbox FS by default; opt-in to S3-compatible if you need durability)
-4. Configure the gateway's TLS, allowedDomains, and quotas — the layer trusts the gateway
-5. Periodically export `/workspace/<agent-id>/.audit/` to an off-host store for compliance
 
-## What bundles look like after this lands
+1. **Provision Ed25519 identity keypair** + ensure the gateway injects `TANGLE_AGENT_IDENTITY_JSON` at session start. Without it, the layer fails-closed.
+2. **Encrypt secrets via dotenvx**: `dotenvx encrypt .env --key <pubkey>`. Set `DOTENV_PRIVATE_KEY` in the runtime environment. Without it, the layer fails-closed on first secret read.
+3. **Configure gateway-side** TLS, allowedDomains, quotas — the layer trusts the gateway.
+4. **Periodically export `/workspace/<agent-id>/.audit/` off-host** for compliance retention; verify the chain via `audit.verifyDay(date)` post-export.
+5. **In dev / test only**: set `SF_DEV_IDENTITY_OPTIN=1` to enable the synthetic identity fallback. Doing this in production is operator policy choice and is itself the audit trail.
+
+## Composition
 
 ```
-agent-runtime-<role>-ts/
-  manifest.json
-    {
-      "id": "...",
-      "includes": ["agent-base:tangle", "agent-base:secure", "agent-output:blocks", ...],
-      "defaults": {
-        "schedule": [{ "id": "morning-summary", "cron": "0 8 * * *", "capability": "morning-summary" }],
-        "secrets":  ["MUSICBRAINZ_USER_AGENT", "PHONY_API_KEY"],
-        "webhooks": {
-          "in": [{ "path": "/pt-session", "schema": "schemas/pt-session.json", "capability": "ingest-pt-session" }]
-        },
-        "outboundDomains": ["api.tangle.tools", "musicbrainz.org"]
-      }
-    }
-  files/
-    AGENTS.md            ← role + how-you-think + tools-by-name (refers to the secure layer)
-    TOOLS.md             ← TOC of *intent*: tools the operator might add (e.g. analyze-audio)
-    methodology/         ← short tool-using guides
-    README.md
-    # NO wrangler.toml — opt-in only if deployer chooses CF Workers
-    # NO tools/ scripts — operator materializes from TOOLS.md if/when needed
-    # NO templates/ — replaced by methodology/
+agent-base:tangle              ← Tangle SDK + sandbox + router (lower layer)
+  └── agent-base:secure        ← THIS layer (in-process primitives)
+        ├── secrets.ts          (dotenvx façade + SecureString)
+        ├── workspace.ts        (sandboxed FS + sensitive-zone ACL + frozen root)
+        ├── webhook-in.ts       (HMAC verify + replay window)
+        ├── webhook-out.ts      (HMAC sign + retry + circuit breaker + URL whitelist)
+        ├── schedule.ts         (cron-handler registry)
+        ├── identity.ts         (typed envelope + fail-closed dev fallback)
+        └── audit.ts            (canonical-JSON hash chain)
 ```
 
-5-6 markdown files + manifest. Total bundle size: ~10-20 KB. Maintenance burden per bundle: minimal.
+Bundles include the layer; methodology guides reference primitives by name.
 
-## Implementation plan
+## Test coverage
 
-1. `registry/layers/agent-base/secure/manifest.json` declares the layer; appliesTo includes every agent-runtime bundle
-2. `registry/layers/agent-base/secure/files/lib/secure/*.ts` — 7 small modules (~50-150 LOC each)
-3. New validators in `src/lib/validate.ts`:
-   - `agents-md-valid` (frontmatter check on AGENTS.md)
-   - `methodology-index-valid` (replaces template-index-valid for new bundles)
-   - `schedule-valid` (validates `manifest.defaults.schedule` cron syntax + capability resolution)
-   - `secrets-declared-valid` (every secret listed in `manifest.defaults.secrets` must have a matching declaration in the layer's encrypted vault structure)
-4. Update validator registry in `src/types/registry.ts` to recognize the new check types
-5. Document via this spec + `agent-base:secure/README.md`
+`files/lib/secure/index.test.ts` covers every guarantee in the table above:
+- secrets: dotenvx ciphertext detection, SecureString redaction, cache behavior
+- workspace: path-traversal rejection, frozen-root invariant, sensitive-zone capability check
+- webhook-in: HMAC verification, replay-window rejection, case-insensitive headers, schema gate
+- webhook-out: HMAC signing, allowedDomains enforcement, circuit breaker
+- audit: canonical-JSON stability, chain integrity, verifyDay tamper detection
+- identity: fail-closed default, dev opt-in synthetic identity, expiry check
+
+## Implementation notes
+
+- All primitives are pure TS modules. No daemons. No background threads.
+- Module-level state is documented and reset-for-test escape hatches exist (`workspace._resetForTest()`, `secrets.clearCache()`).
+- `audit.log()` is the only write path for the chain; it is called internally by every other primitive that does a privileged action.
+- Per-secret-reveal audit entries can be high-frequency on hot-path code (webhook-in/out call `unsafeReveal()` once per request). Operators concerned with audit volume should consider per-process secret caching (already done) and review the audit retention policy.
+
+## Related
+
+- `agent-base:privacy` — PII detection + redaction at intentional egress points (separate layer; composes with this one)
+- RFC `docs/specs/rfc-tangle-pii-egress-controls.md` — platform-side gateway scanner + sandbox-runtime log filter (out of scope for this layer)

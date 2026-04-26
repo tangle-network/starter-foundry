@@ -49,12 +49,29 @@ interface SecretsBackend {
   get(name: string): string | undefined
 }
 
+// Detects values that look like dotenvx ciphertext but were not decrypted —
+// the failure mode H1 flagged. Real dotenvx output always starts with
+// `encrypted:` or is a base64 envelope with a known prefix. If a secret value
+// matches this shape, dotenvx didn't run and we'd be returning ciphertext
+// to the caller as if it were plaintext.
+const DOTENVX_CIPHERTEXT_RE = /^encrypted:[A-Za-z0-9+/=]+$/
+
 class DotenvxBackend implements SecretsBackend {
   // Uses process.env at runtime. dotenvx's CLI/runtime decrypts
   // .env.encrypted via DOTENV_PRIVATE_KEY at process start; we read
   // from process.env which the dotenvx wrapper already populated.
   get(name: string): string | undefined {
-    return process.env[name]
+    const raw = process.env[name]
+    if (raw === undefined) return undefined
+    if (DOTENVX_CIPHERTEXT_RE.test(raw)) {
+      throw new Error(
+        `secrets.${name}: value looks like dotenvx ciphertext (starts with 'encrypted:'). ` +
+          'dotenvx decryption did not run — check DOTENV_PRIVATE_KEY is set in the runtime ' +
+          'environment and that .env.encrypted is loaded before the agent starts. ' +
+          'Refusing to return ciphertext as if it were plaintext.',
+      )
+    }
+    return raw
   }
 }
 
@@ -96,10 +113,16 @@ export function requireSecret(name: string): SecureString {
 export const secrets = {
   load: loadSecret,
   require: requireSecret,
-  /** Clear the in-process cache. Use at end of session or on rotation. */
-  purge(): void {
+  /**
+   * Clear the in-process secret cache. SecureString instances already
+   * handed out to bundle code are NOT zeroed — they remain live in
+   * memory until garbage-collected. This is a CACHE clear, not a memory
+   * shred. The name reflects what it actually does (M3 fix — was misnamed
+   * `purge()` which implied a stronger guarantee than delivered).
+   */
+  clearCache(): void {
     const count = cache.size
     cache.clear()
-    audit.log({ event: 'secret.purge', payload: { cleared: count } })
+    audit.log({ event: 'secret.cache-clear', payload: { cleared: count } })
   },
 }

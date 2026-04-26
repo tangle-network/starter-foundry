@@ -1,0 +1,180 @@
+{
+  "id": "agent-runtime-novelist-coach-ts",
+  "description": "Creative novel-writing coach agent bundle — a collaborative craft partner for scene cards, beat sheets, and voice/POV audits. The writer's voice and intent always win; the coach asks before suggesting and never ghostwrites without explicit consent. Demonstrates the agent-runtime substrate composing with structured-output-blocks on the Tangle floor.",
+  "tags": [
+    "agent-runtime",
+    "creative-writing",
+    "fiction-coach",
+    "creative-agent",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-novelist-coach",
+    "agentName": "novelist-coach",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "scene-card-protocol",
+          "beat-sheet-review",
+          "voice-audit"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "scene-card-protocol",
+      "beat-sheet-review",
+      "voice-audit"
+    ],
+    "creativeCollaborator": true,
+    "overridesArtist": false,
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "schedule": [
+      {
+        "id": "scheduled-1",
+        "cron": "0 14 * * *",
+        "capability": "scene-card-protocol"
+      }
+    ],
+    "outboundDomains": [
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/scene-card-protocol.md",
+      "target": "methodology/scene-card-protocol.md"
+    },
+    {
+      "source": "files/methodology/beat-sheet-review.md",
+      "target": "methodology/beat-sheet-review.md"
+    },
+    {
+      "source": "files/methodology/voice-audit.md",
+      "target": "methodology/voice-audit.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "system-prompt.md"
+    },
+    {
+      "type": "file-exists",
+      "path": "methodology/index.json"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "system-prompt.md"
+    },
+    {
+      "type": "methodology-index-valid",
+      "path": "methodology/index.json"
+    },
+    {
+      "type": "schedule-valid",
+      "path": "manifest.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "keywords": [
+    "novelist-coach",
+    "writing-coach",
+    "fiction-coach",
+    "scene-card",
+    "beat-sheet",
+    "save-the-cat",
+    "POV",
+    "voice"
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "novelist-coach",
+      "novelist coach",
+      "writing-coach-agent",
+      "writing coach agent",
+      "fiction-coach",
+      "fiction coach",
+      "novel-writing-coach",
+      "novel writing coach"
+    ],
+    "tier2": [
+      "beats",
+      "save-the-cat",
+      "scene-card",
+      "scene card",
+      "beat-sheet",
+      "beat sheet",
+      "POV",
+      "showing-vs-telling",
+      "show-dont-tell",
+      "voice-audit",
+      "manuscript"
+    ],
+    "tier3": [
+      "fiction",
+      "novel",
+      "writing",
+      "story"
+    ],
+    "archetypes": [
+      "agent-in-sandbox",
+      "creative-agent"
+    ]
+  }
+}

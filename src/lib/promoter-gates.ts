@@ -26,9 +26,9 @@
 //                  (e.g. agent-eval composed but scaffold-runs skipped
 //                  for no-start-script) is still visible in the scorecard.
 
+import { spawn } from 'node:child_process'
 import { readFileSync, existsSync, statSync, readdirSync } from 'node:fs'
 import { join, extname, relative } from 'node:path'
-import { spawn } from 'node:child_process'
 
 // ──────────────────────────────────────────────────────────────────
 // Shared types
@@ -97,7 +97,12 @@ export function checkDeclaredDepUsed(args: {
   const { manifest, composedDir } = args
   const deps = manifestPackageDeps(manifest)
   if (deps.length === 0) {
-    return { gate: 'declared-dep-used', status: 'skipped', reason: 'no-package-deps', filesSearched: [] }
+    return {
+      gate: 'declared-dep-used',
+      status: 'skipped',
+      reason: 'no-package-deps',
+      filesSearched: [],
+    }
   }
 
   const files = listScannableFiles(composedDir)
@@ -123,7 +128,11 @@ export function checkDeclaredDepUsed(args: {
 
 function manifestPackageDeps(manifest: Record<string, unknown>): string[] {
   const pkg = manifest.packageDeps as
-    | { dependencies?: Record<string, string>; devDependencies?: Record<string, string>; peerDependencies?: Record<string, string> }
+    | {
+        dependencies?: Record<string, string>
+        devDependencies?: Record<string, string>
+        peerDependencies?: Record<string, string>
+      }
     | undefined
   if (!pkg) return []
   const names = new Set<string>()
@@ -137,24 +146,46 @@ function manifestPackageDeps(manifest: Record<string, unknown>): string[] {
 // Extensions we'll scan for import/require. Skip binary + asset + lockfile
 // — they're never the site of a JS/TS import statement.
 const SCANNABLE_EXTS = new Set([
-  '.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs',
+  '.ts',
+  '.tsx',
+  '.js',
+  '.jsx',
+  '.mjs',
+  '.cjs',
   '.json', // package.json references, JSON-imports via bundlers
-  '.md',   // README examples
-  '.py', '.rs', '.go', '.sol', '.move',
-  '.yml', '.yaml',
+  '.md', // README examples
+  '.py',
+  '.rs',
+  '.go',
+  '.sol',
+  '.move',
+  '.yml',
+  '.yaml',
 ])
 
 function listScannableFiles(rootDir: string): string[] {
   const out: string[] = []
   const walk = (dir: string) => {
     let entries: string[]
-    try { entries = readdirSync(dir) } catch { return }
+    try {
+      entries = readdirSync(dir)
+    } catch {
+      return
+    }
     for (const entry of entries) {
-      if (entry === 'node_modules' || entry === '.git' || entry === 'dist' || entry === 'target') continue
+      if (entry === 'node_modules' || entry === '.git' || entry === 'dist' || entry === 'target')
+        continue
       const full = join(dir, entry)
       let s
-      try { s = statSync(full) } catch { continue }
-      if (s.isDirectory()) { walk(full); continue }
+      try {
+        s = statSync(full)
+      } catch {
+        continue
+      }
+      if (s.isDirectory()) {
+        walk(full)
+        continue
+      }
       const ext = extname(entry).toLowerCase()
       if (SCANNABLE_EXTS.has(ext) || entry === 'package.json') out.push(full)
     }
@@ -180,7 +211,11 @@ function anyFileImports(files: string[], root: string, pkg: string): boolean {
   ]
   for (const abs of files) {
     let text: string
-    try { text = readFileSync(abs, 'utf8') } catch { continue }
+    try {
+      text = readFileSync(abs, 'utf8')
+    } catch {
+      continue
+    }
     // Skip the root-level package.json — it's where the dep is DECLARED,
     // not "used". A scaffold's own package.json listing the dep cannot
     // count as proof-of-use (otherwise this gate would always pass). We
@@ -232,7 +267,18 @@ export async function checkScaffoldRuns(args: {
   const port = resolveScaffoldPort(manifest, options.port)
   const readyTimeoutMs = options.readyTimeoutMs ?? 20_000
 
-  const language = (manifest.taxonomy as Record<string, unknown> | undefined)?.language as string | undefined
+  const language = (manifest.taxonomy as Record<string, unknown> | undefined)?.language as
+    | string
+    | undefined
+  if (language === 'markdown') {
+    return {
+      gate: 'scaffold-runs',
+      status: 'skipped',
+      reason: 'agent-runtime-bundle-check-substitutes',
+      message:
+        'agent-runtime bundles validate via scripts/agent-runtime-bundle-check.ts, not pnpm start',
+    }
+  }
   const tsOrJs = language === 'typescript' || language === 'javascript' || language === undefined
   // TODO: add rust-runs / python-runs / go-runs branches — first iteration
   // targets JS/TS because that's where capability:agent-eval lives.
@@ -271,16 +317,25 @@ export async function checkScaffoldRuns(args: {
   })
   let stderrBuf = ''
   child.stderr.setEncoding('utf8')
-  child.stderr.on('data', (chunk: string) => { stderrBuf = (stderrBuf + chunk).slice(-4000) })
+  child.stderr.on('data', (chunk: string) => {
+    stderrBuf = (stderrBuf + chunk).slice(-4000)
+  })
   child.stdout.setEncoding('utf8')
   // Keep stdout drained so the child's pipe buffer doesn't block it.
-  child.stdout.on('data', () => { /* drain */ })
+  child.stdout.on('data', () => {
+    /* drain */
+  })
 
   // If the child exits before /health is reachable, we know it booted
   // and died — that's a fail, not a skip.
-  interface ExitInfo { code: number | null; signal: NodeJS.Signals | null }
+  interface ExitInfo {
+    code: number | null
+    signal: NodeJS.Signals | null
+  }
   let earlyExit: ExitInfo | null = null
-  child.on('exit', (code, signal) => { earlyExit = { code, signal } as ExitInfo })
+  child.on('exit', (code, signal) => {
+    earlyExit = { code, signal }
+  })
 
   const baseUrl = `http://127.0.0.1:${port}`
   const ready = await waitForHealth(baseUrl, readyTimeoutMs, () => earlyExit !== null)
@@ -311,7 +366,12 @@ export async function checkScaffoldRuns(args: {
       gate: 'scaffold-runs',
       status: 'pass',
       port,
-      process: { pid: child.pid ?? -1, kill: () => killProcess(child) },
+      process: {
+        pid: child.pid ?? -1,
+        kill: () => {
+          killProcess(child)
+        },
+      },
     }
   }
   killProcess(child)
@@ -330,14 +390,20 @@ function resolveScaffoldPort(manifest: Record<string, unknown>, override?: numbe
   return 3100
 }
 
-async function waitForHealth(baseUrl: string, timeoutMs: number, exited: () => boolean): Promise<boolean> {
+async function waitForHealth(
+  baseUrl: string,
+  timeoutMs: number,
+  exited: () => boolean,
+): Promise<boolean> {
   const deadline = Date.now() + timeoutMs
   while (Date.now() < deadline) {
     if (exited()) return false
     try {
       const res = await fetch(`${baseUrl}/health`, { signal: AbortSignal.timeout(1500) })
       if (res.ok) return true
-    } catch { /* retry */ }
+    } catch {
+      /* retry */
+    }
     await new Promise((r) => setTimeout(r, 250))
   }
   return false
@@ -351,14 +417,32 @@ function killProcess(child: ReturnType<typeof spawn>): void {
   // (observed with some npm/pnpm builds).
   try {
     if (child.pid) {
-      try { process.kill(-child.pid, 'SIGTERM') } catch { /* group may not exist */ }
-      try { child.kill('SIGTERM') } catch { /* noop */ }
+      try {
+        process.kill(-child.pid, 'SIGTERM')
+      } catch {
+        /* group may not exist */
+      }
+      try {
+        child.kill('SIGTERM')
+      } catch {
+        /* noop */
+      }
       setTimeout(() => {
-        try { process.kill(-child.pid!, 'SIGKILL') } catch { /* already dead */ }
-        try { child.kill('SIGKILL') } catch { /* noop */ }
+        try {
+          process.kill(-child.pid!, 'SIGKILL')
+        } catch {
+          /* already dead */
+        }
+        try {
+          child.kill('SIGKILL')
+        } catch {
+          /* noop */
+        }
       }, 500).unref()
     }
-  } catch { /* already dead */ }
+  } catch {
+    /* already dead */
+  }
 }
 
 // ──────────────────────────────────────────────────────────────────
@@ -421,28 +505,52 @@ export async function checkEvalScores(args: {
   const timeoutMs = options.timeoutMs ?? 120_000
 
   // Spawn run-eval.mjs. Unlike gate 2 this awaits completion.
-  const runnerRes = await new Promise<{ code: number | null; stdout: string; stderr: string }>((resolve) => {
-    const child = spawn(
-      'node',
-      ['tests/eval/run-eval.mjs', '--no-spawn', '--base', baseUrl, '--threshold', String(threshold)],
-      { cwd: composedDir, env: { ...process.env }, stdio: ['ignore', 'pipe', 'pipe'] },
-    )
-    let stdout = ''
-    let stderr = ''
-    child.stdout.on('data', (c: Buffer) => { stdout += c.toString('utf8') })
-    child.stderr.on('data', (c: Buffer) => { stderr += c.toString('utf8') })
-    const timer = setTimeout(() => {
-      try { child.kill('SIGKILL') } catch { /* noop */ }
-    }, timeoutMs)
-    child.on('exit', (code) => { clearTimeout(timer); resolve({ code, stdout, stderr }) })
-  })
+  const runnerRes = await new Promise<{ code: number | null; stdout: string; stderr: string }>(
+    (resolve) => {
+      const child = spawn(
+        'node',
+        [
+          'tests/eval/run-eval.mjs',
+          '--no-spawn',
+          '--base',
+          baseUrl,
+          '--threshold',
+          String(threshold),
+        ],
+        { cwd: composedDir, env: { ...process.env }, stdio: ['ignore', 'pipe', 'pipe'] },
+      )
+      let stdout = ''
+      let stderr = ''
+      child.stdout.on('data', (c: Buffer) => {
+        stdout += c.toString('utf8')
+      })
+      child.stderr.on('data', (c: Buffer) => {
+        stderr += c.toString('utf8')
+      })
+      const timer = setTimeout(() => {
+        try {
+          child.kill('SIGKILL')
+        } catch {
+          /* noop */
+        }
+      }, timeoutMs)
+      child.on('exit', (code) => {
+        clearTimeout(timer)
+        resolve({ code, stdout, stderr })
+      })
+    },
+  )
 
   // Read the scorecard — run-eval.mjs writes to .evolve/eval/latest.json
   // inside the scaffold dir.
   const scorecardPath = join(composedDir, '.evolve/eval/latest.json')
-  let scorecard: { aggregate?: number; scenarios?: Array<{ id?: string; pass?: boolean }> } | null = null
+  let scorecard: { aggregate?: number; scenarios?: { id?: string; pass?: boolean }[] } | null = null
   if (existsSync(scorecardPath)) {
-    try { scorecard = JSON.parse(readFileSync(scorecardPath, 'utf8')) } catch { /* leave null */ }
+    try {
+      scorecard = JSON.parse(readFileSync(scorecardPath, 'utf8'))
+    } catch {
+      /* leave null */
+    }
   }
 
   if (!scorecard) {
@@ -456,7 +564,7 @@ export async function checkEvalScores(args: {
 
   const aggregate = typeof scorecard.aggregate === 'number' ? scorecard.aggregate : 0
   const failing = (scorecard.scenarios ?? [])
-    .filter((s) => s && s.pass === false)
+    .filter((s) => s?.pass === false)
     .map((s) => s.id ?? '(unnamed)')
 
   if (aggregate < threshold) {

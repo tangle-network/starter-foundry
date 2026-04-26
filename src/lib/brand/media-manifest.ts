@@ -5,7 +5,9 @@
 
 import fs from 'node:fs/promises'
 import { dirname, join } from 'node:path'
+
 import { ensureDir } from '../fs.js'
+
 import type { BrandKit } from './index.js'
 
 export interface MediaAsset {
@@ -24,7 +26,7 @@ export interface MediaManifest {
 
 export interface GenerateMediaResult {
   manifest: MediaManifest
-  files: Array<{ path: string; body: string }>
+  files: { path: string; body: string }[]
 }
 
 function initialsFor(kit: BrandKit): string {
@@ -89,20 +91,37 @@ function appIconSvg(kit: BrandKit): string {
 }
 
 function escapeXml(s: string): string {
-  return s.replace(/[<>&"']/g, (c) =>
-    ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&apos;' })[c]!,
+  return s.replace(
+    /[<>&"']/g,
+    (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&apos;' })[c]!,
   )
 }
 
 export function buildMediaManifest(kit: BrandKit): GenerateMediaResult {
   const assets: MediaAsset[] = [
     { path: 'public/logo.svg', purpose: 'logo', spec: { width: 256, height: 256, format: 'svg' } },
-    { path: 'public/hero-bg.svg', purpose: 'hero-bg', spec: { width: 1920, height: 1080, format: 'svg' } },
-    { path: 'public/og-image.svg', purpose: 'og', spec: { width: 1200, height: 630, format: 'svg' } },
-    { path: 'public/favicon.svg', purpose: 'favicon', spec: { width: 32, height: 32, format: 'svg' } },
-    { path: 'public/app-icon.svg', purpose: 'app-icon', spec: { width: 512, height: 512, format: 'svg' } },
+    {
+      path: 'public/hero-bg.svg',
+      purpose: 'hero-bg',
+      spec: { width: 1920, height: 1080, format: 'svg' },
+    },
+    {
+      path: 'public/og-image.svg',
+      purpose: 'og',
+      spec: { width: 1200, height: 630, format: 'svg' },
+    },
+    {
+      path: 'public/favicon.svg',
+      purpose: 'favicon',
+      spec: { width: 32, height: 32, format: 'svg' },
+    },
+    {
+      path: 'public/app-icon.svg',
+      purpose: 'app-icon',
+      spec: { width: 512, height: 512, format: 'svg' },
+    },
   ]
-  const files: Array<{ path: string; body: string }> = [
+  const files: { path: string; body: string }[] = [
     { path: 'public/logo.svg', body: logoSvg(kit, 256) },
     { path: 'public/hero-bg.svg', body: heroBgSvg(kit, 1920, 1080) },
     { path: 'public/og-image.svg', body: ogSvg(kit) },
@@ -119,7 +138,10 @@ export function buildMediaManifest(kit: BrandKit): GenerateMediaResult {
   return { manifest, files }
 }
 
-export async function generateMediaManifest(kit: BrandKit, outDir: string): Promise<GenerateMediaResult> {
+export async function generateMediaManifest(
+  kit: BrandKit,
+  outDir: string,
+): Promise<GenerateMediaResult> {
   const result = buildMediaManifest(kit)
   for (const f of result.files) {
     const abs = join(outDir, f.path)

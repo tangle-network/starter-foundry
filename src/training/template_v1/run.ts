@@ -21,7 +21,7 @@
 //               the next shot. NEVER overturns `verify.pass`.
 //
 // The emit-candidate + --apply gating at the end is preserved unchanged so
-// scripts/template-quality-sweep.mjs and downstream CI keep working.
+// scripts/template-quality-sweep.ts and downstream CI keep working.
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
@@ -48,7 +48,7 @@ interface VbTemplateFeedback {
   generatedAt: string
   vbGeneration: number
   vbVariant: string
-  failingLeaves: Array<{
+  failingLeaves: {
     leafId: string
     verticalId: string
     difficulty: string
@@ -57,17 +57,17 @@ interface VbTemplateFeedback {
     reviewerDiagnoses: string[]
     shotsUsed: number
     primaryFailureExcerpt: string | null
-  }>
-  passingLeaves: Array<{
+  }[]
+  passingLeaves: {
     leafId: string
     verticalId: string
     blendedScore: number
-  }>
+  }[]
   aggregate: {
     totalLeaves: number
     passRate: number
     meanBlended: number
-    topFailingLayers: Array<{ layer: string; count: number }>
+    topFailingLayers: { layer: string; count: number }[]
     commonFailureClusters: string[]
   }
 }
@@ -99,7 +99,9 @@ function loadVbFeedback(
       )
       return raw
     } catch (err) {
-      console.warn(`[vb-feedback] parse failed for ${p}: ${err instanceof Error ? err.message : err}`)
+      console.warn(
+        `[vb-feedback] parse failed for ${p}: ${err instanceof Error ? err.message : err}`,
+      )
     }
   }
   return null
@@ -107,9 +109,7 @@ function loadVbFeedback(
 
 function renderVbFeedbackForReviewer(fb: VbTemplateFeedback): string {
   const parts: string[] = []
-  parts.push(
-    `VB SWEEP FEEDBACK (from blueprint-agent gen ${fb.vbGeneration} / ${fb.vbVariant}):`,
-  )
+  parts.push(`VB SWEEP FEEDBACK (from blueprint-agent gen ${fb.vbGeneration} / ${fb.vbVariant}):`)
   parts.push(
     `  passRate=${(fb.aggregate.passRate * 100).toFixed(0)}% meanBlended=${fb.aggregate.meanBlended.toFixed(2)} leaves=${fb.aggregate.totalLeaves}`,
   )
@@ -128,7 +128,9 @@ function renderVbFeedbackForReviewer(fb: VbTemplateFeedback): string {
         `    - ${leaf.verticalId}/${leaf.leafId} (${leaf.difficulty || '?'}) blended=${leaf.blendedScore.toFixed(2)} layers=[${leaf.failingLayers.join(',')}]`,
       )
       if (leaf.reviewerDiagnoses.length > 0) {
-        parts.push(`      diagnosis: ${leaf.reviewerDiagnoses[leaf.reviewerDiagnoses.length - 1]!.slice(0, 300)}`)
+        parts.push(
+          `      diagnosis: ${leaf.reviewerDiagnoses[leaf.reviewerDiagnoses.length - 1].slice(0, 300)}`,
+        )
       }
     }
   }
@@ -137,17 +139,15 @@ function renderVbFeedbackForReviewer(fb: VbTemplateFeedback): string {
   )
   return parts.join('\n')
 }
-import {
-  runProposeReview,
-  createLlmReviewer,
-  jsonlReviewStore,
-} from '@tangle-network/agent-eval'
-import { harvest, type HarvestSummary } from './harvest.js'
-import { multiPropose, type MultiProposeResult } from './multi-propose.js'
-import { audit, type AuditResult } from './audit.js'
-import { judge, type JudgeResult } from './judge.js'
+import { runProposeReview, createLlmReviewer, jsonlReviewStore } from '@tangle-network/agent-eval'
+
 import { selectReviewerRoute, reviewerJsonCall } from '../../lib/reviewer-route.js'
 import type { ComposeSpec } from '../../types.js'
+
+import { audit, type AuditResult } from './audit.js'
+import { harvest, type HarvestSummary } from './harvest.js'
+import { judge, type JudgeResult } from './judge.js'
+import { multiPropose, type MultiProposeResult } from './multi-propose.js'
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..')
 const CANDIDATES_DIR = join(REPO, '.evolve/template-candidates')
@@ -243,7 +243,9 @@ async function main(): Promise<void> {
 
   const route = selectReviewerRoute()
   if (!route) {
-    console.error('No reviewer key available (ANTHROPIC_API_KEY / GROQ_API_KEY / TANGLE_ROUTER_USER_KEY).')
+    console.error(
+      'No reviewer key available (ANTHROPIC_API_KEY / GROQ_API_KEY / TANGLE_ROUTER_USER_KEY).',
+    )
     process.exit(2)
   }
   console.log(`reviewer: ${route.style} → ${route.model}`)
@@ -277,20 +279,24 @@ async function main(): Promise<void> {
       'The VERIFIER compiled the scaffold with the candidate swapped in: compose → install → typecheck.',
       'Failing stages: compose | install | typecheck | (done = pass).',
       'When the audit fails at typecheck, inspect auditStderrTail for the concrete tsc error and tell the worker which imports or types to fix.',
-      'When the audit fails at install, the candidate likely removed or added a dep that isn\'t resolvable — direct the worker accordingly.',
+      "When the audit fails at install, the candidate likely removed or added a dep that isn't resolvable — direct the worker accordingly.",
       'If verify.pass is true OR you see identical-shape failures on two consecutive shots, set shouldContinue=false.',
       ...(vbFeedback ? ['', renderVbFeedbackForReviewer(vbFeedback)] : []),
     ].join('\n'),
   })
 
-  const propose = async (input: { shot: number; goal: string; priorReview: { nextShotInstruction?: string } | null }) => {
+  const propose = async (input: {
+    shot: number
+    goal: string
+    priorReview: { nextShotInstruction?: string } | null
+  }) => {
     const instructionTail = input.priorReview?.nextShotInstruction ?? ''
     // Propose N candidates in parallel (mix of LLM + deterministic), let the
     // deterministic judge pick the winner. Reviewer feedback propagates
     // through the LLM synthesizer via env var (stays out of the type-level
     // contract so other callers of multiPropose don't have to care).
     if (instructionTail) {
-      process.env['STARTER_FOUNDRY_TEMPLATE_REVIEW_INSTRUCTION'] = instructionTail
+      process.env.STARTER_FOUNDRY_TEMPLATE_REVIEW_INSTRUCTION = instructionTail
     }
     const multi = await multiPropose({
       templatePath: h.templatePath,
@@ -347,7 +353,11 @@ async function main(): Promise<void> {
   console.log(`loop: up to ${maxShots} shots`)
   const initialMulti: MultiProposeResult = {
     winner: {
-      candidate: { mode: 'deterministic', candidate: currentSource, reasoning: '(unchanged starting state)' },
+      candidate: {
+        mode: 'deterministic',
+        candidate: currentSource,
+        reasoning: '(unchanged starting state)',
+      },
       score: judge({
         templatePath: h.templatePath,
         currentSource,
@@ -384,8 +394,12 @@ async function main(): Promise<void> {
   })
 
   const finalState = report.finalState
-  const finalAudit: AuditResult =
-    lastAudit ?? { ok: false, stage: 'compose', stderrTail: '(loop never ran verify)', durationMs: 0 }
+  const finalAudit: AuditResult = lastAudit ?? {
+    ok: false,
+    stage: 'compose',
+    stderrTail: '(loop never ran verify)',
+    durationMs: 0,
+  }
 
   mkdirSync(CANDIDATES_DIR, { recursive: true })
   const stamp = new Date().toISOString().replace(/[:.]/g, '-')
@@ -423,7 +437,9 @@ async function main(): Promise<void> {
   console.log(`\ncandidate → ${candidateFile}`)
   console.log(`report    → ${reportFile}`)
   console.log(`memory    → ${memoryPath}`)
-  console.log(`shots     → ${report.shots.length}/${maxShots}  (pass=${report.finalVerification.pass})`)
+  console.log(
+    `shots     → ${report.shots.length}/${maxShots}  (pass=${report.finalVerification.pass})`,
+  )
 
   if (flag('--apply') && flag('--yes') && finalAudit.ok && finalState.judge.score > 0.55) {
     // Phase F.2 — VB smoke gate. Before applying a template rewrite,
@@ -433,7 +449,7 @@ async function main(): Promise<void> {
     // prior passing leaves, bail out. --skip-vb-smoke to disable.
     if (!flag('--skip-vb-smoke') && vbFeedback && vbFeedback.failingLeaves.length > 0) {
       const smokeOk = await runVbSmoke({
-        vertical: vbFeedback.failingLeaves[0]!.verticalId,
+        vertical: vbFeedback.failingLeaves[0].verticalId,
         leafCount: Math.min(3, vbFeedback.failingLeaves.length),
         passingBaseline: vbFeedback.passingLeaves.length,
         templateKey,
@@ -444,7 +460,9 @@ async function main(): Promise<void> {
       }
     }
     writeFileSync(absoluteSource, finalState.candidateSource)
-    console.log(`\n✓ applied candidate to ${absoluteSource} (score ${finalState.judge.score.toFixed(2)})`)
+    console.log(
+      `\n✓ applied candidate to ${absoluteSource} (score ${finalState.judge.score.toFixed(2)})`,
+    )
     console.log(`  commit the change + attach the report in the PR body.`)
   } else if (flag('--apply')) {
     console.log('\nnot applied — either audit failed, score too low, or --yes not passed.')
@@ -474,18 +492,28 @@ async function runVbSmoke(args: {
   }
   const { spawn } = await import('node:child_process')
   const variant = `smoke-${args.templateKey}-${Date.now().toString(36)}`
-  console.log(`\n[vb-smoke] dispatching blueprint-agent sweep: vertical=${args.vertical} variant=${variant}`)
+  console.log(
+    `\n[vb-smoke] dispatching blueprint-agent sweep: vertical=${args.vertical} variant=${variant}`,
+  )
   return await new Promise<boolean>((resolvePromise) => {
     const proc = spawn(
       'pnpm',
       [
-        '-s', 'tsx', 'scripts/experiments/vb-pipeline.ts',
-        '--vertical', args.vertical,
-        '--shots', '3',
-        '--verify', 'minimal',
-        '--wall-ms', '600000',
-        '--generation', '99',
-        '--variant', variant,
+        '-s',
+        'tsx',
+        'scripts/experiments/vb-pipeline.ts',
+        '--vertical',
+        args.vertical,
+        '--shots',
+        '3',
+        '--verify',
+        'minimal',
+        '--wall-ms',
+        '600000',
+        '--generation',
+        '99',
+        '--variant',
+        variant,
         '--skip-render',
         '--skip-template-feedback',
       ],

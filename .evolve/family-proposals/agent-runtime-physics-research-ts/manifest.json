@@ -1,0 +1,166 @@
+{
+  "id": "agent-runtime-physics-research-ts",
+  "description": "Physics research assistant agent bundle — literature search, citation-grounded analysis, and experimental design support. Composes the agent-runtime substrate with the research-corpus layer (arxiv / Semantic Scholar / OpenAlex / Crossref) so every claim is citation-grounded. Advisory only — never replaces peer review, ethics board, or professional judgment.",
+  "tags": [
+    "agent-runtime",
+    "physics-research",
+    "literature-search",
+    "citation-grounded",
+    "experimental-design",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-tools:research-corpus",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-physics-research",
+    "agentName": "physics-research",
+    "allowedDomains": [
+      "api.tangle.tools",
+      "export.arxiv.org",
+      "api.semanticscholar.org",
+      "api.openalex.org",
+      "api.crossref.org"
+    ],
+    "allowedEnv": [
+      "TANGLE_ROUTER_KEY"
+    ],
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "research:paper-search",
+          "research:citation-graph"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "literature-search",
+      "citation-analysis",
+      "experimental-design"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "low",
+    "advisoryOnly": true
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/templates/index.json",
+      "target": "templates/index.json"
+    },
+    {
+      "source": "files/templates/literature-search.md",
+      "target": "templates/literature-search.md"
+    },
+    {
+      "source": "files/templates/citation-analysis.md",
+      "target": "templates/citation-analysis.md"
+    },
+    {
+      "source": "files/templates/experimental-design.md",
+      "target": "templates/experimental-design.md"
+    },
+    {
+      "source": "files/wrangler.toml",
+      "target": "wrangler.toml"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "system-prompt.md"
+    },
+    {
+      "type": "file-exists",
+      "path": "templates/index.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "wrangler.toml"
+    },
+    {
+      "type": "prompt-frontmatter-valid",
+      "path": "system-prompt.md"
+    },
+    {
+      "type": "template-index-valid",
+      "path": "templates/index.json"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "keywords": [
+    "physics-research",
+    "physics research",
+    "literature-search",
+    "citation-analysis",
+    "experimental-design",
+    "arxiv",
+    "semantic-scholar"
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "physics-research-agent",
+      "physics research agent",
+      "physics-researcher",
+      "physics researcher",
+      "literature-search-agent",
+      "literature search agent"
+    ],
+    "tier2": [
+      "arxiv",
+      "semantic-scholar",
+      "openalex",
+      "crossref",
+      "citation-graph",
+      "citation analysis",
+      "experimental-design",
+      "experimental design"
+    ],
+    "tier3": [
+      "research",
+      "physics",
+      "science"
+    ],
+    "archetypes": [
+      "agent-in-sandbox",
+      "research-agent"
+    ]
+  }
+}

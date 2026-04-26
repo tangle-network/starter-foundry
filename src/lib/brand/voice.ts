@@ -3,7 +3,9 @@
 // applies a word-substitution table so the output is stable in tests + offline.
 
 import { ax } from '@ax-llm/ax'
+
 import { createLLM, isLLMAvailable } from '../llm.js'
+
 import type { BrandKit } from './index.js'
 
 export type VoiceRegister = 'formal' | 'casual' | 'technical' | 'playful' | 'neutral'
@@ -32,7 +34,7 @@ const voiceRewriter = ax(
 
 // Deterministic substitution table — same input always produces the same
 // output. Not great prose, but stable for tests + offline operation.
-const SUBSTITUTIONS: Record<VoiceRegister, Array<[RegExp, string]>> = {
+const SUBSTITUTIONS: Record<VoiceRegister, [RegExp, string][]> = {
   formal: [
     [/\bget\b/gi, 'obtain'],
     [/\bhelp\b/gi, 'assist'],
@@ -67,7 +69,11 @@ function rewriteDeterministic(text: string, voice: VoiceRegister): string {
   return out
 }
 
-async function rewriteLLM(text: string, voice: VoiceRegister, brandName: string): Promise<string | null> {
+async function rewriteLLM(
+  text: string,
+  voice: VoiceRegister,
+  brandName: string,
+): Promise<string | null> {
   if (!isLLMAvailable()) return null
   try {
     const llm = createLLM()

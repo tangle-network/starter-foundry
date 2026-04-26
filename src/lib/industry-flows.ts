@@ -39,7 +39,7 @@ const INDUSTRY_FIRST_TURNS: Record<string, IndustryFirstTurn> = {
     ],
     whatNotToDo: [
       'Do not start with a marketing landing page — financial products land users into their account view',
-      'Do not hard-code fiat symbols; read the user\'s region from personalize.json',
+      "Do not hard-code fiat symbols; read the user's region from personalize.json",
     ],
   },
   gaming: {
@@ -84,7 +84,7 @@ const INDUSTRY_FIRST_TURNS: Record<string, IndustryFirstTurn> = {
     industry: 'fitness',
     shortLabel: 'Workout tracking, training plans, gyms',
     firstFeatures: [
-      'Today\'s workout — list of exercises with reps/sets and check-off',
+      "Today's workout — list of exercises with reps/sets and check-off",
       'Progress chart — reps-over-time or PR trend (chart-widget)',
       'Plan selector — browse or pick a training program',
     ],
@@ -112,9 +112,7 @@ const INDUSTRY_FIRST_TURNS: Record<string, IndustryFirstTurn> = {
       'Order or reservation form — items/table + time + party size + confirm',
       'Order status / receipt — post-submission summary with estimated time',
     ],
-    whatNotToDo: [
-      'Do not default to a marketing landing — hungry users want the menu immediately',
-    ],
+    whatNotToDo: ['Do not default to a marketing landing — hungry users want the menu immediately'],
   },
   crypto: {
     industry: 'crypto',
@@ -152,7 +150,7 @@ const INDUSTRY_FIRST_TURNS: Record<string, IndustryFirstTurn> = {
 export function renderIndustryFirstTurn(layers: string[]): string {
   const industryLayer = layers.find((l) => l.startsWith('industry:'))
   if (!industryLayer) return ''
-  const id = industryLayer.split(':')[1]!
+  const id = industryLayer.split(':')[1]
   const entry = INDUSTRY_FIRST_TURNS[id]
   if (!entry) return ''
 

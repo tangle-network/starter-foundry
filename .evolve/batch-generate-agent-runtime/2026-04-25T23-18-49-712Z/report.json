@@ -1,0 +1,18 @@
+{
+  "ts": "2026-04-25T23:18:49.713Z",
+  "opts": {
+    "tranche": 1,
+    "limit": 1,
+    "rlm": false,
+    "maxShots": 3,
+    "dryRun": true,
+    "skipExisting": true
+  },
+  "counts": {
+    "total": 0,
+    "validateOk": 0,
+    "composeOnly": 0,
+    "composeFail": 0
+  },
+  "results": []
+}

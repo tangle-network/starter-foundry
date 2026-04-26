@@ -49,7 +49,7 @@ test('filesForTaxonomy: every demand-signal surface has a non-bare file set', ()
 test('measure-coverage-lift: --baseline writes snapshot with expected shape', () => {
   const tmpOut = join(REPO, '.evolve/coverage-baseline-test.json')
   try {
-    const res = spawnSync('node', ['scripts/measure-coverage-lift.mjs', '--baseline', '--out', tmpOut], {
+    const res = spawnSync('node', ['scripts/measure-coverage-lift.ts', '--baseline', '--out', tmpOut], {
       cwd: REPO,
       encoding: 'utf8',
       env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
@@ -77,8 +77,8 @@ test('measure-coverage-lift: --compare writes coverage-measured event on unchang
   const impactLog = join(REPO, '.evolve/generation-impact.jsonl')
   const pre = existsSync(impactLog) ? readFileSync(impactLog, 'utf8').split('\n').length : 0
   try {
-    spawnSync('node', ['scripts/measure-coverage-lift.mjs', '--baseline', '--out', baseline], { cwd: REPO, encoding: 'utf8' })
-    const res = spawnSync('node', ['scripts/measure-coverage-lift.mjs', '--compare', baseline, '--new-family', 'synthetic-test-family'], {
+    spawnSync('node', ['scripts/measure-coverage-lift.ts', '--baseline', '--out', baseline], { cwd: REPO, encoding: 'utf8' })
+    const res = spawnSync('node', ['scripts/measure-coverage-lift.ts', '--compare', baseline, '--new-family', 'synthetic-test-family'], {
       cwd: REPO,
       encoding: 'utf8',
       env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
@@ -116,7 +116,7 @@ test('promote-capability-proposal: rejects manifest without appliesTo at schema 
     }, null, 2),
   )
   try {
-    const res = spawnSync('node', ['scripts/promote-capability-proposal.mjs', '--id', id], {
+    const res = spawnSync('node', ['scripts/promote-capability-proposal.ts', '--id', id], {
       cwd: REPO,
       encoding: 'utf8',
       env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
@@ -147,7 +147,7 @@ test('promote-capability-proposal: rejects TODO placeholders', () => {
     }, null, 2),
   )
   try {
-    const res = spawnSync('node', ['scripts/promote-capability-proposal.mjs', '--id', id], {
+    const res = spawnSync('node', ['scripts/promote-capability-proposal.ts', '--id', id], {
       cwd: REPO,
       encoding: 'utf8',
       env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
@@ -175,7 +175,7 @@ test('promote-capability-proposal: rejects appliesTo pointing to non-existent fa
     }, null, 2),
   )
   try {
-    const res = spawnSync('node', ['scripts/promote-capability-proposal.mjs', '--id', id], {
+    const res = spawnSync('node', ['scripts/promote-capability-proposal.ts', '--id', id], {
       cwd: REPO,
       encoding: 'utf8',
       env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
@@ -237,7 +237,7 @@ test('promote-family-proposal: --skip-fidelity flag suppresses the fidelity gate
     }, null, 2),
   )
   try {
-    const res = spawnSync('node', ['scripts/promote-family-proposal.mjs', '--id', id, '--no-pr', '--dry-run', '--skip-fidelity'], {
+    const res = spawnSync('node', ['scripts/promote-family-proposal.ts', '--id', id, '--no-pr', '--dry-run', '--skip-fidelity'], {
       cwd: REPO,
       encoding: 'utf8',
       env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
@@ -255,7 +255,7 @@ test('promote-family-proposal: --skip-fidelity flag suppresses the fidelity gate
 test('promote-family-proposal: --fidelity-threshold flag parses numeric override', () => {
   // Smoke: pass a clearly-out-of-range threshold and verify the flag is
   // accepted without crashing script start. Does not require LLM.
-  const res = spawnSync('node', ['scripts/promote-family-proposal.mjs', '--id', 'nonexistent-xyz', '--no-pr', '--fidelity-threshold', '0.95'], {
+  const res = spawnSync('node', ['scripts/promote-family-proposal.ts', '--id', 'nonexistent-xyz', '--no-pr', '--fidelity-threshold', '0.95'], {
     cwd: REPO,
     encoding: 'utf8',
     env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },

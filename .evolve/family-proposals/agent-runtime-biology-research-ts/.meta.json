@@ -1,0 +1,13 @@
+{
+  "id": "agent-runtime-biology-research-ts",
+  "peerFamilies": [
+    "agent-runtime-cmo-advisor-ts",
+    "agent-runtime-legal-counsel-ts",
+    "agent-runtime-music-producer-ts",
+    "agent-runtime-recruiter-ts",
+    "agent-runtime-research"
+  ],
+  "mode": "deterministic",
+  "reasoning": "No router key available — emitting TODO skeleton; human fills in template files + buildHints.",
+  "generatedAt": "2026-04-25T23:19:25.330Z"
+}

@@ -1,0 +1,58 @@
+{
+  "id": "tangle",
+  "slot": "agent-base",
+  "description": "Tangle floor for every agent-runtime bundle: sandbox-sdk + tcloud + router.tangle.tools as the LLM endpoint. Mandatory for all agent-runtime families — never opt out, never alternate.",
+  "appliesTo": [
+    "agent-runtime-research",
+    "agent-runtime-therapist-ts",
+    "agent-runtime-tax-ts",
+    "agent-runtime-legal-counsel-ts",
+    "agent-runtime-music-producer-ts",
+    "agent-runtime-cmo-advisor-ts",
+    "agent-runtime-wealth-manager-ts",
+    "agent-runtime-recruiter-ts",
+    "agent-runtime-real-estate-ts",
+    "agent-runtime-fitness-coach-ts",
+    "agent-runtime-novelist-coach-ts",
+    "agent-runtime-business-partner-ts",
+    "agent-runtime-language-tutor-ts",
+    "agent-runtime-veterinarian-ts",
+    "agent-runtime-relationship-coach-ts"
+  ],
+  "provides": [
+    "tangle:base",
+    "tangle:sandbox",
+    "tangle:tcloud",
+    "tangle:router"
+  ],
+  "defaults": {
+    "tangleBase": true,
+    "llmRouterUrl": "https://router.tangle.tools",
+    "sandboxProvider": "tangle",
+    "tcloudAvailable": true,
+    "tangleSandboxSdk": "@tangle-network/sandbox-sdk",
+    "tcloudSdk": "@tangle-network/tcloud"
+  },
+  "files": [
+    {
+      "source": "files/lib/tangle.ts",
+      "target": "src/lib/tangle.ts"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "src/lib/tangle.ts"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "src/lib/tangle.ts"
+    ],
+    "extensionPoints": [
+      "src/lib/tools/",
+      "templates/"
+    ]
+  }
+}

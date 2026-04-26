@@ -12,7 +12,8 @@ import { spawnSync } from 'node:child_process'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const REPO = join(__dirname, '..')
-const SCRIPT = join(REPO, 'scripts/consume-vb-feedback.mjs')
+const SCRIPT = join(REPO, 'scripts/consume-vb-feedback.ts')
+const TSX = join(REPO, 'node_modules/.bin/tsx')
 
 function fixture(): string {
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'vb-feedback-')))
@@ -87,7 +88,7 @@ describe('consume-vb-feedback', () => {
     const root = fixture()
     try {
       const res = spawnSync(
-        'node',
+        TSX,
         [SCRIPT, '--source', root, '--consumer', 'test-consumer', '--since-gen', '40', '--dry-run'],
         { cwd: REPO, encoding: 'utf8' },
       )
@@ -112,7 +113,7 @@ describe('consume-vb-feedback', () => {
     const sentinelPath = join(REPO, '.evolve/vb-feedback/should-not-exist-after-dry-run.tmp')
     try {
       const res = spawnSync(
-        'node',
+        TSX,
         [SCRIPT, '--source', root, '--consumer', 'dry-run-test', '--since-gen', '40', '--dry-run'],
         { cwd: REPO, encoding: 'utf8' },
       )
@@ -128,12 +129,12 @@ describe('consume-vb-feedback', () => {
   })
 
   test('exit non-zero when --source missing', () => {
-    const res = spawnSync('node', [SCRIPT], { cwd: REPO, encoding: 'utf8' })
+    const res = spawnSync(TSX, [SCRIPT], { cwd: REPO, encoding: 'utf8' })
     assert.equal(res.status, 2, '--source is required')
   })
 
   test('source missing on disk → exit 2 with helpful error', () => {
-    const res = spawnSync('node', [SCRIPT, '--source', '/nonexistent/path'], { cwd: REPO, encoding: 'utf8' })
+    const res = spawnSync(TSX, [SCRIPT, '--source', '/nonexistent/path'], { cwd: REPO, encoding: 'utf8' })
     assert.equal(res.status, 2)
     assert.match(res.stderr, /source not found/)
   })

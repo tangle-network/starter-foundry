@@ -1,23 +1,19 @@
-import { emit, traced } from './telemetry.js'
-import { loadRegistry } from './registry.js'
-import { selectStarter } from './selection.js'
-import { detectCapabilities, detectIndustry, detectLane, hasAny, matchesKeyword } from './keywords.js'
-import { rewritePrompt, rewriteViaBrief } from './prompt-rewriter.js'
-import type { ProductBrief } from './product-brief.js'
 import type { Registry } from '../types.js'
 import type { ComposeSpec, WorkspaceSpec, PromptPlan, ProjectEntry } from '../types.js'
+
 import {
-  API_SIGNALS,
-  EXPLICIT_WORKER_SIGNALS,
-  FRAMEWORK_API_TERMS,
-  FRONTEND_SIGNALS,
-  FULLSTACK_SIGNALS,
-  REACT_FAMILIES,
-  SINGLE_LANE_SIGNALS,
-  STRONG_API_TERMS,
-  WORKER_SIGNALS,
-  WORKSPACE_SIGNALS,
-} from './planner/signals.js'
+  detectCapabilities,
+  detectIndustry,
+  detectLane,
+  hasAny,
+  matchesKeyword,
+} from './keywords.js'
+import {
+  buildEvmContractLayers,
+  buildEvmContractVariables,
+  buildSolanaProgramLayers,
+  buildSolanaProgramVariables,
+} from './planner/contracts.js'
 import {
   detectAuthSlot,
   detectDatabaseSlot,
@@ -33,16 +29,32 @@ import {
   inferPartner,
   needsSupportApiLane,
 } from './planner/detectors.js'
-import {
-  buildEvmContractLayers,
-  buildEvmContractVariables,
-  buildSolanaProgramLayers,
-  buildSolanaProgramVariables,
-} from './planner/contracts.js'
 import { buildSlug, resolvePartnerForFamily } from './planner/helpers.js'
 import { inferImplicitCapabilities } from './planner/implicit-caps.js'
 import { shouldPromotePartnerFirst } from './planner/partner-first.js'
-import { buildApiProject, buildWebProject, buildWorkerProject, chooseApiFamily } from './planner/projects.js'
+import {
+  buildApiProject,
+  buildWebProject,
+  buildWorkerProject,
+  chooseApiFamily,
+} from './planner/projects.js'
+import {
+  API_SIGNALS,
+  EXPLICIT_WORKER_SIGNALS,
+  FRAMEWORK_API_TERMS,
+  FRONTEND_SIGNALS,
+  FULLSTACK_SIGNALS,
+  REACT_FAMILIES,
+  SINGLE_LANE_SIGNALS,
+  STRONG_API_TERMS,
+  WORKER_SIGNALS,
+  WORKSPACE_SIGNALS,
+} from './planner/signals.js'
+import type { ProductBrief } from './product-brief.js'
+import { rewritePrompt, rewriteViaBrief } from './prompt-rewriter.js'
+import { loadRegistry } from './registry.js'
+import { selectStarter } from './selection.js'
+import { emit, traced } from './telemetry.js'
 
 interface LaneDetection {
   frontend: boolean
@@ -66,7 +78,8 @@ interface LaneDetection {
 
 function detectLanes(text: string, partner: string | null): LaneDetection {
   const hasApiRaw = hasAny(text, API_SIGNALS)
-  const apiIsFalsePositive = hasApiRaw && !hasAny(text, STRONG_API_TERMS) && hasAny(text, FRAMEWORK_API_TERMS)
+  const apiIsFalsePositive =
+    hasApiRaw && !hasAny(text, STRONG_API_TERMS) && hasAny(text, FRAMEWORK_API_TERMS)
   const api = hasApiRaw && !apiIsFalsePositive
 
   const hasWorkerRaw = hasAny(text, WORKER_SIGNALS)
@@ -88,12 +101,30 @@ function detectLanes(text: string, partner: string | null): LaneDetection {
 
   const hasProtocol = evm || solana || tangle || avs || stylus || evmInfra
   const commerceSupportApi =
-    !api && frontend && needsSupportApiLane(text) &&
-    (partner === 'coinbase' || detectPaymentsSlot(text) !== null || detectSdkSlot(text, partner) !== null) &&
-    hasAny(text, ['api', 'backend', 'server', 'endpoint', 'webhook', 'order management', 'order history', 'payment webhook', 'indexer', 'transaction history'])
+    !api &&
+    frontend &&
+    needsSupportApiLane(text) &&
+    (partner === 'coinbase' ||
+      detectPaymentsSlot(text) !== null ||
+      detectSdkSlot(text, partner) !== null) &&
+    hasAny(text, [
+      'api',
+      'backend',
+      'server',
+      'endpoint',
+      'webhook',
+      'order management',
+      'order history',
+      'payment webhook',
+      'indexer',
+      'transaction history',
+    ])
   const implicitApi =
     !api &&
-    ((hasProtocol && (needsSupportApiLane(text) || detectEvmSupportApiPattern(text) || (solana && detectSolanaProductApiPattern(text)))) ||
+    ((hasProtocol &&
+      (needsSupportApiLane(text) ||
+        detectEvmSupportApiPattern(text) ||
+        (solana && detectSolanaProductApiPattern(text)))) ||
       commerceSupportApi)
   const implicitWorker =
     !worker &&
@@ -102,28 +133,106 @@ function detectLanes(text: string, partner: string | null): LaneDetection {
       (x402 && agentLane))
 
   return {
-    frontend, api, worker, evm, solana, move, tangle, avs, stylus,
-    zk, mcp, dspy, agent: agentLane, x402, evmInfra, implicitApi, implicitWorker,
+    frontend,
+    api,
+    worker,
+    evm,
+    solana,
+    move,
+    tangle,
+    avs,
+    stylus,
+    zk,
+    mcp,
+    dspy,
+    agent: agentLane,
+    x402,
+    evmInfra,
+    implicitApi,
+    implicitWorker,
   }
 }
 
 function shouldBeWorkspace(lanes: LaneDetection, text: string, partner: string | null): boolean {
   if (hasAny(text, SINGLE_LANE_SIGNALS)) return false
 
-  const { frontend, api, worker, evm, solana, move, tangle, avs, stylus, zk, mcp, dspy, agent, x402, evmInfra, implicitApi, implicitWorker } = lanes
+  const {
+    frontend,
+    api,
+    worker,
+    evm,
+    solana,
+    move,
+    tangle,
+    avs,
+    stylus,
+    zk,
+    mcp,
+    dspy,
+    agent,
+    x402,
+    evmInfra,
+    implicitApi,
+    implicitWorker,
+  } = lanes
   const runtimeCount = [evm, solana, move].filter(Boolean).length
   const protocolLanes = [tangle, avs, stylus, zk, mcp, dspy, x402]
 
   // Plain agent/protocol without other surfaces → single starter
-  const onlyAgent = agent && !frontend && !worker && !evm && !solana && !move && !protocolLanes.some(Boolean) && !evmInfra
+  const onlyAgent =
+    agent &&
+    !frontend &&
+    !worker &&
+    !evm &&
+    !solana &&
+    !move &&
+    !protocolLanes.some(Boolean) &&
+    !evmInfra
   const onlyProtocol = !frontend && !api && !worker && !agent && protocolLanes.some(Boolean)
   if (onlyAgent || onlyProtocol) return false
 
   // Fullstack (frontend + api, no other lanes) → single fullstack-ts starter
-  const noSpecialLanes = !worker && !evm && !solana && !move && !tangle && !avs && !stylus && !zk && !mcp && !dspy && !agent && !x402 && !evmInfra
-  if (noSpecialLanes && frontend && api && !hasAny(text, WORKSPACE_SIGNALS) && hasAny(text, FULLSTACK_SIGNALS)) return false
+  const noSpecialLanes =
+    !worker &&
+    !evm &&
+    !solana &&
+    !move &&
+    !tangle &&
+    !avs &&
+    !stylus &&
+    !zk &&
+    !mcp &&
+    !dspy &&
+    !agent &&
+    !x402 &&
+    !evmInfra
+  if (
+    noSpecialLanes &&
+    frontend &&
+    api &&
+    !hasAny(text, WORKSPACE_SIGNALS) &&
+    hasAny(text, FULLSTACK_SIGNALS)
+  )
+    return false
 
-  const laneCount = [frontend, api, worker, evm, solana, move, tangle, avs, stylus, zk, mcp, dspy, agent, x402, evmInfra, implicitApi].filter(Boolean).length
+  const laneCount = [
+    frontend,
+    api,
+    worker,
+    evm,
+    solana,
+    move,
+    tangle,
+    avs,
+    stylus,
+    zk,
+    mcp,
+    dspy,
+    agent,
+    x402,
+    evmInfra,
+    implicitApi,
+  ].filter(Boolean).length
   const apiChoice = api ? chooseApiFamily(text) : null
 
   return (
@@ -142,14 +251,21 @@ function shouldBeWorkspace(lanes: LaneDetection, text: string, partner: string |
 }
 
 function buildProtocolProject(
-  id: string, path: string, family: string, layers: string[],
-  prompt: string, partner: string | null, variables: Record<string, string>,
+  id: string,
+  path: string,
+  family: string,
+  layers: string[],
+  prompt: string,
+  partner: string | null,
+  variables: Record<string, string>,
 ): ProjectEntry {
   return {
-    id, path,
+    id,
+    path,
     spec: {
       projectName: `${buildSlug(prompt, 'workspace')}-${id}`,
-      family, layers,
+      family,
+      layers,
       partner: resolvePartnerForFamily(partner, family),
       slots: {},
       variables,
@@ -157,7 +273,12 @@ function buildProtocolProject(
   }
 }
 
-function collectProtocolProjects(lanes: LaneDetection, prompt: string, partner: string | null, text: string): ProjectEntry[] {
+function collectProtocolProjects(
+  lanes: LaneDetection,
+  prompt: string,
+  partner: string | null,
+  text: string,
+): ProjectEntry[] {
   const projects: ProjectEntry[] = []
 
   if (lanes.tangle) {
@@ -171,49 +292,152 @@ function collectProtocolProjects(lanes: LaneDetection, prompt: string, partner: 
         : text.includes('zk')
           ? { blueprintName: 'zk-prover-blueprint', jobName: 'GenerateProof' }
           : { blueprintName: 'storage-blueprint', jobName: 'StoreObject' }
-    projects.push(buildProtocolProject('tangle', 'protocols/tangle', 'tangle-blueprint', tangleLayers, prompt, partner, profile))
+    projects.push(
+      buildProtocolProject(
+        'tangle',
+        'protocols/tangle',
+        'tangle-blueprint',
+        tangleLayers,
+        prompt,
+        partner,
+        profile,
+      ),
+    )
   }
 
   if (lanes.avs) {
-    const avsName = text.includes('oracle') ? 'oracle-avs'
-      : text.includes('keeper') ? 'keeper-avs'
-      : text.includes('sequencer') ? 'sequencer-avs'
-      : text.includes('bridge') ? 'bridge-avs'
-      : 'data-availability-avs'
-    projects.push(buildProtocolProject('avs', 'protocols/avs', 'eigenlayer-avs', ['framework:eigenlayer-avs'], prompt, partner, { avsName }))
+    const avsName = text.includes('oracle')
+      ? 'oracle-avs'
+      : text.includes('keeper')
+        ? 'keeper-avs'
+        : text.includes('sequencer')
+          ? 'sequencer-avs'
+          : text.includes('bridge')
+            ? 'bridge-avs'
+            : 'data-availability-avs'
+    projects.push(
+      buildProtocolProject(
+        'avs',
+        'protocols/avs',
+        'eigenlayer-avs',
+        ['framework:eigenlayer-avs'],
+        prompt,
+        partner,
+        { avsName },
+      ),
+    )
   }
 
   if (lanes.stylus) {
-    projects.push(buildProtocolProject('stylus', 'contracts/stylus', 'stylus-contracts', ['framework:stylus-contracts'], prompt, partner, { contractName: 'StylusPool' }))
+    projects.push(
+      buildProtocolProject(
+        'stylus',
+        'contracts/stylus',
+        'stylus-contracts',
+        ['framework:stylus-contracts'],
+        prompt,
+        partner,
+        { contractName: 'StylusPool' },
+      ),
+    )
   }
 
   if (lanes.evm) {
     const family = detectHardhatExplicit(text) ? 'hardhat-contracts' : 'forge-contracts'
-    projects.push(buildProtocolProject('evm', 'contracts/evm', family, buildEvmContractLayers(text), prompt, partner, buildEvmContractVariables(text)))
+    projects.push(
+      buildProtocolProject(
+        'evm',
+        'contracts/evm',
+        family,
+        buildEvmContractLayers(text),
+        prompt,
+        partner,
+        buildEvmContractVariables(text),
+      ),
+    )
   }
 
   if (lanes.solana) {
-    projects.push(buildProtocolProject('solana', 'contracts/solana', 'solana-program', buildSolanaProgramLayers(text), prompt, partner, buildSolanaProgramVariables(text)))
+    projects.push(
+      buildProtocolProject(
+        'solana',
+        'contracts/solana',
+        'solana-program',
+        buildSolanaProgramLayers(text),
+        prompt,
+        partner,
+        buildSolanaProgramVariables(text),
+      ),
+    )
   }
 
   if (lanes.move) {
-    projects.push({ id: 'move', path: 'contracts/move', spec: { projectName: 'move_treasury', family: 'move-contracts', layers: ['framework:move-package'], partner: null, slots: {}, variables: { moduleName: 'TreasuryVault' } } })
+    projects.push({
+      id: 'move',
+      path: 'contracts/move',
+      spec: {
+        projectName: 'move_treasury',
+        family: 'move-contracts',
+        layers: ['framework:move-package'],
+        partner: null,
+        slots: {},
+        variables: { moduleName: 'TreasuryVault' },
+      },
+    })
   }
 
   return projects
 }
 
-function collectServiceProjects(lanes: LaneDetection, prompt: string, partner: string | null, text: string, registry: Registry): ProjectEntry[] {
+function collectServiceProjects(
+  lanes: LaneDetection,
+  prompt: string,
+  partner: string | null,
+  text: string,
+  registry: Registry,
+): ProjectEntry[] {
   const projects: ProjectEntry[] = []
 
   if (lanes.mcp && !lanes.api) {
-    projects.push(buildProtocolProject('mcp', 'apps/mcp', 'mcp-server-ts', ['framework:mcp-server-ts'], prompt, null, {}))
+    projects.push(
+      buildProtocolProject(
+        'mcp',
+        'apps/mcp',
+        'mcp-server-ts',
+        ['framework:mcp-server-ts'],
+        prompt,
+        null,
+        {},
+      ),
+    )
   }
   if (lanes.dspy && !lanes.api) {
-    projects.push(buildProtocolProject('ai', 'apps/ai', 'dspy-pipeline-py', ['framework:dspy-pipeline-py'], prompt, null, {}))
+    projects.push(
+      buildProtocolProject(
+        'ai',
+        'apps/ai',
+        'dspy-pipeline-py',
+        ['framework:dspy-pipeline-py'],
+        prompt,
+        null,
+        {},
+      ),
+    )
   }
   if (lanes.x402 && !lanes.api) {
-    projects.push({ id: 'api', path: 'apps/api', spec: { projectName: `${buildSlug(prompt, 'workspace')}-api`, family: 'x402-service', layers: ['framework:x402-service'], partner: resolvePartnerForFamily(partner, 'x402-service'), slots: {}, variables: {}, primaryArtifactTargetMs: 2500 } })
+    projects.push({
+      id: 'api',
+      path: 'apps/api',
+      spec: {
+        projectName: `${buildSlug(prompt, 'workspace')}-api`,
+        family: 'x402-service',
+        layers: ['framework:x402-service'],
+        partner: resolvePartnerForFamily(partner, 'x402-service'),
+        slots: {},
+        variables: {},
+        primaryArtifactTargetMs: 2500,
+      },
+    })
   }
   if (lanes.zk && !lanes.api) {
     // Dispatch to the specific zkVM family when the prompt names one; fall
@@ -224,21 +448,36 @@ function collectServiceProjects(lanes: LaneDetection, prompt: string, partner: s
     let zkFamily = 'zk-prover-service'
     let zkFramework = 'framework:zk-prover-service'
     const zkVars: Record<string, string> = {}
-    if (text.includes('risc zero') || text.includes('risc0') || text.includes('risczero') || text.includes('bonsai')) {
+    if (
+      text.includes('risc zero') ||
+      text.includes('risc0') ||
+      text.includes('risczero') ||
+      text.includes('bonsai')
+    ) {
       zkFamily = 'risczero-zkvm'
       zkFramework = 'framework:risczero-zkvm'
     } else if (text.includes('sp1') || text.includes('succinct')) {
       zkFamily = 'sp1-zkvm'
       zkFramework = 'framework:sp1-zkvm'
-    } else if (text.includes('arkworks') || text.includes('hand-rolled r1cs') || text.includes('custom snark circuit')) {
+    } else if (
+      text.includes('arkworks') ||
+      text.includes('hand-rolled r1cs') ||
+      text.includes('custom snark circuit')
+    ) {
       zkFamily = 'arkworks-prover'
       zkFramework = 'framework:arkworks-prover'
     } else {
       // Generic fallback — keep the pre-existing proof-system slot logic so
       // the generic scaffold composes with a proofSystem hint.
-      zkVars.proofSystem = text.includes('circom') ? 'circom' : text.includes('fhenix') ? 'fhenix' : 'sp1'
+      zkVars.proofSystem = text.includes('circom')
+        ? 'circom'
+        : text.includes('fhenix')
+          ? 'fhenix'
+          : 'sp1'
     }
-    projects.push(buildProtocolProject('zk', 'apps/prover', zkFamily, [zkFramework], prompt, null, zkVars))
+    projects.push(
+      buildProtocolProject('zk', 'apps/prover', zkFamily, [zkFramework], prompt, null, zkVars),
+    )
   }
   if (lanes.agent && !projects.some((p) => p.id === 'agent')) {
     projects.push(buildApiProject(prompt, partner, text, registry))
@@ -263,7 +502,8 @@ function buildWorkspacePromptPlan({
 
   const projects: ProjectEntry[] = []
   if (lanes.frontend) projects.push(buildWebProject(prompt, partner, text, registry))
-  if (lanes.api || lanes.implicitApi) projects.push(buildApiProject(prompt, partner, text, registry))
+  if (lanes.api || lanes.implicitApi)
+    projects.push(buildApiProject(prompt, partner, text, registry))
   if (lanes.worker || lanes.implicitWorker) projects.push(buildWorkerProject(prompt, partner, text))
 
   projects.push(...collectServiceProjects(lanes, prompt, partner, text, registry))
@@ -322,7 +562,12 @@ export async function planPrompt({
       for (const [key] of registry.layers) {
         if (key.startsWith('capability:')) knownCapabilities.push(key)
       }
-      const briefResult = await rewriteViaBrief({ prompt, partner, knownFamilies, knownCapabilities })
+      const briefResult = await rewriteViaBrief({
+        prompt,
+        partner,
+        knownFamilies,
+        knownCapabilities,
+      })
       if (briefResult) {
         const plan = await planPrompt({
           prompt: briefResult.canonicalPrompt,
@@ -332,7 +577,7 @@ export async function planPrompt({
           rewriter: false,
           brief: false,
         })
-        return { ...plan, brief: briefResult.brief as ProductBrief }
+        return { ...plan, brief: briefResult.brief }
       }
     }
   }
@@ -348,7 +593,13 @@ export async function planPrompt({
       }
       const rewrite = await rewritePrompt({ prompt, partner, knownFamilies, knownCapabilities })
       if (rewrite) {
-        return planPrompt({ prompt: rewrite.canonicalPrompt, partner, forceKind, familyHint, rewriter: false })
+        return planPrompt({
+          prompt: rewrite.canonicalPrompt,
+          partner,
+          forceKind,
+          familyHint,
+          rewriter: false,
+        })
       }
     }
   }
@@ -360,7 +611,12 @@ export async function planPrompt({
 
     // Skip workspace detection when caller knows this is a single project
     if (forceKind !== 'starter') {
-      const workspacePlan = buildWorkspacePromptPlan({ prompt, partner: effectivePartner, text, registry })
+      const workspacePlan = buildWorkspacePromptPlan({
+        prompt,
+        partner: effectivePartner,
+        text,
+        registry,
+      })
       if (workspacePlan) {
         return workspacePlan
       }
@@ -386,7 +642,11 @@ export async function planPrompt({
     //   (3) forceKind === 'starter' callers (scaffold-builder with a
     //       curated family) bypass this branch.
     const PARTNER_FIRST_SURFACES = new Set([
-      'frontend', 'api', 'agent-service', 'fullstack', 'blueprint',
+      'frontend',
+      'api',
+      'agent-service',
+      'fullstack',
+      'blueprint',
     ])
     if (forceKind !== 'starter' && partner) {
       const partnerMatch = shouldPromotePartnerFirst(partner, registry)
@@ -401,14 +661,27 @@ export async function planPrompt({
         // Surface → project id + path. Mirrors how buildWebProject /
         // buildApiProject name their outputs so downstream artifact selectors
         // (primaryArtifact.kind, path) remain consistent.
-        const surfaceConfig: Record<string, { id: string; path: string; artifactKind: string; artifactPath: string }> = {
+        const surfaceConfig: Record<
+          string,
+          { id: string; path: string; artifactKind: string; artifactPath: string }
+        > = {
           frontend: { id: 'web', path: 'apps/web', artifactKind: 'preview', artifactPath: '/' },
           fullstack: { id: 'web', path: 'apps/web', artifactKind: 'preview', artifactPath: '/' },
           api: { id: 'api', path: 'apps/api', artifactKind: 'service', artifactPath: '/health' },
-          'agent-service': { id: 'agent', path: 'apps/agent', artifactKind: 'service', artifactPath: '/health' },
-          blueprint: { id: 'blueprint', path: 'protocols/tangle', artifactKind: 'service', artifactPath: '/health' },
+          'agent-service': {
+            id: 'agent',
+            path: 'apps/agent',
+            artifactKind: 'service',
+            artifactPath: '/health',
+          },
+          blueprint: {
+            id: 'blueprint',
+            path: 'protocols/tangle',
+            artifactKind: 'service',
+            artifactPath: '/health',
+          },
         }
-        const cfg = surfaceConfig[partnerMatch.surface] ?? surfaceConfig.frontend!
+        const cfg = surfaceConfig[partnerMatch.surface] ?? surfaceConfig.frontend
         const wrapped: PromptPlan = {
           kind: 'workspace',
           confidence: 'medium',
@@ -464,6 +737,7 @@ export async function planPrompt({
         },
         fallbackUsed: false,
         reasons: [`family hint: ${familyHint}`],
+        routingRisk: 'safe',
       }
     } else {
       starterSelection = await selectStarter({ prompt, partner: effectivePartner })
@@ -472,32 +746,130 @@ export async function planPrompt({
       // agent-service-ts, fullstack-ts) beat a more specialized family that the
       // prompt clearly demands. When the prompt carries unambiguous phrases, we
       // pick the specialty family directly.
-      const specialtyRules: Array<{ family: string; phrases: string[] }> = [
-        { family: 'expo-rn-rich', phrases: ['skia', 'reanimated', 'rich animations mobile', 'expo skia', 'expo reanimated', 'react native skia'] },
-        { family: 'tauri-tray', phrases: ['tauri system tray', 'system tray daemon', 'tray icon only', 'tray menu daemon'] },
-        { family: 'tauri-menubar', phrases: ['macos menubar', 'menu bar app', 'raycast-like', 'floating panel app'] },
-        { family: 'electron-native-os', phrases: ['electron native os', 'deep links desktop', 'native os integration', 'auto updater electron'] },
-        { family: 'voice-first-agent', phrases: ['voice-first conversational', 'voice first agent', 'browser mic agent', 'push to talk agent'] },
-        { family: 'vision-first-agent', phrases: ['camera agent', 'vision-first agent', 'visual qa agent'] },
-        { family: 'multimodal-agent', phrases: ['multimodal agent', 'text image audio agent', 'gpt-4o client app'] },
-        { family: 'webgpu-inference', phrases: ['webgpu browser compute', 'webgpu inference', 'wgsl matmul', 'wgsl compute'] },
-        { family: 'webgpu-render', phrases: ['raw webgpu', 'wgsl graphics', 'wgsl vertex', 'webgpu triangle'] },
+      const specialtyRules: { family: string; phrases: string[] }[] = [
+        {
+          family: 'expo-rn-rich',
+          phrases: [
+            'skia',
+            'reanimated',
+            'rich animations mobile',
+            'expo skia',
+            'expo reanimated',
+            'react native skia',
+          ],
+        },
+        {
+          family: 'tauri-tray',
+          phrases: [
+            'tauri system tray',
+            'system tray daemon',
+            'tray icon only',
+            'tray menu daemon',
+          ],
+        },
+        {
+          family: 'tauri-menubar',
+          phrases: ['macos menubar', 'menu bar app', 'raycast-like', 'floating panel app'],
+        },
+        {
+          family: 'electron-native-os',
+          phrases: [
+            'electron native os',
+            'deep links desktop',
+            'native os integration',
+            'auto updater electron',
+          ],
+        },
+        {
+          family: 'voice-first-agent',
+          phrases: [
+            'voice-first conversational',
+            'voice first agent',
+            'browser mic agent',
+            'push to talk agent',
+          ],
+        },
+        {
+          family: 'vision-first-agent',
+          phrases: ['camera agent', 'vision-first agent', 'visual qa agent'],
+        },
+        {
+          family: 'multimodal-agent',
+          phrases: ['multimodal agent', 'text image audio agent', 'gpt-4o client app'],
+        },
+        {
+          family: 'webgpu-inference',
+          phrases: ['webgpu browser compute', 'webgpu inference', 'wgsl matmul', 'wgsl compute'],
+        },
+        {
+          family: 'webgpu-render',
+          phrases: ['raw webgpu', 'wgsl graphics', 'wgsl vertex', 'webgpu triangle'],
+        },
         { family: 'bevy-web', phrases: ['bevy web game', 'bevy wasm', 'rust web game'] },
         { family: 'godot-web', phrases: ['godot 4 web', 'godot html5', 'godot web game'] },
         { family: 'unity-web-proxy', phrases: ['unity webgl export', 'unity web build'] },
-        { family: 'livekit-sfu', phrases: ['livekit sfu', 'self-hosted livekit', 'selective forwarding unit'] },
+        {
+          family: 'livekit-sfu',
+          phrases: ['livekit sfu', 'self-hosted livekit', 'selective forwarding unit'],
+        },
         { family: 'hls-origin', phrases: ['hls origin', 'hls live streaming', 'rtmp ingest'] },
-        { family: 'realtime-audio-ts', phrases: ['realtime audio visualiz', 'webaudio analyser', 'peer audio'] },
-        { family: 'hipaa-compliance-pack', phrases: ['hipaa compliance pack', 'hipaa-compliant compliance pack', 'phi audit trail and baa', 'baa template'] },
-        { family: 'soc2-compliance-pack', phrases: ['soc 2 type ii compliance pack', 'soc 2 compliance pack', 'soc2 compliance pack', 'change management and incident response'] },
-        { family: 'pci-dss-compliance-pack', phrases: ['pci-dss 4.0 compliance pack', 'pci dss compliance pack', 'pan redaction and stripe tokenization', 'pci compliance pack'] },
-        { family: 'gdpr-compliance-pack', phrases: ['gdpr compliance pack', 'gdpr-compliant consent management', 'data subject rights endpoint'] },
-        { family: 'healthcare-hipaa-backend', phrases: ['hipaa-compliant', 'phi audit log', 'healthcare backend'] },
-        { family: 'fintech-ledger-backend', phrases: ['double-entry ledger', 'double entry ledger', 'debits and credits'] },
-        { family: 'legal-case-mgmt', phrases: ['legal case management', 'matter management', 'attorney timekeeping'] },
+        {
+          family: 'realtime-audio-ts',
+          phrases: ['realtime audio visualiz', 'webaudio analyser', 'peer audio'],
+        },
+        {
+          family: 'hipaa-compliance-pack',
+          phrases: [
+            'hipaa compliance pack',
+            'hipaa-compliant compliance pack',
+            'phi audit trail and baa',
+            'baa template',
+          ],
+        },
+        {
+          family: 'soc2-compliance-pack',
+          phrases: [
+            'soc 2 type ii compliance pack',
+            'soc 2 compliance pack',
+            'soc2 compliance pack',
+            'change management and incident response',
+          ],
+        },
+        {
+          family: 'pci-dss-compliance-pack',
+          phrases: [
+            'pci-dss 4.0 compliance pack',
+            'pci dss compliance pack',
+            'pan redaction and stripe tokenization',
+            'pci compliance pack',
+          ],
+        },
+        {
+          family: 'gdpr-compliance-pack',
+          phrases: [
+            'gdpr compliance pack',
+            'gdpr-compliant consent management',
+            'data subject rights endpoint',
+          ],
+        },
+        {
+          family: 'healthcare-hipaa-backend',
+          phrases: ['hipaa-compliant', 'phi audit log', 'healthcare backend'],
+        },
+        {
+          family: 'fintech-ledger-backend',
+          phrases: ['double-entry ledger', 'double entry ledger', 'debits and credits'],
+        },
+        {
+          family: 'legal-case-mgmt',
+          phrases: ['legal case management', 'matter management', 'attorney timekeeping'],
+        },
         { family: 'k12-edtech', phrases: ['k-12 edtech', 'k12 edtech', 'ferpa'] },
         { family: 'crm-backend', phrases: ['sales crm', 'deals pipeline', 'sales pipeline'] },
-        { family: 'ecommerce-headless', phrases: ['headless commerce', 'ecommerce backend', 'cart checkout'] },
+        {
+          family: 'ecommerce-headless',
+          phrases: ['headless commerce', 'ecommerce backend', 'cart checkout'],
+        },
         { family: 'aptos-move', phrases: ['aptos move', 'aptos_framework', 'aptos framework'] },
         { family: 'celestia-da', phrases: ['celestia', 'data availability node', 'celestia blob'] },
         { family: 'ollama-server', phrases: ['ollama local', 'ollama server', 'gguf'] },
@@ -506,9 +878,15 @@ export async function planPrompt({
         { family: 'triton-server', phrases: ['nvidia triton', 'triton inference'] },
         { family: 'skypilot-serving', phrases: ['skypilot', 'sky serve'] },
         { family: 'lora-training', phrases: ['lora fine-tun', 'qlora', 'lora training'] },
-        { family: 'streamlit-advanced', phrases: ['multipage streamlit', 'streamlit multipage', 'production streamlit'] },
+        {
+          family: 'streamlit-advanced',
+          phrases: ['multipage streamlit', 'streamlit multipage', 'production streamlit'],
+        },
         { family: 'jupyter-book', phrases: ['jupyter book', 'jupyterbook', 'executable book'] },
-        { family: 'observable-notebook', phrases: ['observable framework', 'observablehq', 'observable notebook'] },
+        {
+          family: 'observable-notebook',
+          phrases: ['observable framework', 'observablehq', 'observable notebook'],
+        },
         { family: 'eleventy-static', phrases: ['eleventy', '11ty'] },
         { family: 'hugo-static', phrases: ['hugo static', 'hugo site', 'hugo blog'] },
         { family: 'zola-static', phrases: ['zola static', 'zola site', 'tera template'] },
@@ -516,11 +894,26 @@ export async function planPrompt({
         { family: 'threejs-game', phrases: ['three.js', 'threejs', 'webgl 3d scene'] },
         { family: 'phaser-game', phrases: ['phaser 3', '2d arcade game'] },
         { family: 'pixijs-game', phrases: ['pixi.js v8', 'pixijs', '2d webgpu'] },
-        { family: 'flutter-app', phrases: ['flutter app', 'flutter dart', 'material design flutter', 'cupertino flutter'] },
-        { family: 'kotlin-multiplatform', phrases: ['kotlin multiplatform', 'compose multiplatform', 'kmp kotlin', 'expect-actual'] },
-        { family: 'esp32-rust', phrases: ['esp32 rust', 'esp-idf-svc', 'xtensa rust', 'espressif rust'] },
-        { family: 'stm32-rust', phrases: ['stm32 rust', 'embassy stm32', 'stm32 embassy', 'stm32 bare metal'] },
-        { family: 'ros2-node-py', phrases: ['ros2 rclpy', 'ros2 python node', 'rclpy publisher', 'ros2 node python'] },
+        {
+          family: 'flutter-app',
+          phrases: ['flutter app', 'flutter dart', 'material design flutter', 'cupertino flutter'],
+        },
+        {
+          family: 'kotlin-multiplatform',
+          phrases: ['kotlin multiplatform', 'compose multiplatform', 'kmp kotlin', 'expect-actual'],
+        },
+        {
+          family: 'esp32-rust',
+          phrases: ['esp32 rust', 'esp-idf-svc', 'xtensa rust', 'espressif rust'],
+        },
+        {
+          family: 'stm32-rust',
+          phrases: ['stm32 rust', 'embassy stm32', 'stm32 embassy', 'stm32 bare metal'],
+        },
+        {
+          family: 'ros2-node-py',
+          phrases: ['ros2 rclpy', 'ros2 python node', 'rclpy publisher', 'ros2 node python'],
+        },
       ]
       const lower = prompt.toLowerCase()
       for (const rule of specialtyRules) {
@@ -529,7 +922,8 @@ export async function planPrompt({
         if (rule.phrases.some((p) => lower.includes(p))) {
           const fwLayers: string[] = []
           for (const [key, layer] of registry.layers) {
-            if (layer.group === 'framework' && layer.appliesTo?.includes(rule.family)) fwLayers.push(key)
+            if (layer.group === 'framework' && layer.appliesTo?.includes(rule.family))
+              fwLayers.push(key)
           }
           starterSelection = {
             confidence: 'high',
@@ -540,6 +934,7 @@ export async function planPrompt({
             },
             fallbackUsed: false,
             reasons: [`specialty override → ${rule.family}`],
+            routingRisk: 'safe',
           }
           break
         }
@@ -552,7 +947,10 @@ export async function planPrompt({
       // composeStarter throws at compose time, after the caller has already
       // allocated a workspace and shown the user a "preparing" UI (blueprint-
       // agent bug report #3).
-      partner: resolvePartnerForFamily(starterSelection.spec.partner ?? effectivePartner, starterSelection.spec.family),
+      partner: resolvePartnerForFamily(
+        starterSelection.spec.partner ?? effectivePartner,
+        starterSelection.spec.family,
+      ),
       projectName: buildSlug(prompt, starterSelection.spec.projectName),
       primaryArtifactTargetMs: 2500,
       userPrompt: prompt,
@@ -565,11 +963,11 @@ export async function planPrompt({
     const queueSlot = detectQueueSlot(text)
     spec.slots = { ...(spec.slots ?? {}) }
 
-    if (databaseSlot && family?.slots?.['database']) spec.slots['database'] = databaseSlot
-    if (sdkSlot && family?.slots?.['sdk']) spec.slots['sdk'] = sdkSlot
-    if (authSlot && family?.slots?.['auth']) spec.slots['auth'] = authSlot
-    if (paymentsSlot && family?.slots?.['payments']) spec.slots['payments'] = paymentsSlot
-    if (queueSlot && family?.slots?.['queue']) spec.slots['queue'] = queueSlot
+    if (databaseSlot && family?.slots?.database) spec.slots.database = databaseSlot
+    if (sdkSlot && family?.slots?.sdk) spec.slots.sdk = sdkSlot
+    if (authSlot && family?.slots?.auth) spec.slots.auth = authSlot
+    if (paymentsSlot && family?.slots?.payments) spec.slots.payments = paymentsSlot
+    if (queueSlot && family?.slots?.queue) spec.slots.queue = queueSlot
 
     const capabilities = detectCapabilities(text, spec.family, registry)
     if (capabilities.length > 0) {
@@ -612,10 +1010,14 @@ export async function planPrompt({
     }
   })
 
-  const family = plan.kind === 'starter' ? plan.spec.family : plan.spec.projects?.[0]?.spec.family ?? 'unknown'
-  const capabilities = plan.kind === 'starter'
-    ? (plan.spec.layers ?? []).filter((l: string) => l.startsWith('capability:'))
-    : plan.spec.projects?.flatMap((p: { spec: { layers?: string[] } }) => (p.spec.layers ?? []).filter((l: string) => l.startsWith('capability:'))) ?? []
+  const family =
+    plan.kind === 'starter' ? plan.spec.family : (plan.spec.projects?.[0]?.spec.family ?? 'unknown')
+  const capabilities =
+    plan.kind === 'starter'
+      ? (plan.spec.layers ?? []).filter((l: string) => l.startsWith('capability:'))
+      : (plan.spec.projects?.flatMap((p: { spec: { layers?: string[] } }) =>
+          (p.spec.layers ?? []).filter((l: string) => l.startsWith('capability:')),
+        ) ?? [])
 
   emit('route', {
     prompt,

@@ -11,9 +11,10 @@
 
 import type { Registry, FamilyManifest } from '../types.js'
 
-interface EmbeddingPipeline {
-  (text: string, options: { pooling: string; normalize: boolean }): Promise<{ data: Float32Array }>
-}
+type EmbeddingPipeline = (
+  text: string,
+  options: { pooling: string; normalize: boolean },
+) => Promise<{ data: Float32Array }>
 
 let pipeline: EmbeddingPipeline | null = null
 let familyEmbeddings: Map<string, Float32Array> | null = null
@@ -24,9 +25,9 @@ function cosine(a: Float32Array, b: Float32Array): number {
   let normA = 0
   let normB = 0
   for (let i = 0; i < a.length; i++) {
-    dot += a[i]! * b[i]!
-    normA += a[i]! * a[i]!
-    normB += b[i]! * b[i]!
+    dot += a[i] * b[i]
+    normA += a[i] * a[i]
+    normB += b[i] * b[i]
   }
   return dot / (Math.sqrt(normA) * Math.sqrt(normB))
 }
@@ -52,13 +53,15 @@ export async function initSemanticRouter(registry: Registry): Promise<void> {
       const hf: any = await import('@huggingface/transformers')
       const pipelineFn = hf.pipeline ?? hf.default?.pipeline
       if (!pipelineFn) {
-        console.warn('semantic-router: @huggingface/transformers pipeline not found, fallback disabled')
+        console.warn(
+          'semantic-router: @huggingface/transformers pipeline not found, fallback disabled',
+        )
         return
       }
 
-      pipeline = await pipelineFn('feature-extraction', 'Xenova/bge-small-en-v1.5', {
+      pipeline = (await pipelineFn('feature-extraction', 'Xenova/bge-small-en-v1.5', {
         quantized: true,
-      }) as EmbeddingPipeline
+      })) as EmbeddingPipeline
 
       // Pre-compute embeddings for all family descriptions
       familyEmbeddings = new Map()
@@ -68,7 +71,10 @@ export async function initSemanticRouter(registry: Registry): Promise<void> {
         familyEmbeddings.set(id, embedding)
       }
     } catch (err) {
-      console.warn('semantic-router: initialization failed, fallback disabled', err instanceof Error ? err.message : err)
+      console.warn(
+        'semantic-router: initialization failed, fallback disabled',
+        err instanceof Error ? err.message : err,
+      )
       pipeline = null
       familyEmbeddings = null
     }

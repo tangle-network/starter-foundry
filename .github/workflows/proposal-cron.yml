@@ -48,7 +48,7 @@ jobs:
         # Original capability proposer that mines npm-dep clusters in
         # buildout traces. Kept alongside the RLM flow because the two
         # catch different gaps (packages-together vs. feature-mentions).
-        run: node scripts/propose-capabilities.mjs --out .evolve/proposals/capabilities.json || true
+        run: pnpm exec tsx scripts/propose-capabilities.ts --out .evolve/proposals/capabilities.json || true
       - name: detect capability gaps + run RLM proposer on top-3 candidates
         env:
           TANGLE_ROUTER_USER_KEY: ${{ secrets.TANGLE_ROUTER_USER_KEY }}
@@ -59,15 +59,15 @@ jobs:
         # RLM capability proposer. Failing is non-fatal — the promoter
         # rejects any TODO drafts at the schema gate downstream.
         run: |
-          node scripts/detect-capability-gaps.mjs --json --top 3 \
-            | node scripts/propose-capability-candidates.mjs --max-shots 2 \
+          pnpm exec tsx scripts/detect-capability-gaps.ts --json --top 3 \
+            | pnpm exec tsx scripts/propose-capability-candidates.ts --max-shots 2 \
             || true
       - name: promote capability drafts that pass schema + compose + build
-        run: node scripts/promote-capability-proposal.mjs --all || true
+        run: pnpm exec tsx scripts/promote-capability-proposal.ts --all || true
       - name: open PRs for promoted capabilities + package-cluster proposals
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node scripts/open-proposal-prs.mjs --kind capability --min-confidence 0.75 || true
+        run: pnpm exec tsx scripts/open-proposal-prs.ts --kind capability --min-confidence 0.75 || true
       - name: upload generation-impact log as artifact
         if: always()
         uses: actions/upload-artifact@v4
@@ -105,17 +105,17 @@ jobs:
         # should not fail the job — downstream promoter will reject any
         # deterministic TODO drafts at the schema gate.
         run: |
-          node scripts/detect-family-gaps.mjs --json --top 3 \
-            | node scripts/propose-family-candidates.mjs --max-shots 2 \
+          pnpm exec tsx scripts/detect-family-gaps.ts --json --top 3 \
+            | pnpm exec tsx scripts/propose-family-candidates.ts --max-shots 2 \
             || true
       - name: promote drafts that pass schema + compose + build gates
-        run: node scripts/promote-family-proposal.mjs --all --no-pr || true
+        run: pnpm exec tsx scripts/promote-family-proposal.ts --all --no-pr || true
       - name: open PRs for promoted families (human review)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # promote-family-proposal.mjs writes promoted.json sentinel in each
         # draft dir on success; open-proposal-prs.mjs consumes that.
-        run: node scripts/open-proposal-prs.mjs --kind family --min-confidence 0.75 || true
+        run: pnpm exec tsx scripts/open-proposal-prs.ts --kind family --min-confidence 0.75 || true
       - name: upload generation-impact log as artifact (for inspection)
         if: always()
         uses: actions/upload-artifact@v4
@@ -147,4 +147,4 @@ jobs:
       - name: open PRs for promotable template candidates
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node scripts/open-template-prs.mjs --min-score 0.7 || true
+        run: pnpm exec tsx scripts/open-template-prs.ts --min-score 0.7 || true

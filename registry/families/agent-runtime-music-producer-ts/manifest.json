@@ -1,0 +1,146 @@
+{
+  "id": "agent-runtime-music-producer-ts",
+  "description": "Senior music producer + senior staff engineer who builds tools to help producers. Markdown-only bundle: AGENTS.md role + TOOLS.md intent + methodology/ guides. Inherits security primitives from agent-base:secure. Operator materializes domain audio tools (LUFS analysis, A/B vs reference, stem extraction) when the deployment needs them.",
+  "tags": [
+    "agent-runtime",
+    "music-production",
+    "practitioner-with-tools",
+    "voice-first",
+    "markdown-only"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-tools:phony-voice",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-music-producer",
+    "agentName": "music-producer",
+    "outboundDomains": [
+      "api.tangle.tools",
+      "musicbrainz.org"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY",
+      "PHONY_API_KEY"
+    ],
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "schedule": [
+      {
+        "id": "afternoon-listening-prompt",
+        "cron": "0 16 * * *",
+        "capability": "listening-prompt"
+      }
+    ],
+    "declaredCapabilities": [
+      "arrangement-review",
+      "mix-feedback",
+      "listening-prompt"
+    ],
+    "creativeCollaborator": true,
+    "overridesArtist": false
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/mix-feedback.md",
+      "target": "methodology/mix-feedback.md"
+    },
+    {
+      "source": "files/methodology/arrangement-review.md",
+      "target": "methodology/arrangement-review.md"
+    },
+    {
+      "source": "files/methodology/listening-prompt.md",
+      "target": "methodology/listening-prompt.md"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "agents-md-valid",
+      "path": "system-prompt.md"
+    },
+    {
+      "type": "file-exists",
+      "path": "TOOLS.md"
+    },
+    {
+      "type": "file-exists",
+      "path": "README.md"
+    },
+    {
+      "type": "methodology-index-valid",
+      "path": "methodology/index.json"
+    },
+    {
+      "type": "schedule-valid",
+      "path": "manifest.json"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "methodology/",
+      "TOOLS.md"
+    ]
+  },
+  "keywords": [
+    "music-producer",
+    "mixing",
+    "mastering",
+    "arrangement",
+    "DAW"
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "music-producer",
+      "music producer",
+      "music-production-agent",
+      "music production agent",
+      "creative-director-music",
+      "music production"
+    ],
+    "tier2": [
+      "mixing",
+      "mastering",
+      "arrangement",
+      "DAW",
+      "sample-pack",
+      "stem-separation",
+      "mix feedback"
+    ],
+    "tier3": [],
+    "archetypes": [
+      "agent-in-sandbox",
+      "creative-agent",
+      "voice-first",
+      "practitioner-with-tools"
+    ]
+  }
+}

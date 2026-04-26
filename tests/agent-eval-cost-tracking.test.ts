@@ -1,7 +1,7 @@
 // R4 regression guard: the agent-eval-scaffold runner must actually
 // populate cost-summary.json via CostTracker.
 //
-// Pre-R4 bug (governor-requested fix): `scripts/agent-eval-scaffold.mjs`
+// Pre-R4 bug (governor-requested fix): `scripts/agent-eval-scaffold.ts`
 // instantiated `new CostTracker()` at line 105 but never called `.record()`.
 // At end-of-run it wrote `costTracker.getSummary?.()` — the method is
 // actually named `.summary()`, and optional chaining silent-failed to `{}`.
@@ -31,7 +31,7 @@ const REPO = join(__dirname, '..')
 
 describe('agent-eval-scaffold cost tracking', () => {
   test('agent-eval-scaffold.mjs records into costTracker and writes real summary', () => {
-    const src = readFileSync(join(REPO, 'scripts/agent-eval-scaffold.mjs'), 'utf8')
+    const src = readFileSync(join(REPO, 'scripts/agent-eval-scaffold.ts'), 'utf8')
 
     // Must call recordVerdict (0.7.2 helper — one call replaces record + markOutcome).
     assert.match(

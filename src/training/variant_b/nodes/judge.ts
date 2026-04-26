@@ -9,8 +9,10 @@
 
 import { appendFile, mkdir } from 'node:fs/promises'
 import path from 'node:path'
+
 import { ax } from '@ax-llm/ax'
 import type { AxAIService } from '@ax-llm/ax'
+
 import type { ArchetypeCandidate } from './generate.js'
 
 export interface CandidateScore {
@@ -46,7 +48,11 @@ const rubricAgent = ax(
     'utility:number, specificity:number, novelty:number, overall:number, reasoning:string',
 )
 
-function deterministicScore(c: ArchetypeCandidate): { specificity: number; novelty: number; utility: number } {
+function deterministicScore(c: ArchetypeCandidate): {
+  specificity: number
+  novelty: number
+  utility: number
+} {
   const kw = c.promptKeywords ?? []
   const specificity = Math.min(1, kw.length / 8)
   const utility = c.source === 'cooccurrence' ? 0.8 : c.source === 'coverage-gap' ? 0.7 : 0.5
@@ -77,7 +83,13 @@ export async function judgeNode(input: JudgeInput): Promise<JudgeOutput> {
             existingArchetypes: [],
           },
           { stream: false },
-        )) as { utility?: number; specificity?: number; novelty?: number; overall?: number; reasoning?: string }
+        )) as {
+          utility?: number
+          specificity?: number
+          novelty?: number
+          overall?: number
+          reasoning?: string
+        }
         const overall = typeof raw.overall === 'number' ? raw.overall : 0.5
         rubric = Math.max(0, Math.min(1, overall))
         notes = raw.reasoning ?? ''

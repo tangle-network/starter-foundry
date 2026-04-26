@@ -18,8 +18,12 @@ package = "_"
 package = "0xcafe"
 
 # AptosFramework provides std (signer, vector, string, ...) and the
-# aptos_framework namespace (coin, account, event, timestamp). Pinned to
-# `mainnet` branch so the resolved versions match what's actually deployed.
+# aptos_framework namespace (coin, account, event, timestamp). Pinned to a
+# stable framework release tag rather than a moving branch — the `mainnet`
+# branch ships Move 2.2 language features (e.g. ability constraints on
+# function types) that older aptos CLI versions reject. v1.36.1 is the
+# highest framework release that compiles cleanly under aptos CLI 7.x;
+# bump to a newer tag once you upgrade the CLI in lockstep.
 # First `aptos move compile` fetches this git dep (~30s cold, cached after).
 [dependencies]
-AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework", rev = "mainnet" }
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework", rev = "aptos-framework-v1.36.1" }

@@ -27,8 +27,8 @@ const REPO = join(__dirname, '..')
 describe('proposal_promotion_rate measurement', () => {
   test('promoter scripts no-op logImpact when STARTER_FOUNDRY_SYNTHETIC_RUN=1', () => {
     for (const script of [
-      'scripts/promote-family-proposal.mjs',
-      'scripts/promote-capability-proposal.mjs',
+      'scripts/promote-family-proposal.ts',
+      'scripts/promote-capability-proposal.ts',
     ]) {
       const text = readFileSync(join(REPO, script), 'utf8')
       assert.match(
@@ -40,7 +40,7 @@ describe('proposal_promotion_rate measurement', () => {
   })
 
   test('scorecard filters fixture-only ids from impact log', () => {
-    const text = readFileSync(join(REPO, 'scripts/refresh-scorecard.mjs'), 'utf8')
+    const text = readFileSync(join(REPO, 'scripts/refresh-scorecard.ts'), 'utf8')
     // Known fixture patterns that must stay in the filter.
     for (const pattern of [
       /\^test-/,       // test- prefix
@@ -59,7 +59,7 @@ describe('proposal_promotion_rate measurement', () => {
   })
 
   test('scorecard uses per-id-outcome counting, not per-event', () => {
-    const text = readFileSync(join(REPO, 'scripts/refresh-scorecard.mjs'), 'utf8')
+    const text = readFileSync(join(REPO, 'scripts/refresh-scorecard.ts'), 'utf8')
     // The latest-state-per-id pattern must exist. A regression back to
     // raw event counting would inflate the denominator on
     // revert-and-retry workflows.

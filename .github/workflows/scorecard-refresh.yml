@@ -42,13 +42,13 @@ jobs:
       - name: build
         run: pnpm build
       - name: audit scaffolds (smoke-compose)
-        run: node scripts/audit-scaffold-quality.mjs --smoke-compose || true
+        run: pnpm exec tsx scripts/audit-scaffold-quality.ts --smoke-compose || true
         # The audit returns non-zero on any layer failure. That's expected
         # — we still want the scorecard to emit with the current numbers
         # so downstream reviewers can see the regression rather than have
         # the workflow abort silently.
       - name: refresh scorecard
-        run: node scripts/refresh-scorecard.mjs
+        run: pnpm exec tsx scripts/refresh-scorecard.ts
       - name: diff check
         id: diff
         run: |

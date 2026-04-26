@@ -1,8 +1,8 @@
 {
   "product": "starter-foundry",
-  "timestamp": "2026-04-25T02:44:59.912Z",
-  "coverage": "21/25 flows measured",
-  "aggregate": 0.618,
+  "timestamp": "2026-04-26T00:20:24.057Z",
+  "coverage": "25/29 flows measured",
+  "aggregate": 0.648,
   "inputs": [
     {
       "path": ".evolve/buildout-analysis.json",
@@ -14,11 +14,11 @@
     },
     {
       "path": ".evolve/scaffold-quality-audit.json",
-      "mtime": "2026-04-24T02:31:44.030Z"
+      "mtime": "2026-04-25T22:57:52.218Z"
     },
     {
       "path": ".evolve/buildout-analysis-internal.json",
-      "mtime": "2026-04-24T20:18:10.870Z"
+      "mtime": "2026-04-26T00:13:37.733Z"
     },
     {
       "path": ".evolve/agent-eval/2026-04-23/three-layer-report.json",
@@ -51,10 +51,26 @@
       "direction": "higher-better"
     },
     {
-      "name": "scaffold_audit_pass_rate",
-      "value": 0.95,
-      "target": 1,
+      "name": "buildout_pass_rate_counterfactual",
+      "value": 0.8245614035087719,
+      "target": 0.85,
       "status": "fail",
+      "productValueClaim": "Buildout pass rate on the subset of historical traces that current SF can re-plan. Tracks current SF capability without waiting for BA to re-sweep. When this leads buildout_pass_rate by >5pp, BA owes a re-sweep.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "install_prevention_rate",
+      "value": 0.8823529411764706,
+      "target": 0.85,
+      "status": "pass",
+      "productValueClaim": "Fraction of historical agent installs that current SF would prevent. Each prevented install = one less turn of wasted agent setup work. Forward-looking measure of SF coverage; moves immediately when families gain deps, even before BA re-runs.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "scaffold_audit_pass_rate",
+      "value": 1,
+      "target": 1,
+      "status": "pass",
       "productValueClaim": "Fraction of framework layers where pnpm install + tsc noEmit succeeds on a freshly composed scaffold. A failure here means agents fight install errors on turn 1.",
       "direction": "higher-better"
     },
@@ -125,7 +141,7 @@
     },
     {
       "name": "families",
-      "value": 100,
+      "value": 116,
       "target": 40,
       "status": "pass",
       "productValueClaim": "Number of distinct family archetypes the router can route to. Breadth = more prompts find a good home.",
@@ -145,6 +161,22 @@
       "target": 10,
       "status": "pass",
       "productValueClaim": "Partner packs — ecosystem-specific biases + config. More partners = more prompts get routed with SDK/addresses pre-wired.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "catalog_breadth_agent_runtime",
+      "value": 13,
+      "target": 50,
+      "status": "fail",
+      "productValueClaim": "Count of distinct agent-runtime bundles in the registry. Each bundle = one role (CMO advisor / wealth manager / music producer / etc.) the operator can compose without authoring a new manifest. When this moves, the share of unrouteable BA prompts that map to fallback-static drops, and agent-runtime becomes a real product category instead of a 3-seed proof-of-concept.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "catalog_breadth_agent_ui",
+      "value": 3,
+      "target": 6,
+      "status": "fail",
+      "productValueClaim": "Count of UI scaffolds that compose over agent-runtime bundles or the Tangle sandbox SDK directly. Each unlocks a new product category: single-agent app, multi-agent dashboard, non-agent workspace (editor / audit-tool / REPL / file-browser). When this moves, operators can ship visible UX in hours instead of weeks of glue code.",
       "direction": "higher-better"
     },
     {
@@ -213,9 +245,9 @@
     },
     {
       "name": "consumer_scaffold_attributable_rate",
-      "value": 0.7674,
+      "value": 0.1099,
       "target": 0.2,
-      "status": "fail",
+      "status": "pass",
       "productValueClaim": "Of all consumer-side (e.g. blueprint-agent) leaf failures, the fraction whose root cause was SF (routing-error or scaffold-gap) rather than agent-side. Lower means SF is a smaller part of the consumer's failure surface — the right product direction.",
       "direction": "lower-better"
     },

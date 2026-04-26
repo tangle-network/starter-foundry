@@ -1,0 +1,82 @@
+{
+  "id": "privacy",
+  "slot": "agent-base",
+  "description": "PII detection + redaction primitive for agent egress points. Structured detectors (SSN, email, phone, credit-card-with-Luhn, IPv4/v6, multi-provider API keys, contextual DOB) ship in the layer; semantic detection (person names, addresses) is delegated to an optional pluggable nerBackend (operator wires openai/privacy-filter, Microsoft Presidio, or AWS Comprehend as a subprocess). Pure functions; no global state; bundles call detectPII / redactPII / assertNoPII at the trust boundaries they own. Composes with agent-base:integrity for HMAC-signed forwarding of redacted payloads.",
+  "appliesTo": [
+    "agent-runtime-research",
+    "agent-runtime-therapist-ts",
+    "agent-runtime-tax-ts",
+    "agent-runtime-legal-counsel-ts",
+    "agent-runtime-music-producer-ts",
+    "agent-runtime-cmo-advisor-ts",
+    "agent-runtime-wealth-manager-ts",
+    "agent-runtime-recruiter-ts",
+    "agent-runtime-real-estate-ts",
+    "agent-runtime-fitness-coach-ts",
+    "agent-runtime-novelist-coach-ts",
+    "agent-runtime-business-partner-ts",
+    "agent-runtime-language-tutor-ts",
+    "agent-runtime-veterinarian-ts",
+    "agent-runtime-relationship-coach-ts"
+  ],
+  "provides": [
+    "privacy:detect",
+    "privacy:redact",
+    "privacy:assert-no-pii"
+  ],
+  "defaults": {
+    "privacyLayer": true,
+    "structuredDetectors": [
+      "ssn",
+      "email",
+      "phone",
+      "credit-card",
+      "ip",
+      "api-key",
+      "dob"
+    ],
+    "semanticBackend": "none-by-default-opt-in-via-bundle"
+  },
+  "files": [
+    {
+      "source": "files/lib/privacy/index.ts",
+      "target": "src/lib/privacy/index.ts"
+    },
+    {
+      "source": "files/lib/privacy/types.ts",
+      "target": "src/lib/privacy/types.ts"
+    },
+    {
+      "source": "files/lib/privacy/detectors.ts",
+      "target": "src/lib/privacy/detectors.ts"
+    },
+    {
+      "source": "files/lib/privacy/index.test.ts",
+      "target": "src/lib/privacy/index.test.ts"
+    },
+    {
+      "source": "files/lib/privacy/README.md",
+      "target": "src/lib/privacy/README.md"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "src/lib/privacy/index.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/privacy/types.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/privacy/detectors.ts"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": [
+      "src/lib/privacy/"
+    ],
+    "commands": []
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "entries": [
+    {
+      "id": "filing-1040",
+      "capability": "filing-drafting",
+      "path": "./filing-1040.md",
+      "tags": ["form", "individual"],
+      "version": "0.1.0",
+      "retrieved": "2026-04-25"
+    },
+    {
+      "id": "deadlines",
+      "capability": "deadline-tracking",
+      "path": "./deadlines.md",
+      "tags": ["calendar", "irs"],
+      "version": "0.1.0",
+      "retrieved": "2026-04-25"
+    },
+    {
+      "id": "refusal-protocol",
+      "capability": "compliance-disclaimer",
+      "path": "./refusal-protocol.md",
+      "tags": ["safety", "circular230", "mandatory"],
+      "version": "0.1.0"
+    }
+  ]
+}

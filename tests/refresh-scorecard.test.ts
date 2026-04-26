@@ -1,4 +1,4 @@
-// Integration tests for scripts/refresh-scorecard.mjs.
+// Integration tests for scripts/refresh-scorecard.ts.
 //
 // Runs the script against synthetic inputs in a temp dir and asserts the
 // emitted scorecard.json has the right values, targets, staleness flags,
@@ -16,13 +16,13 @@ import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 
 const REPO = resolve(fileURLToPath(new URL('../', import.meta.url)))
-const SCRIPT = join(REPO, 'scripts/refresh-scorecard.mjs')
+const SCRIPT = join(REPO, 'scripts/refresh-scorecard.ts')
 
 function runScorecardIn(fixtureDir: string): { code: number; stdout: string } {
   // Gen-2: STARTER_FOUNDRY_REPO_OVERRIDE redirects the scorecard's REPO
   // resolution to the fixture dir, so it reads .evolve/ from the fixture
   // and writes scorecard.json back to the fixture. No global state touched.
-  const res = spawnSync('node', [SCRIPT], {
+  const res = spawnSync(join(REPO, 'node_modules/.bin/tsx'), [SCRIPT], {
     cwd: fixtureDir,
     encoding: 'utf8',
     env: { ...process.env, STARTER_FOUNDRY_REPO_OVERRIDE: fixtureDir },

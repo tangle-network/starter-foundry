@@ -13,7 +13,9 @@
 // conversation without re-tokenizing the full context.
 
 import { execSync } from 'node:child_process'
+
 import { createBridge } from '../lib/bridge.js'
+
 import type { GapProposal } from './diagnoser.js'
 
 export interface ProposerOptions {
@@ -68,7 +70,7 @@ function buildAgentTask(proposal: GapProposal, draft: boolean): string {
     `  2. Merge the suggested packageDeps into the manifest's packageDeps field. Preserve existing deps.`,
     `  3. If appliesTo needs a wider surface for this cluster, update it — but default to minimal changes.`,
     `  4. Run: pnpm build && pnpm test — both must pass.`,
-    `  5. Run: node scripts/replay-traces.mjs — verify cluster ${proposal.clusterId} gap count drops.`,
+    `  5. Run: node scripts/replay-traces.ts — verify cluster ${proposal.clusterId} gap count drops.`,
     `  6. Create a new branch named fix/gap-${proposal.clusterId}-<shortSha>, commit with a message explaining the cluster + measured impact, push, and open ${draft ? 'a DRAFT' : 'a'} PR with gh pr create.`,
     `  7. Report back with the PR URL as your final message.`,
     ``,

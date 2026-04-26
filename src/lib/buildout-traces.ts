@@ -5,15 +5,15 @@
 // feeds the next; every stage is resumable + fault-tolerant):
 //
 //   factory-local Claude Code JSONL sessions
-//      └→ scripts/mine-buildout-sessions.mjs
+//      └→ scripts/mine-buildout-sessions.ts
 //           writes .evolve/traces/buildouts.jsonl (append-only)
 //
 //   VB execution traces (.evolve/traces/vb-execution-*.jsonl)
-//      └→ scripts/join-buildout-outcomes.mjs
+//      └→ scripts/join-buildout-outcomes.ts
 //           annotates buildouts.jsonl with outcome fields
 //
 //   buildouts.jsonl (annotated)
-//      └→ scripts/analyze-buildouts.mjs
+//      └→ scripts/analyze-buildouts.ts
 //           writes .evolve/buildout-analysis.json (committed evidence)
 //
 // Adding a new session source (GLM 5.1, OpenAI, etc.):
@@ -63,7 +63,7 @@ export interface BuildoutEvent {
    * Deduped. Captures signal like "agent had to add stripe because we didn't
    * attach saas-billing."
    */
-  addedPackages: Array<{ pm: 'npm' | 'pnpm' | 'yarn' | 'cargo' | 'go' | 'pip'; name: string }>
+  addedPackages: { pm: 'npm' | 'pnpm' | 'yarn' | 'cargo' | 'go' | 'pip'; name: string }[]
   /**
    * Directories created with `mkdir`. Normalized paths (`src/foo/bar`).
    * Signal: "agent had to scaffold its own payments/ directory."
@@ -76,7 +76,7 @@ export interface BuildoutEvent {
    */
   rewrittenFiles: string[]
   /**
-   * Outcome annotated by scripts/join-buildout-outcomes.mjs from VB traces.
+   * Outcome annotated by scripts/join-buildout-outcomes.ts from VB traces.
    * `null` means no VB trace matched yet.
    */
   outcome: BuildoutOutcome | null
@@ -153,7 +153,7 @@ export function parseSlug(slug: string): {
   scenarioId: string | null
   replayRound: number | null
 } {
-  const m = slug.match(/factory-local-phase2-(.+?)-mo[a-z0-9]+-(.+?)-r(\d+)-\2-[A-Za-z0-9]+$/)
+  const m = /factory-local-phase2-(.+?)-mo[a-z0-9]+-(.+?)-r(\d+)-\2-[A-Za-z0-9]+$/.exec(slug)
   if (!m) return { partnerGuess: null, scenarioId: null, replayRound: null }
   return {
     partnerGuess: m[1] ?? null,

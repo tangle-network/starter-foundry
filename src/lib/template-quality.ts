@@ -30,7 +30,7 @@ interface EnrichmentSummary {
   finalPass: boolean
   finalScore?: number
   wallMs: number
-  shots: Array<{ shot: number; pass: boolean; durationMs: number }>
+  shots: { shot: number; pass: boolean; durationMs: number }[]
 }
 
 interface QualityScore {
@@ -67,11 +67,11 @@ interface ScoreInput {
 }
 
 const WEIGHTS = {
-  validationPass: 0.30,
+  validationPass: 0.3,
   bundleBuildOk: 0.25,
   typecheckOk: 0.15,
-  installOk: 0.10,
-  richness: 0.10,
+  installOk: 0.1,
+  richness: 0.1,
   firstShotBonus: 0.05,
   freshness: 0.05,
 } as const
@@ -97,9 +97,13 @@ function phaseMs(audit: AuditReport, name: string): number | null {
 function validationScore(audit: AuditReport): number {
   const p = audit.phases?.find((ph) => ph.phase === 'validationChecks')
   if (!p) return 0
-  if (p.skipped === 'none-declared') return 0.5  // no ground truth declared — partial credit
+  if (p.skipped === 'none-declared') return 0.5 // no ground truth declared — partial credit
   if (p.skipped) return 0
-  if (typeof p.checksTotal === 'number' && typeof p.checksPassed === 'number' && p.checksTotal > 0) {
+  if (
+    typeof p.checksTotal === 'number' &&
+    typeof p.checksPassed === 'number' &&
+    p.checksTotal > 0
+  ) {
     return p.checksPassed / p.checksTotal
   }
   return p.ok === true ? 1 : 0
@@ -131,8 +135,7 @@ export function scoreVersion(input: ScoreInput): QualityScore {
   const richness = Math.min(1, fileCount / 10)
 
   const shotsUsed = summary?.shotsUsed ?? 0
-  const firstShotBonus =
-    shotsUsed === 1 ? 1 : shotsUsed <= 3 ? 0.5 : shotsUsed <= 10 ? 0.2 : 0
+  const firstShotBonus = shotsUsed === 1 ? 1 : shotsUsed <= 3 ? 0.5 : shotsUsed <= 10 ? 0.2 : 0
 
   const daysOld = Math.max(0, (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24))
   const freshness = Math.max(0, 1 - Math.min(1, daysOld / 365))

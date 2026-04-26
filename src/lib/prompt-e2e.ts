@@ -1,9 +1,11 @@
 import path from 'node:path'
-import { benchmarkStarter } from './benchmark.js'
+
+import type { CorpusScenario, CorpusExpected, BenchmarkReport, ValidationCheck } from '../types.js'
+
+import { benchmarkStarter } from './eval/benchmark.js'
 import { createTempDir, readJson, removeDir, writeJson } from './fs.js'
 import { planPrompt } from './prompt-planner.js'
 import { benchmarkWorkspace } from './workspace.js'
-import type { CorpusScenario, CorpusExpected, BenchmarkReport, ValidationCheck } from '../types.js'
 
 interface Corpus {
   name: string
@@ -13,13 +15,13 @@ interface Corpus {
 interface ValidationEvidence {
   mode: 'live-runtime' | 'toolchain' | 'structural' | 'mixed'
   tools: string[]
-  projects: Array<{
+  projects: {
     id: string
     family: string
     mode: 'live-runtime' | 'toolchain' | 'structural'
     tools: string[]
     checks: number
-  }>
+  }[]
 }
 
 interface StarterRoute {
@@ -50,7 +52,9 @@ interface CorpusResult {
   validationOk: boolean
   primaryArtifactHit: boolean
   validationEvidence: ValidationEvidence
-  benchmark: BenchmarkReport | ReturnType<typeof benchmarkWorkspace> extends Promise<infer T> ? T : never
+  benchmark: BenchmarkReport | ReturnType<typeof benchmarkWorkspace> extends Promise<infer T>
+    ? T
+    : never
   ok: boolean
 }
 
@@ -88,7 +92,11 @@ function classifyProjectValidation(validationChecks: ValidationCheck[]): {
     const commandText = [bin, ...args].join(' ')
     if (bin === 'node' && commandText.includes('validate-')) continue
 
-    if (['cargo', 'forge', 'go', 'python3', 'solana', 'anchor', 'aptos', 'sui', 'wrangler'].includes(bin)) {
+    if (
+      ['cargo', 'forge', 'go', 'python3', 'solana', 'anchor', 'aptos', 'sui', 'wrangler'].includes(
+        bin,
+      )
+    ) {
       hasToolchain = true
       tools.add(bin)
       continue
@@ -125,7 +133,7 @@ async function loadStarterValidationEvidence(runDir: string): Promise<Validation
 
 async function loadWorkspaceValidationEvidence(
   runDir: string,
-  plan: { spec: { projects: Array<{ path: string; id?: string }> } },
+  plan: { spec: { projects: { path: string; id?: string }[] } },
 ): Promise<ValidationEvidence> {
   const projects = []
 
@@ -171,7 +179,9 @@ function matchesExpectation(
 
   const route = result.route as WorkspaceRoute
   const samePrimary = expected.primaryProjectId === route.primaryProjectId
-  const sameProjects = (expected.projectIds ?? []).every((projectId) => route.projectIds.includes(projectId))
+  const sameProjects = (expected.projectIds ?? []).every((projectId) =>
+    route.projectIds.includes(projectId),
+  )
   const sameFamilies = Object.entries(expected.projectFamilies ?? {}).every(
     ([projectId, family]) => route.projectFamilies[projectId] === family,
   )
@@ -239,7 +249,7 @@ export async function runPromptCorpus({
         }
       }
 
-      const benchmarkRunDir = benchmark.results[0]!.outDir
+      const benchmarkRunDir = benchmark.results[0].outDir
       const validationEvidence =
         plan.kind === 'starter'
           ? await loadStarterValidationEvidence(benchmarkRunDir)
@@ -270,7 +280,9 @@ export async function runPromptCorpus({
   }
 
   try {
-    await Promise.all(Array.from({ length: Math.min(CONCURRENCY, corpus.scenarios.length) }, worker))
+    await Promise.all(
+      Array.from({ length: Math.min(CONCURRENCY, corpus.scenarios.length) }, worker),
+    )
 
     const report = {
       schemaVersion: 1 as const,
@@ -289,7 +301,8 @@ export async function runPromptCorpus({
           return checkable.filter((r) => r.routeOk).length / checkable.length
         })(),
         validationPassRate: results.filter((result) => result.validationOk).length / results.length,
-        primaryArtifactHitRate: results.filter((result) => result.primaryArtifactHit).length / results.length,
+        primaryArtifactHitRate:
+          results.filter((result) => result.primaryArtifactHit).length / results.length,
       },
     }
 

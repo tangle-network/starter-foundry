@@ -2,8 +2,9 @@
 // variant_b-flow.mjs script and by the integration test. This is the
 // one-shot "do everything" entrypoint.
 
-import { buildVariantBFlow } from './flow.js'
 import { createLLM } from '../../lib/llm.js'
+
+import { buildVariantBFlow } from './flow.js'
 import type { FlowOutput } from './flow.js'
 
 interface RunFullFlowInput {
@@ -29,5 +30,5 @@ export async function runFullFlow(input: RunFullFlowInput = {}): Promise<FlowOut
     iterations: input.iterations ?? 1,
     llm,
   })
-  return result as FlowOutput
+  return result
 }

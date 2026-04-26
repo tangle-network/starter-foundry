@@ -20,7 +20,7 @@ export interface RankOutput {
 }
 
 function dominates(a: ScoredCandidate, b: ScoredCandidate): boolean {
-  const dims: Array<[number, number]> = [
+  const dims: [number, number][] = [
     [a.score.utility, b.score.utility],
     [a.score.specificity, b.score.specificity],
     [a.score.novelty, b.score.novelty],

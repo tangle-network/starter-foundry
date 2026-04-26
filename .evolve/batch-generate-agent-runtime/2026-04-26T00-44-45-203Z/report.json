@@ -1,0 +1,45 @@
+{
+  "ts": "2026-04-26T00:44:45.203Z",
+  "opts": {
+    "tranche": 3,
+    "limit": 1,
+    "rlm": false,
+    "maxShots": 3,
+    "tcloud": true,
+    "tcloudIterations": 1,
+    "tcloudWallSec": 60,
+    "tcloudUsd": 2,
+    "dryRun": false,
+    "skipExisting": true
+  },
+  "counts": {
+    "total": 1,
+    "validateOk": 0,
+    "composeOnly": 0,
+    "composeFail": 1
+  },
+  "results": [
+    {
+      "familyId": "agent-runtime-physics-research-ts",
+      "composeOk": false,
+      "validateOk": false,
+      "durationMs": 0,
+      "promotedToRegistry": false,
+      "tcloudVerdict": {
+        "verdict": "exhausted",
+        "iterations": 1,
+        "wallMs": 47739,
+        "usd": 0.08439
+      },
+      "tcloudCriteria": [
+        {
+          "iteration": 1,
+          "name": "envelope-parse",
+          "ok": false,
+          "reason": "chat call failed: Unexpected token '\\', \"\\n:::surve\"... is not valid JSON"
+        }
+      ],
+      "composeError": "tcloud agent exhausted budget without passing gates. last error: chat call failed: Unexpected token '\\', \"\\n:::surve\"... is not valid JSON"
+    }
+  ]
+}

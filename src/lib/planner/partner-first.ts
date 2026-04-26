@@ -12,8 +12,18 @@ import type { Registry, FamilyManifest } from '../../types.js'
 // id, tags, keywords, or tieredKeywords tier1/tier2 reference ANY of the
 // meaningful tokens from the partner name.
 const GENERIC_TOKENS = new Set([
-  'network', 'prediction', 'mixed', 'foundation', 'chain', 'l1',
-  'mpc', 'perps', 'fhe', 'event', 'contracts', 'smart',
+  'network',
+  'prediction',
+  'mixed',
+  'foundation',
+  'chain',
+  'l1',
+  'mpc',
+  'perps',
+  'fhe',
+  'event',
+  'contracts',
+  'smart',
 ])
 
 function partnerTokens(partner: string): string[] {
@@ -49,7 +59,7 @@ const PARTNER_ANCHOR_TOKENS: Record<string, string[]> = {
   'kalshi-event-contracts': ['kalshi'],
   'polymarket-prediction': ['polymarket'],
   'fintech-mixed': ['fintech', 'ledger'],
-  'deno': ['deno'],
+  deno: ['deno'],
 }
 
 function familySignalTokens(fm: FamilyManifest): Set<string> {
@@ -81,7 +91,7 @@ interface PartnerFamilyMatch {
  * Surface is returned so callers can pick a frontend family for the web lane
  * vs a blueprint/agent family for protocol/agent lanes.
  */
-export function findPartnerAlignedFamilies(
+function findPartnerAlignedFamilies(
   partner: string | null,
   registry: Registry,
 ): PartnerFamilyMatch[] {
@@ -109,18 +119,6 @@ export function findPartnerAlignedFamilies(
   return matches
 }
 
-/** Pick the best partner-aligned FRONTEND family, if any. */
-export function findPartnerAlignedFrontendFamily(
-  partner: string | null,
-  registry: Registry,
-): string | null {
-  const matches = findPartnerAlignedFamilies(partner, registry)
-  for (const m of matches) {
-    if (m.surface === 'frontend') return m.familyId
-  }
-  return null
-}
-
 /**
  * Decide whether partner-first routing should promote this prompt to a
  * partner-aligned workspace. Only fires when:
@@ -139,7 +137,7 @@ export function shouldPromotePartnerFirst(
 ): { familyId: string; surface: string } | null {
   const matches = findPartnerAlignedFamilies(partner, registry)
   if (matches.length === 0) return null
-  const best = matches[0]!
+  const best = matches[0]
   if (best.score < 2) return null
   return { familyId: best.familyId, surface: best.surface }
 }

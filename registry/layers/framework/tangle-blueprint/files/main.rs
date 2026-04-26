@@ -1,8 +1,5 @@
 use {{crateName}}_lib::router;
 use blueprint_sdk::contexts::tangle::TangleClientContext;
-use blueprint_sdk::crypto::tangle_pair_signer::TanglePairSigner;
-use blueprint_sdk::keystore::backends::Backend;
-use blueprint_sdk::keystore::crypto::sp_core::SpSr25519;
 use blueprint_sdk::runner::BlueprintRunner;
 use blueprint_sdk::runner::config::BlueprintEnvironment;
 use blueprint_sdk::runner::tangle::config::TangleConfig;
@@ -21,16 +18,6 @@ async fn main() -> Result<(), blueprint_sdk::Error> {
         .await
         .map_err(|e| blueprint_sdk::Error::Other(e.to_string()))?;
 
-    let sr25519_signer = env
-        .keystore()
-        .first_local::<SpSr25519>()
-        .map_err(|e| blueprint_sdk::Error::Other(e.to_string()))?;
-    let sr25519_pair = env
-        .keystore()
-        .get_secret::<SpSr25519>(&sr25519_signer)
-        .map_err(|e| blueprint_sdk::Error::Other(e.to_string()))?;
-    let tangle_signer = TanglePairSigner::new(sr25519_pair.0);
-
     let service_id = env
         .protocol_settings
         .tangle()
@@ -40,10 +27,8 @@ async fn main() -> Result<(), blueprint_sdk::Error> {
 
     info!("Starting {{blueprintName}} for service {service_id}");
 
-    let tangle_producer = TangleProducer::finalized_blocks(tangle_client.rpc_client.clone())
-        .await
-        .map_err(|e| blueprint_sdk::Error::Other(e.to_string()))?;
-    let tangle_consumer = TangleConsumer::new(tangle_client.rpc_client.clone(), tangle_signer);
+    let tangle_producer = TangleProducer::new(tangle_client.clone(), service_id);
+    let tangle_consumer = TangleConsumer::new(tangle_client);
     let tangle_config = TangleConfig::default();
 
     let result = BlueprintRunner::builder(tangle_config, env)

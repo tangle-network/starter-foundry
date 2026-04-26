@@ -1,0 +1,10 @@
+dist
+dist-tests
+node_modules
+coverage
+.evolve
+registry
+corpus
+specs
+pnpm-lock.yaml
+src/types/registry-schemas.generated.ts

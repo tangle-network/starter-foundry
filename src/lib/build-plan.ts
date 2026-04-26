@@ -1,26 +1,71 @@
 import { ax } from '@ax-llm/ax'
-import { createLLM, isLLMAvailable } from './llm.js'
-import type { ProductBrief } from './product-brief.js'
+
 import type { BuildPlan, ComposeSpec, ResolvedComponents } from '../types.js'
 
+import { createLLM, isLLMAvailable } from './llm.js'
+import type { ProductBrief } from './product-brief.js'
+
 const FAMILY_ARCHITECTURE: Record<string, string[]> = {
-  'nextjs-ts': ['Next.js App Router', 'Server Components', 'Server Actions for mutations', 'Middleware for auth'],
+  'nextjs-ts': [
+    'Next.js App Router',
+    'Server Components',
+    'Server Actions for mutations',
+    'Middleware for auth',
+  ],
   'react-vite-ts': ['React SPA', 'Vite build', 'Client-side routing', 'REST or tRPC for backend'],
-  'fullstack-ts': ['Node.js HTTP server', 'TypeScript with experimental strip-types', 'Server-rendered HTML', 'JSON API endpoints'],
+  'fullstack-ts': [
+    'Node.js HTTP server',
+    'TypeScript with experimental strip-types',
+    'Server-rendered HTML',
+    'JSON API endpoints',
+  ],
   'sveltekit-ts': ['SvelteKit with SSR', 'File-based routing', 'Form actions', 'Load functions'],
-  'remix-ts': ['Remix with nested routing', 'Loaders for data fetching', 'Actions for mutations', 'Progressive enhancement'],
+  'remix-ts': [
+    'Remix with nested routing',
+    'Loaders for data fetching',
+    'Actions for mutations',
+    'Progressive enhancement',
+  ],
   'vue-ts': ['Vue 3 Composition API', 'Vite build', 'Client-side routing with vue-router'],
   'angular-ts': ['Angular standalone components', 'Signals for reactivity', 'Dependency injection'],
   'api-service': ['Node.js HTTP server', 'JSON API', 'Health endpoint pattern'],
   'python-api': ['Python HTTP server', 'JSON API', 'Async handlers if using FastAPI'],
   'go-api': ['Go net/http', 'JSON API', 'Middleware chain'],
   'rust-service': ['Rust HTTP server', 'Typed routes', 'Error handling with Result'],
-  'agent-service-ts': ['Agent control loop: plan → act → reflect', 'Tool registration', 'Memory/state management', 'HTTP health endpoint'],
-  'agent-service-py': ['Agent control loop: plan → act → reflect', 'Tool registration', 'Memory/state management', 'HTTP health endpoint'],
-  'agent-service-rust': ['Agent control loop: plan → act → reflect', 'Tool registration', 'Typed state management'],
-  'forge-contracts': ['Foundry project', 'Solidity contracts in src/', 'Tests in test/', 'Deploy scripts in script/'],
-  'hardhat-contracts': ['Hardhat TypeScript', 'Contracts in contracts/', 'Deploy tasks', 'Hardhat config with network settings'],
-  'worker-job': ['Background worker loop', 'RUN_ONCE mode for validation', 'Signal handling for graceful shutdown'],
+  'agent-service-ts': [
+    'Agent control loop: plan → act → reflect',
+    'Tool registration',
+    'Memory/state management',
+    'HTTP health endpoint',
+  ],
+  'agent-service-py': [
+    'Agent control loop: plan → act → reflect',
+    'Tool registration',
+    'Memory/state management',
+    'HTTP health endpoint',
+  ],
+  'agent-service-rust': [
+    'Agent control loop: plan → act → reflect',
+    'Tool registration',
+    'Typed state management',
+  ],
+  'forge-contracts': [
+    'Foundry project',
+    'Solidity contracts in src/',
+    'Tests in test/',
+    'Deploy scripts in script/',
+  ],
+  'hardhat-contracts': [
+    'Hardhat TypeScript',
+    'Contracts in contracts/',
+    'Deploy tasks',
+    'Hardhat config with network settings',
+  ],
+  'worker-job': [
+    'Background worker loop',
+    'RUN_ONCE mode for validation',
+    'Signal handling for graceful shutdown',
+  ],
   'cloudflare-worker-ts': ['Cloudflare Worker', 'Edge runtime', 'Durable Objects if stateful'],
 }
 
@@ -71,13 +116,16 @@ export function gatherBuildHints(components: ResolvedComponents): {
     if (familyHints.integrations) integrations.push(...familyHints.integrations)
     if (familyHints.architectureNotes) architectureNotes.push(...familyHints.architectureNotes)
     if (familyHints.firstSteps) {
-      for (const step of familyHints.firstSteps) firstSteps.push({ source: `family:${components.family.id}`, step })
+      for (const step of familyHints.firstSteps)
+        firstSteps.push({ source: `family:${components.family.id}`, step })
     }
     if (familyHints.gotchas) {
-      for (const note of familyHints.gotchas) gotchas.push({ source: `family:${components.family.id}`, note })
+      for (const note of familyHints.gotchas)
+        gotchas.push({ source: `family:${components.family.id}`, note })
     }
     if (familyHints.placeholders) {
-      for (const p of familyHints.placeholders) placeholders.push({ source: `family:${components.family.id}`, ...p })
+      for (const p of familyHints.placeholders)
+        placeholders.push({ source: `family:${components.family.id}`, ...p })
     }
   }
 
@@ -91,26 +139,31 @@ export function gatherBuildHints(components: ResolvedComponents): {
     if (hints.integrations) integrations.push(...hints.integrations)
     if (hints.architectureNotes) architectureNotes.push(...hints.architectureNotes)
     if (hints.firstSteps) {
-      for (const step of hints.firstSteps) firstSteps.push({ source: `${layer.group}:${layer.id}`, step })
+      for (const step of hints.firstSteps)
+        firstSteps.push({ source: `${layer.group}:${layer.id}`, step })
     }
     if (hints.gotchas) {
       for (const note of hints.gotchas) gotchas.push({ source: `${layer.group}:${layer.id}`, note })
     }
     if (hints.placeholders) {
-      for (const p of hints.placeholders) placeholders.push({ source: `${layer.group}:${layer.id}`, ...p })
+      for (const p of hints.placeholders)
+        placeholders.push({ source: `${layer.group}:${layer.id}`, ...p })
     }
   }
 
   if (components.partner?.buildHints) {
     const hints = components.partner.buildHints
     if (hints.firstSteps) {
-      for (const step of hints.firstSteps) firstSteps.push({ source: `partner:${components.partner.id}`, step })
+      for (const step of hints.firstSteps)
+        firstSteps.push({ source: `partner:${components.partner.id}`, step })
     }
     if (hints.gotchas) {
-      for (const note of hints.gotchas) gotchas.push({ source: `partner:${components.partner.id}`, note })
+      for (const note of hints.gotchas)
+        gotchas.push({ source: `partner:${components.partner.id}`, note })
     }
     if (hints.placeholders) {
-      for (const p of hints.placeholders) placeholders.push({ source: `partner:${components.partner.id}`, ...p })
+      for (const p of hints.placeholders)
+        placeholders.push({ source: `partner:${components.partner.id}`, ...p })
     }
     if (hints.architectureNotes) architectureNotes.push(...hints.architectureNotes)
   }
@@ -128,10 +181,7 @@ export function gatherBuildHints(components: ResolvedComponents): {
   }
 }
 
-export function generateBuildPlan(
-  spec: ComposeSpec,
-  components: ResolvedComponents,
-): BuildPlan {
+export function generateBuildPlan(spec: ComposeSpec, components: ResolvedComponents): BuildPlan {
   const prompt = spec.userPrompt ?? ''
   const familyArch = FAMILY_ARCHITECTURE[spec.family] ?? []
   const hints = gatherBuildHints(components)
@@ -169,10 +219,8 @@ export function generateBuildPlan(
   const designDirective = generateDesignDirective(spec, components)
 
   // Extract shadcn preset code from layer defaults
-  const shadcnLayer = components.layers.find(
-    (l) => l.group === 'capability' && l.id === 'shadcn',
-  )
-  const presetCode = shadcnLayer?.defaults?.presetCode as string | undefined ?? null
+  const shadcnLayer = components.layers.find((l) => l.group === 'capability' && l.id === 'shadcn')
+  const presetCode = (shadcnLayer?.defaults?.presetCode as string | undefined) ?? null
 
   return {
     goal: prompt || `Build a ${spec.family} project`,
@@ -208,7 +256,11 @@ export function __setTestEnhancer(fn: EnhancerFn | null): void {
   testEnhancerOverride = fn
 }
 
-async function enhanceBuildPlanWithLLMImpl({ spec, base, composedFiles }: EnhanceArgs): Promise<BuildPlan> {
+async function enhanceBuildPlanWithLLMImpl({
+  spec,
+  base,
+  composedFiles,
+}: EnhanceArgs): Promise<BuildPlan> {
   if (!isLLMAvailable()) return base
   const prompt = spec.userPrompt ?? ''
   if (!prompt) return base
@@ -216,20 +268,21 @@ async function enhanceBuildPlanWithLLMImpl({ spec, base, composedFiles }: Enhanc
   const llm = createLLM()
   let raw: { firstMoves?: string[]; openQuestions?: string[] }
   try {
-    raw = (await enhancerAgent.forward(llm, {
+    raw = await enhancerAgent.forward(llm, {
       userPrompt: prompt,
       family: spec.family,
       layers: spec.layers ?? [],
       composedFiles,
       templateFirstMoves: base.firstMoves,
-    })) as { firstMoves?: string[]; openQuestions?: string[] }
+    })
   } catch {
     return base
   }
 
-  const firstMoves = Array.isArray(raw.firstMoves) && raw.firstMoves.length > 0
-    ? raw.firstMoves.map((m) => String(m)).filter(Boolean)
-    : base.firstMoves
+  const firstMoves =
+    Array.isArray(raw.firstMoves) && raw.firstMoves.length > 0
+      ? raw.firstMoves.map((m) => String(m)).filter(Boolean)
+      : base.firstMoves
 
   const openQuestions = Array.isArray(raw.openQuestions)
     ? raw.openQuestions.map((q) => String(q)).filter(Boolean)
@@ -272,9 +325,17 @@ export function mergeBriefIntoBuildPlan(base: BuildPlan, brief: ProductBrief): B
 }
 
 const FRONTEND_FAMILIES = new Set([
-  'react-vite-ts', 'nextjs-ts', 'fullstack-ts', 'sveltekit-ts',
-  'remix-ts', 'vue-ts', 'angular-ts', 'frontend-static',
-  'electron-desktop-ts', 'tauri-desktop', 'expo-react-native-ts',
+  'react-vite-ts',
+  'nextjs-ts',
+  'fullstack-ts',
+  'sveltekit-ts',
+  'remix-ts',
+  'vue-ts',
+  'angular-ts',
+  'frontend-static',
+  'electron-desktop-ts',
+  'tauri-desktop',
+  'expo-react-native-ts',
   'browser-extension-ts',
 ])
 
@@ -283,10 +344,7 @@ const FRONTEND_FAMILIES = new Set([
  * These are English rules about aesthetics, not CSS — the LLM follows them
  * when generating Tailwind classes and component markup.
  */
-function generateDesignDirective(
-  spec: ComposeSpec,
-  components: ResolvedComponents,
-): string | null {
+function generateDesignDirective(spec: ComposeSpec, components: ResolvedComponents): string | null {
   if (!FRONTEND_FAMILIES.has(spec.family)) return null
 
   const layerIds = new Set(components.layers.map((l) => `${l.group}:${l.id}`))

@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "allocation-review",
+      "capability": "asset-allocation-review",
+      "path": "./allocation-review.md",
+      "tags": ["methodology", "allocation", "rebalancing", "bogleheads"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "tax-loss-harvest-protocol",
+      "capability": "tax-loss-harvesting",
+      "path": "./tax-loss-harvest-protocol.md",
+      "tags": ["methodology", "tax", "wash-sale", "irc-1091"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "retirement-projection",
+      "capability": "retirement-projection",
+      "path": "./retirement-projection.md",
+      "tags": ["methodology", "retirement", "monte-carlo", "trinity-study"],
+      "version": "0.1.0"
+    }
+  ]
+}

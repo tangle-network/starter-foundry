@@ -1,0 +1,129 @@
+{
+  "id": "secure",
+  "slot": "agent-base",
+  "description": "Security floor for every agent-runtime bundle: dotenvx-backed secrets, sandboxed workspace with sensitive-zone ACL, HMAC-signed webhooks (in + out), schedule trigger registry with signed identity, Ed25519 ephemeral identity, append-only signed audit log. Composes with agent-base:tangle. Bundles inherit the security guarantees automatically; opting out is explicit and audit-logged. See docs/specs/agent-base-secure.md.",
+  "appliesTo": [
+    "agent-runtime-research",
+    "agent-runtime-therapist-ts",
+    "agent-runtime-tax-ts",
+    "agent-runtime-legal-counsel-ts",
+    "agent-runtime-music-producer-ts",
+    "agent-runtime-cmo-advisor-ts",
+    "agent-runtime-wealth-manager-ts",
+    "agent-runtime-recruiter-ts",
+    "agent-runtime-real-estate-ts",
+    "agent-runtime-fitness-coach-ts",
+    "agent-runtime-novelist-coach-ts",
+    "agent-runtime-business-partner-ts",
+    "agent-runtime-language-tutor-ts",
+    "agent-runtime-veterinarian-ts",
+    "agent-runtime-relationship-coach-ts"
+  ],
+  "provides": [
+    "secure:secrets",
+    "secure:workspace",
+    "secure:webhook-in",
+    "secure:webhook-out",
+    "secure:schedule",
+    "secure:identity",
+    "secure:audit"
+  ],
+  "requires": [
+    "tangle:base"
+  ],
+  "defaults": {
+    "secureLayer": true,
+    "secretsBackend": "dotenvx",
+    "workspaceRoot": "/workspace",
+    "auditDir": ".audit",
+    "identityAlgorithm": "Ed25519",
+    "identityTtlSec": 3600,
+    "webhookSignatureHeader": "X-Tangle-Signature",
+    "webhookReplayWindowSec": 300,
+    "webhookOutMaxRetries": 3,
+    "webhookOutCircuitBreakerThreshold": 5,
+    "webhookOutCircuitBreakerCooldownSec": 60
+  },
+  "files": [
+    {
+      "source": "files/lib/secure/index.ts",
+      "target": "src/lib/secure/index.ts"
+    },
+    {
+      "source": "files/lib/secure/secrets.ts",
+      "target": "src/lib/secure/secrets.ts"
+    },
+    {
+      "source": "files/lib/secure/workspace.ts",
+      "target": "src/lib/secure/workspace.ts"
+    },
+    {
+      "source": "files/lib/secure/webhook-in.ts",
+      "target": "src/lib/secure/webhook-in.ts"
+    },
+    {
+      "source": "files/lib/secure/webhook-out.ts",
+      "target": "src/lib/secure/webhook-out.ts"
+    },
+    {
+      "source": "files/lib/secure/schedule.ts",
+      "target": "src/lib/secure/schedule.ts"
+    },
+    {
+      "source": "files/lib/secure/identity.ts",
+      "target": "src/lib/secure/identity.ts"
+    },
+    {
+      "source": "files/lib/secure/audit.ts",
+      "target": "src/lib/secure/audit.ts"
+    },
+    {
+      "source": "files/lib/secure/index.test.ts",
+      "target": "src/lib/secure/index.test.ts"
+    },
+    {
+      "source": "files/lib/secure/README.md",
+      "target": "src/lib/secure/README.md"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "src/lib/secure/index.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/secure/secrets.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/secure/workspace.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/secure/webhook-in.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/secure/webhook-out.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/secure/schedule.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/secure/identity.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/secure/audit.ts"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": [
+      "src/lib/secure/"
+    ],
+    "commands": []
+  }
+}

@@ -112,7 +112,25 @@
     "tier2": [
       "rust wasm",
       "rust in browser",
-      "browser wasm"
+      "browser wasm",
+      "compiler",
+      "lexer",
+      "parser",
+      "interpreter",
+      "tokenizer",
+      "dfa",
+      "regex engine",
+      "vm",
+      "bytecode",
+      "jit",
+      "language runtime",
+      "algorithm",
+      "data structure",
+      "suffix array",
+      "sais",
+      "graph traversal",
+      "dynamic programming",
+      "competitive programming"
     ],
     "archetypes": [
       "image processing in browser",
@@ -120,7 +138,10 @@
       "client-side video encoder",
       "physics simulation",
       "geometry engine",
-      "scientific computing web"
+      "scientific computing web",
+      "compiler in browser",
+      "lexer dfa playground",
+      "algorithm visualizer"
     ]
   },
   "buildHints": {

@@ -23,15 +23,17 @@ export interface MirrorLoadResult {
   body: string
   mirrorUrl: string
   sha256: string
-  attempts: Array<{ url: string; status: 'ok' | 'error' | 'timeout' | 'integrity-mismatch'; detail?: string }>
+  attempts: {
+    url: string
+    status: 'ok' | 'error' | 'timeout' | 'integrity-mismatch'
+    detail?: string
+  }[]
 }
 
 export class MirrorLoadError extends Error {
   readonly attempts: MirrorLoadResult['attempts']
   constructor(attempts: MirrorLoadResult['attempts']) {
-    super(
-      `all mirrors failed: ${attempts.map((a) => `${a.url} [${a.status}]`).join(', ')}`,
-    )
+    super(`all mirrors failed: ${attempts.map((a) => `${a.url} [${a.status}]`).join(', ')}`)
     this.name = 'MirrorLoadError'
     this.attempts = attempts
   }
@@ -47,7 +49,9 @@ async function fetchWithTimeout(
   impl: typeof fetch,
 ): Promise<Response> {
   const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), timeoutMs)
+  const timer = setTimeout(() => {
+    controller.abort()
+  }, timeoutMs)
   try {
     return await impl(url, { signal: controller.signal })
   } finally {
@@ -60,9 +64,7 @@ export async function loadRegistryFromMirrors(
   options: MirrorLoadOptions = {},
 ): Promise<MirrorLoadResult> {
   if (mirrors.length === 0) throw new Error('loadRegistryFromMirrors: empty mirror list')
-  const ordered = [...mirrors].sort(
-    (a, b) => (a.priority ?? 100) - (b.priority ?? 100),
-  )
+  const ordered = [...mirrors].sort((a, b) => (a.priority ?? 100) - (b.priority ?? 100))
   const attempts: MirrorLoadResult['attempts'] = []
   const fetchImpl = options.fetchImpl ?? fetch
   const timeoutMs = options.timeoutMs ?? 5000

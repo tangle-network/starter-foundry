@@ -5,15 +5,16 @@
 // flag. LLM is used when available; deterministic scoring is the fallback.
 
 import { createLLM, isLLMAvailable } from '../../lib/llm.js'
+
+import type { ArchetypeCandidate } from './nodes/generate.js'
 import { judgeNode } from './nodes/judge.js'
 import type { CandidateScore } from './nodes/judge.js'
-import type { ArchetypeCandidate } from './nodes/generate.js'
 
 export interface ScoreCandidateInput {
   spec: ArchetypeCandidate
 }
 
-export interface ScoreCandidateResult extends CandidateScore {}
+export type ScoreCandidateResult = CandidateScore
 
 export async function scoreCandidate(input: ScoreCandidateInput): Promise<ScoreCandidateResult> {
   let llm
@@ -28,5 +29,5 @@ export async function scoreCandidate(input: ScoreCandidateInput): Promise<ScoreC
     llm,
     useLLM: llm !== undefined,
   })
-  return out.scored[0]!.score
+  return out.scored[0].score
 }

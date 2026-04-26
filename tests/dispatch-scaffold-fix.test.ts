@@ -12,7 +12,7 @@ import { spawnSync } from 'node:child_process'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const REPO = join(__dirname, '..')
-const SCRIPT = join(REPO, 'scripts/dispatch-scaffold-fix.mjs')
+const SCRIPT = join(REPO, 'scripts/dispatch-scaffold-fix.ts')
 
 describe('dispatch-scaffold-fix', () => {
   test('gated: refuses to run without SF_AUTO_DISPATCH=1 or --force', () => {
@@ -65,7 +65,7 @@ describe('dispatch-scaffold-fix', () => {
   })
 
   test('auto-loop wires dispatch-fix as a fourth action', () => {
-    const loopSrc = readFileSync(join(REPO, 'scripts/auto-loop.mjs'), 'utf8')
+    const loopSrc = readFileSync(join(REPO, 'scripts/auto-loop.ts'), 'utf8')
     assert.match(loopSrc, /action: 'dispatch-fix'/, 'auto-loop must declare dispatch-fix action')
     assert.match(loopSrc, /SF_AUTO_DISPATCH/, 'auto-loop must gate on SF_AUTO_DISPATCH')
     // Rate-limit: must check hours since last dispatch

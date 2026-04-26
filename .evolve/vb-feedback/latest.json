@@ -1,26 +1,28 @@
 {
-  "consumer": "blueprint-agent",
+  "consumer": "blueprint-agent-r2-final",
   "source": "/Users/drew/webb/blueprint-agent/scripts/experiments/results/sessions",
-  "generatedAt": "2026-04-25T02:44:45.148Z",
+  "generatedAt": "2026-04-25T22:01:20.251Z",
   "sinceGen": 40,
-  "totalSessions": 75,
+  "totalSessions": 153,
   "buckets": {
-    "pass": 32,
-    "routing-error": 32,
-    "scaffold-gap": 1,
-    "agent-error": 10,
-    "unknown": 0
+    "pass": 62,
+    "sf-not-invoked": 24,
+    "routing-error": 0,
+    "routing-unrouteable": 12,
+    "routing-fixed-forward": 18,
+    "scaffold-gap": 10,
+    "agent-error": 24,
+    "unknown": 3
   },
-  "scaffoldAttributableNonPass": 33,
-  "totalNonPass": 43,
-  "scaffoldAttributableRate": 0.7674,
+  "scaffoldAttributableNonPass": 10,
+  "totalNonPass": 91,
+  "scaffoldAttributableRate": 0.1099,
   "topScaffoldGaps": {
-    "remix-ts/ai-agents-mixed": 1
+    "remix-ts/ai-agents-mixed": 1,
+    "stylus-contracts/arbitrum-stylus": 3,
+    "wasm-rust/arbitrum-stylus": 1,
+    "rust-service/arbitrum-stylus": 4,
+    "frontend-static/fhenix-fhe": 1
   },
-  "topRoutingErrors": {
-    "swe-bench-verified": 5,
-    "ai-agents-mixed": 1,
-    "base-defi": 11,
-    "ethereum-l1": 15
-  }
+  "topRoutingErrors": {}
 }

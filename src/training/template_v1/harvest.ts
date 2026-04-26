@@ -26,13 +26,13 @@ export interface HarvestSummary {
   writeCount: number
   editCount: number
   /** Lines that appear in many agents' "new" outputs but NOT in the current template. */
-  frequentlyAddedLines: Array<{ line: string; frequency: number }>
+  frequentlyAddedLines: { line: string; frequency: number }[]
   /** Imports + dependency tokens agents consistently add. */
-  frequentImports: Array<{ token: string; frequency: number }>
+  frequentImports: { token: string; frequency: number }[]
   /** Sample "after" bodies for reference. */
   samplesAfter: string[]
   /** Sample "before → after" diffs for Edit calls. */
-  editPatterns: Array<{ before: string; after: string; count: number }>
+  editPatterns: { before: string; after: string; count: number }[]
 }
 
 function readTuples(key: string): RewriteTuple[] {
@@ -47,9 +47,7 @@ function readTuples(key: string): RewriteTuple[] {
 
 function tokenize(source: string): string[] {
   // Very small tokenizer — split on whitespace + punct, filter short.
-  return source
-    .split(/[^a-zA-Z0-9@/._-]+/)
-    .filter((t) => t.length >= 3)
+  return source.split(/[^a-zA-Z0-9@/._-]+/).filter((t) => t.length >= 3)
 }
 
 function lineFrequency(bodies: string[]): Map<string, number> {
@@ -74,7 +72,7 @@ function importFrequency(bodies: string[]): Map<string, number> {
     const seen = new Set<string>()
     let match: RegExpExecArray | null
     while ((match = importRe.exec(body)) !== null) {
-      const mod = match[1]!
+      const mod = match[1]
       if (seen.has(mod)) continue
       seen.add(mod)
       freq.set(mod, (freq.get(mod) ?? 0) + 1)
@@ -83,7 +81,7 @@ function importFrequency(bodies: string[]): Map<string, number> {
   return freq
 }
 
-function editPatterns(tuples: RewriteTuple[]): Array<{ before: string; after: string; count: number }> {
+function editPatterns(tuples: RewriteTuple[]): { before: string; after: string; count: number }[] {
   const buckets = new Map<string, { before: string; after: string; count: number }>()
   for (const t of tuples) {
     if (t.tool !== 'Edit' || !t.old) continue

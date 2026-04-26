@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "weekly-review-protocol",
+      "capability": "weekly-review-protocol",
+      "path": "./weekly-review-protocol.md",
+      "tags": ["cadence", "weekly", "operating-rhythm"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "okr-design",
+      "capability": "okr-design",
+      "path": "./okr-design.md",
+      "tags": ["goal-setting", "okrs", "quarterly"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "decision-journal",
+      "capability": "decision-journal",
+      "path": "./decision-journal.md",
+      "tags": ["decision-making", "reversibility", "post-hoc-scoring"],
+      "version": "0.1.0"
+    }
+  ]
+}

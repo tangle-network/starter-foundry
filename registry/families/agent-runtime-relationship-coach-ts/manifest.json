@@ -1,0 +1,210 @@
+{
+  "id": "agent-runtime-relationship-coach-ts",
+  "description": "Voice-first relationship coaching agent bundle — explicitly NOT a licensed couples therapist and NOT a substitute for individual therapy or DV safety planning. Helps the user reflect on patterns, practice communication tools (Gottman, NVC), and recognize when professional help is the right next step. Mandatory DV / abuse / crisis escalation protocol is non-negotiable. Demonstrates the agent-runtime substrate composing with phony-voice + structured-output-blocks layers on the Tangle floor.",
+  "tags": [
+    "agent-runtime",
+    "relationship-coach",
+    "couples-coach",
+    "voice-first",
+    "coaching-agent",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-tools:phony-voice",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-relationship-coach",
+    "agentName": "relationship-coach",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "voice-stt",
+          "voice-tts",
+          "check-in",
+          "communication-tool",
+          "pattern-naming",
+          "escalation"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "check-in-protocol",
+      "communication-tool-practice",
+      "conflict-pattern-naming"
+    ],
+    "disclaimerRequired": true,
+    "dvProtocolRequired": true,
+    "escalationRequired": true,
+    "notTherapist": true,
+    "notCouplesTherapist": true,
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "crisisHotlines": [
+      {
+        "name": "National Domestic Violence Hotline",
+        "number": "1-800-799-7233",
+        "text": "START to 88788",
+        "url": "https://www.thehotline.org",
+        "type": "dv"
+      },
+      {
+        "name": "RAINN National Sexual Assault Hotline",
+        "number": "1-800-656-HOPE",
+        "url": "https://www.rainn.org",
+        "type": "sexual-assault"
+      },
+      {
+        "name": "988 Suicide & Crisis Lifeline",
+        "number": "988",
+        "type": "call-or-text"
+      },
+      {
+        "name": "SAMHSA National Helpline",
+        "number": "1-800-662-HELP",
+        "type": "substance-use"
+      }
+    ],
+    "schedule": [
+      {
+        "id": "scheduled-1",
+        "cron": "0 14 * * *",
+        "capability": "check-in-protocol"
+      }
+    ],
+    "outboundDomains": [
+      "api.tangle.tools",
+      "thehotline.org",
+      "rainn.org"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY",
+      "PHONY_API_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/check-in-protocol.md",
+      "target": "methodology/check-in-protocol.md"
+    },
+    {
+      "source": "files/methodology/communication-tool-practice.md",
+      "target": "methodology/communication-tool-practice.md"
+    },
+    {
+      "source": "files/methodology/conflict-pattern-naming.md",
+      "target": "methodology/conflict-pattern-naming.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "system-prompt.md"
+    },
+    {
+      "type": "file-exists",
+      "path": "methodology/index.json"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "system-prompt.md"
+    },
+    {
+      "type": "methodology-index-valid",
+      "path": "methodology/index.json"
+    },
+    {
+      "type": "schedule-valid",
+      "path": "manifest.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "keywords": [
+    "relationship-coach",
+    "couples-coach",
+    "communication-skills",
+    "active-listening",
+    "boundary-setting",
+    "conflict-resolution",
+    "gottman",
+    "nvc"
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "relationship-coach-agent",
+      "relationship coach agent",
+      "couples-coach-agent",
+      "couples coach agent",
+      "relationship coach"
+    ],
+    "tier2": [
+      "communication-skills",
+      "communication skills",
+      "active-listening",
+      "active listening",
+      "boundary-setting",
+      "boundary setting",
+      "conflict-resolution",
+      "conflict resolution"
+    ],
+    "tier3": [
+      "relationship",
+      "couple",
+      "partner"
+    ],
+    "archetypes": [
+      "agent-in-sandbox",
+      "coaching-agent",
+      "voice-first"
+    ]
+  }
+}

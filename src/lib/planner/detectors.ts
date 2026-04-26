@@ -14,7 +14,11 @@ export function detectDatabaseSlot(text: string): string | null {
 }
 
 export function detectSdkSlot(text: string, partner: string | null): string | null {
-  if (text.includes('solana web3') || text.includes('@solana/web3') || text.includes('wallet adapter')) {
+  if (
+    text.includes('solana web3') ||
+    text.includes('@solana/web3') ||
+    text.includes('wallet adapter')
+  ) {
     return 'sdk:solana-web3'
   }
   if (partner === 'coinbase') return 'sdk:coinbase-cdp'
@@ -38,30 +42,50 @@ export function detectAuthSlot(text: string): string | null {
 
 export function detectPaymentsSlot(text: string): string | null {
   if (text.includes('coinbase commerce')) return 'payments:coinbase-commerce'
-  if (text.includes('stripe') || text.includes('subscription') || text.includes('billing') || text.includes('checkout')) {
+  if (
+    text.includes('stripe') ||
+    text.includes('subscription') ||
+    text.includes('billing') ||
+    text.includes('checkout')
+  ) {
     return 'payments:stripe'
   }
   return null
 }
 
-
 export function detectQueueSlot(text: string): string | null {
   if (text.includes('trigger.dev') || text.includes('trigger dev')) return 'queue:trigger-dev'
-  if (text.includes('bullmq') || text.includes('queue') || text.includes('background job')) return 'queue:bullmq'
+  if (text.includes('bullmq') || text.includes('queue') || text.includes('background job'))
+    return 'queue:bullmq'
   return null
 }
 
 export function detectTangleOraclePattern(text: string): boolean {
   return (
     hasAny(text, ['tangle', 'tangle network', 'tangle native']) &&
-    hasAny(text, ['oracle', 'price feed', 'attestation', 'feeder', 'operator rewards', 'slashing', 'data source'])
+    hasAny(text, [
+      'oracle',
+      'price feed',
+      'attestation',
+      'feeder',
+      'operator rewards',
+      'slashing',
+      'data source',
+    ])
   )
 }
 
 export function detectTangleCustodyPattern(text: string): boolean {
   return (
     hasAny(text, ['tangle', 'tangle network', 'tangle native', 'frost']) &&
-    hasAny(text, ['custody', 'mpc', 'threshold signing', 'key resharing', 'policy engine', 'signing ceremony'])
+    hasAny(text, [
+      'custody',
+      'mpc',
+      'threshold signing',
+      'key resharing',
+      'policy engine',
+      'signing ceremony',
+    ])
   )
 }
 
@@ -112,7 +136,15 @@ export function detectEvmSupportApiPattern(text: string): boolean {
 }
 
 export function inferPartner(text: string): string | null {
-  if (hasAny(text, ['coinbase', 'base network', 'coinbase commerce', 'coinbase wallet', 'coinbase cdp'])) {
+  if (
+    hasAny(text, [
+      'coinbase',
+      'base network',
+      'coinbase commerce',
+      'coinbase wallet',
+      'coinbase cdp',
+    ])
+  ) {
     return 'coinbase'
   }
   if (hasAny(text, ['tangle', 'blueprint sdk', 'cargo tangle'])) return 'tangle'
@@ -125,14 +157,17 @@ export function inferPartner(text: string): string | null {
   if (hasAny(text, ['tempo', 'tempo l1', 'tempo chain', 'tempo payments'])) return 'tempo'
   if (hasAny(text, ['monad', 'monad chain', 'parallel evm'])) return 'monad'
   if (hasAny(text, ['sei', 'sei v2', 'sei evm', 'sei network'])) return 'sei-evm'
-  if (hasAny(text, ['avalanche', 'avax', 'c-chain', 'c chain', 'subnet', 'teleporter'])) return 'avalanche'
+  if (hasAny(text, ['avalanche', 'avax', 'c-chain', 'c chain', 'subnet', 'teleporter']))
+    return 'avalanche'
   if (hasAny(text, ['linea', 'consensys zkevm', 'linea mainnet'])) return 'linea'
-  if (hasAny(text, ['polygon', 'matic', 'polygon zkevm', 'agglayer', 'polygon pos'])) return 'polygon'
+  if (hasAny(text, ['polygon', 'matic', 'polygon zkevm', 'agglayer', 'polygon pos']))
+    return 'polygon'
   if (hasAny(text, ['hyperliquid', 'hyperevm', 'hype', 'perp dex'])) return 'hyperliquid'
   if (hasAny(text, ['usdc', 'circle usdc', 'cctp', 'circle api'])) return 'usdc-circle'
   if (hasAny(text, ['usdt', 'tether', 'trc-20', 'trc20'])) return 'tether'
   if (hasAny(text, ['lens protocol', 'lens chain', 'lens profile', 'lens feed'])) return 'lens'
-  if (hasAny(text, ['farcaster', 'warpcast', 'frames v2', 'frame sdk', 'neynar', 'mini app'])) return 'farcaster'
+  if (hasAny(text, ['farcaster', 'warpcast', 'frames v2', 'frame sdk', 'neynar', 'mini app']))
+    return 'farcaster'
   return null
 }
 

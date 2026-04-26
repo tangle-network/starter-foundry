@@ -26,7 +26,7 @@ interface BuildoutLike {
   sessionId: string
   initialPrompt: string | null
   scenarioId: string | null
-  addedPackages?: Array<{ pm: string; name: string }>
+  addedPackages?: { pm: string; name: string }[]
   addedDirs?: string[]
   outcome?: { allPass: boolean; blendedScore: number } | null
 }
@@ -46,7 +46,9 @@ interface CapabilityMapSummary {
 }
 
 /** Load the hand-curated package → capability map. */
-export function loadCapabilityMap(path = 'registry/package-to-capability.json'): PackageCapabilityMap {
+export function loadCapabilityMap(
+  path = 'registry/package-to-capability.json',
+): PackageCapabilityMap {
   if (!existsSync(path)) {
     return { schemaVersion: 1, mapping: {} }
   }
@@ -55,13 +57,16 @@ export function loadCapabilityMap(path = 'registry/package-to-capability.json'):
 }
 
 /** Classify a single buildout into inferred capabilities. Pure function. */
-export function inferCapabilities(buildout: BuildoutLike, map: PackageCapabilityMap): InferredCapability[] {
+export function inferCapabilities(
+  buildout: BuildoutLike,
+  map: PackageCapabilityMap,
+): InferredCapability[] {
   const out: InferredCapability[] = []
   const seen = new Set<string>()
 
   for (const p of buildout.addedPackages ?? []) {
     const entry = map.mapping[p.name]
-    if (!entry || !entry.capability) continue
+    if (!entry?.capability) continue
     const key = entry.capability
     if (seen.has(key)) continue
     seen.add(key)

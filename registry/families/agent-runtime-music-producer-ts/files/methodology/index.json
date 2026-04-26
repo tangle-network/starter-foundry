@@ -1,0 +1,29 @@
+{
+  "entries": [
+    {
+      "id": "mix-feedback",
+      "capability": "mix-feedback",
+      "path": "./mix-feedback.md",
+      "tags": ["methodology", "mixing", "tool-using"],
+      "version": "0.2.0",
+      "uses_tools": ["analyze-audio", "compare-tracks", "extract-stems", "arrangement-map"]
+    },
+    {
+      "id": "arrangement-review",
+      "capability": "arrangement-review",
+      "path": "./arrangement-review.md",
+      "tags": ["methodology", "arrangement", "tool-using"],
+      "version": "0.2.0",
+      "uses_tools": ["arrangement-map"]
+    },
+    {
+      "id": "listening-prompt",
+      "capability": "listening-prompt",
+      "path": "./listening-prompt.md",
+      "tags": ["methodology", "listening", "voice-first", "tool-using"],
+      "version": "0.2.0",
+      "uses_tools": ["find-references", "analyze-audio", "compare-tracks"],
+      "providedBy": "agent-tools/phony-voice"
+    }
+  ]
+}

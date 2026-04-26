@@ -17,11 +17,12 @@
  * wording across their codebase. This function is the single supported entrypoint.
  */
 
+import type { ComposeResult, ComposeSpec, WorkspaceSpec } from '../types.js'
+
+import { getComposedScaffoldContext } from './agent-context.js'
 import { composeStarter } from './compose.js'
 import { planPrompt } from './prompt-planner.js'
 import { composeWorkspace, type ComposeWorkspaceResult } from './workspace.js'
-import { getComposedScaffoldContext } from './agent-context.js'
-import type { ComposeResult, ComposeSpec, WorkspaceSpec } from '../types.js'
 
 export interface ComposeFromPromptOptions {
   /** Free-text user prompt — drives family routing and industry detection. */
@@ -75,7 +76,7 @@ export async function composeFromPrompt(
   }
 
   if (plan.kind === 'workspace') {
-    const spec = plan.spec as WorkspaceSpec
+    const spec = plan.spec
     let result: ComposeWorkspaceResult
     try {
       result = await composeWorkspace({ spec, outDir })

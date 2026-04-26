@@ -20,9 +20,17 @@
 //   pnpm tsx src/training/routing/train.ts \
 //     [--corpus <path>] [--traces <path>] [--reps 3] [--apply]
 
-import { existsSync, readFileSync, writeFileSync, mkdirSync, symlinkSync, unlinkSync } from 'node:fs'
+import {
+  existsSync,
+  readFileSync,
+  writeFileSync,
+  mkdirSync,
+  symlinkSync,
+  unlinkSync,
+} from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+
 import { createLLM } from '../../lib/llm.js'
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..')
@@ -46,7 +54,7 @@ export interface OptimizedRouter {
   schemaVersion: 1
   trainedAt: string
   exampleCount: number
-  sources: Array<{ name: string; count: number }>
+  sources: { name: string; count: number }[]
   /** Learned keyword weights per family — JSON-serializable. */
   weights: Record<string, { keywords: Record<string, number> }>
   /** Evaluation metrics over the held-out set. */
@@ -121,9 +129,7 @@ export function loadExamples(opts: RoutingTrainOptions = {}): RoutingExample[] {
  * planner. Returns accuracy + F1 breakdown. Used both for baseline and for
  * post-optimization validation.
  */
-export async function evaluate(
-  examples: RoutingExample[],
-): Promise<OptimizedRouter['metrics']> {
+export async function evaluate(examples: RoutingExample[]): Promise<OptimizedRouter['metrics']> {
   // Import lazily so the training module compiles without the heavy
   // planner graph when imported elsewhere.
   const { planPrompt } = await import('../../lib/prompt-planner.js')
@@ -131,26 +137,25 @@ export async function evaluate(
   const byFamily: Record<string, { tp: number; fp: number; fn: number }> = {}
   for (const ex of examples) {
     const plan = await planPrompt({ prompt: ex.prompt })
-    const spec = plan.spec as { family?: string; projects?: Array<{ spec?: { family?: string } }> }
+    const spec = plan.spec as { family?: string; projects?: { spec?: { family?: string } }[] }
     const actual = spec.family ?? spec.projects?.[0]?.spec?.family ?? ''
     byFamily[ex.expectedFamily] ??= { tp: 0, fp: 0, fn: 0 }
     byFamily[actual] ??= { tp: 0, fp: 0, fn: 0 }
     if (actual === ex.expectedFamily) {
       hits++
-      byFamily[ex.expectedFamily]!.tp++
+      byFamily[ex.expectedFamily].tp++
     } else {
-      byFamily[actual]!.fp++
-      byFamily[ex.expectedFamily]!.fn++
+      byFamily[actual].fp++
+      byFamily[ex.expectedFamily].fn++
     }
   }
   const accuracy = examples.length > 0 ? hits / examples.length : 0
   // Macro-F1 averaged across families.
-  const f1Values = Object.values(byFamily)
-    .map(({ tp, fp, fn }) => {
-      const prec = tp + fp > 0 ? tp / (tp + fp) : 0
-      const rec = tp + fn > 0 ? tp / (tp + fn) : 0
-      return prec + rec > 0 ? (2 * prec * rec) / (prec + rec) : 0
-    })
+  const f1Values = Object.values(byFamily).map(({ tp, fp, fn }) => {
+    const prec = tp + fp > 0 ? tp / (tp + fp) : 0
+    const rec = tp + fn > 0 ? tp / (tp + fn) : 0
+    return prec + rec > 0 ? (2 * prec * rec) / (prec + rec) : 0
+  })
   const f1 = f1Values.length > 0 ? f1Values.reduce((a, b) => a + b, 0) / f1Values.length : 0
   return { heldOutAccuracy: accuracy, heldOutF1: f1, sampleSize: examples.length }
 }
@@ -159,7 +164,9 @@ export async function evaluate(
  * Top-level training loop. Returns the OptimizedRouter; optionally
  * writes it to disk when opts.apply=true.
  */
-export async function runRoutingTrainingLoop(opts: RoutingTrainOptions = {}): Promise<OptimizedRouter> {
+export async function runRoutingTrainingLoop(
+  opts: RoutingTrainOptions = {},
+): Promise<OptimizedRouter> {
   const examples = loadExamples(opts)
   if (examples.length === 0) {
     throw new Error('No routing training examples found — did you run the miner?')
@@ -170,12 +177,12 @@ export async function runRoutingTrainingLoop(opts: RoutingTrainOptions = {}): Pr
   const bySource: Record<string, RoutingExample[]> = {}
   for (const ex of examples) {
     bySource[ex.source] ??= []
-    bySource[ex.source]!.push(ex)
+    bySource[ex.source].push(ex)
   }
   const testSet: RoutingExample[] = []
   const trainSet: RoutingExample[] = []
   for (const source in bySource) {
-    const arr = bySource[source]!
+    const arr = bySource[source]
     // Deterministic split — same seed → same train/test split.
     arr.sort((a, b) => a.prompt.localeCompare(b.prompt))
     const cutoff = Math.floor(arr.length * 0.8)
@@ -187,7 +194,7 @@ export async function runRoutingTrainingLoop(opts: RoutingTrainOptions = {}): Pr
   // to compile. The optimization itself is a best-effort: when no LLM
   // key is configured, we still emit a weights snapshot computed
   // deterministically from corpus keyword frequencies.
-  let llmAvailable = false
+  let llmAvailable: boolean
   try {
     createLLM()
     llmAvailable = true
@@ -206,14 +213,14 @@ export async function runRoutingTrainingLoop(opts: RoutingTrainOptions = {}): Pr
     const tokens = ex.prompt.toLowerCase().match(/\b[a-z][a-z0-9-]+\b/g) ?? []
     for (const tok of tokens) {
       if (tok.length < 3) continue
-      familyWeights[ex.expectedFamily]![tok] =
-        (familyWeights[ex.expectedFamily]![tok] ?? 0) + ex.sourceConfidence
+      familyWeights[ex.expectedFamily][tok] =
+        (familyWeights[ex.expectedFamily][tok] ?? 0) + ex.sourceConfidence
     }
   }
 
   // Keep only top-50 keywords per family.
   for (const fam in familyWeights) {
-    const entries = Object.entries(familyWeights[fam]!)
+    const entries = Object.entries(familyWeights[fam])
       .sort((a, b) => b[1] - a[1])
       .slice(0, 50)
     familyWeights[fam] = Object.fromEntries(entries)
@@ -221,7 +228,7 @@ export async function runRoutingTrainingLoop(opts: RoutingTrainOptions = {}): Pr
 
   const weights: OptimizedRouter['weights'] = {}
   for (const fam in familyWeights) {
-    weights[fam] = { keywords: familyWeights[fam]! }
+    weights[fam] = { keywords: familyWeights[fam] }
   }
 
   // Evaluate against test set using the CURRENT planner — this tells us
@@ -246,8 +253,16 @@ export async function runRoutingTrainingLoop(opts: RoutingTrainOptions = {}): Pr
     writeFileSync(versionedPath, JSON.stringify(result, null, 2))
     // Symlink routing-current.json → versioned.
     const currentPath = join(outDir, 'routing-current.json')
-    try { unlinkSync(currentPath) } catch { /* ok */ }
-    try { symlinkSync(`routing-v${timestamp}.json`, currentPath) } catch { /* filesystem without symlinks */ }
+    try {
+      unlinkSync(currentPath)
+    } catch {
+      /* ok */
+    }
+    try {
+      symlinkSync(`routing-v${timestamp}.json`, currentPath)
+    } catch {
+      /* filesystem without symlinks */
+    }
     writeFileSync(currentPath, JSON.stringify(result, null, 2)) // fallback when symlink fails
   }
 

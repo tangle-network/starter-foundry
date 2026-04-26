@@ -12,14 +12,16 @@
 // (did the proposed edit actually drop the gap count on the next replay?).
 
 import { ax, type AxAIService } from '@ax-llm/ax'
+
 import { createLLM, isLLMAvailable } from '../lib/llm.js'
+
 import type { CounterfactualReport } from './replay.js'
 
 export interface GapCluster {
   /** Deterministic key. Usually a package-prefix or a semantic tag. */
   id: string
   /** Packages in this cluster, sorted by timesRemaining desc. */
-  packages: Array<{ name: string; timesRemaining: number; remainingOnFail: number }>
+  packages: { name: string; timesRemaining: number; remainingOnFail: number }[]
   /** Total install events the cluster represents. */
   totalTimesRemaining: number
 }
@@ -39,18 +41,42 @@ export interface GapProposal {
 
 // ---- deterministic clustering ----
 
-const CLUSTER_RULES: Array<{ id: string; test: (name: string) => boolean }> = [
+const CLUSTER_RULES: { id: string; test: (name: string) => boolean }[] = [
   { id: 'codemirror', test: (n) => n === 'codemirror' || n.startsWith('@codemirror/') },
   { id: 'tailwind', test: (n) => n === 'tailwindcss' || n.startsWith('@tailwindcss/') },
-  { id: 'shadcn', test: (n) => n === 'clsx' || n === 'class-variance-authority' || n === 'tailwind-merge' || n === 'lucide-react' },
-  { id: 'zk-primitives', test: (n) => n === 'snarkjs' || n === 'circomlibjs' || n === 'circomlib' || n.startsWith('@zk-kit/') },
-  { id: 'evm-clients', test: (n) => n === 'ethers' || n === 'viem' || n === 'wagmi' || n.startsWith('@rainbow-me/') },
+  {
+    id: 'shadcn',
+    test: (n) =>
+      n === 'clsx' ||
+      n === 'class-variance-authority' ||
+      n === 'tailwind-merge' ||
+      n === 'lucide-react',
+  },
+  {
+    id: 'zk-primitives',
+    test: (n) =>
+      n === 'snarkjs' || n === 'circomlibjs' || n === 'circomlib' || n.startsWith('@zk-kit/'),
+  },
+  {
+    id: 'evm-clients',
+    test: (n) => n === 'ethers' || n === 'viem' || n === 'wagmi' || n.startsWith('@rainbow-me/'),
+  },
   { id: 'solana-clients', test: (n) => n === '@solana/web3.js' || n.startsWith('@solana/') },
   { id: 'ai-sdk', test: (n) => n === 'ai' || n.startsWith('@ai-sdk/') },
   { id: 'date-utils', test: (n) => n === 'date-fns' || n === 'dayjs' || n === 'moment' },
-  { id: 'routing', test: (n) => n === 'react-router-dom' || n === 'react-router' || n.startsWith('@tanstack/react-router') },
-  { id: 'charts', test: (n) => n === 'recharts' || n === 'd3' || n.startsWith('@nivo/') || n === 'chart.js' },
-  { id: 'forms', test: (n) => n === 'react-hook-form' || n === 'zod' || n === '@hookform/resolvers' },
+  {
+    id: 'routing',
+    test: (n) =>
+      n === 'react-router-dom' || n === 'react-router' || n.startsWith('@tanstack/react-router'),
+  },
+  {
+    id: 'charts',
+    test: (n) => n === 'recharts' || n === 'd3' || n.startsWith('@nivo/') || n === 'chart.js',
+  },
+  {
+    id: 'forms',
+    test: (n) => n === 'react-hook-form' || n === 'zod' || n === '@hookform/resolvers',
+  },
 ]
 
 export function clusterGaps(report: CounterfactualReport): GapCluster[] {

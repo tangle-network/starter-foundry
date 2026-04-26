@@ -1,0 +1,83 @@
+{
+  "ts": "2026-04-26T00:49:59.513Z",
+  "opts": {
+    "tranche": 3,
+    "limit": 1,
+    "rlm": false,
+    "maxShots": 3,
+    "tcloud": true,
+    "tcloudIterations": 2,
+    "tcloudWallSec": 90,
+    "tcloudUsd": 2,
+    "dryRun": false,
+    "skipExisting": true
+  },
+  "counts": {
+    "total": 1,
+    "validateOk": 1,
+    "composeOnly": 0,
+    "composeFail": 0
+  },
+  "results": [
+    {
+      "familyId": "agent-runtime-physics-research-ts",
+      "composeOk": true,
+      "validateOk": true,
+      "durationMs": 44106,
+      "promotedToRegistry": false,
+      "tcloudVerdict": {
+        "verdict": "pass",
+        "iterations": 1,
+        "wallMs": 44100,
+        "usd": 0.081588
+      },
+      "tcloudCriteria": [
+        {
+          "iteration": 1,
+          "name": "all-gates",
+          "ok": true
+        }
+      ],
+      "proposalDir": "/Users/drew/webb/starter-foundry/.evolve/family-proposals/agent-runtime-physics-research-ts",
+      "proposalMode": "tcloud-agent",
+      "composedDir": "/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/batch-agent-runtime-agent-runtime-physics-research-ts-7MUIBZ",
+      "validateChecks": [
+        {
+          "ok": true,
+          "check": {
+            "type": "file-exists",
+            "path": "system-prompt.md"
+          }
+        },
+        {
+          "ok": true,
+          "check": {
+            "type": "file-exists",
+            "path": "templates/index.json"
+          }
+        },
+        {
+          "ok": true,
+          "check": {
+            "type": "file-exists",
+            "path": "wrangler.toml"
+          }
+        },
+        {
+          "ok": true,
+          "check": {
+            "type": "prompt-frontmatter-valid",
+            "path": "system-prompt.md"
+          }
+        },
+        {
+          "ok": true,
+          "check": {
+            "type": "template-index-valid",
+            "path": "templates/index.json"
+          }
+        }
+      ]
+    }
+  ]
+}

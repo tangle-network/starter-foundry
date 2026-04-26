@@ -1,0 +1,180 @@
+{
+  "id": "agent-runtime-business-partner-ts",
+  "description": "Executive thinking-partner agent bundle \u2014 co-founder / executive coach. Runs a weekly review cadence, designs OKRs, and maintains a decision journal. Composes the agent-runtime substrate with the research-corpus layer (arxiv / Semantic Scholar / OpenAlex / Crossref) so any market or strategy claim is citation-grounded rather than hallucinated. Advisory only \u2014 never replaces the operator's lawyer, CPA, or board.",
+  "tags": [
+    "agent-runtime",
+    "executive-coaching",
+    "advisory",
+    "weekly-review",
+    "okrs",
+    "decision-journal",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-tools:research-corpus",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-business-partner",
+    "agentName": "business-partner",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "research:paper-search",
+          "research:citation-graph"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "weekly-review-protocol",
+      "okr-design",
+      "decision-journal"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "moderate",
+    "advisoryOnly": true,
+    "schedule": [
+      {
+        "id": "scheduled-1",
+        "cron": "0 14 * * 1",
+        "capability": "weekly-review-protocol"
+      }
+    ],
+    "outboundDomains": [
+      "api.tangle.tools",
+      "export.arxiv.org",
+      "api.semanticscholar.org",
+      "api.openalex.org",
+      "api.crossref.org"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/weekly-review-protocol.md",
+      "target": "methodology/weekly-review-protocol.md"
+    },
+    {
+      "source": "files/methodology/okr-design.md",
+      "target": "methodology/okr-design.md"
+    },
+    {
+      "source": "files/methodology/decision-journal.md",
+      "target": "methodology/decision-journal.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "system-prompt.md"
+    },
+    {
+      "type": "file-exists",
+      "path": "methodology/index.json"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "system-prompt.md"
+    },
+    {
+      "type": "methodology-index-valid",
+      "path": "methodology/index.json"
+    },
+    {
+      "type": "schedule-valid",
+      "path": "manifest.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "keywords": [
+    "business-partner",
+    "business partner",
+    "co-founder agent",
+    "executive coach",
+    "executive-coaching",
+    "weekly-review",
+    "okrs",
+    "decision-journal",
+    "operating-cadence",
+    "north-star"
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "business-partner",
+      "business partner",
+      "co-founder-agent",
+      "co-founder agent",
+      "executive-coach",
+      "executive coach"
+    ],
+    "tier2": [
+      "strategy",
+      "operating-cadence",
+      "weekly-review",
+      "OKRs",
+      "okr-design",
+      "decision-journal",
+      "north-star"
+    ],
+    "tier3": [
+      "agent",
+      "coach"
+    ],
+    "archetypes": [
+      "agent-in-sandbox",
+      "advisory-agent"
+    ]
+  }
+}

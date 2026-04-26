@@ -1,0 +1,95 @@
+{
+  "id": "agent-runtime-fitness-coach-ts",
+  "description": "Voice-first personal fitness coach agent bundle — general strength & conditioning programming, technique cues, and deload protocols. Explicitly NOT a licensed physical therapist, not a doctor, not a registered dietitian. Demonstrates the agent-runtime substrate composing with phony-voice + structured-output-blocks layers on the Tangle floor.",
+  "tags": [
+    "agent-runtime",
+    "fitness-coach",
+    "personal-trainer",
+    "voice-first",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-tools:phony-voice",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-fitness-coach",
+    "agentName": "fitness-coach",
+    "allowedDomains": ["api.tangle.tools"],
+    "allowedEnv": ["TANGLE_ROUTER_KEY", "PHONY_API_KEY"],
+    "publicVars": ["AGENT_NAME"],
+    "routes": [
+      { "path": "/api/chat", "auth": "bearer", "callsTools": ["voice-stt", "voice-tts", "weekly-program", "form-check", "deload"] },
+      { "path": "/api/health", "auth": "none", "callsTools": [] }
+    ],
+    "declaredCapabilities": ["weekly-program", "form-check-protocol", "deload-prompt"],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    }
+  },
+  "files": [
+    { "source": "files/system-prompt.md", "target": "system-prompt.md" },
+    { "source": "files/templates/index.json", "target": "templates/index.json" },
+    { "source": "files/templates/weekly-program.md", "target": "templates/weekly-program.md" },
+    { "source": "files/templates/form-check-protocol.md", "target": "templates/form-check-protocol.md" },
+    { "source": "files/templates/deload-prompt.md", "target": "templates/deload-prompt.md" },
+    { "source": "files/wrangler.toml", "target": "wrangler.toml" },
+    { "source": "files/README.md", "target": "README.md" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "system-prompt.md" },
+    { "type": "file-exists", "path": "templates/index.json" },
+    { "type": "file-exists", "path": "wrangler.toml" },
+    { "type": "prompt-frontmatter-valid", "path": "system-prompt.md" },
+    { "type": "template-index-valid", "path": "templates/index.json" },
+    { "type": "cron-syntax-valid", "path": "wrangler.toml" }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": ["system-prompt.md"],
+    "extensionPoints": ["templates/", "src/lib/tools/"]
+  },
+  "keywords": [
+    "fitness-coach",
+    "personal-trainer",
+    "workout-coach",
+    "strength-training",
+    "rpe",
+    "deload",
+    "voice"
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "fitness-coach",
+      "fitness coach",
+      "personal-trainer-agent",
+      "personal trainer agent",
+      "workout-coach",
+      "workout coach",
+      "strength-coach",
+      "strength coach"
+    ],
+    "tier2": [
+      "macros",
+      "rpe",
+      "rir",
+      "progressive-overload",
+      "progressive overload",
+      "deload",
+      "mobility",
+      "hypertrophy",
+      "periodization",
+      "form check"
+    ],
+    "tier3": ["coaching agent", "trainer agent"],
+    "archetypes": ["agent-in-sandbox", "coaching-agent", "voice-first"]
+  }
+}

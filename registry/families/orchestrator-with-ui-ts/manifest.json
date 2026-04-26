@@ -1,0 +1,91 @@
+{
+  "id": "orchestrator-with-ui-ts",
+  "description": "Next.js + sandbox-ui multi-agent dashboard scaffold. Lists all agents in a rail sidebar, opens per-agent chat tabs, surfaces shared artifact + billing + usage panes. Composes with N agent-runtime bundles via the orchestrator pattern. NOTE: lib/parse-blocks.ts and lib/blocks-to-artifacts.tsx are provided by the ui-adapter:blocks-renderer layer at compose time — they are NOT duplicated in this family's files[] but ARE asserted by validationChecks because the layer composes them in.",
+  "tags": [
+    "orchestrator-ui",
+    "next",
+    "typescript",
+    "sandbox-ui",
+    "multi-agent",
+    "dashboard"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "agent-runtime-ui"
+  },
+  "includes": [
+    "ui-adapter:blocks-renderer"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-ui-orchestrator",
+    "appName": "agent-fleet",
+    "agentRoster": [
+      "agent-runtime-cmo-advisor-ts",
+      "agent-runtime-recruiter-ts",
+      "agent-runtime-business-partner-ts"
+    ],
+    "sandboxApiUrl": "https://api.tangle.tools",
+    "port": 3000
+  },
+  "files": [
+    { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/next.config.mjs", "target": "next.config.mjs" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/tailwind.config.cjs", "target": "tailwind.config.cjs" },
+    { "source": "files/postcss.config.cjs", "target": "postcss.config.cjs" },
+    { "source": "files/README.md", "target": "README.md" },
+    { "source": "files/app/layout.tsx", "target": "app/layout.tsx" },
+    { "source": "files/app/page.tsx", "target": "app/page.tsx" },
+    { "source": "files/app/globals.css", "target": "app/globals.css" },
+    { "source": "files/app/agents/[id]/page.tsx", "target": "app/agents/[id]/page.tsx" },
+    { "source": "files/src/lib/agent-roster.ts", "target": "src/lib/agent-roster.ts" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "package.json" },
+    { "type": "file-exists", "path": "next.config.mjs" },
+    { "type": "file-exists", "path": "tsconfig.json" },
+    { "type": "file-exists", "path": "app/layout.tsx" },
+    { "type": "file-exists", "path": "app/page.tsx" },
+    { "type": "file-exists", "path": "app/agents/[id]/page.tsx" },
+    { "type": "file-exists", "path": "src/lib/agent-roster.ts" },
+    { "type": "file-exists", "path": "src/lib/parse-blocks.ts" },
+    { "type": "file-exists", "path": "src/lib/blocks-to-artifacts.tsx" }
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "orchestrator-ui",
+      "agent fleet",
+      "multi-agent dashboard",
+      "agent dashboard"
+    ],
+    "tier2": [
+      "agent roster",
+      "agent pool",
+      "fleet manager",
+      "multi-agent app",
+      "sandbox dashboard"
+    ],
+    "archetypes": [
+      "orchestrator-with-ui",
+      "multi-agent-app",
+      "agent-fleet"
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pnpm dev",
+      "pnpm build",
+      "pnpm start"
+    ],
+    "entrypoints": [
+      "app/page.tsx",
+      "app/agents/[id]/page.tsx"
+    ],
+    "extensionPoints": [
+      "lib/agent-roster.ts",
+      "app/agents/[id]/page.tsx",
+      "lib/blocks-to-artifacts.tsx"
+    ]
+  }
+}

@@ -127,6 +127,22 @@ const FAMILY_PROMPTS: Record<string, string> = {
   "risczero-zkvm": "Build a RISC Zero zkVM prover service that proves Rust programs and uses the Bonsai proving network",
   "sp1-zkvm": "Build a Succinct SP1 zkVM with the Succinct prover network and an on-chain SP1 Gnark verifier",
   "arkworks-prover": "Build a custom SNARK circuit from scratch with arkworks hand-rolled r1cs for a research-grade zk proof",
+  "agent-runtime-research": "Build a research-assistant agent that reads templates from its filesystem and runs daily literature surveys",
+  "agent-runtime-therapist-ts": "Build a voice-first peer-support companion agent that runs PHQ-9 / GAD-7 screeners and escalates to crisis hotlines",
+  "agent-runtime-tax-ts": "Build a tax-prep companion agent with Circular 230 disclaimer that gathers documents and routes to a CPA for filing",
+  "agent-runtime-cmo-advisor-ts": "Build a CMO advisor agent for marketing strategy: positioning canvas, channel experiment design, ICP deep dives",
+  "agent-runtime-wealth-manager-ts": "Build a personal wealth manager agent: asset allocation review, tax-loss harvesting, retirement projection (not a fiduciary)",
+  "agent-runtime-legal-counsel-ts": "Build a legal counsel agent for contract redlines, NDA + MSA reviews (not a lawyer, no attorney-client privilege)",
+  "agent-runtime-music-producer-ts": "Build a music producer agent with voice mode for arrangement review, mix feedback, and weekly listening prompts",
+  "agent-runtime-recruiter-ts": "Build a technical recruiter agent for JD drafting, screening rubrics, and interview-loop design with bias-safeguards",
+  "agent-runtime-real-estate-ts": "Build a real estate agent for property advisor with comp analysis, cap rate worksheets, and 1031 exchange",
+  "agent-runtime-fitness-coach-ts": "Build a fitness coach agent for weekly programming, form check protocols, and deload prompts (not a PT, not medical advice)",
+  "agent-runtime-novelist-coach-ts": "Build a novelist coach agent for scene cards, beat sheet review, and voice audits — creative collaborator, artist always wins",
+  "agent-runtime-business-partner-ts": "Build a business partner agent for weekly review protocol, OKR design, and decision journal — executive thinking partner",
+  "agent-runtime-language-tutor-ts": "Build a language tutor agent with daily conversation prompts, vocabulary drill, and shadowing protocol — Krashen comprehensible input",
+  "agent-with-ui-ts": "Build an agent-with-ui single-agent app with sandbox-ui chat surface and artifact pane",
+  "orchestrator-with-ui-ts": "Build an orchestrator-with-ui-ts agent fleet manager scaffold using sandbox-ui dashboard primitives",
+  "sandbox-app-ts": "Build a sandbox-app sandbox workspace on tangle sandbox SDK with editor, file tree, and terminal",
 };
 
 for (const [family, prompt] of Object.entries(FAMILY_PROMPTS)) {

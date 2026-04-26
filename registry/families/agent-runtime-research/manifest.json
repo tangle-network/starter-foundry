@@ -1,0 +1,84 @@
+{
+  "id": "agent-runtime-research",
+  "description": "Greenfield agent-runtime bundle: research-assistant agent that reads templates from its own filesystem, runs daily cron, and emits structured proposal blocks. Demonstrates the full agent-runtime substrate end-to-end with no external extraction source.",
+  "tags": [
+    "agent-runtime",
+    "research",
+    "cloudflare-worker",
+    "greenfield"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "slots": {
+    "agent-base": {
+      "options": ["agent-base:tangle"],
+      "default": "agent-base:tangle"
+    },
+    "agent-tools": {
+      "options": [
+        "agent-tools:research-corpus",
+        "agent-tools:phony-voice",
+        "agent-tools:clinical-screeners"
+      ],
+      "default": "agent-tools:research-corpus"
+    },
+    "agent-output": {
+      "options": ["agent-output:blocks"],
+      "default": "agent-output:blocks"
+    }
+  },
+  "defaults": {
+    "projectType": "agent-runtime-research",
+    "agentName": "research-assistant",
+    "allowedDomains": ["api.tangle.tools"],
+    "allowedEnv": [],
+    "publicVars": ["AGENT_NAME"],
+    "routes": [
+      { "path": "/api/chat", "auth": "bearer", "callsTools": ["search", "summarize"] },
+      { "path": "/api/health", "auth": "none", "callsTools": [] }
+    ],
+    "declaredCapabilities": ["literature-survey", "proposal-drafting"],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    }
+  },
+  "files": [
+    { "source": "files/system-prompt.md", "target": "system-prompt.md" },
+    { "source": "files/templates/index.json", "target": "templates/index.json" },
+    { "source": "files/templates/literature-survey.md", "target": "templates/literature-survey.md" },
+    { "source": "files/templates/proposal-drafting.md", "target": "templates/proposal-drafting.md" },
+    { "source": "files/wrangler.toml", "target": "wrangler.toml" },
+    { "source": "files/README.md", "target": "README.md" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "system-prompt.md" },
+    { "type": "file-exists", "path": "templates/index.json" },
+    { "type": "file-exists", "path": "wrangler.toml" },
+    { "type": "prompt-frontmatter-valid", "path": "system-prompt.md" },
+    { "type": "template-index-valid", "path": "templates/index.json" },
+    { "type": "cron-syntax-valid", "path": "wrangler.toml" }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": ["system-prompt.md"],
+    "extensionPoints": ["templates/", "skills/"]
+  },
+  "keywords": [
+    "research",
+    "literature-survey",
+    "proposal",
+    "agent",
+    "sandbox"
+  ],
+  "tieredKeywords": {
+    "tier1": ["research-agent", "literature-survey"],
+    "tier2": ["research", "proposal", "draft"],
+    "tier3": ["agent", "assistant"],
+    "archetypes": ["agent-in-sandbox"]
+  }
+}

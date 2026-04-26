@@ -1,0 +1,72 @@
+{
+  "id": "agent-runtime-tax-ts",
+  "description": "Tax-prep agent bundle — drafts filings, tracks deadlines, never substitutes for a CPA. Demonstrates the agent-runtime substrate composing on a regulated-domain role with structured-output blocks (:::filing, :::deadline, :::question) and a strict refusal contract.",
+  "tags": [
+    "agent-runtime",
+    "tax",
+    "fintech",
+    "regulated-domain",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-tax",
+    "agentName": "tax-prep-companion",
+    "allowedDomains": ["api.tangle.tools", "irs.gov"],
+    "allowedEnv": ["TANGLE_ROUTER_KEY"],
+    "publicVars": ["AGENT_NAME"],
+    "routes": [
+      { "path": "/api/chat", "auth": "bearer", "callsTools": ["form-fill", "deadline-lookup"] },
+      { "path": "/api/health", "auth": "none", "callsTools": [] }
+    ],
+    "declaredCapabilities": [
+      "filing-drafting",
+      "deadline-tracking",
+      "form-mapping",
+      "compliance-disclaimer"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "circular230Notice": true
+  },
+  "files": [
+    { "source": "files/system-prompt.md", "target": "system-prompt.md" },
+    { "source": "files/templates/index.json", "target": "templates/index.json" },
+    { "source": "files/templates/filing-1040.md", "target": "templates/filing-1040.md" },
+    { "source": "files/templates/deadlines.md", "target": "templates/deadlines.md" },
+    { "source": "files/templates/refusal-protocol.md", "target": "templates/refusal-protocol.md" },
+    { "source": "files/wrangler.toml", "target": "wrangler.toml" },
+    { "source": "files/README.md", "target": "README.md" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "system-prompt.md" },
+    { "type": "file-exists", "path": "templates/index.json" },
+    { "type": "file-exists", "path": "wrangler.toml" },
+    { "type": "prompt-frontmatter-valid", "path": "system-prompt.md" },
+    { "type": "template-index-valid", "path": "templates/index.json" },
+    { "type": "cron-syntax-valid", "path": "wrangler.toml" }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": ["system-prompt.md"],
+    "extensionPoints": ["templates/", "src/lib/tools/"]
+  },
+  "keywords": ["tax", "irs", "1040", "filing", "deadline", "cpa"],
+  "tieredKeywords": {
+    "tier1": ["tax-prep", "tax-filer", "irs-filing"],
+    "tier2": ["1040", "tax-deadline", "schedule-c", "k-1", "estimated-tax"],
+    "tier3": ["tax", "filing", "deadline", "cpa"],
+    "archetypes": ["agent-in-sandbox", "regulated-domain-agent"]
+  }
+}

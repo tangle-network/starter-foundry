@@ -1,0 +1,36 @@
+{
+  "id": "blocks",
+  "slot": "agent-output",
+  "description": "Structured-output-blocks parser. Lets agents emit `:::proposal`, `:::filing`, `:::artifact`, `:::screener-result`, `:::escalation`, `:::survey` blocks inside streaming chat — downstream UIs parse the side-channel and render typed cards. Stack on every agent-runtime bundle that emits structured deliverables (most do).",
+  "appliesTo": [
+    "agent-runtime-research",
+    "agent-runtime-therapist-ts",
+    "agent-runtime-music-producer-ts",
+    "agent-runtime-tax-ts",
+    "agent-runtime-legal-counsel-ts",
+    "agent-runtime-cmo-advisor-ts",
+    "agent-runtime-wealth-manager-ts",
+    "agent-runtime-recruiter-ts",
+    "agent-runtime-real-estate-ts",
+    "agent-runtime-fitness-coach-ts",
+    "agent-runtime-novelist-coach-ts",
+    "agent-runtime-business-partner-ts",
+    "agent-runtime-language-tutor-ts",
+    "agent-runtime-friend-ts",
+    "agent-runtime-team-marketing"
+  ],
+  "provides": ["output:blocks-grammar"],
+  "defaults": {
+    "structuredOutputBlocks": true,
+    "blockTypes": ["proposal", "filing", "artifact", "screener-result", "escalation", "survey"]
+  },
+  "files": [
+    { "source": "files/lib/blocks.ts", "target": "src/lib/blocks.ts" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "src/lib/blocks.ts" }
+  ],
+  "contextHints": {
+    "extensionPoints": ["src/lib/blocks.ts"]
+  }
+}

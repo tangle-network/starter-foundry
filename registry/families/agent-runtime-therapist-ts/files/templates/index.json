@@ -1,0 +1,35 @@
+{
+  "entries": [
+    {
+      "id": "listening-protocol",
+      "capability": "peer-support-listening",
+      "path": "./listening-protocol.md",
+      "tags": ["methodology", "active-listening"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "phq-9-screener",
+      "capability": "phq9-screener",
+      "path": "./screener-phq9.md",
+      "tags": ["screener", "depression", "validated"],
+      "version": "0.1.0",
+      "providedBy": "agent-tools/clinical-screeners"
+    },
+    {
+      "id": "gad-7-screener",
+      "capability": "gad7-screener",
+      "path": "./screener-gad7.md",
+      "tags": ["screener", "anxiety", "validated"],
+      "version": "0.1.0",
+      "providedBy": "agent-tools/clinical-screeners"
+    },
+    {
+      "id": "escalation-protocol",
+      "capability": "crisis-escalation",
+      "path": "./escalation-protocol.md",
+      "tags": ["safety", "escalation", "mandatory"],
+      "version": "0.1.0",
+      "providedBy": "agent-tools/clinical-screeners"
+    }
+  ]
+}

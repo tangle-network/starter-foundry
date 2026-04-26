@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "scene-card-protocol",
+      "capability": "scene-card-protocol",
+      "path": "./scene-card-protocol.md",
+      "tags": ["methodology", "scene-construction", "craft"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "beat-sheet-review",
+      "capability": "beat-sheet-review",
+      "path": "./beat-sheet-review.md",
+      "tags": ["methodology", "structure", "save-the-cat"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "voice-audit",
+      "capability": "voice-audit",
+      "path": "./voice-audit.md",
+      "tags": ["methodology", "voice", "POV", "line-edit"],
+      "version": "0.1.0"
+    }
+  ]
+}

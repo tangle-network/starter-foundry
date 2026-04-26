@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "positioning-canvas",
+      "capability": "positioning-strategy",
+      "path": "./positioning-canvas.md",
+      "tags": ["methodology", "positioning", "crossing-the-chasm"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "channel-experiment-design",
+      "capability": "channel-experiment-design",
+      "path": "./channel-experiment-design.md",
+      "tags": ["methodology", "growth", "experiment-design"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "icp-deep-dive",
+      "capability": "icp-research",
+      "path": "./icp-deep-dive.md",
+      "tags": ["methodology", "icp", "jtbd", "customer-research"],
+      "version": "0.1.0"
+    }
+  ]
+}

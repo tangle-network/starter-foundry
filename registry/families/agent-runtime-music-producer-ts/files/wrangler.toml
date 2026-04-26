@@ -1,0 +1,19 @@
+name = "music-producer"
+main = "src/index.ts"
+compatibility_date = "2026-04-01"
+
+[vars]
+AGENT_NAME = "music-producer"
+LLM_ROUTER_URL = "https://router.tangle.tools"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "<replace-me>"
+database_id = "<replace-me>"
+
+[[kv_namespaces]]
+binding = "VAULT"
+id = "<replace-me>"
+
+[triggers]
+crons = ["0 16 * * *"]

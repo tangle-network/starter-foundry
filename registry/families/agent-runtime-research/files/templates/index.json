@@ -1,0 +1,18 @@
+{
+  "entries": [
+    {
+      "id": "literature-survey",
+      "capability": "literature-survey",
+      "path": "./literature-survey.md",
+      "tags": ["methodology", "citations"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "proposal-drafting",
+      "capability": "proposal-drafting",
+      "path": "./proposal-drafting.md",
+      "tags": ["methodology", "structure"],
+      "version": "0.1.0"
+    }
+  ]
+}

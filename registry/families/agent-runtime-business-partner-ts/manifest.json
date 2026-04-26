@@ -1,0 +1,103 @@
+{
+  "id": "agent-runtime-business-partner-ts",
+  "description": "Executive thinking-partner agent bundle — co-founder / executive coach. Runs a weekly review cadence, designs OKRs, and maintains a decision journal. Composes the agent-runtime substrate with the research-corpus layer (arxiv / Semantic Scholar / OpenAlex / Crossref) so any market or strategy claim is citation-grounded rather than hallucinated. Advisory only — never replaces the operator's lawyer, CPA, or board.",
+  "tags": [
+    "agent-runtime",
+    "executive-coaching",
+    "advisory",
+    "weekly-review",
+    "okrs",
+    "decision-journal",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-tools:research-corpus",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-business-partner",
+    "agentName": "business-partner",
+    "allowedDomains": [
+      "api.tangle.tools",
+      "export.arxiv.org",
+      "api.semanticscholar.org",
+      "api.openalex.org",
+      "api.crossref.org"
+    ],
+    "allowedEnv": ["TANGLE_ROUTER_KEY"],
+    "publicVars": ["AGENT_NAME"],
+    "routes": [
+      { "path": "/api/chat", "auth": "bearer", "callsTools": ["research:paper-search", "research:citation-graph"] },
+      { "path": "/api/health", "auth": "none", "callsTools": [] }
+    ],
+    "declaredCapabilities": ["weekly-review-protocol", "okr-design", "decision-journal"],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "moderate",
+    "advisoryOnly": true
+  },
+  "files": [
+    { "source": "files/system-prompt.md", "target": "system-prompt.md" },
+    { "source": "files/templates/index.json", "target": "templates/index.json" },
+    { "source": "files/templates/weekly-review-protocol.md", "target": "templates/weekly-review-protocol.md" },
+    { "source": "files/templates/okr-design.md", "target": "templates/okr-design.md" },
+    { "source": "files/templates/decision-journal.md", "target": "templates/decision-journal.md" },
+    { "source": "files/wrangler.toml", "target": "wrangler.toml" },
+    { "source": "files/README.md", "target": "README.md" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "system-prompt.md" },
+    { "type": "file-exists", "path": "templates/index.json" },
+    { "type": "file-exists", "path": "wrangler.toml" },
+    { "type": "prompt-frontmatter-valid", "path": "system-prompt.md" },
+    { "type": "template-index-valid", "path": "templates/index.json" },
+    { "type": "cron-syntax-valid", "path": "wrangler.toml" }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": ["system-prompt.md"],
+    "extensionPoints": ["templates/", "src/lib/tools/"]
+  },
+  "keywords": [
+    "business-partner",
+    "business partner",
+    "co-founder agent",
+    "executive coach",
+    "executive-coaching",
+    "weekly-review",
+    "okrs",
+    "decision-journal",
+    "operating-cadence",
+    "north-star"
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "business-partner",
+      "business partner",
+      "co-founder-agent",
+      "co-founder agent",
+      "executive-coach",
+      "executive coach"
+    ],
+    "tier2": [
+      "strategy",
+      "operating-cadence",
+      "weekly-review",
+      "OKRs",
+      "okr-design",
+      "decision-journal",
+      "north-star"
+    ],
+    "tier3": ["agent", "advisor", "coach"],
+    "archetypes": ["agent-in-sandbox", "advisory-agent"]
+  }
+}

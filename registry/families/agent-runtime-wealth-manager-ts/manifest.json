@@ -1,0 +1,81 @@
+{
+  "id": "agent-runtime-wealth-manager-ts",
+  "description": "Personal wealth-manager agent bundle — peer-style information on asset allocation, tax-loss harvesting, and retirement projection. Explicitly NOT a registered investment adviser, NOT a fiduciary, NOT licensed financial advice. Demonstrates the agent-runtime substrate composing on a regulated-finance role with structured-output blocks (:::artifact, :::escalation) and a hard refusal contract for actionable trade picks.",
+  "tags": [
+    "agent-runtime",
+    "personal-finance",
+    "wealth-management",
+    "regulated-finance",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-wealth-manager",
+    "agentName": "wealth-manager",
+    "allowedDomains": ["api.tangle.tools", "sec.gov", "irs.gov"],
+    "allowedEnv": ["TANGLE_ROUTER_KEY"],
+    "publicVars": ["AGENT_NAME"],
+    "routes": [
+      { "path": "/api/chat", "auth": "bearer", "callsTools": ["allocation-review", "tax-lot-scan", "projection"] },
+      { "path": "/api/health", "auth": "none", "callsTools": [] }
+    ],
+    "declaredCapabilities": [
+      "asset-allocation-review",
+      "tax-loss-harvesting",
+      "retirement-projection",
+      "regulatory-disclaimer"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "disclaimerRequired": true,
+    "notFiduciary": true,
+    "regulatoryDisclaimer": true
+  },
+  "files": [
+    { "source": "files/system-prompt.md", "target": "system-prompt.md" },
+    { "source": "files/templates/index.json", "target": "templates/index.json" },
+    { "source": "files/templates/allocation-review.md", "target": "templates/allocation-review.md" },
+    { "source": "files/templates/tax-loss-harvest-protocol.md", "target": "templates/tax-loss-harvest-protocol.md" },
+    { "source": "files/templates/retirement-projection.md", "target": "templates/retirement-projection.md" },
+    { "source": "files/wrangler.toml", "target": "wrangler.toml" },
+    { "source": "files/README.md", "target": "README.md" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "system-prompt.md" },
+    { "type": "file-exists", "path": "templates/index.json" },
+    { "type": "file-exists", "path": "wrangler.toml" },
+    { "type": "prompt-frontmatter-valid", "path": "system-prompt.md" },
+    { "type": "template-index-valid", "path": "templates/index.json" },
+    { "type": "cron-syntax-valid", "path": "wrangler.toml" }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": ["system-prompt.md"],
+    "extensionPoints": ["templates/", "src/lib/tools/"]
+  },
+  "keywords": [
+    "wealth",
+    "investing",
+    "asset-allocation",
+    "tax-loss-harvesting",
+    "retirement",
+    "rebalancing"
+  ],
+  "tieredKeywords": {
+    "tier1": ["wealth-manager", "wealth manager", "financial-planner-agent", "financial planner", "personal-cfo", "personal cfo", "personal wealth"],
+    "tier2": ["asset-allocation", "asset allocation", "tax-loss-harvesting", "tax loss harvesting", "retirement-planning", "retirement planning", "estate", "529"],
+    "tier3": ["investing", "portfolio", "rebalancing", "ira"],
+    "archetypes": ["agent-in-sandbox", "advisory-agent", "regulated-finance"]
+  }
+}

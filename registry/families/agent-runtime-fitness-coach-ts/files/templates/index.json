@@ -1,0 +1,26 @@
+{
+  "entries": [
+    {
+      "id": "weekly-program",
+      "capability": "weekly-program",
+      "path": "./weekly-program.md",
+      "tags": ["methodology", "programming", "rpe", "volume-landmarks"],
+      "version": "0.1.0",
+      "providedBy": "agent-tools/phony-voice"
+    },
+    {
+      "id": "form-check-protocol",
+      "capability": "form-check-protocol",
+      "path": "./form-check-protocol.md",
+      "tags": ["methodology", "technique", "five-point-check"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "deload-prompt",
+      "capability": "deload-prompt",
+      "path": "./deload-prompt.md",
+      "tags": ["protocol", "recovery", "fatigue-management"],
+      "version": "0.1.0"
+    }
+  ]
+}

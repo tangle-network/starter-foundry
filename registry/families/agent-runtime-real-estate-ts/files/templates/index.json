@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "comp-analysis",
+      "capability": "comp-analysis",
+      "path": "./comp-analysis.md",
+      "tags": ["methodology", "cma", "valuation"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "cap-rate-worksheet",
+      "capability": "cap-rate-worksheet",
+      "path": "./cap-rate-worksheet.md",
+      "tags": ["methodology", "investment", "noi", "cash-on-cash"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "offer-strategy",
+      "capability": "offer-strategy",
+      "path": "./offer-strategy.md",
+      "tags": ["methodology", "negotiation", "contingencies"],
+      "version": "0.1.0"
+    }
+  ]
+}

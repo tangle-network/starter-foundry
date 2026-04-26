@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "contract-redline-protocol",
+      "capability": "contract-redline",
+      "path": "./contract-redline-protocol.md",
+      "tags": ["methodology", "redline", "clause-review"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "nda-checklist",
+      "capability": "nda-review",
+      "path": "./nda-checklist.md",
+      "tags": ["checklist", "nda", "confidentiality"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "msa-checklist",
+      "capability": "msa-review",
+      "path": "./msa-checklist.md",
+      "tags": ["checklist", "msa", "services-agreement"],
+      "version": "0.1.0"
+    }
+  ]
+}

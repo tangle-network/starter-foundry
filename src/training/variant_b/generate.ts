@@ -1,15 +1,17 @@
 // Public entrypoint: generateIdeas({ registryRoot, tracesPath })
 //
 // Scans the traces directory for the most recent trace file, rehydrates
-// Trace[] from it, then invokes the generate node. The scripts/multi-pursue-eval.mjs
+// Trace[] from it, then invokes the generate node. The scripts/multi-pursue-eval.ts
 // harness calls this and feeds the result into judge.scoreCandidate.
 
 import { readdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
+
 import { createLLM, isLLMAvailable } from '../../lib/llm.js'
+
+import type { Trace } from './nodes/collect.js'
 import { generateNode } from './nodes/generate.js'
 import type { ArchetypeCandidate } from './nodes/generate.js'
-import type { Trace } from './nodes/collect.js'
 
 export interface GenerateIdeasInput {
   registryRoot: string
@@ -18,14 +20,16 @@ export interface GenerateIdeasInput {
 }
 
 async function loadLatestTraces(tracesDir: string): Promise<Trace[]> {
-  let files: string[] = []
+  let files: string[]
   try {
-    files = (await readdir(tracesDir)).filter((f) => f.startsWith('variant_b-') && f.endsWith('.jsonl')).sort()
+    files = (await readdir(tracesDir))
+      .filter((f) => f.startsWith('variant_b-') && f.endsWith('.jsonl'))
+      .sort()
   } catch {
     return []
   }
   if (files.length === 0) return []
-  const latest = files[files.length - 1]!
+  const latest = files[files.length - 1]
   const raw = await readFile(path.join(tracesDir, latest), 'utf8')
   const traces: Trace[] = []
   for (const line of raw.split('\n')) {
@@ -54,7 +58,9 @@ export async function generateIdeas(input: GenerateIdeasInput): Promise<Archetyp
     // handles the llm-undefined branch internally when proposerAgent fails.
     // Easier: pass a harmless throw to skip LLM path.
     const throwing = {
-      async chat() { throw new Error('no-llm') },
+      async chat() {
+        throw new Error('no-llm')
+      },
       getId: () => 'noop',
     } as unknown as Parameters<typeof generateNode>[0]['llm']
     const out = await generateNode({

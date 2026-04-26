@@ -53,7 +53,13 @@ export interface VisualDiff {
    * Paths present in both but with different sha256.
    * Each entry records the before/after hashes for debugging.
    */
-  changed: Array<{ path: string; beforeSha256: string; afterSha256: string; beforeBytes: number; afterBytes: number }>
+  changed: {
+    path: string
+    beforeSha256: string
+    afterSha256: string
+    beforeBytes: number
+    afterBytes: number
+  }[]
 }
 
 interface SnapshotOptions {
@@ -86,7 +92,12 @@ async function sha256OfFile(abs: string): Promise<{ sha: string; bytes: number }
   return { sha, bytes: buf.length }
 }
 
-async function walk(root: string, rel: string, ignore: string[], out: VisualFileEntry[]): Promise<void> {
+async function walk(
+  root: string,
+  rel: string,
+  ignore: string[],
+  out: VisualFileEntry[],
+): Promise<void> {
   const abs = rel ? join(root, rel) : root
   const entries = await readdir(abs, { withFileTypes: true })
   for (const e of entries) {
@@ -171,4 +182,3 @@ export function diff(before: VisualSnapshot, after: VisualSnapshot): VisualDiff 
 export function isClean(d: VisualDiff): boolean {
   return d.added.length === 0 && d.removed.length === 0 && d.changed.length === 0
 }
-

@@ -55,6 +55,7 @@ PR with the candidate.
 ## Evidence contract
 
 Every promote step MUST attach:
+
 - Before/after rewrite counts for the targeted template (from the next buildout sweep)
 - Before/after audit status (install + typecheck) for the affected family
 - Judge's reasoning trace

@@ -38,17 +38,21 @@ export function findUnusedImports(source: string, file: string): CorrectnessFail
   // Only scan the import block — everything before the first non-import,
   // non-comment, non-blank line. Keeps the scan O(imports), not O(file).
   const lines = source.split('\n')
-  const importLines: Array<{ line: string; lineNo: number }> = []
+  const importLines: { line: string; lineNo: number }[] = []
   for (let i = 0; i < lines.length; i++) {
-    const l = lines[i]!
+    const l = lines[i]
     const t = l.trim()
     if (t === '' || t.startsWith('//') || t.startsWith('/*') || t.startsWith('*')) continue
     if (t.startsWith('import ') || t.startsWith('import{')) {
       importLines.push({ line: l, lineNo: i + 1 })
       // multi-line import: keep accumulating until we see the closing `from '...'` or `;`
-      while (i + 1 < lines.length && !/ from ['"]/.test(importLines[importLines.length - 1]!.line) && !importLines[importLines.length - 1]!.line.trim().endsWith(';')) {
+      while (
+        i + 1 < lines.length &&
+        !/ from ['"]/.test(importLines[importLines.length - 1].line) &&
+        !importLines[importLines.length - 1].line.trim().endsWith(';')
+      ) {
         i++
-        importLines[importLines.length - 1]!.line += '\n' + lines[i]!
+        importLines[importLines.length - 1].line += '\n' + lines[i]
       }
       continue
     }
@@ -58,9 +62,7 @@ export function findUnusedImports(source: string, file: string): CorrectnessFail
 
   // Body = source minus the imports we just collected. Strip line comments
   // and block comments so commented-out usages don't count as real uses.
-  const bodyStart = importLines.length > 0
-    ? importLines[importLines.length - 1]!.lineNo
-    : 0
+  const bodyStart = importLines.length > 0 ? importLines[importLines.length - 1].lineNo : 0
   const body = lines
     .slice(bodyStart)
     .join('\n')
@@ -75,15 +77,15 @@ export function findUnusedImports(source: string, file: string): CorrectnessFail
     //   import X, { A } from '...'
     //   import '...'  (side-effect; nothing to check)
     const names: string[] = []
-    const defaultMatch = line.match(/^\s*import\s+([A-Za-z_$][\w$]*)\s*(?:,|from)/)
-    if (defaultMatch) names.push(defaultMatch[1]!)
-    const nsMatch = line.match(/\*\s+as\s+([A-Za-z_$][\w$]*)/)
-    if (nsMatch) names.push(nsMatch[1]!)
-    const namedBlock = line.match(/\{([^}]+)\}/)
+    const defaultMatch = /^\s*import\s+([A-Za-z_$][\w$]*)\s*(?:,|from)/.exec(line)
+    if (defaultMatch) names.push(defaultMatch[1])
+    const nsMatch = /\*\s+as\s+([A-Za-z_$][\w$]*)/.exec(line)
+    if (nsMatch) names.push(nsMatch[1])
+    const namedBlock = /\{([^}]+)\}/.exec(line)
     if (namedBlock) {
-      for (const piece of namedBlock[1]!.split(',')) {
-        const renamed = piece.trim().match(/(?:[A-Za-z_$][\w$]*\s+as\s+)?([A-Za-z_$][\w$]*)\s*$/)
-        if (renamed) names.push(renamed[1]!)
+      for (const piece of namedBlock[1].split(',')) {
+        const renamed = /(?:[A-Za-z_$][\w$]*\s+as\s+)?([A-Za-z_$][\w$]*)\s*$/.exec(piece.trim())
+        if (renamed) names.push(renamed[1])
       }
     }
     // Type-only imports can be unused at value level but still affect
@@ -128,11 +130,11 @@ export function checkHtmlTsWireup(composedDir: string): CorrectnessFailure[] {
   for (const html of htmlFiles) {
     const body = readFileSync(html, 'utf8')
     for (const m of body.matchAll(/\bid\s*=\s*["']([^"']+)["']/g)) {
-      allIds.add(m[1]!)
+      allIds.add(m[1])
     }
     // Each <script type="module" src="..."> must resolve.
     for (const m of body.matchAll(/<script\b[^>]*\bsrc\s*=\s*["']([^"']+)["'][^>]*>/g)) {
-      const src = m[1]!
+      const src = m[1]
       if (/^https?:\/\//.test(src)) continue // external
       // Strip leading slash; resolve relative to composedDir.
       const rel = src.replace(/^\//, '')
@@ -149,12 +151,13 @@ export function checkHtmlTsWireup(composedDir: string): CorrectnessFailure[] {
 
   // Scan entry TS/TSX files for getElementById calls; each must match
   // an id found in some HTML. Skip if no entries exist (non-web family).
-  const entryFiles = shallowFindFiles(composedDir, ['.ts', '.tsx', '.js', '.jsx'])
-    .filter((p) => /\/(main|index|App)\.(ts|tsx|js|jsx)$/.test(p))
+  const entryFiles = shallowFindFiles(composedDir, ['.ts', '.tsx', '.js', '.jsx']).filter((p) =>
+    /\/(main|index|App)\.(ts|tsx|js|jsx)$/.test(p),
+  )
   for (const entry of entryFiles) {
     const src = readFileSync(entry, 'utf8')
     for (const m of src.matchAll(/document\s*\.\s*getElementById\s*\(\s*["']([^"']+)["']\s*\)/g)) {
-      const id = m[1]!
+      const id = m[1]
       if (!allIds.has(id)) {
         failures.push({
           kind: 'missing-element-id',
@@ -171,13 +174,21 @@ function shallowFindFiles(dir: string, extensions: string[]): string[] {
   const hits: string[] = []
   const walk = (d: string, depth: number) => {
     if (depth > 4) return
-    let entries: string[] = []
-    try { entries = readdirSync(d) } catch { return }
+    let entries: string[]
+    try {
+      entries = readdirSync(d)
+    } catch {
+      return
+    }
     for (const name of entries) {
       if (name === 'node_modules' || name === '.starter-foundry' || name === '.git') continue
       const full = join(d, name)
       let st
-      try { st = statSync(full) } catch { continue }
+      try {
+        st = statSync(full)
+      } catch {
+        continue
+      }
       if (st.isDirectory()) walk(full, depth + 1)
       else if (extensions.includes(extname(name))) hits.push(full)
     }

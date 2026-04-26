@@ -28,6 +28,11 @@
       }
     },
     "requires": { "type": "array", "items": { "type": "string" } },
+    "includes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Layer IDs to additively stack on every compose of this family — bypasses the slot mechanism. Use for multi-pick stacks like agent-runtime tool kits where every bundle gets a known set without needing N single-option slots."
+    },
     "defaults": { "type": "object" },
     "files": {
       "type": "array",
@@ -46,7 +51,7 @@
         "type": "object",
         "required": ["type"],
         "properties": {
-          "type": { "enum": ["file-exists", "node-syntax", "http-start", "command-success", "python-compile"] },
+          "type": { "enum": ["file-exists", "node-syntax", "http-start", "command-success", "python-compile", "prompt-frontmatter-valid", "cron-syntax-valid", "template-index-valid"] },
           "path": { "type": "string" },
           "command": { "type": "array", "items": { "type": "string" } },
           "expect": { "type": "string" },

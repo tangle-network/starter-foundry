@@ -10,8 +10,8 @@ import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 
 const REPO = resolve(import.meta.dirname, '..')
-const ORCHESTRATOR = join(REPO, 'scripts/run-buildout-pipeline.mjs')
-const GAPS = join(REPO, 'scripts/infer-capability-gaps.mjs')
+const ORCHESTRATOR = join(REPO, 'scripts/run-buildout-pipeline.ts')
+const GAPS = join(REPO, 'scripts/infer-capability-gaps.ts')
 
 function makeSlug(partner: string, scenarioId: string, round: number) {
   return `-private-var-folders-wk-T-factory-local-phase2-${partner}-mozxcvbnm-${scenarioId}-r${round}-${scenarioId}-abcd`

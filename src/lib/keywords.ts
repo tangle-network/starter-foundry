@@ -8,18 +8,18 @@ function levenshtein(a: string, b: string): number {
   if (b.length === 0) return a.length
   const matrix: number[][] = []
   for (let i = 0; i <= b.length; i++) matrix[i] = [i]
-  for (let j = 0; j <= a.length; j++) matrix[0]![j] = j
+  for (let j = 0; j <= a.length; j++) matrix[0][j] = j
   for (let i = 1; i <= b.length; i++) {
     for (let j = 1; j <= a.length; j++) {
       const cost = b[i - 1] === a[j - 1] ? 0 : 1
-      matrix[i]![j] = Math.min(
-        matrix[i - 1]![j]! + 1,
-        matrix[i]![j - 1]! + 1,
-        matrix[i - 1]![j - 1]! + cost,
+      matrix[i][j] = Math.min(
+        matrix[i - 1][j] + 1,
+        matrix[i][j - 1] + 1,
+        matrix[i - 1][j - 1] + cost,
       )
     }
   }
-  return matrix[b.length]![a.length]!
+  return matrix[b.length][a.length]
 }
 
 /**
@@ -110,7 +110,7 @@ export function fuzzyKeywordScore(text: string, keywords: string[]): number {
   const lower = lowerText(text)
   let total = 0
   for (let i = 0; i < keywords.length; i++) {
-    const k = keywords[i]!.toLowerCase()
+    const k = keywords[i].toLowerCase()
     if (k.length < 5) continue
     if (k.includes(' ') || k.includes('.') || k.includes('/') || k.includes('-')) continue
     if (fuzzyMatchesWord(lower, k, 1)) total += 1
@@ -121,7 +121,7 @@ export function fuzzyKeywordScore(text: string, keywords: string[]): number {
 export function hasAny(text: string, keywords: string[]): boolean {
   const normalizedText = lowerText(text)
   for (let i = 0; i < keywords.length; i++) {
-    const info = getKeywordInfo(keywords[i]!)
+    const info = getKeywordInfo(keywords[i])
     if (info.isPhrase) {
       if (normalizedText.includes(info.lower)) return true
     } else {
@@ -135,7 +135,7 @@ export function countMatches(text: string, keywords: string[]): number {
   const normalizedText = lowerText(text)
   let total = 0
   for (let i = 0; i < keywords.length; i++) {
-    const info = getKeywordInfo(keywords[i]!)
+    const info = getKeywordInfo(keywords[i])
     if (info.isPhrase) {
       if (normalizedText.includes(info.lower)) total += 1
     } else {
@@ -217,7 +217,13 @@ export const LANE_ROUTES: LaneRoute[] = [
   },
   {
     id: 'dspy',
-    keywords: ['dspy', 'rag system', 'summarization system', 'text classification system', 'prompt engineering'],
+    keywords: [
+      'dspy',
+      'rag system',
+      'summarization system',
+      'text classification system',
+      'prompt engineering',
+    ],
   },
   {
     id: 'agent',
@@ -316,11 +322,26 @@ export const LANE_ROUTES: LaneRoute[] = [
   },
   {
     id: 'fhevm',
-    keywords: ['fhevm', 'zama', 'zama fhe', 'tfhe contract', 'fhevm contract', 'confidential erc20'],
+    keywords: [
+      'fhevm',
+      'zama',
+      'zama fhe',
+      'tfhe contract',
+      'fhevm contract',
+      'confidential erc20',
+    ],
   },
   {
     id: 'fhe',
-    keywords: ['fhe', 'fully homomorphic', 'encrypted computation', 'euint', 'encrypted auction', 'encrypted voting', 'private token'],
+    keywords: [
+      'fhe',
+      'fully homomorphic',
+      'encrypted computation',
+      'euint',
+      'encrypted auction',
+      'encrypted voting',
+      'private token',
+    ],
   },
   {
     id: 'x402',

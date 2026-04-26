@@ -1,12 +1,25 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
+
+import type {
+  FamilyManifest,
+  LayerManifest,
+  PartnerManifest,
+  ComposeSpec,
+  ComposeResult,
+  ResolvedComponents,
+  ValidationCheck,
+  ContextHints,
+  MediaManifest,
+  MediaSlot,
+} from '../types.js'
+
 import { generateBuildPlan } from './build-plan.js'
 import { ensureDir, sanitizePackageName, writeJson } from './fs.js'
 import { renderIndustryFirstTurn } from './industry-flows.js'
 import { buildVariables, resolveComponents, resolveTemplateObject } from './registry.js'
 import { selectTemplateVersion } from './selection.js'
 import { emit, traced } from './telemetry.js'
-import type { FamilyManifest, LayerManifest, PartnerManifest, ComposeSpec, ComposeResult, ResolvedComponents, ValidationCheck, ContextHints, MediaManifest, MediaSlot } from '../types.js'
 
 type AnyManifest = FamilyManifest | LayerManifest | PartnerManifest
 
@@ -16,7 +29,11 @@ function escapeHtmlChars(value: string): string {
   return value.replace(/</g, '&lt;').replace(/>/g, '&gt;')
 }
 
-async function renderFile(sourcePath: string, targetPath: string, variables: Record<string, unknown>): Promise<void> {
+async function renderFile(
+  sourcePath: string,
+  targetPath: string,
+  variables: Record<string, unknown>,
+): Promise<void> {
   const raw = await fs.readFile(sourcePath, 'utf8')
   const ext = path.extname(targetPath).toLowerCase()
   const needsEscape = HTML_LIKE_EXTS.has(ext)
@@ -39,27 +56,36 @@ function simpleHash(str: string): number {
   return Math.abs(hash)
 }
 
-function resolveVariantSource(component: AnyManifest, filePath: string, variantSeed: string): string {
+function resolveVariantSource(
+  component: AnyManifest,
+  filePath: string,
+  variantSeed: string,
+): string {
   const layer = component as LayerManifest
-  const variants = layer.variants as string[] | undefined
-  if (!variants?.length || !filePath.startsWith('files/')) return path.join(component.baseDir, filePath)
+  const variants = layer.variants
+  if (!variants?.length || !filePath.startsWith('files/'))
+    return path.join(component.baseDir, filePath)
   const idx = simpleHash(variantSeed + layer.id) % variants.length
   const variantDir = `variants/${variants[idx]}`
   return path.join(component.baseDir, filePath.replace(/^files\//, `${variantDir}/`))
 }
 
-function collectComponentFiles(component: AnyManifest, variantSeed: string): Array<{ source: string; target: string; owner: string }> {
+function collectComponentFiles(
+  component: AnyManifest,
+  variantSeed: string,
+): { source: string; target: string; owner: string }[] {
   return (component.files ?? []).map((file) => ({
     ...file,
     source: resolveVariantSource(component, file.source, variantSeed),
-    owner:
-      component.kind === 'layer'
-        ? `${(component as LayerManifest).group}:${component.id}`
-        : component.id,
+    owner: component.kind === 'layer' ? `${component.group}:${component.id}` : component.id,
   }))
 }
 
-function buildComponentOrder(components: { family: FamilyManifest; layers: LayerManifest[]; partner: PartnerManifest | null }): AnyManifest[] {
+function buildComponentOrder(components: {
+  family: FamilyManifest
+  layers: LayerManifest[]
+  partner: PartnerManifest | null
+}): AnyManifest[] {
   const order: AnyManifest[] = [components.family, ...components.layers]
   if (components.partner) {
     order.push(components.partner)
@@ -72,7 +98,8 @@ function collectValidationChecks(
   variables: Record<string, unknown>,
 ): ValidationCheck[] {
   return buildComponentOrder(components).flatMap(
-    (component) => resolveTemplateObject(component.validationChecks ?? [], variables) as ValidationCheck[],
+    (component) =>
+      resolveTemplateObject(component.validationChecks ?? [], variables) as ValidationCheck[],
   )
 }
 
@@ -93,7 +120,7 @@ function collectContextHints(
     merged.entrypoints.push(...(hints.entrypoints ?? []))
     merged.extensionPoints.push(...(hints.extensionPoints ?? []))
     if (hints.preview) {
-      merged.preview = hints.preview as never
+      merged.preview = hints.preview
     }
   }
 
@@ -104,7 +131,13 @@ function collectContextHints(
   return merged
 }
 
-export async function composeStarter({ spec, outDir }: { spec: ComposeSpec; outDir: string }): Promise<ComposeResult> {
+export async function composeStarter({
+  spec,
+  outDir,
+}: {
+  spec: ComposeSpec
+  outDir: string
+}): Promise<ComposeResult> {
   const { result, durationMs } = await traced('composeStarter', async () => {
     return composeStarterInner(spec, outDir)
   })
@@ -123,7 +156,9 @@ export async function composeStarter({ spec, outDir }: { spec: ComposeSpec; outD
     industry,
     durationMs,
     templateVersion: diverseVersion,
-    diverseServe: process.env['STARTER_FOUNDRY_DIVERSE_SERVE'] === '1' || process.env['STARTER_FOUNDRY_DIVERSE_SERVE'] === 'true',
+    diverseServe:
+      process.env.STARTER_FOUNDRY_DIVERSE_SERVE === '1' ||
+      process.env.STARTER_FOUNDRY_DIVERSE_SERVE === 'true',
   })
   return result
 }
@@ -138,7 +173,7 @@ async function mergeMediaManifests(outDir: string): Promise<MediaSlot[]> {
     // no existing manifest
   }
 
-  if (!existing || !existing.slots?.length) return []
+  if (!existing?.slots?.length) return []
 
   // Deduplicate by slot id, last write wins
   const seen = new Map<string, MediaSlot>()
@@ -231,7 +266,10 @@ async function composeStarterInner(spec: ComposeSpec, outDir: string): Promise<C
       const targetPath = path.join(outDir, resolvedTarget)
 
       // Guard against directory traversal
-      if (!path.resolve(targetPath).startsWith(resolvedOutDir + path.sep) && path.resolve(targetPath) !== resolvedOutDir) {
+      if (
+        !path.resolve(targetPath).startsWith(resolvedOutDir + path.sep) &&
+        path.resolve(targetPath) !== resolvedOutDir
+      ) {
         throw new Error(`File target ${resolvedTarget} would escape output directory`)
       }
 
@@ -273,7 +311,13 @@ async function composeStarterInner(spec: ComposeSpec, outDir: string): Promise<C
   const mediaSlots = await mergeMediaManifests(outDir)
 
   // Generate AGENTS.md — per-project agent instructions (OpenCode, Codex, etc.)
-  const agentsMd = buildAgentsMd(spec, components, composeReport.contextHints, mediaSlots, preinstalledPackages)
+  const agentsMd = buildAgentsMd(
+    spec,
+    components,
+    composeReport.contextHints,
+    mediaSlots,
+    preinstalledPackages,
+  )
   await fs.writeFile(path.join(outDir, 'AGENTS.md'), `${agentsMd}\n`, 'utf8')
 
   // Generate CLAUDE.md — Claude Code specific instructions (same content, different filename)
@@ -284,7 +328,7 @@ async function composeStarterInner(spec: ComposeSpec, outDir: string): Promise<C
   await fs.writeFile(path.join(outDir, 'llms.txt'), `${llmsTxt}\n`, 'utf8')
 
   // Generate SBOM (CycloneDX) from the composed scaffold's dep manifest.
-  const { writeSbom } = await import('./sbom.js')
+  const { writeSbom } = await import('./eval/sbom.js')
   const sbomPath = await writeSbom(outDir, spec.projectName)
 
   // Collect optional prompt-fragment.md files from family + partner.
@@ -331,18 +375,18 @@ function buildLlmsTxt(
     '',
     `## Stack`,
     `- Family: ${spec.family}`,
-    `- Layers: ${components.layers.map(l => `${l.group}:${l.id}`).join(', ')}`,
+    `- Layers: ${components.layers.map((l) => `${l.group}:${l.id}`).join(', ')}`,
     components.partner ? `- Partner: ${components.partner.id}` : null,
     '',
     `## Entry Points`,
-    ...contextHints.entrypoints.map(e => `- ${e}`),
+    ...contextHints.entrypoints.map((e) => `- ${e}`),
     '',
     `## Commands`,
-    ...contextHints.commands.map(c => `- ${c}`),
+    ...contextHints.commands.map((c) => `- ${c}`),
     '',
     `## Extension Points`,
-    ...contextHints.extensionPoints.map(e => `- ${e}`),
-  ].filter(line => line !== null)
+    ...contextHints.extensionPoints.map((e) => `- ${e}`),
+  ].filter((line) => line !== null)
   return lines.join('\n')
 }
 
@@ -354,10 +398,7 @@ function buildAgentsMd(
   preinstalledPackages: string[] = [],
 ): string {
   const buildPlan = generateBuildPlan(spec, components)
-  const lines: string[] = [
-    '# AGENTS.md',
-    '',
-  ]
+  const lines: string[] = ['# AGENTS.md', '']
 
   if (buildPlan.goal) {
     lines.push(buildPlan.goal, '')
@@ -380,7 +421,7 @@ function buildAgentsMd(
     '',
     'The `SIDECAR_PORT` and `SIDECAR_AUTH_TOKEN` env vars are pre-set in your bash environment — you do NOT need to look them up.',
     '',
-    'CRITICAL: Do NOT run `pnpm install`, `pnpm dev`, `npm install`, `npm run dev`, `next dev`, `vite`, `cargo run`, or any other dev/install command via `bash` directly. The command above handles all of that AND tracks the dev process for the runtime so the user\'s preview pane wires up automatically. Running them directly bypasses the runtime tracking and the user will not see a preview.',
+    "CRITICAL: Do NOT run `pnpm install`, `pnpm dev`, `npm install`, `npm run dev`, `next dev`, `vite`, `cargo run`, or any other dev/install command via `bash` directly. The command above handles all of that AND tracks the dev process for the runtime so the user's preview pane wires up automatically. Running them directly bypasses the runtime tracking and the user will not see a preview.",
     '',
     'The response is JSON: `{ "success": true, "data": { "pid": ..., "family": "node-pnpm", "command": "...", "startedNow": true|false, "installRan": true|false } }`. On error: `{ "success": false, "error": { "code": "...", "message": "..." } }` with codes `WORKSPACE_NOT_FOUND | NO_RUNNABLE_PROJECT | INSTALL_FAILED | DEV_COMMAND_NOT_FOUND | DEV_PROCESS_EXITED | PORT_BIND_FAILED`. React to each: `INSTALL_FAILED` → read the `log` field, fix `package.json`, call again; `DEV_COMMAND_NOT_FOUND` → add a `dev` script to `package.json`, call again; `DEV_PROCESS_EXITED` → read `log`, fix the bug in `src/`, call again.',
     '',
@@ -390,7 +431,7 @@ function buildAgentsMd(
   // before the scaffold's default behavior.
   if (spec.userPrompt) {
     lines.push(
-      '## User\'s brief (takes priority over everything else in this file)',
+      "## User's brief (takes priority over everything else in this file)",
       '',
       `> ${spec.userPrompt.replace(/\n/g, '\n> ')}`,
       '',
@@ -398,7 +439,7 @@ function buildAgentsMd(
   }
 
   lines.push(
-    '## What\'s here',
+    "## What's here",
     '',
     `This project was scaffolded by starter-foundry. The choices below were made deterministically from the user's brief.`,
     '',
@@ -420,12 +461,7 @@ function buildAgentsMd(
   // Step 0 above. Listing them in a "Getting started" block was creating
   // a competing recipe the agent followed instead of the runtime route.
   if (contextHints.entrypoints.length > 0) {
-    lines.push(
-      '## Key files',
-      '',
-      contextHints.entrypoints.map((e) => `- \`${e}\``).join('\n'),
-      '',
-    )
+    lines.push('## Key files', '', contextHints.entrypoints.map((e) => `- \`${e}\``).join('\n'), '')
   }
 
   // Pre-installed packages — closes the efficiency gap where agents run
@@ -439,7 +475,7 @@ function buildAgentsMd(
     lines.push(
       '## Pre-installed packages — do NOT re-install',
       '',
-      'These are already in `package.json` (the sidecar\'s ensure-dev-server auto-installed them on first call). If you need any of these, **import them** — do not run `pnpm add`, `pnpm install <name>`, `npm install <name>`, or equivalent. Re-installing a present package burns turns and tokens for zero gain.',
+      "These are already in `package.json` (the sidecar's ensure-dev-server auto-installed them on first call). If you need any of these, **import them** — do not run `pnpm add`, `pnpm install <name>`, `npm install <name>`, or equivalent. Re-installing a present package burns turns and tokens for zero gain.",
       '',
       preinstalledPackages.map((p) => `- \`${p}\``).join('\n'),
       '',
@@ -448,18 +484,26 @@ function buildAgentsMd(
     )
   }
 
-  if (buildPlan.pages.length > 0 || buildPlan.apiRoutes.length > 0 || buildPlan.components.length > 0) {
+  if (
+    buildPlan.pages.length > 0 ||
+    buildPlan.apiRoutes.length > 0 ||
+    buildPlan.components.length > 0
+  ) {
     lines.push(
       '## Suggested build plan',
       '',
-      'These are starting points — adapt them to the user\'s actual needs.',
+      "These are starting points — adapt them to the user's actual needs.",
       '',
     )
     if (buildPlan.pages.length > 0) lines.push(`- **Pages:** ${buildPlan.pages.join(', ')}`)
-    if (buildPlan.apiRoutes.length > 0) lines.push(`- **API routes:** ${buildPlan.apiRoutes.join(', ')}`)
-    if (buildPlan.components.length > 0) lines.push(`- **Components:** ${buildPlan.components.join(', ')}`)
-    if (buildPlan.dataModels.length > 0) lines.push(`- **Data models:** ${buildPlan.dataModels.join(', ')}`)
-    if (buildPlan.integrations.length > 0) lines.push(`- **Integrations:** ${buildPlan.integrations.join(', ')}`)
+    if (buildPlan.apiRoutes.length > 0)
+      lines.push(`- **API routes:** ${buildPlan.apiRoutes.join(', ')}`)
+    if (buildPlan.components.length > 0)
+      lines.push(`- **Components:** ${buildPlan.components.join(', ')}`)
+    if (buildPlan.dataModels.length > 0)
+      lines.push(`- **Data models:** ${buildPlan.dataModels.join(', ')}`)
+    if (buildPlan.integrations.length > 0)
+      lines.push(`- **Integrations:** ${buildPlan.integrations.join(', ')}`)
     lines.push('')
   }
 
@@ -467,7 +511,7 @@ function buildAgentsMd(
     lines.push(
       '## Placeholders — MUST replace',
       '',
-      'These files ship DEFAULT content so the preview renders before your first edit. You MUST replace them with product-specific behavior for the user\'s brief. Rewriting `personalize.json` updates brand strings only — it does NOT replace the content in these files. Treat this list as required-to-rewrite.',
+      "These files ship DEFAULT content so the preview renders before your first edit. You MUST replace them with product-specific behavior for the user's brief. Rewriting `personalize.json` updates brand strings only — it does NOT replace the content in these files. Treat this list as required-to-rewrite.",
       '',
     )
     for (const { source, path, description } of buildPlan.placeholders) {
@@ -498,12 +542,7 @@ function buildAgentsMd(
   }
 
   if (buildPlan.domainGotchas.length > 0) {
-    lines.push(
-      '## Gotchas',
-      '',
-      'Traps specific to this stack — read before you hit them.',
-      '',
-    )
+    lines.push('## Gotchas', '', 'Traps specific to this stack — read before you hit them.', '')
     for (const { source, note } of buildPlan.domainGotchas) {
       lines.push(`- **[${source}]** ${note}`)
     }
@@ -519,19 +558,17 @@ function buildAgentsMd(
       '## Media',
       '',
       'Image slots are declared in `media-manifest.json` with generation prompts.',
-      'Adapt the prompts to match the user\'s product before generating.',
+      "Adapt the prompts to match the user's product before generating.",
       '',
       '| Slot | Size | Path | Purpose |',
       '|------|------|------|---------|',
     )
     for (const slot of mediaSlots) {
-      lines.push(`| ${slot.id} | ${slot.width}\u00d7${slot.height} | \`${slot.path}\` | ${slot.purpose} |`)
+      lines.push(
+        `| ${slot.id} | ${slot.width}\u00d7${slot.height} | \`${slot.path}\` | ${slot.purpose} |`,
+      )
     }
-    lines.push(
-      '',
-      'Skip any slots that don\'t apply. Add new ones if the product needs them.',
-      '',
-    )
+    lines.push('', "Skip any slots that don't apply. Add new ones if the product needs them.", '')
   }
 
   // Progressive disclosure — turn-order sections agents pattern-match on.
@@ -539,22 +576,22 @@ function buildAgentsMd(
     '## Turn 1 (do these before writing features)',
     '',
     '1. Call the dev-server route from Step 0 (above). Wait for success.',
-    '2. Read the user\'s brief (above) and the Placeholders section.',
+    "2. Read the user's brief (above) and the Placeholders section.",
     '3. Rewrite `personalize.json` + `personalize.css` (brand strings + palette). These are render-time — preview updates on next refresh, no rebuild.',
     '4. Delete or rewrite EVERY file in the Placeholders list. Not optional.',
     '5. Only after (3) + (4) do you start feature work.',
     '',
     '## Before first preview screenshot',
     '',
-    '- Confirm the landing surface renders the user\'s product (no default KPI cards from a dashboard template).',
+    "- Confirm the landing surface renders the user's product (no default KPI cards from a dashboard template).",
     '- Brand strings in `personalize.json` are product-specific, not the scaffold default.',
     '- Any placeholder file in the list above has been replaced or deleted.',
     '',
     '## Before shipping',
     '',
-    '- Run the family\'s validate script (see Key files above).',
+    "- Run the family's validate script (see Key files above).",
     '- Re-check Gotchas (above) against what you built — those traps bite most at ship time.',
-    '- If you added deps, they\'re in `package.json`; if you added routes/pages, they\'re reachable.',
+    "- If you added deps, they're in `package.json`; if you added routes/pages, they're reachable.",
     '',
   )
 
@@ -563,8 +600,8 @@ function buildAgentsMd(
     '',
     'This is a starting point, not a contract. You own every file.',
     '',
-    '- **Customize freely.** Replace components, change the layout, swap the color scheme — whatever fits the user\'s product.',
-    '- **The scaffold saves you setup time** — Tailwind, shadcn/ui, path aliases, and framework config are ready. Don\'t redo them.',
+    "- **Customize freely.** Replace components, change the layout, swap the color scheme — whatever fits the user's product.",
+    "- **The scaffold saves you setup time** — Tailwind, shadcn/ui, path aliases, and framework config are ready. Don't redo them.",
     '- **Check `.starter-foundry/compose-report.json`** if you want to see which layer wrote which file.',
     '- **Update this file** as the project evolves. Delete sections that no longer apply.',
   )

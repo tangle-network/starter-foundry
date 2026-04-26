@@ -99,8 +99,8 @@ export default app
     // catches that drift — same shape as the HARNESS_CONFIGS invariant
     // in tests/muffled-gate-invariant.test.ts.
     const scripts = [
-      'scripts/promote-family-proposal.mjs',
-      'scripts/promote-capability-proposal.mjs',
+      'scripts/promote-family-proposal.ts',
+      'scripts/promote-capability-proposal.ts',
     ]
     for (const script of scripts) {
       const path = join(REPO_ROOT, script)
@@ -129,8 +129,8 @@ export default app
     // calls fail(id, 'declared-dep-used', ...) — assert the `fail`
     // site exists with that exact gateReached string.
     const scripts = [
-      'scripts/promote-family-proposal.mjs',
-      'scripts/promote-capability-proposal.mjs',
+      'scripts/promote-family-proposal.ts',
+      'scripts/promote-capability-proposal.ts',
     ]
     for (const script of scripts) {
       const text = readFileSync(join(REPO_ROOT, script), 'utf8')

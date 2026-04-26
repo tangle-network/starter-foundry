@@ -12,17 +12,29 @@ export {
 } from './agent-context.js'
 export { createContextPack } from './context-pack.js'
 export { generateBuildPlan } from './build-plan.js'
-export { loadRegistry, listRegistry, resolveComponents, clearRegistryCache, initSemanticRouting } from './registry.js'
+export {
+  loadRegistry,
+  listRegistry,
+  resolveComponents,
+  clearRegistryCache,
+  initSemanticRouting,
+} from './registry.js'
 export { validatePlan } from './validate-plan.js'
 export type { PlanValidationResult, PlanValidationIssue } from './validate-plan.js'
 export { semanticMatch, isSemanticRouterReady } from './semantic-router.js'
 export { selectStarter } from './selection.js'
 export { validateStarter } from './validate.js'
-export { benchmarkStarter } from './benchmark.js'
+export { benchmarkStarter } from './eval/benchmark.js'
 export { composeWorkspace, createWorkspaceContextPack, benchmarkWorkspace } from './workspace.js'
 export { augmentWithLayer } from './augment.js'
 export { fattenStarter, fattenWorkspace } from './fatten.js'
-export { matchesKeyword, hasAny, detectLane, detectCapabilities, detectIndustry } from './keywords.js'
+export {
+  matchesKeyword,
+  hasAny,
+  detectLane,
+  detectCapabilities,
+  detectIndustry,
+} from './keywords.js'
 export { listIndustries, getIndustry, PERSONALIZE_CSS_PATHS } from './industries.js'
 export type { IndustryInfo } from './industries.js'
 export { on, off, emit, traced } from './telemetry.js'
@@ -32,10 +44,10 @@ export type { BuildoutEvent, BuildoutEventInput, BuildoutOutcome } from './build
 // Foundational primitives — unblock multiple ROADMAP branches.
 export { generatePrompts, persistBatch } from './synthetic/index.js'
 export type { SyntheticPrompt, SyntheticBatch, GenerateOptions } from './synthetic/index.js'
-export { abDecide } from './ab.js'
-export type { AbExperiment, AbDecision } from './ab.js'
-export { generateSbom, writeSbom } from './sbom.js'
-export type { Sbom, SbomComponent } from './sbom.js'
+export { abDecide } from './eval/ab.js'
+export type { AbExperiment, AbDecision } from './eval/ab.js'
+export { generateSbom, writeSbom } from './eval/sbom.js'
+export type { Sbom, SbomComponent } from './eval/sbom.js'
 export { scanDirectory as scanForSecrets } from './safety/secret-scan.js'
 export type { SecretMatch } from './safety/secret-scan.js'
 export { scanLicenses } from './safety/license-check.js'
@@ -48,11 +60,20 @@ export { applyVoice, defaultVoiceForIndustry, INDUSTRY_VOICE } from './brand/voi
 export type { VoiceRegister, VoiceApplyResult } from './brand/voice.js'
 export { emitI18n, buildI18nFiles, generateLocalePack, isRtl, RTL_LOCALES } from './brand/i18n.js'
 export type { LocalePack, I18nEmitResult } from './brand/i18n.js'
-export { firstTurnFlowForFamily, firstTurnFlowForIndustry, firstTurnFlowAsMarkdown, listKnownIndustries } from './brand/first-turn-flows.js'
+export {
+  firstTurnFlowForFamily,
+  firstTurnFlowForIndustry,
+  firstTurnFlowAsMarkdown,
+  listKnownIndustries,
+} from './brand/first-turn-flows.js'
 export type { FirstTurnFlow } from './brand/first-turn-flows.js'
 export { inferSegment, segmentDefaultsAsMarkdown, SEGMENT_DEFAULTS } from './brand/user-segments.js'
 export type { UserSegment } from './brand/user-segments.js'
-export { snapshot as visualSnapshot, diff as visualDiff, isClean as visualIsClean } from './visual-regression.js'
+export {
+  snapshot as visualSnapshot,
+  diff as visualDiff,
+  isClean as visualIsClean,
+} from './visual-regression.js'
 export type { VisualSnapshot, VisualDiff, VisualFileEntry } from './visual-regression.js'
 /** @deprecated renamed to VisualSnapshot. */
 export type { VisualSnapshot as VisualAuditResult } from './visual-regression.js'
@@ -65,8 +86,8 @@ export { loadRegistryFromMirrors, MirrorLoadError } from './registry-mirror.js'
 export type { MirrorEntry, MirrorLoadOptions, MirrorLoadResult } from './registry-mirror.js'
 export { isVersionRolledBack, getLastKnownGoodVersion, listRollbacks } from './version-history.js'
 export type { RollbackRecord } from './version-history.js'
-export { seedForSpec, seededRng, buildLockFile, verifyLockMatches } from './reproducibility.js'
-export type { SeededRng, ComposeLockFile } from './reproducibility.js'
+export { seedForSpec, seededRng, buildLockFile, verifyLockMatches } from './eval/reproducibility.js'
+export type { SeededRng, ComposeLockFile } from './eval/reproducibility.js'
 export type {
   ComposeSpec,
   WorkspaceSpec,

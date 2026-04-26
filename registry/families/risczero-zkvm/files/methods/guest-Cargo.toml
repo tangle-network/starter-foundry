@@ -1,3 +1,11 @@
+# Empty `[workspace]` block opts the guest crate out of the parent
+# workspace. risc0-build invokes `cargo metadata` against this manifest
+# during `embed_methods`, and without an explicit opt-out cargo refuses
+# because the parent Cargo.toml's `exclude = ["methods/guest"]` is not
+# enough — cargo needs the guest manifest itself to declare workspace
+# independence.
+[workspace]
+
 [package]
 name = "guest"
 version = "0.1.0"

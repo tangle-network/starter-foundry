@@ -1,8 +1,6 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { composeStarter } from './compose.js'
-import { createTempDir, ensureDir, listFilesRecursive, readJson, removeDir, writeJson } from './fs.js'
-import { validateStarter } from './validate.js'
+
 import type {
   WorkspaceSpec,
   LaunchPlan,
@@ -11,6 +9,17 @@ import type {
   ComposeComponents,
   PreviewHint,
 } from '../types.js'
+
+import { composeStarter } from './compose.js'
+import {
+  createTempDir,
+  ensureDir,
+  listFilesRecursive,
+  readJson,
+  removeDir,
+  writeJson,
+} from './fs.js'
+import { validateStarter } from './validate.js'
 
 interface ProjectRecord {
   id: string
@@ -32,7 +41,7 @@ export interface WorkspaceReport {
   workspaceName: string
   userPrompt: string | null
   launchPlan: LaunchPlan
-  projects: Array<{
+  projects: {
     id: string
     path: string
     projectName: string
@@ -43,7 +52,7 @@ export interface WorkspaceReport {
     preview: PreviewHint | null
     extensionPoints: string[]
     composeReportPath: string
-  }>
+  }[]
 }
 
 function buildProjectMd(spec: WorkspaceSpec, workspaceReport: WorkspaceReport): string {
@@ -89,7 +98,7 @@ function buildAgentsMd(workspaceReport: WorkspaceReport): string {
     '',
     '## Step 0 — Start the dev server (do this FIRST)',
     '',
-    'Before reading anything else in this file, run this command in `bash` to start the primary project\'s dev server. The user is waiting for a preview. This is idempotent — safe to call multiple times (returns the same pid). It auto-installs dependencies on first call, so you do NOT need to run `pnpm install` separately. Subsequent edits hot-reload via HMR; do NOT call this again to restart unless the response says you should.',
+    "Before reading anything else in this file, run this command in `bash` to start the primary project's dev server. The user is waiting for a preview. This is idempotent — safe to call multiple times (returns the same pid). It auto-installs dependencies on first call, so you do NOT need to run `pnpm install` separately. Subsequent edits hot-reload via HMR; do NOT call this again to restart unless the response says you should.",
     '',
     '```bash',
     'curl -fsS -X POST "http://localhost:${SIDECAR_PORT:-9000}/process/ensure-dev-server" -H "Content-Type: application/json" -H "Authorization: Bearer ${SIDECAR_AUTH_TOKEN}" -d \'{}\'',
@@ -97,7 +106,7 @@ function buildAgentsMd(workspaceReport: WorkspaceReport): string {
     '',
     'The `SIDECAR_PORT` and `SIDECAR_AUTH_TOKEN` env vars are pre-set in your bash environment — you do NOT need to look them up.',
     '',
-    'CRITICAL: Do NOT run `pnpm install`, `pnpm dev`, `npm install`, `npm run dev`, `next dev`, `vite`, `cargo run`, or any other dev/install command via `bash` directly. The command above handles all of that AND tracks the dev process for the runtime so the user\'s preview pane wires up automatically. Running them directly bypasses the runtime tracking and the user will not see a preview.',
+    "CRITICAL: Do NOT run `pnpm install`, `pnpm dev`, `npm install`, `npm run dev`, `next dev`, `vite`, `cargo run`, or any other dev/install command via `bash` directly. The command above handles all of that AND tracks the dev process for the runtime so the user's preview pane wires up automatically. Running them directly bypasses the runtime tracking and the user will not see a preview.",
     '',
     'The response is JSON with `{ success, data: { pid, family, command, startedNow, installRan } }` on success or `{ success: false, error: { code, message, log? } }` on failure. Error codes: `WORKSPACE_NOT_FOUND | NO_RUNNABLE_PROJECT | INSTALL_FAILED | DEV_COMMAND_NOT_FOUND | DEV_PROCESS_EXITED | PORT_BIND_FAILED`. Read the `log` field on failure to find what to fix, then call again.',
     '',
@@ -125,7 +134,7 @@ function buildLaunchPlan(spec: WorkspaceSpec, projects: ProjectRecord[]): Launch
     },
     initialAgentMission:
       spec.launchPlan?.initialAgentMission ??
-      'Build the user\'s prompt on top of this prepared workspace base.',
+      "Build the user's prompt on top of this prepared workspace base.",
   }
 }
 
@@ -134,11 +143,18 @@ async function writeWorkspaceScaffolding(
   outDir: string,
   workspaceReport: WorkspaceReport,
 ): Promise<void> {
-  await fs.writeFile(path.join(outDir, 'PROJECT.md'), `${buildProjectMd(spec, workspaceReport)}\n`, 'utf8')
+  await fs.writeFile(
+    path.join(outDir, 'PROJECT.md'),
+    `${buildProjectMd(spec, workspaceReport)}\n`,
+    'utf8',
+  )
   await fs.writeFile(path.join(outDir, 'AGENTS.md'), `${buildAgentsMd(workspaceReport)}\n`, 'utf8')
   const sharedDepsMd = buildSharedDependenciesMd(workspaceReport)
   await fs.writeFile(path.join(outDir, 'shared_dependencies.md'), `${sharedDepsMd}\n`, 'utf8')
-  await writeJson(path.join(outDir, '.starter-foundry', 'launch-plan.json'), workspaceReport.launchPlan)
+  await writeJson(
+    path.join(outDir, '.starter-foundry', 'launch-plan.json'),
+    workspaceReport.launchPlan,
+  )
   await writeJson(path.join(outDir, '.starter-foundry', 'workspace-report.json'), workspaceReport)
 }
 
@@ -156,10 +172,10 @@ function buildSharedDependenciesMd(workspaceReport: WorkspaceReport): string {
     lines.push(`### ${project.id} (\`${project.path}\`)`)
     lines.push(`- Family: \`${project.components.family}\``)
     if (project.entrypoints.length > 0) {
-      lines.push(`- Entrypoints: ${project.entrypoints.map(e => `\`${e}\``).join(', ')}`)
+      lines.push(`- Entrypoints: ${project.entrypoints.map((e) => `\`${e}\``).join(', ')}`)
     }
     if (project.commands.length > 0) {
-      lines.push(`- Commands: ${project.commands.map(c => `\`${c}\``).join(', ')}`)
+      lines.push(`- Commands: ${project.commands.map((c) => `\`${c}\``).join(', ')}`)
     }
     lines.push('')
   }
@@ -182,7 +198,10 @@ function buildSharedDependenciesMd(workspaceReport: WorkspaceReport): string {
   return lines.join('\n')
 }
 
-function normalizeProject(project: WorkspaceSpec['projects'][number], index: number): NormalizedProjectEntry {
+function normalizeProject(
+  project: WorkspaceSpec['projects'][number],
+  index: number,
+): NormalizedProjectEntry {
   if (!project.path || !project.spec) {
     throw new Error(`Workspace project ${index + 1} requires path and spec`)
   }
@@ -310,21 +329,23 @@ export async function composeWorkspace({
   )
 
   let primaryProjectComposeMs = 0
-  const projectRecords: ProjectRecord[] = composed.map(({ project, composeResult, composeReport, projectComposeMs }) => {
-    if (project.id === primaryProjectId) primaryProjectComposeMs = projectComposeMs
-    return {
-      id: project.id,
-      path: project.path,
-      spec: project.spec,
-      components: composeResult.components,
-      filesWritten: composeResult.filesWritten,
-      composeReportPath: composeResult.composeReportPath,
-      commands: composeReport.contextHints.commands,
-      entrypoints: composeReport.contextHints.entrypoints,
-      preview: composeReport.contextHints.preview ?? null,
-      extensionPoints: composeReport.contextHints.extensionPoints,
-    }
-  })
+  const projectRecords: ProjectRecord[] = composed.map(
+    ({ project, composeResult, composeReport, projectComposeMs }) => {
+      if (project.id === primaryProjectId) primaryProjectComposeMs = projectComposeMs
+      return {
+        id: project.id,
+        path: project.path,
+        spec: project.spec,
+        components: composeResult.components,
+        filesWritten: composeResult.filesWritten,
+        composeReportPath: composeResult.composeReportPath,
+        commands: composeReport.contextHints.commands,
+        entrypoints: composeReport.contextHints.entrypoints,
+        preview: composeReport.contextHints.preview ?? null,
+        extensionPoints: composeReport.contextHints.extensionPoints,
+      }
+    },
+  )
 
   const workspaceReport = await buildWorkspaceReport(spec, outDir, projectRecords)
   await writeWorkspaceScaffolding(spec, outDir, workspaceReport)
@@ -380,7 +401,7 @@ export interface WorkspaceBenchmarkReport {
   generatedAt: string
   workspaceName: string
   runs: number
-  results: Array<{
+  results: {
     runId: number
     outDir: string
     composeMs: number
@@ -391,9 +412,9 @@ export interface WorkspaceBenchmarkReport {
     meetsPrimaryArtifactTarget: boolean
     totalMs: number
     projectCount: number
-    validations: Array<{ id: string; ok: boolean; checksPassed: number; checksTotal: number }>
+    validations: { id: string; ok: boolean; checksPassed: number; checksTotal: number }[]
     contextPath: string
-  }>
+  }[]
   summary: {
     passRate: number
     primaryArtifactHitRate: number
@@ -465,7 +486,7 @@ export async function benchmarkWorkspace({
       totalMs: composeMs + contextMs + validateMs,
       projectCount: workspaceReport.projects.length,
       validations,
-      contextPath: context.contextPath as string,
+      contextPath: context.contextPath,
     })
 
     if (!outDir) {
@@ -480,14 +501,18 @@ export async function benchmarkWorkspace({
     runs,
     results,
     summary: {
-      passRate: results.filter((result) => result.validations.every((item) => item.ok)).length / results.length,
+      passRate:
+        results.filter((result) => result.validations.every((item) => item.ok)).length /
+        results.length,
       primaryArtifactHitRate:
         results.filter((result) => result.meetsPrimaryArtifactTarget).length / results.length,
       primaryArtifactTargetMs: results[0]?.primaryArtifactTargetMs ?? null,
       meanPrimaryArtifactMs: Math.round(
         results.reduce((total, result) => total + result.primaryArtifactMs, 0) / results.length,
       ),
-      meanTotalMs: Math.round(results.reduce((total, result) => total + result.totalMs, 0) / results.length),
+      meanTotalMs: Math.round(
+        results.reduce((total, result) => total + result.totalMs, 0) / results.length,
+      ),
     },
   }
 

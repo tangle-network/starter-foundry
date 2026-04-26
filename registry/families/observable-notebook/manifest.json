@@ -104,7 +104,24 @@
     "tier2": [
       "observable",
       "reactive dashboard",
-      "data loader"
+      "data loader",
+      "algorithm",
+      "data structure",
+      "suffix array",
+      "sais",
+      "graph traversal",
+      "dynamic programming",
+      "competitive programming",
+      "algorithm visualizer",
+      "research notebook",
+      "computational notebook",
+      "scientific notebook"
+    ],
+    "archetypes": [
+      "algorithm visualization",
+      "data-structure walkthrough",
+      "research dashboard",
+      "interactive paper"
     ]
   }
 }

@@ -8,11 +8,12 @@
 //
 // When a router key is present, the LLM drafts fresh manifests +
 // real template bodies. Without a key, we fall back to the existing
-// `scripts/new-family.mjs` skeleton (deterministic TODO stubs).
+// `scripts/new-family.ts` skeleton (deterministic TODO stubs).
 
 import { readFileSync, existsSync, readdirSync, writeFileSync, mkdirSync, statSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+
 import { ax } from '@ax-llm/ax'
 import {
   runProposeReview,
@@ -23,6 +24,7 @@ import {
   type Verification,
   type ReviewMemoryEntry,
 } from '@tangle-network/agent-eval'
+
 import { createLLM, isLLMAvailable } from '../../lib/llm.js'
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..')
@@ -41,7 +43,7 @@ interface FamilyProposal {
   proposalDir: string
   manifest: unknown
   frameworkManifest: unknown
-  templateFiles: Array<{ path: string; body: string }>
+  templateFiles: { path: string; body: string }[]
   peerFamilies: string[]
   mode: 'llm' | 'deterministic'
   reasoning: string
@@ -61,9 +63,9 @@ function taxonomyDistance(
   b: Record<string, string | undefined>,
 ): number {
   let dist = 0
-  if (a.language !== b['language']) dist += 1
-  if (a.runtime !== b['runtime']) dist += 1
-  if (a.surface !== b['surface']) dist += 1
+  if (a.language !== b.language) dist += 1
+  if (a.runtime !== b.runtime) dist += 1
+  if (a.surface !== b.surface) dist += 1
   return dist
 }
 
@@ -141,25 +143,34 @@ function slotForFile(filePath: string, runtime: string, surface?: string): strin
     }
     return 'package manifest with "dev" + "build" + "test" scripts and pinned TypeScript ^5 (NOT ^4.x).'
   }
-  if (filePath === 'tsconfig.json') return 'strict TS5 config: target es2022, module esnext, moduleResolution bundler, jsx react-jsx (if frontend), strict true, noEmit true, skipLibCheck true, lib ["es2022","dom","dom.iterable"].'
-  if (filePath === 'vite.config.ts') return 'Vite config importing @vitejs/plugin-react, with defineConfig({ plugins: [react()], server: { port: 5173 } }).'
-  if (filePath === 'index.html') return 'HTML5 shell: <!doctype html>, <div id="root"></div>, <script type="module" src="/src/main.tsx">, responsive viewport meta.'
+  if (filePath === 'tsconfig.json')
+    return 'strict TS5 config: target es2022, module esnext, moduleResolution bundler, jsx react-jsx (if frontend), strict true, noEmit true, skipLibCheck true, lib ["es2022","dom","dom.iterable"].'
+  if (filePath === 'vite.config.ts')
+    return 'Vite config importing @vitejs/plugin-react, with defineConfig({ plugins: [react()], server: { port: 5173 } }).'
+  if (filePath === 'index.html')
+    return 'HTML5 shell: <!doctype html>, <div id="root"></div>, <script type="module" src="/src/main.tsx">, responsive viewport meta.'
   if (filePath === 'src/main.ts' || filePath === 'src/main.tsx') {
-    if (surface === 'frontend') return 'React entrypoint: import React, ReactDOM; createRoot(document.getElementById("root")).render(<App />). MUST NOT import node:http or createServer — this is browser code.'
+    if (surface === 'frontend')
+      return 'React entrypoint: import React, ReactDOM; createRoot(document.getElementById("root")).render(<App />). MUST NOT import node:http or createServer — this is browser code.'
     return `main entrypoint for the ${runtime} starter`
   }
-  if (filePath === 'src/App.tsx') return 'React App component — functional component with useState for app-local state, renders a simple UI surfacing the family\'s domain.'
+  if (filePath === 'src/App.tsx')
+    return "React App component — functional component with useState for app-local state, renders a simple UI surfacing the family's domain."
   if (filePath === 'src/index.ts') {
-    if (surface === 'api') return 'HTTP server entrypoint using Hono or native Node http, /health endpoint returning 200.'
-    if (surface === 'agent') return 'Agent entrypoint: import agent loop, wire tools, start chat step runner.'
+    if (surface === 'api')
+      return 'HTTP server entrypoint using Hono or native Node http, /health endpoint returning 200.'
+    if (surface === 'agent')
+      return 'Agent entrypoint: import agent loop, wire tools, start chat step runner.'
     return `main entrypoint for the ${runtime} starter`
   }
   if (filePath === 'src/cli.ts') return 'commander-based CLI entrypoint with --help surface'
-  if (filePath === 'src/agent.ts') return 'agent loop entrypoint — tool registry + chat step function'
+  if (filePath === 'src/agent.ts')
+    return 'agent loop entrypoint — tool registry + chat step function'
   if (filePath === 'src/runner.ts') return 'batch runner that iterates scenarios/ + writes results'
   if (filePath === 'scenarios/example.ts') return 'example scenario file the harness picks up'
   if (filePath === 'judges/example.ts') return 'example rubric judge returning {score, rationale}'
-  if (filePath === '.env.example') return 'Environment variables the app reads. List every var with a short comment. Never include real secrets. Frontend vars use VITE_ prefix.'
+  if (filePath === '.env.example')
+    return 'Environment variables the app reads. List every var with a short comment. Never include real secrets. Frontend vars use VITE_ prefix.'
   if (filePath === 'docker-compose.yml') return 'docker compose with the primary service + volume'
   if (filePath === 'requirements.txt') return 'Python deps pinned to current major versions'
   if (filePath === 'pyproject.toml') return 'Python package metadata + deps'
@@ -169,34 +180,120 @@ function slotForFile(filePath: string, runtime: string, surface?: string): strin
   if (filePath === 'go.mod') return 'Go module declaration with Go version + deps'
   if (filePath === 'main.go') return 'Go binary entrypoint with main() and top-level wiring'
   if (filePath.endsWith('.mjs')) return 'Node validator asserting key files + deps structure'
-  if (filePath === 'README.md') return 'Project README with THESE exact section headers in order: "## Quickstart" (npm/pnpm install + dev command), "## Environment" (list every VITE_ / env var from .env.example with a one-line description + where to obtain the value), "## Architecture" (what src/main and src/App do, what deps are used for), "## Extension Points" (the 2-3 files an agent will most likely edit when building on this starter). Write as if the reader is a staff engineer who has never seen the domain — explain every non-obvious design choice. No marketing fluff, no emojis.'
+  if (filePath === 'README.md') {
+    if (surface === 'agent-runtime')
+      return 'Bundle README with THESE exact sections in order: "## What this bundle is" (one paragraph: this is a system prompt + domain templates + cron/webhook triggers for an agent-in-a-sandbox; no `pnpm build` step), "## How a sandbox spawns it" (what file the agent reads first — system-prompt.md — and how templates/ get resolved), "## Domain capabilities" (bullet list mirroring defaults.declaredCapabilities), "## Extension Points" (the 2-3 files a downstream BA-dispatched agent will edit). NO start scripts, NO npm install instructions for non-Worker bundles.'
+    return 'Project README with THESE exact section headers in order: "## Quickstart" (npm/pnpm install + dev command), "## Environment" (list every VITE_ / env var from .env.example with a one-line description + where to obtain the value), "## Architecture" (what src/main and src/App do, what deps are used for), "## Extension Points" (the 2-3 files an agent will most likely edit when building on this starter). Write as if the reader is a staff engineer who has never seen the domain — explain every non-obvious design choice. No marketing fluff, no emojis.'
+  }
+  // agent-runtime surface — bundles ship a system prompt + domain templates + (CF Worker or local-CLI) triggers.
+  if (surface === 'agent-runtime') {
+    if (filePath === 'system-prompt.md')
+      return 'Layered system prompt for the agent-in-sandbox. MUST start with YAML frontmatter (---\\nname: <id>\\nrole: <one-line>\\ndomain: <one-line>\\nallowedDomains: []\\nallowedEnv: []\\n---) followed by sections: "## Role", "## Authoritative skills" (relative refs to skills/*.md), "## Output blocks" (declares :::<block> grammar the UI parses, e.g. :::proposal, :::filing, :::artifact), "## Refusal & escalation" (when to refuse, when to escalate to a human). Concise, directive, no examples in the prompt body — examples live in templates/.'
+    if (filePath === 'templates/index.json')
+      return 'JSON index of domain templates. Shape: {"entries":[{"id":"<slug>","capability":"<declared-capability-id>","path":"./<file.md>","tags":["..."],"version":"0.1.0"}]}. Every declared capability in defaults.declaredCapabilities MUST appear as the capability field on at least one entry. Every "path" MUST resolve to an existing file relative to this index.'
+    if (filePath.startsWith('templates/') && filePath.endsWith('.md'))
+      return 'Domain template (>=40 lines, no stub). Reference content the agent reads at runtime — examples, rule files, form-mappings, persona briefs. Concrete, sourced, dated where applicable. Frontmatter MUST include source + retrieved (ISO date) when citing factual material; no factual claim ships without provenance.'
+    if (filePath.startsWith('skills/') && filePath.endsWith('.md'))
+      return 'Conditional skill (>=30 lines). Loaded by name from system-prompt.md "Authoritative skills" list. Domain rules + cross-references to templates. No directive that contradicts the base prompt.'
+    if (filePath === 'wrangler.toml')
+      return 'Cloudflare Worker config for agent-runtime bundle. Sections: [vars] (only allowlisted public vars from defaults.publicVars — NEVER secrets), [[d1_databases]] with binding="DB" + database_name="<replace-me>" + database_id="<replace-me>" placeholder (consumer provisions), [[kv_namespaces]] with binding="VAULT", [triggers] crons = ["<minute> <hour> * * *"] where <minute> is the literal token RANDOM_MINUTE (substituted at compose time per bundleId hash). NO inline secrets, NO `* * * * *` crons.'
+    if (filePath === 'src/index.ts')
+      return 'CF Worker entrypoint exporting fetch + scheduled handlers. fetch: streaming chat against the agent — POST /api/chat dispatches to the agent loop, reads system-prompt.md + templates index, passes through structured output blocks. scheduled(): wakes on cron, runs deadline/feedback checks declared in defaults.scheduled. Both handlers MUST gate on Authorization unless the route is in defaults.routes with auth: "none".'
+    if (filePath === 'agent.config.json')
+      return 'Local-CLI bundle config. Shape: {"runtime":"local-cli","triggers":[{"id":"<slug>","cron":"<expr>","cmd":"<argv>"}],"tools":["<sandbox-tool-id>"]}. Substitutes for wrangler.toml on local-CLI variant; same cron-syntax constraints apply.'
+  }
   return `${filePath} — agent-extensible entry file`
 }
 
-function filesForTaxonomy(taxonomy: { language: string; runtime: string; surface: string }): Array<{ path: string; role: string }> {
+function filesForTaxonomy(taxonomy: {
+  language: string
+  runtime: string
+  surface: string
+}): { path: string; role: string }[] {
   const lang = taxonomy.language
   const runtime = taxonomy.runtime
   const surface = taxonomy.surface
   const validator = `validate-${runtime}.mjs`
-  const toFiles = (paths: string[]) => paths.map((p) => ({ path: p, role: slotForFile(p, runtime, surface) }))
+  const toFiles = (paths: string[]) =>
+    paths.map((p) => ({ path: p, role: slotForFile(p, runtime, surface) }))
+
+  // agent-runtime surface — bundles span markdown + (CF Worker or local-CLI) triggers.
+  // Triggered via taxonomy.surface, not language: a bundle whose primary content
+  // is markdown still ships a TS Worker shell when runtime=cloudflare-worker.
+  if (surface === 'agent-runtime') {
+    const baseMd = [
+      'system-prompt.md',
+      'templates/index.json',
+      'templates/example.md',
+      'README.md',
+      validator,
+    ]
+    if (runtime === 'cloudflare-worker') {
+      return toFiles([...baseMd, 'wrangler.toml', 'src/index.ts', 'package.json', 'tsconfig.json'])
+    }
+    if (runtime === 'local-cli') {
+      return toFiles([...baseMd, 'agent.config.json'])
+    }
+    return toFiles(baseMd)
+  }
 
   // TypeScript / Node / Bun / Deno / CF-Worker permutations
   if (lang === 'typescript' || lang === 'javascript') {
     if (surface === 'frontend') {
-      return toFiles(['package.json', 'tsconfig.json', 'vite.config.ts', 'index.html', 'src/main.tsx', 'src/App.tsx', '.env.example', 'README.md', validator])
+      return toFiles([
+        'package.json',
+        'tsconfig.json',
+        'vite.config.ts',
+        'index.html',
+        'src/main.tsx',
+        'src/App.tsx',
+        '.env.example',
+        'README.md',
+        validator,
+      ])
     }
     if (surface === 'api' || surface === 'inference') {
-      return toFiles(['package.json', 'tsconfig.json', 'src/index.ts', '.env.example', 'README.md', validator])
+      return toFiles([
+        'package.json',
+        'tsconfig.json',
+        'src/index.ts',
+        '.env.example',
+        'README.md',
+        validator,
+      ])
     }
     if (surface === 'cli') {
-      return toFiles(['package.json', 'tsconfig.json', 'src/cli.ts', 'src/index.ts', 'README.md', validator])
+      return toFiles([
+        'package.json',
+        'tsconfig.json',
+        'src/cli.ts',
+        'src/index.ts',
+        'README.md',
+        validator,
+      ])
     }
     if (surface === 'agent') {
-      return toFiles(['package.json', 'tsconfig.json', 'src/agent.ts', 'src/index.ts', '.env.example', 'README.md', validator])
+      return toFiles([
+        'package.json',
+        'tsconfig.json',
+        'src/agent.ts',
+        'src/index.ts',
+        '.env.example',
+        'README.md',
+        validator,
+      ])
     }
     if (surface === 'tooling') {
       // Eval/test-harness-shaped project: scenarios + judges + runner + validator.
-      return toFiles(['package.json', 'tsconfig.json', 'src/runner.ts', 'scenarios/example.ts', 'judges/example.ts', 'README.md', validator])
+      return toFiles([
+        'package.json',
+        'tsconfig.json',
+        'src/runner.ts',
+        'scenarios/example.ts',
+        'judges/example.ts',
+        'README.md',
+        validator,
+      ])
     }
     // Unknown TS surface: still give a real scaffold, not a bare README.
     return toFiles(['package.json', 'tsconfig.json', 'src/index.ts', 'README.md', validator])
@@ -205,16 +302,37 @@ function filesForTaxonomy(taxonomy: { language: string; runtime: string; surface
   // Python permutations
   if (lang === 'python') {
     if (surface === 'api') {
-      return toFiles(['pyproject.toml', 'requirements.txt', 'src/main.py', '.env.example', 'README.md', validator])
+      return toFiles([
+        'pyproject.toml',
+        'requirements.txt',
+        'src/main.py',
+        '.env.example',
+        'README.md',
+        validator,
+      ])
     }
     if (surface === 'cli') {
       return toFiles(['pyproject.toml', 'requirements.txt', 'src/cli.py', 'README.md', validator])
     }
     if (surface === 'agent') {
-      return toFiles(['pyproject.toml', 'requirements.txt', 'src/agent.py', 'src/main.py', 'README.md', validator])
+      return toFiles([
+        'pyproject.toml',
+        'requirements.txt',
+        'src/agent.py',
+        'src/main.py',
+        'README.md',
+        validator,
+      ])
     }
     // Default python surface
-    return toFiles(['pyproject.toml', 'requirements.txt', 'src/main.py', '.env.example', 'README.md', validator])
+    return toFiles([
+      'pyproject.toml',
+      'requirements.txt',
+      'src/main.py',
+      '.env.example',
+      'README.md',
+      validator,
+    ])
   }
 
   // Rust permutations
@@ -240,13 +358,16 @@ function filesForTaxonomy(taxonomy: { language: string; runtime: string; surface
   return toFiles(['README.md', validator])
 }
 
-async function proposeViaLLM(input: ProposeFamilyInput, peers: PeerSummary[]): Promise<FamilyProposal | null> {
+async function proposeViaLLM(
+  input: ProposeFamilyInput,
+  peers: PeerSummary[],
+): Promise<FamilyProposal | null> {
   if (!isLLMAvailable()) return null
   const llm = createLLM()
   const peerSummary = peers
     .map(
       (p) =>
-        `- ${p.id} (${p.taxonomy['language'] ?? '?'}/${p.taxonomy['runtime'] ?? '?'}/${p.taxonomy['surface'] ?? '?'}): ${p.description}`,
+        `- ${p.id} (${p.taxonomy.language ?? '?'}/${p.taxonomy.runtime ?? '?'}/${p.taxonomy.surface ?? '?'}): ${p.description}`,
     )
     .join('\n')
   const cues = (input.productCues ?? []).join('\n- ') || '(none)'
@@ -273,7 +394,7 @@ async function proposeViaLLM(input: ProposeFamilyInput, peers: PeerSummary[]): P
     }
 
     const wantedFiles = filesForTaxonomy(input.taxonomy)
-    const templateFiles: Array<{ path: string; body: string }> = []
+    const templateFiles: { path: string; body: string }[] = []
     // Extract reviewer directives from productCues for the file generator.
     // The RLM wrapper prefixes its directives with "REVIEWER DIRECTIVE" so
     // they're distinguishable from plain product cues. Ax rejects empty
@@ -282,9 +403,8 @@ async function proposeViaLLM(input: ProposeFamilyInput, peers: PeerSummary[]): P
     const directives = (input.productCues ?? []).filter((c) =>
       /REVIEWER DIRECTIVE|REFINEMENT GUIDANCE|prior fidelity rejection/i.test(c),
     )
-    const refinementHints = directives.length > 0
-      ? directives
-      : ['(shot 1 — no prior reviewer directives)']
+    const refinementHints =
+      directives.length > 0 ? directives : ['(shot 1 — no prior reviewer directives)']
     for (const f of wantedFiles) {
       try {
         const body = (await fileAuthor.forward(llm, {
@@ -316,7 +436,10 @@ async function proposeViaLLM(input: ProposeFamilyInput, peers: PeerSummary[]): P
 
     const manifest = {
       id: input.id,
-      description: input.description.length >= 20 ? input.description : `${input.description} — ${input.taxonomy.runtime} ${input.taxonomy.surface} starter`,
+      description:
+        input.description.length >= 20
+          ? input.description
+          : `${input.description} — ${input.taxonomy.runtime} ${input.taxonomy.surface} starter`,
       tags: [input.taxonomy.runtime, input.taxonomy.surface, input.taxonomy.language],
       taxonomy: input.taxonomy,
       defaults: { projectType: input.taxonomy.surface, serviceName: `starter-foundry-${input.id}` },
@@ -341,7 +464,12 @@ async function proposeViaLLM(input: ProposeFamilyInput, peers: PeerSummary[]): P
         gotchas: hints.gotchas ?? [],
         architectureNotes: hints.architectureNotes ?? [],
         placeholders: hints.primaryEntrypoint
-          ? [{ path: hints.primaryEntrypoint, description: `Primary entrypoint agents must extend.` }]
+          ? [
+              {
+                path: hints.primaryEntrypoint,
+                description: `Primary entrypoint agents must extend.`,
+              },
+            ]
           : [],
       },
       ...(Object.keys(deps).length > 0 ? { packageDeps: { dependencies: deps } } : {}),
@@ -372,7 +500,10 @@ async function proposeViaLLM(input: ProposeFamilyInput, peers: PeerSummary[]): P
 function proposeDeterministic(input: ProposeFamilyInput, peers: PeerSummary[]): FamilyProposal {
   const manifest = {
     id: input.id,
-    description: input.description.length >= 20 ? input.description : `${input.description} — starter (regenerate before shipping)`,
+    description:
+      input.description.length >= 20
+        ? input.description
+        : `${input.description} — starter (regenerate before shipping)`,
     tags: [input.taxonomy.runtime, input.taxonomy.surface, input.taxonomy.language],
     taxonomy: input.taxonomy,
     defaults: { projectType: input.taxonomy.surface, serviceName: `starter-foundry-${input.id}` },
@@ -382,10 +513,19 @@ function proposeDeterministic(input: ProposeFamilyInput, peers: PeerSummary[]): 
     keywords: [input.id],
     tieredKeywords: { tier1: [input.id], tier2: [] },
     buildHints: {
-      whenToUse: `TODO: describe when a prompt should route to ${input.id}. Derive from peer families: ${peers.slice(0, 3).map((p) => p.id).join(', ')}.`,
-      firstSteps: ['TODO: install command', 'TODO: dev-server command', 'TODO: entrypoint an agent should extend'],
+      whenToUse: `TODO: describe when a prompt should route to ${input.id}. Derive from peer families: ${peers
+        .slice(0, 3)
+        .map((p) => p.id)
+        .join(', ')}.`,
+      firstSteps: [
+        'TODO: install command',
+        'TODO: dev-server command',
+        'TODO: entrypoint an agent should extend',
+      ],
       gotchas: ['TODO: one non-obvious trap specific to this runtime'],
-      placeholders: [{ path: 'TODO/entrypoint.xyz', description: 'TODO: primary file agents must replace.' }],
+      placeholders: [
+        { path: 'TODO/entrypoint.xyz', description: 'TODO: primary file agents must replace.' },
+      ],
     },
   }
   const frameworkManifest = {
@@ -402,7 +542,8 @@ function proposeDeterministic(input: ProposeFamilyInput, peers: PeerSummary[]): 
     templateFiles: [],
     peerFamilies: peers.map((p) => p.id),
     mode: 'deterministic',
-    reasoning: 'No router key available — emitting TODO skeleton; human fills in template files + buildHints.',
+    reasoning:
+      'No router key available — emitting TODO skeleton; human fills in template files + buildHints.',
   }
 }
 
@@ -412,7 +553,10 @@ export async function proposeFamily(input: ProposeFamilyInput): Promise<FamilyPr
   const proposal = llmProposal ?? proposeDeterministic(input, peers)
 
   mkdirSync(proposal.proposalDir, { recursive: true })
-  writeFileSync(join(proposal.proposalDir, 'manifest.json'), JSON.stringify(proposal.manifest, null, 2) + '\n')
+  writeFileSync(
+    join(proposal.proposalDir, 'manifest.json'),
+    JSON.stringify(proposal.manifest, null, 2) + '\n',
+  )
   writeFileSync(
     join(proposal.proposalDir, 'framework.manifest.json'),
     JSON.stringify(proposal.frameworkManifest, null, 2) + '\n',
@@ -470,7 +614,7 @@ export async function proposeFamily(input: ProposeFamilyInput): Promise<FamilyPr
 interface ProposalDraftState {
   manifest: Record<string, unknown> | null
   frameworkManifest: Record<string, unknown> | null
-  templateFiles: Array<{ path: string; body: string }>
+  templateFiles: { path: string; body: string }[]
   reasoning: string
 }
 
@@ -495,8 +639,19 @@ function loadPriorFidelityEntries(id: string): ReviewMemoryEntry[] {
     const entries: ReviewMemoryEntry[] = []
     let shotCounter = 0
     for (const line of lines) {
-      let ev: { event?: string; id?: string; overall?: number; verdict?: string; topIssue?: string | null; ts?: string } = {}
-      try { ev = JSON.parse(line) } catch { continue }
+      let ev: {
+        event?: string
+        id?: string
+        overall?: number
+        verdict?: string
+        topIssue?: string | null
+        ts?: string
+      } = {}
+      try {
+        ev = JSON.parse(line)
+      } catch {
+        continue
+      }
       if (ev.event !== 'fidelity-fail') continue
       if (String(ev.id) !== id) continue
       const ts = Date.parse(ev.ts ?? '') || Date.now()
@@ -506,7 +661,8 @@ function loadPriorFidelityEntries(id: string): ReviewMemoryEntry[] {
         shot: shotCounter,
         timestamp: ts,
         observations: `Prior session: fidelity judge returned verdict=${ev.verdict ?? 'fail'}, overall=${(ev.overall ?? 0).toFixed(2)}.`,
-        diagnosis: 'Previous proposer attempt was rejected downstream by the scaffold-fidelity judge.',
+        diagnosis:
+          'Previous proposer attempt was rejected downstream by the scaffold-fidelity judge.',
         nextShotInstruction: `Prior fidelity rejection: "${topIssue}". Do NOT repeat this defect in the new draft — explicitly address it by adjusting file bodies (e.g., add the missing script, add .env.example, fix taxonomy/implementation mismatch).`,
         shouldContinue: true,
         confidence: 0.5,
@@ -519,20 +675,25 @@ function loadPriorFidelityEntries(id: string): ReviewMemoryEntry[] {
   }
 }
 
-function validateDraftForRLM(state: ProposalDraftState, id: string, taxonomy?: { language: string; runtime: string; surface: string }): string[] {
+function validateDraftForRLM(
+  state: ProposalDraftState,
+  id: string,
+  taxonomy?: { language: string; runtime: string; surface: string },
+): string[] {
   const errors: string[] = []
   const m = state.manifest
   if (!m) return ['manifest is null']
-  if (m['id'] !== id) errors.push(`manifest.id=${String(m['id'])} but expected ${id}`)
-  const desc = typeof m['description'] === 'string' ? m['description'] : ''
+  if (m.id !== id) errors.push(`manifest.id=${String(m.id)} but expected ${id}`)
+  const desc = typeof m.description === 'string' ? m.description : ''
   if (!desc || desc.length < 20) errors.push('description missing or <20 chars')
-  if (!m['taxonomy']) errors.push('missing taxonomy')
+  if (!m.taxonomy) errors.push('missing taxonomy')
   const serialized = JSON.stringify(m)
   if (serialized.includes('TODO:') || serialized.includes('TODO ')) {
     errors.push('TODO placeholders present — proposer emitted a skeleton')
   }
-  const tier1 = (m['tieredKeywords'] as Record<string, unknown> | undefined)?.['tier1']
-  if (!Array.isArray(tier1) || tier1.length < 3) errors.push('tieredKeywords.tier1 must have ≥3 entries')
+  const tier1 = (m.tieredKeywords as Record<string, unknown> | undefined)?.tier1
+  if (!Array.isArray(tier1) || tier1.length < 3)
+    errors.push('tieredKeywords.tier1 must have ≥3 entries')
   // R3: tier1 must be domain-specific, not taxonomy restatements. The LLM
   // loves emitting "TypeScript/Node.js/Frontend" which absorbs generic
   // prompts. Reject tier1 overlap with taxonomy tags.
@@ -542,11 +703,16 @@ function validateDraftForRLM(state: ProposalDraftState, id: string, taxonomy?: {
       .flatMap((s) => [s.toLowerCase(), s.toLowerCase().replace(/[^a-z]/g, '')]),
   )
   const tier1Lower = Array.isArray(tier1) ? tier1.map((k) => String(k).toLowerCase()) : []
-  const tier1TaxonomyOverlap = tier1Lower.filter((k) => taxonomyTerms.has(k) || taxonomyTerms.has(k.replace(/[^a-z]/g, '')))
+  const tier1TaxonomyOverlap = tier1Lower.filter(
+    (k) => taxonomyTerms.has(k) || taxonomyTerms.has(k.replace(/[^a-z]/g, '')),
+  )
   if (tier1TaxonomyOverlap.length > 0) {
-    errors.push(`tier1 keywords must be domain-specific, not taxonomy restatements — found ${tier1TaxonomyOverlap.join(', ')} (these are already in tags)`)
+    errors.push(
+      `tier1 keywords must be domain-specific, not taxonomy restatements — found ${tier1TaxonomyOverlap.join(', ')} (these are already in tags)`,
+    )
   }
-  if (state.templateFiles.length === 0) errors.push('no template files generated — proposer produced no file bodies')
+  if (state.templateFiles.length === 0)
+    errors.push('no template files generated — proposer produced no file bodies')
   for (const f of state.templateFiles) {
     if (typeof f.body !== 'string' || f.body.length < 20) {
       errors.push(`file ${f.path} body <20 chars (stub)`)
@@ -561,13 +727,19 @@ function validateDraftForRLM(state: ProposalDraftState, id: string, taxonomy?: {
   const pkg = byPath['package.json']
   if (pkg && (language === 'typescript' || language === 'javascript')) {
     try {
-      const parsed = JSON.parse(pkg) as { scripts?: Record<string, string>; dependencies?: Record<string, string>; devDependencies?: Record<string, string> }
+      const parsed = JSON.parse(pkg) as {
+        scripts?: Record<string, string>
+        dependencies?: Record<string, string>
+        devDependencies?: Record<string, string>
+      }
       const scripts = parsed.scripts ?? {}
-      if (surface === 'frontend' && !scripts['dev']) {
-        errors.push('package.json missing "dev" script — frontend scaffold must expose a dev server command (e.g. "vite")')
+      if (surface === 'frontend' && !scripts.dev) {
+        errors.push(
+          'package.json missing "dev" script — frontend scaffold must expose a dev server command (e.g. "vite")',
+        )
       }
       const allDeps = { ...(parsed.dependencies ?? {}), ...(parsed.devDependencies ?? {}) }
-      const tsVersion = allDeps['typescript']
+      const tsVersion = allDeps.typescript
       if (tsVersion && /^\^?4\./.test(tsVersion)) {
         errors.push(`typescript pinned to ${tsVersion} — use TypeScript 5.x for new scaffolds`)
       }
@@ -578,7 +750,9 @@ function validateDraftForRLM(state: ProposalDraftState, id: string, taxonomy?: {
         const hasUiDep = uiDeps.some((d) => d in allDeps)
         const hasHtml = 'index.html' in byPath
         if (!hasUiDep && !hasHtml) {
-          errors.push('frontend surface but no UI framework dep and no index.html — shape mismatch with taxonomy')
+          errors.push(
+            'frontend surface but no UI framework dep and no index.html — shape mismatch with taxonomy',
+          )
         }
       }
     } catch {
@@ -593,7 +767,87 @@ function validateDraftForRLM(state: ProposalDraftState, id: string, taxonomy?: {
     const readme = byPath['README.md'] ?? ''
     const readmeMentionsEnv = /env(ironment)?|\.env|import\.meta\.env|process\.env/.test(readme)
     if (!hasEnv && !readmeMentionsEnv) {
-      errors.push(`${surface} surface should document env vars — add .env.example or an "Environment" section to README.md`)
+      errors.push(
+        `${surface} surface should document env vars — add .env.example or an "Environment" section to README.md`,
+      )
+    }
+  }
+  // agent-runtime surface — structural rules the proposer must obey, mirroring the
+  // gate-2 validators (prompt-frontmatter-valid, template-index-valid, cron-syntax-valid).
+  // Without these checks the LLM happily ships a markdown bundle that schema-passes
+  // but has no frontmatter / dangling templates / a cron storm.
+  if (surface === 'agent-runtime') {
+    const promptBody = byPath['system-prompt.md']
+    if (!promptBody) {
+      errors.push(
+        'agent-runtime bundle missing system-prompt.md — every bundle must declare its layered base prompt',
+      )
+    } else if (!promptBody.startsWith('---')) {
+      errors.push(
+        'system-prompt.md does not begin with YAML frontmatter (---) — gate-2 prompt-frontmatter-valid will fail',
+      )
+    } else {
+      const closeIdx = promptBody.indexOf('\n---', 4)
+      if (closeIdx === -1) {
+        errors.push('system-prompt.md frontmatter is unterminated (missing closing "---")')
+      }
+    }
+    const indexBody = byPath['templates/index.json']
+    if (!indexBody) {
+      errors.push(
+        'agent-runtime bundle missing templates/index.json — capability ↔ template mapping is required',
+      )
+    } else {
+      try {
+        const parsed = JSON.parse(indexBody) as {
+          entries?: { id?: string; capability?: string; path?: string }[]
+        }
+        const entries = parsed.entries ?? []
+        if (entries.length === 0) {
+          errors.push('templates/index.json has zero entries — bundle ships no domain content')
+        }
+        for (const entry of entries) {
+          if (!entry.path) {
+            errors.push(`templates/index.json entry id=${entry.id ?? '?'} has no path`)
+            continue
+          }
+          const normalized = entry.path
+            .replace(/^\.?\//, 'templates/')
+            .replace(/^templates\/templates\//, 'templates/')
+          if (!(normalized in byPath) && !(entry.path in byPath)) {
+            errors.push(
+              `templates/index.json entry "${entry.path}" does not resolve to a generated file (dangling reference)`,
+            )
+          }
+        }
+      } catch {
+        errors.push('templates/index.json is not valid JSON')
+      }
+    }
+    const wrangler = byPath['wrangler.toml']
+    if (wrangler) {
+      const cronMatch = /crons\s*=\s*\[([^\]]*)\]/.exec(wrangler)
+      if (cronMatch && cronMatch[1]) {
+        const exprs = Array.from(cronMatch[1].matchAll(/"([^"]+)"/g)).map((m) => m[1] ?? '')
+        for (const expr of exprs) {
+          if (expr.trim() === '* * * * *') {
+            errors.push(
+              `wrangler.toml ships a "* * * * *" cron — fires 60×/hour, gate-2 cron-syntax-valid will fail`,
+            )
+          }
+        }
+      }
+    }
+    // Anti-stub: every template under templates/ (except index.json) must be substantive.
+    for (const [p, body] of Object.entries(byPath)) {
+      if (!p.startsWith('templates/') || !p.endsWith('.md')) continue
+      const lines = body.split('\n').filter((l) => l.trim().length > 0).length
+      const hasStubFrontmatter = /^---[\s\S]*?\bstatus:\s*stub\b[\s\S]*?---/.test(body)
+      if (lines < 40 && !hasStubFrontmatter) {
+        errors.push(
+          `${p} is too short (${lines} non-empty lines) — templates need >=40 lines of substance, or explicit "status: stub" frontmatter (which fails the substance gate honestly)`,
+        )
+      }
     }
   }
   // Frontend mainfile shape: if surface=frontend and language=typescript/javascript,
@@ -603,14 +857,20 @@ function validateDraftForRLM(state: ProposalDraftState, id: string, taxonomy?: {
     for (const p of ['src/main.ts', 'src/main.tsx', 'src/index.ts', 'src/index.tsx']) {
       const body = byPath[p]
       if (!body) continue
-      if (/\bfrom\s+['"]http['"]/.test(body) || /require\(['"]http['"]\)/.test(body) || /createServer/.test(body)) {
-        errors.push(`${p} imports node:http / createServer — frontend surface must not ship a Node HTTP server in the UI entrypoint`)
+      if (
+        /\bfrom\s+['"]http['"]/.test(body) ||
+        /require\(['"]http['"]\)/.test(body) ||
+        body.includes('createServer')
+      ) {
+        errors.push(
+          `${p} imports node:http / createServer — frontend surface must not ship a Node HTTP server in the UI entrypoint`,
+        )
       }
     }
   }
   const fm = state.frameworkManifest
   if (fm) {
-    const applies = fm['appliesTo']
+    const applies = fm.appliesTo
     if (!Array.isArray(applies) || !applies.includes(id)) {
       errors.push('frameworkManifest.appliesTo must include family id')
     }
@@ -622,7 +882,7 @@ export interface ProposeWithRLMOptions {
   maxShots?: number
 }
 
-export async function proposeFamilyWithRLM(
+async function proposeFamilyWithRLM(
   input: ProposeFamilyInput,
   opts: ProposeWithRLMOptions = {},
 ): Promise<FamilyProposal | null> {
@@ -633,12 +893,22 @@ export async function proposeFamilyWithRLM(
 
   const propose: ProposeFn<ProposalDraftState> = async ({ priorReview }) => {
     const cues = priorReview?.nextShotInstruction
-      ? [...(input.productCues ?? []), `REVIEWER DIRECTIVE (shot refinement): ${priorReview.nextShotInstruction}`]
+      ? [
+          ...(input.productCues ?? []),
+          `REVIEWER DIRECTIVE (shot refinement): ${priorReview.nextShotInstruction}`,
+        ]
       : (input.productCues ?? [])
     const p = await proposeViaLLM({ ...input, productCues: cues }, peers)
     if (!p) {
       // Proposer failed entirely — return empty state so the verifier flags it.
-      return { state: { manifest: null, frameworkManifest: null, templateFiles: [], reasoning: '(proposer returned null)' } }
+      return {
+        state: {
+          manifest: null,
+          frameworkManifest: null,
+          templateFiles: [],
+          reasoning: '(proposer returned null)',
+        },
+      }
     }
     return {
       state: {
@@ -658,15 +928,25 @@ export async function proposeFamilyWithRLM(
     return result
   }
 
-  const review: ReviewFn<ProposalDraftState> = async ({ state, verification, memory, shot, goal }) => {
+  const review: ReviewFn<ProposalDraftState> = async ({
+    state,
+    verification,
+    memory,
+    shot,
+    goal,
+  }) => {
     const failures = (verification.details as string[] | undefined) ?? []
-    const priorMem = memory
-      .map((m) => `shot ${m.shot} conf=${m.confidence.toFixed(2)} instr="${m.nextShotInstruction.slice(0, 200)}"`)
-      .join('\n') || '(none)'
-    const tier1 = (state.manifest?.['tieredKeywords'] as Record<string, unknown> | undefined)?.['tier1']
+    const priorMem =
+      memory
+        .map(
+          (m) =>
+            `shot ${m.shot} conf=${m.confidence.toFixed(2)} instr="${m.nextShotInstruction.slice(0, 200)}"`,
+        )
+        .join('\n') || '(none)'
+    const tier1 = (state.manifest?.tieredKeywords as Record<string, unknown> | undefined)?.tier1
     const tier1Len = Array.isArray(tier1) ? tier1.length : 0
-    const desc = typeof state.manifest?.['description'] === 'string' ? (state.manifest['description'] as string) : ''
-    const summary = `id=${String(state.manifest?.['id'])} desc="${desc.slice(0, 120)}" files=${state.templateFiles.length} tier1=${tier1Len}`
+    const desc = typeof state.manifest?.description === 'string' ? state.manifest.description : ''
+    const summary = `id=${String(state.manifest?.id)} desc="${desc.slice(0, 120)}" files=${state.templateFiles.length} tier1=${tier1Len}`
     const raw = (await proposalReviewer.forward(llm, {
       goal,
       currentDraftSummary: summary,
@@ -686,13 +966,20 @@ export async function proposeFamilyWithRLM(
     // concern. R3 caught the LLM reviewer giving up at shot 1 because the
     // draft "looked OK" despite the verifier flagging missing dev scripts.
     const hasBudget = shot < maxShots
-    const shouldContinue = failures.length > 0 && hasBudget
-      ? true
-      : typeof raw.shouldContinue === 'boolean' ? raw.shouldContinue : hasBudget
+    const shouldContinue =
+      failures.length > 0 && hasBudget
+        ? true
+        : typeof raw.shouldContinue === 'boolean'
+          ? raw.shouldContinue
+          : hasBudget
     return {
-      observations: String(raw.observations ?? `shot ${shot} produced ${failures.length} verification failures`),
+      observations: String(
+        raw.observations ?? `shot ${shot} produced ${failures.length} verification failures`,
+      ),
       diagnosis: String(raw.diagnosis ?? 'reviewer returned no diagnosis'),
-      nextShotInstruction: String(raw.nextShotInstruction ?? 'fix the verification failures in priority order'),
+      nextShotInstruction: String(
+        raw.nextShotInstruction ?? 'fix the verification failures in priority order',
+      ),
       shouldContinue,
       confidence: Number.isFinite(raw.confidence) ? Number(raw.confidence) : 0.5,
     }
@@ -703,7 +990,12 @@ export async function proposeFamilyWithRLM(
   // prior sessions — the proposer stops repeating the same failure.
   const priorFidelityEntries = loadPriorFidelityEntries(input.id)
 
-  const initialState: ProposalDraftState = { manifest: null, frameworkManifest: null, templateFiles: [], reasoning: '' }
+  const initialState: ProposalDraftState = {
+    manifest: null,
+    frameworkManifest: null,
+    templateFiles: [],
+    reasoning: '',
+  }
   const report = await runProposeReview<ProposalDraftState>({
     goal: `Generate a complete, promotable family registry entry for ${input.id}: ${input.description}`,
     initialState,
@@ -718,7 +1010,9 @@ export async function proposeFamilyWithRLM(
 
   const final = report.finalState
   if (!final.manifest) {
-    console.error(`[propose-rlm] ${input.id}: all ${report.shots.length} shots produced no manifest`)
+    console.error(
+      `[propose-rlm] ${input.id}: all ${report.shots.length} shots produced no manifest`,
+    )
     return null
   }
 
@@ -747,7 +1041,10 @@ export async function proposeFamilyWithRLMToDisk(
   const proposal = rlmProposal ?? proposeDeterministic(input, peers)
 
   mkdirSync(proposal.proposalDir, { recursive: true })
-  writeFileSync(join(proposal.proposalDir, 'manifest.json'), JSON.stringify(proposal.manifest, null, 2) + '\n')
+  writeFileSync(
+    join(proposal.proposalDir, 'manifest.json'),
+    JSON.stringify(proposal.manifest, null, 2) + '\n',
+  )
   writeFileSync(
     join(proposal.proposalDir, 'framework.manifest.json'),
     JSON.stringify(proposal.frameworkManifest, null, 2) + '\n',

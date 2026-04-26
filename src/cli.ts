@@ -1,24 +1,29 @@
 #!/usr/bin/env node
 
 import process from 'node:process'
-import { createAuditBundle } from './lib/audit.js'
-import { batchExport } from './lib/batch-export.js'
-import { fattenStarter } from './lib/fatten.js'
+
 import { evaluateAgents } from './lib/agent-runners.js'
-import { benchmarkStarter } from './lib/benchmark.js'
+import { createAuditBundle } from './lib/eval/audit.js'
+import { batchExport } from './lib/eval/batch-export.js'
+import { benchmarkStarter } from './lib/eval/benchmark.js'
 import { buildCatalog } from './lib/catalog.js'
-import { composeStarter } from './lib/compose.js'
 import { composeFromPrompt } from './lib/compose-prompt.js'
+import { composeStarter } from './lib/compose.js'
 import { createContextPack } from './lib/context-pack.js'
+import { fattenStarter } from './lib/fatten.js'
 import { readJson } from './lib/fs.js'
 import { runPromptCorpus } from './lib/prompt-e2e.js'
 import { planPrompt } from './lib/prompt-planner.js'
-import { runProofSuite } from './lib/prove.js'
+import { runProofSuite } from './lib/eval/prove.js'
 import { listRegistry, loadProjectSpec } from './lib/registry.js'
 import { createRelease } from './lib/release.js'
 import { selectStarter } from './lib/selection.js'
 import { validateStarter } from './lib/validate.js'
-import { benchmarkWorkspace, composeWorkspace, createWorkspaceContextPack } from './lib/workspace.js'
+import {
+  benchmarkWorkspace,
+  composeWorkspace,
+  createWorkspaceContextPack,
+} from './lib/workspace.js'
 import type { WorkspaceSpec } from './types.js'
 
 interface ParsedArgs {
@@ -32,7 +37,7 @@ function parseArgs(argv: string[]): ParsedArgs {
   const options: Record<string, string | boolean> = {}
 
   for (let index = 1; index < args.length; index += 1) {
-    const token = args[index]!
+    const token = args[index]
 
     if (!token.startsWith('--')) continue
 
@@ -96,7 +101,7 @@ function usage(): string {
 
 async function main(): Promise<void> {
   const { command, options } = parseArgs(process.argv)
-  const jsonMode = Boolean(options['json'])
+  const jsonMode = Boolean(options.json)
 
   switch (command) {
     case 'list': {
@@ -112,13 +117,13 @@ async function main(): Promise<void> {
     }
 
     case 'plan': {
-      if (!options['prompt']) throw new Error('Missing --prompt')
+      if (!options.prompt) throw new Error('Missing --prompt')
 
       const result = await planPrompt({
-        prompt: String(options['prompt']),
-        partner: options['partner'] ? String(options['partner']) : null,
-        rewriter: Boolean(options['rewriter']),
-        brief: Boolean(options['brief']),
+        prompt: String(options.prompt),
+        partner: options.partner ? String(options.partner) : null,
+        rewriter: Boolean(options.rewriter),
+        brief: Boolean(options.brief),
       })
 
       print(result, true)
@@ -126,11 +131,11 @@ async function main(): Promise<void> {
     }
 
     case 'select': {
-      if (!options['prompt']) throw new Error('Missing --prompt')
+      if (!options.prompt) throw new Error('Missing --prompt')
 
       const result = await selectStarter({
-        prompt: String(options['prompt']),
-        partner: options['partner'] ? String(options['partner']) : null,
+        prompt: String(options.prompt),
+        partner: options.partner ? String(options.partner) : null,
       })
 
       print(result, jsonMode)
@@ -138,25 +143,25 @@ async function main(): Promise<void> {
     }
 
     case 'compose': {
-      if (!options['spec'] || !options['out']) throw new Error('compose requires --spec and --out')
+      if (!options.spec || !options.out) throw new Error('compose requires --spec and --out')
 
-      const spec = await loadProjectSpec(String(options['spec']))
-      const result = await composeStarter({ spec, outDir: String(options['out']) })
+      const spec = await loadProjectSpec(String(options.spec))
+      const result = await composeStarter({ spec, outDir: String(options.out) })
 
       print(result, jsonMode)
       break
     }
 
     case 'compose-prompt': {
-      if (!options['prompt'] || !options['out']) {
+      if (!options.prompt || !options.out) {
         throw new Error('compose-prompt requires --prompt and --out')
       }
 
       const result = await composeFromPrompt({
-        prompt: String(options['prompt']),
-        outDir: String(options['out']),
-        partner: options['partner'] ? String(options['partner']) : null,
-        projectName: options['name'] ? String(options['name']) : undefined,
+        prompt: String(options.prompt),
+        outDir: String(options.out),
+        partner: options.partner ? String(options.partner) : null,
+        projectName: options.name ? String(options.name) : undefined,
       })
 
       if (result.kind === 'error') {
@@ -166,13 +171,17 @@ async function main(): Promise<void> {
       if (jsonMode) {
         print(result, true)
       } else if (result.kind === 'workspace') {
-        console.log(`Composed workspace with ${result.result.projectCount} project(s) at ${result.result.outDir}`)
+        console.log(
+          `Composed workspace with ${result.result.projectCount} project(s) at ${result.result.outDir}`,
+        )
         for (const project of result.result.projects) {
           console.log(`  - ${project.id} (${project.components.family}) → ${project.path}`)
         }
         console.log(`Launch plan: ${result.result.launchPlanPath}`)
       } else {
-        console.log(`Composed ${result.spec.family} (${(result.spec.layers ?? []).length} layers, ${result.result.filesWritten.length} files)`)
+        console.log(
+          `Composed ${result.spec.family} (${(result.spec.layers ?? []).length} layers, ${result.result.filesWritten.length} files)`,
+        )
         console.log(`Family: ${result.spec.family}`)
         console.log(`Layers: ${(result.spec.layers ?? []).join(', ')}`)
         console.log(`Out: ${result.result.outDir}`)
@@ -181,12 +190,12 @@ async function main(): Promise<void> {
     }
 
     case 'validate': {
-      if (!options['spec']) throw new Error('validate requires --spec')
+      if (!options.spec) throw new Error('validate requires --spec')
 
-      const spec = await loadProjectSpec(String(options['spec']))
+      const spec = await loadProjectSpec(String(options.spec))
       const result = await validateStarter({
         spec,
-        outDir: options['out'] ? String(options['out']) : null,
+        outDir: options.out ? String(options.out) : null,
       })
 
       print(result, jsonMode)
@@ -194,12 +203,12 @@ async function main(): Promise<void> {
     }
 
     case 'context': {
-      if (!options['spec']) throw new Error('context requires --spec')
+      if (!options.spec) throw new Error('context requires --spec')
 
-      const spec = await loadProjectSpec(String(options['spec']))
+      const spec = await loadProjectSpec(String(options.spec))
       const result = await createContextPack({
         spec,
-        outDir: options['out'] ? String(options['out']) : null,
+        outDir: options.out ? String(options.out) : null,
         llmBuildPlan: Boolean(options['llm-build-plan']),
       })
 
@@ -208,14 +217,14 @@ async function main(): Promise<void> {
     }
 
     case 'bench': {
-      if (!options['spec']) throw new Error('bench requires --spec')
+      if (!options.spec) throw new Error('bench requires --spec')
 
-      const spec = await loadProjectSpec(String(options['spec']))
-      const runs = options['runs'] ? Number.parseInt(String(options['runs']), 10) : 1
+      const spec = await loadProjectSpec(String(options.spec))
+      const runs = options.runs ? Number.parseInt(String(options.runs), 10) : 1
       const result = await benchmarkStarter({
         spec,
         runs,
-        outDir: options['out'] ? String(options['out']) : null,
+        outDir: options.out ? String(options.out) : null,
       })
 
       print(result, true)
@@ -223,22 +232,23 @@ async function main(): Promise<void> {
     }
 
     case 'workspace-compose': {
-      if (!options['spec'] || !options['out']) throw new Error('workspace-compose requires --spec and --out')
+      if (!options.spec || !options.out)
+        throw new Error('workspace-compose requires --spec and --out')
 
-      const spec = await readJson<WorkspaceSpec>(String(options['spec']))
-      const result = await composeWorkspace({ spec, outDir: String(options['out']) })
+      const spec = await readJson<WorkspaceSpec>(String(options.spec))
+      const result = await composeWorkspace({ spec, outDir: String(options.out) })
 
       print(result, true)
       break
     }
 
     case 'workspace-context': {
-      if (!options['spec']) throw new Error('workspace-context requires --spec')
+      if (!options.spec) throw new Error('workspace-context requires --spec')
 
-      const spec = await readJson<WorkspaceSpec>(String(options['spec']))
+      const spec = await readJson<WorkspaceSpec>(String(options.spec))
       const result = await createWorkspaceContextPack({
         spec,
-        outDir: options['out'] ? String(options['out']) : null,
+        outDir: options.out ? String(options.out) : null,
       })
 
       print(result, true)
@@ -246,14 +256,14 @@ async function main(): Promise<void> {
     }
 
     case 'workspace-bench': {
-      if (!options['spec']) throw new Error('workspace-bench requires --spec')
+      if (!options.spec) throw new Error('workspace-bench requires --spec')
 
-      const spec = await readJson<WorkspaceSpec>(String(options['spec']))
-      const runs = options['runs'] ? Number.parseInt(String(options['runs']), 10) : 1
+      const spec = await readJson<WorkspaceSpec>(String(options.spec))
+      const runs = options.runs ? Number.parseInt(String(options.runs), 10) : 1
       const result = await benchmarkWorkspace({
         spec,
         runs,
-        outDir: options['out'] ? String(options['out']) : null,
+        outDir: options.out ? String(options.out) : null,
       })
 
       print(result, true)
@@ -261,11 +271,11 @@ async function main(): Promise<void> {
     }
 
     case 'prompt-e2e': {
-      if (!options['corpus']) throw new Error('prompt-e2e requires --corpus')
+      if (!options.corpus) throw new Error('prompt-e2e requires --corpus')
 
       const result = await runPromptCorpus({
-        corpusPath: String(options['corpus']),
-        outDir: options['out'] ? String(options['out']) : null,
+        corpusPath: String(options.corpus),
+        outDir: options.out ? String(options.out) : null,
       })
 
       print(result, true)
@@ -273,11 +283,11 @@ async function main(): Promise<void> {
     }
 
     case 'prove': {
-      if (!options['corpus'] || !options['out']) throw new Error('prove requires --corpus and --out')
+      if (!options.corpus || !options.out) throw new Error('prove requires --corpus and --out')
 
       const result = await runProofSuite({
-        corpusPath: String(options['corpus']),
-        outDir: String(options['out']),
+        corpusPath: String(options.corpus),
+        outDir: String(options.out),
       })
 
       print(result, true)
@@ -285,12 +295,12 @@ async function main(): Promise<void> {
     }
 
     case 'audit': {
-      if (!options['spec']) throw new Error('audit requires --spec')
+      if (!options.spec) throw new Error('audit requires --spec')
 
-      const spec = await loadProjectSpec(String(options['spec']))
+      const spec = await loadProjectSpec(String(options.spec))
       const result = await createAuditBundle({
         spec,
-        outDir: options['out'] ? String(options['out']) : null,
+        outDir: options.out ? String(options.out) : null,
       })
 
       print(result, true)
@@ -298,14 +308,14 @@ async function main(): Promise<void> {
     }
 
     case 'evaluate': {
-      if (!options['spec']) throw new Error('evaluate requires --spec')
+      if (!options.spec) throw new Error('evaluate requires --spec')
 
-      const spec = await loadProjectSpec(String(options['spec']))
+      const spec = await loadProjectSpec(String(options.spec))
       const result = await evaluateAgents({
         spec,
-        outDir: options['out'] ? String(options['out']) : null,
-        agents: options['agents']
-          ? String(options['agents'])
+        outDir: options.out ? String(options.out) : null,
+        agents: options.agents
+          ? String(options.agents)
               .split(',')
               .map((value) => value.trim())
               .filter(Boolean)
@@ -317,16 +327,16 @@ async function main(): Promise<void> {
     }
 
     case 'release': {
-      if (!options['spec']) throw new Error('release requires --spec')
+      if (!options.spec) throw new Error('release requires --spec')
 
-      const spec = await loadProjectSpec(String(options['spec']))
-      const runs = options['runs'] ? Number.parseInt(String(options['runs']), 10) : 1
+      const spec = await loadProjectSpec(String(options.spec))
+      const runs = options.runs ? Number.parseInt(String(options.runs), 10) : 1
       const result = await createRelease({
         spec,
-        outDir: options['out'] ? String(options['out']) : null,
+        outDir: options.out ? String(options.out) : null,
         benchmarkRuns: runs,
-        agents: options['agents']
-          ? String(options['agents'])
+        agents: options.agents
+          ? String(options.agents)
               .split(',')
               .map((value) => value.trim())
               .filter(Boolean)
@@ -338,19 +348,23 @@ async function main(): Promise<void> {
     }
 
     case 'batch-export': {
-      if (!options['mapping'] || !options['out']) throw new Error('batch-export requires --mapping and --out')
+      if (!options.mapping || !options.out)
+        throw new Error('batch-export requires --mapping and --out')
 
-      const mappingPath = String(options['mapping'])
-      const filter = options['filter']
-        ? String(options['filter']).split(',').map((v) => v.trim()).filter(Boolean)
+      const mappingPath = String(options.mapping)
+      const filter = options.filter
+        ? String(options.filter)
+            .split(',')
+            .map((v) => v.trim())
+            .filter(Boolean)
         : null
-      const concurrency = options['concurrency'] ? Number.parseInt(String(options['concurrency']), 10) : 4
+      const concurrency = options.concurrency ? Number.parseInt(String(options.concurrency), 10) : 4
 
       const result = await batchExport({
         mappingPath,
-        outDir: String(options['out']),
+        outDir: String(options.out),
         filter,
-        fatten: Boolean(options['fatten']),
+        fatten: Boolean(options.fatten),
         validate: !options['skip-validate'],
         concurrency,
       })
@@ -361,11 +375,11 @@ async function main(): Promise<void> {
 
     case 'mine': {
       const { spawn } = await import('node:child_process')
-      const scriptPath = new URL('../scripts/mine-archetypes.mjs', import.meta.url).pathname
+      const scriptPath = new URL('../scripts/mine-archetypes.ts', import.meta.url).pathname
       const argv: string[] = []
-      if (options['corpus']) argv.push('--corpus', String(options['corpus']))
-      if (options['out']) argv.push('--out', String(options['out']))
-      if (options['provider']) argv.push('--provider', String(options['provider']))
+      if (options.corpus) argv.push('--corpus', String(options.corpus))
+      if (options.out) argv.push('--out', String(options.out))
+      if (options.provider) argv.push('--provider', String(options.provider))
       await new Promise<void>((resolveFn, rejectFn) => {
         const child = spawn(process.execPath, [scriptPath, ...argv], { stdio: 'inherit' })
         child.on('exit', (code) => {
@@ -378,10 +392,10 @@ async function main(): Promise<void> {
     }
 
     case 'fatten': {
-      if (!options['spec'] || !options['out']) throw new Error('fatten requires --spec and --out')
+      if (!options.spec || !options.out) throw new Error('fatten requires --spec and --out')
 
-      const spec = await loadProjectSpec(String(options['spec']))
-      const outDir = String(options['out'])
+      const spec = await loadProjectSpec(String(options.spec))
+      const outDir = String(options.out)
 
       // Compose first
       await composeStarter({ spec, outDir })

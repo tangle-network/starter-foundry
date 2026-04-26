@@ -54,6 +54,21 @@
         "dependencies": { "type": "object", "additionalProperties": { "type": "string" } },
         "devDependencies": { "type": "object", "additionalProperties": { "type": "string" } }
       }
+    },
+    "provides": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*(:[a-z][a-z0-9-]*)?$" },
+      "description": "Capabilities this layer provides. Conflicts when two stacked layers provide the same capability — composer rejects unless one is explicitly preferred via spec."
+    },
+    "requires": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*(:[a-z][a-z0-9-]*)?$" },
+      "description": "Capabilities this layer needs from the stack. Composer topo-sorts so providers run before requirers; missing capabilities fail loud at compose time."
+    },
+    "conflictsWith": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*(:[a-z][a-z0-9-]*)?$" },
+      "description": "Capabilities or layer ids this layer is incompatible with. Composer rejects spec if a conflicting layer is stacked alongside."
     }
   }
 }

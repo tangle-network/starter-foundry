@@ -1,10 +1,16 @@
 import path from 'node:path'
-import { enhanceBuildPlanWithLLM, generateBuildPlan, mergeBriefIntoBuildPlan } from './build-plan.js'
+
+import type { ComposeSpec, ContextPack, ComposeReport } from '../types.js'
+
+import {
+  enhanceBuildPlanWithLLM,
+  generateBuildPlan,
+  mergeBriefIntoBuildPlan,
+} from './build-plan.js'
 import { composeStarter } from './compose.js'
 import { createTempDir, listFilesRecursive, readJson, removeDir, writeJson } from './fs.js'
-import { resolveComponents } from './registry.js'
 import type { ProductBrief } from './product-brief.js'
-import type { ComposeSpec, ContextPack, ComposeReport } from '../types.js'
+import { resolveComponents } from './registry.js'
 
 export interface ContextPackResult {
   outDir: string

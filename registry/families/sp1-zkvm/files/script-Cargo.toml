@@ -10,7 +10,13 @@ path = "src/main.rs"
 
 [dependencies]
 sp1-sdk = "4.0"
-serde = { version = "1", features = ["derive"] }
+# Pin serde to =1.0.219. alloy-consensus 0.14 (a transitive dep via
+# sp1-sdk → alloy-signer-local → alloy-network) reaches into
+# `serde::__private` at the crate root, which serde 1.0.220+ moved
+# beneath `serde::core::private` and no longer re-exports. Until
+# alloy-consensus releases a fix or sp1-sdk bumps its alloy minor,
+# constrain the resolver so the breaking serde change is excluded.
+serde = { version = "=1.0.219", features = ["derive"] }
 anyhow = "1"
 
 [build-dependencies]

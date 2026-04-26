@@ -2,8 +2,11 @@ import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { performance } from 'node:perf_hooks'
+
 import { ax } from '@ax-llm/ax'
+
 import { createLLM, isLLMAvailable } from './llm.js'
+import type { ProductBrief } from './product-brief.js'
 import { generateProductBrief } from './product-brief.js'
 
 const CACHE_DIR = '.evolve'
@@ -14,7 +17,10 @@ const inMemLRU = new Map<string, string>()
 let diskCache: Map<string, string> | null = null
 
 function hashKey(prompt: string, partner: string | null): string {
-  return createHash('sha1').update(`${prompt}::${partner ?? ''}`).digest('hex').slice(0, 16)
+  return createHash('sha1')
+    .update(`${prompt}::${partner ?? ''}`)
+    .digest('hex')
+    .slice(0, 16)
 }
 
 async function loadDiskCache(): Promise<Map<string, string>> {
@@ -96,11 +102,11 @@ async function rewritePromptImpl({
   const llm = createLLM()
   let raw: { canonicalPrompt?: string; confidence?: number }
   try {
-    raw = (await rewriterAgent.forward(llm, {
+    raw = await rewriterAgent.forward(llm, {
       userPrompt: prompt,
       knownFamilies,
       knownCapabilities,
-    })) as { canonicalPrompt?: string; confidence?: number }
+    })
   } catch {
     return null
   }
@@ -143,7 +149,12 @@ export function rewritePrompt(args: RewriteArgs): Promise<RewriteResult | null> 
 // and context pack). Cached and keyed separately from the narrow rewriter.
 export async function rewriteViaBrief(
   args: RewriteArgs,
-): Promise<{ canonicalPrompt: string; brief: import('./product-brief.js').ProductBrief; cacheHit: boolean; latencyMs: number } | null> {
+): Promise<{
+  canonicalPrompt: string
+  brief: ProductBrief
+  cacheHit: boolean
+  latencyMs: number
+} | null> {
   const result = await generateProductBrief({
     prompt: args.prompt,
     partner: args.partner ?? null,

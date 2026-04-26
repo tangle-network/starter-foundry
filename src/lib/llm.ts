@@ -28,34 +28,34 @@ const DEFAULT_MODELS: Record<LLMProvider, string> = {
 // (402 no-credit, 429 rate-limit, 400 signature-mismatch, 401 bad-key),
 // try these in order. Excludes the primary itself (caller filters).
 const FALLBACK_ORDER: LLMProvider[] = [
-  'together',        // usually fast + generous rate limits for llama-3.3
-  'anthropic',       // direct Claude access
-  'tangle-router',   // billing-plane proxy
+  'together', // usually fast + generous rate limits for llama-3.3
+  'anthropic', // direct Claude access
+  'tangle-router', // billing-plane proxy
   'google-gemini',
   'openai',
   'groq',
 ]
 
 function envKey(provider: LLMProvider): string | undefined {
-  if (provider === 'tangle-router') return process.env['TANGLE_ROUTER_USER_KEY']
-  if (provider === 'groq') return process.env['GROQ_API_KEY']
-  if (provider === 'anthropic') return process.env['ANTHROPIC_API_KEY']
-  if (provider === 'together') return process.env['TOGETHER_API_KEY']
-  if (provider === 'google-gemini') return process.env['GEMINI_API_KEY'] ?? process.env['GOOGLE_AI_KEY']
-  return process.env['OPENAI_API_KEY']
+  if (provider === 'tangle-router') return process.env.TANGLE_ROUTER_USER_KEY
+  if (provider === 'groq') return process.env.GROQ_API_KEY
+  if (provider === 'anthropic') return process.env.ANTHROPIC_API_KEY
+  if (provider === 'together') return process.env.TOGETHER_API_KEY
+  if (provider === 'google-gemini') return process.env.GEMINI_API_KEY ?? process.env.GOOGLE_AI_KEY
+  return process.env.OPENAI_API_KEY
 }
 
 function detectProvider(): LLMProvider | null {
-  const explicit = process.env['STARTER_FOUNDRY_LLM_PROVIDER'] as LLMProvider | undefined
+  const explicit = process.env.STARTER_FOUNDRY_LLM_PROVIDER as LLMProvider | undefined
   if (explicit && envKey(explicit)) return explicit
   // Tangle router is the preferred path for Tangle projects — routes through
   // the billing/governance/observability plane instead of direct provider APIs.
-  if (process.env['TANGLE_ROUTER_USER_KEY']) return 'tangle-router'
-  if (process.env['ANTHROPIC_API_KEY']) return 'anthropic'
-  if (process.env['GROQ_API_KEY']) return 'groq'
-  if (process.env['TOGETHER_API_KEY']) return 'together'
-  if (process.env['OPENAI_API_KEY']) return 'openai'
-  if (process.env['GEMINI_API_KEY'] ?? process.env['GOOGLE_AI_KEY']) return 'google-gemini'
+  if (process.env.TANGLE_ROUTER_USER_KEY) return 'tangle-router'
+  if (process.env.ANTHROPIC_API_KEY) return 'anthropic'
+  if (process.env.GROQ_API_KEY) return 'groq'
+  if (process.env.TOGETHER_API_KEY) return 'together'
+  if (process.env.OPENAI_API_KEY) return 'openai'
+  if (process.env.GEMINI_API_KEY ?? process.env.GOOGLE_AI_KEY) return 'google-gemini'
   return null
 }
 
@@ -63,8 +63,8 @@ export function isLLMAvailable(): boolean {
   return detectProvider() !== null
 }
 
-export function availableProviders(): LLMProvider[] {
-  const explicit = process.env['STARTER_FOUNDRY_LLM_PROVIDER'] as LLMProvider | undefined
+function availableProviders(): LLMProvider[] {
+  const explicit = process.env.STARTER_FOUNDRY_LLM_PROVIDER as LLMProvider | undefined
   const all: LLMProvider[] = [
     ...(explicit ? [explicit] : []),
     'tangle-router',
@@ -94,14 +94,19 @@ function buildSingle(provider: LLMProvider, opts: LLMOptions): AxAIService {
       apiKey,
       apiURL: ROUTER_URL,
       config: { model },
-    } as Parameters<typeof ai>[0]) as AxAIService
+    } as Parameters<typeof ai>[0])
   }
-  return ai({ name: provider, apiKey, config: { model } } as Parameters<typeof ai>[0]) as AxAIService
+  return ai({ name: provider, apiKey, config: { model } } as Parameters<typeof ai>[0])
 }
 
 // Provider-side errors we treat as "try the next provider." Transient
 // server errors (500/502/503/504) are caller-side retry, not fallback.
-const FALLBACK_TRIGGER_PATTERNS = [/\b40[0124]\b/, /payment[\s_-]?required/i, /rate.?limit/i, /insufficient.*credit/i]
+const FALLBACK_TRIGGER_PATTERNS = [
+  /\b40[0124]\b/,
+  /payment[\s_-]?required/i,
+  /rate.?limit/i,
+  /insufficient.*credit/i,
+]
 function shouldFallback(err: unknown): boolean {
   const msg = err instanceof Error ? err.message : String(err)
   return FALLBACK_TRIGGER_PATTERNS.some((rx) => rx.test(msg))
@@ -151,10 +156,13 @@ function buildFallbackChain(primary: LLMProvider, opts: LLMOptions): AxAIService
   const handler: ProxyHandler<AxAIService> = {
     get(target, key: PropertyKey) {
       if (key === 'chat') {
-        return async function (req: AxChatRequest, svcOptions?: Readonly<AxAIServiceOptions>): Promise<AxChatResponse> {
+        return async function (
+          req: AxChatRequest,
+          svcOptions?: Readonly<AxAIServiceOptions>,
+        ): Promise<AxChatResponse> {
           let lastErr: unknown
           for (let i = 0; i < svcs.length; i++) {
-            const { provider, svc } = svcs[i]!
+            const { provider, svc } = svcs[i]
             // Per-provider model rewrite. The primary chose a model name
             // (set by Ax from its service config). When we fall over to a
             // different provider that model name is wrong — e.g.,
@@ -162,9 +170,8 @@ function buildFallbackChain(primary: LLMProvider, opts: LLMOptions): AxAIService
             // Together and OpenAI don't recognize. Swap in the target
             // provider's DEFAULT_MODELS entry for every fallback hop.
             const modelForProvider = i === 0 ? req.model : DEFAULT_MODELS[provider]
-            const rewrittenReq = modelForProvider === req.model
-              ? req
-              : { ...req, model: modelForProvider }
+            const rewrittenReq =
+              modelForProvider === req.model ? req : { ...req, model: modelForProvider }
             try {
               return (await svc.chat(rewrittenReq, svcOptions)) as AxChatResponse
             } catch (err) {
@@ -181,7 +188,7 @@ function buildFallbackChain(primary: LLMProvider, opts: LLMOptions): AxAIService
       return Reflect.get(target, key)
     },
   }
-  return new Proxy(svcs[0]!.svc, handler)
+  return new Proxy(svcs[0].svc, handler)
 }
 
 export function createLLM(opts: LLMOptions = {}): AxAIService {
@@ -196,7 +203,8 @@ export function createLLM(opts: LLMOptions = {}): AxAIService {
   // setups silently get the single-provider path. Callers that need a
   // specific provider (e.g., scaffold-bridge pinning a Sonnet model) must
   // pass `provider` explicitly, which disables fallback.
-  const shouldFallback = opts.fallback !== false && !opts.provider && availableProviders().length >= 2
+  const shouldFallback =
+    opts.fallback !== false && !opts.provider && availableProviders().length >= 2
   if (shouldFallback) return buildFallbackChain(provider, opts)
   return buildSingle(provider, opts)
 }

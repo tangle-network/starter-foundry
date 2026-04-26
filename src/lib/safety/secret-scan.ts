@@ -14,7 +14,7 @@ export interface SecretMatch {
 
 // Pattern → label. Narrow regexes — false positives are worse than misses
 // here because secret-scan errors must be CI-blocking.
-const PATTERNS: Array<{ re: RegExp; kind: string }> = [
+const PATTERNS: { re: RegExp; kind: string }[] = [
   { re: /sk-(?:proj-)?[A-Za-z0-9_-]{30,}/g, kind: 'openai-secret-key' },
   { re: /ghp_[A-Za-z0-9]{36,}/g, kind: 'github-personal-token' },
   { re: /xoxb-[A-Za-z0-9-]{40,}/g, kind: 'slack-bot-token' },
@@ -31,9 +31,27 @@ const PATTERNS: Array<{ re: RegExp; kind: string }> = [
 // Directories we don't scan — binary / generated / huge.
 const SKIP_DIRS = new Set(['node_modules', 'pkg', 'target', 'dist', '.git', '.next', '.turbo'])
 // Extensions we don't bother reading.
-const SKIP_EXTS = new Set(['.png', '.jpg', '.jpeg', '.gif', '.webp', '.ico', '.svg', '.woff', '.woff2', '.ttf', '.otf', '.wasm', '.lockb'])
+const SKIP_EXTS = new Set([
+  '.png',
+  '.jpg',
+  '.jpeg',
+  '.gif',
+  '.webp',
+  '.ico',
+  '.svg',
+  '.woff',
+  '.woff2',
+  '.ttf',
+  '.otf',
+  '.wasm',
+  '.lockb',
+])
 
-async function walk(dir: string, onFile: (abs: string, rel: string) => Promise<void>, root: string = dir): Promise<void> {
+async function walk(
+  dir: string,
+  onFile: (abs: string, rel: string) => Promise<void>,
+  root: string = dir,
+): Promise<void> {
   const entries = await fs.readdir(dir, { withFileTypes: true })
   for (const entry of entries) {
     if (SKIP_DIRS.has(entry.name)) continue

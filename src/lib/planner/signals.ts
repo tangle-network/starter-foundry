@@ -14,7 +14,12 @@
 // Families where implicit UI capability inference fires (archetype-based
 // dashboard/chat/chart attachment). Moving it out of this set means losing
 // the auto-attached React UI layers.
-export const IMPLICIT_UI_FAMILIES = new Set(['react-vite-ts', 'nextjs-ts', 'fullstack-ts', 'remix-ts'])
+export const IMPLICIT_UI_FAMILIES = new Set([
+  'react-vite-ts',
+  'nextjs-ts',
+  'fullstack-ts',
+  'remix-ts',
+])
 
 // React families that get unconditional tailwind + shadcn attachment.
 // Keep in sync with IMPLICIT_UI_FAMILIES — any addition here should also
@@ -498,50 +503,143 @@ export const ZK_GNARK_ARCHETYPE_SIGNALS = [
 
 // Single-surface families that never become workspaces.
 export const SINGLE_LANE_SIGNALS = [
-  'expo', 'react native', 'mobile app', 'ios app', 'android app',
-  'browser extension', 'chrome extension', 'manifest v3',
-  'electron', 'desktop app', 'desktop assistant',
-  'command line', 'terminal tool',
-  'streamlit', 'gradio', 'data app', 'tauri',
+  'expo',
+  'react native',
+  'mobile app',
+  'ios app',
+  'android app',
+  'browser extension',
+  'chrome extension',
+  'manifest v3',
+  'electron',
+  'desktop app',
+  'desktop assistant',
+  'command line',
+  'terminal tool',
+  'streamlit',
+  'gradio',
+  'data app',
+  'tauri',
 ]
 
 export const FRONTEND_SIGNALS = [
-  'frontend', 'ui', 'website', 'landing', 'dashboard', 'web app', 'app',
-  'preview', 'next', 'react', 'platform', 'dapp', 'interface', 'portal',
+  'frontend',
+  'ui',
+  'website',
+  'landing',
+  'dashboard',
+  'web app',
+  'app',
+  'preview',
+  'next',
+  'react',
+  'platform',
+  'dapp',
+  'interface',
+  'portal',
   // "X page" / "Y screen" — UI nouns. Buildout corpus showed prompts like
   // "DEX swap page" / "NFT mint page" routing to forge-contracts only
   // because no frontend signal matched.
-  'page', 'screen', 'mint page', 'swap page', 'bridge page',
-  'staking page', 'claim page',
+  'page',
+  'screen',
+  'mint page',
+  'swap page',
+  'bridge page',
+  'staking page',
+  'claim page',
 ]
 
 export const API_SIGNALS = [
-  'api', 'backend', 'server', 'endpoint', 'service', 'webhook', 'health check',
-  'cloudflare', 'durable object', 'edge api', 'edge function', 'payment webhook',
-  'server wallet', 'rest api', 'graphql api',
+  'api',
+  'backend',
+  'server',
+  'endpoint',
+  'service',
+  'webhook',
+  'health check',
+  'cloudflare',
+  'durable object',
+  'edge api',
+  'edge function',
+  'payment webhook',
+  'server wallet',
+  'rest api',
+  'graphql api',
 ]
 
 // Framework namespace "api" mentions that aren't REST APIs — disambiguate.
-export const FRAMEWORK_API_TERMS = ['composition api', 'options api', 'signals api', 'context api', 'hooks api']
-export const STRONG_API_TERMS = ['backend', 'server', 'endpoint', 'webhook', 'rest api', 'graphql api', 'api service', 'api endpoint', 'health check']
+export const FRAMEWORK_API_TERMS = [
+  'composition api',
+  'options api',
+  'signals api',
+  'context api',
+  'hooks api',
+]
+export const STRONG_API_TERMS = [
+  'backend',
+  'server',
+  'endpoint',
+  'webhook',
+  'rest api',
+  'graphql api',
+  'api service',
+  'api endpoint',
+  'health check',
+]
 
 export const WORKER_SIGNALS = [
-  'trading bot', 'background job', 'background worker', 'worker for', 'playwright worker',
-  'automation worker', 'go worker', 'golang worker', 'queue', 'cron', 'market stream', 'bot',
+  'trading bot',
+  'background job',
+  'background worker',
+  'worker for',
+  'playwright worker',
+  'automation worker',
+  'go worker',
+  'golang worker',
+  'queue',
+  'cron',
+  'market stream',
+  'bot',
 ]
 
 export const EXPLICIT_WORKER_SIGNALS = [
-  'trading bot', 'background job', 'background worker', 'worker for', 'playwright worker',
-  'automation worker', 'go worker', 'golang worker', 'queue', 'cron', 'market stream',
+  'trading bot',
+  'background job',
+  'background worker',
+  'worker for',
+  'playwright worker',
+  'automation worker',
+  'go worker',
+  'golang worker',
+  'queue',
+  'cron',
+  'market stream',
 ]
 
 export const FULLSTACK_SIGNALS = [
-  'fullstack', 'full stack', 'dashboard with api', 'app with api', 'admin app', 'admin panel',
-  'database-backed', 'dashboard and api', 'admin flows', 'saas', 'saas app', 'saas platform',
-  'internal tool', 'back office', 'crud app',
+  'fullstack',
+  'full stack',
+  'dashboard with api',
+  'app with api',
+  'admin app',
+  'admin panel',
+  'database-backed',
+  'dashboard and api',
+  'admin flows',
+  'saas',
+  'saas app',
+  'saas platform',
+  'internal tool',
+  'back office',
+  'crud app',
 ]
 
 export const WORKSPACE_SIGNALS = [
-  'workspace', 'monorepo', 'separate backend', 'separate api',
-  'background worker', 'contract lane', 'contract lanes',
+  'workspace',
+  'monorepo',
+  'separate backend',
+  'separate api',
+  'background worker',
+  'contract lane',
+  'contract lanes',
 ]

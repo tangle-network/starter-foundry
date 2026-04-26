@@ -9,9 +9,11 @@
 // Either way: output is a full file string, not a patch. The caller
 // composes a scaffold with it and runs audit.
 
-import type { HarvestSummary } from './harvest.js'
-import { createLLM, isLLMAvailable } from '../../lib/llm.js'
 import { ax } from '@ax-llm/ax'
+
+import { createLLM, isLLMAvailable } from '../../lib/llm.js'
+
+import type { HarvestSummary } from './harvest.js'
 
 interface SynthesizeInput {
   templatePath: string
@@ -34,8 +36,16 @@ async function synthesizeLLM(input: SynthesizeInput): Promise<SynthesizeResult |
   if (!isLLMAvailable()) return null
   const llm = createLLM()
   const sample = input.harvest.samplesAfter[0] ?? ''
-  const lines = input.harvest.frequentlyAddedLines.slice(0, 15).map((l) => `- ${l.line}`).join('\n') || '(none above threshold)'
-  const imports = input.harvest.frequentImports.slice(0, 10).map((i) => `- ${i.token}`).join('\n') || '(no recurring imports)'
+  const lines =
+    input.harvest.frequentlyAddedLines
+      .slice(0, 15)
+      .map((l) => `- ${l.line}`)
+      .join('\n') || '(none above threshold)'
+  const imports =
+    input.harvest.frequentImports
+      .slice(0, 10)
+      .map((i) => `- ${i.token}`)
+      .join('\n') || '(no recurring imports)'
   try {
     const out = (await synthesizer.forward(llm, {
       templatePath: input.templatePath,
@@ -108,9 +118,10 @@ function synthesizeDeterministic(input: SynthesizeInput): SynthesizeResult {
   // 3. Normalize excess blank lines.
   candidate = candidate.replace(/\n{3,}/g, '\n\n')
 
-  const reasoning = appliedAdditions.length > 0
-    ? `Deterministic: grafted ${appliedAdditions.length} line(s) that appeared in ≥25% of ${input.harvest.tupleCount} agent rewrites and were missing from the current template. Stripped long comment runs + normalized blanks.`
-    : `Deterministic: no frequent agent additions above the 25% threshold. Stripped long comment runs + normalized blanks only (${input.harvest.tupleCount} tuples analyzed).`
+  const reasoning =
+    appliedAdditions.length > 0
+      ? `Deterministic: grafted ${appliedAdditions.length} line(s) that appeared in ≥25% of ${input.harvest.tupleCount} agent rewrites and were missing from the current template. Stripped long comment runs + normalized blanks.`
+      : `Deterministic: no frequent agent additions above the 25% threshold. Stripped long comment runs + normalized blanks only (${input.harvest.tupleCount} tuples analyzed).`
 
   return { mode: 'deterministic', candidate, reasoning }
 }

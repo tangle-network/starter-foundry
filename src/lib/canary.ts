@@ -12,6 +12,7 @@
  */
 import fs from 'node:fs/promises'
 import path from 'node:path'
+
 import { resolveRepoRoot } from './fs.js'
 
 export interface CanaryExperiment {
@@ -53,7 +54,10 @@ function fnv1a32(input: string): number {
  * produces the same bucket. Change the experiment name (not just the
  * percentage) to re-randomize.
  */
-export function decideCanaryBucket(consumerKey: string, experiment: CanaryExperiment): CanaryBucket {
+export function decideCanaryBucket(
+  consumerKey: string,
+  experiment: CanaryExperiment,
+): CanaryBucket {
   if (experiment.exclude?.includes(consumerKey)) return 'main'
   if (experiment.force?.includes(consumerKey)) return 'canary'
 

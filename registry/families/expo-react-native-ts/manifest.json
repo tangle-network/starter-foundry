@@ -104,7 +104,10 @@
   "tieredKeywords": {
     "tier1": [
       "expo",
-      "react native"
+      "react native",
+      "react-native",
+      "asyncstorage",
+      "expo-router"
     ],
     "tier2": [
       "mobile app",
@@ -112,7 +115,19 @@
       "android app",
       "iphone app",
       "iphone",
-      "cross-platform mobile"
+      "cross-platform mobile",
+      "react native storage",
+      "rn",
+      "mobile todo",
+      "native module",
+      "expo go",
+      "metro bundler"
+    ],
+    "archetypes": [
+      "mobile todo app",
+      "offline-first mobile",
+      "mobile note app",
+      "expo storage demo"
     ]
   }
 }

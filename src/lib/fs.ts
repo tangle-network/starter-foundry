@@ -1,7 +1,7 @@
-import fs from 'node:fs/promises'
-import path from 'node:path'
-import os from 'node:os'
 import { spawn } from 'node:child_process'
+import fs from 'node:fs/promises'
+import os from 'node:os'
+import path from 'node:path'
 
 export async function ensureDir(dirPath: string): Promise<void> {
   await fs.mkdir(dirPath, { recursive: true })
@@ -38,7 +38,9 @@ export async function resolveRepoRoot(): Promise<string> {
       const registryPath = path.join(dir, 'registry')
       const stat = await fs.stat(registryPath)
       if (stat.isDirectory()) return dir
-    } catch { /* continue walking up */ }
+    } catch {
+      /* continue walking up */
+    }
     const parent = path.dirname(dir)
     if (parent === dir) break
     dir = parent
@@ -78,8 +80,12 @@ export function runTar(sourceDir: string, archivePath: string): Promise<boolean>
     const child = spawn('tar', ['-czf', archivePath, '-C', sourceDir, '.'], {
       stdio: ['ignore', 'ignore', 'ignore'],
     })
-    child.on('close', (code) => resolve(code === 0))
-    child.on('error', () => resolve(false))
+    child.on('close', (code) => {
+      resolve(code === 0)
+    })
+    child.on('error', () => {
+      resolve(false)
+    })
   })
 }
 

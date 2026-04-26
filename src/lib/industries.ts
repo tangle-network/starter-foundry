@@ -6,8 +6,9 @@
  * via :root cascade. The CSS file is the contract.
  */
 
-import { loadRegistry } from './registry.js'
 import type { LayerManifest } from '../types.js'
+
+import { loadRegistry } from './registry.js'
 
 /**
  * Canonical paths where personalize.css lives in a composed project.
@@ -48,7 +49,7 @@ export async function listIndustries(): Promise<IndustryInfo[]> {
 export async function getIndustry(id: string): Promise<IndustryInfo | null> {
   const registry = await loadRegistry()
   const layer = registry.layers.get(`industry:${id}`)
-  if (!layer || layer.group !== 'industry') return null
+  if (layer?.group !== 'industry') return null
   return industryInfoFromLayer(layer)
 }
 
@@ -57,7 +58,7 @@ function industryInfoFromLayer(layer: LayerManifest): IndustryInfo {
     id: layer.id,
     description: layer.description,
     keywords: layer.keywords ?? [],
-    tone: (layer.defaults?.['industryTone'] as string | undefined) ?? '',
+    tone: (layer.defaults?.industryTone as string | undefined) ?? '',
     paletteCssPath: PERSONALIZE_CSS_PATHS.vite,
   }
 }

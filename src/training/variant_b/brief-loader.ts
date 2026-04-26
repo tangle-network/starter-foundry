@@ -10,9 +10,12 @@
 // constructed from mined keyword→capability mappings.
 
 import { readFile } from 'node:fs/promises'
+
 import { ax } from '@ax-llm/ax'
+
 import { createLLM, isLLMAvailable } from '../../lib/llm.js'
 import { __setTestBrief, type BriefFn, type ProductBrief } from '../../lib/product-brief.js'
+
 import type { SerializedOptimizedProgram } from './nodes/train.js'
 
 export interface InstallLoaderInput {
@@ -92,14 +95,19 @@ function archetypeRules(): ArchetypeRule[] {
     {
       id: 'agent-intel',
       test: (l) =>
-        /(scrap(e|er|ing)|aggregator|aggreg|web crawl|monitor(ing)?|competit(or|ive) (intel|intelligence|pricing)|brand monitor|news aggregator|lead gen(eration)?|listing (aggregator|scraper))/.test(l),
+        /(scrap(e|er|ing)|aggregator|aggreg|web crawl|monitor(ing)?|competit(or|ive) (intel|intelligence|pricing)|brand monitor|news aggregator|lead gen(eration)?|listing (aggregator|scraper))/.test(
+          l,
+        ),
       canonical:
         'Build a TypeScript fullstack-ts app with a browser agent that crawls and collects data, a dashboard with analytics and chart widgets for showing trends.',
     },
     // webrtc / video / telehealth
     {
       id: 'webrtc',
-      test: (l) => /(telehealth|video call|video chat|video consult|doctor.*patient|webrtc|live stream|peer-to-peer video)/.test(l),
+      test: (l) =>
+        /(telehealth|video call|video chat|video consult|doctor.*patient|webrtc|live stream|peer-to-peer video)/.test(
+          l,
+        ),
       canonical:
         'Build a TypeScript fullstack-ts app with webrtc video chat, a dashboard, and an auth flow with signup and login page.',
     },
@@ -107,7 +115,9 @@ function archetypeRules(): ArchetypeRule[] {
     {
       id: 'marketplace',
       test: (l) =>
-        /(marketplace|two-sided|peer-to-peer|multi-vendor|listing|rental|classifieds|vendor platform|seller platform|buy.*sell|neighbors? (can|rent)|rental platform)/.test(l),
+        /(marketplace|two-sided|peer-to-peer|multi-vendor|listing|rental|classifieds|vendor platform|seller platform|buy.*sell|neighbors? (can|rent)|rental platform)/.test(
+          l,
+        ),
       canonical:
         'Build a TypeScript fullstack-ts marketplace app with multi-vendor listings, a dashboard with analytics, and a shadcn component library.',
     },
@@ -115,7 +125,9 @@ function archetypeRules(): ArchetypeRule[] {
     {
       id: 'ai-chat',
       test: (l) =>
-        /((ai|voice) (companion|assistant|tutor|coach|advisor|helper|friend|therapist|mentor)|chatbot|chat app|conversational ai|ai that.*(talks|answers|listens|explains)|messaging app|kids|bedtime|stories? for)/.test(l) &&
+        /((ai|voice) (companion|assistant|tutor|coach|advisor|helper|friend|therapist|mentor)|chatbot|chat app|conversational ai|ai that.*(talks|answers|listens|explains)|messaging app|kids|bedtime|stories? for)/.test(
+          l,
+        ) &&
         !/(analytic|dashboard|insight|metric|sentiment|chart|visualiz|tracking|report)/.test(l),
       canonical:
         'Build a TypeScript fullstack-ts app with a tailwind styled responsive design, a streaming chat interface, and a conversation ui chat app.',
@@ -125,7 +137,9 @@ function archetypeRules(): ArchetypeRule[] {
       id: 'ai-chat-dashboard',
       test: (l) =>
         /\bai\b/.test(l) &&
-        /(analyz|insight|sentiment|dashboard|tracking|report|metric|trend|pattern|coach|monitor|identif)/.test(l) &&
+        /(analyz|insight|sentiment|dashboard|tracking|report|metric|trend|pattern|coach|monitor|identif)/.test(
+          l,
+        ) &&
         !/(chart|graph|visualiz)/.test(l),
       canonical:
         'Build a TypeScript fullstack-ts app with a tailwind styled responsive design, an ai chat conversation ui, and a dashboard analytics overview.',
@@ -134,15 +148,19 @@ function archetypeRules(): ArchetypeRule[] {
     {
       id: 'dashboard-shadcn-data',
       test: (l) =>
-        /(b2b|saas|subscription|hoa|association|inventory|project management|customer feedback|subscription box|small business|admin panel|dashboard)/.test(l) &&
-        /(chart|report|metric|analytic|trend|revenue|growth|insight|inventory|track)/.test(l),
+        /(b2b|saas|subscription|hoa|association|inventory|project management|customer feedback|subscription box|small business|admin panel|dashboard)/.test(
+          l,
+        ) && /(chart|report|metric|analytic|trend|revenue|growth|insight|inventory|track)/.test(l),
       canonical:
         'Build a TypeScript fullstack-ts app with a shadcn component library, a dashboard with analytics and metrics, and chart data visualization widgets.',
     },
     // dashboard-analytics: data/insights tools (default for analytics prompts)
     {
       id: 'dashboard-analytics',
-      test: (l) => /(analyz|insight|sentiment|trend|pattern|chart|graph|visualiz|dashboard|metric|stats|tracking|monitor|report|leaderboard)/.test(l),
+      test: (l) =>
+        /(analyz|insight|sentiment|trend|pattern|chart|graph|visualiz|dashboard|metric|stats|tracking|monitor|report|leaderboard)/.test(
+          l,
+        ),
       canonical:
         'Build a TypeScript fullstack-ts app with a tailwind styled responsive design, a dashboard analytics overview, and chart data visualization widgets.',
     },
@@ -160,7 +178,8 @@ function classifyArchetype(lower: string): Archetype {
 // technology family hints). Preserves held-out prompts like "Solana NFT
 // marketplace" or "Playwright scraper" that mention specific families.
 function shouldRewrite(lower: string): boolean {
-  const familyHints = /(next\.?js|react native|expo|solana|rust|playwright|streamlit|django|flask|fastapi|go api|gin |rust api|tangle blueprint|eigen(layer)? avs|mcp server|x402|dspy|stylus|move |sveltekit|remix |angular |vue |tauri |electron |cloudflare worker|hardhat|forge |zk prover|fhenix|fhevm)/
+  const familyHints =
+    /(next\.?js|react native|expo|solana|rust|playwright|streamlit|django|flask|fastapi|go api|gin |rust api|tangle blueprint|eigen(layer)? avs|mcp server|x402|dspy|stylus|move |sveltekit|remix |angular |vue |tauri |electron |cloudflare worker|hardhat|forge |zk prover|fhenix|fhevm)/
   if (familyHints.test(lower)) return false
   // Explicit "agent" that isn't a product (e.g. "AI trading agent") — skip
   if (/\b(trading|blockchain|autonomous|agent service|multi-agent) agent/.test(lower)) return false
@@ -171,12 +190,14 @@ function shouldRewrite(lower: string): boolean {
 // a strong capability set, pass through — the baseline is the best we can
 // do given the planner's auto-attach behavior. Only rewrite when the
 // baseline returns an empty or single-layer result.
-async function probeBaseline(prompt: string): Promise<{ kind: string | null; family: string | null; caps: string[] }> {
+async function probeBaseline(
+  prompt: string,
+): Promise<{ kind: string | null; family: string | null; caps: string[] }> {
   try {
     const { planPrompt } = await import('../../lib/prompt-planner.js')
     const plan = (await planPrompt({ prompt })) as {
       kind?: string
-      spec?: { family?: string; layers?: string[]; projects?: Array<{ layers?: string[] }> }
+      spec?: { family?: string; layers?: string[]; projects?: { layers?: string[] }[] }
     } | null
     if (!plan) return { kind: null, family: null, caps: [] }
     if (plan.kind === 'starter') {
@@ -188,7 +209,8 @@ async function probeBaseline(prompt: string): Promise<{ kind: string | null; fam
     }
     if (plan.kind === 'workspace') {
       const caps: string[] = []
-      for (const proj of plan.spec?.projects ?? []) for (const l of proj.layers ?? []) if (l.startsWith('capability:')) caps.push(l)
+      for (const proj of plan.spec?.projects ?? [])
+        for (const l of proj.layers ?? []) if (l.startsWith('capability:')) caps.push(l)
       return { kind: 'workspace', family: 'workspace', caps }
     }
     return { kind: plan.kind ?? null, family: null, caps: [] }
@@ -223,7 +245,8 @@ function buildDeterministicBrief(artifact: SerializedOptimizedProgram): BriefFn 
 
     const brief: ProductBrief = {
       canonicalPrompt,
-      vision: 'Ship a usable v1 that exercises the attached capability layers with real user flows.',
+      vision:
+        'Ship a usable v1 that exercises the attached capability layers with real user flows.',
       taskChecklist: [
         `Scaffold the ${familyHint} project`,
         'Wire the primary UI layout',
@@ -302,7 +325,16 @@ function buildLLMBrief(artifact: SerializedOptimizedProgram): BriefFn {
       // fall back to the deterministic path.
       const detResult = await deterministic(args)
       const detCanonical = detResult?.brief.canonicalPrompt ?? ''
-      const detKeyPhrases = ['dashboard', 'chart', 'tailwind', 'shadcn', 'chat interface', 'marketplace', 'webrtc', 'agent']
+      const detKeyPhrases = [
+        'dashboard',
+        'chart',
+        'tailwind',
+        'shadcn',
+        'chat interface',
+        'marketplace',
+        'webrtc',
+        'agent',
+      ]
       const detTriggered = detKeyPhrases.filter((p) => detCanonical.toLowerCase().includes(p))
       const llmMissing = detTriggered.filter((p) => !canonical.toLowerCase().includes(p))
       const mergedCanonical = llmMissing.length >= 2 ? detCanonical : canonical
@@ -310,12 +342,24 @@ function buildLLMBrief(artifact: SerializedOptimizedProgram): BriefFn {
       const brief: ProductBrief = {
         canonicalPrompt: mergedCanonical,
         vision: (raw.vision ?? detResult?.brief.vision ?? '').trim(),
-        taskChecklist: sanitizeList(raw.taskChecklist).length ? sanitizeList(raw.taskChecklist) : detResult?.brief.taskChecklist ?? [],
-        milestones: sanitizeList(raw.milestones).length ? sanitizeList(raw.milestones) : detResult?.brief.milestones ?? [],
-        testingPlan: sanitizeList(raw.testingPlan).length ? sanitizeList(raw.testingPlan) : detResult?.brief.testingPlan ?? [],
-        e2ePlan: sanitizeList(raw.e2ePlan).length ? sanitizeList(raw.e2ePlan) : detResult?.brief.e2ePlan ?? [],
-        securityConcerns: sanitizeList(raw.securityConcerns).length ? sanitizeList(raw.securityConcerns) : detResult?.brief.securityConcerns ?? [],
-        openQuestions: sanitizeList(raw.openQuestions).length ? sanitizeList(raw.openQuestions) : detResult?.brief.openQuestions ?? [],
+        taskChecklist: sanitizeList(raw.taskChecklist).length
+          ? sanitizeList(raw.taskChecklist)
+          : (detResult?.brief.taskChecklist ?? []),
+        milestones: sanitizeList(raw.milestones).length
+          ? sanitizeList(raw.milestones)
+          : (detResult?.brief.milestones ?? []),
+        testingPlan: sanitizeList(raw.testingPlan).length
+          ? sanitizeList(raw.testingPlan)
+          : (detResult?.brief.testingPlan ?? []),
+        e2ePlan: sanitizeList(raw.e2ePlan).length
+          ? sanitizeList(raw.e2ePlan)
+          : (detResult?.brief.e2ePlan ?? []),
+        securityConcerns: sanitizeList(raw.securityConcerns).length
+          ? sanitizeList(raw.securityConcerns)
+          : (detResult?.brief.securityConcerns ?? []),
+        openQuestions: sanitizeList(raw.openQuestions).length
+          ? sanitizeList(raw.openQuestions)
+          : (detResult?.brief.openQuestions ?? []),
         confidence: normalizeConfidence(raw.confidence),
       }
       return { brief, cacheHit: false, latencyMs: 0 }
@@ -327,7 +371,7 @@ function buildLLMBrief(artifact: SerializedOptimizedProgram): BriefFn {
 
 export async function installLoader(input: InstallLoaderInput = {}): Promise<void> {
   const optimizedPath = input.optimizedPath ?? '.evolve/optimized/brief-variant_b.json'
-  let artifact: SerializedOptimizedProgram | null = null
+  let artifact: SerializedOptimizedProgram | null
   try {
     const raw = await readFile(optimizedPath, 'utf8')
     artifact = JSON.parse(raw) as SerializedOptimizedProgram
@@ -342,7 +386,7 @@ export async function installLoader(input: InstallLoaderInput = {}): Promise<voi
   // Choose LLM-backed or deterministic. The deterministic path is always
   // available and is what provides the reliable capHit lift — it encodes the
   // optimizer's learned rules directly in JS.
-  const useLLM = isLLMAvailable() && process.env['VARIANT_B_DETERMINISTIC_ONLY'] !== '1'
+  const useLLM = isLLMAvailable() && process.env.VARIANT_B_DETERMINISTIC_ONLY !== '1'
   const fn: BriefFn = useLLM ? buildLLMBrief(artifact) : buildDeterministicBrief(artifact)
   __setTestBrief(fn)
 }

@@ -31,11 +31,11 @@ const SCAN_FILES = [
   'src/eval/scaffold-bridge.ts',
   'src/lib/template-quality.ts',
   'src/lib/prompt-e2e.ts',
-  'scripts/promote-family-proposal.mjs',
-  'scripts/promote-capability-proposal.mjs',
-  'scripts/audit-scaffold-quality.mjs',
-  'scripts/meta-harness-eval.mjs',
-  'scripts/agent-eval-scaffold.mjs',
+  'scripts/promote-family-proposal.ts',
+  'scripts/promote-capability-proposal.ts',
+  'scripts/audit-scaffold-quality.ts',
+  'scripts/meta-harness-eval.ts',
+  'scripts/agent-eval-scaffold.ts',
 ]
 
 /**
@@ -113,7 +113,7 @@ describe('muffled-gate invariant', () => {
   })
 
   test('promoters import HARNESS_CONFIGS', () => {
-    for (const p of ['scripts/promote-family-proposal.mjs', 'scripts/promote-capability-proposal.mjs']) {
+    for (const p of ['scripts/promote-family-proposal.ts', 'scripts/promote-capability-proposal.ts']) {
       const text = readFileSync(join(REPO_ROOT, p), 'utf8')
       assert.match(text, /HARNESS_CONFIGS/, `${p} must import HARNESS_CONFIGS from scaffold-bridge`)
     }

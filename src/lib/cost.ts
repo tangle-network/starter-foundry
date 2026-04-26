@@ -15,6 +15,7 @@
 import { readFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+
 import type { BuildoutEvent } from './buildout-traces.js'
 
 /** Average tokens emitted per tool call (tool args + tool result + assistant thinking). */
@@ -63,7 +64,8 @@ export async function loadRateTable(path?: string): Promise<CostRateTable> {
     path ?? join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'corpus', 'model-rates.json')
   const raw = await readFile(resolvedPath, 'utf8')
   const parsed = JSON.parse(raw) as CostRateTable
-  if (parsed.schemaVersion !== 1) throw new Error(`unknown rate table schema version: ${parsed.schemaVersion}`)
+  if (parsed.schemaVersion !== 1)
+    throw new Error(`unknown rate table schema version: ${parsed.schemaVersion}`)
   if (!Array.isArray(parsed.rates)) throw new Error('rate table must have rates array')
   if (!path) cachedTable = parsed
   return parsed
@@ -95,17 +97,16 @@ function estimateTokensFromTrace(trace: BuildoutEvent, avgTokensPerToolCall: num
  * rate table. Call loadRateTable() first in environments where you want
  * a specific table; otherwise this loads the default on first call.
  */
-export function estimateBuildoutCost(
-  trace: BuildoutEvent,
-  table: CostRateTable,
-): CostEstimate {
+export function estimateBuildoutCost(trace: BuildoutEvent, table: CostRateTable): CostEstimate {
   const rate = pickRate(trace.sourceModel, table)
   const avg = table.avgTokensPerToolCall || DEFAULT_AVG_TOKENS_PER_TOOL_CALL
   const total = estimateTokensFromTrace(trace, avg)
   const outputShare = rate.outputShare ?? table.defaultOutputShare ?? 0.3
   const outputTokens = Math.round(total * outputShare)
   const inputTokens = total - outputTokens
-  const usd = (inputTokens / 1_000_000) * rate.inputUsdPerMtok + (outputTokens / 1_000_000) * rate.outputUsdPerMtok
+  const usd =
+    (inputTokens / 1_000_000) * rate.inputUsdPerMtok +
+    (outputTokens / 1_000_000) * rate.outputUsdPerMtok
   return {
     tokenEstimate: total,
     inputTokens,
@@ -115,4 +116,3 @@ export function estimateBuildoutCost(
     rateId: rate.id,
   }
 }
-

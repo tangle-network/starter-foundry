@@ -8,10 +8,13 @@
 
 import { writeFile, mkdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
+
 import { ax, AxMiPRO } from '@ax-llm/ax'
 import type { AxAIService, AxMetricFn, AxTypedExample, AxOptimizedProgram } from '@ax-llm/ax'
-import { loadRegistry } from '../../../lib/registry.js'
+
 import { planPrompt } from '../../../lib/prompt-planner.js'
+import { loadRegistry } from '../../../lib/registry.js'
+
 import type { Trace } from './collect.js'
 
 export interface TrainInput {
@@ -53,8 +56,12 @@ const BRIEF_SIGNATURE =
   'userPrompt:string, knownFamilies:string[], knownCapabilities:string[] -> ' +
   'canonicalPrompt:string, vision:string, taskChecklist:string[], milestones:string[], testingPlan:string[], e2ePlan:string[], securityConcerns:string[], openQuestions:string[], confidence:number'
 
-type BriefExampleInput = { userPrompt: string; knownFamilies: string[]; knownCapabilities: string[] }
-type BriefPrediction = {
+interface BriefExampleInput {
+  userPrompt: string
+  knownFamilies: string[]
+  knownCapabilities: string[]
+}
+interface BriefPrediction {
   canonicalPrompt?: string
   vision?: string
   taskChecklist?: string[]
@@ -76,7 +83,10 @@ function jaccard(a: string[], b: string[]): number {
   return union === 0 ? 1 : inter / union
 }
 
-async function buildKnownLists(): Promise<{ knownFamilies: string[]; knownCapabilities: string[] }> {
+async function buildKnownLists(): Promise<{
+  knownFamilies: string[]
+  knownCapabilities: string[]
+}> {
   const registry = await loadRegistry()
   const knownFamilies = [...registry.families.keys()]
   const knownCapabilities: string[] = []
@@ -96,22 +106,26 @@ function makeMetric(expectedByPrompt: Map<string, string[]>): AxMetricFn {
     const canonical = (pred.canonicalPrompt ?? '').trim()
     if (!canonical) return 0
     const ex = example as Record<string, unknown>
-    const userPrompt = typeof ex['userPrompt'] === 'string' ? (ex['userPrompt'] as string) : ''
+    const userPrompt = typeof ex.userPrompt === 'string' ? ex.userPrompt : ''
     const expected = expectedByPrompt.get(userPrompt) ?? []
     if (expected.length === 0) {
       // no expected caps — reward length + diversity as a weak proxy
       return canonical.length > userPrompt.length ? 0.5 : 0
     }
-    let plan: unknown = null
+    let plan: unknown
     try {
       plan = await planPrompt({ prompt: canonical })
     } catch {
       return 0
     }
-    const p = plan as { kind?: string; spec?: { layers?: string[]; projects?: Array<{ layers?: string[] }> } } | null
-    const actual = p?.kind === 'starter'
-      ? p.spec?.layers ?? []
-      : (p?.spec?.projects ?? []).flatMap((proj) => proj.layers ?? [])
+    const p = plan as {
+      kind?: string
+      spec?: { layers?: string[]; projects?: { layers?: string[] }[] }
+    } | null
+    const actual =
+      p?.kind === 'starter'
+        ? (p.spec?.layers ?? [])
+        : (p?.spec?.projects ?? []).flatMap((proj) => proj.layers ?? [])
     return jaccard(actual, expected)
   }
 }
@@ -175,7 +189,7 @@ export async function trainNode(input: TrainInput): Promise<TrainOutput> {
         bestScore = opt.bestScore
         instruction = opt.instruction
         instructionMap = opt.instructionMap
-        demos = opt.demos as unknown[] | undefined
+        demos = opt.demos
         modelConfig = opt.modelConfig
         optimizerType = opt.optimizerType
         totalRounds = opt.totalRounds
@@ -187,8 +201,11 @@ export async function trainNode(input: TrainInput): Promise<TrainOutput> {
     } catch (err) {
       // Rate-limits, provider blips — fall back to the corpus-mined instruction
       // so the variant still produces an artifact.
-      // eslint-disable-next-line no-console
-      console.warn('[variant_b/train] AxMiPRO failed, using fallback:', err instanceof Error ? err.message : err)
+
+      console.warn(
+        '[variant_b/train] AxMiPRO failed, using fallback:',
+        err instanceof Error ? err.message : err,
+      )
     }
   }
 
@@ -197,7 +214,8 @@ export async function trainNode(input: TrainInput): Promise<TrainOutput> {
   // deterministic planner keys off. Real optimization can only improve on it.
   if (!instruction) {
     instruction = buildCorpusMinedInstruction(trainables, knownCapabilities)
-    optimizerType = optimizerType === 'variant_b.fallback' ? 'variant_b.corpus-mined' : optimizerType
+    optimizerType =
+      optimizerType === 'variant_b.fallback' ? 'variant_b.corpus-mined' : optimizerType
   }
 
   const artifact: SerializedOptimizedProgram = {
@@ -233,7 +251,10 @@ export async function trainNode(input: TrainInput): Promise<TrainOutput> {
 // sees those keywords. This is the deterministic floor the optimizer must
 // beat. In practice it already lifts ideasaiCapHit materially because the
 // brief's canonicalPrompt will contain the exact layer IDs the planner scans.
-export function buildCorpusMinedInstruction(trainables: Trace[], knownCapabilities: string[]): string {
+export function buildCorpusMinedInstruction(
+  trainables: Trace[],
+  knownCapabilities: string[],
+): string {
   const capToKeywords = new Map<string, Map<string, number>>()
   for (const t of trainables) {
     const words = t.prompt
@@ -249,20 +270,35 @@ export function buildCorpusMinedInstruction(trainables: Trace[], knownCapabiliti
     }
   }
   const lines: string[] = []
-  lines.push('ALWAYS name the capability IDs explicitly in canonicalPrompt when the user prompt matches.')
+  lines.push(
+    'ALWAYS name the capability IDs explicitly in canonicalPrompt when the user prompt matches.',
+  )
   lines.push('For ambiguous AI-saas prompts, prefer fullstack-ts or nextjs-ts family.')
   lines.push('Route rules (ordered):')
   const entries = [...capToKeywords.entries()]
-    .map(([cap, m]) => ({ cap, top: [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6).map(([w]) => w) }))
+    .map(([cap, m]) => ({
+      cap,
+      top: [...m.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 6)
+        .map(([w]) => w),
+    }))
     .filter((e) => knownCapabilities.includes(e.cap))
     .slice(0, 12)
   for (const { cap, top } of entries) {
-    lines.push(`- If prompt mentions any of [${top.join(', ')}] include "${cap}" in canonicalPrompt.`)
+    lines.push(
+      `- If prompt mentions any of [${top.join(', ')}] include "${cap}" in canonicalPrompt.`,
+    )
   }
   lines.push('ALWAYS include capability:tailwind for any UI that renders pages.')
-  lines.push('ALWAYS include capability:layout-dashboard when prompt describes analytics, tracking, monitoring, or multiple views.')
-  lines.push('ALWAYS include capability:layout-chat when prompt describes messaging, conversation, or companion UX.')
-  lines.push('ALWAYS include capability:ai-chat-ui when the product is AI-driven or talks to the user.')
+  lines.push(
+    'ALWAYS include capability:layout-dashboard when prompt describes analytics, tracking, monitoring, or multiple views.',
+  )
+  lines.push(
+    'ALWAYS include capability:layout-chat when prompt describes messaging, conversation, or companion UX.',
+  )
+  lines.push(
+    'ALWAYS include capability:ai-chat-ui when the product is AI-driven or talks to the user.',
+  )
   return lines.join('\n')
 }
-

@@ -1,13 +1,21 @@
+import { spawn } from 'node:child_process'
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { spawn } from 'node:child_process'
-import { createAuditBundle } from './audit.js'
-import { createTempDir, ensureDir, writeJson } from './fs.js'
+
 import type { ComposeSpec } from '../types.js'
+
+import { createAuditBundle } from './eval/audit.js'
+import { createTempDir, ensureDir, writeJson } from './fs.js'
 
 const DEFAULT_AGENTS = ['opencode', 'codex', 'claude']
 
-type AgentStatus = 'ok' | 'rate_limited' | 'auth_error' | 'unavailable' | 'transient_error' | 'failed'
+type AgentStatus =
+  | 'ok'
+  | 'rate_limited'
+  | 'auth_error'
+  | 'unavailable'
+  | 'transient_error'
+  | 'failed'
 
 function classifyFailure(output: string, exitCode: number): AgentStatus {
   const lower = output.toLowerCase()
@@ -190,7 +198,9 @@ async function runSingleAgent({
   })
   const durationMs = Math.round(performance.now() - startedAt)
   const combinedOutput = `${processResult.stdout}\n${processResult.stderr}`.trim()
-  const status = processResult.timedOut ? 'transient_error' : classifyFailure(combinedOutput, processResult.exitCode)
+  const status = processResult.timedOut
+    ? 'transient_error'
+    : classifyFailure(combinedOutput, processResult.exitCode)
 
   return {
     agent: agentName,
@@ -215,7 +225,7 @@ export async function evaluateAgents({
 }): Promise<{
   outDir: string
   reportPath: string
-  results: Array<AgentRunResult & { outputPath: string }>
+  results: (AgentRunResult & { outputPath: string })[]
   summary: { passRate: number; statuses: Record<string, AgentStatus> }
 }> {
   const evaluationDir = outDir ?? (await createTempDir('starter-foundry-evaluate'))
@@ -224,10 +234,11 @@ export async function evaluateAgents({
   const runsDir = path.join(evaluationDir, '.starter-foundry', 'agent-runs')
   await ensureDir(runsDir)
 
-  const results: Array<AgentRunResult & { outputPath: string }> = []
+  const results: (AgentRunResult & { outputPath: string })[] = []
 
   for (const agentName of selectedAgents) {
-    const promptPath = audit.promptPaths[agentName as keyof typeof audit.promptPaths] ?? audit.promptPaths.codex
+    const promptPath =
+      audit.promptPaths[agentName as keyof typeof audit.promptPaths] ?? audit.promptPaths.codex
     const result = await runSingleAgent({ agentName, promptPath, cwd: evaluationDir })
 
     const outputPath = path.join(runsDir, `${agentName}.json`)
@@ -237,7 +248,7 @@ export async function evaluateAgents({
 
   const summary = {
     passRate: results.filter((result) => result.ok).length / results.length,
-    statuses: Object.fromEntries(results.map((result) => [result.agent, result.status])) as Record<string, AgentStatus>,
+    statuses: Object.fromEntries(results.map((result) => [result.agent, result.status])),
   }
 
   const reportPath = path.join(evaluationDir, '.starter-foundry', 'agent-evaluation.json')

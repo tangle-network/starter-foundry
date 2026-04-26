@@ -7,6 +7,7 @@
 import { readFile, mkdir, appendFile } from 'node:fs/promises'
 import path from 'node:path'
 import { performance } from 'node:perf_hooks'
+
 import { planPrompt } from '../../../lib/prompt-planner.js'
 
 export interface Trace {
@@ -36,7 +37,7 @@ export interface CollectInput {
 export interface CollectOutput {
   traces: Trace[]
   tracesFile: string
-  coverageGaps: Array<{ capability: string; missCount: number }>
+  coverageGaps: { capability: string; missCount: number }[]
 }
 
 interface IdeasaiScenario {
@@ -63,8 +64,15 @@ function jaccard(a: string[], b: string[]): number {
   return union === 0 ? 1 : inter / union
 }
 
-function extractActual(plan: unknown): { kind: string | null; family: string | null; capabilities: string[] } {
-  const p = plan as { kind?: string; spec?: { family?: string; layers?: string[]; projects?: Array<{ layers?: string[] }> } } | null
+function extractActual(plan: unknown): {
+  kind: string | null
+  family: string | null
+  capabilities: string[]
+} {
+  const p = plan as {
+    kind?: string
+    spec?: { family?: string; layers?: string[]; projects?: { layers?: string[] }[] }
+  } | null
   if (!p) return { kind: null, family: null, capabilities: [] }
   if (p.kind === 'starter') {
     return { kind: 'starter', family: p.spec?.family ?? null, capabilities: p.spec?.layers ?? [] }
@@ -83,14 +91,14 @@ export async function collectNode(input: CollectInput): Promise<CollectOutput> {
   const ideasRaw = await readFile(input.corpusPath, 'utf8')
   const ideas = JSON.parse(ideasRaw) as IdeasaiScenario[]
 
-  const scenarios: Array<{
+  const scenarios: {
     id: string
     corpus: 'ideasai' | 'held-out'
     prompt: string
     partner: string | null
     expectedFamily: string | null
     expectedCapabilities: string[]
-  }> = []
+  }[] = []
 
   for (const s of ideas) {
     scenarios.push({

@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 
 const REPO = process.cwd()
-const GAP_SCRIPT = join(REPO, 'scripts/detect-capability-gaps.mjs')
+const GAP_SCRIPT = join(REPO, 'scripts/detect-capability-gaps.ts')
 
 // ── Gen 6 R6: capability gap detector contract ───────────────────────
 

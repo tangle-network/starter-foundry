@@ -22,8 +22,8 @@ importers:
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.2.1(jiti@2.6.1))
       '@tangle-network/agent-eval':
-        specifier: ^0.7.2
-        version: 0.7.2(typescript@5.9.3)(zod@4.3.6)
+        specifier: ^0.13.0
+        version: 0.13.0(typescript@5.9.3)
       '@types/node':
         specifier: ^20.0.0
         version: 20.19.39
@@ -71,6 +71,11 @@ packages:
 
   '@adraffy/ens-normalize@1.11.1':
     resolution: {integrity: sha512-nhCBV3quEgesuf7c7KYfperqSS14T8bYuvJ8PcLJp6znkZpFc0AuW4qBtr8eKVyPPe/8RSr7sglCWPU5eaxwKQ==}
+
+  '@asteasolutions/zod-to-openapi@8.5.0':
+    resolution: {integrity: sha512-SABbKiObg5dLRiTFnqiW1WWwGcg1BJfmHtT2asIBnBHg6Smy/Ms2KHc650+JI4Hw7lSkdiNebEGXpwoxfben8Q==}
+    peerDependencies:
+      zod: ^4.0.0
 
   '@ax-llm/ax@19.0.45':
     resolution: {integrity: sha512-zC/OqUutTV0omOuAxBgeCihmxP3e1eUcbA78FCaMF3pPXZ3/FgQDZf0R04LH/lVIxm5BH4/qDdNNYcIVGwii8Q==}
@@ -287,6 +292,12 @@ packages:
   '@eslint/plugin-kit@0.7.1':
     resolution: {integrity: sha512-rZAP3aVgB9ds9KOeUSL+zZ21hPmo8dh6fnIFwRQj5EAZl9gzR7wxYbYXYysAM8CTqGmUGyp2S4kUdV17MnGuWQ==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
+
+  '@hono/node-server@2.0.0':
+    resolution: {integrity: sha512-n3GfHwwCvHCkGmOwKfxUPOlbfzuO64Sbc5XC4NGPIXxkuOnJrdgExdRKmHfF924r914WRJPT397GdqLvdYTeyQ==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      hono: ^4
 
   '@huggingface/jinja@0.5.7':
     resolution: {integrity: sha512-OosMEbF/R6zkKNNzqhI7kvKYCpo1F0UeIv46/h4D4UjVEKKd6k3TiV8sgu6fkreX4lbBiRI+lZG8UnXnqVQmEQ==}
@@ -764,9 +775,10 @@ packages:
   '@sinclair/typebox@0.34.49':
     resolution: {integrity: sha512-brySQQs7Jtn0joV8Xh9ZV/hZb9Ozb0pmazDIASBkYKCjXrXU3mpcFahmK/z4YDhGkQvP9mWJbVyahdtU5wQA+A==}
 
-  '@tangle-network/agent-eval@0.7.2':
-    resolution: {integrity: sha512-2n5ftzFI0j8Upe75z1nhS8LlgYYmbq7b9w9kIr73q//GRDsiKyVLRzosbTU21UWtsZWvjba87dCvinNIvaoFbQ==}
+  '@tangle-network/agent-eval@0.13.0':
+    resolution: {integrity: sha512-HQbdjnlBaK8fQbw/V2uqBGUYLnMoengnWJCd8Fg7iU+snbDyO15Q3SiMs6Z/eHqnLRhE2EKHk6zCEU2nPwly1g==}
     engines: {node: '>=20'}
+    hasBin: true
 
   '@tangle-network/sandbox@0.0.3':
     resolution: {integrity: sha512-GWZVIGrZtg2YpTUP8x0AC9HU6xVu862cv3X0zheijcyCujMnlyFBNerohWPh9U4rS5Linm+/f4RZrYOeQXuaYw==}
@@ -1271,6 +1283,10 @@ packages:
   has-property-descriptors@1.0.2:
     resolution: {integrity: sha512-55JNKuIW+vq4Ke1BjOTjM2YctQIvCT7GFzHwmfZPGo5wnrgkid0YQtnAleFSqumZm4az3n2BS+erby5ipJdgrg==}
 
+  hono@4.12.15:
+    resolution: {integrity: sha512-qM0jDhFEaCBb4TxoW7f53Qrpv9RBiayUHo0S52JudprkhvpjIrGoU1mnnr29Fvd1U335ZFPZQY1wlkqgfGXyLg==}
+    engines: {node: '>=16.9.0'}
+
   husky@9.1.7:
     resolution: {integrity: sha512-5gs5ytaNjBrh5Ow3zrvdUUY+0VxIuWVL4i9irt6friV+BqdCfmV11CQTWMiBYWHbXhco+J1kHfTOUkePhCDvMA==}
     engines: {node: '>=18'}
@@ -1402,6 +1418,9 @@ packages:
 
   onnxruntime-web@1.26.0-dev.20260410-5e55544225:
     resolution: {integrity: sha512-hHd9n8DzIfGSAjM4Dvslesc8i6h9HEEcl8qt7X3LfhUxMgls6FBJ32j2xrDtJjKJFEehFeJmyB/pvad1I8KS8w==}
+
+  openapi3-ts@4.5.0:
+    resolution: {integrity: sha512-jaL+HgTq2Gj5jRcfdutgRGLosCy/hT8sQf6VOy+P+g36cZOjI1iukdPnijC+4CmeRzg/jEllJUboEic2FhxhtQ==}
 
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
@@ -1651,6 +1670,11 @@ snapshots:
 
   '@adraffy/ens-normalize@1.11.1': {}
 
+  '@asteasolutions/zod-to-openapi@8.5.0(zod@4.3.6)':
+    dependencies:
+      openapi3-ts: 4.5.0
+      zod: 4.3.6
+
   '@ax-llm/ax@19.0.45(zod@4.3.6)':
     dependencies:
       '@opentelemetry/api': 1.9.1
@@ -1790,6 +1814,10 @@ snapshots:
     dependencies:
       '@eslint/core': 1.2.1
       levn: 0.4.1
+
+  '@hono/node-server@2.0.0(hono@4.12.15)':
+    dependencies:
+      hono: 4.12.15
 
   '@huggingface/jinja@0.5.7': {}
 
@@ -2137,15 +2165,18 @@ snapshots:
   '@sinclair/typebox@0.34.49':
     optional: true
 
-  '@tangle-network/agent-eval@0.7.2(typescript@5.9.3)(zod@4.3.6)':
+  '@tangle-network/agent-eval@0.13.0(typescript@5.9.3)':
     dependencies:
+      '@asteasolutions/zod-to-openapi': 8.5.0(zod@4.3.6)
       '@ax-llm/ax': 19.0.45(zod@4.3.6)
+      '@hono/node-server': 2.0.0(hono@4.12.15)
       '@tangle-network/tcloud': 0.2.0(typescript@5.9.3)(zod@4.3.6)
+      hono: 4.12.15
+      zod: 4.3.6
     transitivePeerDependencies:
       - bufferutil
       - typescript
       - utf-8-validate
-      - zod
 
   '@tangle-network/sandbox@0.0.3(viem@2.48.4(typescript@5.9.3)(zod@4.3.6))':
     optionalDependencies:
@@ -2669,6 +2700,8 @@ snapshots:
     dependencies:
       es-define-property: 1.0.1
 
+  hono@4.12.15: {}
+
   husky@9.1.7: {}
 
   ignore@5.3.2: {}
@@ -2806,6 +2839,10 @@ snapshots:
       onnxruntime-common: 1.24.0-dev.20251116-b39e144322
       platform: 1.3.6
       protobufjs: 7.5.5
+
+  openapi3-ts@4.5.0:
+    dependencies:
+      yaml: 2.8.3
 
   optionator@0.9.4:
     dependencies:

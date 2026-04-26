@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-04-25T22:00:00Z",
+  "context": "post-structural-cleanup-tasks-44-50; deep-clean Phase 0 baseline",
+  "typeErrors": 0,
+  "lintErrors": 0,
+  "lintWarnings": 239,
+  "weakTypes": 5,
+  "anyAnnotations": 1,
+  "circularDeps": 0,
+  "tryCatchBlocks": 122,
+  "debtMarkers": 16,
+  "duplication": { "percentage": 1.06, "clones": 21 },
+  "unusedFiles": 6,
+  "unusedExports": 7,
+  "unusedExportedTypes": 32,
+  "sourceLoc": 20013,
+  "sourceFiles": 98
+}

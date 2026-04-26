@@ -1,35 +1,48 @@
 {
-  "mode": "evolve",
-  "goal": "Gen 10 agentic-dispatch shipped — judge fleet + dispatch-scaffold-fix + auto-loop closure",
-  "status": "gen-10-shipped",
-  "round": 0,
-  "generation": 10,
-  "activePursuit": null,
-  "lastPursuit": ".evolve/pursuits/2026-04-25-gen10-agentic-dispatch.md",
-  "updatedAt": "2026-04-25T02:30:00Z",
+  "mode": "pursue",
+  "goal": "catalog_breadth_agent_runtime ≥ 50 + catalog_breadth_agent_ui ≥ 6 (Stream B Tranche 2 + UI surface complete; current = 13 + 3)",
+  "status": "tranche-2-and-ui-complete",
+  "round": null,
+  "generation": "11.5b",
+  "activePursuit": ".evolve/pursuits/2026-04-26-gen11.5-stream-b-tranche-1.md",
+  "lastPursuit": ".evolve/pursuits/2026-04-25-gen11-agent-runtime-surface.md",
+  "updatedAt": "2026-04-26T01:30:00Z",
+  "gen11_5bResult": {
+    "thesis": "Catalog grows on both axes: 5 more agent-runtime bundles (tranche 2: real-estate / fitness / novelist / business-partner / language-tutor) AND 3 UI families (agent-with-ui / orchestrator-with-ui / sandbox-app) sit OVER the agent bundles to render their sessions / artifacts / runs.",
+    "changes": [
+      "registry/families/agent-runtime-real-estate-ts/ — 8 files, 7/7 gates, FHA + jurisdictional disclaimer",
+      "registry/families/agent-runtime-fitness-coach-ts/ — 8 files, 9/9 gates, voice-first, clinical/non-clinical boundary",
+      "registry/families/agent-runtime-novelist-coach-ts/ — 8 files, 8/8 gates, creative-collaborator with consent-per-session",
+      "registry/families/agent-runtime-business-partner-ts/ — 8 files, 9/9 gates, research-corpus citations, 7 escalation triggers",
+      "registry/families/agent-runtime-language-tutor-ts/ — 8 files, 9/9 gates, voice-first, Krashen-aligned, configurable targetLanguage",
+      "registry/families/agent-with-ui-ts/ — 11 files, 10/10 gates, Vite+React+sandbox-ui, agentInvoker prop pattern",
+      "registry/families/orchestrator-with-ui-ts/ — 11 files, 11/11 gates, Next.js+sandbox-ui, agent-roster as source of truth",
+      "registry/families/sandbox-app-ts/ — 11 files, 9/9 gates, non-agent workspace, 4 appKind defaults (editor/audit-tool/repl/file-browser)",
+      "registry/layers/ui-adapter/blocks-renderer/ — NEW slot + layer: parses :::artifact/:::escalation/:::screener-result/:::audio-cue/:::suggestion blocks; SandboxWorkbenchArtifact adapter; round-trip tests",
+      "scripts/gen11.5-validate-ui.ts — UI catalog gate validator (3/3 PASS)",
+      "scripts/refresh-scorecard.ts — added catalog_breadth_agent_ui flow (target 6, current 3)",
+      "Layer appliesTo updated for tranche-2: agent-base/tangle, agent-output/blocks, agent-tools/phony-voice"
+    ],
+    "scorecardFlowsAdded": ["catalog_breadth_agent_ui"],
+    "phase15Gate": "passed (additive-only, isolated bundles, slot-collision detected + resolved by introducing ui-adapter slot)",
+    "tests": "795/798 pass (unchanged from tranche 1 — no regressions). Pre-existing failures in agentic-proposer.test.js (lib path) + llm: availableProviders (env-dependent) are orthogonal."
+  },
+  "scorecard": {
+    "catalog_breadth_agent_runtime": { "value": 13, "target": 50, "status": "fail" },
+    "catalog_breadth_agent_ui": { "value": 3, "target": 6, "status": "fail" },
+    "scaffold_audit_pass_rate": { "value": 1.0, "target": 1.0, "status": "pass" },
+    "consumer_scaffold_attributable_rate": { "value": 0.1099, "target": 0.20, "status": "pass" }
+  },
+  "_priorTarget": "consumer_scaffold_attributable_rate ≤ 0.20 — TARGET MET (R2: 0.1099)",
+  "_priorBlockedTarget": "buildout_pass_rate (Cluster A operator-gated; awaits BA re-sweep)",
   "priorGenerations": [
     { "n": 8, "pursuit": "compile-gate", "commit": "07b54c3" },
     { "n": "8b", "pursuit": "promoter-cwd-plumbing", "commit": "8419c8a" },
     { "n": 9, "pursuit": "muffled-gate-audit", "commit": "2e5551a" },
-    { "n": 10, "pursuit": "agentic-dispatch", "commit": "pending" }
+    { "n": 10, "pursuit": "agentic-dispatch", "commit": "pending" },
+    { "n": 11, "pursuit": "agent-runtime-surface", "commit": "pending" },
+    { "n": "11.5", "pursuit": "catalog-tranche-1", "commit": "pending" },
+    { "n": "11.5b", "pursuit": "catalog-tranche-2 + ui-surface", "commit": "pending" }
   ],
-  "gen10Result": {
-    "thesis": "SF transitions from heuristic-driven to agent-dispatch-driven loop. Three coordinated changes: judge fleet replaces single judge, agent dispatches fixes against consumer-feedback clusters, auto-loop wires it.",
-    "changes": [
-      "src/eval/scaffold-bridge.ts: invokeJudgeFleet (compiler+test+linter+security parallel) — orthogonal validation",
-      "scripts/dispatch-scaffold-fix.mjs: agentic loop closure via tcloud-agent, gated on SF_AUTO_DISPATCH=1",
-      "scripts/auto-loop.mjs: dispatch-fix action with rate-limit + budget",
-      "scripts/consume-vb-feedback.mjs: optional LLM fallback for unknown bucket (SF_VB_LLM_FALLBACK=1)",
-      "scripts/refresh-scorecard.mjs: judge_fleet_unanimous_pass_rate + auto_dispatched_fix_pr_rate flows",
-      "Deleted 4 truly-orphan scripts: mine-template-rewrites, relabel-corpus, variant_b-collect-traces, variant_b-flow"
-    ],
-    "scorecardFlowsAdded": ["judge_fleet_unanimous_pass_rate", "auto_dispatched_fix_pr_rate"],
-    "envGates": ["SF_AUTO_DISPATCH=1 to enable agent dispatch", "SF_VB_LLM_FALLBACK=1 to enable LLM unknown-bucket fallback"],
-    "phase15Gate": "BLOCKING — adversarial review completed, 5 perspectives, 0 blocks"
-  },
-  "scorecard": {
-    "aggregate": "see .evolve/scorecard.json",
-    "note": "Gen 10 is architectural — adds two new flows, doesn't move existing ones until first dispatch run lands. Real measurement requires SF_AUTO_DISPATCH=1 + tcloud creds + agent-eval scaffold run with --judge-fleet."
-  },
-  "handoff": "Run /evolve targeting consumer_scaffold_attributable_rate (current 0.77, target 0.20) by enabling SF_AUTO_DISPATCH=1 and running auto-loop on a cron. Each dispatch attacks the top SF-attributable cluster; success measured by auto_dispatched_fix_pr_rate over time."
+  "handoff": "Gen 11.5b complete — 16 families total (13 agent-runtime + 3 UI), 0 regressions, all gates green. Next options: (a) /pursue gen-11.5-tranche-3 — run scripts/batch-generate-agent-runtime.ts --tranche 3 --rlm against the 37 long-tail seeds; (b) /pursue gen-12 — orchestrator-with-ui in production: agent-roster wire to real sandbox-sdk multi-sandbox provisioning; (c) apply OpenAI agentic-steerability rules to all 13 bundles (memory: openai-agentic-steerability-rules.md); (d) /governor for next pick. The product can now ship: any agent-runtime bundle + any UI family + Tangle sandbox + router.tangle.tools = a working agentic app."
 }

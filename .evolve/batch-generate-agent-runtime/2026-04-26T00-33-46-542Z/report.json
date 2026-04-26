@@ -1,0 +1,34 @@
+{
+  "ts": "2026-04-26T00:33:46.542Z",
+  "opts": {
+    "tranche": 3,
+    "limit": 1,
+    "rlm": false,
+    "maxShots": 3,
+    "tcloud": false,
+    "tcloudIterations": 8,
+    "tcloudWallSec": 900,
+    "tcloudUsd": 2,
+    "dryRun": true,
+    "skipExisting": true
+  },
+  "counts": {
+    "total": 1,
+    "validateOk": 0,
+    "composeOnly": 1,
+    "composeFail": 0
+  },
+  "results": [
+    {
+      "familyId": "agent-runtime-physics-research-ts",
+      "composeOk": true,
+      "validateOk": false,
+      "durationMs": 0,
+      "promotedToRegistry": false,
+      "proposalDir": "/Users/drew/webb/starter-foundry/.evolve/family-proposals/agent-runtime-physics-research-ts",
+      "proposalMode": "deterministic",
+      "composedDir": "/var/folders/wk/qcfly3h940s4cfmlpxbyf21w0000gn/T/batch-agent-runtime-agent-runtime-physics-research-ts-D1QhHT",
+      "composeError": "manifest has no validationChecks — proposer emitted a skeleton, not a real bundle"
+    }
+  ]
+}

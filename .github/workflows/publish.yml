@@ -1,50 +1,23 @@
 name: Release
 
-# Publishes @tangle-network/starter-foundry to npm on git tag push.
+# Publishes @tangle-network/starter-foundry to GitHub Packages on git tag push.
 #
-# WHY: starter-foundry stopped being published at 0.4.0 because we
-# were iterating fast and didn't want to flood the registry with
-# version bumps for every prompt tweak. blueprint-agent vendored each
-# version as a tarball under apps/web/vendor/. That's brittle (the
-# vendored tarball gets stale, the BP package.json + .dev.vars need
-# manual sync, every consumer needs to re-vendor) and the user has
-# now asked for it to be published normally.
+# Proprietary — All Rights Reserved. The package is intentionally NOT
+# published to public npmjs.org. Internal consumers (blueprint-agent,
+# agent-dev-container, etc.) route the @tangle-network scope to
+# https://npm.pkg.github.com/ via .npmrc.
 #
-# This workflow fires on `git tag v*` push (e.g. `v0.5.0`). It builds
-# the package, runs `npm publish --provenance --access public`, and
-# creates a Github release with the changelog.
+# Prior versions 0.4.0–0.7.3 are on public npm under MIT (perpetual
+# grant — cannot be revoked). v0.8.0 onward is proprietary on
+# GitHub Packages only.
 #
-# AUTHENTICATION (two paths, in priority order)
-#
-#   1. OIDC trusted publishing (preferred)
-#      Configured on npmjs.org under the package's "Access" tab →
-#      "Trusted publishers" → "Add trusted publisher". Choose
-#      "GitHub Actions" and set:
-#        - Organization or user:  tangle-network
-#        - Repository:            starter-foundry
-#        - Workflow filename:     publish.yml
-#        - Environment name:      (leave blank)
-#      The npm CLI then exchanges the GitHub OIDC ID token for a
-#      short-lived publish token automatically. No long-lived secret,
-#      no rotation, no compromise blast radius. This is the only
-#      mode you should ship to production.
-#
-#      Setup steps documented in PUBLISHING.md.
-#
-#   2. NPM_TOKEN (legacy fallback)
-#      A long-lived granular access token in repo Settings →
-#      Secrets → Actions → NPM_TOKEN. Used only if OIDC trusted
-#      publishing isn't configured yet (e.g. the very first publish
-#      from CI before the trusted publisher entry is added).
-#      Rotate or remove once OIDC is live.
-#
-# Both paths require `id-token: write` and `contents: write` permissions
-# on the job, set below.
+# Authentication uses the workflow's GITHUB_TOKEN automatically via
+# the registry-url override; no long-lived secret needed.
 #
 # To cut a release:
 #   1. Bump version in package.json
-#   2. git commit -am "chore: release v0.5.0"
-#   3. git tag v0.5.0
+#   2. git commit -am "chore: release v0.8.1"
+#   3. git tag v0.8.1
 #   4. git push origin main --tags
 # The workflow handles the rest.
 
@@ -59,13 +32,13 @@ on:
         required: true
 
 permissions:
-  contents: write   # for creating the github release
-  id-token: write   # for npm provenance attestation
-  packages: write   # for publishing to GitHub Packages
+  contents: write # for creating the github release
+  id-token: write # for npm provenance attestation
+  packages: write # for publishing to GitHub Packages
 
 jobs:
   publish:
-    name: Publish to npm
+    name: Publish to GitHub Packages
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -76,7 +49,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          registry-url: https://registry.npmjs.org
+          registry-url: https://npm.pkg.github.com
+          scope: '@tangle-network'
 
       - name: Install
         run: npm install
@@ -104,68 +78,17 @@ jobs:
           npm pack
           ls -la *.tgz
 
-      - name: Publish to npmjs.org
-        # OIDC-first authentication. When trusted publishing is
-        # configured for this package on npmjs.org, the npm CLI
-        # exchanges the GitHub Actions OIDC token for a short-lived
-        # publish token automatically — no NODE_AUTH_TOKEN needed.
-        # NODE_AUTH_TOKEN is set ONLY as a fallback for the case
-        # where the trusted publisher entry hasn't been created yet.
-        # Once OIDC is live in production the secret can be removed
-        # and this env block deleted entirely.
-        #
-        # NOTE: --provenance is intentionally OMITTED.
-        # npm sigstore provenance attestation requires the source
-        # repository to be PUBLIC (npm error 422: "Unsupported
-        # GitHub Actions source repository visibility: private").
-        # tangle-network/starter-foundry is private, so we publish
-        # without provenance for now. To re-enable:
-        #   1. Make the repo public, OR
-        #   2. Wait for npm to support private-repo provenance
-        # Then add `--provenance` back to the command below. The
-        # `id-token: write` permission and OIDC trusted publisher
-        # entry already in place support both modes.
-        #
-        # Idempotent on retry: if the version already exists on the
-        # registry (the gh-packages publish failed mid-workflow on a
-        # prior tag, say), skip the publish instead of 409'ing the
-        # whole job. The follow-up gh-packages step still runs.
-        run: |
-          PKG_VERSION=$(node -p "require('./package.json').version")
-          if npm view "@tangle-network/starter-foundry@$PKG_VERSION" version --registry=https://registry.npmjs.org/ >/dev/null 2>&1; then
-            echo "@tangle-network/starter-foundry@$PKG_VERSION already on npmjs.org — skipping"
-          else
-            npm publish --access public --registry=https://registry.npmjs.org/
-          fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      # Also publish to GitHub Packages so consumers whose .npmrc routes
-      # the @tangle-network scope to npm.pkg.github.com (e.g.
-      # blueprint-agent, which already has 8 other @tangle-network/*
-      # packages on gh packages) can fetch this package without
-      # rerouting their entire scope. The package metadata is identical;
-      # only the registry URL differs.
-      #
-      # GH Packages auth uses the workflow's GITHUB_TOKEN automatically
-      # via the registry-url override below; no extra secret needed.
-      - name: Configure Node for GitHub Packages
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          registry-url: https://npm.pkg.github.com
-          scope: '@tangle-network'
-
       - name: Publish to GitHub Packages
         # Idempotent on retry: skip if the version is already on gh
         # packages (e.g. a partial earlier run that succeeded here but
-        # failed elsewhere).
+        # failed elsewhere). Auth uses GITHUB_TOKEN automatically via
+        # the registry-url override above; no extra secret needed.
         run: |
           PKG_VERSION=$(node -p "require('./package.json').version")
           if npm view "@tangle-network/starter-foundry@$PKG_VERSION" version --registry=https://npm.pkg.github.com/ >/dev/null 2>&1; then
             echo "@tangle-network/starter-foundry@$PKG_VERSION already on gh packages — skipping"
           else
-            npm publish --access public --registry=https://npm.pkg.github.com/
+            npm publish --registry=https://npm.pkg.github.com/
           fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

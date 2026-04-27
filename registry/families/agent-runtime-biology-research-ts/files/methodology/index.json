@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "literature-search",
+      "capability": "literature-search",
+      "path": "./literature-search.md",
+      "tags": ["methodology", "literature", "pubmed", "search", "citation"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "sequence-analysis",
+      "capability": "sequence-analysis",
+      "path": "./sequence-analysis.md",
+      "tags": ["methodology", "sequence", "ncbi", "uniprot", "ensembl"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "experimental-design",
+      "capability": "experimental-design",
+      "path": "./experimental-design.md",
+      "tags": ["methodology", "experiment", "design", "controls", "power", "arrive"],
+      "version": "0.1.0"
+    }
+  ]
+}

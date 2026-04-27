@@ -76,11 +76,11 @@
   "files": [
     {
       "source": "files/channels/imessage.ts",
-      "target": "src/channels/imessage.ts"
+      "target": "channels/imessage.ts"
     },
     {
       "source": "files/channels/imessage.env.example",
-      "target": "src/channels/imessage.env.example"
+      "target": "channels/imessage.env.example"
     }
   ],
   "validationChecks": [

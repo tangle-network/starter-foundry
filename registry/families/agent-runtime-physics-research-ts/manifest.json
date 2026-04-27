@@ -15,6 +15,7 @@
     "surface": "agent-runtime"
   },
   "includes": [
+    "agent-base:secure",
     "agent-base:tangle",
     "agent-tools:research-corpus",
     "agent-output:blocks",

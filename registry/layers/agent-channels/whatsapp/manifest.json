@@ -80,11 +80,11 @@
   "files": [
     {
       "source": "files/channels/whatsapp.ts",
-      "target": "src/channels/whatsapp.ts"
+      "target": "channels/whatsapp.ts"
     },
     {
       "source": "files/channels/whatsapp.env.example",
-      "target": "src/channels/whatsapp.env.example"
+      "target": "channels/whatsapp.env.example"
     }
   ],
   "validationChecks": [

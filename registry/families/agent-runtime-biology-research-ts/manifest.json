@@ -73,6 +73,8 @@
     ]
   },
   "includes": [
+    "agent-base:secure",
+    "agent-base:tangle",
     "agent-base:memory",
     "agent-base:scheduler",
     "agent-base:mcp-registry",

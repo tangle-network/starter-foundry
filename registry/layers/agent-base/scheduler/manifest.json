@@ -77,19 +77,19 @@
   "files": [
     {
       "source": "files/lib/scheduler/index.ts",
-      "target": "src/lib/scheduler/index.ts"
+      "target": "lib/scheduler/index.ts"
     },
     {
       "source": "files/lib/scheduler/cron-parse.ts",
-      "target": "src/lib/scheduler/cron-parse.ts"
+      "target": "lib/scheduler/cron-parse.ts"
     },
     {
       "source": "files/lib/scheduler/sweep.ts",
-      "target": "src/lib/scheduler/sweep.ts"
+      "target": "lib/scheduler/sweep.ts"
     },
     {
       "source": "files/lib/scheduler/types.ts",
-      "target": "src/lib/scheduler/types.ts"
+      "target": "lib/scheduler/types.ts"
     }
   ],
   "validationChecks": [

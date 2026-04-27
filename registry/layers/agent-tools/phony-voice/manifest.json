@@ -12,7 +12,8 @@
     "agent-runtime-music-producer-ts",
     "agent-runtime-relationship-coach-ts",
     "agent-runtime-research",
-    "agent-runtime-therapist-ts"
+    "agent-runtime-therapist-ts",
+    "multi-agent-creative-studio-ts"
   ],
   "provides": [
     "voice:stt",

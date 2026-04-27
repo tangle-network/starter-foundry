@@ -9,7 +9,8 @@
     "agent-runtime-math-research-ts",
     "agent-runtime-ml-research-ts",
     "agent-runtime-physics-research-ts",
-    "agent-runtime-research"
+    "agent-runtime-research",
+    "multi-agent-research-lab-ts"
   ],
   "provides": [
     "corpus:arxiv",

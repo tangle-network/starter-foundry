@@ -1,0 +1,94 @@
+{
+  "studio": "creative-studio",
+  "leadArtistRule": "the role that started the project sets style; others propose alignment, never override",
+  "noRewriteRule": "agents NEVER rewrite the artist's text/notes/score. They suggest. The artist accepts or rejects.",
+  "roles": [
+    {
+      "id": "music-producer",
+      "title": "Music Producer",
+      "systemPrompt": "roles/music-producer/system-prompt.md",
+      "methodology": [
+        { "id": "arrangement-review", "path": "roles/music-producer/methodology/arrangement-review.md" },
+        { "id": "mix-feedback", "path": "roles/music-producer/methodology/mix-feedback.md" },
+        { "id": "needle-drop-suggestions", "path": "roles/music-producer/methodology/needle-drop-suggestions.md" }
+      ],
+      "handsOffTo": ["screenwriter", "novelist-coach", "illustrator"],
+      "voiceCapable": true,
+      "phonyVoiceSdk": "@ph0ny/sdk"
+    },
+    {
+      "id": "screenwriter",
+      "title": "Screenwriter",
+      "systemPrompt": "roles/screenwriter/system-prompt.md",
+      "methodology": [
+        { "id": "beat-out-protocol", "path": "roles/screenwriter/methodology/beat-out-protocol.md" },
+        { "id": "logline-sharpener", "path": "roles/screenwriter/methodology/logline-sharpener.md" },
+        { "id": "scene-rewrite-pass", "path": "roles/screenwriter/methodology/scene-rewrite-pass.md" }
+      ],
+      "handsOffTo": ["music-producer", "novelist-coach", "illustrator"],
+      "voiceCapable": false
+    },
+    {
+      "id": "novelist-coach",
+      "title": "Novelist Coach",
+      "systemPrompt": "roles/novelist-coach/system-prompt.md",
+      "methodology": [
+        { "id": "scene-card-system", "path": "roles/novelist-coach/methodology/scene-card-system.md" },
+        { "id": "voice-audit", "path": "roles/novelist-coach/methodology/voice-audit.md" }
+      ],
+      "handsOffTo": ["screenwriter", "illustrator", "music-producer"],
+      "voiceCapable": false
+    },
+    {
+      "id": "illustrator",
+      "title": "Illustrator",
+      "systemPrompt": "roles/illustrator/system-prompt.md",
+      "methodology": [
+        { "id": "composition-canvas", "path": "roles/illustrator/methodology/composition-canvas.md" },
+        { "id": "storyboard-protocol", "path": "roles/illustrator/methodology/storyboard-protocol.md" },
+        { "id": "color-palette-design", "path": "roles/illustrator/methodology/color-palette-design.md" }
+      ],
+      "handsOffTo": ["screenwriter", "novelist-coach", "music-producer"],
+      "voiceCapable": false
+    }
+  ],
+  "handoffBlockGrammar": ":::handoff to: <role-id> reason: <one-sentence>",
+  "handoffExamples": [
+    {
+      "from": "screenwriter",
+      "to": "music-producer",
+      "trigger": "scene includes a needle-drop placeholder or unscored sequence",
+      "example": ":::handoff to: music-producer reason: needle-drop suggestion needed for scene 14, INT. CAR — NIGHT, the protagonist drives away after the breakup; tone should land somewhere between Phoebe Bridgers and early Bon Iver, three-minute window, diegetic radio."
+    },
+    {
+      "from": "illustrator",
+      "to": "screenwriter",
+      "trigger": "storyboard panel composition reframes the action of a scripted scene",
+      "example": ":::handoff to: screenwriter reason: panel 4 of the chase sequence reads stronger from a low-angle wide than the over-the-shoulder the action lines call for. Action lines need to match panel composition: subject crosses left-to-right, foreground rebar in shot."
+    },
+    {
+      "from": "novelist-coach",
+      "to": "screenwriter",
+      "trigger": "novelist drafts a scene that reads cinematic and may be adaptable",
+      "example": ":::handoff to: screenwriter reason: chapter 6 scene reads cinematic — close-third POV, single location, value-shift on a visual beat. Suggest adaptation pass: would land in 2-3 pages of script. Source POV is Maren; adaptation may need to externalize her interior."
+    },
+    {
+      "from": "music-producer",
+      "to": "screenwriter",
+      "trigger": "needle-drop suggestion alters the emotional arc of the scene",
+      "example": ":::handoff to: screenwriter reason: the track I have in mind for scene 14 is in a major key with a hopeful turn at the bridge. The scripted scene reads tragic. Either the track is wrong for this beat, or the beat wants reframing — your call."
+    },
+    {
+      "from": "screenwriter",
+      "to": "illustrator",
+      "trigger": "scripted action sequence is dense enough to need a storyboard pass",
+      "example": ":::handoff to: illustrator reason: action sequence pages 42-47 has 9 distinct beats in 5 pages; storyboard would clarify continuity. Lead artist is the writer — match script tone (cold, procedural). Aspect 2.39:1, b&w thumbnail acceptable."
+    },
+    {
+      "from": "novelist-coach",
+      "to": "illustrator",
+      "trigger": "novel project needs a cover concept or interior chapter illustrations",
+      "example": ":::handoff to: illustrator reason: novel cover brief — single image, evokes the book's central image (the half-built lighthouse), audience: literary fiction adult. Lead artist is the novelist; voice is sparse, image-heavy, late-modernist. Avoid genre signifiers."
+    }
+  ]
+}

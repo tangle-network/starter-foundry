@@ -172,8 +172,12 @@ const FAMILY_PROMPTS: Record<string, string> = {
     'Build a language tutor agent with daily conversation prompts, vocabulary drill, and shadowing protocol — Krashen comprehensible input',
   'agent-with-ui-ts':
     'Build an agent-with-ui single-agent app with sandbox-ui chat surface and artifact pane',
+  'agent-platform-ts':
+    'Build a multi-tenant-agent-platform agent-hosting-platform agent-pack-host for hosting agent markdown packs with tenant-auth and audit-log',
   'orchestrator-with-ui-ts':
     'Build an orchestrator-with-ui-ts agent fleet manager scaffold using sandbox-ui dashboard primitives',
+  'agent-orchestrator-service-ts':
+    'Build an agent-orchestrator-service headless-agent-orchestrator with team-routing agent-roster tenant-auth and rate-limit on Hono',
   'sandbox-app-ts':
     'Build a sandbox-app sandbox workspace on tangle sandbox SDK with editor, file tree, and terminal',
   'agent-runtime-veterinarian-ts':
@@ -260,6 +264,14 @@ const FAMILY_PROMPTS: Record<string, string> = {
     'Build a chef-agent for recipe-development and kitchen-workflow with technique-guidance',
   'multi-agent-legal-ops-ts':
     'Build a legal-ops-team multi-agent pod for paralegal-intake contract-redline and control-walkthrough deficiency-write-up',
+  'multi-agent-product-ops-ts':
+    'Build a product-ops-team multi-agent feature-team-agent for discovery-cycle prioritization-rice sprint-planning and qbr-prep',
+  'multi-agent-research-lab-ts':
+    'Build a research-lab-team interdisciplinary cross-domain-research-pod with arxiv crossref openalex literature-survey across multiple domains',
+  'multi-agent-creative-studio-ts':
+    'Build a creative-studio-team multi-agent cross-medium-creative-team for arrangement-review beat-out scene-card and storyboard-protocol',
+  'multi-agent-startup-team-ts':
+    'Build a startup-team-agent leadership-team-agent exec-pod with CEO CTO CMO HR CFO advisor — team-cadence weekly-review okr-design decision-journal burn-runway recruiting-loop',
 }
 
 for (const [family, prompt] of Object.entries(FAMILY_PROMPTS)) {

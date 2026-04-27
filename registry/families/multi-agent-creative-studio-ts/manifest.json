@@ -1,0 +1,198 @@
+{
+  "id": "multi-agent-creative-studio-ts",
+  "description": "Curated creative studio — music producer, screenwriter, novelist coach, illustrator with cross-medium handoff protocols. Artist always wins — agents propose, never override creative voice.",
+  "tags": [
+    "multi-agent",
+    "creative",
+    "studio",
+    "cross-medium",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "multi-agent",
+    "surface": "multi-agent-team"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-tools:phony-voice",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "multi-agent-creative-studio",
+    "agentName": "creative-studio",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY",
+      "PHONY_API_KEY"
+    ],
+    "outboundDomains": [
+      "api.tangle.tools",
+      "musicbrainz.org"
+    ],
+    "declaredCapabilities": [
+      "arrangement-review",
+      "mix-feedback",
+      "needle-drop-suggestions",
+      "beat-out-protocol",
+      "logline-sharpener",
+      "scene-rewrite-pass",
+      "scene-card-system",
+      "voice-audit",
+      "composition-canvas",
+      "storyboard-protocol",
+      "color-palette-design",
+      "cross-medium-handoff"
+    ],
+    "creativeCollaborator": true,
+    "overridesArtist": false,
+    "roles": [
+      "music-producer",
+      "screenwriter",
+      "novelist-coach",
+      "illustrator"
+    ],
+    "leadArtistRule": "the role that started the project sets style; others propose alignment, never override"
+  },
+  "files": [
+    {
+      "source": "files/agent-roster.json",
+      "target": "agent-roster.json"
+    },
+    {
+      "source": "files/coordination-protocol.md",
+      "target": "coordination-protocol.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/roles/music-producer/system-prompt.md",
+      "target": "roles/music-producer/system-prompt.md"
+    },
+    {
+      "source": "files/roles/music-producer/methodology/arrangement-review.md",
+      "target": "roles/music-producer/methodology/arrangement-review.md"
+    },
+    {
+      "source": "files/roles/music-producer/methodology/mix-feedback.md",
+      "target": "roles/music-producer/methodology/mix-feedback.md"
+    },
+    {
+      "source": "files/roles/music-producer/methodology/needle-drop-suggestions.md",
+      "target": "roles/music-producer/methodology/needle-drop-suggestions.md"
+    },
+    {
+      "source": "files/roles/screenwriter/system-prompt.md",
+      "target": "roles/screenwriter/system-prompt.md"
+    },
+    {
+      "source": "files/roles/screenwriter/methodology/beat-out-protocol.md",
+      "target": "roles/screenwriter/methodology/beat-out-protocol.md"
+    },
+    {
+      "source": "files/roles/screenwriter/methodology/logline-sharpener.md",
+      "target": "roles/screenwriter/methodology/logline-sharpener.md"
+    },
+    {
+      "source": "files/roles/screenwriter/methodology/scene-rewrite-pass.md",
+      "target": "roles/screenwriter/methodology/scene-rewrite-pass.md"
+    },
+    {
+      "source": "files/roles/novelist-coach/system-prompt.md",
+      "target": "roles/novelist-coach/system-prompt.md"
+    },
+    {
+      "source": "files/roles/novelist-coach/methodology/scene-card-system.md",
+      "target": "roles/novelist-coach/methodology/scene-card-system.md"
+    },
+    {
+      "source": "files/roles/novelist-coach/methodology/voice-audit.md",
+      "target": "roles/novelist-coach/methodology/voice-audit.md"
+    },
+    {
+      "source": "files/roles/illustrator/system-prompt.md",
+      "target": "roles/illustrator/system-prompt.md"
+    },
+    {
+      "source": "files/roles/illustrator/methodology/composition-canvas.md",
+      "target": "roles/illustrator/methodology/composition-canvas.md"
+    },
+    {
+      "source": "files/roles/illustrator/methodology/storyboard-protocol.md",
+      "target": "roles/illustrator/methodology/storyboard-protocol.md"
+    },
+    {
+      "source": "files/roles/illustrator/methodology/color-palette-design.md",
+      "target": "roles/illustrator/methodology/color-palette-design.md"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "agent-roster.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "coordination-protocol.md"
+    },
+    {
+      "type": "file-exists",
+      "path": "README.md"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "roles/music-producer/system-prompt.md"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "roles/screenwriter/system-prompt.md"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "roles/novelist-coach/system-prompt.md"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "roles/illustrator/system-prompt.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "coordination-protocol.md",
+      "agent-roster.json"
+    ],
+    "extensionPoints": [
+      "roles/",
+      "coordination-protocol.md"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "creative-studio-team",
+      "creative-studio-pod",
+      "cross-medium-creative-team",
+      "studio-collaboration-agent"
+    ],
+    "tier2": [
+      "arrangement-review",
+      "beat-out",
+      "scene-card",
+      "voice-audit",
+      "storyboard-protocol",
+      "needle-drop"
+    ],
+    "tier3": [
+      "agent"
+    ],
+    "archetypes": [
+      "multi-agent-team",
+      "creative-pod"
+    ]
+  }
+}

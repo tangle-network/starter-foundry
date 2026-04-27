@@ -59,6 +59,14 @@
   },
   "files": [
     {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
+    {
+      "source": "files/orchestrator-system-prompt.md",
+      "target": "orchestrator-system-prompt.md"
+    },
+    {
       "source": "files/agent-roster.json",
       "target": "agent-roster.json"
     },

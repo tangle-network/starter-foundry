@@ -1,0 +1,23 @@
+{
+  "name": "with-hooks-and-mcp",
+  "description": "Fixture with pre/post hooks + MCP servers + harness override.",
+  "version": "0.1.0",
+  "harness": "claude-code",
+  "hooks": {
+    "pre": "hooks/pre.sh",
+    "post": "hooks/post.sh"
+  },
+  "prompt": {
+    "systemPromptFile": "AGENTS.md"
+  },
+  "mcp": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/home/agent"]
+    },
+    "fetch": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-fetch"]
+    }
+  }
+}

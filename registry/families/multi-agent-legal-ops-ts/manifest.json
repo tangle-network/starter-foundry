@@ -1,6 +1,6 @@
 {
   "id": "multi-agent-legal-ops-ts",
-  "description": "Curated 3-role legal-ops team — paralegal intake, in-house counsel reference, and internal-audit advisor coordinated under one coordination protocol. High-stakes domain with baked-in disclaimers (not-a-lawyer, no attorney-client privilege, never signs off on controls), structured handoffs (intake → counsel for advice, intake → auditor for SOX/SOC2/process compliance, counsel → auditor on material weakness discovered during contract review), and PII flow gated through agent-base:privacy. Composes agent-base:tangle, agent-base:secure, agent-base:privacy, agent-output:blocks. The team substrate above three single-role legal/audit families.",
+  "description": "Curated 3-role legal-ops team \u2014 paralegal intake, in-house counsel reference, and internal-audit advisor coordinated under one coordination protocol. High-stakes domain with baked-in disclaimers (not-a-lawyer, no attorney-client privilege, never signs off on controls), structured handoffs (intake \u2192 counsel for advice, intake \u2192 auditor for SOX/SOC2/process compliance, counsel \u2192 auditor on material weakness discovered during contract review), and PII flow gated through agent-base:privacy. Composes agent-base:tangle, agent-base:secure, agent-base:privacy, agent-output:blocks. The team substrate above three single-role legal/audit families.",
   "tags": [
     "multi-agent",
     "team",
@@ -19,7 +19,17 @@
     "agent-base:tangle",
     "agent-base:secure",
     "agent-base:privacy",
-    "agent-output:blocks"
+    "agent-output:blocks",
+    "agent-base:memory",
+    "agent-base:scheduler",
+    "agent-base:mcp-registry",
+    "agent-channels:telegram",
+    "agent-channels:discord",
+    "agent-channels:slack",
+    "agent-channels:whatsapp",
+    "agent-channels:imessage",
+    "agent-channels:gmail",
+    "agent-channels:linear"
   ],
   "defaults": {
     "projectType": "multi-agent-legal-ops",
@@ -182,18 +192,18 @@
     ]
   },
   "buildHints": {
-    "whenToUse": "When the product is a coordinated 3-role legal-ops team — paralegal intake triages requests and routes to in-house counsel for contract advice or to internal audit for SOX/SOC2/process compliance. Use when the user asks for a 'legal-ops team', 'compliance team agent', 'legal and audit pod', or describes a workflow that spans intake + advisory + audit. For a single role, prefer agent-runtime-legal-counsel-ts or agent-runtime-auditor-ts.",
+    "whenToUse": "When the product is a coordinated 3-role legal-ops team \u2014 paralegal intake triages requests and routes to in-house counsel for contract advice or to internal audit for SOX/SOC2/process compliance. Use when the user asks for a 'legal-ops team', 'compliance team agent', 'legal and audit pod', or describes a workflow that spans intake + advisory + audit. For a single role, prefer agent-runtime-legal-counsel-ts or agent-runtime-auditor-ts.",
     "firstSteps": [
-      "Read AGENTS.md — orchestrator prompt + Coordination section defines the request flow (intake first, then counsel OR auditor).",
+      "Read AGENTS.md \u2014 orchestrator prompt + Coordination section defines the request flow (intake first, then counsel OR auditor).",
       "Each role has an AGENTS.md with mandatory disclaimers. Do NOT remove the disclaimer block.",
-      "PII flowing through any role passes agent-base:privacy redaction before persistence — see src/lib/privacy/.",
+      "PII flowing through any role passes agent-base:privacy redaction before persistence \u2014 see src/lib/privacy/.",
       "Default respondent is paralegal-intake; counsel and auditor are reachable only via documented hand-offs."
     ],
     "gotchas": [
       "Nothing in this team has attorney-client privilege. Every paralegal-intake session must surface this on first turn.",
-      "The auditor never signs off on controls — drafts only; a credentialed CIA/CISA reviews and signs.",
-      "Counsel → auditor hand-off fires when contract review surfaces a material weakness in the counterparty's or client's ICFR; do not silently work around it.",
-      "Roles share PII redaction primitives but DO NOT share state — each role keeps its own session log."
+      "The auditor never signs off on controls \u2014 drafts only; a credentialed CIA/CISA reviews and signs.",
+      "Counsel \u2192 auditor hand-off fires when contract review surfaces a material weakness in the counterparty's or client's ICFR; do not silently work around it.",
+      "Roles share PII redaction primitives but DO NOT share state \u2014 each role keeps its own session log."
     ],
     "architectureNotes": [
       "Bundle layout: AGENTS.md (orchestrator + Coordination section) + agents.json (OpenCode-native subagent registry with inline prompts) + roles/<role>/AGENTS.md + roles/<role>/methodology/*.md.",

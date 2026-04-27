@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-cmo-advisor-ts",
-  "description": "CMO-level marketing strategy advisor bundle. Works alongside an operator on positioning, ICP, and channel-experiment design — not a replacement for hands-on board-level diligence. Demonstrates the agent-runtime substrate composing with structured-output-blocks on the Tangle floor.",
+  "description": "CMO-level marketing strategy advisor bundle. Works alongside an operator on positioning, ICP, and channel-experiment design \u2014 not a replacement for hands-on board-level diligence. Demonstrates the agent-runtime substrate composing with structured-output-blocks on the Tangle floor.",
   "tags": [
     "agent-runtime",
     "marketing-strategy",
@@ -16,7 +16,17 @@
   "includes": [
     "agent-base:tangle",
     "agent-base:secure",
-    "agent-output:blocks"
+    "agent-output:blocks",
+    "agent-base:memory",
+    "agent-base:scheduler",
+    "agent-base:mcp-registry",
+    "agent-channels:telegram",
+    "agent-channels:discord",
+    "agent-channels:slack",
+    "agent-channels:whatsapp",
+    "agent-channels:imessage",
+    "agent-channels:gmail",
+    "agent-channels:linear"
   ],
   "defaults": {
     "projectType": "agent-runtime-cmo-advisor",

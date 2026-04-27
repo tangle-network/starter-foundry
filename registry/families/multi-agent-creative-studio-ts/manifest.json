@@ -1,6 +1,6 @@
 {
   "id": "multi-agent-creative-studio-ts",
-  "description": "Curated creative studio — music producer, screenwriter, novelist coach, illustrator with cross-medium handoff protocols. Artist always wins — agents propose, never override creative voice.",
+  "description": "Curated creative studio \u2014 music producer, screenwriter, novelist coach, illustrator with cross-medium handoff protocols. Artist always wins \u2014 agents propose, never override creative voice.",
   "tags": [
     "multi-agent",
     "creative",
@@ -17,7 +17,17 @@
     "agent-base:tangle",
     "agent-base:secure",
     "agent-tools:phony-voice",
-    "agent-output:blocks"
+    "agent-output:blocks",
+    "agent-base:memory",
+    "agent-base:scheduler",
+    "agent-base:mcp-registry",
+    "agent-channels:telegram",
+    "agent-channels:discord",
+    "agent-channels:slack",
+    "agent-channels:whatsapp",
+    "agent-channels:imessage",
+    "agent-channels:gmail",
+    "agent-channels:linear"
   ],
   "defaults": {
     "projectType": "multi-agent-creative-studio",

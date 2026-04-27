@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-history-tutor-ts",
-  "description": "Voice-first history tutor agent bundle — primary-source analysis, historiographic debate, and timeline reasoning. Explicitly NOT a substitute for a credentialed history teacher, not a source of original archival research, not a replacement for peer-reviewed scholarship. Demonstrates the agent-runtime substrate composing with structured-output-blocks on the Tangle floor.",
+  "description": "Voice-first history tutor agent bundle \u2014 primary-source analysis, historiographic debate, and timeline reasoning. Explicitly NOT a substitute for a credentialed history teacher, not a source of original archival research, not a replacement for peer-reviewed scholarship. Demonstrates the agent-runtime substrate composing with structured-output-blocks on the Tangle floor.",
   "tags": [
     "agent-runtime",
     "history-tutor",
@@ -17,7 +17,17 @@
   "includes": [
     "agent-base:tangle",
     "agent-base:secure",
-    "agent-output:blocks"
+    "agent-output:blocks",
+    "agent-base:memory",
+    "agent-base:scheduler",
+    "agent-base:mcp-registry",
+    "agent-channels:telegram",
+    "agent-channels:discord",
+    "agent-channels:slack",
+    "agent-channels:whatsapp",
+    "agent-channels:imessage",
+    "agent-channels:gmail",
+    "agent-channels:linear"
   ],
   "defaults": {
     "projectType": "agent-runtime-history-tutor",

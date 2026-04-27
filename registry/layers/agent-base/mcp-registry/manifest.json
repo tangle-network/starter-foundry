@@ -1,0 +1,109 @@
+{
+  "id": "mcp-registry",
+  "slot": "agent-base",
+  "description": "MCP server registry. Ships a .mcp.json template at <workspace.root>/.mcp.json with env-var-driven server config. Composes with agent-base:secure for credential injection. Harness-aware: deploy script translates the file path/format per target harness (Claude Code + OpenCode read .mcp.json natively; Hermes path is partial \u2014 see docs/issues/sandbox-sdk-deploy-hooks.md).",
+  "appliesTo": [
+    "agent-runtime-account-executive-ts",
+    "agent-runtime-architect-ts",
+    "agent-runtime-auditor-ts",
+    "agent-runtime-biology-research-ts",
+    "agent-runtime-business-partner-ts",
+    "agent-runtime-career-coach-ts",
+    "agent-runtime-chef-ts",
+    "agent-runtime-chemistry-research-ts",
+    "agent-runtime-cmo-advisor-ts",
+    "agent-runtime-college-counselor-ts",
+    "agent-runtime-cs-research-ts",
+    "agent-runtime-cs-tutor-ts",
+    "agent-runtime-customer-success-ts",
+    "agent-runtime-data-analyst-ts",
+    "agent-runtime-designer-ts",
+    "agent-runtime-devops-ts",
+    "agent-runtime-doctor-ts",
+    "agent-runtime-engineering-manager-ts",
+    "agent-runtime-essay-coach-ts",
+    "agent-runtime-financial-analyst-ts",
+    "agent-runtime-fitness-coach-ts",
+    "agent-runtime-friend-ts",
+    "agent-runtime-game-designer-ts",
+    "agent-runtime-grant-writer-ts",
+    "agent-runtime-history-tutor-ts",
+    "agent-runtime-illustrator-ts",
+    "agent-runtime-language-tutor-ts",
+    "agent-runtime-legal-counsel-ts",
+    "agent-runtime-math-research-ts",
+    "agent-runtime-math-tutor-ts",
+    "agent-runtime-mediator-ts",
+    "agent-runtime-meditation-coach-ts",
+    "agent-runtime-ml-research-ts",
+    "agent-runtime-music-producer-ts",
+    "agent-runtime-novelist-coach-ts",
+    "agent-runtime-nutritionist-ts",
+    "agent-runtime-pentester-ts",
+    "agent-runtime-pharmacist-ts",
+    "agent-runtime-photographer-ts",
+    "agent-runtime-physics-research-ts",
+    "agent-runtime-product-manager-ts",
+    "agent-runtime-real-estate-ts",
+    "agent-runtime-recruiter-ts",
+    "agent-runtime-relationship-coach-ts",
+    "agent-runtime-research",
+    "agent-runtime-sales-engineer-ts",
+    "agent-runtime-screenwriter-ts",
+    "agent-runtime-security-engineer-ts",
+    "agent-runtime-tax-ts",
+    "agent-runtime-therapist-ts",
+    "agent-runtime-travel-planner-ts",
+    "agent-runtime-veterinarian-ts",
+    "agent-runtime-wealth-manager-ts",
+    "multi-agent-creative-studio-ts",
+    "multi-agent-legal-ops-ts",
+    "multi-agent-product-ops-ts",
+    "multi-agent-research-lab-ts",
+    "multi-agent-startup-team-ts"
+  ],
+  "provides": [
+    "mcp:registry"
+  ],
+  "requires": [],
+  "defaults": {
+    "mcpRegistryPath": "/home/agent/.mcp.json",
+    "mcpServers": [
+      "filesystem",
+      "fetch",
+      "github",
+      "memory",
+      "scheduler"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/.mcp.json",
+      "target": ".mcp.json"
+    },
+    {
+      "source": "files/lib/mcp/register.ts",
+      "target": "src/lib/mcp/register.ts"
+    },
+    {
+      "source": "files/lib/mcp/README.md",
+      "target": "src/lib/mcp/README.md"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": ".mcp.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/mcp/register.ts"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": [
+      "src/lib/mcp/"
+    ],
+    "commands": []
+  }
+}

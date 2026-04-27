@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-recruiter-ts",
-  "description": "Technical-recruiter agent bundle — drafts JDs, designs structured screening rubrics, and composes interview loops. Hard-refuses any input or inference about protected-class attributes (race / gender / age / national-origin / disability). Hiring decisions stay with humans; the agent produces artifacts (`:::artifact`) the hiring team reviews, edits, and signs off on. Demonstrates the agent-runtime substrate composing with structured-output-blocks on the Tangle floor for a moderate-stakes operations workflow.",
+  "description": "Technical-recruiter agent bundle \u2014 drafts JDs, designs structured screening rubrics, and composes interview loops. Hard-refuses any input or inference about protected-class attributes (race / gender / age / national-origin / disability). Hiring decisions stay with humans; the agent produces artifacts (`:::artifact`) the hiring team reviews, edits, and signs off on. Demonstrates the agent-runtime substrate composing with structured-output-blocks on the Tangle floor for a moderate-stakes operations workflow.",
   "tags": [
     "agent-runtime",
     "recruiting",
@@ -17,7 +17,17 @@
     "agent-base:tangle",
     "agent-base:secure",
     "agent-base:privacy",
-    "agent-output:blocks"
+    "agent-output:blocks",
+    "agent-base:memory",
+    "agent-base:scheduler",
+    "agent-base:mcp-registry",
+    "agent-channels:telegram",
+    "agent-channels:discord",
+    "agent-channels:slack",
+    "agent-channels:whatsapp",
+    "agent-channels:imessage",
+    "agent-channels:gmail",
+    "agent-channels:linear"
   ],
   "defaults": {
     "projectType": "agent-runtime-recruiter",

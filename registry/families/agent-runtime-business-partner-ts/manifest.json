@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-business-partner-ts",
-  "description": "Executive thinking-partner agent bundle — co-founder / executive coach. Runs a weekly review cadence, designs OKRs, and maintains a decision journal. Composes the agent-runtime substrate with the research-corpus layer (arxiv / Semantic Scholar / OpenAlex / Crossref) so any market or strategy claim is citation-grounded rather than hallucinated. Advisory only — never replaces the operator's lawyer, CPA, or board.",
+  "description": "Executive thinking-partner agent bundle \u2014 co-founder / executive coach. Runs a weekly review cadence, designs OKRs, and maintains a decision journal. Composes the agent-runtime substrate with the research-corpus layer (arxiv / Semantic Scholar / OpenAlex / Crossref) so any market or strategy claim is citation-grounded rather than hallucinated. Advisory only \u2014 never replaces the operator's lawyer, CPA, or board.",
   "tags": [
     "agent-runtime",
     "executive-coaching",
@@ -19,7 +19,17 @@
     "agent-base:tangle",
     "agent-base:secure",
     "agent-tools:research-corpus",
-    "agent-output:blocks"
+    "agent-output:blocks",
+    "agent-base:memory",
+    "agent-base:scheduler",
+    "agent-base:mcp-registry",
+    "agent-channels:telegram",
+    "agent-channels:discord",
+    "agent-channels:slack",
+    "agent-channels:whatsapp",
+    "agent-channels:imessage",
+    "agent-channels:gmail",
+    "agent-channels:linear"
   ],
   "defaults": {
     "projectType": "agent-runtime-business-partner",

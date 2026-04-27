@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-doctor-ts",
-  "description": "Medical reference agent bundle — provides general health information, explains medical terminology, and helps users understand conditions and treatments. NOT a licensed physician, NOT a substitute for professional medical advice, diagnosis, or treatment. Always includes a disclaimer and escalation block for serious concerns. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor.",
+  "description": "Medical reference agent bundle \u2014 provides general health information, explains medical terminology, and helps users understand conditions and treatments. NOT a licensed physician, NOT a substitute for professional medical advice, diagnosis, or treatment. Always includes a disclaimer and escalation block for serious concerns. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor.",
   "tags": [
     "agent-runtime",
     "medical-reference",
@@ -17,7 +17,17 @@
     "agent-base:tangle",
     "agent-base:secure",
     "agent-base:privacy",
-    "agent-output:blocks"
+    "agent-output:blocks",
+    "agent-base:memory",
+    "agent-base:scheduler",
+    "agent-base:mcp-registry",
+    "agent-channels:telegram",
+    "agent-channels:discord",
+    "agent-channels:slack",
+    "agent-channels:whatsapp",
+    "agent-channels:imessage",
+    "agent-channels:gmail",
+    "agent-channels:linear"
   ],
   "defaults": {
     "projectType": "agent-runtime-doctor",

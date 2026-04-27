@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "tags": ["multi-agent", "team", "product-ops", "advisory", "weekly-cadence"],
   "prompt": {
-    "systemPromptFile": "orchestrator-system-prompt.md"
+    "systemPromptFile": "AGENTS.md"
   },
   "tools": {
     "filesystem": true,
@@ -19,30 +19,30 @@
   "subagents": {
     "pm": {
       "description": "Product Manager — owns scope, hypothesis, kill criterion, roadmap. Emits PRD, RICE, discovery cycles. Final tie-breaker on scope conflicts.",
-      "systemPromptFile": "roles/pm/system-prompt.md",
+      "systemPromptFile": "roles/pm/AGENTS.md",
       "tools": { "filesystem": true, "router": true }
     },
     "designer": {
       "description": "Product Designer — owns flow, fidelity, usability heuristics, information architecture. Emits UX strategy and design critiques.",
-      "systemPromptFile": "roles/designer/system-prompt.md",
+      "systemPromptFile": "roles/designer/AGENTS.md",
       "tools": { "filesystem": true, "router": true }
     },
     "eng-manager": {
       "description": "Engineering Manager — owns feasibility, capacity, sprint plan, delivery risk. Emits tech-feasibility scoping and sprint planning.",
-      "systemPromptFile": "roles/eng-manager/system-prompt.md",
+      "systemPromptFile": "roles/eng-manager/AGENTS.md",
       "tools": { "filesystem": true, "router": true }
     },
     "customer-success": {
       "description": "Customer Success — owns user-pain signal, churn risk, QBR, renewal readout. Emits churn-risk analysis and QBR prep.",
-      "systemPromptFile": "roles/customer-success/system-prompt.md",
+      "systemPromptFile": "roles/customer-success/AGENTS.md",
       "tools": { "filesystem": true, "router": true }
     }
   },
   "resources": {
     "files": [
+      { "source": "AGENTS.md", "target": "/workspace/AGENTS.md" },
+      { "source": "agents.json", "target": "/workspace/agents.json" },
       { "source": "roles/", "target": "/workspace/roles/" },
-      { "source": "coordination-protocol.md", "target": "/workspace/coordination-protocol.md" },
-      { "source": "agent-roster.json", "target": "/workspace/agent-roster.json" },
       { "source": "README.md", "target": "/workspace/README.md" }
     ]
   }

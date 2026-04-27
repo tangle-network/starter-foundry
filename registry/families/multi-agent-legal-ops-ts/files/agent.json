@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "tags": ["multi-agent", "team", "legal-ops", "compliance", "audit", "regulated-domain", "high-stakes"],
   "prompt": {
-    "systemPromptFile": "orchestrator-system-prompt.md"
+    "systemPromptFile": "AGENTS.md"
   },
   "tools": {
     "filesystem": true,
@@ -19,25 +19,25 @@
   "subagents": {
     "paralegal-intake": {
       "description": "Paralegal (Intake) — DEFAULT RESPONDENT. Triages every inbound request, surfaces the session disclaimer, runs intake-checklist + conflict-check + fact-pattern summary, routes to counsel or auditor with a structured handoff packet. Never gives legal advice.",
-      "systemPromptFile": "roles/paralegal-intake/system-prompt.md",
+      "systemPromptFile": "roles/paralegal-intake/AGENTS.md",
       "tools": { "filesystem": true, "router": true }
     },
     "legal-counsel": {
       "description": "Legal Counsel (Advisory) — reachable ONLY via paralegal-intake handoff or auditor cross-handoff. Drafts contract redlines, NDA/MSA reviews, regulatory research. Never asserts privilege; escalates binding moments to outside counsel.",
-      "systemPromptFile": "roles/legal-counsel/system-prompt.md",
+      "systemPromptFile": "roles/legal-counsel/AGENTS.md",
       "tools": { "filesystem": true, "router": true }
     },
     "auditor": {
       "description": "Internal Auditor — reachable ONLY via paralegal-intake handoff or counsel cross-handoff. Drafts control walkthroughs and 5-part deficiency findings against SOX/SOC2/ISO27001/NIST/PCI/HIPAA. NEVER signs off on controls.",
-      "systemPromptFile": "roles/auditor/system-prompt.md",
+      "systemPromptFile": "roles/auditor/AGENTS.md",
       "tools": { "filesystem": true, "router": true }
     }
   },
   "resources": {
     "files": [
+      { "source": "AGENTS.md", "target": "/workspace/AGENTS.md" },
+      { "source": "agents.json", "target": "/workspace/agents.json" },
       { "source": "roles/", "target": "/workspace/roles/" },
-      { "source": "coordination-protocol.md", "target": "/workspace/coordination-protocol.md" },
-      { "source": "agent-roster.json", "target": "/workspace/agent-roster.json" },
       { "source": "README.md", "target": "/workspace/README.md" }
     ]
   }

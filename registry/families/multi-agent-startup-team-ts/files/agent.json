@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "tags": ["multi-agent", "team", "startup", "advisory", "exec-pod", "leadership-team-agent"],
   "prompt": {
-    "systemPromptFile": "orchestrator-system-prompt.md"
+    "systemPromptFile": "AGENTS.md"
   },
   "tools": {
     "filesystem": true,
@@ -19,35 +19,35 @@
   "subagents": {
     "ceo": {
       "description": "Chief Executive — strategy, OKRs, weekly review, decision journal, board prep. Default respondent for ambiguous or cross-role questions.",
-      "systemPromptFile": "roles/ceo/system-prompt.md",
+      "systemPromptFile": "roles/ceo/AGENTS.md",
       "tools": { "filesystem": true, "router": true }
     },
     "cto": {
       "description": "Chief Technology Officer — engineering 1:1 cadence, sprint planning, tech-debt triage, architecture decisions, postmortems.",
-      "systemPromptFile": "roles/cto/system-prompt.md",
+      "systemPromptFile": "roles/cto/AGENTS.md",
       "tools": { "filesystem": true, "router": true }
     },
     "cmo": {
       "description": "Chief Marketing Officer — positioning canvas, ICP research, channel experiment design, growth scoreboard.",
-      "systemPromptFile": "roles/cmo/system-prompt.md",
+      "systemPromptFile": "roles/cmo/AGENTS.md",
       "tools": { "filesystem": true, "router": true }
     },
     "hr": {
       "description": "Talent and recruiting — JD drafting, structured interview rubrics, recruiting loop design, comp-band hygiene. Refuses protected-class filtering; defaults to structured interviews.",
-      "systemPromptFile": "roles/hr/system-prompt.md",
+      "systemPromptFile": "roles/hr/AGENTS.md",
       "tools": { "filesystem": true, "router": true }
     },
     "cfo-advisor": {
       "description": "Finance advisor (NOT licensed) — burn / runway modeling, unit economics, fundraise prep, board financials. Discloses 'not a licensed advisor' before any number.",
-      "systemPromptFile": "roles/cfo-advisor/system-prompt.md",
+      "systemPromptFile": "roles/cfo-advisor/AGENTS.md",
       "tools": { "filesystem": true, "router": true }
     }
   },
   "resources": {
     "files": [
+      { "source": "AGENTS.md", "target": "/workspace/AGENTS.md" },
+      { "source": "agents.json", "target": "/workspace/agents.json" },
       { "source": "roles/", "target": "/workspace/roles/" },
-      { "source": "coordination-protocol.md", "target": "/workspace/coordination-protocol.md" },
-      { "source": "agent-roster.json", "target": "/workspace/agent-roster.json" },
       { "source": "README.md", "target": "/workspace/README.md" }
     ]
   }

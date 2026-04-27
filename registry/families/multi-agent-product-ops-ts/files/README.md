@@ -5,9 +5,10 @@ Manager, and Customer Success — wired together with a hand-tuned weekly
 cadence and explicit feature-development handoffs.
 
 This is **not** a generic multi-agent shell. The differentiator is the
-`coordination-protocol.md`: a Monday-through-Friday cadence that names who
-leads, what artifact handoffs trigger the next phase, and how escalation
-works.
+`## Coordination` section in `AGENTS.md`: a Monday-through-Friday cadence
+that names who leads, what artifact handoffs trigger the next phase, and
+how escalation works. The Tangle sandbox sidecar reads `agents.json` to
+register each role as an OpenCode-native subagent.
 
 ## When to use this bundle
 
@@ -38,9 +39,10 @@ You do **not** want this if:
 
 ## Coordination
 
-See `coordination-protocol.md` for the full Monday-Friday cadence,
-handoff rules, and escalation rules. See `agent-roster.json` for the
-machine-readable wiring (who emits what, who consumes what).
+See the `## Coordination` section in `AGENTS.md` for the full
+Monday-Friday cadence, handoff rules, and escalation rules. See
+`agents.json` for the machine-readable subagent registry (per-role
+description, inline system prompt, tool/permission settings).
 
 ## Stakes
 

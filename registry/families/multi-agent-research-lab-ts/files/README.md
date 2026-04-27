@@ -36,25 +36,27 @@ cross-domain handoff protocol:
    refuses to ship a synthesis with a fabricated or missing
    citation.
 
-See `coordination-protocol.md` for the full mechanism, with worked
-examples for chem-bio, bio-physics, and chem-physics handoffs.
+See the `## Coordination` section in `AGENTS.md` for the full
+mechanism, with worked examples for chem-bio, bio-physics, and
+chem-physics handoffs.
 
 ## Files
 
-- `coordination-protocol.md` — cross-domain dispatch + handoff +
-  synthesis protocol.
-- `agent-roster.json` — role registry with default respondent,
-  responsibilities, delegation graph.
-- `roles/lab-director/` — Director's system prompt + methodology
-  (research-question-formulation, cross-domain-synthesis,
-  literature-triage).
-- `roles/physics-researcher/` — Physics system prompt +
+- `AGENTS.md` — orchestrator system prompt with `## Coordination`
+  section: cross-domain dispatch + handoff + synthesis protocol.
+- `agents.json` — OpenCode-native subagent registry; per-role
+  `mode`, `description`, inline `prompt`, `tools`, `permission`.
+  Consumed by the Tangle sandbox sidecar.
+- `roles/lab-director/AGENTS.md` — Director's system prompt +
+  methodology (research-question-formulation,
+  cross-domain-synthesis, literature-triage).
+- `roles/physics-researcher/AGENTS.md` — Physics system prompt +
   methodology (arxiv-literature-search, experimental-design).
-- `roles/chemistry-researcher/` — Chemistry system prompt +
-  methodology (reaction-mechanism-analysis,
+- `roles/chemistry-researcher/AGENTS.md` — Chemistry system prompt
+  + methodology (reaction-mechanism-analysis,
   crossref-literature-search).
-- `roles/biology-researcher/` — Biology system prompt + methodology
-  (protein-structure-analysis, bioinformatics-survey).
+- `roles/biology-researcher/AGENTS.md` — Biology system prompt +
+  methodology (protein-structure-analysis, bioinformatics-survey).
 
 ## Advisory only — what this lab is NOT
 

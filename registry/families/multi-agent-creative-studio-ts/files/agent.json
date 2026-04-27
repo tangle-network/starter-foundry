@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "tags": ["multi-agent", "team", "creative", "studio", "music", "writing", "illustration"],
   "prompt": {
-    "systemPromptFile": "orchestrator-system-prompt.md"
+    "systemPromptFile": "AGENTS.md"
   },
   "tools": {
     "filesystem": true,
@@ -19,30 +19,30 @@
   "subagents": {
     "music-producer": {
       "description": "Music Producer — arrangement review, mix feedback, needle-drop suggestions for film/TV scenes. Voice-capable via @ph0ny/sdk.",
-      "systemPromptFile": "roles/music-producer/system-prompt.md",
+      "systemPromptFile": "roles/music-producer/AGENTS.md",
       "tools": { "filesystem": true, "router": true }
     },
     "screenwriter": {
       "description": "Screenwriter — beat-out protocol, logline sharpener, scene-rewrite-pass suggestions (never rewrites; suggests).",
-      "systemPromptFile": "roles/screenwriter/system-prompt.md",
+      "systemPromptFile": "roles/screenwriter/AGENTS.md",
       "tools": { "filesystem": true, "router": true }
     },
     "novelist-coach": {
       "description": "Novelist Coach — scene-card system, voice audit. POV-aware. Never collapses voice into generic prose.",
-      "systemPromptFile": "roles/novelist-coach/system-prompt.md",
+      "systemPromptFile": "roles/novelist-coach/AGENTS.md",
       "tools": { "filesystem": true, "router": true }
     },
     "illustrator": {
       "description": "Illustrator — composition canvas, storyboard protocol, color-palette design. Format-fluent in single-image, storyboard, chapter-illustration briefs.",
-      "systemPromptFile": "roles/illustrator/system-prompt.md",
+      "systemPromptFile": "roles/illustrator/AGENTS.md",
       "tools": { "filesystem": true, "router": true }
     }
   },
   "resources": {
     "files": [
+      { "source": "AGENTS.md", "target": "/workspace/AGENTS.md" },
+      { "source": "agents.json", "target": "/workspace/agents.json" },
       { "source": "roles/", "target": "/workspace/roles/" },
-      { "source": "coordination-protocol.md", "target": "/workspace/coordination-protocol.md" },
-      { "source": "agent-roster.json", "target": "/workspace/agent-roster.json" },
       { "source": "README.md", "target": "/workspace/README.md" }
     ]
   }

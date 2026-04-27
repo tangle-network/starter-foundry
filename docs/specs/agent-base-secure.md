@@ -99,12 +99,12 @@ These are real gaps, not minor. Read this before treating the layer as "producti
 1. **Gateway pubkey directory + Ed25519 verify path.** Required for `identity.verify()` to do anything useful. Currently throws on call. Status: spec'd, not built.
 2. **External audit sink** (append-only ledger or signed S3 + immutable retention). Required for the hash chain to be tamper-evident in real time. Currently the chain is local-filesystem and operator must export. Status: design TBD.
 3. **Egress controller at SDK boundary.** Required to make `webhook-out` mandatory rather than aspirational. Currently bundles can `fetch()` directly. Status: depends on sandbox-sdk's network policy primitives.
-4. **`agent-base:privacy` wired into bundles.** The layer exists with PII detectors but **no bundle currently includes it** in `manifest.json`. Status: explicit opt-in pending operator policy on which bundles must include it.
+4. **`agent-base:privacy` wired into bundles.** Partially wired: the 6 high-stakes bundles (`legal-counsel`, `tax`, `wealth-manager`, `auditor`, `recruiter`, `doctor`) now `include` it in `manifest.json` because they routinely handle SSNs, account numbers, candidate PII, and PHI. Low-stakes bundles still opt out by default — they don't sit on a regulated-PII egress path, so the cost (added compose-time files, runtime check overhead) is not justified. Status: high-stakes wiring shipped; low-stakes opt-out is the deliberate policy.
 5. **High-stakes structural disclaimer enforcement.** Bundles like `legal-counsel`, `wealth-manager`, `tax`, `auditor` carry frontmatter disclaimer language and `:::escalation` block grammar — but enforcement is LLM-following-instructions, not structural. Status: needs a downstream gate (refuse to render actionable advice without escalation block).
 
 Each of these is in the layer's roadmap. Until they ship, treat the layer as **a fail-closed footgun reducer that makes accidents loud** — not a security boundary.
 
 ## Related
 
-- `agent-base:privacy` — PII detection + redaction layer; ships but not currently wired into any bundle's `includes[]`
+- `agent-base:privacy` — PII detection + redaction layer; wired into the 6 high-stakes bundles' `includes[]` (legal-counsel, tax, wealth-manager, auditor, recruiter, doctor). Low-stakes bundles intentionally opt out.
 - RFC `docs/specs/rfc-tangle-pii-egress-controls.md` — platform-side gateway scanner + sandbox-runtime log filter (out of scope for this layer)

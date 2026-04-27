@@ -2,7 +2,14 @@
   "id": "privacy",
   "slot": "agent-base",
   "description": "PII detection + redaction primitive for agent egress points. Structured detectors (SSN, email, phone, credit-card-with-Luhn, IPv4/v6, multi-provider API keys, contextual DOB) ship in the layer; semantic detection (person names, addresses) is delegated to an optional pluggable nerBackend (operator wires openai/privacy-filter, Microsoft Presidio, or AWS Comprehend as a subprocess). Pure functions; no global state; bundles call detectPII / redactPII / assertNoPII at the trust boundaries they own. Composes with agent-base:integrity for HMAC-signed forwarding of redacted payloads.",
-  "appliesTo": [],
+  "appliesTo": [
+    "agent-runtime-legal-counsel-ts",
+    "agent-runtime-tax-ts",
+    "agent-runtime-wealth-manager-ts",
+    "agent-runtime-auditor-ts",
+    "agent-runtime-recruiter-ts",
+    "agent-runtime-doctor-ts"
+  ],
   "provides": [
     "privacy:detect",
     "privacy:redact",

@@ -16,6 +16,7 @@
   "includes": [
     "agent-base:tangle",
     "agent-base:secure",
+    "agent-base:privacy",
     "agent-output:blocks"
   ],
   "defaults": {

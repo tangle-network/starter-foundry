@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "thesis-development",
+      "capability": "thesis-development",
+      "path": "./thesis-development.md",
+      "tags": ["methodology", "thesis", "claim"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "argument-structuring",
+      "capability": "argument-structuring",
+      "path": "./argument-structuring.md",
+      "tags": ["methodology", "argument", "outline"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "revision-cycle",
+      "capability": "revision-cycle",
+      "path": "./revision-cycle.md",
+      "tags": ["methodology", "revision", "feedback"],
+      "version": "0.1.0"
+    }
+  ]
+}

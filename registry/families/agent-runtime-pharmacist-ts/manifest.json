@@ -1,0 +1,142 @@
+{
+  "id": "agent-runtime-pharmacist-ts",
+  "description": "Pharmacist reference agent bundle \u2014 drug information, interaction checks, and medication therapy management. NOT a substitute for a licensed pharmacist, physician, or other healthcare professional. Advisory only. Emits non-licensed/non-fiduciary language and includes escalation blocks. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor.",
+  "tags": [
+    "agent-runtime",
+    "pharmacist",
+    "drug-reference",
+    "medication-therapy-management",
+    "advisory",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-pharmacist",
+    "agentName": "pharmacist",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "drug:lookup",
+          "drug:interaction-check",
+          "drug:dosing-calc",
+          "drug:adverse-effects"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "drug-information",
+      "drug-interaction-check",
+      "dosing-guidance",
+      "adverse-effect-monitoring"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "high",
+    "advisoryOnly": true,
+    "outboundDomains": [
+      "api.tangle.tools",
+      "api.drugbank.ca",
+      "api.fda.gov",
+      "pubmed.ncbi.nlm.nih.gov"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY",
+      "DRUGBANK_API_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/drug-information.md",
+      "target": "methodology/drug-information.md"
+    },
+    {
+      "source": "files/methodology/drug-interaction-check.md",
+      "target": "methodology/drug-interaction-check.md"
+    },
+    {
+      "source": "files/methodology/dosing-guidance.md",
+      "target": "methodology/dosing-guidance.md"
+    },
+    {
+      "source": "files/methodology/adverse-effect-monitoring.md",
+      "target": "methodology/adverse-effect-monitoring.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "pharmacist-agent",
+      "pharmacist agent",
+      "drug-reference-agent",
+      "drug reference agent",
+      "medication-therapy-management-agent",
+      "medication therapy management agent"
+    ],
+    "tier2": [
+      "drug-information",
+      "drug information",
+      "drug-interaction",
+      "drug interaction",
+      "dosing-guidance",
+      "dosing guidance",
+      "adverse-effect-monitoring",
+      "adverse effect monitoring",
+      "contraindications",
+      "side-effects",
+      "side effects"
+    ],
+    "tier3": [],
+    "archetypes": [
+      "agent-in-sandbox",
+      "advisory-agent",
+      "regulated-medical"
+    ]
+  }
+}

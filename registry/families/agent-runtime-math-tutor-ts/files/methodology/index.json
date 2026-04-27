@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "problem-generation",
+      "capability": "problem-generation",
+      "path": "./problem-generation.md",
+      "tags": ["methodology", "practice", "adaptive"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "step-by-step-solution",
+      "capability": "step-by-step-solution",
+      "path": "./step-by-step-solution.md",
+      "tags": ["methodology", "worked-example", "scaffolding"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "concept-explanation",
+      "capability": "concept-explanation",
+      "path": "./concept-explanation.md",
+      "tags": ["methodology", "theory", "foundations"],
+      "version": "0.1.0"
+    }
+  ]
+}

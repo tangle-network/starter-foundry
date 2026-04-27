@@ -1,0 +1,134 @@
+{
+  "id": "agent-runtime-chef-ts",
+  "description": "Voice-first personal chef agent bundle \u2014 meal planning, recipe development, technique guidance, and kitchen workflow optimization. Not a registered dietitian, not a food-safety inspector, not a substitute for medical nutrition therapy. Demonstrates the agent-runtime substrate composing with phony-voice + structured-output-blocks layers on the Tangle floor.",
+  "tags": [
+    "agent-runtime",
+    "personal-chef",
+    "culinary",
+    "voice-first",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-tools:phony-voice",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-chef",
+    "agentName": "chef",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "voice-stt",
+          "voice-tts",
+          "meal-plan",
+          "recipe-dev",
+          "technique-cue"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "meal-planning",
+      "recipe-development",
+      "technique-guidance"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "low",
+    "advisoryOnly": false,
+    "outboundDomains": [
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY",
+      "PHONY_API_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/meal-planning.md",
+      "target": "methodology/meal-planning.md"
+    },
+    {
+      "source": "files/methodology/recipe-development.md",
+      "target": "methodology/recipe-development.md"
+    },
+    {
+      "source": "files/methodology/technique-guidance.md",
+      "target": "methodology/technique-guidance.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "chef-agent",
+      "chef agent",
+      "personal-chef",
+      "personal chef",
+      "cooking-coach-agent",
+      "cooking coach agent",
+      "culinary-agent",
+      "culinary agent"
+    ],
+    "tier2": [
+      "recipe-development",
+      "recipe development",
+      "technique-guidance",
+      "technique guidance",
+      "kitchen-workflow",
+      "kitchen workflow",
+      "ingredient-substitution",
+      "ingredient substitution"
+    ],
+    "tier3": [],
+    "archetypes": [
+      "agent-in-sandbox",
+      "creative-agent",
+      "voice-first"
+    ]
+  }
+}

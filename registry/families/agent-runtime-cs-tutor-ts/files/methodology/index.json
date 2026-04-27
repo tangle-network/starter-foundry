@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "explain-concept",
+      "capability": "explain-concept",
+      "path": "./explain-concept.md",
+      "tags": ["methodology", "teaching", "concept"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "debug-code",
+      "capability": "debug-code",
+      "path": "./debug-code.md",
+      "tags": ["methodology", "debugging", "code-review"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "generate-exercise",
+      "capability": "generate-exercise",
+      "path": "./generate-exercise.md",
+      "tags": ["methodology", "practice", "exercise"],
+      "version": "0.1.0"
+    }
+  ]
+}

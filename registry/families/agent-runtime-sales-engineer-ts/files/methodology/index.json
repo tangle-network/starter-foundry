@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "demo-script",
+      "capability": "demo-scripting",
+      "path": "./demo-script.md",
+      "tags": ["methodology", "demo", "pre-sales"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "poc-design",
+      "capability": "poc-design",
+      "path": "./poc-design.md",
+      "tags": ["methodology", "proof-of-concept", "technical-validation"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "competitive-technical-positioning",
+      "capability": "competitive-technical-positioning",
+      "path": "./competitive-technical-positioning.md",
+      "tags": ["methodology", "competitive-analysis", "positioning"],
+      "version": "0.1.0"
+    }
+  ]
+}

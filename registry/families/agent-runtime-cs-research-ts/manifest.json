@@ -1,0 +1,143 @@
+{
+  "id": "agent-runtime-cs-research-ts",
+  "description": "CS Research Assistant agent bundle \u2014 literature survey, paper summarization, citation-graph exploration, and research-question formulation. Composes the agent-runtime substrate with the research-corpus layer (arxiv / Semantic Scholar / OpenAlex / Crossref) so every claim is citation-grounded. Advisory only \u2014 never replaces peer review, IRB, or the researcher's own judgment.",
+  "tags": [
+    "agent-runtime",
+    "cs-research",
+    "literature-survey",
+    "paper-summarization",
+    "citation-graph",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-tools:research-corpus",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-cs-research",
+    "agentName": "cs-research-assistant",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "research:paper-search",
+          "research:citation-graph"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "literature-survey",
+      "paper-summarization",
+      "citation-graph-exploration",
+      "research-question-formulation"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "low",
+    "advisoryOnly": true,
+    "outboundDomains": [
+      "api.tangle.tools",
+      "export.arxiv.org",
+      "api.semanticscholar.org",
+      "api.openalex.org",
+      "api.crossref.org"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/literature-survey.md",
+      "target": "methodology/literature-survey.md"
+    },
+    {
+      "source": "files/methodology/paper-summarization.md",
+      "target": "methodology/paper-summarization.md"
+    },
+    {
+      "source": "files/methodology/citation-graph-exploration.md",
+      "target": "methodology/citation-graph-exploration.md"
+    },
+    {
+      "source": "files/methodology/research-question-formulation.md",
+      "target": "methodology/research-question-formulation.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "cs-research-assistant",
+      "cs research assistant",
+      "literature-survey-agent",
+      "literature survey agent",
+      "paper-summarizer",
+      "paper summarizer",
+      "citation-graph-agent",
+      "citation graph agent"
+    ],
+    "tier2": [
+      "literature-survey",
+      "literature survey",
+      "paper-summarization",
+      "paper summarization",
+      "citation-graph",
+      "citation graph",
+      "research-question",
+      "research question",
+      "systematic-review",
+      "systematic review"
+    ],
+    "tier3": [
+      "agent"
+    ],
+    "archetypes": [
+      "agent-in-sandbox",
+      "research-agent"
+    ]
+  }
+}

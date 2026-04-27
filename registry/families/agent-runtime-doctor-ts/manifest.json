@@ -1,0 +1,128 @@
+{
+  "id": "agent-runtime-doctor-ts",
+  "description": "Medical reference agent bundle \u2014 provides general health information, explains medical terminology, and helps users understand conditions and treatments. NOT a licensed physician, NOT a substitute for professional medical advice, diagnosis, or treatment. Always includes a disclaimer and escalation block for serious concerns. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor.",
+  "tags": [
+    "agent-runtime",
+    "medical-reference",
+    "health-information",
+    "advisory-agent",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-doctor",
+    "agentName": "doctor",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "medical-reference",
+          "symptom-explainer",
+          "treatment-overview"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "medical-reference",
+      "symptom-explainer",
+      "treatment-overview"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "high",
+    "advisoryOnly": true,
+    "outboundDomains": [
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/medical-reference.md",
+      "target": "methodology/medical-reference.md"
+    },
+    {
+      "source": "files/methodology/symptom-explainer.md",
+      "target": "methodology/symptom-explainer.md"
+    },
+    {
+      "source": "files/methodology/treatment-overview.md",
+      "target": "methodology/treatment-overview.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "medical-reference-agent",
+      "medical reference agent",
+      "health-info-agent",
+      "health info agent",
+      "doctor-agent",
+      "doctor agent"
+    ],
+    "tier2": [
+      "symptom-explainer",
+      "symptom explainer",
+      "treatment-overview",
+      "treatment overview",
+      "medical-terminology",
+      "medical terminology",
+      "health-literacy",
+      "health literacy"
+    ],
+    "tier3": [],
+    "archetypes": [
+      "agent-in-sandbox",
+      "advisory-agent",
+      "regulated-medical"
+    ]
+  }
+}

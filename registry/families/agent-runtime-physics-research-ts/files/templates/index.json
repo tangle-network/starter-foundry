@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "literature-search",
+      "capability": "literature-search",
+      "path": "./literature-search.md",
+      "tags": ["methodology", "literature", "search", "arxiv"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "citation-analysis",
+      "capability": "citation-analysis",
+      "path": "./citation-analysis.md",
+      "tags": ["methodology", "citation", "analysis", "semantic-scholar"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "experimental-design",
+      "capability": "experimental-design",
+      "path": "./experimental-design.md",
+      "tags": ["methodology", "experiment", "design", "hypothesis"],
+      "version": "0.1.0"
+    }
+  ]
+}

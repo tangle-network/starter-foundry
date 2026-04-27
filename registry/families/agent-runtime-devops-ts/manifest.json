@@ -1,0 +1,135 @@
+{
+  "id": "agent-runtime-devops-ts",
+  "description": "DevOps / SRE agent bundle \u2014 incident response, runbook automation, and infrastructure-as-code review. Composes the agent-runtime substrate with the structured-output-blocks layer on the Tangle floor. Advisory only \u2014 never replaces the operator's on-call rotation or production access.",
+  "tags": [
+    "agent-runtime",
+    "devops",
+    "sre",
+    "incident-response",
+    "runbook",
+    "infrastructure-as-code",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-devops",
+    "agentName": "devops-agent",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "incident-response",
+          "runbook-execute",
+          "iac-review"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "incident-response-protocol",
+      "runbook-automation",
+      "iac-review"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "moderate",
+    "advisoryOnly": true,
+    "outboundDomains": [
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/incident-response-protocol.md",
+      "target": "methodology/incident-response-protocol.md"
+    },
+    {
+      "source": "files/methodology/runbook-automation.md",
+      "target": "methodology/runbook-automation.md"
+    },
+    {
+      "source": "files/methodology/iac-review.md",
+      "target": "methodology/iac-review.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "devops-agent",
+      "devops agent",
+      "sre-agent",
+      "sre agent",
+      "infrastructure-agent",
+      "infrastructure agent",
+      "operations-agent",
+      "operations agent"
+    ],
+    "tier2": [
+      "incident-response",
+      "incident response",
+      "runbook-automation",
+      "runbook automation",
+      "iac-review",
+      "iac review",
+      "infrastructure-as-code",
+      "infrastructure as code",
+      "postmortem",
+      "slo",
+      "error-budget",
+      "error budget"
+    ],
+    "tier3": [],
+    "archetypes": [
+      "agent-in-sandbox",
+      "operations-agent"
+    ]
+  }
+}

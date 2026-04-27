@@ -3,13 +3,16 @@
   "slot": "agent-tools",
   "description": "Voice toolkit for agent-runtime bundles. Wraps @ph0ny/sdk (the only public phony package) for STT, TTS, voice-cloning, and voice RAG. Stack on therapist, music-producer, friend, language-tutor, voice-orchestrator bundles. Internal phony packages are NOT included.",
   "appliesTo": [
-    "agent-runtime-research",
-    "agent-runtime-therapist-ts",
-    "agent-runtime-music-producer-ts",
+    "agent-runtime-chef-ts",
     "agent-runtime-fitness-coach-ts",
+    "agent-runtime-friend-ts",
     "agent-runtime-language-tutor-ts",
+    "agent-runtime-mediator-ts",
+    "agent-runtime-meditation-coach-ts",
+    "agent-runtime-music-producer-ts",
     "agent-runtime-relationship-coach-ts",
-    "agent-runtime-business-partner-ts"
+    "agent-runtime-research",
+    "agent-runtime-therapist-ts"
   ],
   "provides": [
     "voice:stt",

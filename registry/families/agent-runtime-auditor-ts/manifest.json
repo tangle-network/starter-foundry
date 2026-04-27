@@ -1,0 +1,81 @@
+{
+  "id": "agent-runtime-auditor-ts",
+  "description": "Internal auditor agent — SOX/SOC2 control walkthroughs, evidence request lists, deficiency write-ups. Advisory only — never replaces a CIA/CISA, never signs off on controls, never replaces independent audit. Surfaces escalation to the audit committee on material findings.",
+  "tags": [
+    "agent-runtime",
+    "internal-audit",
+    "sox",
+    "soc2",
+    "compliance",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-auditor",
+    "agentName": "internal-auditor",
+    "publicVars": [
+      "AGENT_NAME"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/control-walkthrough.md",
+      "target": "methodology/control-walkthrough.md"
+    },
+    {
+      "source": "files/methodology/evidence-request-list.md",
+      "target": "methodology/evidence-request-list.md"
+    },
+    {
+      "source": "files/methodology/deficiency-write-up.md",
+      "target": "methodology/deficiency-write-up.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    }
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "internal-auditor",
+      "audit-agent",
+      "compliance-reviewer",
+      "sox-auditor",
+      "soc2-auditor"
+    ],
+    "tier2": [
+      "sox",
+      "soc2",
+      "control-test",
+      "evidence-collection",
+      "deficiency",
+      "walkthrough",
+      "control-narrative"
+    ],
+    "tier3": [
+      "agent"
+    ],
+    "archetypes": [
+      "agent-in-sandbox",
+      "operations-agent",
+      "regulated-audit"
+    ]
+  }
+}

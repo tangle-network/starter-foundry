@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "application-strategy",
+      "capability": "application-strategy",
+      "path": "./application-strategy.md",
+      "tags": ["methodology", "college-list", "application-plan"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "essay-coaching",
+      "capability": "essay-coaching",
+      "path": "./essay-coaching.md",
+      "tags": ["methodology", "essay", "personal-statement"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "financial-aid-navigation",
+      "capability": "financial-aid-navigation",
+      "path": "./financial-aid-navigation.md",
+      "tags": ["methodology", "financial-aid", "fafsa", "css-profile"],
+      "version": "0.1.0"
+    }
+  ]
+}

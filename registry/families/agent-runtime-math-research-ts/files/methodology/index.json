@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "literature-review",
+      "capability": "literature-review",
+      "path": "./literature-review.md",
+      "tags": ["methodology", "literature", "survey"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "proof-verification",
+      "capability": "proof-verification",
+      "path": "./proof-verification.md",
+      "tags": ["methodology", "proof", "logic"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "mathematical-reasoning",
+      "capability": "mathematical-reasoning",
+      "path": "./mathematical-reasoning.md",
+      "tags": ["methodology", "reasoning", "conjecture"],
+      "version": "0.1.0"
+    }
+  ]
+}

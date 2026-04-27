@@ -1,0 +1,130 @@
+{
+  "id": "agent-runtime-security-engineer-ts",
+  "description": "Security engineer agent bundle \u2014 threat modeling, vulnerability triage, and security architecture review. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only \u2014 never replaces a real security team, penetration tester, or compliance officer.",
+  "tags": [
+    "agent-runtime",
+    "security-engineer",
+    "appsec",
+    "threat-modeling",
+    "vulnerability-triage",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-security-engineer",
+    "agentName": "security-engineer",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "threat-model",
+          "vulnerability-triage",
+          "architecture-review"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "threat-modeling",
+      "vulnerability-triage",
+      "security-architecture-review"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "high",
+    "advisoryOnly": true,
+    "outboundDomains": [
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/threat-modeling.md",
+      "target": "methodology/threat-modeling.md"
+    },
+    {
+      "source": "files/methodology/vulnerability-triage.md",
+      "target": "methodology/vulnerability-triage.md"
+    },
+    {
+      "source": "files/methodology/security-architecture-review.md",
+      "target": "methodology/security-architecture-review.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "security-engineer-agent",
+      "security engineer agent",
+      "appsec-agent",
+      "appsec agent",
+      "security-engineer",
+      "security engineer"
+    ],
+    "tier2": [
+      "threat-modeling",
+      "threat modeling",
+      "vulnerability-triage",
+      "vulnerability triage",
+      "security-architecture-review",
+      "security architecture review",
+      "stride",
+      "dread",
+      "cve",
+      "cwe"
+    ],
+    "tier3": [],
+    "archetypes": [
+      "agent-in-sandbox",
+      "advisory-agent"
+    ]
+  }
+}

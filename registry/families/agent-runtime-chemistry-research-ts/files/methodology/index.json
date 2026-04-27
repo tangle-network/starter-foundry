@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "literature-search",
+      "capability": "literature-search",
+      "path": "./literature-search.md",
+      "tags": ["methodology", "literature", "search"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "reaction-planning",
+      "capability": "reaction-planning",
+      "path": "./reaction-planning.md",
+      "tags": ["methodology", "reaction", "synthesis"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "compound-data-extraction",
+      "capability": "compound-data-extraction",
+      "path": "./compound-data-extraction.md",
+      "tags": ["methodology", "compound", "data-extraction"],
+      "version": "0.1.0"
+    }
+  ]
+}

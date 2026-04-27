@@ -1,0 +1,32 @@
+{
+  "entries": [
+    {
+      "id": "ad-hoc-query",
+      "capability": "ad-hoc-query",
+      "path": "./ad-hoc-query.md",
+      "tags": ["methodology", "sql", "query"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "exploratory-analysis",
+      "capability": "exploratory-analysis",
+      "path": "./exploratory-analysis.md",
+      "tags": ["methodology", "python", "eda"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "dashboard-design",
+      "capability": "dashboard-design",
+      "path": "./dashboard-design.md",
+      "tags": ["methodology", "dashboard", "visualization"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "data-quality-audit",
+      "capability": "data-quality-audit",
+      "path": "./data-quality-audit.md",
+      "tags": ["methodology", "data-quality", "audit"],
+      "version": "0.1.0"
+    }
+  ]
+}

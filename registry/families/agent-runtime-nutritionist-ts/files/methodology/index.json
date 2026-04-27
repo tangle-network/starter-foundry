@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "meal-plan",
+      "capability": "meal-planning",
+      "path": "./meal-plan.md",
+      "tags": ["methodology", "meal-planning", "macros"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "macro-targets",
+      "capability": "macro-targeting",
+      "path": "./macro-targets.md",
+      "tags": ["methodology", "macros", "tdde"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "dietary-assessment",
+      "capability": "dietary-assessment",
+      "path": "./dietary-assessment.md",
+      "tags": ["methodology", "assessment", "micronutrients"],
+      "version": "0.1.0"
+    }
+  ]
+}

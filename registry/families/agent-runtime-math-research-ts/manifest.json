@@ -1,0 +1,136 @@
+{
+  "id": "agent-runtime-math-research-ts",
+  "description": "Math research assistant agent bundle \u2014 helps with literature review, proof verification, and mathematical reasoning. Composes the agent-runtime substrate with the research-corpus layer (arxiv / Semantic Scholar / OpenAlex / Crossref) so any claim is citation-grounded. Advisory only \u2014 never replaces peer review or domain expertise.",
+  "tags": [
+    "agent-runtime",
+    "math-research",
+    "advisory-agent",
+    "literature-review",
+    "proof-assistant",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-tools:research-corpus",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-math-research",
+    "agentName": "math-research",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "research:paper-search",
+          "research:citation-graph"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "literature-review",
+      "proof-verification",
+      "mathematical-reasoning"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "low",
+    "advisoryOnly": true,
+    "outboundDomains": [
+      "api.tangle.tools",
+      "export.arxiv.org",
+      "api.semanticscholar.org",
+      "api.openalex.org",
+      "api.crossref.org"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/literature-review.md",
+      "target": "methodology/literature-review.md"
+    },
+    {
+      "source": "files/methodology/proof-verification.md",
+      "target": "methodology/proof-verification.md"
+    },
+    {
+      "source": "files/methodology/mathematical-reasoning.md",
+      "target": "methodology/mathematical-reasoning.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "math-research-agent",
+      "math research agent",
+      "mathematical-assistant",
+      "mathematical assistant",
+      "proof-assistant",
+      "proof assistant",
+      "theorem-prover",
+      "theorem prover"
+    ],
+    "tier2": [
+      "literature-review",
+      "literature review",
+      "proof-verification",
+      "proof verification",
+      "mathematical-reasoning",
+      "mathematical reasoning",
+      "arxiv-search",
+      "arxiv search",
+      "citation-graph",
+      "citation graph"
+    ],
+    "tier3": [],
+    "archetypes": [
+      "agent-in-sandbox",
+      "research-agent"
+    ]
+  }
+}

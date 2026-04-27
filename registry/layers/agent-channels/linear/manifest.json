@@ -1,0 +1,21 @@
+{
+  "id": "linear",
+  "slot": "agent-channels",
+  "description": "Linear channel adapter — webhook receive (Issue + Comment events, HMAC-SHA256 signature verified against Linear-Signature header) + GraphQL commentCreate send via api.linear.app/graphql with bearer auth. Composes with any agent-runtime bundle. Set LINEAR_API_KEY and LINEAR_WEBHOOK_SECRET at deploy.",
+  "appliesTo": [],
+  "provides": ["channel:linear"],
+  "requires": ["secure:webhook-in"],
+  "defaults": {
+    "channelLinearAvailable": true
+  },
+  "files": [
+    { "source": "files/channels/linear.ts", "target": "channels/linear.ts" },
+    { "source": "files/channels/linear.env.example", "target": "channels/linear.env.example" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "channels/linear.ts" }
+  ],
+  "contextHints": {
+    "extensionPoints": ["channels/linear.ts"]
+  }
+}

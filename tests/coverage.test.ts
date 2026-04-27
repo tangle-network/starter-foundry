@@ -174,6 +174,8 @@ const FAMILY_PROMPTS: Record<string, string> = {
     'Build an agent-with-ui single-agent app with sandbox-ui chat surface and artifact pane',
   'orchestrator-with-ui-ts':
     'Build an orchestrator-with-ui-ts agent fleet manager scaffold using sandbox-ui dashboard primitives',
+  'agent-orchestrator-service-ts':
+    'Build an agent-orchestrator-service headless-agent-orchestrator with team-routing agent-roster tenant-auth and rate-limit on Hono',
   'sandbox-app-ts':
     'Build a sandbox-app sandbox workspace on tangle sandbox SDK with editor, file tree, and terminal',
   'agent-runtime-veterinarian-ts':
@@ -258,6 +260,10 @@ const FAMILY_PROMPTS: Record<string, string> = {
     'Build a trip planner agent with packing-list and multi-city itinerary design',
   'agent-runtime-chef-ts':
     'Build a chef-agent for recipe-development and kitchen-workflow with technique-guidance',
+  'multi-agent-product-ops-ts':
+    'Build a product-ops-team multi-agent feature-team-agent for discovery-cycle prioritization-rice sprint-planning and qbr-prep',
+  'multi-agent-research-lab-ts':
+    'Build a research-lab-team interdisciplinary cross-domain-research-pod with arxiv crossref openalex literature-survey across multiple domains',
 }
 
 for (const [family, prompt] of Object.entries(FAMILY_PROMPTS)) {

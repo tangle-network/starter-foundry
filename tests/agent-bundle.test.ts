@@ -1,23 +1,34 @@
 /**
- * Unit tests for the agent-bundle loader + AgentProfile translator.
+ * Unit tests for the agent-bundle loader + AgentProfile translator +
+ * harness-native workspace-file emitter.
  *
  * Covers:
  * - schema validation (valid + invalid fixtures)
  * - single-agent translation: system prompt inlined, resources enumerated
  * - multi-agent translation: subagent prompts flattened into AgentProfile.subagents
  * - directory resources expand recursively into per-file inline mounts
+ * - workspace-file emit at /home/agent: AGENTS.md (always),
+ *   agents.json (multi-agent only, OpenCode shape), resource files
+ * - resource target defaults to <workspace.root>/<source> when unset
  *
- * The "GAP test" at the bottom asserts the generated AgentProfile shape
- * matches what would be sent to `client.create({ backend: { profile } })`,
- * without standing up a real sandbox API. Live end-to-end proof requires a
- * reachable Tangle sandbox API + key — see docs/cookbooks/deploy-agent-bundle.md.
+ * The "boundary test" asserts the generated AgentProfile shape matches what
+ * would be sent to `client.create({ backend: { profile } })`, without
+ * standing up a real sandbox API. Live end-to-end proof requires a reachable
+ * Tangle sandbox API + key — see docs/cookbooks/deploy-agent-bundle.md.
  */
 import assert from 'node:assert/strict'
 import { dirname, resolve } from 'node:path'
 import test from 'node:test'
 import { fileURLToPath } from 'node:url'
 
-import { loadAgentBundle, resolveSystemPrompt, toAgentProfile } from '../dist/lib/agent-bundle.js'
+import {
+  DEFAULT_WORKSPACE_ROOT,
+  loadAgentBundle,
+  resolveSystemPrompt,
+  resolveWorkspaceRoot,
+  toAgentProfile,
+  toWorkspaceFiles,
+} from '../dist/lib/agent-bundle.js'
 
 // Tests compile to dist-tests/ but fixtures live in tests/fixtures/.
 // Walk up to the repo root, then back down into tests/fixtures.
@@ -29,7 +40,7 @@ test('loadAgentBundle accepts a valid single-agent fixture', async () => {
   const bundle = await loadAgentBundle(resolve(FIXTURES, 'agent-bundle-example'))
   assert.equal(bundle.name, 'research-assistant')
   assert.equal(bundle.version, '0.1.0')
-  assert.equal(bundle.prompt.systemPromptFile, 'system-prompt.md')
+  assert.equal(bundle.prompt.systemPromptFile, 'AGENTS.md')
   assert.deepEqual(bundle.tags, ['research', 'single-agent'])
 })
 
@@ -60,6 +71,13 @@ test('resolveSystemPrompt returns the file content', async () => {
   assert.match(prompt, /Refuse to invent data/)
 })
 
+test('resolveWorkspaceRoot defaults to /home/agent when workspace.root unset', async () => {
+  const dir = resolve(FIXTURES, 'agent-bundle-example')
+  const bundle = await loadAgentBundle(dir)
+  assert.equal(resolveWorkspaceRoot(bundle), DEFAULT_WORKSPACE_ROOT)
+  assert.equal(DEFAULT_WORKSPACE_ROOT, '/home/agent')
+})
+
 test('toAgentProfile inlines systemPrompt + flattens single-agent resources', async () => {
   const dir = resolve(FIXTURES, 'agent-bundle-example')
   const bundle = await loadAgentBundle(dir)
@@ -86,15 +104,15 @@ test('toAgentProfile inlines systemPrompt + flattens single-agent resources', as
     webfetch: 'deny',
   })
 
-  // Resources enumerated: 1 system-prompt file + 2 methodology files = 3
+  // Resources enumerated: methodology directory expands into 2 files,
+  // both rooted at /home/agent/ (the harness-native workspace root).
   const files = profile.resources?.files ?? []
-  assert.equal(files.length, 3, `expected 3 resource files, got ${files.length}`)
+  assert.equal(files.length, 2, `expected 2 resource files, got ${files.length}`)
 
   const paths = files.map((f) => f.path).sort()
   assert.deepEqual(paths, [
-    '/workspace/methodology/literature-survey.md',
-    '/workspace/methodology/proposal-drafting.md',
-    '/workspace/system-prompt.md',
+    '/home/agent/methodology/literature-survey.md',
+    '/home/agent/methodology/proposal-drafting.md',
   ])
 
   // Every mount carries inline content
@@ -128,14 +146,13 @@ test('toAgentProfile flattens subagent prompts into AgentProfile.subagents', asy
   assert.deepEqual(researcher.permissions, { webfetch: 'allow' })
   assert.equal(researcher.maxSteps, undefined)
 
-  // Resources still carry the flat-file roster
+  // Resources still carry the per-role flat-file roster, rooted at /home/agent.
   const files = profile.resources?.files ?? []
-  assert.equal(files.length, 3)
+  assert.equal(files.length, 2)
   const paths = files.map((f) => f.path).sort()
   assert.deepEqual(paths, [
-    '/workspace/roles/lead/system-prompt.md',
-    '/workspace/roles/researcher/system-prompt.md',
-    '/workspace/team-system.md',
+    '/home/agent/roles/lead/AGENTS.md',
+    '/home/agent/roles/researcher/AGENTS.md',
   ])
 })
 
@@ -164,4 +181,104 @@ test('toAgentProfile produces the exact backend.profile shape the SDK expects', 
     assert.ok(mount.path.startsWith('/'), `path must be absolute: ${mount.path}`)
     assert.equal(mount.resource.kind, 'inline')
   }
+})
+
+test('toWorkspaceFiles emits exactly one AGENTS.md for a single-agent bundle', async () => {
+  const dir = resolve(FIXTURES, 'agent-bundle-example')
+  const bundle = await loadAgentBundle(dir)
+  const files = await toWorkspaceFiles(bundle, dir)
+
+  // Expect AGENTS.md + 2 methodology files = 3
+  assert.equal(files.length, 3)
+
+  const agentsMd = files.filter((f) => f.targetPath === '/home/agent/AGENTS.md')
+  assert.equal(agentsMd.length, 1, 'exactly one AGENTS.md must be emitted')
+  assert.match(agentsMd[0].content, /# Research Assistant/)
+
+  // Single-agent bundles do NOT emit agents.json
+  const agentsJson = files.filter((f) => f.targetPath === '/home/agent/agents.json')
+  assert.equal(agentsJson.length, 0, 'single-agent bundle must not emit agents.json')
+
+  // Resource files default to /home/agent/<source>
+  const paths = files.map((f) => f.targetPath).sort()
+  assert.deepEqual(paths, [
+    '/home/agent/AGENTS.md',
+    '/home/agent/methodology/literature-survey.md',
+    '/home/agent/methodology/proposal-drafting.md',
+  ])
+})
+
+test('toWorkspaceFiles emits AGENTS.md + agents.json for a multi-agent bundle', async () => {
+  const dir = resolve(FIXTURES, 'agent-bundle-multi')
+  const bundle = await loadAgentBundle(dir)
+  const files = await toWorkspaceFiles(bundle, dir)
+
+  // AGENTS.md + agents.json + 2 role files = 4
+  assert.equal(files.length, 4)
+
+  const paths = files.map((f) => f.targetPath).sort()
+  assert.deepEqual(paths, [
+    '/home/agent/AGENTS.md',
+    '/home/agent/agents.json',
+    '/home/agent/roles/lead/AGENTS.md',
+    '/home/agent/roles/researcher/AGENTS.md',
+  ])
+
+  const orchestrator = files.find((f) => f.targetPath === '/home/agent/AGENTS.md')!
+  assert.match(orchestrator.content, /# Team root/)
+})
+
+test('emitted agents.json conforms to the OpenCode subagent shape', async () => {
+  // Contract verified against apps/sidecar/agents.json + load-agents-config.ts:
+  //   { <id>: { mode: "subagent", description, prompt, temperature?, tools?, permission? } }
+  // `permission` is SINGULAR per the harness contract. `prompt` is the full
+  // markdown content inline (not a path).
+  const dir = resolve(FIXTURES, 'agent-bundle-multi')
+  const bundle = await loadAgentBundle(dir)
+  const files = await toWorkspaceFiles(bundle, dir)
+
+  const agentsJsonFile = files.find((f) => f.targetPath === '/home/agent/agents.json')
+  assert.ok(agentsJsonFile, 'multi-agent bundle must emit agents.json')
+
+  const parsed = JSON.parse(agentsJsonFile!.content) as Record<string, Record<string, unknown>>
+  assert.deepEqual(Object.keys(parsed).sort(), ['lead', 'researcher'])
+
+  // Lead carries every documented OpenCode field
+  const lead = parsed.lead
+  assert.equal(lead.mode, 'subagent')
+  assert.equal(lead.description, 'Routes work and reviews drafts')
+  assert.equal(typeof lead.prompt, 'string')
+  assert.match(lead.prompt as string, /# Lead/)
+  assert.equal(lead.temperature, 0.2)
+  assert.deepEqual(lead.tools, { bash: true })
+  // SINGULAR `permission`, not the bundle-side plural `permissions`.
+  assert.deepEqual(lead.permission, { bash: 'ask' })
+  // `permissions` (plural) must NOT leak into the harness file.
+  assert.equal('permissions' in lead, false)
+
+  // Researcher: omits temperature; still has mode/prompt/tools/permission
+  const researcher = parsed.researcher
+  assert.equal(researcher.mode, 'subagent')
+  assert.equal(researcher.description, 'Reads papers and writes summaries')
+  assert.match(researcher.prompt as string, /# Researcher/)
+  assert.equal(researcher.temperature, undefined)
+  assert.deepEqual(researcher.tools, { webfetch: true })
+  assert.deepEqual(researcher.permission, { webfetch: 'allow' })
+})
+
+test('toWorkspaceFiles defaults resource target to <workspace.root>/<source>', async () => {
+  // Single-agent fixture's only resource is `{ "source": "methodology" }`
+  // with no explicit target. Files must land at /home/agent/methodology/*.
+  const dir = resolve(FIXTURES, 'agent-bundle-example')
+  const bundle = await loadAgentBundle(dir)
+  const files = await toWorkspaceFiles(bundle, dir)
+
+  const methodology = files
+    .filter((f) => f.targetPath.startsWith('/home/agent/methodology/'))
+    .map((f) => f.targetPath)
+    .sort()
+  assert.deepEqual(methodology, [
+    '/home/agent/methodology/literature-survey.md',
+    '/home/agent/methodology/proposal-drafting.md',
+  ])
 })

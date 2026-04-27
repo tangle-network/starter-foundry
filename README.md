@@ -2,6 +2,10 @@
 
 Deterministic project scaffold engine for AI coding platforms. Routes a user prompt to the right project structure, composes files, and gives the AI agent a concrete build plan — all in under 10ms.
 
+starter-foundry ships **starter folders** for any project the user prompts — webapps, contracts, full-stack monorepos, **and agent bundles**. Agent bundles are folders of `system-prompt.md` + methodology + a thin `agent.json` ([`AgentProfile`][agent-profile]) that deploy **into a Tangle sandbox** via the sandbox SDK; the sandbox is the runtime, not this repo. See [`docs/architecture/agent-bundles.md`](./docs/architecture/agent-bundles.md) for the canonical model and the agent-bundle cookbooks under [`docs/cookbooks/`](./docs/cookbooks/) for the deploy path.
+
+[agent-profile]: https://github.com/tangle-network/agent-dev-container/blob/main/products/sandbox/sdk/src/agent-profile.ts
+
 ```
 "Build a Next.js SaaS with Stripe billing and team management"
   → nextjs-ts + capability:saas-teams + capability:tailwind + capability:layout-dashboard
@@ -20,13 +24,13 @@ The hot path is fully deterministic — no LLM calls, no network. A keyword scor
 
 ## Registry
 
-| | Count | Examples |
-|---|---|---|
-| **Families** | 94 | nextjs-ts, react-vite-ts, agent-service-ts, forge-contracts, solana-native-rust, python-http, go-net-http, sveltekit-ts, wasm-rust, bun-http, tangle-blueprint, kotlin-multiplatform |
-| **Capability layers** | 104 | See categories below |
-| **Slot layers** | 28 | database (sqlite/postgres/mongodb/convex), auth (clerk/better-auth/supabase), payments (stripe/coinbase-commerce), sdk (evm-wallet/solana-web3/coinbase-cdp), queue (bullmq/trigger-dev), industry (10 verticals) |
-| **Partners** | 19 | Arbitrum, Avalanche, Chainlink, Coinbase, EigenLayer, Farcaster, Hyperliquid, Lens, Linea, Monad, Polygon, Sei-EVM, Solana, Sui, Tangle, Tempo, Tether, USDC-Circle, XLayer |
-| **Product archetypes** | 115+ | "Twitter clone" → fullstack-ts + realtime-ws + saas-teams |
+|                        | Count | Examples                                                                                                                                                                                                          |
+| ---------------------- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Families**           | 94    | nextjs-ts, react-vite-ts, agent-service-ts, forge-contracts, solana-native-rust, python-http, go-net-http, sveltekit-ts, wasm-rust, bun-http, tangle-blueprint, kotlin-multiplatform                              |
+| **Capability layers**  | 104   | See categories below                                                                                                                                                                                              |
+| **Slot layers**        | 28    | database (sqlite/postgres/mongodb/convex), auth (clerk/better-auth/supabase), payments (stripe/coinbase-commerce), sdk (evm-wallet/solana-web3/coinbase-cdp), queue (bullmq/trigger-dev), industry (10 verticals) |
+| **Partners**           | 19    | Arbitrum, Avalanche, Chainlink, Coinbase, EigenLayer, Farcaster, Hyperliquid, Lens, Linea, Monad, Polygon, Sei-EVM, Solana, Sui, Tangle, Tempo, Tether, USDC-Circle, XLayer                                       |
+| **Product archetypes** | 115+  | "Twitter clone" → fullstack-ts + realtime-ws + saas-teams                                                                                                                                                         |
 
 ### Capability layers by category
 
@@ -51,10 +55,10 @@ ai-chat-sessions (ChatGPT-style session list + folders + header), ai-agent-orche
 
 Layout layers support **visual variants** — different design treatments of the same component structure. The compose engine picks a variant deterministically from the project name, so every scaffold looks distinct but the result is reproducible.
 
-| Layer | Variants |
-|---|---|
-| layout-landing | gradient-hero, minimal-clean, dark-product |
-| layout-dashboard | sidebar, topnav |
+| Layer            | Variants                                   |
+| ---------------- | ------------------------------------------ |
+| layout-landing   | gradient-hero, minimal-clean, dark-product |
+| layout-dashboard | sidebar, topnav                            |
 
 ## Programmatic API
 
@@ -76,16 +80,16 @@ const context = await createContextPack({ spec: plan.spec, outDir: '/tmp/project
 npm run build && node dist/cli.js <command>
 ```
 
-| Command | Description |
-|---------|-------------|
-| `plan --prompt <text> [--partner <id>]` | Route a prompt to a family + capabilities |
-| `compose --spec <path> --out <dir>` | Compose a starter project |
-| `workspace-compose --spec <path> --out <dir>` | Compose a multi-project workspace |
-| `validate --spec <path>` | Run validation checks |
-| `context --spec <path>` | Generate a context pack with build plan |
-| `bench --spec <path> [--runs <n>]` | Benchmark compose + validate timing |
-| `prove --corpus <path> --out <dir>` | Run proof suite over a prompt corpus |
-| `catalog` | List all families and layers |
+| Command                                       | Description                               |
+| --------------------------------------------- | ----------------------------------------- |
+| `plan --prompt <text> [--partner <id>]`       | Route a prompt to a family + capabilities |
+| `compose --spec <path> --out <dir>`           | Compose a starter project                 |
+| `workspace-compose --spec <path> --out <dir>` | Compose a multi-project workspace         |
+| `validate --spec <path>`                      | Run validation checks                     |
+| `context --spec <path>`                       | Generate a context pack with build plan   |
+| `bench --spec <path> [--runs <n>]`            | Benchmark compose + validate timing       |
+| `prove --corpus <path> --out <dir>`           | Run proof suite over a prompt corpus      |
+| `catalog`                                     | List all families and layers              |
 
 ## Toolchain (for `pnpm test`)
 
@@ -94,10 +98,10 @@ need real binaries on `PATH`. Without them the tests fail with
 `spawn <bin> ENOENT`. `pnpm pretest` probes the env and prints install
 hints; the actual tests are strict (no auto-skip).
 
-| Tool | Needed for | Install |
-|---|---|---|
+| Tool    | Needed for                                                                                                                                                               | Install                                                                    |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
 | `forge` | `forge-contracts` family validation, `xlayer-foundry-deploy` / `layerzero-oft` / `account-abstraction` specs, `runPromptCorpus` multichain scenario, workspace benchmark | `curl -L https://foundry.paradigm.xyz \| bash && ~/.foundry/bin/foundryup` |
-| `cargo` | `solana-program` toolchain validation in workspace tests | `curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs \| sh` |
+| `cargo` | `solana-program` toolchain validation in workspace tests                                                                                                                 | `curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs \| sh`          |
 
 After installing forge, ensure `~/.foundry/bin` is on your `PATH`
 (`foundryup` adds it to `~/.zshenv`/`~/.bashrc`; restart shell or
@@ -115,14 +119,14 @@ After family selection, **capability detection** scans the prompt against capabi
 
 ## Quality
 
-| Metric | Value |
-|--------|-------|
-| Route accuracy (training corpus, 60 scenarios) | 100% |
-| Route accuracy (held-out corpus, 43 scenarios) | 100% |
-| Route accuracy (IdeasAI corpus, 60 scenarios) | 100% |
-| Unit + integration tests | 615/615 |
-| Scaffold audit pass rate | 85/89 (4 toolchain-blocked) |
-| Compose latency (warm) | ~5ms |
+| Metric                                         | Value                       |
+| ---------------------------------------------- | --------------------------- |
+| Route accuracy (training corpus, 60 scenarios) | 100%                        |
+| Route accuracy (held-out corpus, 43 scenarios) | 100%                        |
+| Route accuracy (IdeasAI corpus, 60 scenarios)  | 100%                        |
+| Unit + integration tests                       | 615/615                     |
+| Scaffold audit pass rate                       | 85/89 (4 toolchain-blocked) |
+| Compose latency (warm)                         | ~5ms                        |
 
 ### Template regeneration pipeline
 
@@ -176,18 +180,19 @@ node scripts/run-buildout-pipeline.mjs   # mine → join → analyze
 ```
 
 Outputs:
+
 - `.evolve/buildout-analysis.json` — per-scenario pass rate, top-added packages, top-rewritten files (committed evidence)
 - `.evolve/capability-gaps.json` — ranked (scenario, capability) router misses
 - `.evolve/traces/buildouts.jsonl` — append-only corpus (gitignored, regenerable)
 
 ### Stages
 
-| Script | Input | Output |
-|---|---|---|
-| `mine-buildout-sessions.mjs` | `~/.claude/projects/**/factory-local-phase2-*/*.jsonl` | `.evolve/traces/buildouts.jsonl` |
-| `join-buildout-outcomes.mjs` | VB execution traces + buildouts | buildouts.jsonl annotated with outcomes |
-| `analyze-buildouts.mjs` | joined buildouts | `.evolve/buildout-analysis.json` |
-| `infer-capability-gaps.mjs` | joined buildouts + `registry/package-to-capability.json` | `.evolve/capability-gaps.json` |
+| Script                       | Input                                                    | Output                                  |
+| ---------------------------- | -------------------------------------------------------- | --------------------------------------- |
+| `mine-buildout-sessions.mjs` | `~/.claude/projects/**/factory-local-phase2-*/*.jsonl`   | `.evolve/traces/buildouts.jsonl`        |
+| `join-buildout-outcomes.mjs` | VB execution traces + buildouts                          | buildouts.jsonl annotated with outcomes |
+| `analyze-buildouts.mjs`      | joined buildouts                                         | `.evolve/buildout-analysis.json`        |
+| `infer-capability-gaps.mjs`  | joined buildouts + `registry/package-to-capability.json` | `.evolve/capability-gaps.json`          |
 
 ### Fault tolerance
 

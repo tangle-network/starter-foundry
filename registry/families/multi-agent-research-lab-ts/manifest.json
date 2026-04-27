@@ -77,6 +77,14 @@
   },
   "files": [
     {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
+    {
+      "source": "files/orchestrator-system-prompt.md",
+      "target": "orchestrator-system-prompt.md"
+    },
+    {
       "source": "files/coordination-protocol.md",
       "target": "coordination-protocol.md"
     },

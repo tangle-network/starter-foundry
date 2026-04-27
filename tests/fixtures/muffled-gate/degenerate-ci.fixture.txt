@@ -1,0 +1,4 @@
+// Fixture for findDegenerateCi.
+const result = { hypothesisId: 'h1', delta: 0.05, ci95: { lower: delta, upper: delta }, cohensD: 0 }
+// Acceptable: distinct identifiers — real interval estimate.
+const realCi = { lower: lo, upper: hi }

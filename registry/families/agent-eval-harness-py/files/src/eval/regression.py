@@ -46,7 +46,15 @@ class BootstrapCI:
 
 @dataclass(frozen=True)
 class RegressionVerdict:
-    """Per-flow regression verdict from comparing baseline vs head samples."""
+    """Per-flow regression verdict from comparing baseline vs head samples.
+
+    The CI fields describe the ``head - baseline`` mean difference, NOT the
+    head mean alone. Pre-fix this module called ``bootstrap_ci(head, ...)``
+    which returned the head-mean CI; downstream code that read
+    ``ci_lower > 0`` as "treatment significantly above baseline" was wrong
+    every time. ``bootstrap_diff_ci`` is the only correct primitive here
+    and matches the TS sibling family's contract.
+    """
 
     flow: str
     regressed: bool
@@ -57,8 +65,10 @@ class RegressionVerdict:
     cohen_d: float  # signed; positive = head higher than baseline
     welch_p: float
     welch_t: float
-    bootstrap_ci_low: float
-    bootstrap_ci_high: float
+    # CI on the DIFFERENCE of means (head - baseline). Named explicitly so
+    # any reader inferring "ci_lower > 0 ⇒ improvement" is correct.
+    diff_ci_low: float
+    diff_ci_high: float
     resamples: int
     alpha: float
     d_threshold: float
@@ -90,6 +100,10 @@ def bootstrap_ci(
 ) -> BootstrapCI:
     """Percentile bootstrap CI on the sample mean.
 
+    Use this ONLY for single-sample mean estimation. For comparing two
+    arms (the regression-gate use case), call ``bootstrap_diff_ci`` —
+    confusing the two was the bug fixed in Gen-15.1.
+
     Hand-rolled (rather than scipy's ``stats.bootstrap``) so the resampling
     is byte-equal to the TS sibling — same seed, same algorithm, same
     percentile rule.
@@ -112,6 +126,41 @@ def bootstrap_ci(
         resamples=resamples,
         seed=seed,
     )
+
+
+def bootstrap_diff_ci(
+    baseline: Sequence[float],
+    head: Sequence[float],
+    *,
+    alpha: float = DEFAULT_ALPHA,
+    resamples: int = DEFAULT_RESAMPLES,
+    seed: int = DEFAULT_SEED,
+) -> tuple[float, float]:
+    """Percentile bootstrap CI on the difference of means: head − baseline.
+
+    Resamples each arm independently with replacement, takes the mean
+    difference per resample, returns the alpha/2 and 1-alpha/2 quantiles.
+    Matches the TS sibling family's ``bootstrapCi(baseline, candidate)``
+    contract: same seed, same resample count, same percentile method.
+
+    Cross-language parity: with ``baseline = [0.5, 0.5, 0.5]`` and
+    ``head = [0.7, 0.7, 0.7]``, both implementations return
+    ``(low, high) ≈ (0.2, 0.2)`` (zero-variance arms ⇒ degenerate CI at
+    the point estimate; this is correct).
+    """
+    a = np.asarray(list(baseline), dtype=float)
+    b = np.asarray(list(head), dtype=float)
+    if a.size < 2 or b.size < 2:
+        raise ValueError("bootstrap_diff_ci requires n>=2 in each arm")
+    if not (np.all(np.isfinite(a)) and np.all(np.isfinite(b))):
+        raise ValueError("bootstrap_diff_ci: contains non-finite values")
+    rng = np.random.default_rng(seed)
+    idx_a = rng.integers(0, a.size, size=(resamples, a.size))
+    idx_b = rng.integers(0, b.size, size=(resamples, b.size))
+    diffs = b[idx_b].mean(axis=1) - a[idx_a].mean(axis=1)
+    lo_q = alpha / 2.0
+    hi_q = 1.0 - alpha / 2.0
+    return float(np.quantile(diffs, lo_q)), float(np.quantile(diffs, hi_q))
 
 
 def cohens_d(baseline: Sequence[float], head: Sequence[float]) -> float:
@@ -182,7 +231,9 @@ def regression_gate(
 
     d = cohens_d(baseline, head)
     t, p = welch_t_test(baseline, head)
-    ci_head = bootstrap_ci(head, alpha=alpha, resamples=resamples, seed=seed)
+    diff_low, diff_high = bootstrap_diff_ci(
+        baseline, head, alpha=alpha, resamples=resamples, seed=seed
+    )
 
     a = np.asarray(list(baseline), dtype=float)
     b = np.asarray(list(head), dtype=float)
@@ -216,8 +267,8 @@ def regression_gate(
         cohen_d=d,
         welch_p=p,
         welch_t=t,
-        bootstrap_ci_low=ci_head.low,
-        bootstrap_ci_high=ci_head.high,
+        diff_ci_low=diff_low,
+        diff_ci_high=diff_high,
         resamples=resamples,
         alpha=alpha,
         d_threshold=d_threshold,

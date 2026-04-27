@@ -1,6 +1,8 @@
 node_modules/
 dist/
 dist-tests/
+dist-layer-tests/
+**/__pycache__/
 artifacts/
 package-lock.json
 .tmp/

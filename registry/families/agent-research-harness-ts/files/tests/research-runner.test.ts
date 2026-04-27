@@ -266,6 +266,7 @@ test('validator — promotes when CI lower bound > 0', async () => {
   const result = report.results[0]
   assert.ok(result, 'expected a result')
   assert.equal(result.verdict, 'promote')
+  assert.ok(result.ci95 !== null, 'validator must populate ci95 (reps>=2)')
   assert.ok(result.ci95.lower > 0, `expected ciLower > 0, got ${result.ci95.lower}`)
   assert.equal(report.paretoFrontier.length, 1)
 })
@@ -301,6 +302,7 @@ test('validator — rejects when CI upper bound < 0', async () => {
   const result = report.results[0]
   assert.ok(result, 'expected a result')
   assert.equal(result.verdict, 'reject')
+  assert.ok(result.ci95 !== null, 'validator must populate ci95 (reps>=2)')
   assert.ok(result.ci95.upper < 0, `expected ciUpper < 0, got ${result.ci95.upper}`)
 })
 

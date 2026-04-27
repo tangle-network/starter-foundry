@@ -23,11 +23,25 @@ import {
   type TrajectoryStep,
 } from '@tangle-network/agent-eval'
 
+export type PerTurnStatus = 'measured' | 'unmeasured'
+
 export interface PerTurnScore {
   /** 1-indexed turn number, parallel to MultiTurnScenario.userTurns. */
   turn: number
-  /** Weighted-mean score in 0..1 across all rubrics that fired this turn. */
-  aggregateScore: number
+  /**
+   * Weighted-mean score in 0..1 across all rubrics that fired this turn.
+   * `null` when no rubric matched any span on this turn (`status: 'unmeasured'`).
+   * NEVER 0 for unmeasured turns — that conflates "rubrics ran and scored
+   * everything as failing" with "no rubrics ran" and inflates 'critical'
+   * findings via severity grading.
+   */
+  aggregateScore: number | null
+  /**
+   * `'measured'` if at least one rubric verdict landed; `'unmeasured'` if
+   * the turn had zero matching/non-null rubric verdicts. Cumulative score
+   * + convergence skip `unmeasured` turns; gates refuse to grade them.
+   */
+  status: PerTurnStatus
   /** Number of spans rubrics actually graded (vs spans that all rubrics skipped). */
   gradedCount: number
   /** Per-rubric breakdown for forensic drill-down. */
@@ -134,10 +148,11 @@ export const scorePerTurn = async (
       }
     }
 
-    const aggregateScore = weightTotal > 0 ? weightedSum / weightTotal : 0
+    const measured = weightTotal > 0
+    const aggregateScore: number | null = measured ? weightedSum / weightTotal : null
     const byRubric = [...rubricAggregates.entries()].map(([rubricId, agg]) => ({
       rubricId,
-      score: agg.weight > 0 ? agg.sum / agg.weight : 0,
+      score: agg.weight > 0 ? agg.sum / agg.weight : 0, // muffle-ok: rubricAggregates only populated when a rubric verdict landed (weight>0 by construction); the unmeasured signal lives on PerTurnScore.status
       weight: agg.weight,
       rationale: agg.lastRationale,
     }))
@@ -145,28 +160,43 @@ export const scorePerTurn = async (
     perTurn.push({
       turn: t + 1,
       aggregateScore,
+      status: measured ? 'measured' : 'unmeasured',
       gradedCount,
       byRubric,
     })
   }
 
-  const totalWeighted = perTurn.reduce(
-    (acc, t) => acc + t.aggregateScore * Math.max(t.gradedCount, 1),
-    0,
-  )
-  const totalWeight = perTurn.reduce((acc, t) => acc + Math.max(t.gradedCount, 1), 0)
-  const cumulativeScore = totalWeight > 0 ? totalWeighted / totalWeight : 0
+  // Cumulative aggregate weights ONLY measured turns. Unmeasured turns
+  // contribute neither score nor weight; counting them as zero (the prior
+  // behaviour) was a muffled-gate that fabricated 'critical' findings for
+  // turns that simply had no matching rubric.
+  let totalWeighted = 0
+  let totalWeight = 0
+  for (const turn of perTurn) {
+    if (turn.status !== 'measured' || turn.aggregateScore === null) continue
+    const w = Math.max(turn.gradedCount, 1)
+    totalWeighted += turn.aggregateScore * w
+    totalWeight += w
+  }
+  const cumulativeScore = totalWeight > 0 ? totalWeighted / totalWeight : 0 // muffle-ok: all-unmeasured case is disambiguated downstream — gradeSemanticStatus is given `available: false` (perTurn lacks any measured turn), so the returned `status` carries the "no measurement" signal even though cumulativeScore reads 0
 
-  const convergenceTurn = perTurn.find((t) => t.aggregateScore >= threshold)?.turn ?? null
+  const convergenceTurn =
+    perTurn.find((t) => t.status === 'measured' && t.aggregateScore !== null && t.aggregateScore >= threshold)
+      ?.turn ?? null
 
   const status = gradeSemanticStatus({
     score: cumulativeScore,
-    findings: perTurn.map((t) => ({
-      severity: severityFromScore(t.aggregateScore, threshold),
-      score: t.aggregateScore,
-      present: t.gradedCount > 0,
-    })),
-    available: perTurn.some((t) => t.gradedCount > 0),
+    // Only feed measured turns into severity grading — unmeasured turns
+    // would otherwise be marked `severity: 'critical'` via score=0 even
+    // though no rubric ever fired on them.
+    findings: perTurn
+      .filter((t) => t.status === 'measured' && t.aggregateScore !== null)
+      .map((t) => ({
+        severity: severityFromScore(t.aggregateScore as number, threshold),
+        score: t.aggregateScore as number,
+        present: t.gradedCount > 0,
+      })),
+    available: perTurn.some((t) => t.status === 'measured'),
     threshold,
   })
 

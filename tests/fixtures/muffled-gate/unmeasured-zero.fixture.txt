@@ -1,0 +1,14 @@
+// Fixture for findUnmeasuredZero. Stored as .txt so it isn't compiled
+// or executed; we read the raw text and feed it through the finder.
+const aggregateScore = weightTotal > 0 ? weightedSum / weightTotal : 0
+function unrelated() { /* spacer to keep windows from overlapping */ }
+function spacer2() { /* spacer */ }
+function spacer3() { /* spacer */ }
+const overallRate = total > 0 ? hits / total : 0
+function spacer4() { /* spacer */ }
+function spacer5() { /* spacer */ }
+function spacer6() { /* spacer */ }
+// Acceptable: explicit `: null` nearby (status carries the signal).
+const okScore = totalOkRate > 0 ? hits / totalOkRate : null
+const okScore2 = totalOkAggregate > 0 ? hits / totalOkAggregate : 0
+// status: 'unmeasured'

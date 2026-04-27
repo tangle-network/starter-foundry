@@ -19,7 +19,12 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
-import { runPairwise, type PairwiseReport, type VariantOutputs } from './pairwise-runner.js'
+import {
+  runPairwise,
+  type PairwiseJudge,
+  type PairwiseReport,
+  type VariantOutputs,
+} from './pairwise-runner.js'
 
 const parseArgs = (argv: string[]): { aDir: string; bDir: string; judgeFamily?: string } => {
   const args = argv.slice(2)
@@ -77,11 +82,28 @@ const renderMarkdown = (r: PairwiseReport): string => {
   return lines.join('\n')
 }
 
-const main = (): void => {
+/**
+ * CLI judge: replays the pre-computed `score.success` from each variant's
+ * outputs.json. Because the score is precomputed (rubric eval already ran
+ * per-variant), there is no presentation-order signal to recover at this
+ * stage — both orderings will return the same numbers, position-bias will
+ * be reported as 0, and the verdict reflects only the rubric-score gap.
+ *
+ * To exercise REAL position-bias correction at the CLI layer, callers
+ * must run a true pairwise judge (e.g. invokeMetaJudge with both outputs
+ * in a single prompt) and write a CLI variant that wraps it. The library
+ * `runPairwise` is the integration point.
+ */
+const replayJudge: PairwiseJudge = async ({ first, second }) => ({
+  firstScore: first.score.success,
+  secondScore: second.score.success,
+})
+
+const main = async (): Promise<void> => {
   const { aDir, bDir, judgeFamily } = parseArgs(process.argv)
   const variantA = loadVariant(aDir)
   const variantB = loadVariant(bDir)
-  const report = runPairwise({ variantA, variantB, judgeFamily })
+  const report = await runPairwise({ variantA, variantB, judge: replayJudge, judgeFamily })
   process.stdout.write(renderMarkdown(report) + '\n')
   // Write structured sidecar for CI ingestion.
   const jsonOut = process.env.PAIRWISE_JSON_OUT
@@ -90,4 +112,7 @@ const main = (): void => {
   }
 }
 
-main()
+main().catch((err) => {
+  console.error('[pairwise-cli] fatal:', err)
+  process.exit(2)
+})

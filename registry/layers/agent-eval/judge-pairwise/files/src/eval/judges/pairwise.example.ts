@@ -9,7 +9,11 @@
  *      not stable and the result should be discarded or the judge swapped.
  */
 
-import { runPairwise, type VariantOutputs } from './pairwise-runner.js'
+import {
+  runPairwise,
+  type PairwiseJudge,
+  type VariantOutputs,
+} from './pairwise-runner.js'
 import { DEFAULT_RUN_SCORE_WEIGHTS } from '@tangle-network/agent-eval'
 
 const exampleVariantA: VariantOutputs = {
@@ -63,10 +67,22 @@ const exampleVariantB: VariantOutputs = {
   ],
 }
 
-export const runExample = (): void => {
-  const report = runPairwise({
+/**
+ * Toy judge for the example: deterministically returns the precomputed
+ * `success` dimension. Real callers should plug in an LLM judge that
+ * scores `first` and `second` per-presentation so positional bias can
+ * actually surface.
+ */
+const replayJudge: PairwiseJudge = async ({ first, second }) => ({
+  firstScore: first.score.success,
+  secondScore: second.score.success,
+})
+
+export const runExample = async (): Promise<void> => {
+  const report = await runPairwise({
     variantA: exampleVariantA,
     variantB: exampleVariantB,
+    judge: replayJudge,
     judgeFamily: 'claude-opus-4',
     optimizerConfig: { weights: DEFAULT_RUN_SCORE_WEIGHTS },
   })

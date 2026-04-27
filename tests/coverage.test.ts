@@ -174,6 +174,8 @@ const FAMILY_PROMPTS: Record<string, string> = {
     'Build an agent-with-ui single-agent app with sandbox-ui chat surface and artifact pane',
   'orchestrator-with-ui-ts':
     'Build an orchestrator-with-ui-ts agent fleet manager scaffold using sandbox-ui dashboard primitives',
+  'agent-orchestrator-service-ts':
+    'Build an agent-orchestrator-service headless-agent-orchestrator with team-routing agent-roster tenant-auth and rate-limit on Hono',
   'sandbox-app-ts':
     'Build a sandbox-app sandbox workspace on tangle sandbox SDK with editor, file tree, and terminal',
   'agent-runtime-veterinarian-ts':

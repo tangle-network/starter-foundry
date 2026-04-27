@@ -78,7 +78,7 @@
       "run-comparison"
     ],
     "tier3": [
-      "dashboard"
+      "eval dashboard"
     ],
     "archetypes": [
       "evaluation-ui"

@@ -129,7 +129,7 @@ sandbox:
     types_blocked: [ssn, credit-card, dob]   # mode=block: which types trigger 403
     types_allowed: [email, phone]              # always permit (e.g. CRM agents)
     log_filter: redact     # one of: redact | block | passthrough
-    audit_destination: /workspace/.audit/pii-events.jsonl
+    audit_destination: /home/agent/.audit/pii-events.jsonl
 ```
 
 Defaults: `detect` mode, `redact` log filter, no types blocked. Compliance-mode deployments flip to `block` / `strict` with explicit types_blocked.

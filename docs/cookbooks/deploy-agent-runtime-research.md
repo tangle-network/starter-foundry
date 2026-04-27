@@ -45,14 +45,14 @@ Time: **~0.6 s wall**. Files written:
 ```
 /tmp/research/
 ├── agent.json                       # AgentProfile, see schema below
-├── system-prompt.md                 # the agent's role + output blocks
+├── AGENTS.md                        # the agent's role + output blocks
+│                                    # (auto-injected by the harness)
 ├── methodology/
 │   ├── index.json
 │   ├── literature-survey.md
 │   └── proposal-drafting.md
 ├── README.md
 ├── TOOLS.md
-├── AGENTS.md / CLAUDE.md / llms.txt
 └── .starter-foundry/compose-report.json
 ```
 
@@ -76,7 +76,7 @@ The shape (single-agent variant of the schema in
   "version": "0.1.0",
   "tags": ["research", "literature-survey"],
   "prompt": {
-    "systemPrompt": "@file:system-prompt.md",
+    "systemPrompt": "@file:AGENTS.md",
     "instructions": [
       "When the user asks for a survey, follow methodology/literature-survey.md.",
       "When drafting a proposal, follow methodology/proposal-drafting.md.",
@@ -89,11 +89,11 @@ The shape (single-agent variant of the schema in
   "resources": {
     "files": [
       {
-        "path": "system-prompt.md",
+        "path": "AGENTS.md",
         "resource": {
           "kind": "inline",
-          "name": "system-prompt",
-          "content": "@file:system-prompt.md"
+          "name": "agents-md",
+          "content": "@file:AGENTS.md"
         }
       },
       {
@@ -120,6 +120,11 @@ The shape (single-agent variant of the schema in
 `@file:` refs are deploy-time markers; `scripts/deploy-agent-bundle.ts`
 reads those files from the bundle directory and inlines them into the
 [`AgentProfileResourceRef`][resource-ref] shape the sandbox-sdk consumes.
+The same `AGENTS.md` content lives at both `prompt.systemPrompt` (for the
+SDK) and `resources.files[].path: "AGENTS.md"` (for the on-disk
+auto-injection); see
+[`docs/architecture/agent-bundles.md`](../architecture/agent-bundles.md#what-the-deploy-script-writes-vs-whats-pushed-via-sdk)
+for why both.
 
 ## Step 3 — Deploy into a sandbox
 
@@ -140,10 +145,9 @@ What the script does, in order:
 3. Calls `client.create({ name, backend: { profile } })` — sandbox-sdk
    provisions a container, picks the right backend (default: `opencode`),
    and stamps the profile.
-4. Optionally calls `box.files.write(...)` for any bundle file not
-   already inlined into `resources.files` (e.g. `README.md`,
-   `TOOLS.md` — not used by the agent loop directly, but useful for
-   `box.exec("cat README.md")` style introspection).
+4. Writes every bundle file via `box.files.write(...)` to its target path
+   under `/home/agent/` — `AGENTS.md`, `methodology/*.md`, `README.md`,
+   `TOOLS.md`, etc.
 5. Prints the sandbox id and a sample `box.task(...)` invocation.
 
 Output (shape):
@@ -152,7 +156,7 @@ Output (shape):
 ✓ validated agent.json
 ✓ inlined 3 resource files
 ✓ sandbox created: sandbox_01HZQ…
-✓ files written: 6
+✓ files written: 6 (under /home/agent/)
 $ next:
   const r = await box.task("Survey latest papers on diffusion models")
 ```
@@ -172,8 +176,8 @@ console.log({ usage: r.usage, durationMs: r.durationMs, traceId: r.traceId })
 ```
 
 `box.task()` runs to completion inside the sandbox — the OpenCode/Claude
-agent loop reads `system-prompt.md`, picks the
-`literature-survey` capability from the methodology index, calls the
+harness loads `/home/agent/AGENTS.md` as part of the system prompt, picks
+the `literature-survey` capability from the methodology index, calls the
 model, and returns the final response.
 
 ## Time-to-first-response

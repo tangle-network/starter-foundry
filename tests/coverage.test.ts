@@ -266,6 +266,8 @@ const FAMILY_PROMPTS: Record<string, string> = {
     'Build a product-ops-team multi-agent feature-team-agent for discovery-cycle prioritization-rice sprint-planning and qbr-prep',
   'multi-agent-research-lab-ts':
     'Build a research-lab-team interdisciplinary cross-domain-research-pod with arxiv crossref openalex literature-survey across multiple domains',
+  'multi-agent-creative-studio-ts':
+    'Build a creative-studio-team multi-agent cross-medium-creative-team for arrangement-review beat-out scene-card and storyboard-protocol',
 }
 
 for (const [family, prompt] of Object.entries(FAMILY_PROMPTS)) {

@@ -1,0 +1,86 @@
+{
+  "id": "auto-research",
+  "group": "agent-eval",
+  "description": "Composable auto-research layer — wires the eval-harness's scenarios + judges + regression gates into agent-eval's optimization primitives (OptimizationLoop, runPromptEvolution, runProposeReview, paretoFrontier). Lets a family run hypothesis-driven prompt + steering evolution against the same harness used for measurement. Required by agent-research-harness-ts.",
+  "appliesTo": [
+    "agent-research-harness-ts"
+  ],
+  "provides": [
+    "eval:auto-research"
+  ],
+  "requires": [
+    "eval:scenarios",
+    "eval:judge-rubric",
+    "eval:regression"
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "@tangle-network/agent-eval": "^0.13.0"
+    }
+  },
+  "files": [
+    {
+      "source": "files/src/eval/auto-research/loop.ts",
+      "target": "src/eval/auto-research/loop.ts"
+    },
+    {
+      "source": "files/src/eval/auto-research/propose-review.ts",
+      "target": "src/eval/auto-research/propose-review.ts"
+    },
+    {
+      "source": "files/src/eval/auto-research/pareto.ts",
+      "target": "src/eval/auto-research/pareto.ts"
+    },
+    {
+      "source": "files/src/eval/auto-research/index.ts",
+      "target": "src/eval/auto-research/index.ts"
+    },
+    {
+      "source": "files/src/eval/auto-research/README.md",
+      "target": "src/eval/auto-research/README.md"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "src/eval/auto-research/loop.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/eval/auto-research/propose-review.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/eval/auto-research/pareto.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/eval/auto-research/index.ts"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": [
+      "src/eval/auto-research/loop.ts",
+      "src/eval/auto-research/pareto.ts"
+    ]
+  },
+  "keywords": [
+    "auto-research",
+    "prompt-evolution",
+    "optimization-loop",
+    "pareto-frontier",
+    "propose-review"
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "auto-research-loop",
+      "prompt-evolution-loop",
+      "optimization-loop-eval"
+    ],
+    "tier2": [
+      "pareto-frontier",
+      "propose-review",
+      "ax-gepa-steering"
+    ]
+  }
+}

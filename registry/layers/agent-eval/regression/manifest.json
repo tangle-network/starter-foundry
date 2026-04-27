@@ -1,0 +1,60 @@
+{
+  "id": "regression",
+  "group": "agent-eval",
+  "description": "Statistical regression gate for the eval harness. Reads two scorecards (baseline + head), compares per-flow distributions via `bootstrapCi` + `welchsTTest` + `cohensD`, applies Benjamini–Hochberg FDR correction across dimensions, and emits a PROMOTE / HOLD / REVERT verdict. Ships a CLI (`eval-regression-gate`) and a CI workflow that wires the gate against `origin/main` on every PR.",
+  "appliesTo": [
+    "agent-eval-harness-ts",
+    "agent-research-harness-ts"
+  ],
+  "provides": ["eval:regression"],
+  "requires": ["eval:scenarios"],
+  "defaults": {
+    "alpha": "0.05",
+    "fdr": "0.1",
+    "effectThreshold": "0.5",
+    "unstableCvThreshold": "0.30"
+  },
+  "files": [
+    {
+      "source": "files/src/eval/regression/gate.ts",
+      "target": "src/eval/regression/gate.ts"
+    },
+    {
+      "source": "files/src/eval/regression/cli.ts",
+      "target": "src/eval/regression/cli.ts"
+    },
+    {
+      "source": "files/src/eval/regression/README.md",
+      "target": "src/eval/regression/README.md"
+    },
+    {
+      "source": "files/.github/workflows/regression-gate.yml",
+      "target": ".github/workflows/regression-gate.yml"
+    }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "src/eval/regression/gate.ts" },
+    { "type": "file-exists", "path": "src/eval/regression/cli.ts" },
+    { "type": "file-exists", "path": "src/eval/regression/README.md" },
+    { "type": "file-exists", "path": ".github/workflows/regression-gate.yml" }
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "eval-regression-gate",
+      "agent-eval-regression",
+      "scorecard-regression-gate",
+      "ci-regression-gate-eval"
+    ],
+    "tier2": [
+      "bootstrap-ci-gate",
+      "welch-t-gate",
+      "cohens-d-effect",
+      "fdr-correction",
+      "benjamini-hochberg"
+    ]
+  },
+  "contextHints": {
+    "commands": ["pnpm eval:gate baseline.json head.json"],
+    "extensionPoints": ["src/eval/regression/gate.ts"]
+  }
+}

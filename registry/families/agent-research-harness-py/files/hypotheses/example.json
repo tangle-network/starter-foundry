@@ -1,0 +1,29 @@
+{
+  "id": "example-batch-size-tuning",
+  "description": "Example hypothesis: doubling the inference batch size improves throughput without regressing latency p95.",
+  "sandboxImage": "ubuntu",
+  "treatment": {
+    "description": "Set BATCH_SIZE=64 in the runtime config.",
+    "files": {
+      "config/runtime.env": "BATCH_SIZE=64\n"
+    },
+    "env": {}
+  },
+  "baseline": {
+    "description": "Default BATCH_SIZE=32.",
+    "files": {
+      "config/runtime.env": "BATCH_SIZE=32\n"
+    },
+    "env": {}
+  },
+  "scenarios": [
+    {
+      "id": "throughput-scenario",
+      "description": "Run the throughput benchmark and emit a JSON line with throughput_qps + p95_ms.",
+      "command": ["bash", "-c", "scripts/run-throughput-bench.sh --json"],
+      "direction": "higher-is-better"
+    }
+  ],
+  "metrics": ["throughput_qps", "p95_ms"],
+  "tags": ["performance", "inference"]
+}

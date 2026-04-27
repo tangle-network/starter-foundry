@@ -1,0 +1,44 @@
+{
+  "id": "scenarios",
+  "group": "agent-eval",
+  "slot": "eval-runner",
+  "description": "Base layer for the agent-eval-harness-ts family. Provides the scenario loader + re-exports of `Scenario` and `Dataset` types from @tangle-network/agent-eval. Other agent-eval layers (judge-rubric, regression) require this. Empty appliesTo[] — the consolidator wires this into the harness family at compose time.",
+  "appliesTo": [
+    "agent-eval-harness-ts",
+    "agent-research-harness-ts"
+  ],
+  "provides": ["eval:scenarios"],
+  "defaults": {
+    "scenariosDir": "scenarios"
+  },
+  "files": [
+    {
+      "source": "files/scenarios/README.md",
+      "target": "scenarios/README.md"
+    },
+    {
+      "source": "files/src/eval/scenario-loader.ts",
+      "target": "src/eval/scenario-loader.ts"
+    },
+    {
+      "source": "files/src/eval/scenario-types.ts",
+      "target": "src/eval/scenario-types.ts"
+    }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "src/eval/scenario-loader.ts" },
+    { "type": "file-exists", "path": "src/eval/scenario-types.ts" },
+    { "type": "file-exists", "path": "scenarios/README.md" }
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "eval-scenarios-loader",
+      "agent-eval-scenarios",
+      "scenarios-base-layer"
+    ],
+    "tier2": ["scenario-runner", "scenario-validation", "dataset-loader"]
+  },
+  "contextHints": {
+    "extensionPoints": ["src/eval/scenario-loader.ts", "scenarios/"]
+  }
+}

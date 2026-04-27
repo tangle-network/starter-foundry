@@ -69,6 +69,10 @@ const SKIP_WHEN_NO_NODE_DEPS = new Set([
   'soc2-compliance-pack',
   'pci-dss-compliance-pack',
   'gdpr-compliance-pack',
+  // Node-only eval harness — no UI surface, no Vite.
+  'agent-eval-harness-ts',
+  // Node-only research bundle — no frontend, no Vite.
+  'agent-research-harness-ts',
 ])
 
 function hasVitePin(pkg: Record<string, unknown>): boolean {
@@ -89,12 +93,13 @@ test('every JS-family package.json template pins vite (direct or overrides)', ()
     const pkg = JSON.parse(readFileSync(pkgPath, 'utf8')) as Record<string, unknown>
     // Families that declare no dependencies at all have nothing to defend against.
     const hasAnyDeps =
-      pkg.dependencies ||
-      pkg.devDependencies ||
-      pkg.overrides ||
-      (pkg as { pnpm?: unknown }).pnpm
+      pkg.dependencies || pkg.devDependencies || pkg.overrides || (pkg as { pnpm?: unknown }).pnpm
     if (!hasAnyDeps) continue
     if (!hasVitePin(pkg)) missing.push(family)
   }
-  assert.deepEqual(missing, [], `families missing a vite pin (defense-in-depth gap — blueprint-agent report #1):\n  ${missing.join('\n  ')}`)
+  assert.deepEqual(
+    missing,
+    [],
+    `families missing a vite pin (defense-in-depth gap — blueprint-agent report #1):\n  ${missing.join('\n  ')}`,
+  )
 })

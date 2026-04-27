@@ -1,0 +1,31 @@
+{
+  "name": "my-research-harness",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Hypothesis-driven research harness on @tangle-network/agent-eval",
+  "bin": {
+    "research-harness": "./dist/research/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "research": "tsx src/research/cli.ts",
+    "research:propose": "tsx src/research/cli.ts propose",
+    "research:screen": "tsx src/research/cli.ts screen",
+    "research:validate": "tsx src/research/cli.ts validate",
+    "research:sweep": "tsx src/research/cli.ts sweep",
+    "test": "node --test --test-concurrency=1 tests/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tangle-network/agent-eval": "^0.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

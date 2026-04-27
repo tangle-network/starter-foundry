@@ -85,11 +85,40 @@ npm run build && node dist/cli.js <command>
 | `plan --prompt <text> [--partner <id>]`       | Route a prompt to a family + capabilities |
 | `compose --spec <path> --out <dir>`           | Compose a starter project                 |
 | `workspace-compose --spec <path> --out <dir>` | Compose a multi-project workspace         |
+| `workspace-compose --preset <id> --out <dir>` | Compose a preset workspace (see below)    |
+| `workspace-presets`                           | List available workspace presets          |
 | `validate --spec <path>`                      | Run validation checks                     |
 | `context --spec <path>`                       | Generate a context pack with build plan   |
 | `bench --spec <path> [--runs <n>]`            | Benchmark compose + validate timing       |
 | `prove --corpus <path> --out <dir>`           | Run proof suite over a prompt corpus      |
 | `catalog`                                     | List all families and layers              |
+
+### Workspace Presets
+
+Canonical multi-bundle stacks for the Tangle agent runtime. One flag, full pnpm workspace with env wiring, top-level scripts, and a CI workflow:
+
+```bash
+# 3-bundle stack (app shell + agent runtime + eval harness)
+pnpm workspace:compose --preset app+agent+eval \
+  --agent agent-runtime-recruiter-ts \
+  --out ./my-stack
+
+# 4-bundle stack (adds research harness)
+pnpm workspace:compose --preset app+agent+eval+research \
+  --agent agent-runtime-cs-research-ts \
+  --out ./my-research-stack
+```
+
+Each preset emits:
+
+- a per-slot directory (`app/`, `agent/`, `eval/`, optional `research/`) composed via `composeStarter`
+- a root `package.json` with private workspace flag and pnpm-style scripts (`dev`, `build`, `eval`, optional `research`)
+- a `pnpm-workspace.yaml`
+- per-bundle `.env` files populated with placeholder URLs for sibling services (e.g. `app/.env` reads `VITE_AGENT_ENDPOINT` from the agent slot)
+- `.github/workflows/ci.yml` that runs `pnpm install --frozen-lockfile`, `pnpm build`, `pnpm eval` (and `pnpm research` when applicable)
+- a top-level `README.md` documenting the layout
+
+Slot constraints are enforced — `--agent` must satisfy `agent-runtime-*-ts`, `--app` must be one of the three app shells. Run `node dist/cli.js workspace-presets` to see the full preset registry as JSON.
 
 ## Toolchain (for `pnpm test`)
 

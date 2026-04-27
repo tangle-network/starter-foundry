@@ -1,0 +1,18 @@
+{
+  "hypotheses": [
+    {
+      "id": "tool-batching-architectural",
+      "name": "Batch parallel tool calls in a single turn",
+      "rationale": "Trace analysis shows ~30% of multi-step scenarios issue 3+ independent tool calls serially. Batching them into one turn cuts wall-time without changing the agent's reasoning surface. Anthropic-published evidence: parallel tool calls reduce latency 2-3x with no quality regression on independent calls.",
+      "category": "architectural",
+      "expected_impact": "wallSeconds: -25-40%, costUsd: ~unchanged, quality: ~unchanged or +0.5pp",
+      "risk": "If the agent batches calls with hidden dependencies (search-then-fetch where the URL comes from the search) the batch fails and the retry costs more than serial. Validator must include scenarios with dependent tool sequences.",
+      "priority": 1,
+      "treatment": {
+        "kind": "system-prompt-delta",
+        "append": "When you need to call multiple INDEPENDENT tools in a turn, issue them in parallel. Only serialize when the next call depends on the previous result.",
+        "promptVersion": "v2-parallel-tools"
+      }
+    }
+  ]
+}

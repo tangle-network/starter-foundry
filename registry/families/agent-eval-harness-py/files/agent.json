@@ -1,0 +1,30 @@
+{
+  "name": "agent-eval-harness-py",
+  "description": "Python eval-harness operator agent: drives `python -m eval run`, inspects scorecard.json, runs regression gate against a baseline, opens fix PRs when judge findings cluster on a specific scenario or dimension. Reads/writes scenarios/, src/eval/, and scorecard artifacts; never edits judges/ unless explicitly told.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-eval",
+    "python",
+    "eval-harness"
+  ],
+  "prompt": {
+    "systemPromptFile": "AGENTS.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "ask"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "README.md"
+      }
+    ]
+  }
+}

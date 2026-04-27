@@ -2,7 +2,7 @@
 
 |              |                                                                                                                                                                                                                                                                                  |
 | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Status**   | canonical (v0.11.0); supersedes the agent-platform/orchestrator runtime stories from v0.10.x                                                                                                                                                                                     |
+| **Status**   | canonical                                                                                                                                                                                                                                                                        |
 | **Audience** | bundle authors, integrators, anyone trying to actually run a starter-foundry agent                                                                                                                                                                                               |
 | **Related**  | [`docs/cookbooks/deploy-agent-runtime-research.md`](../cookbooks/deploy-agent-runtime-research.md) · [`docs/cookbooks/deploy-multi-agent-startup-team.md`](../cookbooks/deploy-multi-agent-startup-team.md) · [`docs/specs/agent-base-secure.md`](../specs/agent-base-secure.md) |
 
@@ -15,7 +15,7 @@ An **agent bundle** is a folder of files this repo composes from a family + laye
 - `agent.json` — a thin [`AgentProfile`][agent-profile] declaration
 - supporting content: `TOOLS.md`, `README.md`, `coordination-protocol.md` (multi-agent only), etc.
 
-A bundle is **not** an HTTP server. It does **not** ship `worker.ts`, `wrangler.jsonc`, an Express app, or a chat endpoint. It is a content payload designed to be deployed **into** a Tangle sandbox, where an OpenCode/Claude agent loop (run by sandbox-sdk) reads the files and acts on them.
+A bundle is **not** an HTTP server. It does **not** ship `worker.ts`, `wrangler.jsonc`, an Express app, or a chat endpoint. It is a content payload deployed **into** a Tangle sandbox, where an OpenCode/Claude agent loop (run by sandbox-sdk) reads the files and acts on them.
 
 The runtime contract lives in the sandbox SDK, not in this repo:
 
@@ -150,7 +150,7 @@ Annotated fields:
 
 ## `agent.json` — multi-agent shape
 
-Multi-agent bundles use the `subagents` field of `AgentProfile`. **The SDK already supports this** — `AgentProfile.subagents` is `Record<string, AgentSubagentProfile>` ([source][agent-profile]). What we previously called `agent-roster.json` collapses into a single `agent.json` with one orchestrator system prompt and N subagent entries:
+Multi-agent bundles use the `subagents` field of `AgentProfile`. The SDK supports this natively — `AgentProfile.subagents` is `Record<string, AgentSubagentProfile>` ([source][agent-profile]). A multi-agent bundle ships a single `agent.json` with one orchestrator system prompt and N subagent entries:
 
 ```json
 {
@@ -214,18 +214,7 @@ Multi-agent bundles use the `subagents` field of `AgentProfile`. **The SDK alrea
 }
 ```
 
-This replaces the v0.10.x `agent-roster.json` + custom worker dispatcher. The OpenCode/Claude backend's native subagent feature handles delegation — there is no `:::handoff` parser to write, no roster loader, no chat handler.
-
-### Subagents = multi-agent (full mapping)
-
-| v0.10.x (wrong abstraction)                          | v0.11.0 (corrected)                                                                                                            |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `agent-roster.json` with `roles[]`                   | `agent.json` with `subagents: { … }`                                                                                           |
-| `defaultRespondent: "ceo"`                           | The orchestrator's `prompt.systemPrompt` IS the CEO; `subagents` are the rest                                                  |
-| `coordination-protocol.md` parsed by a custom worker | Same file, mounted via `resources.files`; the orchestrator reads it like any methodology guide                                 |
-| `:::handoff` blocks parsed by `chat.ts`              | Subagent invocation is native to OpenCode/Claude; `:::handoff` becomes an _output convention_ (see below), not a wire protocol |
-| Custom routing-table dispatcher                      | The orchestrator's instructions are the routing table; the agent loop dispatches                                               |
-| `roles/<id>/methodology/*.md`                        | Same files; each subagent's `prompt` is its system prompt; methodology lives next to it                                        |
+The OpenCode/Claude backend's native subagent feature handles delegation — there is no `:::handoff` parser to write, no roster loader, no chat handler. The orchestrator's `prompt.systemPrompt` IS the lead role; `subagents` are the rest. `coordination-protocol.md` is mounted via `resources.files`; the orchestrator reads it like any methodology guide. Subagent invocation is native to OpenCode/Claude; the orchestrator's instructions are the routing table; the agent loop dispatches.
 
 ## What a bundle does **not** need
 
@@ -237,8 +226,6 @@ If you are tempted to add any of these to a bundle, stop:
 - ❌ A custom roster loader / `:::handoff` parser / role dispatcher — `subagents` is the SDK feature for that.
 - ❌ A `package.json` with `wrangler` / `hono` / `@tangle-network/sandbox-ui` deps — the bundle is content; the runtime is the SDK consumer's process, not the bundle's.
 
-The two wrong-abstraction families that shipped in v0.10.x — `agent-platform-ts` (Vite+React+Hono) and `agent-orchestrator-service-ts` (Hono headless) — are the historical record of this mistake. They will be removed; do not pattern-match new families against them.
-
 ## Coordination protocol (`:::handoff`, `:::escalation`, `:::artifact`)
 
 These fenced-block conventions are **agent-output hints**, not wire protocols. They appear in:
@@ -247,37 +234,28 @@ These fenced-block conventions are **agent-output hints**, not wire protocols. T
 - `coordination-protocol.md` (mounted as a resource file the orchestrator reads).
 - The `parseBlocks()` helper any consumer can run on the final string for downstream UI rendering.
 
-Nothing parses them server-side. When the orchestrator emits `:::handoff to: cto`, the **same agent loop** decides what to do next — usually invoking the `cto` subagent inline. External code does not re-dispatch; the SDK doesn't see these blocks.
-
-This is why the v0.10.x dogfood report ([`docs/cookbooks/deploy-agent-runtime-research.md`](../cookbooks/deploy-agent-runtime-research.md), pre-correction) found GAP — it expected an external `:::handoff` parser. There is no such thing, and there shouldn't be. The hints exist for the agent's own output structure and for downstream UI parsers; the dispatch is handled inside the sandbox.
+Nothing parses them server-side. When the orchestrator emits `:::handoff to: cto`, the **same agent loop** decides what to do next — usually invoking the `cto` subagent inline. External code does not re-dispatch; the SDK doesn't see these blocks. The hints exist for the agent's own output structure and for downstream UI parsers; the dispatch is handled inside the sandbox.
 
 ## Single-egress, audit, identity — sandbox-side concerns
 
-Pre-correction, [`docs/specs/agent-base-secure.md`](../specs/agent-base-secure.md) listed five large unbuilt items: gateway pubkey directory, external audit sink, egress controller, privacy layer wiring, structural disclaimer enforcement. Most of those flip to N/A under the corrected model:
+Network egress, identity injection, audit retention, permissions, and confidential execution are all sandbox-SDK / gateway concerns. The bundle declares intent; the platform enforces it.
 
-| Concern                                | Where it lives now                                                                                                                                                                                    |
-| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Network egress whitelisting            | `client.create({ allowedDomains: [...] })` — sandbox-sdk OS-level boundary.                                                                                                                           |
-| Identity injection                     | sandbox-sdk injects `TANGLE_AGENT_IDENTITY_JSON`; the gateway is the trust boundary.                                                                                                                  |
-| Audit ledger                           | The sandbox's own structured logging + the gateway's audit pipeline. The hash-chain primitive in `agent-base:secure` is now an in-process _helper_ used by code that already runs inside the sandbox. |
-| Permission model (tool allow/ask/deny) | `AgentProfile.permissions` — enforced by the OpenCode/Claude backend itself.                                                                                                                          |
-| Confidential execution / TEE           | `AgentProfile.confidential` — sandbox-sdk routes the job to a TEE-capable operator.                                                                                                                   |
+| Concern                                | Where it lives                                                                                                                                                                                    |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Network egress whitelisting            | `client.create({ allowedDomains: [...] })` — sandbox-sdk OS-level boundary.                                                                                                                       |
+| Identity injection                     | sandbox-sdk injects `TANGLE_AGENT_IDENTITY_JSON`; the gateway is the trust boundary.                                                                                                              |
+| Audit ledger                           | The sandbox's own structured logging + the gateway's audit pipeline. The hash-chain primitive in `agent-base:secure` is an in-process _helper_ used by code that already runs inside the sandbox. |
+| Permission model (tool allow/ask/deny) | `AgentProfile.permissions` — enforced by the OpenCode/Claude backend itself.                                                                                                                      |
+| Confidential execution / TEE           | `AgentProfile.confidential` — sandbox-sdk routes the job to a TEE-capable operator.                                                                                                               |
 
-`agent-base:secure` shrinks to **in-process helpers** that an agent's own code, running inside the sandbox, can use: `SecureString`, audit-log helpers, the workspace-root frozen-path check. It is no longer a "platform pretense" wrapping a custom server.
-
-See [`docs/specs/agent-base-secure.md`](../specs/agent-base-secure.md) §"Architectural correction (v0.11.0)" for the full rewrite of that spec under the corrected model.
+`agent-base:secure` is **in-process helpers** that an agent's own code, running inside the sandbox, can use: `SecureString`, audit-log helpers, the workspace-root frozen-path check. See [`docs/specs/agent-base-secure.md`](../specs/agent-base-secure.md) for the full layer reference.
 
 ## How this is verified
 
-- **Schema**: `registry/_schemas/agent.schema.json` (sister-agent track) — every bundle's `agent.json` validates against it as part of `pnpm exec tsx scripts/validate-registry.ts`.
-- **Deploy script**: `scripts/deploy-agent-bundle.ts` (sister-agent track) — translates `@file:` refs and pushes the bundle to a sandbox via the SDK. Smoke-tested in [`docs/cookbooks/deploy-agent-runtime-research.md`](../cookbooks/deploy-agent-runtime-research.md).
+- **Schema**: `registry/_schemas/agent.schema.json` — every bundle's `agent.json` validates against it as part of `pnpm exec tsx scripts/validate-registry.ts`.
+- **Deploy script**: `scripts/deploy-agent-bundle.ts` — translates `@file:` refs and pushes the bundle to a sandbox via the SDK. Smoke-tested in [`docs/cookbooks/deploy-agent-runtime-research.md`](../cookbooks/deploy-agent-runtime-research.md).
 - **End-to-end multi-agent**: [`docs/cookbooks/deploy-multi-agent-startup-team.md`](../cookbooks/deploy-multi-agent-startup-team.md) walks the full path from compose → deploy → `box.task("…")` against a real LLM.
-
-## Honest acknowledgment
-
-PRs #85 (agent-platform-ts), #86 (agent-orchestrator-service-ts), and #87 (the bundle that consolidates them) shipped a runtime story that pre-empted the SDK's own runtime. The dogfood validation in [the PR #89 report][pr89] surfaced GAPs that, on re-evaluation, were not gaps in those families' implementation — they were gaps in the _premise_. The correct response is not to wire them up; it is to remove them and lean on the SDK as documented above. This doc is the corrected canon.
 
 [agent-profile]: https://github.com/tangle-network/agent-dev-container/blob/main/products/sandbox/sdk/src/agent-profile.ts
 [resource-ref]: https://github.com/tangle-network/agent-dev-container/blob/main/products/sandbox/sdk/src/agent-profile.ts#L17-L28
 [sandbox-task]: https://github.com/tangle-network/agent-dev-container/blob/main/products/sandbox/sdk/src/sandbox.ts#L1012-L1023
-[pr89]: https://github.com/tangle-network/starter-foundry/pull/89

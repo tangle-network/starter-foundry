@@ -207,8 +207,7 @@ function appendWeight(
     return
   }
   // Merge same family into a single entry — avoids double hits at query time
-  // when the same keyword appears in multiple tiers of one family (rare, but
-  // the legacy scorer counted each tier independently).
+  // when the same keyword appears in multiple tiers of one family.
   const same = existing.find((e) => e.family === family)
   if (same) {
     same.weight += weight

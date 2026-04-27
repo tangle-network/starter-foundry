@@ -1,0 +1,101 @@
+{
+  "id": "agent-eval-ui-ts",
+  "description": "Vite+React UI for evaluating agent-eval traces. Reads JSONL/JSON traces from disk, visualizes multi-dimensional scores (correctness, helpfulness, latency, cost), and compares runs side-by-side. Composes ui-adapter:blocks-renderer to detect :::artifact blocks inside turn content + @tangle-network/sandbox-ui primitives. NOTE: src/lib/parse-blocks.ts and src/lib/blocks-to-artifacts.tsx are provided by the ui-adapter:blocks-renderer layer at compose time — they are NOT duplicated in this family's files[] but ARE asserted by validationChecks because the layer composes them in.",
+  "tags": [
+    "ui",
+    "agent-eval",
+    "evaluation",
+    "scoring",
+    "vite",
+    "react",
+    "typescript",
+    "sandbox-ui"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "vite",
+    "surface": "ui"
+  },
+  "slots": {
+    "ui-adapter": {
+      "options": ["ui-adapter:blocks-renderer"],
+      "default": "ui-adapter:blocks-renderer"
+    }
+  },
+  "defaults": {
+    "projectType": "agent-eval-ui",
+    "appName": "my-agent-eval-ui",
+    "tracesDir": ".evolve/agent-eval",
+    "publicVars": ["AGENT_EVAL_TRACES_DIR"],
+    "port": 4175
+  },
+  "files": [
+    { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/index.html", "target": "index.html" },
+    { "source": "files/vite.config.ts", "target": "vite.config.ts" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/.env.example", "target": ".env.example" },
+    { "source": "files/README.md", "target": "README.md" },
+    { "source": "files/src/main.tsx", "target": "src/main.tsx" },
+    { "source": "files/src/App.tsx", "target": "src/App.tsx" },
+    { "source": "files/src/styles.css", "target": "src/styles.css" },
+    { "source": "files/src/components/TraceList.tsx", "target": "src/components/TraceList.tsx" },
+    { "source": "files/src/components/TraceDetail.tsx", "target": "src/components/TraceDetail.tsx" },
+    { "source": "files/src/components/ScoreRadar.tsx", "target": "src/components/ScoreRadar.tsx" },
+    { "source": "files/src/components/RunDiff.tsx", "target": "src/components/RunDiff.tsx" },
+    { "source": "files/src/lib/traces.ts", "target": "src/lib/traces.ts" },
+    { "source": "files/src/lib/scoring.ts", "target": "src/lib/scoring.ts" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "package.json" },
+    { "type": "file-exists", "path": "index.html" },
+    { "type": "file-exists", "path": "vite.config.ts" },
+    { "type": "file-exists", "path": "tsconfig.json" },
+    { "type": "file-exists", "path": "src/main.tsx" },
+    { "type": "file-exists", "path": "src/App.tsx" },
+    { "type": "file-exists", "path": "src/components/TraceList.tsx" },
+    { "type": "file-exists", "path": "src/components/TraceDetail.tsx" },
+    { "type": "file-exists", "path": "src/components/ScoreRadar.tsx" },
+    { "type": "file-exists", "path": "src/components/RunDiff.tsx" },
+    { "type": "file-exists", "path": "src/lib/traces.ts" },
+    { "type": "file-exists", "path": "src/lib/scoring.ts" },
+    { "type": "file-exists", "path": "src/lib/parse-blocks.ts" },
+    { "type": "file-exists", "path": "src/lib/blocks-to-artifacts.tsx" }
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "agent-eval-ui",
+      "eval-dashboard-agent",
+      "agent-trace-scorer",
+      "eval-runner-ui",
+      "agent-scoring-ui"
+    ],
+    "tier2": [
+      "scoring-dimension",
+      "trace-replay",
+      "judge-output",
+      "score-radar",
+      "run-comparison"
+    ],
+    "tier3": [
+      "eval dashboard"
+    ],
+    "archetypes": [
+      "evaluation-ui"
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pnpm dev",
+      "pnpm build"
+    ],
+    "entrypoints": [
+      "src/App.tsx"
+    ],
+    "extensionPoints": [
+      "src/lib/traces.ts",
+      "src/lib/scoring.ts",
+      "src/components/ScoreRadar.tsx"
+    ]
+  }
+}

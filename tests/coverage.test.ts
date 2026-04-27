@@ -172,10 +172,16 @@ const FAMILY_PROMPTS: Record<string, string> = {
     'Build a language tutor agent with daily conversation prompts, vocabulary drill, and shadowing protocol — Krashen comprehensible input',
   'agent-with-ui-ts':
     'Build an agent-with-ui single-agent app with sandbox-ui chat surface and artifact pane',
+  'agent-eval-ui-ts':
+    'Build an agent-eval-ui dashboard for trace-replay and score-radar visualization with run-comparison',
   'orchestrator-with-ui-ts':
     'Build an orchestrator-with-ui-ts agent fleet manager scaffold using sandbox-ui dashboard primitives',
   'sandbox-app-ts':
     'Build a sandbox-app sandbox workspace on tangle sandbox SDK with editor, file tree, and terminal',
+  'agent-debug-ui-ts':
+    'Build an agent-debug-ui live-trace-debugger for sse-stream tool-call-inspector and step-through-agent replay',
+  'agent-marketplace-ui-ts':
+    'Build an agent-marketplace-ui agent-bundle-browser with bundle-detail-page agent-install-flow and marketplace-search',
   'agent-runtime-veterinarian-ts':
     'Build a vet-agent veterinarian agent for pet-health husbandry-reference, vaccination-framework, and emergency-triage (not a licensed DVM)',
   'agent-runtime-relationship-coach-ts':

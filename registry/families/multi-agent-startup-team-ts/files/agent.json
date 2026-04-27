@@ -2,7 +2,14 @@
   "name": "startup-team",
   "description": "Curated multi-agent startup leadership team — CEO / CTO / CMO / HR / CFO-advisor with hand-tuned coordination protocols, explicit handoff blocks, and a default-respondent routing rule.",
   "version": "0.1.0",
-  "tags": ["multi-agent", "team", "startup", "advisory", "exec-pod", "leadership-team-agent"],
+  "tags": [
+    "multi-agent",
+    "team",
+    "startup",
+    "advisory",
+    "exec-pod",
+    "leadership-team-agent"
+  ],
   "prompt": {
     "systemPromptFile": "AGENTS.md"
   },
@@ -20,35 +27,52 @@
     "ceo": {
       "description": "Chief Executive — strategy, OKRs, weekly review, decision journal, board prep. Default respondent for ambiguous or cross-role questions.",
       "systemPromptFile": "roles/ceo/AGENTS.md",
-      "tools": { "filesystem": true, "router": true }
+      "tools": {
+        "filesystem": true,
+        "router": true
+      }
     },
     "cto": {
       "description": "Chief Technology Officer — engineering 1:1 cadence, sprint planning, tech-debt triage, architecture decisions, postmortems.",
       "systemPromptFile": "roles/cto/AGENTS.md",
-      "tools": { "filesystem": true, "router": true }
+      "tools": {
+        "filesystem": true,
+        "router": true
+      }
     },
     "cmo": {
       "description": "Chief Marketing Officer — positioning canvas, ICP research, channel experiment design, growth scoreboard.",
       "systemPromptFile": "roles/cmo/AGENTS.md",
-      "tools": { "filesystem": true, "router": true }
+      "tools": {
+        "filesystem": true,
+        "router": true
+      }
     },
     "hr": {
       "description": "Talent and recruiting — JD drafting, structured interview rubrics, recruiting loop design, comp-band hygiene. Refuses protected-class filtering; defaults to structured interviews.",
       "systemPromptFile": "roles/hr/AGENTS.md",
-      "tools": { "filesystem": true, "router": true }
+      "tools": {
+        "filesystem": true,
+        "router": true
+      }
     },
     "cfo-advisor": {
       "description": "Finance advisor (NOT licensed) — burn / runway modeling, unit economics, fundraise prep, board financials. Discloses 'not a licensed advisor' before any number.",
       "systemPromptFile": "roles/cfo-advisor/AGENTS.md",
-      "tools": { "filesystem": true, "router": true }
+      "tools": {
+        "filesystem": true,
+        "router": true
+      }
     }
   },
   "resources": {
     "files": [
-      { "source": "AGENTS.md", "target": "/workspace/AGENTS.md" },
-      { "source": "agents.json", "target": "/workspace/agents.json" },
-      { "source": "roles/", "target": "/workspace/roles/" },
-      { "source": "README.md", "target": "/workspace/README.md" }
+      {
+        "source": "roles/"
+      },
+      {
+        "source": "README.md"
+      }
     ]
   }
 }

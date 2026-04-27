@@ -24,12 +24,10 @@
   "resources": {
     "files": [
       {
-        "source": "methodology/",
-        "target": "/workspace/methodology/"
+        "source": "methodology/"
       },
       {
-        "source": "README.md",
-        "target": "/workspace/README.md"
+        "source": "README.md"
       }
     ]
   }

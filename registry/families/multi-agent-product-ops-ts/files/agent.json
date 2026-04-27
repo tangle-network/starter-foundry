@@ -2,7 +2,13 @@
   "name": "product-ops-team",
   "description": "Curated multi-agent product-ops team — PM / Designer / Engineering Manager / Customer Success on a weekly cadence with documented handoffs (discovery-locked, fidelity-decided, feasibility-scoped, prd-locked, sprint-committed, weekly-signal).",
   "version": "0.1.0",
-  "tags": ["multi-agent", "team", "product-ops", "advisory", "weekly-cadence"],
+  "tags": [
+    "multi-agent",
+    "team",
+    "product-ops",
+    "advisory",
+    "weekly-cadence"
+  ],
   "prompt": {
     "systemPromptFile": "AGENTS.md"
   },
@@ -20,30 +26,44 @@
     "pm": {
       "description": "Product Manager — owns scope, hypothesis, kill criterion, roadmap. Emits PRD, RICE, discovery cycles. Final tie-breaker on scope conflicts.",
       "systemPromptFile": "roles/pm/AGENTS.md",
-      "tools": { "filesystem": true, "router": true }
+      "tools": {
+        "filesystem": true,
+        "router": true
+      }
     },
     "designer": {
       "description": "Product Designer — owns flow, fidelity, usability heuristics, information architecture. Emits UX strategy and design critiques.",
       "systemPromptFile": "roles/designer/AGENTS.md",
-      "tools": { "filesystem": true, "router": true }
+      "tools": {
+        "filesystem": true,
+        "router": true
+      }
     },
     "eng-manager": {
       "description": "Engineering Manager — owns feasibility, capacity, sprint plan, delivery risk. Emits tech-feasibility scoping and sprint planning.",
       "systemPromptFile": "roles/eng-manager/AGENTS.md",
-      "tools": { "filesystem": true, "router": true }
+      "tools": {
+        "filesystem": true,
+        "router": true
+      }
     },
     "customer-success": {
       "description": "Customer Success — owns user-pain signal, churn risk, QBR, renewal readout. Emits churn-risk analysis and QBR prep.",
       "systemPromptFile": "roles/customer-success/AGENTS.md",
-      "tools": { "filesystem": true, "router": true }
+      "tools": {
+        "filesystem": true,
+        "router": true
+      }
     }
   },
   "resources": {
     "files": [
-      { "source": "AGENTS.md", "target": "/workspace/AGENTS.md" },
-      { "source": "agents.json", "target": "/workspace/agents.json" },
-      { "source": "roles/", "target": "/workspace/roles/" },
-      { "source": "README.md", "target": "/workspace/README.md" }
+      {
+        "source": "roles/"
+      },
+      {
+        "source": "README.md"
+      }
     ]
   }
 }

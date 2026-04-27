@@ -26,12 +26,10 @@
   "resources": {
     "files": [
       {
-        "source": "templates/",
-        "target": "/workspace/templates/"
+        "source": "templates/"
       },
       {
-        "source": "README.md",
-        "target": "/workspace/README.md"
+        "source": "README.md"
       }
     ]
   }

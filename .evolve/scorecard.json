@@ -1,8 +1,8 @@
 {
   "product": "starter-foundry",
-  "timestamp": "2026-04-27T17:19:38.251Z",
-  "coverage": "25/29 flows measured",
-  "aggregate": 0.698,
+  "timestamp": "2026-04-27T19:31:52.273Z",
+  "coverage": "27/31 flows measured",
+  "aggregate": 0.72,
   "inputs": [
     {
       "path": ".evolve/buildout-analysis.json",
@@ -18,7 +18,7 @@
     },
     {
       "path": ".evolve/buildout-analysis-internal.json",
-      "mtime": "2026-04-27T17:06:04.441Z"
+      "mtime": "2026-04-27T18:57:42.402Z"
     },
     {
       "path": ".evolve/agent-eval/2026-04-23/three-layer-report.json",
@@ -141,7 +141,7 @@
     },
     {
       "name": "families",
-      "value": 164,
+      "value": 168,
       "target": 40,
       "status": "pass",
       "productValueClaim": "Number of distinct family archetypes the router can route to. Breadth = more prompts find a good home.",
@@ -177,6 +177,22 @@
       "target": 6,
       "status": "pass",
       "productValueClaim": "Count of UI scaffolds that compose over agent-runtime bundles or the Tangle sandbox SDK directly. Each unlocks a new product category: single-agent app, multi-agent dashboard, non-agent workspace (editor / audit-tool / REPL / file-browser). When this moves, operators can ship visible UX in hours instead of weeks of glue code.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "catalog_breadth_eval_runner",
+      "value": 4,
+      "target": 4,
+      "status": "pass",
+      "productValueClaim": "Count of eval-runner and research-runner family bundles. Each = a deployable harness for measuring or improving an agent (scenario-based eval, hypothesis-driven research). When this moves, the develop → measure → improve loop closes in catalog-shaped form instead of one-shot scripts.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "catalog_breadth_eval_shapes",
+      "value": 7,
+      "target": 7,
+      "status": "pass",
+      "productValueClaim": "Count of composable eval-shape layers under agent-eval/. Each = a distinct measurement primitive (rubric vs pairwise vs trace vs redteam etc). When this moves, harness families can express richer measurement contracts without hand-rolling internals.",
       "direction": "higher-better"
     },
     {

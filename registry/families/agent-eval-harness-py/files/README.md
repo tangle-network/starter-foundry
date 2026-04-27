@@ -14,6 +14,18 @@ pip install -e ".[dev]"
 python -m eval run --scenarios scenarios --out scorecard.json
 ```
 
+> **`tangle-sandbox` PyPI status (2026-04-27): not yet published.** The
+> SDK source is at `~/webb/agent-dev-container/products/sandbox/sdk-python/`
+> (version 0.1.0). Until `pip install tangle-sandbox` is publishable,
+> install from local checkout:
+>
+> ```bash
+> pip install -e ~/webb/agent-dev-container/products/sandbox/sdk-python/
+> ```
+>
+> The `--driver sandbox` mode requires this; `--driver local` and
+> `--driver http` work without it.
+
 The default scenario (`scenarios/example.py`) runs offline with a local
 agent + offline judge — useful for smoke tests.
 

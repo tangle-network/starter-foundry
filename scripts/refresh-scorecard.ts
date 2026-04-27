@@ -216,6 +216,37 @@ const agentUiFamilyCount = (() => {
   return count
 })()
 
+// Gen-15: eval-runner family breadth (eval-harness-{ts,py} + research-harness-{ts,py}).
+const evalRunnerFamilyCount = (() => {
+  const root = join(REPO, 'registry/families')
+  let count = 0
+  for (const dir of readdirSync(root)) {
+    const manifestPath = join(root, dir, 'manifest.json')
+    if (!existsSync(manifestPath)) continue
+    try {
+      const m = JSON.parse(readFileSync(manifestPath, 'utf8')) as {
+        taxonomy?: { surface?: string }
+      }
+      const surface = m.taxonomy?.surface
+      if (surface === 'eval-runner' || surface === 'research-runner') count++
+    } catch {
+      /* skip malformed */
+    }
+  }
+  return count
+})()
+
+// Gen-15: eval-shape layer breadth (composable eval modes under registry/layers/agent-eval/).
+const evalShapeLayerCount = (() => {
+  const root = join(REPO, 'registry/layers/agent-eval')
+  if (!existsSync(root)) return 0
+  let count = 0
+  for (const dir of readdirSync(root)) {
+    if (existsSync(join(root, dir, 'manifest.json'))) count++
+  }
+  return count
+})()
+
 const auditPass = audit
   ? audit.audits.filter((a) => (a.phases ?? []).every((p) => p.ok)).length
   : null
@@ -459,6 +490,22 @@ const flows = [
     target: 6,
     productValueClaim:
       'Count of UI scaffolds that compose over agent-runtime bundles or the Tangle sandbox SDK directly. Each unlocks a new product category: single-agent app, multi-agent dashboard, non-agent workspace (editor / audit-tool / REPL / file-browser). When this moves, operators can ship visible UX in hours instead of weeks of glue code.',
+  },
+  // Gen-15: eval-runner catalog breadth (TS + Py for both eval-harness and research-harness).
+  {
+    name: 'catalog_breadth_eval_runner',
+    value: evalRunnerFamilyCount,
+    target: 4,
+    productValueClaim:
+      'Count of eval-runner and research-runner family bundles. Each = a deployable harness for measuring or improving an agent (scenario-based eval, hypothesis-driven research). When this moves, the develop → measure → improve loop closes in catalog-shaped form instead of one-shot scripts.',
+  },
+  // Gen-15: eval-shape layer breadth (composable eval modes — scenarios, judge-rubric, judge-pairwise, trace-multi-turn, redteam, regression, auto-research).
+  {
+    name: 'catalog_breadth_eval_shapes',
+    value: evalShapeLayerCount,
+    target: 7,
+    productValueClaim:
+      'Count of composable eval-shape layers under agent-eval/. Each = a distinct measurement primitive (rubric vs pairwise vs trace vs redteam etc). When this moves, harness families can express richer measurement contracts without hand-rolling internals.',
   },
   // ── Gen 5: closed-loop generation flows ────────────────────────
   // Read .evolve/generation-impact.jsonl — one entry per proposal

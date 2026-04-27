@@ -15,6 +15,14 @@ never mutates the host. Statistical math (`scipy.stats`) mirrors the
 TS sibling family byte-for-byte so verdicts are stable across
 languages.
 
+> **`tangle-sandbox` PyPI status (2026-04-27): not yet published.** The
+> SDK source is at `~/webb/agent-dev-container/products/sandbox/sdk-python/`
+> (version 0.1.0). Until publish lands, install from local checkout:
+>
+> ```bash
+> pip install -e ~/webb/agent-dev-container/products/sandbox/sdk-python/
+> ```
+
 ## Layout
 
 ```

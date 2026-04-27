@@ -1,48 +1,39 @@
 {
   "mode": "pursue",
-  "goal": "catalog_breadth_agent_runtime ≥ 50 + catalog_breadth_agent_ui ≥ 6 (Stream B Tranche 2 + UI surface complete; current = 13 + 3)",
-  "status": "tranche-2-and-ui-complete",
+  "goal": "Gen-15 catalog buildout (eval + research harnesses) — TARGET MET; arc reflected; audit cleanup in flight",
+  "status": "shipped",
   "round": null,
-  "generation": "11.5b",
-  "activePursuit": ".evolve/pursuits/2026-04-26-gen11.5-stream-b-tranche-1.md",
-  "lastPursuit": ".evolve/pursuits/2026-04-25-gen11-agent-runtime-surface.md",
-  "updatedAt": "2026-04-26T01:30:00Z",
-  "gen11_5bResult": {
-    "thesis": "Catalog grows on both axes: 5 more agent-runtime bundles (tranche 2: real-estate / fitness / novelist / business-partner / language-tutor) AND 3 UI families (agent-with-ui / orchestrator-with-ui / sandbox-app) sit OVER the agent bundles to render their sessions / artifacts / runs.",
-    "changes": [
-      "registry/families/agent-runtime-real-estate-ts/ — 8 files, 7/7 gates, FHA + jurisdictional disclaimer",
-      "registry/families/agent-runtime-fitness-coach-ts/ — 8 files, 9/9 gates, voice-first, clinical/non-clinical boundary",
-      "registry/families/agent-runtime-novelist-coach-ts/ — 8 files, 8/8 gates, creative-collaborator with consent-per-session",
-      "registry/families/agent-runtime-business-partner-ts/ — 8 files, 9/9 gates, research-corpus citations, 7 escalation triggers",
-      "registry/families/agent-runtime-language-tutor-ts/ — 8 files, 9/9 gates, voice-first, Krashen-aligned, configurable targetLanguage",
-      "registry/families/agent-with-ui-ts/ — 11 files, 10/10 gates, Vite+React+sandbox-ui, agentInvoker prop pattern",
-      "registry/families/orchestrator-with-ui-ts/ — 11 files, 11/11 gates, Next.js+sandbox-ui, agent-roster as source of truth",
-      "registry/families/sandbox-app-ts/ — 11 files, 9/9 gates, non-agent workspace, 4 appKind defaults (editor/audit-tool/repl/file-browser)",
-      "registry/layers/ui-adapter/blocks-renderer/ — NEW slot + layer: parses :::artifact/:::escalation/:::screener-result/:::audio-cue/:::suggestion blocks; SandboxWorkbenchArtifact adapter; round-trip tests",
-      "scripts/gen11.5-validate-ui.ts — UI catalog gate validator (3/3 PASS)",
-      "scripts/refresh-scorecard.ts — added catalog_breadth_agent_ui flow (target 6, current 3)",
-      "Layer appliesTo updated for tranche-2: agent-base/tangle, agent-output/blocks, agent-tools/phony-voice"
-    ],
-    "scorecardFlowsAdded": ["catalog_breadth_agent_ui"],
-    "phase15Gate": "passed (additive-only, isolated bundles, slot-collision detected + resolved by introducing ui-adapter slot)",
-    "tests": "795/798 pass (unchanged from tranche 1 — no regressions). Pre-existing failures in agentic-proposer.test.js (lib path) + llm: availableProviders (env-dependent) are orthogonal."
-  },
-  "scorecard": {
-    "catalog_breadth_agent_runtime": { "value": 13, "target": 50, "status": "fail" },
-    "catalog_breadth_agent_ui": { "value": 3, "target": 6, "status": "fail" },
+  "generation": 15,
+  "activePursuit": ".evolve/pursuits/2026-04-27-gen15-eval-harness-completion.md",
+  "lastReflection": ".evolve/reflections/2026-04-27-gen13-14-15-arc.md",
+  "lastAudit": ".evolve/critical-audit/2026-04-27T19-18-48Z/",
+  "updatedAt": "2026-04-27T20:55:00Z",
+  "scorecardSnapshot": {
+    "catalog_breadth_agent_runtime": { "value": 53, "target": 50, "status": "pass" },
+    "catalog_breadth_agent_ui": { "value": 6, "target": 6, "status": "pass" },
+    "catalog_breadth_eval_runner": { "value": 4, "target": 4, "status": "pass" },
+    "catalog_breadth_eval_shapes": { "value": 7, "target": 7, "status": "pass" },
     "scaffold_audit_pass_rate": { "value": 1.0, "target": 1.0, "status": "pass" },
     "consumer_scaffold_attributable_rate": { "value": 0.1099, "target": 0.20, "status": "pass" }
   },
-  "_priorTarget": "consumer_scaffold_attributable_rate ≤ 0.20 — TARGET MET (R2: 0.1099)",
-  "_priorBlockedTarget": "buildout_pass_rate (Cluster A operator-gated; awaits BA re-sweep)",
   "priorGenerations": [
-    { "n": 8, "pursuit": "compile-gate", "commit": "07b54c3" },
-    { "n": "8b", "pursuit": "promoter-cwd-plumbing", "commit": "8419c8a" },
-    { "n": 9, "pursuit": "muffled-gate-audit", "commit": "2e5551a" },
-    { "n": 10, "pursuit": "agentic-dispatch", "commit": "pending" },
-    { "n": 11, "pursuit": "agent-runtime-surface", "commit": "pending" },
-    { "n": "11.5", "pursuit": "catalog-tranche-1", "commit": "pending" },
-    { "n": "11.5b", "pursuit": "catalog-tranche-2 + ui-surface", "commit": "pending" }
+    { "n": 8, "pursuit": "compile-gate" },
+    { "n": "8b", "pursuit": "promoter-cwd-plumbing" },
+    { "n": 9, "pursuit": "muffled-gate-audit" },
+    { "n": 10, "pursuit": "agentic-dispatch" },
+    { "n": 11, "pursuit": "agent-runtime-surface" },
+    { "n": "11.5", "pursuit": "catalog-tranche-1" },
+    { "n": "11.5b", "pursuit": "catalog-tranche-2 + ui-surface" },
+    { "n": 12, "pursuit": "architectural-correction (sandbox-SDK is the runtime)" },
+    { "n": 13, "pursuit": "ui-catalog-completion (3 to 6)" },
+    { "n": 14, "pursuit": "integrations-bundle (channels + memory + scheduler + mcp-registry)" },
+    { "n": 15, "pursuit": "eval-research-harnesses (TS+Py + 7 eval-shape layers + workspace presets)" }
   ],
-  "handoff": "Gen 11.5b complete — 16 families total (13 agent-runtime + 3 UI), 0 regressions, all gates green. Next options: (a) /pursue gen-11.5-tranche-3 — run scripts/batch-generate-agent-runtime.ts --tranche 3 --rlm against the 37 long-tail seeds; (b) /pursue gen-12 — orchestrator-with-ui in production: agent-roster wire to real sandbox-sdk multi-sandbox provisioning; (c) apply OpenAI agentic-steerability rules to all 13 bundles (memory: openai-agentic-steerability-rules.md); (d) /governor for next pick. The product can now ship: any agent-runtime bundle + any UI family + Tangle sandbox + router.tangle.tools = a working agentic app."
+  "openOpsItems": [
+    "File upstream sandbox-sdk pre/post hooks issue at tangle-network/agent-dev-container (body in docs/issues/sandbox-sdk-deploy-hooks.md)",
+    "Document tangle-sandbox PyPI gap in eval-harness-py + research-harness-py READMEs (not yet published; pip install -e ~/webb/agent-dev-container/products/sandbox/sdk-python/)",
+    "Re-audit blueprint-agent <-> starter-foundry integration at v0.12.0 (last audit was post-v0.11.0 = pre-Gen-13)",
+    "Bump v0.12.0 release (PR #128 merged)"
+  ],
+  "handoff": "Gen-15 shipped + reflected + audited. Audit found 1 CRITICAL + 6 HIGH (3 muffled-gate instances despite repo-memory rule). Audit-cleanup PR in flight. Next: /governor after cleanup lands; likely Gen-16 thesis is 'ship the eval harnesses live' — measure a real agent-runtime bundle's quality with Gen-15's harness end-to-end."
 }

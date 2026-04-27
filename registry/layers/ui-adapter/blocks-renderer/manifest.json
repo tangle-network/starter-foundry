@@ -5,7 +5,8 @@
   "appliesTo": [
     "agent-with-ui-ts",
     "orchestrator-with-ui-ts",
-    "sandbox-app-ts"
+    "sandbox-app-ts",
+    "agent-eval-ui-ts"
   ],
   "provides": ["ui:blocks-parser", "ui:sandbox-ui-adapter"],
   "defaults": {

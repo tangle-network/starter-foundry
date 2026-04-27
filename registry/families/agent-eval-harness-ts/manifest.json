@@ -1,0 +1,109 @@
+{
+  "id": "agent-eval-harness-ts",
+  "description": "Node-only TypeScript eval harness that wraps @tangle-network/agent-eval. Operator-facing `pnpm eval` runner for scenarios + LLM-as-judge rubrics + statistical regression gates against a baseline scorecard. Composes with eval:scenarios / eval:judge-rubric / eval:regression base layers; emits scorecard.json into .evolve/ for the project-level dashboard. This is the family for any standalone eval bundle that needs to grade an agent under test (HTTP target or in-process function) and gate CI on regressions.",
+  "tags": [
+    "agent-eval",
+    "evaluation",
+    "eval-harness",
+    "judge",
+    "rubric",
+    "regression-gate",
+    "typescript",
+    "node"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "eval-runner"
+  },
+  "slots": {
+    "eval-runner": {
+      "options": [
+        "agent-eval:scenarios"
+      ],
+      "default": "agent-eval:scenarios"
+    }
+  },
+  "defaults": {
+    "projectType": "agent-eval-harness",
+    "appName": "my-eval-harness",
+    "scorecardDir": ".evolve",
+    "tracesDir": ".evolve/agent-eval/traces",
+    "experimentsDir": ".evolve/agent-eval/experiments",
+    "publicVars": [
+      "EVAL_TARGET_BASE_URL",
+      "EVAL_THRESHOLD",
+      "TANGLE_ROUTER_KEY"
+    ],
+    "evalThreshold": "0.7"
+  },
+  "files": [
+    { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/agent.json", "target": "agent.json" },
+    { "source": "files/AGENTS.md", "target": "AGENTS.md" },
+    { "source": "files/README.md", "target": "README.md" },
+    { "source": "files/src/eval/runner.ts", "target": "src/eval/runner.ts" },
+    { "source": "files/src/eval/scorecard.ts", "target": "src/eval/scorecard.ts" },
+    { "source": "files/src/eval/cli.ts", "target": "src/eval/cli.ts" },
+    { "source": "files/scenarios/.gitkeep", "target": "scenarios/.gitkeep" },
+    { "source": "files/scenarios/example.scenario.ts", "target": "scenarios/example.scenario.ts" },
+    { "source": "files/judges/example.judge.ts", "target": "judges/example.judge.ts" },
+    { "source": "files/.github/workflows/eval.yml", "target": ".github/workflows/eval.yml" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "package.json" },
+    { "type": "file-exists", "path": "tsconfig.json" },
+    { "type": "file-exists", "path": "AGENTS.md" },
+    { "type": "agents-md-valid", "path": "AGENTS.md" },
+    { "type": "file-exists", "path": "src/eval/runner.ts" },
+    { "type": "file-exists", "path": "src/eval/scorecard.ts" },
+    { "type": "file-exists", "path": "src/eval/cli.ts" },
+    { "type": "file-exists", "path": "scenarios/example.scenario.ts" },
+    { "type": "file-exists", "path": "judges/example.judge.ts" },
+    { "type": "file-exists", "path": ".github/workflows/eval.yml" }
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "eval-harness-ts",
+      "agent-eval-harness",
+      "eval-runner-bundle",
+      "scorecard-harness-ts",
+      "ci-eval-gate-ts"
+    ],
+    "tier2": [
+      "scenarios-runner",
+      "judge-runner",
+      "rubric-runner",
+      "regression-gate",
+      "scorecard-emit",
+      "baseline-compare"
+    ],
+    "tier3": [
+      "eval harness",
+      "ci gate",
+      "regression gate"
+    ],
+    "archetypes": [
+      "evaluation-harness",
+      "ci-quality-gate"
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pnpm install",
+      "pnpm eval",
+      "pnpm eval:compare",
+      "pnpm typecheck"
+    ],
+    "entrypoints": [
+      "src/eval/runner.ts",
+      "src/eval/cli.ts"
+    ],
+    "extensionPoints": [
+      "scenarios/",
+      "judges/",
+      "src/eval/scorecard.ts"
+    ]
+  }
+}

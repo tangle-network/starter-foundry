@@ -1,0 +1,142 @@
+{
+  "id": "agent-runtime-chemistry-research-ts",
+  "description": "Chemistry research assistant agent bundle \u2014 literature search, reaction planning, and data extraction from chemical databases. Composes the agent-runtime substrate with the research-corpus layer (PubChem, ChemSpider, RSC, ACS) so every claim is citation-grounded. Advisory only \u2014 never replaces a licensed chemist, lab safety officer, or regulatory professional.",
+  "tags": [
+    "agent-runtime",
+    "chemistry-research",
+    "research-assistant",
+    "literature-search",
+    "reaction-planning",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-tools:research-corpus",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-chemistry-research",
+    "agentName": "chemistry-research",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "research:paper-search",
+          "research:citation-graph",
+          "chemistry:compound-search",
+          "chemistry:reaction-search"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "literature-search",
+      "reaction-planning",
+      "compound-data-extraction"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "low",
+    "advisoryOnly": true,
+    "outboundDomains": [
+      "api.tangle.tools",
+      "pubchem.ncbi.nlm.nih.gov",
+      "www.chemspider.com",
+      "pubs.rsc.org",
+      "pubs.acs.org"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/literature-search.md",
+      "target": "methodology/literature-search.md"
+    },
+    {
+      "source": "files/methodology/reaction-planning.md",
+      "target": "methodology/reaction-planning.md"
+    },
+    {
+      "source": "files/methodology/compound-data-extraction.md",
+      "target": "methodology/compound-data-extraction.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "chemistry-research-agent",
+      "chemistry research agent",
+      "chemistry-research-assistant",
+      "chemistry research assistant",
+      "chemical-research-agent",
+      "chemical research agent",
+      "chemistry-researcher",
+      "chemistry researcher"
+    ],
+    "tier2": [
+      "literature-search",
+      "literature search",
+      "reaction-planning",
+      "reaction planning",
+      "compound-data-extraction",
+      "compound data extraction",
+      "chemical-database",
+      "chemical database",
+      "pubchem",
+      "chemspider",
+      "rsc",
+      "acs"
+    ],
+    "tier3": [
+      "agent"
+    ],
+    "archetypes": [
+      "agent-in-sandbox",
+      "research-agent"
+    ]
+  }
+}

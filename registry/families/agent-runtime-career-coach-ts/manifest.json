@@ -1,0 +1,128 @@
+{
+  "id": "agent-runtime-career-coach-ts",
+  "description": "Career coach agent bundle \u2014 helps professionals navigate career transitions, job searches, and professional growth. Provides structured frameworks for self-assessment, market positioning, and decision-making. Advisory only \u2014 never replaces a licensed career counselor, therapist, or recruiter.",
+  "tags": [
+    "agent-runtime",
+    "career-coach",
+    "advisory",
+    "career-transition",
+    "job-search",
+    "professional-development",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-career-coach",
+    "agentName": "career-coach",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "self-assessment",
+          "market-positioning",
+          "decision-framework"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "self-assessment",
+      "market-positioning",
+      "decision-framework"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "moderate",
+    "advisoryOnly": true,
+    "outboundDomains": [
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/self-assessment.md",
+      "target": "methodology/self-assessment.md"
+    },
+    {
+      "source": "files/methodology/market-positioning.md",
+      "target": "methodology/market-positioning.md"
+    },
+    {
+      "source": "files/methodology/decision-framework.md",
+      "target": "methodology/decision-framework.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "career-coach-agent",
+      "career coach agent"
+    ],
+    "tier2": [
+      "career-transition",
+      "career transition",
+      "job-search",
+      "job search",
+      "professional-development",
+      "professional development",
+      "self-assessment",
+      "market-positioning",
+      "decision-framework",
+      "interview",
+      "networking"
+    ],
+    "tier3": [],
+    "archetypes": [
+      "agent-in-sandbox",
+      "coaching-agent"
+    ]
+  }
+}

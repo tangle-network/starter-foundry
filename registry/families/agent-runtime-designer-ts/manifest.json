@@ -1,0 +1,129 @@
+{
+  "id": "agent-runtime-designer-ts",
+  "description": "Product design agent bundle \u2014 UX strategy, design critique, and prototyping guidance. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only \u2014 never replaces the operator's design team or user research.",
+  "tags": [
+    "agent-runtime",
+    "product-design",
+    "ux-design",
+    "design-critique",
+    "advisory-agent",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-designer",
+    "agentName": "designer",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "ux-strategy",
+          "design-critique",
+          "prototyping-guide"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "ux-strategy",
+      "design-critique",
+      "prototyping-guide"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "low",
+    "advisoryOnly": true,
+    "outboundDomains": [
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/ux-strategy.md",
+      "target": "methodology/ux-strategy.md"
+    },
+    {
+      "source": "files/methodology/design-critique.md",
+      "target": "methodology/design-critique.md"
+    },
+    {
+      "source": "files/methodology/prototyping-guide.md",
+      "target": "methodology/prototyping-guide.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "product-designer-agent",
+      "product designer agent",
+      "ux-designer-agent",
+      "ux designer agent",
+      "design-strategist",
+      "design strategist"
+    ],
+    "tier2": [
+      "ux-strategy",
+      "ux strategy",
+      "design-critique",
+      "design critique",
+      "prototyping",
+      "user-research",
+      "user research",
+      "interaction-design",
+      "interaction design"
+    ],
+    "tier3": [],
+    "archetypes": [
+      "agent-in-sandbox",
+      "creative-agent"
+    ]
+  }
+}

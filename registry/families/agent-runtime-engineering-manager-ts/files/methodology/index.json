@@ -1,0 +1,32 @@
+{
+  "entries": [
+    {
+      "id": "one-on-one-cadence",
+      "capability": "1:1-cadence",
+      "path": "./one-on-one-cadence.md",
+      "tags": ["cadence", "1:1", "team-management"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "sprint-planning",
+      "capability": "sprint-planning",
+      "path": "./sprint-planning.md",
+      "tags": ["methodology", "sprint", "agile"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "incident-postmortem",
+      "capability": "incident-postmortem",
+      "path": "./incident-postmortem.md",
+      "tags": ["methodology", "incident", "postmortem", "blameless"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "tech-debt-triage",
+      "capability": "tech-debt-triage",
+      "path": "./tech-debt-triage.md",
+      "tags": ["methodology", "tech-debt", "triage"],
+      "version": "0.1.0"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "entries": [
+    {
+      "id": "drug-information",
+      "capability": "drug-information",
+      "path": "./drug-information.md",
+      "tags": ["drug", "monograph", "pharmacology"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "drug-interaction-check",
+      "capability": "drug-interaction-check",
+      "path": "./drug-interaction-check.md",
+      "tags": ["interaction", "ddi", "safety"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "dosing-guidance",
+      "capability": "dosing-guidance",
+      "path": "./dosing-guidance.md",
+      "tags": ["dosing", "pharmacokinetics", "renal-adjustment"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "adverse-effect-monitoring",
+      "capability": "adverse-effect-monitoring",
+      "path": "./adverse-effect-monitoring.md",
+      "tags": ["adverse-effects", "monitoring", "safety"],
+      "version": "0.1.0"
+    }
+  ]
+}

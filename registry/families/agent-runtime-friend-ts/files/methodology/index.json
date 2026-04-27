@@ -1,0 +1,22 @@
+{
+  "templates": [
+    {
+      "id": "check-in-protocol",
+      "title": "Daily check-in structure",
+      "path": "check-in-protocol.md",
+      "loadWhen": "user opens a session OR a daily cron fires"
+    },
+    {
+      "id": "rapport-warm",
+      "title": "Warm opening without performance",
+      "path": "rapport-warm.md",
+      "loadWhen": "first message of a session"
+    },
+    {
+      "id": "topic-pivot",
+      "title": "Pivot when a topic has run its course",
+      "path": "topic-pivot.md",
+      "loadWhen": "user response is short or trailing AND topic has been covered"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+name = "physics-research"
+main = "src/index.ts"
+compatibility_date = "2025-03-01"
+
+[vars]
+AGENT_NAME = "physics-research"
+
+[[routes]]
+pattern = "/api/chat"
+methods = ["POST"]
+
+[[routes]]
+pattern = "/api/health"
+methods = ["GET"]
+
+[[env]]
+name = "TANGLE_ROUTER_KEY"
+value = ""
+
+[[env]]
+name = "AGENT_NAME"
+value = "physics-research"

@@ -1,0 +1,76 @@
+{
+  "id": "agent-runtime-screenwriter-ts",
+  "description": "Screenwriting craft agent — beat-out, logline, scene rewrite. Three-act and limited-series structure literate. Ships craft-of-screenwriting methodology, not generic 'write a script' affordances.",
+  "tags": [
+    "agent-runtime",
+    "screenwriting",
+    "creative",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-screenwriter",
+    "agentName": "screenwriter-coach",
+    "publicVars": [
+      "AGENT_NAME"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/beat-out-protocol.md",
+      "target": "methodology/beat-out-protocol.md"
+    },
+    {
+      "source": "files/methodology/logline-sharpener.md",
+      "target": "methodology/logline-sharpener.md"
+    },
+    {
+      "source": "files/methodology/scene-rewrite-pass.md",
+      "target": "methodology/scene-rewrite-pass.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    }
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "screenwriter-agent",
+      "screenplay-coach",
+      "tv-writer-agent",
+      "screenplay-agent"
+    ],
+    "tier2": [
+      "scene-heading",
+      "beat-out",
+      "act-break",
+      "logline",
+      "treatment",
+      "save-the-cat"
+    ],
+    "tier3": [
+      "agent"
+    ],
+    "archetypes": [
+      "agent-in-sandbox",
+      "creative-agent"
+    ]
+  }
+}

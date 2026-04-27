@@ -1,0 +1,132 @@
+{
+  "id": "agent-runtime-illustrator-ts",
+  "description": "Voice-first creative illustrator agent bundle \u2014 art direction, visual style development, and composition guidance. NOT a substitute for a professional art director, creative director, or licensed illustrator. Demonstrates the agent-runtime substrate composing with tangle + structured-output-blocks layers on the Tangle floor.",
+  "tags": [
+    "agent-runtime",
+    "illustrator",
+    "art-direction",
+    "creative-illustration",
+    "voice-first",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-illustrator",
+    "agentName": "illustrator",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "art-direction",
+          "style-development",
+          "composition-guide"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "art-direction",
+      "style-development",
+      "composition-guide"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "low",
+    "advisoryOnly": true,
+    "outboundDomains": [
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/art-direction-canvas.md",
+      "target": "methodology/art-direction-canvas.md"
+    },
+    {
+      "source": "files/methodology/style-development.md",
+      "target": "methodology/style-development.md"
+    },
+    {
+      "source": "files/methodology/composition-guide.md",
+      "target": "methodology/composition-guide.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "illustrator-agent",
+      "illustrator agent",
+      "art-direction-agent",
+      "art direction agent",
+      "creative-illustrator",
+      "creative illustrator",
+      "visual-development-agent",
+      "visual development agent"
+    ],
+    "tier2": [
+      "composition",
+      "color-theory",
+      "color theory",
+      "character-design",
+      "character design",
+      "storyboard",
+      "lighting",
+      "perspective",
+      "visual-style",
+      "visual style"
+    ],
+    "tier3": [],
+    "archetypes": [
+      "agent-in-sandbox",
+      "creative-agent"
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "composition-canvas",
+      "capability": "composition-coaching",
+      "path": "./composition-canvas.md",
+      "tags": ["methodology", "composition", "framing"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "lighting-setup-design",
+      "capability": "lighting-setup-design",
+      "path": "./lighting-setup-design.md",
+      "tags": ["methodology", "lighting", "studio"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "post-production-workflow",
+      "capability": "post-production-workflow",
+      "path": "./post-production-workflow.md",
+      "tags": ["methodology", "post-production", "editing"],
+      "version": "0.1.0"
+    }
+  ]
+}

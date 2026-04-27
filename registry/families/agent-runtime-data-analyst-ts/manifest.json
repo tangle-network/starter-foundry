@@ -1,0 +1,140 @@
+{
+  "id": "agent-runtime-data-analyst-ts",
+  "description": "Data analyst agent bundle \u2014 SQL, Python, and visualization for ad-hoc analytics, dashboards, and data-quality checks. Composes the agent-runtime substrate with the tangle layer and structured-output-blocks. Advisory only \u2014 never replaces a dedicated data-engineering or BI team.",
+  "tags": [
+    "agent-runtime",
+    "data-analyst",
+    "analytics",
+    "sql",
+    "python",
+    "visualization",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-data-analyst",
+    "agentName": "data-analyst",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "sql-query",
+          "python-exec",
+          "viz-render",
+          "data-quality-check"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "ad-hoc-query",
+      "exploratory-analysis",
+      "dashboard-design",
+      "data-quality-audit"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "moderate",
+    "advisoryOnly": true,
+    "outboundDomains": [
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/ad-hoc-query.md",
+      "target": "methodology/ad-hoc-query.md"
+    },
+    {
+      "source": "files/methodology/exploratory-analysis.md",
+      "target": "methodology/exploratory-analysis.md"
+    },
+    {
+      "source": "files/methodology/dashboard-design.md",
+      "target": "methodology/dashboard-design.md"
+    },
+    {
+      "source": "files/methodology/data-quality-audit.md",
+      "target": "methodology/data-quality-audit.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "data-analyst-agent",
+      "data analyst agent",
+      "analytics-agent",
+      "analytics agent",
+      "sql-agent",
+      "sql agent",
+      "python-agent",
+      "python agent"
+    ],
+    "tier2": [
+      "ad-hoc-query",
+      "ad hoc query",
+      "exploratory-analysis",
+      "exploratory analysis",
+      "dashboard-design",
+      "dashboard design",
+      "data-quality-audit",
+      "data quality audit",
+      "visualization",
+      "kpi-tracking",
+      "kpi tracking"
+    ],
+    "tier3": [],
+    "archetypes": [
+      "agent-in-sandbox",
+      "operations-agent"
+    ]
+  }
+}

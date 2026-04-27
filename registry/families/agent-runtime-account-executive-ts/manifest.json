@@ -1,0 +1,137 @@
+{
+  "id": "agent-runtime-account-executive-ts",
+  "description": "Account Executive agent bundle \u2014 pipeline management, deal progression, and forecast hygiene. Works alongside a sales operator on opportunity scoring, MEDDIC/MEDDPICC qualification, and weekly pipeline reviews. Advisory only \u2014 never replaces the operator's CRM, manager, or compensation plan.",
+  "tags": [
+    "agent-runtime",
+    "account-executive",
+    "sales-ae",
+    "pipeline-management",
+    "deal-progression",
+    "forecast-hygiene",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-account-executive",
+    "agentName": "account-executive",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "opportunity-scoring",
+          "deal-progression",
+          "pipeline-review"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "opportunity-scoring",
+      "deal-progression",
+      "pipeline-review"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "moderate",
+    "advisoryOnly": true,
+    "outboundDomains": [
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/opportunity-scoring.md",
+      "target": "methodology/opportunity-scoring.md"
+    },
+    {
+      "source": "files/methodology/deal-progression.md",
+      "target": "methodology/deal-progression.md"
+    },
+    {
+      "source": "files/methodology/pipeline-review.md",
+      "target": "methodology/pipeline-review.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "account-executive-agent",
+      "account executive agent",
+      "ae-agent",
+      "ae agent",
+      "sales-ae",
+      "sales ae",
+      "sales-executive",
+      "sales executive"
+    ],
+    "tier2": [
+      "pipeline-management",
+      "pipeline management",
+      "deal-progression",
+      "deal progression",
+      "forecast-hygiene",
+      "forecast hygiene",
+      "meddic",
+      "meddpicc",
+      "opportunity-scoring",
+      "opportunity scoring",
+      "pipeline-review",
+      "pipeline review"
+    ],
+    "tier3": [
+      "agent"
+    ],
+    "archetypes": [
+      "agent-in-sandbox",
+      "operations-agent"
+    ]
+  }
+}

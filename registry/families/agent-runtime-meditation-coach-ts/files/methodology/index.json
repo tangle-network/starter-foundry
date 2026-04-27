@@ -1,0 +1,26 @@
+{
+  "entries": [
+    {
+      "id": "guided-session",
+      "capability": "guided-session",
+      "path": "./guided-session.md",
+      "tags": ["methodology", "meditation", "guided-practice"],
+      "version": "0.1.0",
+      "providedBy": "agent-tools/phony-voice"
+    },
+    {
+      "id": "technique-cue",
+      "capability": "technique-cue",
+      "path": "./technique-cue.md",
+      "tags": ["methodology", "technique", "cue"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "mindfulness-check",
+      "capability": "mindfulness-check",
+      "path": "./mindfulness-check.md",
+      "tags": ["protocol", "check-in", "awareness"],
+      "version": "0.1.0"
+    }
+  ]
+}

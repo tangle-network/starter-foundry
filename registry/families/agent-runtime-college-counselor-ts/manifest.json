@@ -1,0 +1,130 @@
+{
+  "id": "agent-runtime-college-counselor-ts",
+  "description": "College admissions counselor agent bundle \u2014 application strategy, essay coaching, and financial-aid navigation for high-school students and their families. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only \u2014 never replaces a licensed college counselor, financial-aid officer, or admissions professional.",
+  "tags": [
+    "agent-runtime",
+    "college-counselor",
+    "admissions-coach",
+    "essay-coaching",
+    "financial-aid",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-college-counselor",
+    "agentName": "college-counselor",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "application-strategy",
+          "essay-coaching",
+          "financial-aid-navigation"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "application-strategy",
+      "essay-coaching",
+      "financial-aid-navigation"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "moderate",
+    "advisoryOnly": true,
+    "outboundDomains": [
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/application-strategy.md",
+      "target": "methodology/application-strategy.md"
+    },
+    {
+      "source": "files/methodology/essay-coaching.md",
+      "target": "methodology/essay-coaching.md"
+    },
+    {
+      "source": "files/methodology/financial-aid-navigation.md",
+      "target": "methodology/financial-aid-navigation.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "college-counselor-agent",
+      "college counselor agent",
+      "admissions-coach",
+      "admissions coach",
+      "college-counselor",
+      "college counselor"
+    ],
+    "tier2": [
+      "application-strategy",
+      "application strategy",
+      "essay-coaching",
+      "essay coaching",
+      "financial-aid-navigation",
+      "financial aid navigation",
+      "college-list",
+      "college list",
+      "common-app",
+      "common app"
+    ],
+    "tier3": [],
+    "archetypes": [
+      "agent-in-sandbox",
+      "tutor-agent"
+    ]
+  }
+}

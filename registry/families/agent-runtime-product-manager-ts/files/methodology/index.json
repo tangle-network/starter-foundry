@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "product-strategy-canvas",
+      "capability": "product-strategy",
+      "path": "./product-strategy-canvas.md",
+      "tags": ["methodology", "product-strategy", "jtbd"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "prioritization-framework",
+      "capability": "prioritization-framework",
+      "path": "./prioritization-framework.md",
+      "tags": ["methodology", "prioritization", "roadmap"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "discovery-cycle",
+      "capability": "discovery-cycle",
+      "path": "./discovery-cycle.md",
+      "tags": ["methodology", "discovery", "user-research"],
+      "version": "0.1.0"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "system-design-canvas",
+      "capability": "system-design",
+      "path": "./system-design-canvas.md",
+      "tags": ["methodology", "system-design", "c4-model"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "trade-off-analysis",
+      "capability": "trade-off-analysis",
+      "path": "./trade-off-analysis.md",
+      "tags": ["methodology", "trade-off", "quality-attributes"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "architecture-decision-record",
+      "capability": "architecture-decision-record",
+      "path": "./architecture-decision-record.md",
+      "tags": ["methodology", "adr", "decision-capture"],
+      "version": "0.1.0"
+    }
+  ]
+}

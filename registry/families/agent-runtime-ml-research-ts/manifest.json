@@ -1,0 +1,135 @@
+{
+  "id": "agent-runtime-ml-research-ts",
+  "description": "ML Research Assistant agent bundle \u2014 literature review, experiment design, and result interpretation. Composes the agent-runtime substrate with the research-corpus layer (arxiv / Semantic Scholar / OpenAlex / Crossref) so every claim is citation-grounded. Advisory only \u2014 never replaces the operator's own expertise or peer review.",
+  "tags": [
+    "agent-runtime",
+    "ml-research",
+    "literature-review",
+    "experiment-design",
+    "research-assistant",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-tools:research-corpus",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-ml-research",
+    "agentName": "ml-research",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "research:paper-search",
+          "research:citation-graph"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "literature-review",
+      "experiment-design",
+      "result-interpretation"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "low",
+    "advisoryOnly": true,
+    "outboundDomains": [
+      "api.tangle.tools",
+      "export.arxiv.org",
+      "api.semanticscholar.org",
+      "api.openalex.org",
+      "api.crossref.org"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/literature-review.md",
+      "target": "methodology/literature-review.md"
+    },
+    {
+      "source": "files/methodology/experiment-design.md",
+      "target": "methodology/experiment-design.md"
+    },
+    {
+      "source": "files/methodology/result-interpretation.md",
+      "target": "methodology/result-interpretation.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "ml-research-agent",
+      "ml research agent",
+      "paper-search-agent",
+      "paper search agent"
+    ],
+    "tier2": [
+      "experiment-design",
+      "experiment design",
+      "result-interpretation",
+      "result interpretation",
+      "citation-graph",
+      "citation graph",
+      "arxiv",
+      "semantic-scholar",
+      "semantic scholar",
+      "openalex",
+      "crossref"
+    ],
+    "tier3": [
+      "agent"
+    ],
+    "archetypes": [
+      "agent-in-sandbox",
+      "research-agent"
+    ]
+  }
+}

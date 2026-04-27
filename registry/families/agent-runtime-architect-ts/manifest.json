@@ -1,0 +1,132 @@
+{
+  "id": "agent-runtime-architect-ts",
+  "description": "Software architecture advisor agent bundle \u2014 system design, trade-off analysis, and architecture decision records. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only \u2014 never replaces hands-on engineering leadership or board-level technical diligence.",
+  "tags": [
+    "agent-runtime",
+    "software-architecture",
+    "advisory-agent",
+    "architect",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-architect",
+    "agentName": "architect",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "system-design",
+          "trade-off-analysis",
+          "adr"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "system-design",
+      "trade-off-analysis",
+      "architecture-decision-record"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "moderate",
+    "advisoryOnly": true,
+    "outboundDomains": [
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/system-design-canvas.md",
+      "target": "methodology/system-design-canvas.md"
+    },
+    {
+      "source": "files/methodology/trade-off-analysis.md",
+      "target": "methodology/trade-off-analysis.md"
+    },
+    {
+      "source": "files/methodology/architecture-decision-record.md",
+      "target": "methodology/architecture-decision-record.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "software-architect-agent",
+      "software architect agent",
+      "software-architect",
+      "software architect",
+      "system-design-agent",
+      "system design agent",
+      "architecture-advisor",
+      "architecture advisor"
+    ],
+    "tier2": [
+      "system-design",
+      "system design",
+      "trade-off-analysis",
+      "trade off analysis",
+      "architecture-decision-record",
+      "architecture decision record",
+      "adr",
+      "non-functional-requirements",
+      "non functional requirements",
+      "quality-attributes",
+      "quality attributes"
+    ],
+    "tier3": [],
+    "archetypes": [
+      "agent-in-sandbox",
+      "advisory-agent"
+    ]
+  }
+}

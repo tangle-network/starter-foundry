@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "self-assessment",
+      "capability": "self-assessment",
+      "path": "./self-assessment.md",
+      "tags": ["methodology", "self-assessment", "values", "skills", "interests"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "market-positioning",
+      "capability": "market-positioning",
+      "path": "./market-positioning.md",
+      "tags": ["methodology", "positioning", "personal-brand", "networking"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "decision-framework",
+      "capability": "decision-framework",
+      "path": "./decision-framework.md",
+      "tags": ["methodology", "decision-making", "career-choice"],
+      "version": "0.1.0"
+    }
+  ]
+}

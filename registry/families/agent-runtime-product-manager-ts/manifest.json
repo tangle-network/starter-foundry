@@ -1,0 +1,130 @@
+{
+  "id": "agent-runtime-product-manager-ts",
+  "description": "Product management agent bundle \u2014 helps operators define product strategy, prioritize features, and run discovery cycles. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only \u2014 never replaces the operator's product team or board.",
+  "tags": [
+    "agent-runtime",
+    "product-management",
+    "advisory-agent",
+    "product-strategy",
+    "prioritization",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-product-manager",
+    "agentName": "product-manager",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "product-strategy",
+          "prioritization",
+          "discovery-cycle"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "product-strategy",
+      "prioritization-framework",
+      "discovery-cycle"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "moderate",
+    "advisoryOnly": true,
+    "outboundDomains": [
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/product-strategy-canvas.md",
+      "target": "methodology/product-strategy-canvas.md"
+    },
+    {
+      "source": "files/methodology/prioritization-framework.md",
+      "target": "methodology/prioritization-framework.md"
+    },
+    {
+      "source": "files/methodology/discovery-cycle.md",
+      "target": "methodology/discovery-cycle.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "pm-agent",
+      "pm agent",
+      "product-manager-agent",
+      "product manager agent",
+      "product-strategist",
+      "product strategist",
+      "product-manager",
+      "product manager"
+    ],
+    "tier2": [
+      "product-strategy",
+      "product strategy",
+      "prioritization",
+      "roadmap",
+      "discovery-cycle",
+      "discovery cycle",
+      "user-research",
+      "user research"
+    ],
+    "tier3": [],
+    "archetypes": [
+      "agent-in-sandbox",
+      "operations-agent"
+    ]
+  }
+}

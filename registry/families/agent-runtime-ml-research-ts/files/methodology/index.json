@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "literature-review",
+      "capability": "literature-review",
+      "path": "./literature-review.md",
+      "tags": ["methodology", "survey", "related-work"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "experiment-design",
+      "capability": "experiment-design",
+      "path": "./experiment-design.md",
+      "tags": ["methodology", "experiments", "baselines"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "result-interpretation",
+      "capability": "result-interpretation",
+      "path": "./result-interpretation.md",
+      "tags": ["methodology", "analysis", "statistics"],
+      "version": "0.1.0"
+    }
+  ]
+}

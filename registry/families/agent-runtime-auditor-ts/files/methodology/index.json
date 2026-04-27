@@ -1,0 +1,22 @@
+{
+  "templates": [
+    {
+      "id": "control-walkthrough",
+      "title": "Control walkthrough narrative + sample design",
+      "path": "control-walkthrough.md",
+      "loadWhen": "user names a control to test OR drafts a walkthrough"
+    },
+    {
+      "id": "evidence-request-list",
+      "title": "PBC list construction",
+      "path": "evidence-request-list.md",
+      "loadWhen": "user is preparing fieldwork OR scoping evidence"
+    },
+    {
+      "id": "deficiency-write-up",
+      "title": "5-part finding format + severity rating",
+      "path": "deficiency-write-up.md",
+      "loadWhen": "user identifies a control failure OR drafts a finding"
+    }
+  ]
+}

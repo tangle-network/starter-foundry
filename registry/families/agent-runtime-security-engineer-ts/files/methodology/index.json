@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "threat-modeling",
+      "capability": "threat-modeling",
+      "path": "./threat-modeling.md",
+      "tags": ["methodology", "threat-modeling", "stride"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "vulnerability-triage",
+      "capability": "vulnerability-triage",
+      "path": "./vulnerability-triage.md",
+      "tags": ["methodology", "vulnerability", "cvss"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "security-architecture-review",
+      "capability": "security-architecture-review",
+      "path": "./security-architecture-review.md",
+      "tags": ["methodology", "architecture", "defense-in-depth"],
+      "version": "0.1.0"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "incident-response-protocol",
+      "capability": "incident-response-protocol",
+      "path": "./incident-response-protocol.md",
+      "tags": ["methodology", "incident-response", "sre"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "runbook-automation",
+      "capability": "runbook-automation",
+      "path": "./runbook-automation.md",
+      "tags": ["methodology", "runbook", "automation"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "iac-review",
+      "capability": "iac-review",
+      "path": "./iac-review.md",
+      "tags": ["methodology", "iac", "terraform", "kubernetes"],
+      "version": "0.1.0"
+    }
+  ]
+}

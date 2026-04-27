@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "meal-planning",
+      "capability": "meal-planning",
+      "path": "./meal-planning.md",
+      "tags": ["methodology", "planning", "menu-engineering"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "recipe-development",
+      "capability": "recipe-development",
+      "path": "./recipe-development.md",
+      "tags": ["methodology", "recipe", "flavor-balance"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "technique-guidance",
+      "capability": "technique-guidance",
+      "path": "./technique-guidance.md",
+      "tags": ["methodology", "technique", "knife-skills", "heat-control"],
+      "version": "0.1.0"
+    }
+  ]
+}

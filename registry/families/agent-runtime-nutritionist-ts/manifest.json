@@ -1,0 +1,131 @@
+{
+  "id": "agent-runtime-nutritionist-ts",
+  "description": "Registered-dietitian-level nutrition advisor agent bundle \u2014 meal planning, macro targets, and evidence-based dietary guidance. Explicitly NOT a licensed RD, not a doctor, not a therapist. Advisory only \u2014 never replaces the user's physician, RD, or mental-health professional. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor.",
+  "tags": [
+    "agent-runtime",
+    "nutritionist",
+    "dietitian",
+    "meal-planning",
+    "macros",
+    "advisory",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-nutritionist",
+    "agentName": "nutritionist",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "meal-plan",
+          "macro-targets",
+          "dietary-assessment"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "meal-planning",
+      "macro-targeting",
+      "dietary-assessment"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "moderate",
+    "advisoryOnly": true,
+    "outboundDomains": [
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/meal-plan.md",
+      "target": "methodology/meal-plan.md"
+    },
+    {
+      "source": "files/methodology/macro-targets.md",
+      "target": "methodology/macro-targets.md"
+    },
+    {
+      "source": "files/methodology/dietary-assessment.md",
+      "target": "methodology/dietary-assessment.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "nutritionist-agent",
+      "nutritionist agent",
+      "rd-agent",
+      "rd agent",
+      "dietitian-agent",
+      "dietitian agent",
+      "nutrition-coach",
+      "nutrition coach"
+    ],
+    "tier2": [
+      "macro-targets",
+      "macro targets",
+      "dietary-assessment",
+      "dietary assessment",
+      "evidence-based-nutrition",
+      "evidence based nutrition",
+      "supplement-advice",
+      "supplement advice"
+    ],
+    "tier3": [],
+    "archetypes": [
+      "agent-in-sandbox",
+      "advisory-agent"
+    ]
+  }
+}

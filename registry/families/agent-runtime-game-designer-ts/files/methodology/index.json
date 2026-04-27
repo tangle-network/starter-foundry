@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "mechanic-design",
+      "capability": "mechanic-design",
+      "path": "./mechanic-design.md",
+      "tags": ["methodology", "mechanics", "mda-framework"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "narrative-system",
+      "capability": "narrative-system-design",
+      "path": "./narrative-system.md",
+      "tags": ["methodology", "narrative", "branching-plot"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "player-loop",
+      "capability": "player-loop-design",
+      "path": "./player-loop.md",
+      "tags": ["methodology", "loop", "core-loop", "progression"],
+      "version": "0.1.0"
+    }
+  ]
+}

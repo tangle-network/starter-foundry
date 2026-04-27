@@ -1,0 +1,140 @@
+{
+  "id": "agent-runtime-engineering-manager-ts",
+  "description": "Engineering manager agent bundle \u2014 1:1 cadence, sprint planning, incident post-mortems, and technical-debt triage. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only \u2014 never replaces the operator's own judgment, team, or HR processes.",
+  "tags": [
+    "agent-runtime",
+    "engineering-manager",
+    "advisory-agent",
+    "1:1-cadence",
+    "sprint-planning",
+    "incident-postmortem",
+    "tech-debt",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-engineering-manager",
+    "agentName": "eng-manager",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "1:1-cadence",
+          "sprint-planning",
+          "incident-postmortem",
+          "tech-debt-triage"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "1:1-cadence",
+      "sprint-planning",
+      "incident-postmortem",
+      "tech-debt-triage"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "moderate",
+    "advisoryOnly": true,
+    "outboundDomains": [
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/one-on-one-cadence.md",
+      "target": "methodology/one-on-one-cadence.md"
+    },
+    {
+      "source": "files/methodology/sprint-planning.md",
+      "target": "methodology/sprint-planning.md"
+    },
+    {
+      "source": "files/methodology/incident-postmortem.md",
+      "target": "methodology/incident-postmortem.md"
+    },
+    {
+      "source": "files/methodology/tech-debt-triage.md",
+      "target": "methodology/tech-debt-triage.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "eng-manager-agent",
+      "eng manager agent",
+      "em-agent",
+      "em agent",
+      "engineering-manager-agent",
+      "engineering manager agent"
+    ],
+    "tier2": [
+      "1:1-cadence",
+      "1:1 cadence",
+      "sprint-planning",
+      "sprint planning",
+      "incident-postmortem",
+      "incident postmortem",
+      "tech-debt-triage",
+      "tech debt triage",
+      "team-lead",
+      "team lead"
+    ],
+    "tier3": [
+      "agent"
+    ],
+    "archetypes": [
+      "agent-in-sandbox",
+      "operations-agent"
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "entries": [
+    {
+      "id": "retention-playbook",
+      "capability": "retention-playbook",
+      "path": "./retention-playbook.md",
+      "tags": ["methodology", "retention", "churn"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "health-score",
+      "capability": "health-score",
+      "path": "./health-score.md",
+      "tags": ["methodology", "health-score", "leading-indicators"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "escalation-triage",
+      "capability": "escalation-triage",
+      "path": "./escalation-triage.md",
+      "tags": ["methodology", "escalation", "severity"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "qbr-framework",
+      "capability": "qbr-framework",
+      "path": "./qbr-framework.md",
+      "tags": ["methodology", "qbr", "customer-review"],
+      "version": "0.1.0"
+    }
+  ]
+}

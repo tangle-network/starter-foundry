@@ -3,23 +3,49 @@
   "slot": "agent-tools",
   "description": "Research-corpus tool kit: arxiv / Semantic Scholar / OpenAlex / Crossref clients via @tangle-network/sandbox-sdk shell-out + a citation-graph walker. Stack on agent-runtime-research-* bundles and any analyst role that needs paper-search.",
   "appliesTo": [
-    "agent-runtime-research",
     "agent-runtime-business-partner-ts",
-    "agent-runtime-cmo-advisor-ts"
+    "agent-runtime-chemistry-research-ts",
+    "agent-runtime-cs-research-ts",
+    "agent-runtime-math-research-ts",
+    "agent-runtime-ml-research-ts",
+    "agent-runtime-physics-research-ts",
+    "agent-runtime-research"
   ],
-  "provides": ["corpus:arxiv", "corpus:semantic-scholar", "corpus:openalex", "corpus:crossref", "research:paper-search", "research:citation-graph"],
-  "requires": ["tangle:base"],
+  "provides": [
+    "corpus:arxiv",
+    "corpus:semantic-scholar",
+    "corpus:openalex",
+    "corpus:crossref",
+    "research:paper-search",
+    "research:citation-graph"
+  ],
+  "requires": [
+    "tangle:base"
+  ],
   "defaults": {
     "researchCorpus": true,
-    "corpusProviders": ["arxiv", "semantic-scholar", "openalex", "crossref"]
+    "corpusProviders": [
+      "arxiv",
+      "semantic-scholar",
+      "openalex",
+      "crossref"
+    ]
   },
   "files": [
-    { "source": "files/lib/tools/research.ts", "target": "src/lib/tools/research.ts" }
+    {
+      "source": "files/lib/tools/research.ts",
+      "target": "src/lib/tools/research.ts"
+    }
   ],
   "validationChecks": [
-    { "type": "file-exists", "path": "src/lib/tools/research.ts" }
+    {
+      "type": "file-exists",
+      "path": "src/lib/tools/research.ts"
+    }
   ],
   "contextHints": {
-    "extensionPoints": ["src/lib/tools/research.ts"]
+    "extensionPoints": [
+      "src/lib/tools/research.ts"
+    ]
   }
 }

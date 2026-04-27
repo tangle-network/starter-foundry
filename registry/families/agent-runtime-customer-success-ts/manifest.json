@@ -1,0 +1,142 @@
+{
+  "id": "agent-runtime-customer-success-ts",
+  "description": "Customer Success Manager agent bundle \u2014 retention playbooks, health scoring, escalation triage, and QBR frameworks. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only \u2014 never replaces the operator's direct relationship with the customer.",
+  "tags": [
+    "agent-runtime",
+    "customer-success",
+    "retention",
+    "health-scoring",
+    "qbr",
+    "escalation",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-customer-success",
+    "agentName": "customer-success-manager",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "retention-playbook",
+          "health-score",
+          "escalation-triage",
+          "qbr-framework"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "retention-playbook",
+      "health-score",
+      "escalation-triage",
+      "qbr-framework"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "moderate",
+    "advisoryOnly": true,
+    "outboundDomains": [
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/retention-playbook.md",
+      "target": "methodology/retention-playbook.md"
+    },
+    {
+      "source": "files/methodology/health-score.md",
+      "target": "methodology/health-score.md"
+    },
+    {
+      "source": "files/methodology/escalation-triage.md",
+      "target": "methodology/escalation-triage.md"
+    },
+    {
+      "source": "files/methodology/qbr-framework.md",
+      "target": "methodology/qbr-framework.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "customer-success-agent",
+      "customer success agent",
+      "csm-agent",
+      "csm agent",
+      "retention-agent",
+      "retention agent",
+      "customer-success-manager",
+      "customer success manager"
+    ],
+    "tier2": [
+      "health-score",
+      "health score",
+      "escalation-triage",
+      "escalation triage",
+      "qbr",
+      "qbr-framework",
+      "qbr framework",
+      "churn-analysis",
+      "churn analysis",
+      "retention-playbook",
+      "retention playbook"
+    ],
+    "tier3": [
+      "agent"
+    ],
+    "archetypes": [
+      "agent-in-sandbox",
+      "operations-agent"
+    ]
+  }
+}

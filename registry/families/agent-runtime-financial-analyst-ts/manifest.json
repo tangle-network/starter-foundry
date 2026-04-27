@@ -1,0 +1,131 @@
+{
+  "id": "agent-runtime-financial-analyst-ts",
+  "description": "Financial analyst agent bundle \u2014 equity research, financial modeling, and investment memo generation. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only \u2014 never replaces a licensed financial advisor, CPA, or fiduciary.",
+  "tags": [
+    "agent-runtime",
+    "financial-analyst",
+    "equity-research",
+    "advisory",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-financial-analyst",
+    "agentName": "financial-analyst",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "financial-modeling",
+          "equity-research",
+          "investment-memo"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "financial-modeling",
+      "equity-research",
+      "investment-memo"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "moderate",
+    "advisoryOnly": true,
+    "outboundDomains": [
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/financial-modeling.md",
+      "target": "methodology/financial-modeling.md"
+    },
+    {
+      "source": "files/methodology/equity-research.md",
+      "target": "methodology/equity-research.md"
+    },
+    {
+      "source": "files/methodology/investment-memo.md",
+      "target": "methodology/investment-memo.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "financial-analyst-agent",
+      "financial analyst agent",
+      "equity-research-agent",
+      "equity research agent",
+      "investment-advisor-agent",
+      "investment advisor agent",
+      "financial-analyst",
+      "financial analyst"
+    ],
+    "tier2": [
+      "financial-modeling",
+      "financial modeling",
+      "equity-research",
+      "equity research",
+      "investment-memo",
+      "investment memo",
+      "dcf",
+      "comps",
+      "ratio-analysis",
+      "ratio analysis"
+    ],
+    "tier3": [],
+    "archetypes": [
+      "agent-in-sandbox",
+      "advisory-agent"
+    ]
+  }
+}

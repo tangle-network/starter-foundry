@@ -1,0 +1,134 @@
+{
+  "id": "agent-runtime-grant-writer-ts",
+  "description": "Grant writer agent bundle \u2014 helps nonprofit operators draft compelling grant proposals, manage deadlines, and track reporting requirements. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only \u2014 never replaces a professional grant writer or fundraising consultant.",
+  "tags": [
+    "agent-runtime",
+    "grant-writing",
+    "nonprofit",
+    "advisory-agent",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-grant-writer",
+    "agentName": "grant-writer",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "grant-proposal",
+          "deadline-tracker",
+          "reporting-template"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "grant-proposal-drafting",
+      "deadline-management",
+      "reporting-compliance"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "moderate",
+    "advisoryOnly": true,
+    "outboundDomains": [
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/grant-proposal-canvas.md",
+      "target": "methodology/grant-proposal-canvas.md"
+    },
+    {
+      "source": "files/methodology/deadline-tracker.md",
+      "target": "methodology/deadline-tracker.md"
+    },
+    {
+      "source": "files/methodology/reporting-template.md",
+      "target": "methodology/reporting-template.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "grant-writer-agent",
+      "grant writer agent",
+      "grant-writer",
+      "grant writer",
+      "nonprofit-grant-writer",
+      "nonprofit grant writer",
+      "proposal-writer",
+      "proposal writer"
+    ],
+    "tier2": [
+      "grant-proposal",
+      "grant proposal",
+      "deadline-tracker",
+      "deadline tracker",
+      "reporting-template",
+      "reporting template",
+      "fundraising",
+      "nonprofit",
+      "logic-model",
+      "logic model",
+      "budget-narrative",
+      "budget narrative"
+    ],
+    "tier3": [],
+    "archetypes": [
+      "agent-in-sandbox",
+      "creative-agent",
+      "advisory-agent"
+    ]
+  }
+}

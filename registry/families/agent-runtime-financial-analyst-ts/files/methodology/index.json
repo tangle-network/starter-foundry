@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "financial-modeling",
+      "capability": "financial-modeling",
+      "path": "./financial-modeling.md",
+      "tags": ["methodology", "dcf", "valuation", "financial-modeling"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "equity-research",
+      "capability": "equity-research",
+      "path": "./equity-research.md",
+      "tags": ["methodology", "research", "company-analysis"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "investment-memo",
+      "capability": "investment-memo",
+      "path": "./investment-memo.md",
+      "tags": ["methodology", "investment-thesis", "risk-analysis"],
+      "version": "0.1.0"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "templates": [
+    {
+      "id": "logline-sharpener",
+      "title": "One-sentence logline + common failure modes",
+      "path": "logline-sharpener.md",
+      "loadWhen": "writer asks for help with logline OR pitches a story idea"
+    },
+    {
+      "id": "beat-out-protocol",
+      "title": "Structural beats by paradigm (3-act, limited-series, Save-the-Cat)",
+      "path": "beat-out-protocol.md",
+      "loadWhen": "writer is moving from logline to outline"
+    },
+    {
+      "id": "scene-rewrite-pass",
+      "title": "Find-the-spine + per-beat audit",
+      "path": "scene-rewrite-pass.md",
+      "loadWhen": "writer has a draft scene and wants it sharpened"
+    }
+  ]
+}

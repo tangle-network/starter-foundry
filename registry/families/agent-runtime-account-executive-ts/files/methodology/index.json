@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "opportunity-scoring",
+      "capability": "opportunity-scoring",
+      "path": "./opportunity-scoring.md",
+      "tags": ["methodology", "meddic", "qualification"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "deal-progression",
+      "capability": "deal-progression",
+      "path": "./deal-progression.md",
+      "tags": ["methodology", "deal-stages", "next-steps"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "pipeline-review",
+      "capability": "pipeline-review",
+      "path": "./pipeline-review.md",
+      "tags": ["cadence", "weekly", "forecast"],
+      "version": "0.1.0"
+    }
+  ]
+}

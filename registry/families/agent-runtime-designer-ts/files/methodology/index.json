@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "ux-strategy",
+      "capability": "ux-strategy",
+      "path": "./ux-strategy.md",
+      "tags": ["methodology", "ux", "strategy"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "design-critique",
+      "capability": "design-critique",
+      "path": "./design-critique.md",
+      "tags": ["methodology", "critique", "heuristics"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "prototyping-guide",
+      "capability": "prototyping-guide",
+      "path": "./prototyping-guide.md",
+      "tags": ["methodology", "prototyping", "fidelity"],
+      "version": "0.1.0"
+    }
+  ]
+}

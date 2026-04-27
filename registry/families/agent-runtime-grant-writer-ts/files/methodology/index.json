@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "grant-proposal-canvas",
+      "capability": "grant-proposal-drafting",
+      "path": "./grant-proposal-canvas.md",
+      "tags": ["methodology", "proposal", "logic-model"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "deadline-tracker",
+      "capability": "deadline-management",
+      "path": "./deadline-tracker.md",
+      "tags": ["methodology", "deadlines", "calendar"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "reporting-template",
+      "capability": "reporting-compliance",
+      "path": "./reporting-template.md",
+      "tags": ["methodology", "reporting", "compliance"],
+      "version": "0.1.0"
+    }
+  ]
+}

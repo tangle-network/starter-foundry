@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "itinerary-design",
+      "capability": "itinerary-design",
+      "path": "./itinerary-design.md",
+      "tags": ["methodology", "itinerary", "pace", "balance"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "budget-optimization",
+      "capability": "budget-optimization",
+      "path": "./budget-optimization.md",
+      "tags": ["methodology", "budget", "cost-breakdown"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "logistics-check",
+      "capability": "logistics-check",
+      "path": "./logistics-check.md",
+      "tags": ["methodology", "logistics", "checklist", "packing"],
+      "version": "0.1.0"
+    }
+  ]
+}

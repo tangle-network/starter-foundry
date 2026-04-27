@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "medical-reference",
+      "capability": "medical-reference",
+      "path": "./medical-reference.md",
+      "tags": ["methodology", "reference", "health-literacy"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "symptom-explainer",
+      "capability": "symptom-explainer",
+      "path": "./symptom-explainer.md",
+      "tags": ["methodology", "symptoms", "education"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "treatment-overview",
+      "capability": "treatment-overview",
+      "path": "./treatment-overview.md",
+      "tags": ["methodology", "treatment", "evidence-based"],
+      "version": "0.1.0"
+    }
+  ]
+}

@@ -3,6 +3,7 @@
   "slot": "agent-tools",
   "description": "Validated clinical screeners (PHQ-9, GAD-7, AUDIT-C) for therapy / coaching / mental-health bundles. Includes mandatory escalation-to-real-clinician disclaimer and crisis-language detection. NEVER treat agent output as clinical advice; always pair with the escalation contract.",
   "appliesTo": [
+    "agent-runtime-research",
     "agent-runtime-therapist-ts"
   ],
   "provides": [

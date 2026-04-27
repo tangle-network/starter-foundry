@@ -1,0 +1,78 @@
+{
+  "id": "agent-runtime-friend-ts",
+  "description": "Companion agent bundle — voice-first, daily check-in cadence, durable memory of past conversations. Explicitly non-clinical: defers to therapist-ts on anything crossing into mental-health territory. Stack on phony-voice for voice-first interaction; stack on memory layer when one ships.",
+  "tags": [
+    "agent-runtime",
+    "companion",
+    "voice-first",
+    "daily-check-in",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-tools:phony-voice",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-friend",
+    "agentName": "companion",
+    "publicVars": [
+      "AGENT_NAME"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/check-in-protocol.md",
+      "target": "methodology/check-in-protocol.md"
+    },
+    {
+      "source": "files/methodology/rapport-warm.md",
+      "target": "methodology/rapport-warm.md"
+    },
+    {
+      "source": "files/methodology/topic-pivot.md",
+      "target": "methodology/topic-pivot.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    }
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "companion-agent",
+      "friend-agent",
+      "social-bot",
+      "daily-check-in-agent"
+    ],
+    "tier2": [
+      "rapport",
+      "remembering",
+      "casual",
+      "non-clinical",
+      "warm-presence"
+    ],
+    "tier3": [
+      "agent"
+    ],
+    "archetypes": [
+      "agent-in-sandbox",
+      "companion-agent",
+      "voice-first"
+    ]
+  }
+}

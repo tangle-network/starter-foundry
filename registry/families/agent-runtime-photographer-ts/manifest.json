@@ -1,0 +1,134 @@
+{
+  "id": "agent-runtime-photographer-ts",
+  "description": "Creative photographer agent bundle \u2014 composition coaching, lighting setup design, and post-production workflow guidance. Works alongside a photographer as a thinking partner for shot planning, gear selection, and creative direction. Not a substitute for hands-on experience or professional critique.",
+  "tags": [
+    "agent-runtime",
+    "photographer",
+    "creative-agent",
+    "composition",
+    "lighting",
+    "post-production",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "cloudflare-worker",
+    "surface": "agent-runtime"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "agent-runtime-photographer",
+    "agentName": "photographer",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "composition-coach",
+          "lighting-setup",
+          "post-production-workflow"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "composition-coaching",
+      "lighting-setup-design",
+      "post-production-workflow"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "low",
+    "advisoryOnly": false,
+    "outboundDomains": [
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/system-prompt.md",
+      "target": "system-prompt.md"
+    },
+    {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/composition-canvas.md",
+      "target": "methodology/composition-canvas.md"
+    },
+    {
+      "source": "files/methodology/lighting-setup-design.md",
+      "target": "methodology/lighting-setup-design.md"
+    },
+    {
+      "source": "files/methodology/post-production-workflow.md",
+      "target": "methodology/post-production-workflow.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/TOOLS.md",
+      "target": "TOOLS.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "system-prompt.md"
+    ],
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "photographer-agent",
+      "photographer agent",
+      "composition-coach",
+      "composition coach",
+      "lighting-designer",
+      "lighting designer",
+      "creative-director-agent",
+      "creative director agent"
+    ],
+    "tier2": [
+      "composition",
+      "lighting-setup",
+      "lighting setup",
+      "post-production",
+      "post production",
+      "exposure-triangle",
+      "exposure triangle",
+      "depth-of-field",
+      "depth of field",
+      "color-grading",
+      "color grading"
+    ],
+    "tier3": [],
+    "archetypes": [
+      "agent-in-sandbox",
+      "creative-agent"
+    ]
+  }
+}

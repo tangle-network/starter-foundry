@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "art-direction-canvas",
+      "capability": "art-direction",
+      "path": "./art-direction-canvas.md",
+      "tags": ["methodology", "art-direction", "brief"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "style-development",
+      "capability": "style-development",
+      "path": "./style-development.md",
+      "tags": ["methodology", "style", "visual-development"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "composition-guide",
+      "capability": "composition-guide",
+      "path": "./composition-guide.md",
+      "tags": ["methodology", "composition", "framing"],
+      "version": "0.1.0"
+    }
+  ]
+}

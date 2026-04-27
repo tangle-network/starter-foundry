@@ -36,15 +36,18 @@ Each row reports what the code actually does (line refs to `files/lib/secure/*.t
 2. Workspace path-traversal from a buggy bundle
 3. Misconfigured production silently granting privileged access (H3 fail-closed pattern across identity + audit + secrets)
 4. Returning ciphertext as plaintext when dotenvx didn't decrypt (H1)
-5. Audit-log tampering becoming undetectable (chain + canonical JSON)
+5. Audit-log tampering becoming undetectable on export (chain + canonical JSON)
 
-**Does NOT defend against:**
-- Compromised gateway (TLS terminates upstream; we trust it)
-- Compromised host kernel (sandbox-sdk handles host-level isolation)
-- Bundle author who deliberately reveals secrets via `unsafeReveal()` then logs them (audit logs the reveal; operator policy)
-- Side-channel attacks (timing, cache) — out of scope
-- Operator who sets `SF_DEV_IDENTITY_OPTIN=1` in production (explicit opt-in is the audit signal; if it's wrong, the operator chose wrong)
-- Agent code that calls `node:fs`, `node:http`, etc. directly to bypass the layer (the OS sandbox is the actual enforcement)
+**Does NOT defend against — and does NOT pretend to:**
+- **Cryptographic identity verification.** `identity.verify()` is **not implemented** and throws when called. The Ed25519 deployer-pubkey directory ships with the gateway service; until that's deployed, calling `verify()` is wrong and the method makes that loud. `identity.current()` returns whatever the gateway puts in `TANGLE_AGENT_IDENTITY_JSON` — anyone with env-write becomes any agent until the verify path is live.
+- **Real-time audit-log tamper prevention.** The hash chain detects tampering **on export only**. The agent's process can `unlinkSync` or rewrite the local log file at runtime; the chain catches it when an external sink reads the log and re-verifies. Operators must export off-host on a cadence shorter than their attestation window.
+- **Egress control on raw `fetch()`/`node:http`.** Bundles that bypass `webhook-out` and call `fetch()` directly hit any URL the OS sandbox allows. Egress whitelisting is the OS sandbox's job; this layer does not enforce it.
+- **Memory-resident secret protection.** `SecureString` resists accidental leakage through `console.log` / `JSON.stringify` / Sentry. It does NOT defend against debuggers, heap dumps, or any attacker with process-memory access. `secrets.clearCache()` clears the cache map; it does not zero the underlying string in V8.
+- **Gateway compromise** (TLS terminates upstream; we trust it).
+- **Host kernel compromise** (sandbox-sdk handles host-level isolation).
+- **Bundle author who deliberately reveals secrets** via `unsafeReveal()` then logs them — audit logs the reveal call, operator policy decides what to do.
+- **Side-channel attacks** (timing, cache) — out of scope.
+- **Operator who sets `SF_DEV_IDENTITY_OPTIN=1` in production** — explicit opt-in is the audit signal; if it's wrong, the operator chose wrong.
 
 ## Operator responsibilities
 
@@ -89,7 +92,19 @@ Bundles include the layer; methodology guides reference primitives by name.
 - `audit.log()` is the only write path for the chain; it is called internally by every other primitive that does a privileged action.
 - Per-secret-reveal audit entries can be high-frequency on hot-path code (webhook-in/out call `unsafeReveal()` once per request). Operators concerned with audit volume should consider per-process secret caching (already done) and review the audit retention policy.
 
+## What's NOT yet built (load-bearing infrastructure)
+
+These are real gaps, not minor. Read this before treating the layer as "production-secure":
+
+1. **Gateway pubkey directory + Ed25519 verify path.** Required for `identity.verify()` to do anything useful. Currently throws on call. Status: spec'd, not built.
+2. **External audit sink** (append-only ledger or signed S3 + immutable retention). Required for the hash chain to be tamper-evident in real time. Currently the chain is local-filesystem and operator must export. Status: design TBD.
+3. **Egress controller at SDK boundary.** Required to make `webhook-out` mandatory rather than aspirational. Currently bundles can `fetch()` directly. Status: depends on sandbox-sdk's network policy primitives.
+4. **`agent-base:privacy` wired into bundles.** The layer exists with PII detectors but **no bundle currently includes it** in `manifest.json`. Status: explicit opt-in pending operator policy on which bundles must include it.
+5. **High-stakes structural disclaimer enforcement.** Bundles like `legal-counsel`, `wealth-manager`, `tax`, `auditor` carry frontmatter disclaimer language and `:::escalation` block grammar — but enforcement is LLM-following-instructions, not structural. Status: needs a downstream gate (refuse to render actionable advice without escalation block).
+
+Each of these is in the layer's roadmap. Until they ship, treat the layer as **a fail-closed footgun reducer that makes accidents loud** — not a security boundary.
+
 ## Related
 
-- `agent-base:privacy` — PII detection + redaction at intentional egress points (separate layer; composes with this one)
+- `agent-base:privacy` — PII detection + redaction layer; ships but not currently wired into any bundle's `includes[]`
 - RFC `docs/specs/rfc-tangle-pii-egress-controls.md` — platform-side gateway scanner + sandbox-runtime log filter (out of scope for this layer)

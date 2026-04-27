@@ -148,18 +148,8 @@
   ],
   "tieredKeywords": {
     "tier1": [
-      "language-tutor",
-      "language tutor",
       "language-coach-agent",
-      "language coach agent",
-      "spanish-tutor",
-      "spanish tutor",
-      "japanese-tutor",
-      "japanese tutor",
-      "french-tutor",
-      "french tutor",
-      "mandarin-tutor",
-      "mandarin tutor"
+      "language coach agent"
     ],
     "tier2": [
       "spaced-repetition",
@@ -173,10 +163,7 @@
       "krashen",
       "second language acquisition"
     ],
-    "tier3": [
-      "language",
-      "vocabulary"
-    ],
+    "tier3": [],
     "archetypes": [
       "agent-in-sandbox",
       "tutor-agent",

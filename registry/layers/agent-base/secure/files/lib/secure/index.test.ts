@@ -400,33 +400,23 @@ test('schedule: missing handler throws', async () => {
 })
 
 // ── identity verify() ────────────────────────────────────────────────────
+//
+// verify() is NOT IMPLEMENTED — see identity.ts. Until the gateway
+// pubkey directory ships, calling verify() throws. This test pins
+// that behavior so a future stub that "just returns true" cannot
+// silently regress the contract.
 
-test('identity: verify() rejects expired envelope', async () => {
+test('identity: verify() throws not-implemented (gateway pubkey directory not shipped)', async () => {
   await setupTestEnv()
   const { identity } = await import('./identity.js')
-  const expired = {
-    agentId: 'X',
-    sessionId: 's',
-    deployerId: 'd',
-    signedAt: 0,
-    expiresAt: 0, // expired
-    publicKey: 'k',
-    signature: 's',
-  }
-  assert.equal(identity.verify(expired), false)
-})
-
-test('identity: verify() rejects missing signature', async () => {
-  await setupTestEnv()
-  const { identity } = await import('./identity.js')
-  const fresh = {
+  const envelope = {
     agentId: 'X',
     sessionId: 's',
     deployerId: 'd',
     signedAt: Date.now(),
     expiresAt: Date.now() + 3600_000,
     publicKey: 'k',
-    signature: '',
+    signature: 's',
   }
-  assert.equal(identity.verify(fresh), false)
+  assert.throws(() => identity.verify(envelope), /not implemented/)
 })

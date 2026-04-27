@@ -78,19 +78,25 @@ export const identity = {
     return load()
   },
 
-  /** True iff the supplied identity envelope is signed by a known deployer
-   * and unexpired. Verification of the signature itself happens at the
-   * gateway; this is the in-process happy-path check. */
-  verify(envelope: AgentIdentity): boolean {
-    if (envelope.expiresAt < Date.now()) {
-      audit.log({ event: 'identity.verify-fail', target: envelope.agentId, payload: { reason: 'expired' } })
-      return false
-    }
-    if (!envelope.signature || envelope.signature.length === 0) {
-      audit.log({ event: 'identity.verify-fail', target: envelope.agentId, payload: { reason: 'missing-signature' } })
-      return false
-    }
-    return true
+  /** Cryptographic verification of the identity envelope's signature
+   * against a deployer pubkey directory.
+   *
+   * NOT IMPLEMENTED. The pubkey directory + Ed25519 verify path is a
+   * separate piece of infrastructure (the Tangle gateway service)
+   * that does not yet exist as deployed code. Returning a stubbed
+   * boolean here would be worse than missing — callers would assume
+   * cryptographic verification happened when it did not.
+   *
+   * Throws so any caller that depends on real verification fails loud.
+   * When the gateway ships, replace this with the real Ed25519 path. */
+  verify(_envelope: AgentIdentity): boolean {
+    audit.log({ event: 'identity.verify-not-implemented' })
+    throw new Error(
+      'identity.verify() is not implemented — the Ed25519 deployer-pubkey ' +
+        'directory ships with the gateway service in a future release. ' +
+        'Do not call this method until that infrastructure is live; a stub ' +
+        'that returns true would silently pretend verification happened.',
+    )
   },
 
   /** Force a re-load on next .current() call. Use after operator notifies

@@ -1,0 +1,26 @@
+{
+  "entries": [
+    {
+      "id": "structured-dialogue",
+      "capability": "structured-dialogue",
+      "path": "./structured-dialogue.md",
+      "tags": ["methodology", "dialogue", "facilitation"],
+      "version": "0.1.0",
+      "providedBy": "agent-tools/phony-voice"
+    },
+    {
+      "id": "de-escalation-protocol",
+      "capability": "de-escalation-protocol",
+      "path": "./de-escalation-protocol.md",
+      "tags": ["methodology", "de-escalation", "crisis-intervention"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "agreement-drafting",
+      "capability": "agreement-drafting",
+      "path": "./agreement-drafting.md",
+      "tags": ["protocol", "agreement", "action-plan"],
+      "version": "0.1.0"
+    }
+  ]
+}

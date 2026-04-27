@@ -1,0 +1,32 @@
+{
+  "entries": [
+    {
+      "id": "literature-survey",
+      "capability": "literature-survey",
+      "path": "./literature-survey.md",
+      "tags": ["methodology", "survey", "literature"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "paper-summarization",
+      "capability": "paper-summarization",
+      "path": "./paper-summarization.md",
+      "tags": ["methodology", "summarization", "paper"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "citation-graph-exploration",
+      "capability": "citation-graph-exploration",
+      "path": "./citation-graph-exploration.md",
+      "tags": ["methodology", "citation", "graph"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "research-question-formulation",
+      "capability": "research-question-formulation",
+      "path": "./research-question-formulation.md",
+      "tags": ["methodology", "research-question", "gap"],
+      "version": "0.1.0"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "source-analysis",
+      "capability": "source-analysis",
+      "path": "./source-analysis.md",
+      "tags": ["methodology", "primary-sources", "source-criticism"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "historiographic-debate",
+      "capability": "historiographic-debate",
+      "path": "./historiographic-debate.md",
+      "tags": ["methodology", "historiography", "interpretation"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "timeline-reasoning",
+      "capability": "timeline-reasoning",
+      "path": "./timeline-reasoning.md",
+      "tags": ["methodology", "causation", "periodization"],
+      "version": "0.1.0"
+    }
+  ]
+}

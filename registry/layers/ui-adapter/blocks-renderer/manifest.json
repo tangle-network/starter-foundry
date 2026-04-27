@@ -1,14 +1,18 @@
 {
   "id": "blocks-renderer",
   "slot": "ui-adapter",
-  "description": "Client-side parser + React adapter for the agent-runtime output-block grammar (:::artifact, :::escalation, :::screener-result, :::audio-cue, :::suggestion). Maps parsed blocks onto SandboxWorkbenchArtifact[] for @tangle-network/sandbox-ui. Mandatory for any UI family that consumes agent-runtime sessions — sandbox-ui itself is transport-agnostic and ships no block parser. Ships in UI bundles (agent-with-ui-ts, orchestrator-with-ui-ts, sandbox-app-ts), not in agent-runtime bundles — the agent emits the text, the UI parses it.",
+  "description": "Client-side parser + React adapter for the agent-runtime output-block grammar (:::artifact, :::escalation, :::screener-result, :::audio-cue, :::suggestion). Maps parsed blocks onto SandboxWorkbenchArtifact[] for @tangle-network/sandbox-ui. Mandatory for any UI family that consumes agent-runtime sessions \u2014 sandbox-ui itself is transport-agnostic and ships no block parser. Ships in UI bundles (agent-with-ui-ts, orchestrator-with-ui-ts, sandbox-app-ts), not in agent-runtime bundles \u2014 the agent emits the text, the UI parses it.",
   "appliesTo": [
+    "agent-debug-ui-ts",
+    "agent-eval-ui-ts",
     "agent-with-ui-ts",
     "orchestrator-with-ui-ts",
-    "sandbox-app-ts",
-    "agent-eval-ui-ts"
+    "sandbox-app-ts"
   ],
-  "provides": ["ui:blocks-parser", "ui:sandbox-ui-adapter"],
+  "provides": [
+    "ui:blocks-parser",
+    "ui:sandbox-ui-adapter"
+  ],
   "defaults": {
     "blocksRenderer": true,
     "supportedBlockTypes": [
@@ -23,13 +27,28 @@
     ]
   },
   "files": [
-    { "source": "files/lib/parse-blocks.ts", "target": "src/lib/parse-blocks.ts" },
-    { "source": "files/lib/blocks-to-artifacts.tsx", "target": "src/lib/blocks-to-artifacts.tsx" },
-    { "source": "files/lib/parse-blocks.test.ts", "target": "src/lib/parse-blocks.test.ts" }
+    {
+      "source": "files/lib/parse-blocks.ts",
+      "target": "src/lib/parse-blocks.ts"
+    },
+    {
+      "source": "files/lib/blocks-to-artifacts.tsx",
+      "target": "src/lib/blocks-to-artifacts.tsx"
+    },
+    {
+      "source": "files/lib/parse-blocks.test.ts",
+      "target": "src/lib/parse-blocks.test.ts"
+    }
   ],
   "validationChecks": [
-    { "type": "file-exists", "path": "src/lib/parse-blocks.ts" },
-    { "type": "file-exists", "path": "src/lib/blocks-to-artifacts.tsx" }
+    {
+      "type": "file-exists",
+      "path": "src/lib/parse-blocks.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/blocks-to-artifacts.tsx"
+    }
   ],
   "contextHints": {
     "extensionPoints": [

@@ -1,0 +1,91 @@
+{
+  "id": "agent-debug-ui-ts",
+  "description": "Vite+React UI for live debugging of agent runs. Connects to a Tangle sandbox via @tangle-network/sandbox SSE stream, visualizes events in real-time, supports step-through replay. Composes ui-adapter:blocks-renderer + @tangle-network/sandbox-ui primitives.",
+  "tags": [
+    "ui",
+    "agent-debug",
+    "debugger",
+    "live-trace",
+    "sse-stream",
+    "vite",
+    "react"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "vite",
+    "surface": "ui"
+  },
+  "slots": {
+    "ui-adapter": {
+      "options": ["ui-adapter:blocks-renderer"],
+      "default": "ui-adapter:blocks-renderer"
+    }
+  },
+  "defaults": {
+    "projectType": "agent-debug-ui",
+    "publicVars": ["TANGLE_SANDBOX_BASE_URL", "SANDBOX_ID"]
+  },
+  "files": [
+    { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/tsconfig.node.json", "target": "tsconfig.node.json" },
+    { "source": "files/vite.config.ts", "target": "vite.config.ts" },
+    { "source": "files/index.html", "target": "index.html" },
+    { "source": "files/.env.example", "target": ".env.example" },
+    { "source": "files/README.md", "target": "README.md" },
+    { "source": "files/src/main.tsx", "target": "src/main.tsx" },
+    { "source": "files/src/App.tsx", "target": "src/App.tsx" },
+    { "source": "files/src/styles.css", "target": "src/styles.css" },
+    { "source": "files/src/components/EventStream.tsx", "target": "src/components/EventStream.tsx" },
+    { "source": "files/src/components/ToolCallTimeline.tsx", "target": "src/components/ToolCallTimeline.tsx" },
+    { "source": "files/src/components/ChatPair.tsx", "target": "src/components/ChatPair.tsx" },
+    { "source": "files/src/components/EventInspector.tsx", "target": "src/components/EventInspector.tsx" },
+    { "source": "files/src/components/ReplayScrubber.tsx", "target": "src/components/ReplayScrubber.tsx" },
+    { "source": "files/src/lib/sandbox-stream.ts", "target": "src/lib/sandbox-stream.ts" },
+    { "source": "files/src/lib/event-types.ts", "target": "src/lib/event-types.ts" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "package.json" },
+    { "type": "file-exists", "path": "index.html" },
+    { "type": "file-exists", "path": "vite.config.ts" },
+    { "type": "file-exists", "path": "tsconfig.json" },
+    { "type": "file-exists", "path": "src/main.tsx" },
+    { "type": "file-exists", "path": "src/App.tsx" },
+    { "type": "file-exists", "path": "src/lib/sandbox-stream.ts" },
+    { "type": "file-exists", "path": "src/lib/event-types.ts" },
+    { "type": "file-exists", "path": "src/components/EventStream.tsx" },
+    { "type": "file-exists", "path": "src/components/ToolCallTimeline.tsx" },
+    { "type": "file-exists", "path": "src/components/ChatPair.tsx" },
+    { "type": "file-exists", "path": "src/components/EventInspector.tsx" },
+    { "type": "file-exists", "path": "src/components/ReplayScrubber.tsx" },
+    { "type": "file-exists", "path": "src/lib/parse-blocks.ts" },
+    { "type": "file-exists", "path": "src/lib/blocks-to-artifacts.tsx" }
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "agent-debug-ui",
+      "agent-debugger",
+      "live-trace-debugger",
+      "agent-step-debugger",
+      "agent-stream-debugger"
+    ],
+    "tier2": [
+      "sse-stream",
+      "tool-call-inspector",
+      "live-replay",
+      "step-through-agent",
+      "event-timeline"
+    ],
+    "tier3": ["debugger"],
+    "archetypes": ["debug-ui"]
+  },
+  "contextHints": {
+    "commands": ["pnpm dev", "pnpm build"],
+    "entrypoints": ["src/App.tsx"],
+    "extensionPoints": [
+      "src/App.tsx",
+      "src/lib/sandbox-stream.ts",
+      "src/components/EventStream.tsx"
+    ]
+  }
+}

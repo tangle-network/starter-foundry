@@ -22,12 +22,15 @@ import test from 'node:test'
 import { fileURLToPath } from 'node:url'
 
 import {
+  DEFAULT_HARNESS,
   DEFAULT_WORKSPACE_ROOT,
   loadAgentBundle,
+  resolveHarness,
   resolveSystemPrompt,
   resolveWorkspaceRoot,
   toAgentProfile,
   toWorkspaceFiles,
+  workspaceFilenames,
 } from '../dist/lib/agent-bundle.js'
 
 // Tests compile to dist-tests/ but fixtures live in tests/fixtures/.
@@ -281,4 +284,114 @@ test('toWorkspaceFiles defaults resource target to <workspace.root>/<source>', a
     '/home/agent/methodology/literature-survey.md',
     '/home/agent/methodology/proposal-drafting.md',
   ])
+})
+
+// --- Harness-aware emit ----------------------------------------------------
+
+test('DEFAULT_HARNESS is opencode and resolveHarness honors override > bundle > default', () => {
+  assert.equal(DEFAULT_HARNESS, 'opencode')
+  // No bundle hint, no override
+  assert.equal(resolveHarness({}), 'opencode')
+  // Bundle hint
+  assert.equal(resolveHarness({ harness: 'claude-code' }), 'claude-code')
+  // Override beats bundle hint
+  assert.equal(resolveHarness({ harness: 'claude-code' }, 'hermes'), 'hermes')
+  // Bad value throws
+  assert.throws(() => resolveHarness({}, 'kimi-code'), /unknown harness/)
+})
+
+test('workspaceFilenames maps every supported harness', () => {
+  assert.deepEqual(workspaceFilenames('opencode'), {
+    systemPromptFile: 'AGENTS.md',
+    subagentsFile: 'agents.json',
+    mcpFile: '.mcp.json',
+  })
+  assert.deepEqual(workspaceFilenames('claude-code'), {
+    systemPromptFile: 'CLAUDE.md',
+    subagentsFile: 'agents.json',
+    mcpFile: '.mcp.json',
+  })
+  assert.deepEqual(workspaceFilenames('hermes'), {
+    systemPromptFile: 'AGENTS.md',
+    subagentsFile: 'agents.json',
+    mcpFile: '.mcp.json',
+  })
+})
+
+test('--harness opencode emits AGENTS.md (default behaviour)', async () => {
+  const dir = resolve(FIXTURES, 'agent-bundle-example')
+  const bundle = await loadAgentBundle(dir)
+  const files = await toWorkspaceFiles(bundle, dir, { harness: 'opencode' })
+  const paths = files.map((f) => f.targetPath)
+  assert.ok(paths.includes('/home/agent/AGENTS.md'), 'opencode must emit AGENTS.md')
+  assert.equal(paths.includes('/home/agent/CLAUDE.md'), false, 'opencode must NOT emit CLAUDE.md')
+})
+
+test('--harness claude-code emits CLAUDE.md plus an AGENTS.md cross-compat copy', async () => {
+  const dir = resolve(FIXTURES, 'agent-bundle-example')
+  const bundle = await loadAgentBundle(dir)
+  const files = await toWorkspaceFiles(bundle, dir, { harness: 'claude-code' })
+  const paths = files.map((f) => f.targetPath)
+
+  // Claude Code reads CLAUDE.md natively
+  assert.ok(paths.includes('/home/agent/CLAUDE.md'), 'claude-code must emit CLAUDE.md')
+
+  // AGENTS.md cross-compat copy keeps the workspace portable when the
+  // operator flips backends post-deploy.
+  assert.ok(
+    paths.includes('/home/agent/AGENTS.md'),
+    'claude-code must also emit AGENTS.md (cross-harness copy)',
+  )
+
+  const claude = files.find((f) => f.targetPath === '/home/agent/CLAUDE.md')!
+  const agents = files.find((f) => f.targetPath === '/home/agent/AGENTS.md')!
+  assert.equal(claude.content, agents.content, 'CLAUDE.md and AGENTS.md must carry identical bytes')
+  assert.match(claude.content, /# Research Assistant/)
+})
+
+test('--harness hermes emits AGENTS.md (Hermes MCP path is partial; tracked in docs/issues)', async () => {
+  const dir = resolve(FIXTURES, 'agent-bundle-example')
+  const bundle = await loadAgentBundle(dir)
+  const files = await toWorkspaceFiles(bundle, dir, { harness: 'hermes' })
+  const paths = files.map((f) => f.targetPath)
+  assert.ok(paths.includes('/home/agent/AGENTS.md'), 'hermes must emit AGENTS.md')
+  assert.equal(paths.includes('/home/agent/CLAUDE.md'), false, 'hermes must not emit CLAUDE.md')
+})
+
+test('toWorkspaceFiles emits .mcp.json when bundle declares mcp servers', async () => {
+  const dir = resolve(FIXTURES, 'agent-bundle-with-hooks')
+  const bundle = await loadAgentBundle(dir)
+  // Bundle declares harness=claude-code; override path resolution explicit.
+  const files = await toWorkspaceFiles(bundle, dir, { harness: 'claude-code' })
+
+  const mcpFile = files.find((f) => f.targetPath === '/home/agent/.mcp.json')
+  assert.ok(mcpFile, 'bundle with mcp servers must emit /home/agent/.mcp.json')
+
+  const parsed = JSON.parse(mcpFile!.content) as { mcpServers: Record<string, unknown> }
+  assert.deepEqual(Object.keys(parsed.mcpServers).sort(), ['fetch', 'filesystem'])
+})
+
+test('toWorkspaceFiles does not emit .mcp.json when bundle has no mcp field', async () => {
+  const dir = resolve(FIXTURES, 'agent-bundle-example')
+  const bundle = await loadAgentBundle(dir)
+  const files = await toWorkspaceFiles(bundle, dir)
+  const mcp = files.find((f) => f.targetPath.endsWith('/.mcp.json'))
+  assert.equal(mcp, undefined, 'bundles without mcp must not emit .mcp.json')
+})
+
+test('bundle with hooks loads cleanly and surfaces hook paths', async () => {
+  const dir = resolve(FIXTURES, 'agent-bundle-with-hooks')
+  const bundle = await loadAgentBundle(dir)
+  assert.equal(bundle.harness, 'claude-code', 'harness must round-trip from agent.json')
+  assert.equal(bundle.hooks?.pre, 'hooks/pre.sh')
+  assert.equal(bundle.hooks?.post, 'hooks/post.sh')
+})
+
+test('bundle.harness is the deploy default; CLI override wins', async () => {
+  const dir = resolve(FIXTURES, 'agent-bundle-with-hooks')
+  const bundle = await loadAgentBundle(dir)
+  // No override: respects the bundle's declared claude-code harness.
+  assert.equal(resolveHarness(bundle), 'claude-code')
+  // CLI override flips it.
+  assert.equal(resolveHarness(bundle, 'opencode'), 'opencode')
 })

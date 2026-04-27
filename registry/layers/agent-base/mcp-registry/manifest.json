@@ -1,0 +1,48 @@
+{
+  "id": "mcp-registry",
+  "slot": "agent-base",
+  "description": "MCP server registry. Ships a .mcp.json template at <workspace.root>/.mcp.json with env-var-driven server config. Composes with agent-base:secure for credential injection. Harness-aware: deploy script translates the file path/format per target harness (Claude Code + OpenCode read .mcp.json natively; Hermes path is partial — see docs/issues/sandbox-sdk-deploy-hooks.md).",
+  "appliesTo": [],
+  "provides": ["mcp:registry"],
+  "requires": [],
+  "defaults": {
+    "mcpRegistryPath": "/home/agent/.mcp.json",
+    "mcpServers": [
+      "filesystem",
+      "fetch",
+      "github",
+      "memory",
+      "scheduler"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/.mcp.json",
+      "target": ".mcp.json"
+    },
+    {
+      "source": "files/lib/mcp/register.ts",
+      "target": "src/lib/mcp/register.ts"
+    },
+    {
+      "source": "files/lib/mcp/README.md",
+      "target": "src/lib/mcp/README.md"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": ".mcp.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/mcp/register.ts"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": [
+      "src/lib/mcp/"
+    ],
+    "commands": []
+  }
+}

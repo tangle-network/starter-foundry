@@ -47,24 +47,20 @@
       "target": "agent.json"
     },
     {
-      "source": "files/orchestrator-system-prompt.md",
-      "target": "orchestrator-system-prompt.md"
+      "source": "files/AGENTS.md",
+      "target": "AGENTS.md"
     },
     {
-      "source": "files/coordination-protocol.md",
-      "target": "coordination-protocol.md"
-    },
-    {
-      "source": "files/agent-roster.json",
-      "target": "agent-roster.json"
+      "source": "files/agents.json",
+      "target": "agents.json"
     },
     {
       "source": "files/README.md",
       "target": "README.md"
     },
     {
-      "source": "files/roles/paralegal-intake/system-prompt.md",
-      "target": "roles/paralegal-intake/system-prompt.md"
+      "source": "files/roles/paralegal-intake/AGENTS.md",
+      "target": "roles/paralegal-intake/AGENTS.md"
     },
     {
       "source": "files/roles/paralegal-intake/methodology/intake-checklist.md",
@@ -79,8 +75,8 @@
       "target": "roles/paralegal-intake/methodology/fact-pattern-summary.md"
     },
     {
-      "source": "files/roles/legal-counsel/system-prompt.md",
-      "target": "roles/legal-counsel/system-prompt.md"
+      "source": "files/roles/legal-counsel/AGENTS.md",
+      "target": "roles/legal-counsel/AGENTS.md"
     },
     {
       "source": "files/roles/legal-counsel/methodology/contract-redline.md",
@@ -95,8 +91,8 @@
       "target": "roles/legal-counsel/methodology/regulatory-research.md"
     },
     {
-      "source": "files/roles/auditor/system-prompt.md",
-      "target": "roles/auditor/system-prompt.md"
+      "source": "files/roles/auditor/AGENTS.md",
+      "target": "roles/auditor/AGENTS.md"
     },
     {
       "source": "files/roles/auditor/methodology/control-walkthrough.md",
@@ -110,45 +106,45 @@
   "validationChecks": [
     {
       "type": "file-exists",
-      "path": "coordination-protocol.md"
+      "path": "AGENTS.md"
     },
     {
       "type": "file-exists",
-      "path": "agent-roster.json"
+      "path": "agents.json"
     },
     {
       "type": "file-exists",
-      "path": "roles/paralegal-intake/system-prompt.md"
+      "path": "roles/paralegal-intake/AGENTS.md"
     },
     {
       "type": "file-exists",
-      "path": "roles/legal-counsel/system-prompt.md"
+      "path": "roles/legal-counsel/AGENTS.md"
     },
     {
       "type": "file-exists",
-      "path": "roles/auditor/system-prompt.md"
+      "path": "roles/auditor/AGENTS.md"
     },
     {
       "type": "agents-md-valid",
-      "path": "roles/paralegal-intake/system-prompt.md"
+      "path": "roles/paralegal-intake/AGENTS.md"
     },
     {
       "type": "agents-md-valid",
-      "path": "roles/legal-counsel/system-prompt.md"
+      "path": "roles/legal-counsel/AGENTS.md"
     },
     {
       "type": "agents-md-valid",
-      "path": "roles/auditor/system-prompt.md"
+      "path": "roles/auditor/AGENTS.md"
     }
   ],
   "contextHints": {
     "commands": [],
     "entrypoints": [
-      "coordination-protocol.md",
-      "agent-roster.json",
-      "roles/paralegal-intake/system-prompt.md",
-      "roles/legal-counsel/system-prompt.md",
-      "roles/auditor/system-prompt.md"
+      "AGENTS.md",
+      "agents.json",
+      "roles/paralegal-intake/AGENTS.md",
+      "roles/legal-counsel/AGENTS.md",
+      "roles/auditor/AGENTS.md"
     ],
     "extensionPoints": [
       "roles/",
@@ -188,8 +184,8 @@
   "buildHints": {
     "whenToUse": "When the product is a coordinated 3-role legal-ops team — paralegal intake triages requests and routes to in-house counsel for contract advice or to internal audit for SOX/SOC2/process compliance. Use when the user asks for a 'legal-ops team', 'compliance team agent', 'legal and audit pod', or describes a workflow that spans intake + advisory + audit. For a single role, prefer agent-runtime-legal-counsel-ts or agent-runtime-auditor-ts.",
     "firstSteps": [
-      "Read coordination-protocol.md — defines the request flow (intake first, then counsel OR auditor).",
-      "Each role has a system-prompt.md with mandatory disclaimers. Do NOT remove the disclaimer block.",
+      "Read AGENTS.md — orchestrator prompt + Coordination section defines the request flow (intake first, then counsel OR auditor).",
+      "Each role has an AGENTS.md with mandatory disclaimers. Do NOT remove the disclaimer block.",
       "PII flowing through any role passes agent-base:privacy redaction before persistence — see src/lib/privacy/.",
       "Default respondent is paralegal-intake; counsel and auditor are reachable only via documented hand-offs."
     ],
@@ -200,8 +196,8 @@
       "Roles share PII redaction primitives but DO NOT share state — each role keeps its own session log."
     ],
     "architectureNotes": [
-      "Bundle layout: coordination-protocol.md + agent-roster.json + roles/<role>/system-prompt.md + roles/<role>/methodology/*.md.",
-      "agent-roster.json is the routing table — disclaimerRequired=true and stakes=high are read at session-start to surface disclaimers.",
+      "Bundle layout: AGENTS.md (orchestrator + Coordination section) + agents.json (OpenCode-native subagent registry with inline prompts) + roles/<role>/AGENTS.md + roles/<role>/methodology/*.md.",
+      "agents.json is consumed by the Tangle sandbox sidecar (apps/sidecar/src/agents/subagents/load-agents-config.ts) to register subagents. disclaimerRequired=true and stakes=high are read at session-start to surface disclaimers.",
       "Composes with agent-base:privacy because every role handles client PII; with agent-output:blocks for :::artifact / :::escalation / :::question / :::filing block emission."
     ]
   }

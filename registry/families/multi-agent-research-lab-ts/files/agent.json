@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "tags": ["multi-agent", "team", "research", "lab", "literature-triage", "cross-domain"],
   "prompt": {
-    "systemPromptFile": "orchestrator-system-prompt.md"
+    "systemPromptFile": "AGENTS.md"
   },
   "tools": {
     "filesystem": true,
@@ -19,30 +19,30 @@
   "subagents": {
     "lab-director": {
       "description": "Lab Director — research-question formulation, cross-domain synthesis, literature triage. Default respondent. Owns the synthesis turn on cross-domain questions.",
-      "systemPromptFile": "roles/lab-director/system-prompt.md",
+      "systemPromptFile": "roles/lab-director/AGENTS.md",
       "tools": { "filesystem": true, "router": true }
     },
     "physics-researcher": {
       "description": "Physics Researcher — arXiv literature search, experimental design. Mechanics / quantum / cosmology / condensed-matter / instrumentation.",
-      "systemPromptFile": "roles/physics-researcher/system-prompt.md",
+      "systemPromptFile": "roles/physics-researcher/AGENTS.md",
       "tools": { "filesystem": true, "router": true }
     },
     "chemistry-researcher": {
       "description": "Chemistry Researcher — reaction-mechanism analysis, CrossRef literature search. Synthesis / kinetics / catalysis / spectroscopy / materials chemistry.",
-      "systemPromptFile": "roles/chemistry-researcher/system-prompt.md",
+      "systemPromptFile": "roles/chemistry-researcher/AGENTS.md",
       "tools": { "filesystem": true, "router": true }
     },
     "biology-researcher": {
       "description": "Biology Researcher — protein-structure analysis, bioinformatics survey. Molecular / cellular / genomics / structural-bio / systems bio.",
-      "systemPromptFile": "roles/biology-researcher/system-prompt.md",
+      "systemPromptFile": "roles/biology-researcher/AGENTS.md",
       "tools": { "filesystem": true, "router": true }
     }
   },
   "resources": {
     "files": [
+      { "source": "AGENTS.md", "target": "/workspace/AGENTS.md" },
+      { "source": "agents.json", "target": "/workspace/agents.json" },
       { "source": "roles/", "target": "/workspace/roles/" },
-      { "source": "coordination-protocol.md", "target": "/workspace/coordination-protocol.md" },
-      { "source": "agent-roster.json", "target": "/workspace/agent-roster.json" },
       { "source": "README.md", "target": "/workspace/README.md" }
     ]
   }

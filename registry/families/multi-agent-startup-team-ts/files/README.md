@@ -9,8 +9,11 @@ CPA, HR counsel, or licensed financial advisor.**
 
 A self-contained team of five specialist agents that coordinate via
 explicit handoff blocks. The team is loaded as a single deploy; the
-runtime reads `agent-roster.json` to know which roles are live and
-routes turns according to `coordination-protocol.md`.
+Tangle sandbox sidecar reads `agents.json` (OpenCode-native subagent
+registry) to register each role and uses `AGENTS.md` as the
+orchestrator's system prompt. The orchestrator's `AGENTS.md`
+contains a `## Coordination` section that is the source of truth
+for inter-role routing, handoff format, and joint-decision cadence.
 
 The five roles:
 
@@ -27,8 +30,9 @@ The five roles:
 This is **not** a generic multi-agent harness. The roles are
 hand-tuned to coordinate:
 
-- **Explicit routing table** in `coordination-protocol.md` — every
-  topic has a primary respondent and a list of common collaborators.
+- **Explicit routing table** in `AGENTS.md` (`## Coordination`) —
+  every topic has a primary respondent and a list of common
+  collaborators.
 - **`:::handoff` block format** — a role that catches a request
   outside its scope emits a structured handoff to the right peer
   rather than improvising.
@@ -46,19 +50,23 @@ hand-tuned to coordinate:
   launch; CEO's OKR template requires every peer to cascade KRs).
 
 The difference from a naïve composition (five single-role agents
-glued together) is the **protocol**. Without `coordination-protocol.md`,
-five roles produce five overlapping answers. With it, one role
-answers and the others contribute on demand.
+glued together) is the **protocol**. Without the `## Coordination`
+section in `AGENTS.md`, five roles produce five overlapping
+answers. With it, one role answers and the others contribute on
+demand.
 
 ## How a sandbox spawns the team
 
-1. Sandbox mounts `/team` with this bundle's content.
-2. Runtime reads `agent-roster.json` to enumerate roles, default
-   respondent, and the handoff/escalation block markers.
-3. Runtime loads `coordination-protocol.md` into every role's
-   context at session start.
-4. Each role loads its own `roles/<id>/system-prompt.md` and any
-   methodology files that match the user's request.
+1. Sandbox mounts `/workspace` with this bundle's content.
+2. Sidecar reads `agents.json` to enumerate subagents (each with
+   inline `prompt`, `tools`, and `permission` blocks per the
+   OpenCode shape).
+3. Sidecar uses `AGENTS.md` as the orchestrator's system prompt —
+   the `## Coordination` section is the source of truth for
+   inter-role behavior.
+4. Each role's prompt is the inline `prompt` field in `agents.json`
+   (mirrored from `roles/<id>/AGENTS.md`); methodology files that
+   match the user's request are loaded by the role on demand.
 5. Default respondent (CEO) handles the first turn unless the
    request explicitly names a role.
 6. Handoffs route to the named peer; joint-decision turns assemble
@@ -113,7 +121,8 @@ opinion itself is not.
 
 - `team-coordination-protocol` — routing rules, handoff format,
   escalation triggers, joint-decision cadence. Source of truth for
-  inter-role behavior. See `coordination-protocol.md`.
+  inter-role behavior. See the `## Coordination` section in
+  `AGENTS.md`.
 - `weekly-review` (CEO) — seven-dimension Monday review with CFO /
   CMO / CTO contributions and CEO assembly.
 - `decision-journal` (CEO) — Bezos Type-1/Type-2 reversibility,
@@ -144,14 +153,16 @@ opinion itself is not.
 
 ## Extension points
 
-- `coordination-protocol.md` — routing table, escalation triggers,
-  joint-decision cadence. Edits here change team behavior across
-  all five roles.
-- `agent-roster.json` — role list, default respondent, methodology
-  paths. Edit to add/remove roles (e.g. swap HR for "Head of
-  People + Recruiter" pair).
-- `roles/<role>/system-prompt.md` — adjust role / advisory boundary
-  / escalation triggers. Re-run `agents-md-valid` after edits.
+- `AGENTS.md` (top-level, `## Coordination` section) — routing
+  table, escalation triggers, joint-decision cadence. Edits here
+  change team behavior across all five roles.
+- `agents.json` — OpenCode-native subagent registry: `mode`,
+  `description`, inline `prompt`, `tools`, `permission` per
+  subagent. Edit to add/remove roles or adjust per-role tool
+  permissions.
+- `roles/<role>/AGENTS.md` — adjust role / advisory boundary /
+  escalation triggers. Re-run `agents-md-valid` after edits, then
+  regenerate `agents.json` so the inline prompt mirrors the file.
 - `roles/<role>/methodology/` — refine the role's methodology;
   swap in alternative frames (e.g. swap `okr-design` for V2MOM by
   replacing the file; keep the capability id stable).

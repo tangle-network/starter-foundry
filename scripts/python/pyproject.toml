@@ -1,0 +1,50 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "starter-foundry-deploy"
+version = "0.1.0"
+description = "Python sibling of starter-foundry's agent-bundle loader + deploy CLI (tangle-sandbox SDK)"
+readme = "README.md"
+license = "UNLICENSED"
+requires-python = ">=3.10"
+authors = [{ name = "Tangle Technologies", email = "eng@tangle.tools" }]
+dependencies = [
+    "jsonschema>=4.0",
+    # tangle-sandbox is sourced from the local sdk-python checkout when present;
+    # see [tool.uv.sources]/[tool.hatch.metadata] for the local-path override and
+    # the cookbook for the PyPI / git+ssh fallback.
+    "tangle-sandbox>=0.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio>=0.21",
+]
+
+[project.scripts]
+deploy-agent-bundle = "starter_foundry.deploy:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["starter_foundry"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.uv.sources]
+# Local-first: prefer the in-tree sdk-python checkout. Comment out + fall back to
+# `tangle-sandbox = { git = "ssh://git@github.com/tangle-network/agent-dev-container.git", subdirectory = "products/sandbox/sdk-python" }`
+# when the sibling repo isn't on disk.
+tangle-sandbox = { path = "../../../../../agent-dev-container/products/sandbox/sdk-python", editable = false }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]

@@ -135,11 +135,10 @@ was never updated.
 ## What works
 
 - **Compose itself.** `composeStarter` runs in well under 1 s, writes
-  22 files, generates a valid `compose-report.json`, an `AGENTS.md`
-  - `CLAUDE.md` + `llms.txt`, and merges the layer-provided source
-    files (`src/lib/tangle.ts`, `src/lib/blocks.ts`,
-    `src/lib/tools/research.ts`, `src/lib/secure/*`) into the project
-    tree.
+  22 files, generates a valid `compose-report.json`, an AGENTS.md/CLAUDE.md/`llms.txt`
+  triple, and merges the layer-provided source files (`src/lib/tangle.ts`,
+  `src/lib/blocks.ts`, `src/lib/tools/research.ts`, `src/lib/secure/*`)
+  into the project tree.
 - **Determinism.** Re-running compose produces identical output;
   `agent-base:secure` auto-attaches via `includes[]`; the registry's
   shape validators (file-exists × 13, agents-md-valid,

@@ -1,0 +1,29 @@
+{
+  "id": "scheduler",
+  "slot": "agent-base",
+  "description": "In-sandbox cron scheduler. Zero-dep cron parser + sweep loop dispatcher for the in-process schedule registry shipped by agent-base:secure. Persists task state at SCHEDULER_STATE_PATH (default /home/agent/scheduler/state.json). Bundles register cron-driven tasks; the agent itself owns the sweep tick (no external cron daemon, no cross-process trigger pipe). Composes with agent-base:secure — the registry there owns identity + audit; this layer owns when to fire.",
+  "appliesTo": [],
+  "provides": ["scheduler:cron", "scheduler:sweep"],
+  "requires": ["secure:schedule"],
+  "defaults": {
+    "schedulerEnabled": true,
+    "schedulerStatePath": "/home/agent/scheduler/state.json",
+    "schedulerSweepIntervalMs": 60000
+  },
+  "files": [
+    { "source": "files/lib/scheduler/index.ts", "target": "src/lib/scheduler/index.ts" },
+    { "source": "files/lib/scheduler/cron-parse.ts", "target": "src/lib/scheduler/cron-parse.ts" },
+    { "source": "files/lib/scheduler/sweep.ts", "target": "src/lib/scheduler/sweep.ts" },
+    { "source": "files/lib/scheduler/types.ts", "target": "src/lib/scheduler/types.ts" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "src/lib/scheduler/index.ts" },
+    { "type": "file-exists", "path": "src/lib/scheduler/cron-parse.ts" },
+    { "type": "file-exists", "path": "src/lib/scheduler/sweep.ts" },
+    { "type": "file-exists", "path": "src/lib/scheduler/types.ts" }
+  ],
+  "contextHints": {
+    "extensionPoints": ["src/lib/scheduler/"],
+    "commands": []
+  }
+}

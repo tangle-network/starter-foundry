@@ -1,6 +1,6 @@
 {
   "id": "agent-orchestrator-service-ts",
-  "description": "Deployable headless backend (Hono) that orchestrates a fleet of agents from markdown packs. API-only — no UI. Routes /chat to single agents or multi-agent team rosters. Single egress through router.tangle.tools. Sister to agent-platform-ts (which has the dashboard). For Slack bots, CLIs, or custom frontends that need agent orchestration as a service.",
+  "description": "Deployable headless backend (Hono) that orchestrates a fleet of agents from markdown packs. API-only \u2014 no UI. Routes /chat to single agents or multi-agent team rosters. Single egress through router.tangle.tools. Sister to agent-platform-ts (which has the dashboard). For Slack bots, CLIs, or custom frontends that need agent orchestration as a service.",
   "tags": [
     "agent-orchestrator",
     "backend",
@@ -35,37 +35,124 @@
     ]
   },
   "files": [
-    { "source": "files/package.json", "target": "package.json" },
-    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
-    { "source": "files/wrangler.jsonc", "target": "wrangler.jsonc" },
-    { "source": "files/.env.example", "target": ".env.example" },
-    { "source": "files/README.md", "target": "README.md" },
-    { "source": "files/src/index.ts", "target": "src/index.ts" },
-    { "source": "files/src/types.ts", "target": "src/types.ts" },
-    { "source": "files/src/schema.ts", "target": "src/schema.ts" },
-    { "source": "files/src/routes/chat.ts", "target": "src/routes/chat.ts" },
-    { "source": "files/src/routes/agents.ts", "target": "src/routes/agents.ts" },
-    { "source": "files/src/routes/health.ts", "target": "src/routes/health.ts" },
-    { "source": "files/src/routes/webhooks.ts", "target": "src/routes/webhooks.ts" },
-    { "source": "files/src/lib/agent-loader.ts", "target": "src/lib/agent-loader.ts" },
-    { "source": "files/src/lib/roster.ts", "target": "src/lib/roster.ts" },
-    { "source": "files/src/lib/router.ts", "target": "src/lib/router.ts" },
-    { "source": "files/src/lib/chat-bridge.ts", "target": "src/lib/chat-bridge.ts" },
-    { "source": "files/src/lib/audit.ts", "target": "src/lib/audit.ts" },
-    { "source": "files/src/lib/rate-limit.ts", "target": "src/lib/rate-limit.ts" },
-    { "source": "files/test/router.test.ts", "target": "test/router.test.ts" },
-    { "source": "files/docs/DEPLOYMENT.md", "target": "docs/DEPLOYMENT.md" },
-    { "source": "files/docs/ROUTING.md", "target": "docs/ROUTING.md" },
-    { "source": "files/docs/SECURITY.md", "target": "docs/SECURITY.md" }
+    {
+      "source": "files/package.json",
+      "target": "package.json"
+    },
+    {
+      "source": "files/tsconfig.json",
+      "target": "tsconfig.json"
+    },
+    {
+      "source": "files/wrangler.jsonc",
+      "target": "wrangler.jsonc"
+    },
+    {
+      "source": "files/.env.example",
+      "target": ".env.example"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/src/index.ts",
+      "target": "src/index.ts"
+    },
+    {
+      "source": "files/src/types.ts",
+      "target": "src/types.ts"
+    },
+    {
+      "source": "files/src/schema.ts",
+      "target": "src/schema.ts"
+    },
+    {
+      "source": "files/src/routes/chat.ts",
+      "target": "src/routes/chat.ts"
+    },
+    {
+      "source": "files/src/routes/agents.ts",
+      "target": "src/routes/agents.ts"
+    },
+    {
+      "source": "files/src/routes/health.ts",
+      "target": "src/routes/health.ts"
+    },
+    {
+      "source": "files/src/routes/webhooks.ts",
+      "target": "src/routes/webhooks.ts"
+    },
+    {
+      "source": "files/src/lib/agent-loader.ts",
+      "target": "src/lib/agent-loader.ts"
+    },
+    {
+      "source": "files/src/lib/roster.ts",
+      "target": "src/lib/roster.ts"
+    },
+    {
+      "source": "files/src/lib/router.ts",
+      "target": "src/lib/router.ts"
+    },
+    {
+      "source": "files/src/lib/chat-bridge.ts",
+      "target": "src/lib/chat-bridge.ts"
+    },
+    {
+      "source": "files/src/lib/audit.ts",
+      "target": "src/lib/audit.ts"
+    },
+    {
+      "source": "files/src/lib/rate-limit.ts",
+      "target": "src/lib/rate-limit.ts"
+    },
+    {
+      "source": "files/test/router.test.ts",
+      "target": "test/router.test.ts"
+    },
+    {
+      "source": "files/docs/DEPLOYMENT.md",
+      "target": "docs/DEPLOYMENT.md"
+    },
+    {
+      "source": "files/docs/ROUTING.md",
+      "target": "docs/ROUTING.md"
+    },
+    {
+      "source": "files/docs/SECURITY.md",
+      "target": "docs/SECURITY.md"
+    }
   ],
   "validationChecks": [
-    { "type": "file-exists", "path": "package.json" },
-    { "type": "file-exists", "path": "src/index.ts" },
-    { "type": "file-exists", "path": "src/lib/agent-loader.ts" },
-    { "type": "file-exists", "path": "src/lib/router.ts" },
-    { "type": "file-exists", "path": "src/lib/chat-bridge.ts" },
-    { "type": "file-exists", "path": "test/router.test.ts" },
-    { "type": "file-exists", "path": "docs/SECURITY.md" }
+    {
+      "type": "file-exists",
+      "path": "package.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/index.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/agent-loader.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/router.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/chat-bridge.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "test/router.test.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "docs/SECURITY.md"
+    }
   ],
   "contextHints": {
     "commands": [
@@ -104,16 +191,14 @@
       "single-egress",
       "team-routing"
     ],
-    "tier3": [
-      "service"
-    ],
+    "tier3": [],
     "archetypes": [
       "agent-host",
       "headless-service"
     ]
   },
   "buildHints": {
-    "whenToUse": "Headless backend that fronts a fleet of markdown-pack agents. Ship this when the consumer (Slack bot, CLI, custom frontend) does NOT want a dashboard — they just want HTTP/JSON. For the dashboarded sister, use `agent-platform-ts`. For a single agent with a chat UI, use `agent-with-ui-ts`.",
+    "whenToUse": "Headless backend that fronts a fleet of markdown-pack agents. Ship this when the consumer (Slack bot, CLI, custom frontend) does NOT want a dashboard \u2014 they just want HTTP/JSON. For the dashboarded sister, use `agent-platform-ts`. For a single agent with a chat UI, use `agent-with-ui-ts`.",
     "firstSteps": [
       "Set TANGLE_ROUTER_KEY (router.tangle.tools key) and AGENT_PACK_DIR (filesystem dir holding agent packs).",
       "Drop an agent pack into AGENT_PACK_DIR: either `<id>/system-prompt.md` (single agent) or `<id>/agent-roster.json` (team).",
@@ -122,14 +207,14 @@
     ],
     "gotchas": [
       "chat-bridge.ts is the only file allowed to call router.tangle.tools. If you reach for fetch() elsewhere, the single-egress invariant is dead.",
-      "Rate limit is in-memory by default — multi-instance deploys MUST swap in Redis or the bucket is per-instance, not per-tenant.",
+      "Rate limit is in-memory by default \u2014 multi-instance deploys MUST swap in Redis or the bucket is per-instance, not per-tenant.",
       "HMAC webhooks have no nonce table; the 5-minute replay window is the only defense against replay. Document this for downstream operators.",
-      "agent-roster.json without `defaultRespondent` falls back to LLM-routing — every /chat to that team pays a cheap routing call before the real call."
+      "agent-roster.json without `defaultRespondent` falls back to LLM-routing \u2014 every /chat to that team pays a cheap routing call before the real call."
     ],
     "architectureNotes": [
-      "Hono runs on Bun, Node, AND Cloudflare Workers — pick the adapter at deploy time. Wrangler config ships for the Workers path; package.json scripts cover Node + Bun.",
+      "Hono runs on Bun, Node, AND Cloudflare Workers \u2014 pick the adapter at deploy time. Wrangler config ships for the Workers path; package.json scripts cover Node + Bun.",
       "Agent loader returns a discriminated union: `{ kind: 'single', ... } | { kind: 'team', roles: [...] }`. Downstream router.ts dispatches on `kind`.",
-      "Audit log writes to filesystem by default (local dev). For prod, swap audit.ts's sink for S3/Postgres — the function signature is the seam."
+      "Audit log writes to filesystem by default (local dev). For prod, swap audit.ts's sink for S3/Postgres \u2014 the function signature is the seam."
     ]
   }
 }

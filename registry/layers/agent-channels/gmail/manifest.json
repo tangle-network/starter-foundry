@@ -1,0 +1,21 @@
+{
+  "id": "gmail",
+  "slot": "agent-channels",
+  "description": "Gmail channel adapter — OAuth 2.0 (installed-app flow) + Gmail REST API. Default path is pull-based: poll users.messages.list?q=is:unread, fetch each via users.messages.get, mark read after dispatch. send() encodes RFC 5322 and POSTs to users.messages.send. Push-based (Pub/Sub watch) is documented but not wired in MVP — see channels/gmail.env.example.",
+  "appliesTo": [],
+  "provides": ["channel:gmail"],
+  "requires": ["secret-store"],
+  "defaults": {
+    "channelGmailAvailable": true
+  },
+  "files": [
+    { "source": "files/channels/gmail.ts", "target": "channels/gmail.ts" },
+    { "source": "files/channels/gmail.env.example", "target": "channels/gmail.env.example" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "channels/gmail.ts" }
+  ],
+  "contextHints": {
+    "extensionPoints": ["channels/gmail.ts"]
+  }
+}

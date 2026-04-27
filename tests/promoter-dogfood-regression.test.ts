@@ -39,27 +39,37 @@ describe('promoter dogfood regression (PR #55 shape)', () => {
       // package.json declares the dep (from capability packageDeps merge) —
       // this alone does NOT count as use (see gate's rel === 'package.json'
       // skip).
-      writeFileSync(join(composedDir, 'package.json'), JSON.stringify({
-        name: 'pr55-regression-agent',
-        version: '0.0.1',
-        scripts: { start: 'node server.mjs' },
-        dependencies: {
-          '@tangle-network/agent-eval': '^0.7.0',
-          // Another dep that IS imported — proves the gate isn't just
-          // reporting every package.json entry as unused.
-          'express': '^4.18.0',
-        },
-      }, null, 2))
+      writeFileSync(
+        join(composedDir, 'package.json'),
+        JSON.stringify(
+          {
+            name: 'pr55-regression-agent',
+            version: '0.0.1',
+            scripts: { start: 'node server.mjs' },
+            dependencies: {
+              '@tangle-network/agent-eval': '^0.7.0',
+              // Another dep that IS imported — proves the gate isn't just
+              // reporting every package.json entry as unused.
+              express: '^4.18.0',
+            },
+          },
+          null,
+          2,
+        ),
+      )
       // Source file imports express but NOT @tangle-network/agent-eval.
       // This is the PR #55 bug: capability declared the dep, no file
       // anywhere under the composed output actually uses it.
       mkdirSync(join(composedDir, 'src'), { recursive: true })
-      writeFileSync(join(composedDir, 'src/index.ts'), `
+      writeFileSync(
+        join(composedDir, 'src/index.ts'),
+        `
 import express from 'express'
 const app = express()
 app.get('/health', (_req, res) => res.json({ ok: true }))
 export default app
-`)
+`,
+      )
 
       // Capability manifest as it shipped in PR #55 — declares the dep,
       // provides files that DON'T import it.
@@ -98,10 +108,7 @@ export default app
     // won't fire, and the PR #55 class of bug can re-ship silently. This
     // catches that drift — same shape as the HARNESS_CONFIGS invariant
     // in tests/muffled-gate-invariant.test.ts.
-    const scripts = [
-      'scripts/promote-family-proposal.ts',
-      'scripts/promote-capability-proposal.ts',
-    ]
+    const scripts = ['scripts/promote-family-proposal.ts', 'scripts/promote-capability-proposal.ts']
     for (const script of scripts) {
       const path = join(REPO_ROOT, script)
       assert.ok(existsSync(path), `expected ${script} to exist`)
@@ -111,16 +118,8 @@ export default app
         /checkDeclaredDepUsed.*from.*promoter-gates\.js/s,
         `${script} must import checkDeclaredDepUsed from dist/lib/promoter-gates.js`,
       )
-      assert.match(
-        text,
-        /checkScaffoldRuns/,
-        `${script} must reference checkScaffoldRuns (gate 2)`,
-      )
-      assert.match(
-        text,
-        /checkEvalScores/,
-        `${script} must reference checkEvalScores (gate 3)`,
-      )
+      assert.match(text, /checkScaffoldRuns/, `${script} must reference checkScaffoldRuns (gate 2)`)
+      assert.match(text, /checkEvalScores/, `${script} must reference checkEvalScores (gate 3)`)
     }
   })
 
@@ -128,25 +127,25 @@ export default app
     // The promoter's dogfood block writes validation-errors.json and
     // calls fail(id, 'declared-dep-used', ...) — assert the `fail`
     // site exists with that exact gateReached string.
-    const scripts = [
-      'scripts/promote-family-proposal.ts',
-      'scripts/promote-capability-proposal.ts',
-    ]
+    const scripts = ['scripts/promote-family-proposal.ts', 'scripts/promote-capability-proposal.ts']
     for (const script of scripts) {
       const text = readFileSync(join(REPO_ROOT, script), 'utf8')
+      // Whitespace tolerant: prettier may split `fail(id, 'gate', ...)` across
+      // lines when the third arg gets long enough to wrap. The contract is
+      // "fail() called with this gate string", not the source layout.
       assert.match(
         text,
-        /fail\(id,\s*'declared-dep-used'/,
+        /fail\(\s*id,\s*'declared-dep-used'/,
         `${script} must short-circuit to gateReached='declared-dep-used' — the PR #55 bug catcher`,
       )
       assert.match(
         text,
-        /fail\(id,\s*'scaffold-runs'/,
+        /fail\(\s*id,\s*'scaffold-runs'/,
         `${script} must short-circuit to gateReached='scaffold-runs'`,
       )
       assert.match(
         text,
-        /fail\(id,\s*'eval-scores'/,
+        /fail\(\s*id,\s*'eval-scores'/,
         `${script} must short-circuit to gateReached='eval-scores'`,
       )
     }

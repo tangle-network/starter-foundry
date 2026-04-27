@@ -27,15 +27,20 @@
  * installed in the consumer environment the script reports a clean GAP rather
  * than failing inside a TypeScript import.
  */
-import { resolve } from 'node:path'
-import { argv, env, exit, stdout } from 'node:process'
+import { spawn } from 'node:child_process'
+import { access, constants, readFile } from 'node:fs/promises'
+import { isAbsolute, posix, resolve } from 'node:path'
+import { argv, cwd, env, exit, stderr, stdout } from 'node:process'
 
 import {
   loadAgentBundle,
+  resolveHarness,
   resolveWorkspaceRoot,
   toAgentProfile,
   toWorkspaceFiles,
+  type AgentBundleProfile,
   type AgentProfileMirror,
+  type Harness,
   type WorkspaceFile,
 } from '../src/lib/agent-bundle.js'
 
@@ -47,6 +52,8 @@ interface CliArgs {
   task?: string
   image: string
   dryRun: boolean
+  harness?: Harness
+  skipHooks: boolean
 }
 
 function parseArgs(): CliArgs {
@@ -81,6 +88,19 @@ function parseArgs(): CliArgs {
       case '--dry-run':
         out.dryRun = true
         break
+      case '--harness': {
+        const value = next()
+        if (value !== 'opencode' && value !== 'claude-code' && value !== 'hermes') {
+          throw new Error(
+            `--harness must be one of: opencode, claude-code, hermes (got "${value}")`,
+          )
+        }
+        out.harness = value
+        break
+      }
+      case '--skip-hooks':
+        out.skipHooks = true
+        break
       case '--help':
       case '-h':
         printUsage()
@@ -95,8 +115,13 @@ function parseArgs(): CliArgs {
   if (!out.apiKeyEnv) out.apiKeyEnv = 'TANGLE_SANDBOX_API_KEY'
   if (!out.baseUrl) {
     const fromEnv = env.TANGLE_SANDBOX_BASE_URL ?? env.SANDBOX_BASE_URL
-    if (!fromEnv) throw new Error('--base-url required (or set TANGLE_SANDBOX_BASE_URL)')
-    out.baseUrl = fromEnv
+    // Dry-run does not call the SDK; allow base URL to default for visibility.
+    if (!fromEnv) {
+      if (out.dryRun) out.baseUrl = 'https://sandbox-api.example.invalid'
+      else throw new Error('--base-url required (or set TANGLE_SANDBOX_BASE_URL)')
+    } else {
+      out.baseUrl = fromEnv
+    }
   }
   return {
     bundle: out.bundle!,
@@ -106,6 +131,8 @@ function parseArgs(): CliArgs {
     task: out.task,
     image: out.image ?? 'node:20',
     dryRun: out.dryRun ?? false,
+    harness: out.harness,
+    skipHooks: out.skipHooks ?? false,
   }
 }
 
@@ -118,15 +145,23 @@ function printUsage(): void {
   --base-url <url>         sandbox API base url (or set TANGLE_SANDBOX_BASE_URL)
   --task <prompt>          optional initial agent task to run after deploy
   --image <image>          base image (default node:20)
+  --harness <name>         target harness for workspace-file emit:
+                             opencode (default) | claude-code | hermes
+  --skip-hooks             skip pre/post deploy hooks even when the bundle declares them
   --dry-run                build the AgentProfile + list workspace files, do not call the SDK
 
 The deploy:
   1. Validates agent.json against registry/_schemas/agent.schema.json
-  2. Builds the SDK AgentProfile (used as backend.profile for the runtime)
-  3. Computes harness-native workspace files (AGENTS.md auto-loaded by the
-     harness; agents.json for multi-agent OpenCode subagents)
-  4. Creates the sandbox and box.files.write's each workspace file at the
+  2. (Optional) Runs hooks/pre script LOCALLY in the user's CWD
+  3. Builds the SDK AgentProfile (used as backend.profile for the runtime)
+  4. Computes harness-native workspace files. Per --harness:
+       opencode    -> AGENTS.md  + agents.json + .mcp.json
+       claude-code -> CLAUDE.md  + AGENTS.md (cross-compat copy) + agents.json + .mcp.json
+       hermes      -> AGENTS.md  + agents.json + .mcp.json (Hermes MCP path is partial)
+  5. Creates the sandbox and box.files.write's each workspace file at the
      resolved workspace root (default /home/agent)
+  6. (Optional) Pushes hooks/post script INTO the sandbox and executes it
+     after files.write, before any --task invocation.
 `)
 }
 
@@ -144,6 +179,10 @@ interface SandboxLike {
   files: {
     write(path: string, content: string): Promise<unknown>
   }
+  exec?(
+    command: string | string[],
+    options?: Record<string, unknown>,
+  ): Promise<{ exitCode: number; stdout?: string; stderr?: string }>
   task(
     prompt: string,
     options?: Record<string, unknown>,
@@ -173,12 +212,20 @@ async function main(): Promise<void> {
   stdout.write(`[deploy-agent] loading bundle: ${bundleDir}\n`)
   const bundle = await loadAgentBundle(bundleDir)
   const workspaceRoot = resolveWorkspaceRoot(bundle)
+  const harness = resolveHarness(bundle, args.harness)
+  if (harness === 'hermes') {
+    stderr.write(
+      `[deploy-agent] WARN harness=hermes: MCP file path translation is partial — ` +
+        `emitting .mcp.json. Track upstream gap in docs/issues/sandbox-sdk-deploy-hooks.md.\n`,
+    )
+  }
   const profile = await toAgentProfile(bundle, bundleDir)
-  const workspaceFiles = await toWorkspaceFiles(bundle, bundleDir)
+  const workspaceFiles = await toWorkspaceFiles(bundle, bundleDir, { harness })
   const subagentCount = Object.keys(profile.subagents ?? {}).length
   stdout.write(
     `[deploy-agent] profile built: ` +
       `name=${profile.name} ` +
+      `harness=${harness} ` +
       `workspace=${workspaceRoot} ` +
       `systemPrompt=${profile.prompt?.systemPrompt ? `${profile.prompt.systemPrompt.length} chars` : 'none'} ` +
       `subagents=${subagentCount} ` +
@@ -186,13 +233,30 @@ async function main(): Promise<void> {
   )
 
   if (args.dryRun) {
+    if (!args.skipHooks && bundle.hooks?.pre) {
+      stdout.write(
+        `[deploy-agent] --dry-run: would run pre-hook ${bundle.hooks.pre} ` +
+          `LOCALLY in ${cwd()} before sandbox.create\n`,
+      )
+    }
     stdout.write('[deploy-agent] --dry-run: AgentProfile follows\n')
     stdout.write(JSON.stringify(profile, null, 2) + '\n')
     stdout.write('[deploy-agent] --dry-run: workspace files that would be written:\n')
     for (const f of workspaceFiles) {
       stdout.write(`  ${f.targetPath}  (${f.content.length} bytes)\n`)
     }
+    if (!args.skipHooks && bundle.hooks?.post) {
+      stdout.write(
+        `[deploy-agent] --dry-run: would run post-hook ${bundle.hooks.post} ` +
+          `INSIDE the sandbox at ${workspaceRoot} after files.write\n`,
+      )
+    }
     return
+  }
+
+  // Pre-hook runs LOCALLY in the user's CWD before sandbox.create.
+  if (!args.skipHooks && bundle.hooks?.pre) {
+    await runPreHook(bundle, bundleDir, harness)
   }
 
   const apiKey = env[args.apiKeyEnv]
@@ -215,6 +279,11 @@ async function main(): Promise<void> {
 
   await writeWorkspaceFiles(box, workspaceFiles)
 
+  // Post-hook runs INSIDE the sandbox after files are written, before task().
+  if (!args.skipHooks && bundle.hooks?.post) {
+    await runPostHook(box, bundle, bundleDir, workspaceRoot)
+  }
+
   if (args.task) {
     stdout.write(`[deploy-agent] running task: ${args.task}\n`)
     const result = await box.task(args.task)
@@ -229,6 +298,137 @@ async function main(): Promise<void> {
       `  const box = await client.get('${box.id}')\n` +
       `  await box.task('your prompt here')\n`,
   )
+}
+
+/**
+ * Resolve a hook script path against the bundle root. Refuses absolute paths
+ * and `..` traversal so a hostile bundle can't ask the deploy script to run
+ * `/etc/passwd` or escape the bundle directory.
+ */
+function resolveHookPath(bundleDir: string, hookRel: string): string {
+  if (isAbsolute(hookRel)) {
+    throw new Error(`bundle hook path must be relative to bundle root (got "${hookRel}")`)
+  }
+  const abs = resolve(bundleDir, hookRel)
+  if (!abs.startsWith(bundleDir + '/') && abs !== bundleDir) {
+    throw new Error(`bundle hook path escapes bundle root (got "${hookRel}")`)
+  }
+  return abs
+}
+
+async function ensureExecutable(path: string): Promise<void> {
+  try {
+    await access(path, constants.X_OK)
+  } catch {
+    throw new Error(
+      `hook script ${path} is not executable. ` +
+        `Run \`chmod +x\` on it, or write a shebanged shell script.`,
+    )
+  }
+}
+
+/**
+ * Run the bundle-declared pre-deploy hook on the deploying machine.
+ *
+ * Contract:
+ *   - cwd        : the user's current working directory (NOT the bundle dir)
+ *                  — useful for "write to .env in the user's project"
+ *   - env        : full parent env, plus
+ *                  AGENT_BUNDLE_DIR    = absolute bundle directory
+ *                  AGENT_BUNDLE_NAME   = bundle.name
+ *                  AGENT_HARNESS       = resolved harness id
+ *   - exit code  : non-zero aborts deploy
+ */
+async function runPreHook(
+  bundle: AgentBundleProfile,
+  bundleDir: string,
+  harness: Harness,
+): Promise<void> {
+  const rel = bundle.hooks?.pre
+  if (!rel) return
+  const hookPath = resolveHookPath(bundleDir, rel)
+  await ensureExecutable(hookPath)
+  stdout.write(`[deploy-agent] running pre-hook ${rel} (LOCAL, cwd=${cwd()})\n`)
+  await runLocalScript(hookPath, {
+    cwd: cwd(),
+    env: {
+      ...env,
+      AGENT_BUNDLE_DIR: bundleDir,
+      AGENT_BUNDLE_NAME: bundle.name,
+      AGENT_HARNESS: harness,
+    },
+  })
+}
+
+/**
+ * Run the bundle-declared post-deploy hook INSIDE the sandbox.
+ *
+ * Implementation: pushes the script into the sandbox via `box.files.write`,
+ * then `box.exec` chmods + invokes it. Workspace cwd is the resolved root.
+ *
+ * Falls back to `box.task("run /tmp/post.sh")` only if `box.exec` is
+ * unavailable on the SDK (older builds). Surfaces the gap loudly.
+ */
+async function runPostHook(
+  box: SandboxLike,
+  bundle: AgentBundleProfile,
+  bundleDir: string,
+  workspaceRoot: string,
+): Promise<void> {
+  const rel = bundle.hooks?.post
+  if (!rel) return
+  const hookPath = resolveHookPath(bundleDir, rel)
+  const content = await readFile(hookPath, 'utf8')
+  // Use posix.join — sandbox is Linux regardless of host OS.
+  const sandboxPath = posix.join(workspaceRoot, '.deploy-hooks', 'post.sh')
+  await box.files.write(sandboxPath, content)
+  stdout.write(
+    `[deploy-agent] pushed post-hook to ${sandboxPath} (${content.length} bytes); executing...\n`,
+  )
+
+  if (typeof box.exec !== 'function') {
+    throw new Error(
+      `GAP: sandbox SDK does not expose box.exec; cannot run post-hook. ` +
+        `Skip with --skip-hooks or upgrade @tangle-network/sandbox.`,
+    )
+  }
+
+  const chmod = await box.exec(['chmod', '+x', sandboxPath])
+  if (chmod.exitCode !== 0) {
+    throw new Error(
+      `post-hook chmod failed (exit ${chmod.exitCode}): ${chmod.stderr ?? '(no stderr)'}`,
+    )
+  }
+  const run = await box.exec(['bash', sandboxPath], { cwd: workspaceRoot })
+  if (run.stdout) stdout.write(`[deploy-agent post-hook stdout]\n${run.stdout}\n`)
+  if (run.stderr) stderr.write(`[deploy-agent post-hook stderr]\n${run.stderr}\n`)
+  if (run.exitCode !== 0) {
+    throw new Error(`post-hook exited ${run.exitCode}`)
+  }
+  stdout.write(`[deploy-agent] post-hook finished cleanly\n`)
+}
+
+/**
+ * Spawn a local script and wait for it. Stdio is inherited so the user sees
+ * hook output directly. Throws on non-zero exit.
+ */
+function runLocalScript(
+  path: string,
+  options: { cwd: string; env: NodeJS.ProcessEnv },
+): Promise<void> {
+  return new Promise((res, rej) => {
+    const child = spawn(path, [], {
+      cwd: options.cwd,
+      env: options.env,
+      stdio: 'inherit',
+    })
+    child.on('error', rej)
+    child.on('close', (code, signal) => {
+      if (signal) return rej(new Error(`pre-hook killed by signal ${signal}`))
+      if (code === 0) return res()
+      rej(new Error(`pre-hook exited ${code ?? '(unknown)'}`))
+    })
+  })
 }
 
 async function writeWorkspaceFiles(box: SandboxLike, files: WorkspaceFile[]): Promise<void> {

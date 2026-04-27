@@ -11,6 +11,20 @@
     "description": { "type": "string" },
     "version": { "type": "string" },
     "tags": { "type": "array", "items": { "type": "string" } },
+    "harness": {
+      "type": "string",
+      "enum": ["opencode", "claude-code", "hermes"],
+      "description": "Default harness for this bundle. CLI --harness flag overrides at deploy time."
+    },
+    "hooks": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Optional pre/post deploy hooks. Pre runs locally before sandbox.create. Post runs inside the sandbox after files.write, before any task().",
+      "properties": {
+        "pre": { "type": "string", "description": "Path (relative to bundle root) of a script to run on the deploying machine before sandbox.create." },
+        "post": { "type": "string", "description": "Path (relative to bundle root) of a script to push into the sandbox and execute after files.write." }
+      }
+    },
     "workspace": {
       "type": "object",
       "additionalProperties": false,

@@ -1,0 +1,32 @@
+{
+  "name": "{{projectName}}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "node --import tsx src/index.ts",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test --import tsx test/*.test.ts",
+    "deploy:cf": "wrangler deploy"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.7",
+    "@tangle-network/sandbox-sdk": "^0.5.0",
+    "@tangle-network/tcloud": "^0.4.2",
+    "hono": "^4.6.14",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241218.0",
+    "@types/node": "^20.17.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.7.0",
+    "wrangler": "^3.99.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite": "^5.4.10"
+    }
+  }
+}

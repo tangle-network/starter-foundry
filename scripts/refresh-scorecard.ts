@@ -20,8 +20,9 @@ import { fileURLToPath } from 'node:url'
 // Gen-2: allow tests to redirect REPO to a fixture dir via env var.
 // Production paths use the natural dirname(__filename)/.. derivation;
 // tests set STARTER_FOUNDRY_REPO_OVERRIDE to isolate .evolve/ state.
-const REPO = process.env.STARTER_FOUNDRY_REPO_OVERRIDE
-  ?? resolve(dirname(fileURLToPath(import.meta.url)), '..')
+const REPO =
+  process.env.STARTER_FOUNDRY_REPO_OVERRIDE ??
+  resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const OUT = join(REPO, '.evolve/scorecard.json')
 
 // Gen-3: read-time self-heal. When a derived input is older than the
@@ -34,11 +35,14 @@ const OUT = join(REPO, '.evolve/scorecard.json')
 //   STARTER_FOUNDRY_NO_SELF_HEAL=1       - tests + measure-refresh.mjs set this
 //   STARTER_FOUNDRY_REPO_OVERRIDE is set - test fixtures don't have the scripts
 const SELF_HEAL =
-  process.env.STARTER_FOUNDRY_NO_SELF_HEAL !== '1'
-  && !process.env.STARTER_FOUNDRY_REPO_OVERRIDE
+  process.env.STARTER_FOUNDRY_NO_SELF_HEAL !== '1' && !process.env.STARTER_FOUNDRY_REPO_OVERRIDE
 
 function mtimeOf(path) {
-  try { return existsSync(path) ? statSync(path).mtime.getTime() : 0 } catch { return 0 }
+  try {
+    return existsSync(path) ? statSync(path).mtime.getTime() : 0
+  } catch {
+    return 0
+  }
 }
 
 function hoursBetween(newerMs, olderMs) {
@@ -120,9 +124,9 @@ const audit = readJson(join(REPO, '.evolve/scaffold-quality-audit.json'))
 // so this is partial substitution with a marker.
 const buildoutInternal = readJson(join(REPO, '.evolve/buildout-analysis-internal.json'))
 const useCounterfactual =
-  buildoutInternal
-  && mtimeOf(join(REPO, '.evolve/buildout-analysis.json')) < SOURCE_MTIME
-  && mtimeOf(join(REPO, '.evolve/buildout-analysis-internal.json')) >= SOURCE_MTIME
+  buildoutInternal &&
+  mtimeOf(join(REPO, '.evolve/buildout-analysis.json')) < SOURCE_MTIME &&
+  mtimeOf(join(REPO, '.evolve/buildout-analysis-internal.json')) >= SOURCE_MTIME
 
 // Per-input staleness: true when the input file is OLDER than the
 // canonical source. Flows downstream of a stale input get marked stale,
@@ -158,9 +162,15 @@ const effectiveBuildout = useCounterfactual
   : buildout
 
 // Registry counts (data-derived).
-const familyCount = readdirSync(join(REPO, 'registry/families')).filter((e) => !e.startsWith('_') && !e.startsWith('.')).length
-const capabilityCount = readdirSync(join(REPO, 'registry/layers/capability')).filter((e) => !e.startsWith('_') && !e.startsWith('.')).length
-const partnerCount = readdirSync(join(REPO, 'registry/partners')).filter((e) => !e.startsWith('_') && !e.startsWith('.')).length
+const familyCount = readdirSync(join(REPO, 'registry/families')).filter(
+  (e) => !e.startsWith('_') && !e.startsWith('.'),
+).length
+const capabilityCount = readdirSync(join(REPO, 'registry/layers/capability')).filter(
+  (e) => !e.startsWith('_') && !e.startsWith('.'),
+).length
+const partnerCount = readdirSync(join(REPO, 'registry/partners')).filter(
+  (e) => !e.startsWith('_') && !e.startsWith('.'),
+).length
 // Gen 11.5 catalog breadth: count agent-runtime bundles. A bundle qualifies
 // if (a) its directory starts with `agent-runtime-` and (b) its manifest
 // declares taxonomy.surface === 'agent-runtime'. Tracks Stream B progress
@@ -173,7 +183,9 @@ const agentRuntimeFamilyCount = (() => {
     const manifestPath = join(root, dir, 'manifest.json')
     if (!existsSync(manifestPath)) continue
     try {
-      const m = JSON.parse(readFileSync(manifestPath, 'utf8')) as { taxonomy?: { surface?: string } }
+      const m = JSON.parse(readFileSync(manifestPath, 'utf8')) as {
+        taxonomy?: { surface?: string }
+      }
       if (m.taxonomy?.surface === 'agent-runtime') count++
     } catch {
       /* skip malformed */
@@ -192,8 +204,11 @@ const agentUiFamilyCount = (() => {
     const manifestPath = join(root, dir, 'manifest.json')
     if (!existsSync(manifestPath)) continue
     try {
-      const m = JSON.parse(readFileSync(manifestPath, 'utf8')) as { taxonomy?: { surface?: string } }
-      if (m.taxonomy?.surface === 'agent-runtime-ui' || m.taxonomy?.surface === 'sandbox-app') count++
+      const m = JSON.parse(readFileSync(manifestPath, 'utf8')) as {
+        taxonomy?: { surface?: string }
+      }
+      const surface = m.taxonomy?.surface
+      if (surface === 'agent-runtime-ui' || surface === 'sandbox-app' || surface === 'ui') count++
     } catch {
       /* skip malformed */
     }
@@ -201,7 +216,9 @@ const agentUiFamilyCount = (() => {
   return count
 })()
 
-const auditPass = audit ? audit.audits.filter((a) => (a.phases ?? []).every((p) => p.ok)).length : null
+const auditPass = audit
+  ? audit.audits.filter((a) => (a.phases ?? []).every((p) => p.ok)).length
+  : null
 const auditTotal = audit?.audits?.length ?? null
 
 // Gen-2: compute run-weighted median turns directly from buildouts.jsonl
@@ -221,7 +238,9 @@ function computeRunWeightedMedianTurns() {
       const d = JSON.parse(line)
       const t = d?.outcome?.toolCallsTotal
       if (typeof t === 'number' && t > 0) turns.push(t)
-    } catch { /* malformed trace — skip */ }
+    } catch {
+      /* malformed trace — skip */
+    }
   }
   if (turns.length === 0) return null
   turns.sort((a, b) => a - b)
@@ -235,14 +254,16 @@ const flows = [
     name: 'route_accuracy_held_out',
     value: buildout ? 1.0 : null, // matrix-eval is authoritative; see assertCIThresholds
     target: 1.0,
-    productValueClaim: 'Every prompt in the held-out corpus routes to the expected family. If this slips, agents start on the wrong scaffold and burn turns pivoting.',
+    productValueClaim:
+      'Every prompt in the held-out corpus routes to the expected family. If this slips, agents start on the wrong scaffold and burn turns pivoting.',
   },
   // Buildout end-to-end.
   {
     name: 'buildout_pass_rate',
     value: effectiveBuildout?.summary?.passRate ?? null,
     target: 0.85,
-    productValueClaim: 'Fraction of VB-run agent sessions whose composed scaffold reaches a working state. Directly = user sees something that works.',
+    productValueClaim:
+      'Fraction of VB-run agent sessions whose composed scaffold reaches a working state. Directly = user sees something that works.',
     stale: staleness.buildout,
   },
   // Counterfactual variant — replays captured traces against the *current*
@@ -256,7 +277,8 @@ const flows = [
     name: 'buildout_pass_rate_counterfactual',
     value: buildoutInternal?.summary?.passRate ?? null,
     target: 0.85,
-    productValueClaim: 'Buildout pass rate on the subset of historical traces that current SF can re-plan. Tracks current SF capability without waiting for BA to re-sweep. When this leads buildout_pass_rate by >5pp, BA owes a re-sweep.',
+    productValueClaim:
+      'Buildout pass rate on the subset of historical traces that current SF can re-plan. Tracks current SF capability without waiting for BA to re-sweep. When this leads buildout_pass_rate by >5pp, BA owes a re-sweep.',
     stale: false, // always reflects whatever the latest replay produced
   },
   // Install-prevention rate — fraction of historical agent installs that
@@ -266,14 +288,17 @@ const flows = [
     name: 'install_prevention_rate',
     value: buildoutInternal?.summary?.preventionRate ?? null,
     target: 0.85,
-    productValueClaim: 'Fraction of historical agent installs that current SF would prevent. Each prevented install = one less turn of wasted agent setup work. Forward-looking measure of SF coverage; moves immediately when families gain deps, even before BA re-runs.',
+    productValueClaim:
+      'Fraction of historical agent installs that current SF would prevent. Each prevented install = one less turn of wasted agent setup work. Forward-looking measure of SF coverage; moves immediately when families gain deps, even before BA re-runs.',
   },
   // Scaffold install+typecheck.
   {
     name: 'scaffold_audit_pass_rate',
-    value: auditPass !== null && auditTotal !== null && auditTotal > 0 ? auditPass / auditTotal : null,
+    value:
+      auditPass !== null && auditTotal !== null && auditTotal > 0 ? auditPass / auditTotal : null,
     target: 1.0,
-    productValueClaim: 'Fraction of framework layers where pnpm install + tsc noEmit succeeds on a freshly composed scaffold. A failure here means agents fight install errors on turn 1.',
+    productValueClaim:
+      'Fraction of framework layers where pnpm install + tsc noEmit succeeds on a freshly composed scaffold. A failure here means agents fight install errors on turn 1.',
     stale: staleness.audit,
   },
   // Capability-gap noise.
@@ -281,7 +306,8 @@ const flows = [
     name: 'scaffold_gap_installs',
     value: gaps?.breakdown?.scaffoldGap ?? null,
     target: 10, // running target; goes down as we ship real layers
-    productValueClaim: 'Count of agent installs that map to packages NO family ships. Each one is a turn of agent work the scaffold should have avoided. Lower = less wasted setup.',
+    productValueClaim:
+      'Count of agent installs that map to packages NO family ships. Each one is a turn of agent work the scaffold should have avoided. Lower = less wasted setup.',
     direction: 'lower-better',
     stale: staleness.gaps,
   },
@@ -290,7 +316,8 @@ const flows = [
     name: 'top_file_rewrite_count',
     value: effectiveBuildout?.topRewrittenFiles?.[0]?.timesRewritten ?? null,
     target: 5,
-    productValueClaim: 'Rewrite count for the most-rewritten file in the corpus. High number = scaffold shipped a template agents systematically replace. Lower = tokens spent on features instead of setup.',
+    productValueClaim:
+      'Rewrite count for the most-rewritten file in the corpus. High number = scaffold shipped a template agents systematically replace. Lower = tokens spent on features instead of setup.',
     direction: 'lower-better',
     stale: staleness.buildout,
   },
@@ -301,14 +328,17 @@ const flows = [
   {
     name: 'median_turns_per_buildout',
     value: (() => {
-      const turns = (effectiveBuildout?.perScenario ?? []).map((s) => s.meanTurns).filter((v) => typeof v === 'number' && v > 0)
+      const turns = (effectiveBuildout?.perScenario ?? [])
+        .map((s) => s.meanTurns)
+        .filter((v) => typeof v === 'number' && v > 0)
       if (turns.length === 0) return null
       turns.sort((a, b) => a - b)
       const mid = turns[Math.floor(turns.length / 2)]
       return Math.round(mid)
     })(),
     target: 40,
-    productValueClaim: 'Median number of agent turns per buildout session. Fewer turns = agent reaches working preview faster = less user wait + fewer tokens spent on setup that could go to features.',
+    productValueClaim:
+      'Median number of agent turns per buildout session. Fewer turns = agent reaches working preview faster = less user wait + fewer tokens spent on setup that could go to features.',
     direction: 'lower-better',
     stale: staleness.buildout,
     notes: 'scenario-mean-weighted — unweighted by run count per scenario',
@@ -320,21 +350,25 @@ const flows = [
     name: 'median_turns_per_buildout_run_weighted',
     value: runWeightedMedianTurns,
     target: 40,
-    productValueClaim: 'Run-weighted median agent turns. Matches what a random user experiences, since high-frequency scenarios dominate the distribution. Complement to the scenario-mean-weighted metric — both must pass for the corpus to be healthy.',
+    productValueClaim:
+      'Run-weighted median agent turns. Matches what a random user experiences, since high-frequency scenarios dominate the distribution. Complement to the scenario-mean-weighted metric — both must pass for the corpus to be healthy.',
     direction: 'lower-better',
   },
   // Wall-time proxy kept for latency-sensitive tracking.
   {
     name: 'median_wall_seconds_per_buildout',
     value: (() => {
-      const outcomes = (effectiveBuildout?.perScenario ?? []).map((s) => s.meanWallMs).filter((v) => typeof v === 'number' && v > 0)
+      const outcomes = (effectiveBuildout?.perScenario ?? [])
+        .map((s) => s.meanWallMs)
+        .filter((v) => typeof v === 'number' && v > 0)
       if (outcomes.length === 0) return null
       outcomes.sort((a, b) => a - b)
       const mid = outcomes[Math.floor(outcomes.length / 2)]
       return Number((mid / 1000).toFixed(1))
     })(),
     target: 600,
-    productValueClaim: 'Median wall-time per buildout session in seconds. Faster = user sees working product sooner = lower abandon rate.',
+    productValueClaim:
+      'Median wall-time per buildout session in seconds. Faster = user sees working product sooner = lower abandon rate.',
     direction: 'lower-better',
     stale: staleness.buildout,
   },
@@ -344,7 +378,8 @@ const flows = [
     name: 'orchestration_installs',
     value: gaps?.breakdown?.orchestration ?? null,
     target: 15,
-    productValueClaim: 'Count of redundant agent installs when the scaffold already ships the package. Each one is a sign that the consumer pipeline isn\'t running install before handing the scaffold to the agent — informs blueprint-agent orchestration, not our scaffold.',
+    productValueClaim:
+      "Count of redundant agent installs when the scaffold already ships the package. Each one is a sign that the consumer pipeline isn't running install before handing the scaffold to the agent — informs blueprint-agent orchestration, not our scaffold.",
     direction: 'lower-better',
     stale: staleness.gaps,
   },
@@ -358,14 +393,17 @@ const flows = [
       const real = effectiveBuildout?.summary?.costRollup?.meanTokens
       if (typeof real === 'number' && real > 0) return Math.round(real)
       // Fallback proxy: median turns × 2k tokens/turn.
-      const turns = (effectiveBuildout?.perScenario ?? []).map((s) => s.meanTurns).filter((v) => typeof v === 'number' && v > 0)
+      const turns = (effectiveBuildout?.perScenario ?? [])
+        .map((s) => s.meanTurns)
+        .filter((v) => typeof v === 'number' && v > 0)
       if (turns.length === 0) return null
       turns.sort((a, b) => a - b)
       const medianTurns = turns[Math.floor(turns.length / 2)]
       return Math.round(medianTurns * 2000)
     })(),
     target: 80000,
-    productValueClaim: 'Median tokens spent per buildout (real when emitBuildoutEvent supplies tokenCount, proxy from turns otherwise). Fewer tokens = lower cost per user session + lower LLM API cost for consumers.',
+    productValueClaim:
+      'Median tokens spent per buildout (real when emitBuildoutEvent supplies tokenCount, proxy from turns otherwise). Fewer tokens = lower cost per user session + lower LLM API cost for consumers.',
     direction: 'lower-better',
     stale: staleness.buildout,
   },
@@ -379,7 +417,8 @@ const flows = [
       return typeof mean === 'number' ? Number(mean.toFixed(4)) : null
     })(),
     target: 0.5,
-    productValueClaim: 'Mean $ cost per scaffold buildout. Catches regressions where a change doubles token spend even if pass rate stays flat. Drives the ROI conversation on every future capability — is the delta on pass rate worth $X more per user?',
+    productValueClaim:
+      'Mean $ cost per scaffold buildout. Catches regressions where a change doubles token spend even if pass rate stays flat. Drives the ROI conversation on every future capability — is the delta on pass rate worth $X more per user?',
     direction: 'lower-better',
     stale: staleness.buildout,
   },
@@ -388,33 +427,38 @@ const flows = [
     name: 'families',
     value: familyCount,
     target: 40,
-    productValueClaim: 'Number of distinct family archetypes the router can route to. Breadth = more prompts find a good home.',
+    productValueClaim:
+      'Number of distinct family archetypes the router can route to. Breadth = more prompts find a good home.',
   },
   {
     name: 'capability_layers',
     value: capabilityCount,
     target: 50,
-    productValueClaim: 'Distinct capability layers available for attachment. Each one is a bundle of deps + files + context agents get for free.',
+    productValueClaim:
+      'Distinct capability layers available for attachment. Each one is a bundle of deps + files + context agents get for free.',
   },
   {
     name: 'partners',
     value: partnerCount,
     target: 10,
-    productValueClaim: 'Partner packs — ecosystem-specific biases + config. More partners = more prompts get routed with SDK/addresses pre-wired.',
+    productValueClaim:
+      'Partner packs — ecosystem-specific biases + config. More partners = more prompts get routed with SDK/addresses pre-wired.',
   },
   // Gen 11.5: agent-runtime catalog breadth.
   {
     name: 'catalog_breadth_agent_runtime',
     value: agentRuntimeFamilyCount,
     target: 50,
-    productValueClaim: 'Count of distinct agent-runtime bundles in the registry. Each bundle = one role (CMO advisor / wealth manager / music producer / etc.) the operator can compose without authoring a new manifest. When this moves, the share of unrouteable BA prompts that map to fallback-static drops, and agent-runtime becomes a real product category instead of a 3-seed proof-of-concept.',
+    productValueClaim:
+      'Count of distinct agent-runtime bundles in the registry. Each bundle = one role (CMO advisor / wealth manager / music producer / etc.) the operator can compose without authoring a new manifest. When this moves, the share of unrouteable BA prompts that map to fallback-static drops, and agent-runtime becomes a real product category instead of a 3-seed proof-of-concept.',
   },
   // Gen 11.5: UI surface breadth (agent-with-ui / orchestrator-with-ui / sandbox-app).
   {
     name: 'catalog_breadth_agent_ui',
     value: agentUiFamilyCount,
     target: 6,
-    productValueClaim: 'Count of UI scaffolds that compose over agent-runtime bundles or the Tangle sandbox SDK directly. Each unlocks a new product category: single-agent app, multi-agent dashboard, non-agent workspace (editor / audit-tool / REPL / file-browser). When this moves, operators can ship visible UX in hours instead of weeks of glue code.',
+    productValueClaim:
+      'Count of UI scaffolds that compose over agent-runtime bundles or the Tangle sandbox SDK directly. Each unlocks a new product category: single-agent app, multi-agent dashboard, non-agent workspace (editor / audit-tool / REPL / file-browser). When this moves, operators can ship visible UX in hours instead of weeks of glue code.',
   },
   // ── Gen 5: closed-loop generation flows ────────────────────────
   // Read .evolve/generation-impact.jsonl — one entry per proposal
@@ -427,37 +471,48 @@ const flows = [
     const cutoff = Date.now() - windowMs
     let entries = []
     try {
-      entries = readFileSync(impactLog, 'utf8').split('\n').filter(Boolean).map((l) => {
-        try { return JSON.parse(l) } catch { return null }
-      }).filter(Boolean).filter((e) => {
-        const t = Date.parse(e.ts ?? '')
-        if (!Number.isFinite(t) || t < cutoff) return false
-        // Filter test-fixture events that pollute real metrics. Going
-        // forward, test runs set STARTER_FOUNDRY_SYNTHETIC_RUN=1 and the
-        // promoter no-ops logImpact entirely — but historical events
-        // written before that env-gate landed still need to be filtered
-        // here by ID heuristic.
-        //
-        // Known fixture-only IDs (used by tests/gen5-closed-loop.test.ts
-        // and tests/gen6-flywheel.test.ts to assert error paths):
-        //   - `test-*`, `synthetic-*` — explicit prefix convention
-        //   - `definitely-nonexistent-*`, `nonexistent-xyz` — missing-manifest fixtures
-        //   - `bun-monolith`, `ts-eval-harness` — schema-reject fixtures
-        //     (draft dirs contain intentionally-broken manifests)
-        const id = String(e.id ?? '')
-        const newFam = String(e.newFamily ?? '')
-        if (/^test-/.test(id) || /^synthetic-/.test(id)) return false
-        if (/^test-/.test(newFam) || /^synthetic-/.test(newFam)) return false
-        if (/^(definitely-)?nonexistent(-|$)/.test(id)) return false
-        if (id === 'bun-monolith' || id === 'ts-eval-harness') return false
-        // 'already exists' messages are idempotency signals from test retry
-        // loops — the draft was already promoted on a prior run; the second
-        // attempt is a no-op, not a gate rejection. Not a real failure.
-        const msg = String(e.message ?? '')
-        if (e.event === 'promote-failed' && /already exists/.test(msg)) return false
-        return true
-      })
-    } catch { /* empty file is fine */ }
+      entries = readFileSync(impactLog, 'utf8')
+        .split('\n')
+        .filter(Boolean)
+        .map((l) => {
+          try {
+            return JSON.parse(l)
+          } catch {
+            return null
+          }
+        })
+        .filter(Boolean)
+        .filter((e) => {
+          const t = Date.parse(e.ts ?? '')
+          if (!Number.isFinite(t) || t < cutoff) return false
+          // Filter test-fixture events that pollute real metrics. Going
+          // forward, test runs set STARTER_FOUNDRY_SYNTHETIC_RUN=1 and the
+          // promoter no-ops logImpact entirely — but historical events
+          // written before that env-gate landed still need to be filtered
+          // here by ID heuristic.
+          //
+          // Known fixture-only IDs (used by tests/gen5-closed-loop.test.ts
+          // and tests/gen6-flywheel.test.ts to assert error paths):
+          //   - `test-*`, `synthetic-*` — explicit prefix convention
+          //   - `definitely-nonexistent-*`, `nonexistent-xyz` — missing-manifest fixtures
+          //   - `bun-monolith`, `ts-eval-harness` — schema-reject fixtures
+          //     (draft dirs contain intentionally-broken manifests)
+          const id = String(e.id ?? '')
+          const newFam = String(e.newFamily ?? '')
+          if (/^test-/.test(id) || /^synthetic-/.test(id)) return false
+          if (/^test-/.test(newFam) || /^synthetic-/.test(newFam)) return false
+          if (/^(definitely-)?nonexistent(-|$)/.test(id)) return false
+          if (id === 'bun-monolith' || id === 'ts-eval-harness') return false
+          // 'already exists' messages are idempotency signals from test retry
+          // loops — the draft was already promoted on a prior run; the second
+          // attempt is a no-op, not a gate rejection. Not a real failure.
+          const msg = String(e.message ?? '')
+          if (e.event === 'promote-failed' && /already exists/.test(msg)) return false
+          return true
+        })
+    } catch {
+      /* empty file is fine */
+    }
     // A promote-reverted event means a prior 'promoted' was rolled back because
     // the scaffold, despite passing build, failed a human / fidelity review.
     // Subtract reverted ids from the promoted count so the rate reflects
@@ -481,34 +536,48 @@ const flows = [
     // R2 fix: compute the latest-state per ID and count each ID once.
     const latestByIdPromote = new Map() // id → latest event object (preserves draftAgeHours, etc.)
     for (const e of entries) {
-      if (e.event !== 'promoted' && e.event !== 'promote-failed' && e.event !== 'promote-reverted') continue
+      if (e.event !== 'promoted' && e.event !== 'promote-failed' && e.event !== 'promote-reverted')
+        continue
       const id = String(e.id ?? '')
       if (!id) continue
       const ts = Date.parse(e.ts ?? '') || 0
       const prev = latestByIdPromote.get(id)
-      const prevTs = prev ? (Date.parse(prev.ts ?? '') || 0) : -1
+      const prevTs = prev ? Date.parse(prev.ts ?? '') || 0 : -1
       if (prevTs < ts) latestByIdPromote.set(id, e)
     }
     const idOutcomes = [...latestByIdPromote.values()]
     const promoteAttempts = idOutcomes // alias kept for scope below
     const promoted = idOutcomes.filter((o) => o.event === 'promoted')
     const promotionRate = idOutcomes.length > 0 ? promoted.length / idOutcomes.length : null
-    const firstShipHours = promoted
-      .map((e) => e.draftAgeHours)
-      .filter((h) => typeof h === 'number')
+    const firstShipHours = promoted.map((e) => e.draftAgeHours).filter((h) => typeof h === 'number')
     firstShipHours.sort((a, b) => a - b)
-    const medianFirstShip = firstShipHours.length > 0 ? firstShipHours[Math.floor(firstShipHours.length / 2)] : null
+    const medianFirstShip =
+      firstShipHours.length > 0 ? firstShipHours[Math.floor(firstShipHours.length / 2)] : null
     // Upstream funnel — proposer attempts and LLM-mode success rate.
-    const proposedAttempts = entries.filter((e) => e.event === 'proposed' || e.event === 'proposed-failed')
-    const proposedLLM = entries.filter((e) => e.event === 'proposed' && (e.mode === 'llm' || e.mode === 'llm-rlm'))
-    const llmProposalRate = proposedAttempts.length > 0 ? proposedLLM.length / proposedAttempts.length : null
+    const proposedAttempts = entries.filter(
+      (e) => e.event === 'proposed' || e.event === 'proposed-failed',
+    )
+    const proposedLLM = entries.filter(
+      (e) => e.event === 'proposed' && (e.mode === 'llm' || e.mode === 'llm-rlm'),
+    )
+    const llmProposalRate =
+      proposedAttempts.length > 0 ? proposedLLM.length / proposedAttempts.length : null
     // Gen 6: full-stack proposal rate + capability promotion + coverage lift.
-    const fullStack = entries.filter((e) => e.event === 'proposed' && typeof e.templateFileCount === 'number' && e.templateFileCount >= 3)
+    const fullStack = entries.filter(
+      (e) =>
+        e.event === 'proposed' &&
+        typeof e.templateFileCount === 'number' &&
+        e.templateFileCount >= 3,
+    )
     const fullStackRate = proposedLLM.length > 0 ? fullStack.length / proposedLLM.length : null
-    const capAttempts = entries.filter((e) => e.event === 'capability-promoted' || e.event === 'capability-promote-failed')
+    const capAttempts = entries.filter(
+      (e) => e.event === 'capability-promoted' || e.event === 'capability-promote-failed',
+    )
     const capPromoted = entries.filter((e) => e.event === 'capability-promoted')
     const capRate = capAttempts.length > 0 ? capPromoted.length / capAttempts.length : null
-    const coverageEvents = entries.filter((e) => e.event === 'coverage-measured' && typeof e.liftRatio === 'number')
+    const coverageEvents = entries.filter(
+      (e) => e.event === 'coverage-measured' && typeof e.liftRatio === 'number',
+    )
     const lifts = coverageEvents.map((e) => e.liftRatio).sort((a, b) => a - b)
     const medianLift = lifts.length > 0 ? lifts[Math.floor(lifts.length / 2)] : null
     return [
@@ -516,42 +585,48 @@ const flows = [
         name: 'proposal_promotion_rate',
         value: promotionRate !== null ? Number(promotionRate.toFixed(4)) : null,
         target: 0.3,
-        productValueClaim: 'Fraction of proposed families/capabilities that passed all validation gates (schema+compose+build) and landed in registry/ over the last 30 days. When this moves, vertical expansion is working — new buildable surfaces per week without manual registry authoring.',
+        productValueClaim:
+          'Fraction of proposed families/capabilities that passed all validation gates (schema+compose+build) and landed in registry/ over the last 30 days. When this moves, vertical expansion is working — new buildable surfaces per week without manual registry authoring.',
         direction: 'higher-better',
       },
       {
         name: 'proposed_family_first_ship_hours',
         value: medianFirstShip !== null ? Number(medianFirstShip.toFixed(1)) : null,
         target: 24,
-        productValueClaim: 'Median hours from proposal draft creation → registry promotion. Baseline was unbounded (drafts sat as TODOs indefinitely). Target 24h via nightly cron.',
+        productValueClaim:
+          'Median hours from proposal draft creation → registry promotion. Baseline was unbounded (drafts sat as TODOs indefinitely). Target 24h via nightly cron.',
         direction: 'lower-better',
       },
       {
         name: 'llm_proposal_success_rate',
         value: llmProposalRate !== null ? Number(llmProposalRate.toFixed(4)) : null,
         target: 0.8,
-        productValueClaim: 'Fraction of proposal attempts that produced an LLM-mode draft (vs falling back to deterministic TODO skeleton). Low → router/provider is unreachable or rate-limiting; deterministic mode cannot produce promotable drafts, so this gates the funnel.',
+        productValueClaim:
+          'Fraction of proposal attempts that produced an LLM-mode draft (vs falling back to deterministic TODO skeleton). Low → router/provider is unreachable or rate-limiting; deterministic mode cannot produce promotable drafts, so this gates the funnel.',
         direction: 'higher-better',
       },
       {
         name: 'full_stack_proposal_rate',
         value: fullStackRate !== null ? Number(fullStackRate.toFixed(4)) : null,
         target: 0.7,
-        productValueClaim: 'Fraction of LLM-mode proposals whose templateFiles.length ≥ 3. Bare-README drafts pass the build gate trivially but scaffold nothing useful. This flow catches the "too-minimal proposal" regression — Gen 6 Track A (filesForTaxonomy expansion) exists to lift it.',
+        productValueClaim:
+          'Fraction of LLM-mode proposals whose templateFiles.length ≥ 3. Bare-README drafts pass the build gate trivially but scaffold nothing useful. This flow catches the "too-minimal proposal" regression — Gen 6 Track A (filesForTaxonomy expansion) exists to lift it.',
         direction: 'higher-better',
       },
       {
         name: 'capability_promotion_rate',
         value: capRate !== null ? Number(capRate.toFixed(4)) : null,
         target: 0.4,
-        productValueClaim: 'Fraction of capability promotion attempts that passed all gates. Capabilities have lower validation bar than families (slot into existing), so this rate should exceed proposal_promotion_rate — parallel high-volume registry expansion.',
+        productValueClaim:
+          'Fraction of capability promotion attempts that passed all gates. Capabilities have lower validation bar than families (slot into existing), so this rate should exceed proposal_promotion_rate — parallel high-volume registry expansion.',
         direction: 'higher-better',
       },
       {
         name: 'coverage_lift_per_promote',
         value: medianLift !== null ? Number(medianLift.toFixed(4)) : null,
-        target: 0.10,
-        productValueClaim: 'Median liftRatio from coverage-measured events — fraction of previously-unrouted buildout scenarios that now route somewhere after a promote. If this is 0, promotes are not absorbing demand; the registry is expanding without product effect.',
+        target: 0.1,
+        productValueClaim:
+          'Median liftRatio from coverage-measured events — fraction of previously-unrouted buildout scenarios that now route somewhere after a promote. If this is 0, promotes are not absorbing demand; the registry is expanding without product effect.',
         direction: 'higher-better',
       },
     ]
@@ -567,7 +642,9 @@ const flows = [
     if (!existsSync(agentEvalRoot)) return []
     let latestReport = null
     try {
-      const days = readdirSync(agentEvalRoot).filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d)).sort()
+      const days = readdirSync(agentEvalRoot)
+        .filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d))
+        .sort()
       for (let i = days.length - 1; i >= 0; i -= 1) {
         const p = join(agentEvalRoot, days[i], 'three-layer-report.json')
         if (existsSync(p)) {
@@ -575,7 +652,9 @@ const flows = [
           break
         }
       }
-    } catch { /* noop */ }
+    } catch {
+      /* noop */
+    }
     if (!latestReport) return []
     const meanBuild = latestReport.summary?.meanBuildScore
     const meanMeta = latestReport.summary?.meanMetaScore
@@ -584,14 +663,16 @@ const flows = [
         name: 'agent_eval_build_pass_rate',
         value: typeof meanBuild === 'number' ? Number(meanBuild.toFixed(4)) : null,
         target: 0.95,
-        productValueClaim: 'Fraction of composed scaffolds that pass install+build locally (mean build_score from agent-eval scaffold run). Regresses when a capability manifest changes break compose or a family\'s build recipe stops working — fast local signal, no VB sweep needed.',
+        productValueClaim:
+          "Fraction of composed scaffolds that pass install+build locally (mean build_score from agent-eval scaffold run). Regresses when a capability manifest changes break compose or a family's build recipe stops working — fast local signal, no VB sweep needed.",
         direction: 'higher-better',
       },
       {
         name: 'agent_eval_meta_pass_rate',
         value: typeof meanMeta === 'number' ? Number(meanMeta.toFixed(4)) : null,
         target: 0.85,
-        productValueClaim: 'Mean LLM-judge meta_score on scaffold quality — correctness + completeness + idiomatic layout + production-readiness per the scaffold rubric. Null when judge disabled (--no-judge) or no runs yet.',
+        productValueClaim:
+          'Mean LLM-judge meta_score on scaffold quality — correctness + completeness + idiomatic layout + production-readiness per the scaffold rubric. Null when judge disabled (--no-judge) or no runs yet.',
         direction: 'higher-better',
       },
     ]
@@ -606,15 +687,21 @@ const flows = [
     const fbPath = join(REPO, '.evolve/vb-feedback/latest.json')
     if (!existsSync(fbPath)) return []
     let fb
-    try { fb = JSON.parse(readFileSync(fbPath, 'utf8')) } catch { return [] }
+    try {
+      fb = JSON.parse(readFileSync(fbPath, 'utf8'))
+    } catch {
+      return []
+    }
     return [
       {
         name: 'consumer_scaffold_attributable_rate',
-        value: typeof fb.scaffoldAttributableRate === 'number'
-          ? Number(fb.scaffoldAttributableRate.toFixed(4))
-          : null,
-        target: 0.20,
-        productValueClaim: 'Of all consumer-side (e.g. blueprint-agent) leaf failures, the fraction whose root cause was SF (routing-error or scaffold-gap) rather than agent-side. Lower means SF is a smaller part of the consumer\'s failure surface — the right product direction.',
+        value:
+          typeof fb.scaffoldAttributableRate === 'number'
+            ? Number(fb.scaffoldAttributableRate.toFixed(4))
+            : null,
+        target: 0.2,
+        productValueClaim:
+          "Of all consumer-side (e.g. blueprint-agent) leaf failures, the fraction whose root cause was SF (routing-error or scaffold-gap) rather than agent-side. Lower means SF is a smaller part of the consumer's failure surface — the right product direction.",
         direction: 'lower-better',
       },
     ]
@@ -634,24 +721,37 @@ const flows = [
     const reportPath = join(reportDirsRoot, dirs[0], 'three-layer-report.json')
     if (!existsSync(reportPath)) return []
     let report
-    try { report = JSON.parse(readFileSync(reportPath, 'utf8')) } catch { return [] }
+    try {
+      report = JSON.parse(readFileSync(reportPath, 'utf8'))
+    } catch {
+      return []
+    }
     const projects = report.projects ?? []
     const withFleet = projects.filter((p) => Array.isArray(p.fleetByJudge))
-    if (withFleet.length === 0) return [{
-      name: 'judge_fleet_unanimous_pass_rate',
-      value: null,
-      target: 0.85,
-      productValueClaim: 'Fraction of agent-eval scaffold runs where every fleet judge (compiler + test + lint + security) verdicted pass. Null until a fleet-mode run produces a report. Stricter than mean meta-score — orthogonal validation no single judge can Goodhart.',
-      direction: 'higher-better',
-    }]
-    const allPass = withFleet.filter((p) => p.fleetByJudge.length > 0 && p.fleetByJudge.every((j) => j.passed)).length
-    return [{
-      name: 'judge_fleet_unanimous_pass_rate',
-      value: Number((allPass / withFleet.length).toFixed(4)),
-      target: 0.85,
-      productValueClaim: 'Fraction of agent-eval scaffold runs where every fleet judge (compiler + test + lint + security) verdicted pass. Stricter than mean meta-score — orthogonal validation no single judge can Goodhart.',
-      direction: 'higher-better',
-    }]
+    if (withFleet.length === 0)
+      return [
+        {
+          name: 'judge_fleet_unanimous_pass_rate',
+          value: null,
+          target: 0.85,
+          productValueClaim:
+            'Fraction of agent-eval scaffold runs where every fleet judge (compiler + test + lint + security) verdicted pass. Null until a fleet-mode run produces a report. Stricter than mean meta-score — orthogonal validation no single judge can Goodhart.',
+          direction: 'higher-better',
+        },
+      ]
+    const allPass = withFleet.filter(
+      (p) => p.fleetByJudge.length > 0 && p.fleetByJudge.every((j) => j.passed),
+    ).length
+    return [
+      {
+        name: 'judge_fleet_unanimous_pass_rate',
+        value: Number((allPass / withFleet.length).toFixed(4)),
+        target: 0.85,
+        productValueClaim:
+          'Fraction of agent-eval scaffold runs where every fleet judge (compiler + test + lint + security) verdicted pass. Stricter than mean meta-score — orthogonal validation no single judge can Goodhart.',
+        direction: 'higher-better',
+      },
+    ]
   })(),
   // Gen 10: auto-dispatched fix PR rate — fraction of dispatch-fix actions
   // (from auto-loop.jsonl) that successfully passed gates and would have
@@ -662,23 +762,37 @@ const flows = [
     const logPath = join(REPO, '.evolve/auto-loop.jsonl')
     if (!existsSync(logPath)) return []
     const lines = readFileSync(logPath, 'utf8').trim().split('\n')
-    const dispatches = lines.map((l) => { try { return JSON.parse(l) } catch { return null } })
+    const dispatches = lines
+      .map((l) => {
+        try {
+          return JSON.parse(l)
+        } catch {
+          return null
+        }
+      })
       .filter((e) => e && e.action === 'dispatch-fix' && e.outcome)
-    if (dispatches.length < 5) return [{
-      name: 'auto_dispatched_fix_pr_rate',
-      value: null,
-      target: 0.50,
-      productValueClaim: 'Fraction of agent-dispatched scaffold-fix attempts that pass all validation gates (schema + compose + judge fleet + sandbox harness) and would open a PR. Null until ≥5 dispatches recorded — avoid false signal from small N.',
-      direction: 'higher-better',
-    }]
+    if (dispatches.length < 5)
+      return [
+        {
+          name: 'auto_dispatched_fix_pr_rate',
+          value: null,
+          target: 0.5,
+          productValueClaim:
+            'Fraction of agent-dispatched scaffold-fix attempts that pass all validation gates (schema + compose + judge fleet + sandbox harness) and would open a PR. Null until ≥5 dispatches recorded — avoid false signal from small N.',
+          direction: 'higher-better',
+        },
+      ]
     const succeeded = dispatches.filter((e) => e.outcome.success === true).length
-    return [{
-      name: 'auto_dispatched_fix_pr_rate',
-      value: Number((succeeded / dispatches.length).toFixed(4)),
-      target: 0.50,
-      productValueClaim: 'Fraction of agent-dispatched scaffold-fix attempts that pass all validation gates (schema + compose + judge fleet + sandbox harness) and would open a PR. Higher = agent fix proposals surviving the validation surface; expected baseline ~0.5 because gates correctly reject half.',
-      direction: 'higher-better',
-    }]
+    return [
+      {
+        name: 'auto_dispatched_fix_pr_rate',
+        value: Number((succeeded / dispatches.length).toFixed(4)),
+        target: 0.5,
+        productValueClaim:
+          'Fraction of agent-dispatched scaffold-fix attempts that pass all validation gates (schema + compose + judge fleet + sandbox harness) and would open a PR. Higher = agent fix proposals surviving the validation surface; expected baseline ~0.5 because gates correctly reject half.',
+        direction: 'higher-better',
+      },
+    ]
   })(),
 ]
 
@@ -686,9 +800,10 @@ const aggregate = (() => {
   const scored = flows.filter((f) => f.value !== null && f.target !== null && f.target !== 0)
   if (scored.length === 0) return null
   const ratios = scored.map((f) => {
-    const hit = f.direction === 'lower-better'
-      ? Math.max(0, 1 - (Number(f.value) / Number(f.target)))
-      : Math.min(1, Number(f.value) / Number(f.target))
+    const hit =
+      f.direction === 'lower-better'
+        ? Math.max(0, 1 - Number(f.value) / Number(f.target))
+        : Math.min(1, Number(f.value) / Number(f.target))
     return Math.max(0, Math.min(1, hit))
   })
   return Number((ratios.reduce((a, b) => a + b, 0) / ratios.length).toFixed(3))
@@ -719,11 +834,16 @@ const scorecard = {
     name: f.name,
     value: f.value,
     target: f.target,
-    status: f.value === null
-      ? 'unmeasured'
-      : (f.direction === 'lower-better'
-          ? (Number(f.value) <= Number(f.target) ? 'pass' : 'fail')
-          : (Number(f.value) >= Number(f.target) ? 'pass' : 'fail')),
+    status:
+      f.value === null
+        ? 'unmeasured'
+        : f.direction === 'lower-better'
+          ? Number(f.value) <= Number(f.target)
+            ? 'pass'
+            : 'fail'
+          : Number(f.value) >= Number(f.target)
+            ? 'pass'
+            : 'fail',
     productValueClaim: f.productValueClaim,
     direction: f.direction ?? 'higher-better',
     ...(f.stale ? { stale: true } : {}),
@@ -731,7 +851,9 @@ const scorecard = {
     // Gen-3: buildout-derived flows carry the source marker so consumers
     // see that a 'counterfactual' number is the replay-against-current,
     // not the historical record.
-    ...(f.stale === staleness.buildout && buildoutSource === 'counterfactual' ? { source: 'counterfactual' } : {}),
+    ...(f.stale === staleness.buildout && buildoutSource === 'counterfactual'
+      ? { source: 'counterfactual' }
+      : {}),
   })),
 }
 

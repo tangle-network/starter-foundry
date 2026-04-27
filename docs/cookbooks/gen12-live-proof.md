@@ -6,9 +6,15 @@ Live deploy of the agent-bundle path against real Tangle infrastructure. Run on 
 
 **Architecture validated end-to-end up to the container-provisioning step.** Auth, profile shape, SDK call, and billing all clear. Container provisioning fails on both staging and production with `PROVISION_FAILED` — an infrastructure-side gap, not an architecture gap.
 
+The bundle layout has since been aligned with the in-sandbox harness's
+auto-discovery conventions (`AGENTS.md` + `agents.json` at `/home/agent/`);
+see [`docs/architecture/agent-bundles.md`](../architecture/agent-bundles.md#why-these-file-names-harness-conventions).
+The `PROVISION_FAILED` gap below is unchanged by that update — it sits
+beneath the bundle layer.
+
 ## What was tested
 
-- Repo: `starter-foundry` at HEAD (`v0.10.0`-era after the deep-clean lands)
+- Repo: `starter-foundry`
 - Bundle: `tests/fixtures/agent-bundle-example` (research-assistant single-agent)
 - Script: `scripts/deploy-agent-bundle.ts` against `@tangle-network/sandbox` v0.1.2
 - Endpoints: `https://staging-sandbox.tangle.tools` and `https://sandbox.tangle.tools`
@@ -70,7 +76,7 @@ The orchestrator inspect output suggests staging has 100/100 slots free at 0.00%
 
 ## What this proves
 
-The Gen-12 architecture (markdown bundles deploy via SDK to sandbox-resident agent loops) is correct. Everything we control — the bundle format, the schema, the loader, the AgentProfile mapping, the deploy script, the SDK call — works end-to-end. The remaining unverified step is "the in-sandbox OpenCode/Claude agent reads `system-prompt.md` from `/workspace/` and produces a coherent response when called with `box.task(...)`" — that gate is held closed by the infra capacity issue, not by anything in this repo.
+The Gen-12 architecture (markdown bundles deploy via SDK to sandbox-resident agent loops) is correct. Everything we control — the bundle format, the schema, the loader, the AgentProfile mapping, the deploy script, the SDK call — works end-to-end. The remaining unverified step is "the in-sandbox OpenCode/Claude harness reads `AGENTS.md` (and `agents.json` for multi-agent) from `/home/agent/` and produces a coherent response when called with `box.task(...)`" — that gate is held closed by the infra capacity issue, not by anything in this repo.
 
 ## What's still gated
 
@@ -105,4 +111,7 @@ TANGLE_SANDBOX_BASE_URL="https://sandbox.tangle.tools" \
     --task "Survey 3 papers on diffusion models from 2024"
 ```
 
-Expected on a working provisioner: HTTP 200 sandbox creation, file writes complete, `box.task()` streams a research-assistant response, deploy script prints the response + token usage + duration.
+Expected on a working provisioner: HTTP 200 sandbox creation, file writes
+complete (`AGENTS.md` + `methodology/*` materialized under `/home/agent/`),
+`box.task()` streams a research-assistant response, deploy script prints
+the response + token usage + duration.

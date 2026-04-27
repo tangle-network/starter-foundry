@@ -2,7 +2,7 @@
 
 Deterministic project scaffold engine for AI coding platforms. Routes a user prompt to the right project structure, composes files, and gives the AI agent a concrete build plan — all in under 10ms.
 
-starter-foundry ships **starter folders** for any project the user prompts — webapps, contracts, full-stack monorepos, **and agent bundles**. Agent bundles are folders of `system-prompt.md` + methodology + a thin `agent.json` ([`AgentProfile`][agent-profile]) that deploy **into a Tangle sandbox** via the sandbox SDK; the sandbox is the runtime, not this repo. See [`docs/architecture/agent-bundles.md`](./docs/architecture/agent-bundles.md) for the canonical model and the agent-bundle cookbooks under [`docs/cookbooks/`](./docs/cookbooks/) for the deploy path.
+starter-foundry ships **starter folders** for any project the user prompts — webapps, contracts, full-stack monorepos, **and agent bundles**. Agent bundles are folders of `AGENTS.md` + methodology + a thin `agent.json` ([`AgentProfile`][agent-profile]), plus `agents.json` for multi-agent — the harness-native files the in-sandbox OpenCode/Claude/Hermes loop auto-discovers. They deploy **into a Tangle sandbox** via the sandbox SDK at `/home/agent/`; the sandbox is the runtime, not this repo. See [`docs/architecture/agent-bundles.md`](./docs/architecture/agent-bundles.md) for the canonical model and the agent-bundle cookbooks under [`docs/cookbooks/`](./docs/cookbooks/) for the deploy path.
 
 [agent-profile]: https://github.com/tangle-network/agent-dev-container/blob/main/products/sandbox/sdk/src/agent-profile.ts
 

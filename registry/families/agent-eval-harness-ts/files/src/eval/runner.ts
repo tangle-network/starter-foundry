@@ -15,8 +15,7 @@
 // All primitives come from the published package — this file is the
 // integration glue, not new measurement infra.
 
-import { readdir } from 'node:fs/promises'
-import { resolve, join, dirname, isAbsolute } from 'node:path'
+import { resolve, join, dirname } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import {
   FileSystemTraceStore,
@@ -27,6 +26,12 @@ import {
   type TestGradedScenario,
   type TestGradedRunResult,
 } from '@tangle-network/agent-eval'
+// Single source of truth for scenario loading: the agent-eval:scenarios
+// layer composes `src/eval/scenario-loader.ts` next to this runner. Pre-fix
+// the family re-implemented a weaker loader inline (no shape validation),
+// silently diverging from the layer's strict checks. Per CLAUDE.md
+// "extend, don't duplicate", the runner imports the layer's loader.
+import { loadScenarios, type LoadedScenario } from './scenario-loader.js'
 import { writeScorecard, type ScorecardFlow } from './scorecard.js'
 
 export interface RunnerOptions {
@@ -50,11 +55,6 @@ export interface RunnerOptions {
   variantId?: string
 }
 
-interface LoadedScenario {
-  scenario: Scenario
-  filePath: string
-}
-
 interface ScenarioOutcome {
   scenarioId: string
   pass: boolean
@@ -70,29 +70,6 @@ const DEFAULT_ROOT = resolve(HERE, '..', '..')
 
 function shQuote(s: string): string {
   return `'${String(s).replace(/'/g, `'\\''`)}'`
-}
-
-async function loadScenariosFrom(dir: string): Promise<LoadedScenario[]> {
-  let entries: string[]
-  try {
-    entries = await readdir(dir)
-  } catch {
-    return []
-  }
-  const out: LoadedScenario[] = []
-  for (const entry of entries) {
-    if (!entry.endsWith('.scenario.ts') && !entry.endsWith('.scenario.js')) continue
-    const filePath = join(dir, entry)
-    const url = pathToFileURL(isAbsolute(filePath) ? filePath : resolve(filePath)).href
-    const mod = (await import(url)) as { default?: Scenario | Scenario[] }
-    if (!mod.default) continue
-    const list = Array.isArray(mod.default) ? mod.default : [mod.default]
-    for (const scenario of list) {
-      if (!scenario?.id) continue
-      out.push({ scenario, filePath })
-    }
-  }
-  return out
 }
 
 // Translate a Scenario into a TestGradedScenario — the bridge between
@@ -152,7 +129,7 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
   const _experimentStore = new FileSystemExperimentStore({ dir: experimentsDir })
   const driver = new SubprocessSandboxDriver({ cwd: projectRoot })
 
-  const loaded = await loadScenariosFrom(scenariosDir)
+  const loaded: LoadedScenario[] = await loadScenarios(scenariosDir)
   if (loaded.length === 0) {
     throw new Error(
       `eval-harness: no scenarios loaded from ${scenariosDir}. Drop a *.scenario.ts file with a default-exported Scenario.`,

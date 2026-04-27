@@ -199,7 +199,7 @@ def test_gate_requires_both_d_and_p() -> None:
     assert v.regressed is False, v.reason
 
 
-def test_gate_includes_bootstrap_ci_in_verdict() -> None:
+def test_gate_includes_diff_ci_in_verdict() -> None:
     rng = np.random.default_rng(23)
     base = rng.normal(0.85, 0.02, 50).tolist()
     head = rng.normal(0.85, 0.02, 50).tolist()
@@ -209,9 +209,51 @@ def test_gate_includes_bootstrap_ci_in_verdict() -> None:
         head=head,
         direction="higher-better",
     )
-    assert v.bootstrap_ci_low < v.head_mean < v.bootstrap_ci_high
+    # Both arms are noise around the same mean ⇒ diff CI must span 0.
+    # Pre-fix this asserted the head-mean fell inside head's own CI, which
+    # was tautological (the bug being measured was that the field said
+    # "diff" while computing "head-mean"). Now we assert the actual
+    # treatment-vs-baseline interval.
+    assert v.diff_ci_low < 0 < v.diff_ci_high
+    assert abs(v.delta) < 0.05  # tiny mean shift in noise
     assert v.resamples == DEFAULT_RESAMPLES
     assert v.seed == DEFAULT_SEED
+
+
+def test_diff_ci_recovers_known_lift() -> None:
+    """Cross-language parity check: large lift ⇒ diff CI brackets it."""
+    from eval.regression import bootstrap_diff_ci
+
+    base = [0.5] * 30
+    head = [0.7] * 30
+    low, high = bootstrap_diff_ci(base, head, seed=DEFAULT_SEED)
+    # Zero-variance arms ⇒ degenerate CI exactly at the point estimate 0.2.
+    assert abs(low - 0.2) < 1e-9
+    assert abs(high - 0.2) < 1e-9
+
+
+def test_diff_ci_does_not_collapse_to_head_mean_ci() -> None:
+    """Regression: pre-fix `regression_gate` returned the head-MEAN CI,
+    not the delta CI. With baseline ≪ head, the head-mean CI lives near
+    head_mean (~0.85) while the delta CI lives near delta (~0.15). The
+    fields must report the latter.
+    """
+    rng = np.random.default_rng(99)
+    base = rng.normal(0.70, 0.02, 30).tolist()
+    head = rng.normal(0.85, 0.02, 30).tolist()
+    v = regression_gate(
+        flow="quality",
+        baseline=base,
+        head=head,
+        direction="higher-better",
+    )
+    # Diff CI must be near 0.15, NOT near 0.85.
+    assert 0.10 < v.diff_ci_low < 0.20
+    assert 0.10 < v.diff_ci_high < 0.20
+    # Sanity: not regressed (head moved up significantly, but in
+    # higher-better direction → "improvement", which the gate codes as
+    # not-regressed).
+    assert v.regressed is False
 
 
 def test_gate_invalid_direction_raises() -> None:

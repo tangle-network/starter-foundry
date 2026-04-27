@@ -76,20 +76,25 @@ export async function screen(options: ScreenerOptions): Promise<ScreenerReport> 
       meanScore,
       meanBaseline: baselineMean,
       delta,
-      // 1-rep — no CI, surface point estimate.
-      ci95: { lower: delta, upper: delta },
-      cohensD: 0,
+      // 1-rep ⇒ CI / Cohen's d are statistically undefined. Surface null
+      // so downstream consumers (validator, scorecard) cannot mistake
+      // a degenerate {delta, delta} CI for a real interval estimate.
+      ci95: null,
+      cohensD: null,
       meanCostUsd,
       meanWallSeconds,
-      verdict: passesFloor ? 'candidate' : 'reject',
+      // 'estimate-only' is a hard signal: validator MUST run multi-rep
+      // before promoting. Floor-failure still gets 'reject' so we don't
+      // waste validator budget on point-estimate losers.
+      verdict: passesFloor ? 'estimate-only' : 'reject',
       reason: passesFloor
-        ? `screener delta ${delta.toFixed(4)} cleared floor (baseline ${baselineMean.toFixed(4)} - tolerance ${floorTolerance})`
+        ? `screener delta ${delta.toFixed(4)} cleared floor (baseline ${baselineMean.toFixed(4)} - tolerance ${floorTolerance}); estimate-only — needs multi-rep validation`
         : `screener mean ${meanScore.toFixed(4)} below baseline ${baselineMean.toFixed(4)} - tolerance ${floorTolerance}`,
     })
   }
 
   ranked.sort((a, b) => b.delta - a.delta)
-  const passedFloor = ranked.filter((r) => r.verdict === 'candidate').map((r) => r.hypothesisId)
+  const passedFloor = ranked.filter((r) => r.verdict === 'estimate-only').map((r) => r.hypothesisId)
 
   return {
     runId,

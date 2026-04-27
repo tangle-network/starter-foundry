@@ -39,7 +39,7 @@
     "prepublishOnly": "tsc && tsx scripts/check-publish-integrity.ts",
     "check:publish": "tsc && tsx scripts/check-publish-integrity.ts",
     "pretest": "tsx scripts/check-toolchain.ts && tsx scripts/ensure-test-fixtures.ts",
-    "test": "tsc && tsc -p tsconfig.test.json && node --test --test-concurrency=1 dist-tests/*.test.js",
+    "test": "tsc && tsc -p tsconfig.test.json && tsc -p tsconfig.layer-tests.json && node --test --test-concurrency=1 'dist-tests/*.test.js' 'dist-layer-tests/registry/**/*.test.js'",
     "lint": "eslint src",
     "lint:fix": "eslint --fix src",
     "format": "prettier --write src tests scripts",

@@ -59,18 +59,51 @@ export interface HypothesisRun {
   finishedAt: string
 }
 
-export type Verdict = 'promote' | 'reject' | 'candidate' | 'inconclusive'
+export type Verdict =
+  | 'promote'
+  | 'reject'
+  | 'candidate'
+  | 'inconclusive'
+  /**
+   * Screener (1-rep) outputs only a point estimate; CI / Cohen's d are
+   * statistically undefined at n=1. The validator MUST refuse to consume
+   * `estimate-only` results without re-running at the validator's rep
+   * count. Adding this verdict was the fix for a muffled-gate where the
+   * screener wrote `ci95={delta,delta}` and `cohensD: 0` as if they were
+   * real estimates.
+   */
+  | 'estimate-only'
 
 export interface HypothesisResult {
   hypothesisId: string
+  /** Number of reps the result is computed from. 1 ⇒ no CI / Cohen's d. */
   reps: number
   meanScore: number
   meanBaseline: number
   delta: number
-  ci95: { lower: number; upper: number }
-  cohensD: number
+  /**
+   * 95% CI on the delta. `null` when reps < 2 — DO NOT fabricate
+   * `{lower:delta, upper:delta}` to satisfy a non-null contract; the
+   * validator interprets null as "no statistical estimate available".
+   */
+  ci95: { lower: number; upper: number } | null
+  /** Cohen's d. `null` when reps < 2. */
+  cohensD: number | null
   meanCostUsd: number
   meanWallSeconds: number
+  /**
+   * Raw two-sided Welch p-value from the validator. `null` for screener
+   * (1-rep) results. Kept alongside `qValue` so consumers see both the
+   * uncorrected and FDR-corrected significance.
+   */
+  pValue?: number | null
+  /**
+   * Benjamini–Hochberg FDR-adjusted q-value across the hypothesis family
+   * in this run. Verdicts in the validator key off `qValue`, not `pValue`,
+   * so false-promote rate is bounded at the configured FDR even when
+   * many hypotheses are evaluated jointly.
+   */
+  qValue?: number | null
   verdict: Verdict
   /** Reason string surfaced in the scorecard. */
   reason: string

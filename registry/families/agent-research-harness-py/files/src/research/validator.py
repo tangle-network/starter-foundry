@@ -31,6 +31,54 @@ BOOTSTRAP_RESAMPLES = 1000
 BOOTSTRAP_CI = 0.95
 BOOTSTRAP_SEED = 0xC0FFEE
 COHENS_D_THRESHOLD = 0.2
+DEFAULT_FDR = 0.05
+
+
+def benjamini_hochberg(p_values: list[float], fdr: float = DEFAULT_FDR) -> list[float]:
+    """Benjamini–Hochberg FDR-adjusted q-values.
+
+    Sort p-values ascending; for each rank i (1-based) of n total tests:
+        q[i] = min(p[i] * n / i, q[i+1] ... q[n], 1.0)
+    The trailing-min ("step-up") preserves monotonicity of q-values and
+    matches scipy's ``false_discovery_control`` and the TS sibling's
+    ``benjaminiHochberg`` byte-for-byte under the same input ordering.
+
+    Returns q-values in the ORIGINAL order (not sorted).
+    """
+    if not p_values:
+        return []
+    if not all(0.0 <= p <= 1.0 for p in p_values):
+        raise ValueError("benjamini_hochberg: p-values must be in [0, 1]")
+    n = len(p_values)
+    # Sort indices by ascending p-value.
+    order = sorted(range(n), key=lambda i: p_values[i])
+    sorted_p = [p_values[i] for i in order]
+    # Compute raw adjusted: p_(k) * n / (k+1)  (k 0-indexed → rank k+1).
+    raw = [min(sorted_p[k] * n / (k + 1), 1.0) for k in range(n)]
+    # Step-up: enforce monotonicity by taking trailing minimum.
+    q_sorted = list(raw)
+    for k in range(n - 2, -1, -1):
+        q_sorted[k] = min(q_sorted[k], q_sorted[k + 1])
+    # Re-scatter to original positions.
+    q = [0.0] * n
+    for rank, original_idx in enumerate(order):
+        q[original_idx] = q_sorted[rank]
+    return q
+
+
+def welch_p_value(treatment: Iterable[float], baseline: Iterable[float]) -> float:
+    """Two-sided Welch t-test p-value. Returns 1.0 when n<2 in either arm
+    (no test possible) so BH treats the entry as non-significant.
+    """
+    t = np.asarray(list(treatment), dtype=float)
+    b = np.asarray(list(baseline), dtype=float)
+    if t.size < 2 or b.size < 2:
+        return 1.0
+    res = stats.ttest_ind(t, b, equal_var=False)
+    p = float(res.pvalue)
+    if not np.isfinite(p):
+        return 1.0
+    return p
 
 
 def cohens_d(treatment: Iterable[float], baseline: Iterable[float]) -> float:
@@ -99,21 +147,42 @@ def bootstrap_mean_diff_ci(
 
 
 def _verdict(
-    ci_lower: float, ci_upper: float, d: float, n_reps: int
+    ci_lower: float,
+    ci_upper: float,
+    d: float,
+    n_reps: int,
+    q_value: float | None,
+    fdr: float,
 ) -> Literal["winner", "neutral", "loser", "insufficient-data"]:
     if n_reps < 2:
         return "insufficient-data"
-    if ci_lower > 0 and d >= COHENS_D_THRESHOLD:
+    # Promotion (winner / loser) requires BOTH a CI strictly off zero AND
+    # the BH-adjusted q below the configured FDR. Without the q gate the
+    # family-wise false-promote rate scales linearly with the number of
+    # hypotheses tested in a single run.
+    if q_value is None:
+        # Single-hypothesis run: BH degenerates to identity; fall back to
+        # raw-CI gate. Caller should still aggregate across runs.
+        if ci_lower > 0 and d >= COHENS_D_THRESHOLD:
+            return "winner"
+        if ci_upper < 0 and d <= -COHENS_D_THRESHOLD:
+            return "loser"
+        return "neutral"
+    if ci_lower > 0 and d >= COHENS_D_THRESHOLD and q_value < fdr:
         return "winner"
-    if ci_upper < 0 and d <= -COHENS_D_THRESHOLD:
+    if ci_upper < 0 and d <= -COHENS_D_THRESHOLD and q_value < fdr:
         return "loser"
     return "neutral"
 
 
-def summarize(
+def _summarize_one(
     hypothesis_id: str, results: list[HypothesisResult]
-) -> ValidationVerdict:
-    """Build a `ValidationVerdict` from a list of per-rep results."""
+) -> tuple[ValidationVerdict, float | None]:
+    """Compute per-hypothesis stats; returns (partial verdict, p-value).
+
+    Verdict is filled in by the family-level pass after BH q-values are
+    available. p-value is None when the hypothesis has insufficient data.
+    """
     treatment_vals: list[float] = []
     baseline_vals: list[float] = []
     n_errors = 0
@@ -129,17 +198,22 @@ def summarize(
 
     n_reps = min(len(treatment_vals), len(baseline_vals))
     if n_reps < 2:
-        return ValidationVerdict(
-            hypothesis_id=hypothesis_id,
-            n_reps=n_reps,
-            mean_treatment=float("nan"),
-            mean_baseline=float("nan"),
-            mean_diff=float("nan"),
-            ci_lower=float("nan"),
-            ci_upper=float("nan"),
-            cohens_d=float("nan"),
-            n_errors=n_errors,
-            verdict="insufficient-data",
+        return (
+            ValidationVerdict(
+                hypothesis_id=hypothesis_id,
+                n_reps=n_reps,
+                mean_treatment=float("nan"),
+                mean_baseline=float("nan"),
+                mean_diff=float("nan"),
+                ci_lower=float("nan"),
+                ci_upper=float("nan"),
+                cohens_d=float("nan"),
+                p_value=None,
+                q_value=None,
+                n_errors=n_errors,
+                verdict="insufficient-data",
+            ),
+            None,
         )
 
     mean_t = float(np.mean(treatment_vals))
@@ -147,23 +221,85 @@ def summarize(
     mean_diff = mean_t - mean_b
     lo, hi = bootstrap_mean_diff_ci(treatment_vals, baseline_vals)
     d = cohens_d(treatment_vals, baseline_vals)
-    verdict = _verdict(lo, hi, d, n_reps)
-    return ValidationVerdict(
-        hypothesis_id=hypothesis_id,
-        n_reps=n_reps,
-        mean_treatment=mean_t,
-        mean_baseline=mean_b,
-        mean_diff=mean_diff,
-        ci_lower=lo,
-        ci_upper=hi,
-        cohens_d=d,
-        n_errors=n_errors,
-        verdict=verdict,
+    p = welch_p_value(treatment_vals, baseline_vals)
+
+    # Verdict left as 'neutral' — family-level pass overwrites with BH q.
+    return (
+        ValidationVerdict(
+            hypothesis_id=hypothesis_id,
+            n_reps=n_reps,
+            mean_treatment=mean_t,
+            mean_baseline=mean_b,
+            mean_diff=mean_diff,
+            ci_lower=lo,
+            ci_upper=hi,
+            cohens_d=d,
+            p_value=p,
+            q_value=None,
+            n_errors=n_errors,
+            verdict="neutral",
+        ),
+        p,
     )
+
+
+def summarize(
+    hypothesis_id: str, results: list[HypothesisResult]
+) -> ValidationVerdict:
+    """Single-hypothesis convenience. For multi-hypothesis runs use
+    ``run_validate`` so BH/FDR correction is applied family-wise.
+    """
+    partial, p = _summarize_one(hypothesis_id, results)
+    if p is None:
+        return partial
+    verdict = _verdict(
+        partial.ci_lower, partial.ci_upper, partial.cohens_d, partial.n_reps, None, DEFAULT_FDR
+    )
+    return partial.model_copy(update={"verdict": verdict})
 
 
 def run_validate(
     results_by_hypothesis: dict[str, list[HypothesisResult]],
+    *,
+    fdr: float = DEFAULT_FDR,
 ) -> list[ValidationVerdict]:
-    """Compute verdicts for every hypothesis with collected reps."""
-    return [summarize(hid, results) for hid, results in results_by_hypothesis.items()]
+    """Compute verdicts with family-wise BH-FDR correction.
+
+    Two passes:
+      1. Per-hypothesis stats + raw p-values.
+      2. BH-adjust p-values across the family; finalize verdicts using q.
+    """
+    partials: list[ValidationVerdict] = []
+    p_values: list[float] = []
+    p_indices: list[int] = []  # which partials had a real p-value
+    for hid, rs in results_by_hypothesis.items():
+        v, p = _summarize_one(hid, rs)
+        partials.append(v)
+        if p is not None:
+            p_values.append(p)
+            p_indices.append(len(partials) - 1)
+
+    if p_values:
+        q_values = benjamini_hochberg(p_values, fdr)
+    else:
+        q_values = []
+
+    out: list[ValidationVerdict] = []
+    q_iter = iter(zip(p_indices, q_values, strict=True))
+    next_pair = next(q_iter, None)
+    for i, partial in enumerate(partials):
+        if next_pair is not None and next_pair[0] == i:
+            _, q = next_pair
+            verdict = _verdict(
+                partial.ci_lower,
+                partial.ci_upper,
+                partial.cohens_d,
+                partial.n_reps,
+                q,
+                fdr,
+            )
+            out.append(partial.model_copy(update={"q_value": q, "verdict": verdict}))
+            next_pair = next(q_iter, None)
+        else:
+            out.append(partial)
+    return out

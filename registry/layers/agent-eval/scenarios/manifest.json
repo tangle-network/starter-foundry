@@ -3,7 +3,10 @@
   "group": "agent-eval",
   "slot": "eval-runner",
   "description": "Base layer for the agent-eval-harness-ts family. Provides the scenario loader + re-exports of `Scenario` and `Dataset` types from @tangle-network/agent-eval. Other agent-eval layers (judge-rubric, regression) require this. Empty appliesTo[] — the consolidator wires this into the harness family at compose time.",
-  "appliesTo": [],
+  "appliesTo": [
+    "agent-eval-harness-ts",
+    "agent-research-harness-ts"
+  ],
   "provides": ["eval:scenarios"],
   "defaults": {
     "scenariosDir": "scenarios"

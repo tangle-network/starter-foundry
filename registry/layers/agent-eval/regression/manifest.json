@@ -2,7 +2,10 @@
   "id": "regression",
   "group": "agent-eval",
   "description": "Statistical regression gate for the eval harness. Reads two scorecards (baseline + head), compares per-flow distributions via `bootstrapCi` + `welchsTTest` + `cohensD`, applies Benjamini–Hochberg FDR correction across dimensions, and emits a PROMOTE / HOLD / REVERT verdict. Ships a CLI (`eval-regression-gate`) and a CI workflow that wires the gate against `origin/main` on every PR.",
-  "appliesTo": [],
+  "appliesTo": [
+    "agent-eval-harness-ts",
+    "agent-research-harness-ts"
+  ],
   "provides": ["eval:regression"],
   "requires": ["eval:scenarios"],
   "defaults": {

@@ -60,7 +60,9 @@
     "multi-agent-legal-ops-ts",
     "multi-agent-product-ops-ts",
     "multi-agent-research-lab-ts",
-    "multi-agent-startup-team-ts"
+    "multi-agent-startup-team-ts",
+    "agent-eval-harness-ts",
+    "agent-research-harness-ts"
   ],
   "provides": [
     "tangle:base",

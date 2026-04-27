@@ -2,7 +2,9 @@
   "id": "auto-research",
   "group": "agent-eval",
   "description": "Composable auto-research layer — wires the eval-harness's scenarios + judges + regression gates into agent-eval's optimization primitives (OptimizationLoop, runPromptEvolution, runProposeReview, paretoFrontier). Lets a family run hypothesis-driven prompt + steering evolution against the same harness used for measurement. Required by agent-research-harness-ts.",
-  "appliesTo": [],
+  "appliesTo": [
+    "agent-research-harness-ts"
+  ],
   "provides": [
     "eval:auto-research"
   ],

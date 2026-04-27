@@ -166,13 +166,13 @@ test('CI workflow runs typecheck + eval and uploads scorecard artifact', () => {
   )
 })
 
-test('scenarios layer provides eval:scenarios and has empty appliesTo', () => {
+test('scenarios layer provides eval:scenarios and applies to harness families', () => {
   const mf = loadLayerManifest('scenarios')
   assert.deepEqual(mf.provides, ['eval:scenarios'])
   assert.deepEqual(
-    mf.appliesTo ?? [],
-    [],
-    'agent-eval base layers must have empty appliesTo[] — consolidator wires composition',
+    (mf.appliesTo ?? []).slice().sort(),
+    ['agent-eval-harness-ts', 'agent-research-harness-ts'].sort(),
+    'agent-eval:scenarios must apply to both TS harness families post-consolidation',
   )
   // Verify the loader file exists and has a load function.
   const loader = readFileSync(
@@ -186,7 +186,10 @@ test('judge-rubric layer requires eval:scenarios and exposes a rubric runner', (
   const mf = loadLayerManifest('judge-rubric')
   assert.deepEqual(mf.provides, ['eval:judge-rubric'])
   assert.deepEqual(mf.requires, ['eval:scenarios'])
-  assert.deepEqual(mf.appliesTo ?? [], [])
+  assert.deepEqual(
+    (mf.appliesTo ?? []).slice().sort(),
+    ['agent-eval-harness-ts', 'agent-research-harness-ts'].sort(),
+  )
   const runner = readFileSync(
     join(LAYERS_DIR, 'judge-rubric/files/src/eval/judges/rubric-runner.ts'),
     'utf8',
@@ -209,7 +212,10 @@ test('regression layer requires eval:scenarios and ships gate + CLI + workflow',
   const mf = loadLayerManifest('regression')
   assert.deepEqual(mf.provides, ['eval:regression'])
   assert.deepEqual(mf.requires, ['eval:scenarios'])
-  assert.deepEqual(mf.appliesTo ?? [], [])
+  assert.deepEqual(
+    (mf.appliesTo ?? []).slice().sort(),
+    ['agent-eval-harness-ts', 'agent-research-harness-ts'].sort(),
+  )
   // gate.ts must use the statistical primitives the manifest claims.
   const gate = readFileSync(
     join(LAYERS_DIR, 'regression/files/src/eval/regression/gate.ts'),

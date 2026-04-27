@@ -24,6 +24,13 @@
       "default": "agent-eval:scenarios"
     }
   },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-eval:scenarios",
+    "agent-eval:judge-rubric",
+    "agent-eval:regression"
+  ],
   "defaults": {
     "projectType": "agent-eval-harness",
     "appName": "my-eval-harness",

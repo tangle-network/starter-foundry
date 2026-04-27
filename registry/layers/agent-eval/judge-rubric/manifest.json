@@ -2,7 +2,10 @@
   "id": "judge-rubric",
   "group": "agent-eval",
   "description": "Multi-dimensional LLM-as-judge rubric runner. Wraps `JudgeRunner` + `JudgeRubric` + `calibrateJudge` from @tangle-network/agent-eval. Accepts a rubric definition (named dimensions with anchors + weights) and emits per-scenario judge scores. Calibration flow is mandatory before a judge can gate CI — uncalibrated judges are signal, not ground truth.",
-  "appliesTo": [],
+  "appliesTo": [
+    "agent-eval-harness-ts",
+    "agent-research-harness-ts"
+  ],
   "provides": ["eval:judge-rubric"],
   "requires": ["eval:scenarios"],
   "defaults": {

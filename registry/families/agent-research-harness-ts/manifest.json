@@ -15,6 +15,14 @@
     "runtime": "node",
     "surface": "research-runner"
   },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-eval:scenarios",
+    "agent-eval:judge-rubric",
+    "agent-eval:regression",
+    "agent-eval:auto-research"
+  ],
   "defaults": {
     "projectType": "agent-research-harness",
     "appName": "my-research-harness",

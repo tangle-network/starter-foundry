@@ -1,7 +1,7 @@
 {
   "id": "trace-multi-turn",
   "slot": "agent-eval",
-  "description": "Multi-turn trajectory eval. Composes @tangle-network/agent-eval's Trajectory + TrajectoryStep + StepRubric + buildTrajectory + gradeSemanticStatus to drive a multi-turn rollout against an agent endpoint, capture per-turn spans, and grade each step independently. Per-turn scoring exposes WHERE quality degrades (Turn 3? Turn 5?) and emits a convergence-turn (first turn meeting threshold) so regressions surface as 'Turn 3 dropped from 0.82 → 0.61' rather than a flat aggregate. Composes on top of agent-eval:scenarios and agent-eval:judge-rubric — reuses the same scenario corpus and dimension-level rubric primitives.",
+  "description": "Multi-turn trajectory eval. Composes @tangle-network/agent-eval's Trajectory + TrajectoryStep + StepRubric + buildTrajectory + gradeSemanticStatus to drive a multi-turn rollout against an agent endpoint, capture per-turn spans, and grade each step independently. Per-turn scoring exposes WHERE quality degrades (Turn 3? Turn 5?) and emits a convergence-turn (first turn meeting threshold) so regressions surface as 'Turn 3 dropped from 0.82 → 0.61' rather than a flat aggregate. Composes on top of agent-eval:scenarios and agent-eval:judge-rubric — reuses the same scenario corpus and dimension-level rubric primitives. Opt-in only — appliesTo[] is empty by design; opt in via the workspace-compose `--preset` flag (eval+trace) or by adding to a family's `includes` list.",
   "appliesTo": [],
   "provides": [
     "eval:trace-multi-turn"

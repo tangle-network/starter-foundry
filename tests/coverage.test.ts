@@ -276,6 +276,12 @@ const FAMILY_PROMPTS: Record<string, string> = {
     'Build a startup-team-agent leadership-team-agent exec-pod with CEO CTO CMO HR CFO advisor — team-cadence weekly-review okr-design decision-journal burn-runway recruiting-loop',
   'agent-research-harness-ts':
     'Build an agent-research-harness research-harness-ts auto-research-loop hypothesis-research-loop bundle for prompt-evolution-loop with screener-validator and bootstrap-ci-gate',
+  'agent-eval-harness-ts':
+    'I want a TypeScript eval-harness agent-eval-harness-ts eval-runner-ts node-eval-harness for my agent with scenario-based-eval testing and statistical regression-gate',
+  'agent-eval-harness-py':
+    'I want a Python eval-harness agent-eval-harness-py python-eval-harness eval-runner-py that runs scenarios in tangle-sandbox and emits scorecard-json with bootstrap-ci-eval-gate',
+  'agent-research-harness-py':
+    'I want a Python research-harness agent-research-harness-py python-research-harness research-runner-py that runs hypothesis-driven optimization with bootstrap-ci-gate and scipy-stats',
 }
 
 for (const [family, prompt] of Object.entries(FAMILY_PROMPTS)) {

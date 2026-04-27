@@ -2,9 +2,17 @@
   "name": "creative-studio",
   "description": "Curated multi-agent creative studio — Music Producer / Screenwriter / Novelist Coach / Illustrator with cross-medium handoff grammar, lead-artist rule, and no-rewrite rule baked in.",
   "version": "0.1.0",
-  "tags": ["multi-agent", "team", "creative", "studio", "music", "writing", "illustration"],
+  "tags": [
+    "multi-agent",
+    "team",
+    "creative",
+    "studio",
+    "music",
+    "writing",
+    "illustration"
+  ],
   "prompt": {
-    "systemPromptFile": "orchestrator-system-prompt.md"
+    "systemPromptFile": "AGENTS.md"
   },
   "tools": {
     "filesystem": true,
@@ -19,31 +27,45 @@
   "subagents": {
     "music-producer": {
       "description": "Music Producer — arrangement review, mix feedback, needle-drop suggestions for film/TV scenes. Voice-capable via @ph0ny/sdk.",
-      "systemPromptFile": "roles/music-producer/system-prompt.md",
-      "tools": { "filesystem": true, "router": true }
+      "systemPromptFile": "roles/music-producer/AGENTS.md",
+      "tools": {
+        "filesystem": true,
+        "router": true
+      }
     },
     "screenwriter": {
       "description": "Screenwriter — beat-out protocol, logline sharpener, scene-rewrite-pass suggestions (never rewrites; suggests).",
-      "systemPromptFile": "roles/screenwriter/system-prompt.md",
-      "tools": { "filesystem": true, "router": true }
+      "systemPromptFile": "roles/screenwriter/AGENTS.md",
+      "tools": {
+        "filesystem": true,
+        "router": true
+      }
     },
     "novelist-coach": {
       "description": "Novelist Coach — scene-card system, voice audit. POV-aware. Never collapses voice into generic prose.",
-      "systemPromptFile": "roles/novelist-coach/system-prompt.md",
-      "tools": { "filesystem": true, "router": true }
+      "systemPromptFile": "roles/novelist-coach/AGENTS.md",
+      "tools": {
+        "filesystem": true,
+        "router": true
+      }
     },
     "illustrator": {
       "description": "Illustrator — composition canvas, storyboard protocol, color-palette design. Format-fluent in single-image, storyboard, chapter-illustration briefs.",
-      "systemPromptFile": "roles/illustrator/system-prompt.md",
-      "tools": { "filesystem": true, "router": true }
+      "systemPromptFile": "roles/illustrator/AGENTS.md",
+      "tools": {
+        "filesystem": true,
+        "router": true
+      }
     }
   },
   "resources": {
     "files": [
-      { "source": "roles/", "target": "/workspace/roles/" },
-      { "source": "coordination-protocol.md", "target": "/workspace/coordination-protocol.md" },
-      { "source": "agent-roster.json", "target": "/workspace/agent-roster.json" },
-      { "source": "README.md", "target": "/workspace/README.md" }
+      {
+        "source": "roles/"
+      },
+      {
+        "source": "README.md"
+      }
     ]
   }
 }

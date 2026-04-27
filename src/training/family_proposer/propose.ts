@@ -185,14 +185,16 @@ function slotForFile(filePath: string, runtime: string, surface?: string): strin
       return 'Bundle README with THESE exact sections in order: "## What this bundle is" (one paragraph: this is a system prompt + domain templates + cron/webhook triggers for an agent-in-a-sandbox; no `pnpm build` step), "## How a sandbox spawns it" (what file the agent reads first — system-prompt.md — and how templates/ get resolved), "## Domain capabilities" (bullet list mirroring defaults.declaredCapabilities), "## Extension Points" (the 2-3 files a downstream BA-dispatched agent will edit). NO start scripts, NO npm install instructions for non-Worker bundles.'
     return 'Project README with THESE exact section headers in order: "## Quickstart" (npm/pnpm install + dev command), "## Environment" (list every VITE_ / env var from .env.example with a one-line description + where to obtain the value), "## Architecture" (what src/main and src/App do, what deps are used for), "## Extension Points" (the 2-3 files an agent will most likely edit when building on this starter). Write as if the reader is a staff engineer who has never seen the domain — explain every non-obvious design choice. No marketing fluff, no emojis.'
   }
-  // multi-agent-team surface — curated team of role agents with a coordination protocol.
+  // multi-agent-team surface — curated team of role agents with an
+  // OpenCode-native subagent registry (agents.json) and an orchestrator
+  // AGENTS.md that includes a "## Coordination" section.
   if (surface === 'multi-agent-team') {
-    if (filePath === 'agent-roster.json')
-      return 'JSON roster of roles in the team. Shape: {"studio":"<id>","leadArtistRule":"<sentence>","noRewriteRule":"<sentence>","roles":[{"id":"<role-id>","title":"<title>","systemPrompt":"roles/<role-id>/system-prompt.md","methodology":[{"id":"<cap>","path":"roles/<role-id>/methodology/<cap>.md"}],"handsOffTo":["<other-role>"...],"voiceCapable":<bool>}],"handoffBlockGrammar":":::handoff to: <role-id> reason: <one-sentence>","handoffExamples":[...]}. Every roles[*].systemPrompt and methodology[*].path MUST resolve to a file in the bundle.'
-    if (filePath === 'coordination-protocol.md')
-      return 'Coordination protocol document defining how the roles cooperate. Required sections: "## Rule 1 — Artist always wins" (agents propose, never override), "## Rule 2 — Cross-medium handoffs" (with the :::handoff block grammar AND at least 4 concrete scene/page/track-anchored examples — never abstract "collaborate" platitudes), "## Rule 3 — Style coherence" (lead-artist concept), "## Rule 4 — No-rewrite rule" (agents never rewrite the artist artifact). Plus a priority order for when rules collide and an inventory of output blocks the team uses.'
-    if (filePath.startsWith('roles/') && filePath.endsWith('/system-prompt.md'))
-      return 'Per-role system prompt. MUST start with YAML frontmatter (name / role / domain / allowedDomains / allowedEnv / creativeCollaborator / overridesArtist). MUST reference coordination-protocol.md and the four rules. MUST list initiating + receiving cross-medium handoffs with concrete triggers. Must declare role-specific authoritative skills loadable from methodology/.'
+    if (filePath === 'AGENTS.md')
+      return 'Top-level orchestrator system prompt. MUST start with YAML frontmatter (name / role / domain / team / version). Required sections: "## Role" (one paragraph naming the N roles), "## The team and what each role is for" (bulleted role list with one-line descriptions), "## Delegation protocol" (routing rules + 3-4 concrete examples), "## Coordination" (folds in the team protocol — routing table or rules, handoff format with code block, escalation triggers, joint-decision cadence if applicable, failure modes). The Coordination section is the source of truth for inter-role behavior; when the role training disagrees with it, the protocol wins.'
+    if (filePath === 'agents.json')
+      return 'OpenCode-native subagent registry consumed by the Tangle sandbox sidecar (apps/sidecar/src/agents/subagents/load-agents-config.ts). Shape: {"<role-id>":{"mode":"subagent","description":"<one-line>","prompt":"<INLINE FULL TEXT of roles/<role-id>/AGENTS.md — not a path>","tools":{"bash":<bool>,"edit":<bool>,"read":<bool>,"write":<bool>,"webfetch":<bool>},"permission":{"edit":"allow|deny","webfetch":"allow|deny","bash":"allow|deny"}}}. Conservative defaults: read+write+webfetch on; bash+edit deny. High-stakes bundles handling PII set webfetch:false + permission.webfetch:"deny" on intake roles.'
+    if (filePath.startsWith('roles/') && filePath.endsWith('/AGENTS.md'))
+      return 'Per-role system prompt. MUST start with YAML frontmatter (name / role / domain / allowedDomains / allowedEnv / version). MUST reference the orchestrator AGENTS.md Coordination section and the team-wide rules. MUST list initiating + receiving handoffs with concrete triggers. Must declare role-specific authoritative skills loadable from methodology/. The full text becomes the inline `prompt` in agents.json.'
     if (
       filePath.startsWith('roles/') &&
       filePath.includes('/methodology/') &&
@@ -233,14 +235,16 @@ function filesForTaxonomy(taxonomy: {
   const toFiles = (paths: string[]) =>
     paths.map((p) => ({ path: p, role: slotForFile(p, runtime, surface) }))
 
-  // multi-agent-team surface — curated team bundle: roster + coordination
-  // protocol + per-role system prompts. Markdown + JSON only; no Worker shell
-  // (the host loads agent-roster.json to dispatch between roles).
+  // multi-agent-team surface — curated team bundle: harness-native
+  // AGENTS.md (orchestrator + Coordination section) + agents.json
+  // (OpenCode-native subagent registry consumed by the Tangle sandbox
+  // sidecar) + per-role AGENTS.md + per-role methodology files.
+  // Markdown + JSON only; no Worker shell.
   if (surface === 'multi-agent-team') {
     return toFiles([
-      'agent-roster.json',
-      'coordination-protocol.md',
-      'roles/example-role/system-prompt.md',
+      'AGENTS.md',
+      'agents.json',
+      'roles/example-role/AGENTS.md',
       'README.md',
       validator,
     ])

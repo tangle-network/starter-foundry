@@ -63,24 +63,20 @@
       "target": "agent.json"
     },
     {
-      "source": "files/orchestrator-system-prompt.md",
-      "target": "orchestrator-system-prompt.md"
+      "source": "files/AGENTS.md",
+      "target": "AGENTS.md"
     },
     {
-      "source": "files/agent-roster.json",
-      "target": "agent-roster.json"
-    },
-    {
-      "source": "files/coordination-protocol.md",
-      "target": "coordination-protocol.md"
+      "source": "files/agents.json",
+      "target": "agents.json"
     },
     {
       "source": "files/README.md",
       "target": "README.md"
     },
     {
-      "source": "files/roles/music-producer/system-prompt.md",
-      "target": "roles/music-producer/system-prompt.md"
+      "source": "files/roles/music-producer/AGENTS.md",
+      "target": "roles/music-producer/AGENTS.md"
     },
     {
       "source": "files/roles/music-producer/methodology/arrangement-review.md",
@@ -95,8 +91,8 @@
       "target": "roles/music-producer/methodology/needle-drop-suggestions.md"
     },
     {
-      "source": "files/roles/screenwriter/system-prompt.md",
-      "target": "roles/screenwriter/system-prompt.md"
+      "source": "files/roles/screenwriter/AGENTS.md",
+      "target": "roles/screenwriter/AGENTS.md"
     },
     {
       "source": "files/roles/screenwriter/methodology/beat-out-protocol.md",
@@ -111,8 +107,8 @@
       "target": "roles/screenwriter/methodology/scene-rewrite-pass.md"
     },
     {
-      "source": "files/roles/novelist-coach/system-prompt.md",
-      "target": "roles/novelist-coach/system-prompt.md"
+      "source": "files/roles/novelist-coach/AGENTS.md",
+      "target": "roles/novelist-coach/AGENTS.md"
     },
     {
       "source": "files/roles/novelist-coach/methodology/scene-card-system.md",
@@ -123,8 +119,8 @@
       "target": "roles/novelist-coach/methodology/voice-audit.md"
     },
     {
-      "source": "files/roles/illustrator/system-prompt.md",
-      "target": "roles/illustrator/system-prompt.md"
+      "source": "files/roles/illustrator/AGENTS.md",
+      "target": "roles/illustrator/AGENTS.md"
     },
     {
       "source": "files/roles/illustrator/methodology/composition-canvas.md",
@@ -142,11 +138,11 @@
   "validationChecks": [
     {
       "type": "file-exists",
-      "path": "agent-roster.json"
+      "path": "AGENTS.md"
     },
     {
       "type": "file-exists",
-      "path": "coordination-protocol.md"
+      "path": "agents.json"
     },
     {
       "type": "file-exists",
@@ -154,30 +150,30 @@
     },
     {
       "type": "agents-md-valid",
-      "path": "roles/music-producer/system-prompt.md"
+      "path": "roles/music-producer/AGENTS.md"
     },
     {
       "type": "agents-md-valid",
-      "path": "roles/screenwriter/system-prompt.md"
+      "path": "roles/screenwriter/AGENTS.md"
     },
     {
       "type": "agents-md-valid",
-      "path": "roles/novelist-coach/system-prompt.md"
+      "path": "roles/novelist-coach/AGENTS.md"
     },
     {
       "type": "agents-md-valid",
-      "path": "roles/illustrator/system-prompt.md"
+      "path": "roles/illustrator/AGENTS.md"
     }
   ],
   "contextHints": {
     "commands": [],
     "entrypoints": [
-      "coordination-protocol.md",
-      "agent-roster.json"
+      "AGENTS.md",
+      "agents.json"
     ],
     "extensionPoints": [
       "roles/",
-      "coordination-protocol.md"
+      "AGENTS.md"
     ]
   },
   "tieredKeywords": {

@@ -14,18 +14,22 @@ A coordinated team of four creative-craft agents:
 - **illustrator** — composition-canvas, storyboard-protocol,
   color-palette-design
 
-Plus a coordination protocol — `coordination-protocol.md` — that
-defines how the roles hand work to one another when a project spans
-mediums.
+Plus the orchestrator's `AGENTS.md` (with a `## Coordination`
+section folding the four-rule protocol — artist-always-wins,
+cross-medium handoffs, lead-artist style coherence, no-rewrite —
+into the system prompt) that defines how the roles hand work to one
+another when a project spans mediums.
 
 ## How a sandbox spawns it
 
-The host loads `agent-roster.json` to discover the four roles. Each
-role's first read is its `roles/<role>/system-prompt.md`. The
-coordination protocol is a peer document every role's prompt
-references. Routing between roles happens via `:::handoff` blocks
-emitted by one role and consumed by the host (the host then dispatches
-to the named role's prompt).
+The Tangle sandbox sidecar reads `agents.json` (OpenCode-native
+subagent registry) to enumerate the four roles. Each subagent's
+inline `prompt` field is the full text of its
+`roles/<role>/AGENTS.md`. The orchestrator's `AGENTS.md` is the
+team-level system prompt — its `## Coordination` section is the
+source of truth for the four studio rules. Routing between roles
+happens via `:::handoff` blocks emitted by one role and consumed
+by the host (the host then dispatches to the named subagent).
 
 This is a markdown + JSON bundle; no `pnpm build` step. It composes
 on top of `agent-base:tangle`, `agent-base:secure`, `agent-output:blocks`,
@@ -42,7 +46,8 @@ exists for the moments when one medium creates work in another:
 - music-producer hears a tonal conflict in the scripted scene →
   screenwriter
 
-`coordination-protocol.md` defines the four rules:
+The `## Coordination` section of `AGENTS.md` defines the four
+rules:
 
 1. **Artist always wins** — agents propose, never override.
 2. **Cross-medium handoffs** — explicit `:::handoff` blocks with
@@ -60,12 +65,14 @@ cross-medium-handoff capability. See
 
 ## Extension points
 
-- `roles/<role>/methodology/` — add a methodology file, register it in
-  the role's system-prompt and in `agent-roster.json`.
-- `coordination-protocol.md` — additional handoff examples and edge
-  cases as the studio's vocabulary grows.
-- `agent-roster.json` — add a fifth role (cinematographer-coach,
-  poet-coach, etc.) by extending the roster + dropping in a
+- `roles/<role>/methodology/` — add a methodology file, register it
+  in the role's `AGENTS.md` (under "Authoritative skills"). The
+  inline `prompt` in `agents.json` mirrors the role's `AGENTS.md`,
+  so regenerate after edits.
+- `AGENTS.md` (`## Coordination`) — additional handoff examples
+  and edge cases as the studio's vocabulary grows.
+- `agents.json` — add a fifth role (cinematographer-coach,
+  poet-coach, etc.) by extending the registry + dropping in a
   `roles/<new-role>/` tree mirroring the existing four.
 
 ## What this bundle is NOT

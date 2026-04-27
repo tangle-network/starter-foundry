@@ -54,8 +54,8 @@
       "target": "agent.json"
     },
     {
-      "source": "files/system-prompt.md",
-      "target": "system-prompt.md"
+      "source": "files/AGENTS.md",
+      "target": "AGENTS.md"
     },
     {
       "source": "files/TOOLS.md",
@@ -85,7 +85,7 @@
   "validationChecks": [
     {
       "type": "agents-md-valid",
-      "path": "system-prompt.md"
+      "path": "AGENTS.md"
     },
     {
       "type": "file-exists",
@@ -107,7 +107,7 @@
   "contextHints": {
     "commands": [],
     "entrypoints": [
-      "system-prompt.md"
+      "AGENTS.md"
     ],
     "extensionPoints": [
       "methodology/",

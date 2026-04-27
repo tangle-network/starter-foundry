@@ -1,0 +1,376 @@
+{
+  "spec": {
+    "projectName": "recruiter-eval-workspace-agent",
+    "family": "agent-runtime-recruiter-ts",
+    "layers": [],
+    "partner": null,
+    "slots": {},
+    "variables": {}
+  },
+  "components": {
+    "family": "agent-runtime-recruiter-ts",
+    "layers": [
+      "agent-base:tangle",
+      "agent-base:secure",
+      "agent-base:privacy",
+      "agent-output:blocks",
+      "agent-base:memory",
+      "agent-base:scheduler",
+      "agent-base:mcp-registry",
+      "agent-channels:telegram",
+      "agent-channels:discord",
+      "agent-channels:slack",
+      "agent-channels:whatsapp",
+      "agent-channels:imessage",
+      "agent-channels:gmail",
+      "agent-channels:linear"
+    ],
+    "partner": null,
+    "slots": {}
+  },
+  "variables": {
+    "projectName": "recruiter-eval-workspace-agent",
+    "packageName": "recruiter-eval-workspace-agent",
+    "crateName": "recruiter_eval_workspace_agent",
+    "projectType": "agent-runtime-recruiter",
+    "agentName": "technical-recruiter",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "jd-drafter",
+          "rubric-builder",
+          "loop-composer"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "jd-drafting",
+      "screening-rubric-design",
+      "interview-loop-design"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "biasSafeguards": {
+      "protectedClassRefusal": true,
+      "compensationPolicy": "published-bands-only",
+      "inclusiveLanguageAudit": true,
+      "structuredInterviewDefault": true
+    },
+    "schedule": [
+      {
+        "id": "scheduled-1",
+        "cron": "0 13 * * 1",
+        "capability": "jd-drafting"
+      }
+    ],
+    "outboundDomains": [
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ],
+    "tangleBase": true,
+    "llmRouterUrl": "https://router.tangle.tools",
+    "sandboxProvider": "tangle",
+    "tcloudAvailable": true,
+    "tangleSandboxSdk": "@tangle-network/sandbox-sdk",
+    "tcloudSdk": "@tangle-network/tcloud",
+    "secureLayer": true,
+    "secretsBackend": "dotenvx",
+    "workspaceRoot": "/workspace",
+    "auditDir": ".audit",
+    "identityAlgorithm": "Ed25519",
+    "identityTtlSec": 3600,
+    "webhookSignatureHeader": "X-Tangle-Signature",
+    "webhookReplayWindowSec": 300,
+    "webhookOutMaxRetries": 3,
+    "webhookOutCircuitBreakerThreshold": 5,
+    "webhookOutCircuitBreakerCooldownSec": 60,
+    "privacyLayer": true,
+    "structuredDetectors": [
+      "ssn",
+      "email",
+      "phone",
+      "credit-card",
+      "ip",
+      "api-key",
+      "dob"
+    ],
+    "semanticBackend": "none-by-default-opt-in-via-bundle",
+    "structuredOutputBlocks": true,
+    "blockTypes": [
+      "proposal",
+      "filing",
+      "artifact",
+      "screener-result",
+      "escalation",
+      "survey"
+    ],
+    "memoryEnabled": true,
+    "conversationsDir": "/home/agent/conversations",
+    "schedulerEnabled": true,
+    "schedulerStatePath": "/home/agent/scheduler/state.json",
+    "schedulerSweepIntervalMs": 60000,
+    "mcpRegistryPath": "/home/agent/.mcp.json",
+    "mcpServers": [
+      "filesystem",
+      "fetch",
+      "github",
+      "memory",
+      "scheduler"
+    ],
+    "channelTelegramAvailable": true,
+    "channelDiscordAvailable": true,
+    "channelSlackAvailable": true,
+    "channelId": "imessage",
+    "graphApiVersion": "v18.0",
+    "graphApiBase": "https://graph.facebook.com",
+    "signatureHeader": "x-hub-signature-256",
+    "envVars": [
+      "BLUEBUBBLES_SERVER_URL",
+      "BLUEBUBBLES_PASSWORD"
+    ],
+    "transport": "bluebubbles-http",
+    "channelGmailAvailable": true,
+    "channelLinearAvailable": true
+  },
+  "fileOwnership": {
+    "agent.json": "agent-runtime-recruiter-ts",
+    "AGENTS.md": "agent-runtime-recruiter-ts",
+    "methodology/index.json": "agent-runtime-recruiter-ts",
+    "methodology/jd-drafting-protocol.md": "agent-runtime-recruiter-ts",
+    "methodology/screening-rubric.md": "agent-runtime-recruiter-ts",
+    "methodology/interview-loop-design.md": "agent-runtime-recruiter-ts",
+    "README.md": "agent-runtime-recruiter-ts",
+    "TOOLS.md": "agent-runtime-recruiter-ts",
+    "src/lib/tangle.ts": "agent-base:tangle",
+    "src/lib/secure/index.ts": "agent-base:secure",
+    "src/lib/secure/secrets.ts": "agent-base:secure",
+    "src/lib/secure/workspace.ts": "agent-base:secure",
+    "src/lib/secure/webhook-in.ts": "agent-base:secure",
+    "src/lib/secure/webhook-out.ts": "agent-base:secure",
+    "src/lib/secure/schedule.ts": "agent-base:secure",
+    "src/lib/secure/identity.ts": "agent-base:secure",
+    "src/lib/secure/audit.ts": "agent-base:secure",
+    "src/lib/secure/index.test.ts": "agent-base:secure",
+    "src/lib/secure/README.md": "agent-base:secure",
+    "src/lib/privacy/index.ts": "agent-base:privacy",
+    "src/lib/privacy/types.ts": "agent-base:privacy",
+    "src/lib/privacy/detectors.ts": "agent-base:privacy",
+    "src/lib/privacy/index.test.ts": "agent-base:privacy",
+    "src/lib/privacy/README.md": "agent-base:privacy",
+    "src/lib/blocks.ts": "agent-output:blocks",
+    "lib/memory/index.ts": "agent-base:memory",
+    "lib/memory/types.ts": "agent-base:memory",
+    "lib/memory/grep.ts": "agent-base:memory",
+    "lib/scheduler/index.ts": "agent-base:scheduler",
+    "lib/scheduler/cron-parse.ts": "agent-base:scheduler",
+    "lib/scheduler/sweep.ts": "agent-base:scheduler",
+    "lib/scheduler/types.ts": "agent-base:scheduler",
+    ".mcp.json": "agent-base:mcp-registry",
+    "src/lib/mcp/register.ts": "agent-base:mcp-registry",
+    "src/lib/mcp/README.md": "agent-base:mcp-registry",
+    "channels/telegram.ts": "agent-channels:telegram",
+    "channels/telegram.env.example": "agent-channels:telegram",
+    "channels/discord.ts": "agent-channels:discord",
+    "channels/discord.env.example": "agent-channels:discord",
+    "channels/slack.ts": "agent-channels:slack",
+    "channels/slack.env.example": "agent-channels:slack",
+    "channels/whatsapp.ts": "agent-channels:whatsapp",
+    "channels/whatsapp.env.example": "agent-channels:whatsapp",
+    "channels/imessage.ts": "agent-channels:imessage",
+    "channels/imessage.env.example": "agent-channels:imessage",
+    "channels/gmail.ts": "agent-channels:gmail",
+    "channels/gmail.env.example": "agent-channels:gmail",
+    "channels/linear.ts": "agent-channels:linear",
+    "channels/linear.env.example": "agent-channels:linear"
+  },
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "AGENTS.md"
+    },
+    {
+      "type": "file-exists",
+      "path": "methodology/index.json"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "AGENTS.md"
+    },
+    {
+      "type": "methodology-index-valid",
+      "path": "methodology/index.json"
+    },
+    {
+      "type": "schedule-valid",
+      "path": "manifest.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "TOOLS.md"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/tangle.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/secure/index.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/secure/secrets.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/secure/workspace.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/secure/webhook-in.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/secure/webhook-out.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/secure/schedule.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/secure/identity.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/secure/audit.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/privacy/index.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/privacy/types.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/privacy/detectors.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/blocks.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "lib/memory/index.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "lib/memory/types.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "lib/memory/grep.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/scheduler/index.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/scheduler/cron-parse.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/scheduler/sweep.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/scheduler/types.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": ".mcp.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/mcp/register.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "channels/telegram.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "channels/discord.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "channels/slack.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/channels/whatsapp.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/channels/whatsapp.env.example"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/channels/imessage.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/channels/imessage.env.example"
+    },
+    {
+      "type": "file-exists",
+      "path": "channels/gmail.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "channels/linear.ts"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "AGENTS.md",
+      "src/lib/tangle.ts"
+    ],
+    "preview": null,
+    "extensionPoints": [
+      "templates/",
+      "src/lib/tools/",
+      "src/lib/secure/",
+      "src/lib/privacy/",
+      "src/lib/blocks.ts",
+      "lib/memory/",
+      "src/lib/scheduler/",
+      "src/lib/mcp/",
+      "channels/telegram.ts",
+      "channels/discord.ts",
+      "channels/slack.ts",
+      "src/channels/whatsapp.ts",
+      "src/channels/imessage.ts",
+      "channels/gmail.ts",
+      "channels/linear.ts"
+    ]
+  }
+}

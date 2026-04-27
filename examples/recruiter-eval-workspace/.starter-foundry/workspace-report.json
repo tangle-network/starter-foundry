@@ -1,0 +1,247 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-04-27T21:00:43.369Z",
+  "workspaceName": "recruiter-eval-workspace",
+  "userPrompt": null,
+  "launchPlan": {
+    "primaryProjectId": "app",
+    "primaryArtifact": {
+      "kind": "preview",
+      "path": "/",
+      "port": null,
+      "targetMs": 3000
+    },
+    "initialAgentMission": "Run `pnpm dev` from the workspace root, then read each bundle's AGENTS.md before editing."
+  },
+  "projects": [
+    {
+      "id": "app",
+      "path": "app",
+      "projectName": "recruiter-eval-workspace-app",
+      "components": {
+        "family": "agent-with-ui-ts",
+        "layers": [
+          "ui-adapter:blocks-renderer"
+        ],
+        "partner": null,
+        "slots": {}
+      },
+      "filesWritten": [
+        "AGENTS.md",
+        "CLAUDE.md",
+        "README.md",
+        "index.html",
+        "llms.txt",
+        "package.json",
+        "postcss.config.cjs",
+        "src/App.tsx",
+        "src/index.css",
+        "src/lib/blocks-to-artifacts.tsx",
+        "src/lib/parse-blocks.test.ts",
+        "src/lib/parse-blocks.ts",
+        "src/main.tsx",
+        "tailwind.config.cjs",
+        "tsconfig.json",
+        "vite.config.ts"
+      ],
+      "commands": [
+        "pnpm dev",
+        "pnpm build"
+      ],
+      "entrypoints": [
+        "src/App.tsx"
+      ],
+      "preview": null,
+      "extensionPoints": [
+        "src/App.tsx",
+        "src/lib/blocks-to-artifacts.tsx",
+        "src/lib/parse-blocks.ts"
+      ],
+      "composeReportPath": "app/.starter-foundry/compose-report.json"
+    },
+    {
+      "id": "agent",
+      "path": "agent",
+      "projectName": "recruiter-eval-workspace-agent",
+      "components": {
+        "family": "agent-runtime-recruiter-ts",
+        "layers": [
+          "agent-base:tangle",
+          "agent-base:secure",
+          "agent-base:privacy",
+          "agent-output:blocks",
+          "agent-base:memory",
+          "agent-base:scheduler",
+          "agent-base:mcp-registry",
+          "agent-channels:telegram",
+          "agent-channels:discord",
+          "agent-channels:slack",
+          "agent-channels:whatsapp",
+          "agent-channels:imessage",
+          "agent-channels:gmail",
+          "agent-channels:linear"
+        ],
+        "partner": null,
+        "slots": {}
+      },
+      "filesWritten": [
+        ".mcp.json",
+        "AGENTS.md",
+        "CLAUDE.md",
+        "README.md",
+        "TOOLS.md",
+        "agent.json",
+        "channels/discord.env.example",
+        "channels/discord.ts",
+        "channels/gmail.env.example",
+        "channels/gmail.ts",
+        "channels/imessage.env.example",
+        "channels/imessage.ts",
+        "channels/linear.env.example",
+        "channels/linear.ts",
+        "channels/slack.env.example",
+        "channels/slack.ts",
+        "channels/telegram.env.example",
+        "channels/telegram.ts",
+        "channels/whatsapp.env.example",
+        "channels/whatsapp.ts",
+        "lib/memory/grep.ts",
+        "lib/memory/index.ts",
+        "lib/memory/types.ts",
+        "lib/scheduler/cron-parse.ts",
+        "lib/scheduler/index.ts",
+        "lib/scheduler/sweep.ts",
+        "lib/scheduler/types.ts",
+        "llms.txt",
+        "methodology/index.json",
+        "methodology/interview-loop-design.md",
+        "methodology/jd-drafting-protocol.md",
+        "methodology/screening-rubric.md",
+        "src/lib/blocks.ts",
+        "src/lib/mcp/README.md",
+        "src/lib/mcp/register.ts",
+        "src/lib/privacy/README.md",
+        "src/lib/privacy/detectors.ts",
+        "src/lib/privacy/index.test.ts",
+        "src/lib/privacy/index.ts",
+        "src/lib/privacy/types.ts",
+        "src/lib/secure/README.md",
+        "src/lib/secure/audit.ts",
+        "src/lib/secure/identity.ts",
+        "src/lib/secure/index.test.ts",
+        "src/lib/secure/index.ts",
+        "src/lib/secure/schedule.ts",
+        "src/lib/secure/secrets.ts",
+        "src/lib/secure/webhook-in.ts",
+        "src/lib/secure/webhook-out.ts",
+        "src/lib/secure/workspace.ts",
+        "src/lib/tangle.ts"
+      ],
+      "commands": [],
+      "entrypoints": [
+        "AGENTS.md",
+        "src/lib/tangle.ts"
+      ],
+      "preview": null,
+      "extensionPoints": [
+        "templates/",
+        "src/lib/tools/",
+        "src/lib/secure/",
+        "src/lib/privacy/",
+        "src/lib/blocks.ts",
+        "lib/memory/",
+        "src/lib/scheduler/",
+        "src/lib/mcp/",
+        "channels/telegram.ts",
+        "channels/discord.ts",
+        "channels/slack.ts",
+        "src/channels/whatsapp.ts",
+        "src/channels/imessage.ts",
+        "channels/gmail.ts",
+        "channels/linear.ts"
+      ],
+      "composeReportPath": "agent/.starter-foundry/compose-report.json"
+    },
+    {
+      "id": "eval",
+      "path": "eval",
+      "projectName": "recruiter-eval-workspace-eval",
+      "components": {
+        "family": "agent-eval-harness-ts",
+        "layers": [
+          "agent-eval:scenarios",
+          "agent-base:tangle",
+          "agent-base:secure",
+          "agent-eval:judge-rubric",
+          "agent-eval:regression"
+        ],
+        "partner": null,
+        "slots": {
+          "eval-runner": "agent-eval:scenarios"
+        }
+      },
+      "filesWritten": [
+        ".github/workflows/eval.yml",
+        ".github/workflows/regression-gate.yml",
+        "AGENTS.md",
+        "CLAUDE.md",
+        "README.md",
+        "agent.json",
+        "judges/example.judge.ts",
+        "judges/rubric.example.ts",
+        "llms.txt",
+        "package.json",
+        "scenarios/.gitkeep",
+        "scenarios/README.md",
+        "scenarios/example.scenario.ts",
+        "src/eval/cli.ts",
+        "src/eval/judges/README.md",
+        "src/eval/judges/rubric-runner.ts",
+        "src/eval/regression/README.md",
+        "src/eval/regression/cli.ts",
+        "src/eval/regression/gate.ts",
+        "src/eval/runner.ts",
+        "src/eval/scenario-loader.ts",
+        "src/eval/scenario-types.ts",
+        "src/eval/scorecard.ts",
+        "src/lib/secure/README.md",
+        "src/lib/secure/audit.ts",
+        "src/lib/secure/identity.ts",
+        "src/lib/secure/index.test.ts",
+        "src/lib/secure/index.ts",
+        "src/lib/secure/schedule.ts",
+        "src/lib/secure/secrets.ts",
+        "src/lib/secure/webhook-in.ts",
+        "src/lib/secure/webhook-out.ts",
+        "src/lib/secure/workspace.ts",
+        "src/lib/tangle.ts",
+        "tsconfig.json"
+      ],
+      "commands": [
+        "pnpm install",
+        "pnpm eval",
+        "pnpm eval:compare",
+        "pnpm typecheck",
+        "pnpm eval:gate baseline.json head.json"
+      ],
+      "entrypoints": [
+        "src/eval/runner.ts",
+        "src/eval/cli.ts",
+        "src/lib/tangle.ts"
+      ],
+      "preview": null,
+      "extensionPoints": [
+        "scenarios/",
+        "judges/",
+        "src/eval/scorecard.ts",
+        "src/eval/scenario-loader.ts",
+        "src/lib/tools/",
+        "templates/",
+        "src/lib/secure/",
+        "src/eval/judges/rubric-runner.ts",
+        "src/eval/regression/gate.ts"
+      ],
+      "composeReportPath": "eval/.starter-foundry/compose-report.json"
+    }
+  ]
+}

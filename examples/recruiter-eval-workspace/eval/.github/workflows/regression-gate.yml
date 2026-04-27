@@ -1,0 +1,85 @@
+name: Eval regression gate
+
+# Runs on every PR. Generates a baseline scorecard from origin/main and a
+# head scorecard from the PR branch, then gates on a statistical comparison
+# (bootstrap CI + Welch's t + Cohen's d + Benjamini–Hochberg FDR).
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: regression-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: regression-gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: install
+        run: pnpm install --frozen-lockfile
+
+      - name: build baseline (origin/main)
+        env:
+          EVAL_TARGET_BASE_URL: ${{ vars.EVAL_TARGET_BASE_URL }}
+          TANGLE_ROUTER_KEY: ${{ secrets.TANGLE_ROUTER_KEY }}
+        run: |
+          set -e
+          mkdir -p /tmp/baseline
+          git worktree add /tmp/baseline-tree origin/main
+          cp -R /tmp/baseline-tree /tmp/baseline-clone
+          cd /tmp/baseline-clone
+          pnpm install --frozen-lockfile
+          pnpm eval || true
+          cp .evolve/scorecard.json $GITHUB_WORKSPACE/baseline-scorecard.json
+
+      - name: run head
+        env:
+          EVAL_TARGET_BASE_URL: ${{ vars.EVAL_TARGET_BASE_URL }}
+          TANGLE_ROUTER_KEY: ${{ secrets.TANGLE_ROUTER_KEY }}
+        run: pnpm eval
+
+      - name: regression gate
+        id: gate
+        run: |
+          set +e
+          pnpm eval:gate baseline-scorecard.json .evolve/scorecard.json \
+            --report .evolve/regression-report.json
+          echo "exit=$?" >> $GITHUB_OUTPUT
+
+      - name: upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-gate-${{ github.sha }}
+          path: |
+            baseline-scorecard.json
+            .evolve/scorecard.json
+            .evolve/regression-report.json
+          retention-days: 30
+
+      - name: enforce verdict
+        run: |
+          if [ "${{ steps.gate.outputs.exit }}" = "1" ]; then
+            echo "REVERT — statistically significant regression detected."
+            exit 1
+          elif [ "${{ steps.gate.outputs.exit }}" = "2" ]; then
+            echo "HOLD — non-significant regressions or unstable flows present."
+            echo "Failing the build is opt-in: set vars.STRICT_REGRESSION_GATE=1 to enforce."
+            if [ "${{ vars.STRICT_REGRESSION_GATE }}" = "1" ]; then exit 1; fi
+          fi

@@ -1,0 +1,55 @@
+name: Eval harness
+
+# Runs the eval harness on every PR + push. Emits .evolve/scorecard.json
+# and uploads it as a build artifact. The regression gate is enforced by
+# the agent-eval:regression layer's workflow — this one is the runner.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: eval-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  eval:
+    name: eval-harness
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: install
+        run: pnpm install --frozen-lockfile
+
+      - name: typecheck
+        run: pnpm typecheck
+
+      - name: run eval harness
+        env:
+          EVAL_TARGET_BASE_URL: ${{ vars.EVAL_TARGET_BASE_URL }}
+          EVAL_THRESHOLD: ${{ vars.EVAL_THRESHOLD || '0.7' }}
+          TANGLE_ROUTER_KEY: ${{ secrets.TANGLE_ROUTER_KEY }}
+        run: pnpm eval
+
+      - name: upload scorecard
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-scorecard-${{ github.sha }}
+          path: |
+            .evolve/scorecard.json
+            .evolve/agent-eval/
+          retention-days: 30

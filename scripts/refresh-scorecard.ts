@@ -678,37 +678,79 @@ const flows = [
       },
     ]
   })(),
-  // ── Gen 4: agent-eval scaffold flow ────────────────────────────
-  // Reads the most-recent three-layer-report.json from
-  // .evolve/agent-eval/<YYYY-MM-DD>/. Mean build_score across all
-  // scaffold-only projects from the last run. Governor uses this to
-  // detect scaffold regressions without waiting for a VB sweep —
-  // compose + install + build is a fast local signal.
+  // ── Gen 4 + Gen 16: agent-eval pass-rate flows ────────────────
+  // Two-tier read priority:
+  //   1. Gen-16 — live recruiter eval scorecard at
+  //      examples/recruiter-eval-workspace/.evolve/scorecard.json. This is
+  //      the operator-driven loop: any operator runs `pnpm eval` once with
+  //      TANGLE_ROUTER_KEY set; the file appears; agent_eval_meta_pass_rate
+  //      starts reflecting REAL scenario-against-LLM grades.
+  //   2. Gen-4 — agent-eval scaffold three-layer-report.json (compose +
+  //      install + build + scaffold-quality judge) under .evolve/agent-eval/.
+  //      Fast local scaffold signal, but graded scaffolds-only, not
+  //      live agent behavior.
+  // When (1) is present it takes precedence — live > scaffold-quality. When
+  // neither is present, value is null (status: unmeasured) which surfaces
+  // the operator action transparently.
   ...(() => {
-    const agentEvalRoot = join(REPO, '.evolve/agent-eval')
-    if (!existsSync(agentEvalRoot)) return []
-    let latestReport = null
-    try {
-      const days = readdirSync(agentEvalRoot)
-        .filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d))
-        .sort()
-      for (let i = days.length - 1; i >= 0; i -= 1) {
-        const p = join(agentEvalRoot, days[i], 'three-layer-report.json')
-        if (existsSync(p)) {
-          latestReport = readJson(p)
-          break
+    // Gen-16 live recruiter eval scorecard.
+    const recruiterScorecardPath = join(
+      REPO,
+      'examples/recruiter-eval-workspace/.evolve/scorecard.json',
+    )
+    let recruiterAggregate: number | null = null
+    let recruiterJudgeUnanimous: number | null = null
+    if (existsSync(recruiterScorecardPath)) {
+      try {
+        const sc = JSON.parse(readFileSync(recruiterScorecardPath, 'utf8'))
+        if (typeof sc.aggregate === 'number') recruiterAggregate = sc.aggregate
+        // Per-scenario unanimous: every flow whose status === 'pass' counts;
+        // the eval-runner emits one flow per scenario. unanimous = all-pass.
+        const flowsArr = Array.isArray(sc.flows) ? sc.flows : []
+        const scored = flowsArr.filter((f: { status?: string }) => f.status !== 'unmeasured')
+        if (scored.length > 0) {
+          const allPass = scored.filter((f: { status?: string }) => f.status === 'pass').length
+          recruiterJudgeUnanimous = Number((allPass / scored.length).toFixed(4))
         }
+      } catch {
+        /* malformed — leave null */
       }
-    } catch {
-      /* noop */
     }
-    if (!latestReport) return []
-    const meanBuild = latestReport.summary?.meanBuildScore
-    const meanMeta = latestReport.summary?.meanMetaScore
+
+    // Gen-4 fallback: scaffold three-layer-report.
+    const agentEvalRoot = join(REPO, '.evolve/agent-eval')
+    let scaffoldReport = null
+    if (existsSync(agentEvalRoot)) {
+      try {
+        const days = readdirSync(agentEvalRoot)
+          .filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d))
+          .sort()
+        for (let i = days.length - 1; i >= 0; i -= 1) {
+          const p = join(agentEvalRoot, days[i], 'three-layer-report.json')
+          if (existsSync(p)) {
+            scaffoldReport = readJson(p)
+            break
+          }
+        }
+      } catch {
+        /* noop */
+      }
+    }
+    const scaffoldMeanBuild = scaffoldReport?.summary?.meanBuildScore
+    const scaffoldMeanMeta = scaffoldReport?.summary?.meanMetaScore
+
+    const metaValue =
+      recruiterAggregate !== null
+        ? Number(recruiterAggregate.toFixed(4))
+        : typeof scaffoldMeanMeta === 'number'
+          ? Number(scaffoldMeanMeta.toFixed(4))
+          : null
+    const metaSource = recruiterAggregate !== null ? 'recruiter-live' : 'scaffold-meta'
+
     return [
       {
         name: 'agent_eval_build_pass_rate',
-        value: typeof meanBuild === 'number' ? Number(meanBuild.toFixed(4)) : null,
+        value: typeof scaffoldMeanBuild === 'number' ? Number(scaffoldMeanBuild.toFixed(4)) : null,
         target: 0.95,
         productValueClaim:
           "Fraction of composed scaffolds that pass install+build locally (mean build_score from agent-eval scaffold run). Regresses when a capability manifest changes break compose or a family's build recipe stops working — fast local signal, no VB sweep needed.",
@@ -716,12 +758,33 @@ const flows = [
       },
       {
         name: 'agent_eval_meta_pass_rate',
-        value: typeof meanMeta === 'number' ? Number(meanMeta.toFixed(4)) : null,
+        value: metaValue,
         target: 0.85,
         productValueClaim:
-          'Mean LLM-judge meta_score on scaffold quality — correctness + completeness + idiomatic layout + production-readiness per the scaffold rubric. Null when judge disabled (--no-judge) or no runs yet.',
+          recruiterAggregate !== null
+            ? 'Live aggregate pass rate from the committed recruiter eval workspace (examples/recruiter-eval-workspace). When this moves above 0.85: proof that a starter-foundry bundle composed via the standard preset achieves measurable quality on real router.tangle.tools calls. Closes the measure-improve loop — every future bundle\'s quality becomes measurable, not anecdotal.'
+            : 'Mean LLM-judge meta_score on scaffold quality — correctness + completeness + idiomatic layout + production-readiness per the scaffold rubric. Null when judge disabled (--no-judge) or no runs yet. Will switch to the live recruiter eval aggregate once examples/recruiter-eval-workspace/.evolve/scorecard.json exists.',
         direction: 'higher-better',
+        notes: `source=${metaSource}`,
       },
+      // Gen-16: judge-fleet unanimous from the live recruiter scorecard.
+      // Unanimous = every scenario in the live scorecard passed. Stricter
+      // than aggregate; a single hard-refusal regression drops this to 0.
+      // Only emitted when the recruiter scorecard exists; otherwise the
+      // legacy scaffold judge-fleet block (further down) handles it.
+      ...(recruiterJudgeUnanimous !== null
+        ? [
+            {
+              name: 'judge_fleet_unanimous_pass_rate',
+              value: recruiterJudgeUnanimous,
+              target: 0.85,
+              productValueClaim:
+                'Fraction of recruiter-eval scenarios where ALL judges passed (every scorecard flow status=pass). Stricter than aggregate — a single hard-refusal regression or artifact-shape miss drops this to 0. Pulled from the live recruiter eval scorecard. Source live > scaffold three-layer.',
+              direction: 'higher-better',
+              notes: 'source=recruiter-live',
+            },
+          ]
+        : []),
     ]
   })(),
   // Consumer-feedback flow — fraction of consumer (BA / vibecoder) failures
@@ -757,7 +820,13 @@ const flows = [
   // where ALL fleet judges (compiler + test + lint + security) verdicted
   // pass. Stricter than mean meta-score: a single Goodharted judge can't
   // inflate this. Null until a fleet run lands in three-layer-report.json.
+  // Gen-16 supersession: when the recruiter live scorecard exists, the
+  // live unanimous-rate is emitted by the Gen-4+16 block above; this
+  // block returns [] to avoid duplicate flow names.
   ...(() => {
+    if (existsSync(join(REPO, 'examples/recruiter-eval-workspace/.evolve/scorecard.json'))) {
+      return []
+    }
     const reportDirsRoot = join(REPO, '.evolve/agent-eval')
     if (!existsSync(reportDirsRoot)) return []
     const dirs = readdirSync(reportDirsRoot)

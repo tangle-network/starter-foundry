@@ -1,0 +1,10 @@
+{
+  "primaryProjectId": "app",
+  "primaryArtifact": {
+    "kind": "preview",
+    "path": "/",
+    "port": null,
+    "targetMs": 3000
+  },
+  "initialAgentMission": "Run `pnpm dev` from the workspace root, then read each bundle's AGENTS.md before editing."
+}

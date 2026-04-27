@@ -1,0 +1,30 @@
+# recruiter-eval-workspace-eval
+
+> Node-only TypeScript eval harness that wraps @tangle-network/agent-eval. Operator-facing `pnpm eval` runner for scenarios + LLM-as-judge rubrics + statistical regression gates against a baseline scorecard. Composes with eval:scenarios / eval:judge-rubric / eval:regression base layers; emits scorecard.json into .evolve/ for the project-level dashboard. This is the family for any standalone eval bundle that needs to grade an agent under test (HTTP target or in-process function) and gate CI on regressions.
+
+## Stack
+- Family: agent-eval-harness-ts
+- Layers: agent-eval:scenarios, agent-base:tangle, agent-base:secure, agent-eval:judge-rubric, agent-eval:regression
+
+## Entry Points
+- src/eval/runner.ts
+- src/eval/cli.ts
+- src/lib/tangle.ts
+
+## Commands
+- pnpm install
+- pnpm eval
+- pnpm eval:compare
+- pnpm typecheck
+- pnpm eval:gate baseline.json head.json
+
+## Extension Points
+- scenarios/
+- judges/
+- src/eval/scorecard.ts
+- src/eval/scenario-loader.ts
+- src/lib/tools/
+- templates/
+- src/lib/secure/
+- src/eval/judges/rubric-runner.ts
+- src/eval/regression/gate.ts

@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "jd-drafting-protocol",
+      "capability": "jd-drafting",
+      "path": "./jd-drafting-protocol.md",
+      "tags": ["methodology", "job-description", "inclusive-language", "compensation-bands"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "screening-rubric",
+      "capability": "screening-rubric-design",
+      "path": "./screening-rubric.md",
+      "tags": ["methodology", "structured-interview", "rubric", "calibration"],
+      "version": "0.1.0"
+    },
+    {
+      "id": "interview-loop-design",
+      "capability": "interview-loop-design",
+      "path": "./interview-loop-design.md",
+      "tags": ["methodology", "interview-loop", "leveling", "bar-raiser", "debrief"],
+      "version": "0.1.0"
+    }
+  ]
+}

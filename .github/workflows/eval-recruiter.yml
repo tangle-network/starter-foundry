@@ -56,21 +56,27 @@ jobs:
         run: pnpm build
       - name: sync example workspace from registry
         run: pnpm exec tsx scripts/sync-example-workspaces.ts
-      - name: install workspace deps
-        working-directory: examples/recruiter-eval-workspace
-        run: pnpm install --no-frozen-lockfile
-      - name: run live eval
+      - name: run live eval (gated on TANGLE_ROUTER_KEY)
         id: live
         env:
           TANGLE_ROUTER_KEY: ${{ secrets.TANGLE_ROUTER_KEY }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         working-directory: examples/recruiter-eval-workspace
         run: |
           if [ -z "${TANGLE_ROUTER_KEY}" ]; then
-            echo "::warning::TANGLE_ROUTER_KEY not set as repo secret. Skipping live eval — agent_eval_meta_pass_rate will remain 'unmeasured'. Set the secret to enable live measurement."
+            echo "::warning::TANGLE_ROUTER_KEY not set as repo secret. Skipping workspace install + live eval — agent_eval_meta_pass_rate will remain 'unmeasured'. Set the secret to enable live measurement."
             echo "ran=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
+          # @tangle-network/sandbox-sdk + sandbox-ui live on GH Packages, not public npm.
+          # Auth via the workflow's GITHUB_TOKEN (read-only on this repo's packages).
+          cat > .npmrc <<EOF
+          @tangle-network:registry=https://npm.pkg.github.com
+          //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+          EOF
+          pnpm install --no-frozen-lockfile
           pnpm eval || true
+          rm -f .npmrc
           echo "ran=true" >> "$GITHUB_OUTPUT"
       - name: upload scorecard artifact
         if: steps.live.outputs.ran == 'true'

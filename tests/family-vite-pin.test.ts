@@ -71,6 +71,8 @@ const SKIP_WHEN_NO_NODE_DEPS = new Set([
   'gdpr-compliance-pack',
   // Node-only eval harness — no UI surface, no Vite.
   'agent-eval-harness-ts',
+  // Node-only research bundle — no frontend, no Vite.
+  'agent-research-harness-ts',
 ])
 
 function hasVitePin(pkg: Record<string, unknown>): boolean {

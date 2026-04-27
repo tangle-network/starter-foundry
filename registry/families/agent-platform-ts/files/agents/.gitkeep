@@ -1,0 +1,15 @@
+# Drop agent packs here.
+#
+# Each pack lives in its own subdirectory:
+#
+#   ./agents/
+#     <agent-id>/
+#       system-prompt.md          (frontmatter: name, description, tags, model)
+#       methodology/index.json    (schema: src/worker/lib/load-agent-pack.ts)
+#       methodology/<slug>.md     (any number of guides referenced from index)
+#
+# After dropping a pack, register it in src/worker/lib/load-agent-pack.ts
+# (PACK_REGISTRY) and re-build. The platform deliberately does NOT
+# auto-discover packs at runtime — Cloudflare Workers don't have a
+# filesystem, and explicit registration makes the deployable bundle
+# auditable.

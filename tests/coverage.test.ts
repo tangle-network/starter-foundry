@@ -172,6 +172,8 @@ const FAMILY_PROMPTS: Record<string, string> = {
     'Build a language tutor agent with daily conversation prompts, vocabulary drill, and shadowing protocol — Krashen comprehensible input',
   'agent-with-ui-ts':
     'Build an agent-with-ui single-agent app with sandbox-ui chat surface and artifact pane',
+  'agent-platform-ts':
+    'Build a multi-tenant-agent-platform agent-hosting-platform agent-pack-host for hosting agent markdown packs with tenant-auth and audit-log',
   'orchestrator-with-ui-ts':
     'Build an orchestrator-with-ui-ts agent fleet manager scaffold using sandbox-ui dashboard primitives',
   'agent-orchestrator-service-ts':

@@ -1,0 +1,36 @@
+{
+  "name": "{{projectName}}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently --kill-others-on-fail -n vite,worker -c blue,magenta \"pnpm dev:client\" \"pnpm dev:worker\"",
+    "dev:client": "vite",
+    "dev:worker": "wrangler dev",
+    "build": "tsc -b && vite build",
+    "preview": "wrangler dev",
+    "deploy": "pnpm build && wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@tangle-network/sandbox-sdk": "^0.5.0",
+    "@tangle-network/sandbox-ui": "^0.10.3",
+    "@tangle-network/tcloud": "^0.4.0",
+    "hono": "^4.6.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "react-router-dom": "^6.27.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240909.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.7.0",
+    "concurrently": "^9.0.1",
+    "typescript": "^5.9.0",
+    "vite": "^6.4.2",
+    "vitest": "^2.1.1",
+    "wrangler": "^4.0.0"
+  }
+}

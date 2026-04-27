@@ -1,0 +1,37 @@
+{
+  "$schema": "https://unpkg.com/wrangler/config-schema.json",
+  "name": "{{projectName}}",
+  "main": "src/worker/index.ts",
+  "compatibility_date": "2026-03-26",
+  "compatibility_flags": ["nodejs_compat"],
+  // Single worker serves both /api/* (Hono) and the Vite-built client assets.
+  // `assets.directory` is bound to dist/client and exposed to the worker via
+  // env.ASSETS — Hono falls through to env.ASSETS.fetch() for anything not
+  // matched by an /api route.
+  "assets": {
+    "directory": "./dist/client",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  },
+  "vars": {
+    "AGENT_PACK_DIR": "./agents",
+    "LLM_ROUTER_URL": "https://router.tangle.tools"
+  },
+  // KV is the default audit sink — see docs/SECURITY.md "audit log" row.
+  // Production deploys must point at a durable external sink (D1, R2, or
+  // forwarding to an external SIEM) for compliance retention.
+  "kv_namespaces": [
+    {
+      "binding": "AUDIT",
+      "id": "REPLACE_WITH_KV_NAMESPACE_ID"
+    },
+    {
+      "binding": "RATE_LIMIT",
+      "id": "REPLACE_WITH_KV_NAMESPACE_ID"
+    }
+  ]
+  // Secrets — set via `wrangler secret put`:
+  //   TANGLE_ROUTER_KEY  — required, single egress through router.tangle.tools
+  //   AUTH_SECRET        — required, signs tenant session tokens
+  //   WEBHOOK_HMAC_SECRET — required if /api/webhooks/* is enabled
+}

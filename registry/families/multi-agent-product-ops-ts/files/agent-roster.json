@@ -1,0 +1,65 @@
+{
+  "team": "product-ops-team",
+  "cadence": "weekly",
+  "advisoryOnly": true,
+  "stakes": "moderate",
+  "roles": [
+    {
+      "id": "pm",
+      "name": "Product Manager",
+      "systemPrompt": "roles/pm/system-prompt.md",
+      "methodologyDir": "roles/pm/methodology",
+      "owns": ["scope", "hypothesis", "kill-criterion", "roadmap"],
+      "emits": ["prd-template", "prioritization-rice", "discovery-cycle"],
+      "consumes": ["churn-risk-analysis", "tech-feasibility-scoping", "ux-strategy"],
+      "leadsCadenceDays": ["monday", "wednesday"]
+    },
+    {
+      "id": "designer",
+      "name": "Product Designer",
+      "systemPrompt": "roles/designer/system-prompt.md",
+      "methodologyDir": "roles/designer/methodology",
+      "owns": ["flow", "fidelity", "usability-heuristics", "information-architecture"],
+      "emits": ["ux-strategy", "design-critique"],
+      "consumes": ["prd-template", "tech-feasibility-scoping"],
+      "leadsCadenceDays": ["tuesday"]
+    },
+    {
+      "id": "eng-manager",
+      "name": "Engineering Manager",
+      "systemPrompt": "roles/eng-manager/system-prompt.md",
+      "methodologyDir": "roles/eng-manager/methodology",
+      "owns": ["feasibility", "capacity", "sprint-plan", "delivery-risk"],
+      "emits": ["tech-feasibility-scoping", "sprint-planning"],
+      "consumes": ["prd-template", "ux-strategy", "churn-risk-analysis"],
+      "leadsCadenceDays": ["tuesday", "thursday"]
+    },
+    {
+      "id": "customer-success",
+      "name": "Customer Success",
+      "systemPrompt": "roles/customer-success/system-prompt.md",
+      "methodologyDir": "roles/customer-success/methodology",
+      "owns": ["user-pain-signal", "churn-risk", "qbr", "renewal-readout"],
+      "emits": ["churn-risk-analysis", "qbr-prep"],
+      "consumes": ["sprint-planning", "prd-template"],
+      "leadsCadenceDays": ["friday"]
+    }
+  ],
+  "handoffs": [
+    { "from": "pm", "to": ["designer", "eng-manager"], "trigger": "discovery-locked", "artifact": "discovery-cycle" },
+    { "from": "designer", "to": "pm", "trigger": "fidelity-decided", "artifact": "ux-strategy" },
+    { "from": "eng-manager", "to": "pm", "trigger": "feasibility-scoped", "artifact": "tech-feasibility-scoping" },
+    { "from": "pm", "to": ["designer", "eng-manager"], "trigger": "prd-locked", "artifact": "prd-template" },
+    { "from": "eng-manager", "to": "pm", "trigger": "sprint-committed", "artifact": "sprint-planning" },
+    { "from": "customer-success", "to": "pm", "trigger": "weekly-signal", "artifact": "churn-risk-analysis" },
+    { "from": "customer-success", "to": "pm", "trigger": "qbr-imminent", "artifact": "qbr-prep" }
+  ],
+  "escalationOwners": {
+    "pivot": "operator",
+    "pricing": "operator",
+    "legal": "operator-counsel",
+    "security": "operator-security",
+    "hr": "operator-hr",
+    "scope-conflict": "pm"
+  }
+}

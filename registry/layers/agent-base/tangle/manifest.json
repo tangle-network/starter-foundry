@@ -3,6 +3,8 @@
   "slot": "agent-base",
   "description": "Tangle floor for every agent-runtime bundle: sandbox-sdk + tcloud + router.tangle.tools as the LLM endpoint. Mandatory for all agent-runtime families \u2014 never opt out, never alternate.",
   "appliesTo": [
+    "agent-orchestrator-service-ts",
+    "agent-platform-ts",
     "agent-runtime-account-executive-ts",
     "agent-runtime-architect-ts",
     "agent-runtime-auditor-ts",
@@ -55,7 +57,11 @@
     "agent-runtime-travel-planner-ts",
     "agent-runtime-veterinarian-ts",
     "agent-runtime-wealth-manager-ts",
-    "multi-agent-legal-ops-ts"
+    "multi-agent-creative-studio-ts",
+    "multi-agent-legal-ops-ts",
+    "multi-agent-product-ops-ts",
+    "multi-agent-research-lab-ts",
+    "multi-agent-startup-team-ts"
   ],
   "provides": [
     "tangle:base",

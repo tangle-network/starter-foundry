@@ -185,6 +185,22 @@ function slotForFile(filePath: string, runtime: string, surface?: string): strin
       return 'Bundle README with THESE exact sections in order: "## What this bundle is" (one paragraph: this is a system prompt + domain templates + cron/webhook triggers for an agent-in-a-sandbox; no `pnpm build` step), "## How a sandbox spawns it" (what file the agent reads first — system-prompt.md — and how templates/ get resolved), "## Domain capabilities" (bullet list mirroring defaults.declaredCapabilities), "## Extension Points" (the 2-3 files a downstream BA-dispatched agent will edit). NO start scripts, NO npm install instructions for non-Worker bundles.'
     return 'Project README with THESE exact section headers in order: "## Quickstart" (npm/pnpm install + dev command), "## Environment" (list every VITE_ / env var from .env.example with a one-line description + where to obtain the value), "## Architecture" (what src/main and src/App do, what deps are used for), "## Extension Points" (the 2-3 files an agent will most likely edit when building on this starter). Write as if the reader is a staff engineer who has never seen the domain — explain every non-obvious design choice. No marketing fluff, no emojis.'
   }
+  // multi-agent-team surface — curated team of role agents with a coordination protocol.
+  if (surface === 'multi-agent-team') {
+    if (filePath === 'agent-roster.json')
+      return 'JSON roster of roles in the team. Shape: {"studio":"<id>","leadArtistRule":"<sentence>","noRewriteRule":"<sentence>","roles":[{"id":"<role-id>","title":"<title>","systemPrompt":"roles/<role-id>/system-prompt.md","methodology":[{"id":"<cap>","path":"roles/<role-id>/methodology/<cap>.md"}],"handsOffTo":["<other-role>"...],"voiceCapable":<bool>}],"handoffBlockGrammar":":::handoff to: <role-id> reason: <one-sentence>","handoffExamples":[...]}. Every roles[*].systemPrompt and methodology[*].path MUST resolve to a file in the bundle.'
+    if (filePath === 'coordination-protocol.md')
+      return 'Coordination protocol document defining how the roles cooperate. Required sections: "## Rule 1 — Artist always wins" (agents propose, never override), "## Rule 2 — Cross-medium handoffs" (with the :::handoff block grammar AND at least 4 concrete scene/page/track-anchored examples — never abstract "collaborate" platitudes), "## Rule 3 — Style coherence" (lead-artist concept), "## Rule 4 — No-rewrite rule" (agents never rewrite the artist artifact). Plus a priority order for when rules collide and an inventory of output blocks the team uses.'
+    if (filePath.startsWith('roles/') && filePath.endsWith('/system-prompt.md'))
+      return 'Per-role system prompt. MUST start with YAML frontmatter (name / role / domain / allowedDomains / allowedEnv / creativeCollaborator / overridesArtist). MUST reference coordination-protocol.md and the four rules. MUST list initiating + receiving cross-medium handoffs with concrete triggers. Must declare role-specific authoritative skills loadable from methodology/.'
+    if (
+      filePath.startsWith('roles/') &&
+      filePath.includes('/methodology/') &&
+      filePath.endsWith('.md')
+    )
+      return 'Per-role methodology (>=60 lines, no stub). Real craft methodology — diagnostics, procedures, artifact shapes, anti-patterns, when-to-escalate. When the methodology has a cross-medium variant (e.g., scoring for picture, voice signature for cover), include that variant explicitly with concrete examples; do not bury it in prose.'
+  }
+
   // agent-runtime surface — bundles ship a system prompt + domain templates + (CF Worker or local-CLI) triggers.
   if (surface === 'agent-runtime') {
     if (filePath === 'system-prompt.md')
@@ -216,6 +232,19 @@ function filesForTaxonomy(taxonomy: {
   const validator = `validate-${runtime}.mjs`
   const toFiles = (paths: string[]) =>
     paths.map((p) => ({ path: p, role: slotForFile(p, runtime, surface) }))
+
+  // multi-agent-team surface — curated team bundle: roster + coordination
+  // protocol + per-role system prompts. Markdown + JSON only; no Worker shell
+  // (the host loads agent-roster.json to dispatch between roles).
+  if (surface === 'multi-agent-team') {
+    return toFiles([
+      'agent-roster.json',
+      'coordination-protocol.md',
+      'roles/example-role/system-prompt.md',
+      'README.md',
+      validator,
+    ])
+  }
 
   // agent-runtime surface — bundles span markdown + (CF Worker or local-CLI) triggers.
   // Triggered via taxonomy.surface, not language: a bundle whose primary content

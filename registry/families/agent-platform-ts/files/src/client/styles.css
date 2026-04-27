@@ -1,0 +1,58 @@
+/* Minimal scaffold styles. Replace with your design system / Tailwind /
+ * sandbox-ui theming as you flesh out the admin UI. */
+
+:root {
+  --bg: #0b0d12;
+  --fg: #e6e6e6;
+  --muted: #8b95a3;
+  --accent: #3b82f6;
+  --border: #1f242c;
+  --panel: #11141a;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--fg); }
+
+.app-shell { display: flex; flex-direction: column; height: 100vh; }
+.app-header {
+  display: flex; align-items: baseline; gap: 0.75rem;
+  padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--border);
+}
+.app-header h1 { font-size: 1.1rem; margin: 0; }
+.app-subtitle { color: var(--muted); font-size: 0.85rem; }
+.app-main { flex: 1; overflow: auto; padding: 1.25rem; }
+
+.tenant-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.25rem 0.5rem; border-radius: 4px;
+  background: var(--panel); border: 1px solid var(--border);
+  font-size: 0.8rem; color: var(--muted);
+}
+.tenant-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+.agent-list { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+.agent-card {
+  padding: 1rem; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--panel); cursor: pointer;
+}
+.agent-card:hover { border-color: var(--accent); }
+.agent-card h3 { margin: 0 0 0.25rem; font-size: 1rem; }
+.agent-card p { margin: 0; color: var(--muted); font-size: 0.85rem; }
+.agent-card .tags { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.5rem; }
+.agent-card .tag { font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 4px; background: var(--border); color: var(--fg); }
+
+.chat-panel { display: flex; flex-direction: column; height: 100%; gap: 0.75rem; }
+.chat-log { flex: 1; overflow-y: auto; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; background: var(--panel); }
+.chat-message { margin-bottom: 0.75rem; }
+.chat-message.user { color: var(--fg); }
+.chat-message.assistant { color: var(--fg); }
+.chat-message.role { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; margin-bottom: 0.25rem; }
+.chat-form { display: flex; gap: 0.5rem; }
+.chat-form input { flex: 1; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--fg); }
+.chat-form button { padding: 0.5rem 1rem; border: none; border-radius: 4px; background: var(--accent); color: white; cursor: pointer; }
+.chat-form button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.not-found { color: var(--muted); }
+.error-banner { padding: 0.5rem; background: #4c1d24; border: 1px solid #7a2832; border-radius: 4px; color: #ffd7da; margin-bottom: 0.75rem; }

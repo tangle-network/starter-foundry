@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agent.schema.json",
+  "title": "AgentBundleProfile",
+  "description": "Bundle-side spec; deploy script translates into a Tangle Sandbox AgentProfile.",
+  "type": "object",
+  "required": ["name", "version", "prompt"],
+  "additionalProperties": false,
+  "properties": {
+    "name": { "type": "string" },
+    "description": { "type": "string" },
+    "version": { "type": "string" },
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "prompt": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "systemPromptFile": { "type": "string", "description": "relative path; content becomes profile.prompt.systemPrompt" },
+        "instructions": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "preferred": { "type": "string" },
+        "fallback": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "tools": { "type": "object", "additionalProperties": { "type": "boolean" } },
+    "permissions": { "type": "object", "additionalProperties": { "enum": ["allow", "ask", "deny"] } },
+    "mcp": { "type": "object" },
+    "subagents": {
+      "type": "object",
+      "description": "For multi-agent bundles only. Each entry → AgentProfile.subagents[id].",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["systemPromptFile"],
+        "additionalProperties": false,
+        "properties": {
+          "description": { "type": "string" },
+          "systemPromptFile": { "type": "string" },
+          "model": { "type": "string" },
+          "tools": { "type": "object", "additionalProperties": { "type": "boolean" } },
+          "permissions": { "type": "object", "additionalProperties": { "enum": ["allow", "ask", "deny"] } },
+          "maxSteps": { "type": "integer", "minimum": 1 }
+        }
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["source", "target"],
+            "additionalProperties": false,
+            "properties": {
+              "source": { "type": "string", "description": "relative to bundle root, file or directory" },
+              "target": { "type": "string", "description": "absolute path inside the sandbox; defaults to /workspace/<source>" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

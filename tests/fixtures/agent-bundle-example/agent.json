@@ -1,0 +1,30 @@
+{
+  "name": "research-assistant",
+  "description": "Single-agent literature-survey + proposal-drafting bundle (test fixture).",
+  "version": "0.1.0",
+  "tags": ["research", "single-agent"],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md",
+    "instructions": ["Cite every source.", "Refuse to invent data."]
+  },
+  "model": {
+    "preferred": "anthropic/claude-sonnet-4-7",
+    "fallback": ["openai/gpt-4o-mini"]
+  },
+  "tools": {
+    "bash": true,
+    "edit": true,
+    "webfetch": false
+  },
+  "permissions": {
+    "bash": "ask",
+    "edit": "allow",
+    "webfetch": "deny"
+  },
+  "resources": {
+    "files": [
+      { "source": "system-prompt.md", "target": "system-prompt.md" },
+      { "source": "methodology", "target": "methodology" }
+    ]
+  }
+}

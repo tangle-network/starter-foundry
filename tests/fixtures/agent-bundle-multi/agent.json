@@ -1,0 +1,34 @@
+{
+  "name": "two-role-team",
+  "description": "Multi-agent fixture with one lead and one researcher subagent.",
+  "version": "0.1.0",
+  "prompt": {
+    "systemPromptFile": "team-system.md"
+  },
+  "subagents": {
+    "lead": {
+      "description": "Routes work and reviews drafts",
+      "systemPromptFile": "roles/lead/system-prompt.md",
+      "model": "anthropic/claude-sonnet-4-7",
+      "tools": { "bash": true },
+      "permissions": { "bash": "ask" },
+      "maxSteps": 5
+    },
+    "researcher": {
+      "description": "Reads papers and writes summaries",
+      "systemPromptFile": "roles/researcher/system-prompt.md",
+      "tools": { "webfetch": true },
+      "permissions": { "webfetch": "allow" }
+    }
+  },
+  "resources": {
+    "files": [
+      { "source": "team-system.md", "target": "team-system.md" },
+      { "source": "roles/lead/system-prompt.md", "target": "roles/lead/system-prompt.md" },
+      {
+        "source": "roles/researcher/system-prompt.md",
+        "target": "roles/researcher/system-prompt.md"
+      }
+    ]
+  }
+}

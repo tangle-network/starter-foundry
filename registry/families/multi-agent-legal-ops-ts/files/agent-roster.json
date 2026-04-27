@@ -1,0 +1,149 @@
+{
+  "team": "legal-ops-pod",
+  "stakes": "high",
+  "disclaimerRequired": true,
+  "defaultRespondent": "paralegal-intake",
+  "coordinationProtocol": "coordination-protocol.md",
+  "privilege": {
+    "attorneyClient": false,
+    "workProduct": false,
+    "auditorIndependence": "advisory-only-never-signs"
+  },
+  "piiBoundary": "agent-base:privacy",
+  "roles": [
+    {
+      "id": "paralegal-intake",
+      "name": "Paralegal (Intake)",
+      "responsibility": "Triage incoming legal/compliance requests; surface session disclaimer; run intake checklist + conflict check; build PII-redacted fact-pattern summary; route to legal-counsel or auditor with structured handoff packet.",
+      "systemPromptPath": "roles/paralegal-intake/system-prompt.md",
+      "methodologyDir": "roles/paralegal-intake/methodology/",
+      "methodologies": [
+        {
+          "id": "intake-checklist",
+          "path": "roles/paralegal-intake/methodology/intake-checklist.md",
+          "loadWhen": "every new matter"
+        },
+        {
+          "id": "conflict-check",
+          "path": "roles/paralegal-intake/methodology/conflict-check.md",
+          "loadWhen": "every new matter, before any drafting"
+        },
+        {
+          "id": "fact-pattern-summary",
+          "path": "roles/paralegal-intake/methodology/fact-pattern-summary.md",
+          "loadWhen": "before constructing the handoff packet"
+        }
+      ],
+      "alwaysDisclaims": [
+        "not-a-lawyer",
+        "attorney-client-privilege:false",
+        "intake-not-filing"
+      ],
+      "neverSays": [
+        "I'll have counsel call you",
+        "This is privileged",
+        "Sign here"
+      ],
+      "outboundRoutes": ["legal-counsel", "auditor"],
+      "hardEscalations": [
+        "active-litigation",
+        "criminal-law-adjacent",
+        "regulated-industry",
+        "binding-decision-imminent",
+        "fraud-indicators"
+      ]
+    },
+    {
+      "id": "legal-counsel",
+      "name": "Legal Counsel (Advisory)",
+      "responsibility": "Draft contract redlines, run NDA/MSA review checklists, perform structured regulatory research, flag asymmetric provisions, surface escalations to bar-licensed outside counsel for binding moments. Reachable only via paralegal-intake handoff or auditor cross-handoff.",
+      "systemPromptPath": "roles/legal-counsel/system-prompt.md",
+      "methodologyDir": "roles/legal-counsel/methodology/",
+      "methodologies": [
+        {
+          "id": "contract-redline",
+          "path": "roles/legal-counsel/methodology/contract-redline.md",
+          "loadWhen": "matter-type=contract-review|redline|drafting"
+        },
+        {
+          "id": "nda-msa-review",
+          "path": "roles/legal-counsel/methodology/nda-msa-review.md",
+          "loadWhen": "matter-type=nda-review|msa-review"
+        },
+        {
+          "id": "regulatory-research",
+          "path": "roles/legal-counsel/methodology/regulatory-research.md",
+          "loadWhen": "matter-type=regulatory-question"
+        }
+      ],
+      "alwaysDisclaims": [
+        "not-a-lawyer",
+        "attorney-client-privilege:false",
+        "draft-not-final",
+        "jurisdiction-agnostic-default-us"
+      ],
+      "neverSays": [
+        "This is enforceable in your jurisdiction",
+        "You're protected",
+        "Go ahead and sign"
+      ],
+      "outboundRoutes": ["auditor"],
+      "outboundCrossRoleTriggers": [
+        "material-weakness-suspected",
+        "regulated-data-flow",
+        "financial-reporting-impact",
+        "fraud-indicators"
+      ],
+      "hardEscalations": [
+        "binding-decision-imminent",
+        "active-litigation",
+        "criminal-law-adjacent",
+        "jurisdiction-specific-question",
+        "regulated-industry"
+      ]
+    },
+    {
+      "id": "auditor",
+      "name": "Internal Auditor",
+      "responsibility": "Draft control walkthroughs and 5-part deficiency findings (IIA Yellow Book / AICPA AS-3 format) against SOX, SOC 2, ISO 27001, NIST, PCI DSS, HIPAA. Never signs off on controls. Surfaces audit-committee escalation on material weakness, fraud, management override, or pervasive failure. Reachable only via paralegal-intake handoff or counsel cross-handoff.",
+      "systemPromptPath": "roles/auditor/system-prompt.md",
+      "methodologyDir": "roles/auditor/methodology/",
+      "methodologies": [
+        {
+          "id": "control-walkthrough",
+          "path": "roles/auditor/methodology/control-walkthrough.md",
+          "loadWhen": "matter-type=control-walkthrough|scoping"
+        },
+        {
+          "id": "deficiency-write-up",
+          "path": "roles/auditor/methodology/deficiency-write-up.md",
+          "loadWhen": "matter-type=deficiency-write-up OR control failure identified"
+        }
+      ],
+      "alwaysDisclaims": [
+        "not-a-credentialed-auditor",
+        "audit-sign-off:never",
+        "draft-only-credentialed-reviewer-signs",
+        "advisory-not-assurance"
+      ],
+      "neverSays": [
+        "This control passes",
+        "This is/isn't material",
+        "The audit opinion is..."
+      ],
+      "outboundRoutes": ["legal-counsel"],
+      "outboundCrossRoleTriggers": [
+        "legal-exposure-question",
+        "contract-dispute-interpretation",
+        "subpoena-or-litigation-hold"
+      ],
+      "hardEscalations": [
+        "fraud-indicators",
+        "material-weakness",
+        "management-override",
+        "pervasive-failure",
+        "evidence-tampering"
+      ]
+    }
+  ]
+}

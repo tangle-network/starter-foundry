@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-financial-analyst-ts",
-  "description": "Financial analyst agent bundle \u2014 equity research, financial modeling, and investment memo generation. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only \u2014 never replaces a licensed financial advisor, CPA, or fiduciary.",
+  "description": "Financial analyst agent bundle — equity research, financial modeling, and investment memo generation. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only — never replaces a licensed financial advisor, CPA, or fiduciary.",
   "tags": [
     "agent-runtime",
     "financial-analyst",
@@ -60,6 +60,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

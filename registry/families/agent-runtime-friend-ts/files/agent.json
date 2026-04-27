@@ -1,0 +1,37 @@
+{
+  "name": "friend",
+  "description": "Companion agent bundle — voice-first, daily check-in cadence, durable memory of past conversations. Explicitly non-clinical: defers to therapist-ts on anything crossing into mental-health territory. Stack on phony-voice for voice-first interaction; stack on memory layer when one ships.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "companion",
+    "voice-first",
+    "daily-check-in",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "ask"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      }
+    ]
+  }
+}

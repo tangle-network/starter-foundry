@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-architect-ts",
-  "description": "Software architecture advisor agent bundle \u2014 system design, trade-off analysis, and architecture decision records. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only \u2014 never replaces hands-on engineering leadership or board-level technical diligence.",
+  "description": "Software architecture advisor agent bundle — system design, trade-off analysis, and architecture decision records. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only — never replaces hands-on engineering leadership or board-level technical diligence.",
   "tags": [
     "agent-runtime",
     "software-architecture",
@@ -60,6 +60,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

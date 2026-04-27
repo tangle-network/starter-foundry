@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-chef-ts",
-  "description": "Voice-first personal chef agent bundle \u2014 meal planning, recipe development, technique guidance, and kitchen workflow optimization. Not a registered dietitian, not a food-safety inspector, not a substitute for medical nutrition therapy. Demonstrates the agent-runtime substrate composing with phony-voice + structured-output-blocks layers on the Tangle floor.",
+  "description": "Voice-first personal chef agent bundle — meal planning, recipe development, technique guidance, and kitchen workflow optimization. Not a registered dietitian, not a food-safety inspector, not a substitute for medical nutrition therapy. Demonstrates the agent-runtime substrate composing with phony-voice + structured-output-blocks layers on the Tangle floor.",
   "tags": [
     "agent-runtime",
     "personal-chef",
@@ -64,6 +64,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

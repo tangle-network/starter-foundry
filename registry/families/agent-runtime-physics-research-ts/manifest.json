@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-physics-research-ts",
-  "description": "Physics research assistant agent bundle \u2014 literature search, citation-grounded analysis, and experimental design support. Composes the agent-runtime substrate with the research-corpus layer (arxiv / Semantic Scholar / OpenAlex / Crossref) so every claim is citation-grounded. Advisory only \u2014 never replaces peer review, ethics board, or professional judgment.",
+  "description": "Physics research assistant agent bundle — literature search, citation-grounded analysis, and experimental design support. Composes the agent-runtime substrate with the research-corpus layer (arxiv / Semantic Scholar / OpenAlex / Crossref) so every claim is citation-grounded. Advisory only — never replaces peer review, ethics board, or professional judgment.",
   "tags": [
     "agent-runtime",
     "physics-research",
@@ -64,6 +64,10 @@
     "advisoryOnly": true
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

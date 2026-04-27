@@ -1,0 +1,43 @@
+{
+  "name": "career-coach",
+  "description": "Career coach agent bundle — helps professionals navigate career transitions, job searches, and professional growth. Provides structured frameworks for self-assessment, market positioning, and decision-making. Advisory only — never replaces a licensed career counselor, therapist, or recruiter.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "career-coach",
+    "advisory",
+    "career-transition",
+    "job-search",
+    "professional-development",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "ask"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      },
+      {
+        "source": "TOOLS.md",
+        "target": "/workspace/TOOLS.md"
+      }
+    ]
+  }
+}

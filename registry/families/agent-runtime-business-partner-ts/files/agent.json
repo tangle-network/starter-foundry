@@ -1,0 +1,43 @@
+{
+  "name": "business-partner",
+  "description": "Executive thinking-partner agent bundle — co-founder / executive coach. Runs a weekly review cadence, designs OKRs, and maintains a decision journal. Composes the agent-runtime substrate with the research-corpus layer (arxiv / Semantic Scholar / OpenAlex / Crossref) so any market or strategy claim is citation-grounded rather than hallucinated. Advisory only — never replaces the operator's lawyer, CPA, or board.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "executive-coaching",
+    "advisory",
+    "weekly-review",
+    "okrs",
+    "decision-journal",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "ask"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      },
+      {
+        "source": "TOOLS.md",
+        "target": "/workspace/TOOLS.md"
+      }
+    ]
+  }
+}

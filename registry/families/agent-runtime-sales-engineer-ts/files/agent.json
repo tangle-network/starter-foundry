@@ -1,0 +1,42 @@
+{
+  "name": "sales-engineer",
+  "description": "Sales Engineer agent bundle — technical pre-sales, demo engineering, proof-of-concept design, and competitive technical positioning. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only — never replaces the operator's actual sales process, legal review, or pricing authority.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "sales-engineering",
+    "technical-pre-sales",
+    "demo-engineering",
+    "proof-of-concept",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "ask"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      },
+      {
+        "source": "TOOLS.md",
+        "target": "/workspace/TOOLS.md"
+      }
+    ]
+  }
+}

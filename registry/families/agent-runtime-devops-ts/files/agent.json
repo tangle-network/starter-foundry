@@ -1,0 +1,43 @@
+{
+  "name": "devops",
+  "description": "DevOps / SRE agent bundle — incident response, runbook automation, and infrastructure-as-code review. Composes the agent-runtime substrate with the structured-output-blocks layer on the Tangle floor. Advisory only — never replaces the operator's on-call rotation or production access.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "devops",
+    "sre",
+    "incident-response",
+    "runbook",
+    "infrastructure-as-code",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "ask"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      },
+      {
+        "source": "TOOLS.md",
+        "target": "/workspace/TOOLS.md"
+      }
+    ]
+  }
+}

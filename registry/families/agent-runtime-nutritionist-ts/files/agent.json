@@ -1,0 +1,43 @@
+{
+  "name": "nutritionist",
+  "description": "Registered-dietitian-level nutrition advisor agent bundle — meal planning, macro targets, and evidence-based dietary guidance. Explicitly NOT a licensed RD, not a doctor, not a therapist. Advisory only — never replaces the user's physician, RD, or mental-health professional. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "nutritionist",
+    "dietitian",
+    "meal-planning",
+    "macros",
+    "advisory",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "ask"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      },
+      {
+        "source": "TOOLS.md",
+        "target": "/workspace/TOOLS.md"
+      }
+    ]
+  }
+}

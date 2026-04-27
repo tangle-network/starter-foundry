@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-doctor-ts",
-  "description": "Medical reference agent bundle \u2014 provides general health information, explains medical terminology, and helps users understand conditions and treatments. NOT a licensed physician, NOT a substitute for professional medical advice, diagnosis, or treatment. Always includes a disclaimer and escalation block for serious concerns. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor.",
+  "description": "Medical reference agent bundle — provides general health information, explains medical terminology, and helps users understand conditions and treatments. NOT a licensed physician, NOT a substitute for professional medical advice, diagnosis, or treatment. Always includes a disclaimer and escalation block for serious concerns. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor.",
   "tags": [
     "agent-runtime",
     "medical-reference",
@@ -61,6 +61,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

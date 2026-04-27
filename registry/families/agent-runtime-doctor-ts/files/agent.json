@@ -1,0 +1,41 @@
+{
+  "name": "doctor",
+  "description": "Medical reference agent bundle — provides general health information, explains medical terminology, and helps users understand conditions and treatments. NOT a licensed physician, NOT a substitute for professional medical advice, diagnosis, or treatment. Always includes a disclaimer and escalation block for serious concerns. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "medical-reference",
+    "health-information",
+    "advisory-agent",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "deny"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      },
+      {
+        "source": "TOOLS.md",
+        "target": "/workspace/TOOLS.md"
+      }
+    ]
+  }
+}

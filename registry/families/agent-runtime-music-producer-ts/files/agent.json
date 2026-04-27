@@ -1,0 +1,41 @@
+{
+  "name": "music-producer",
+  "description": "Senior music producer + senior staff engineer who builds tools to help producers. Markdown-only bundle: AGENTS.md role + TOOLS.md intent + methodology/ guides. Inherits security primitives from agent-base:secure. Operator materializes domain audio tools (LUFS analysis, A/B vs reference, stem extraction) when the deployment needs them.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "music-production",
+    "practitioner-with-tools",
+    "voice-first",
+    "markdown-only"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "ask"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      },
+      {
+        "source": "TOOLS.md",
+        "target": "/workspace/TOOLS.md"
+      }
+    ]
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "id": "agent-marketplace-ui-ts",
+  "description": "Next.js public catalog UI for browsing and installing agent bundles. Lists agent-runtime + multi-agent bundles, renders AGENTS.md preview via ui-adapter:blocks-renderer, guides users through pnpm-exec deploy commands. Composes @tangle-network/sandbox-ui primitives.",
+  "tags": [
+    "ui",
+    "agent-marketplace",
+    "catalog-browser",
+    "bundle-store",
+    "next.js",
+    "react"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "next.js",
+    "surface": "ui"
+  },
+  "slots": {
+    "ui-adapter": {
+      "options": ["ui-adapter:blocks-renderer"],
+      "default": "ui-adapter:blocks-renderer"
+    }
+  },
+  "defaults": {
+    "projectType": "agent-marketplace-ui",
+    "appName": "agent-marketplace",
+    "publicVars": ["CATALOG_REGISTRY_PATH"],
+    "port": 3000
+  },
+  "files": [
+    { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/next.config.js", "target": "next.config.js" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/.env.example", "target": ".env.example" },
+    { "source": "files/README.md", "target": "README.md" },
+    { "source": "files/src/app/layout.tsx", "target": "src/app/layout.tsx" },
+    { "source": "files/src/app/page.tsx", "target": "src/app/page.tsx" },
+    { "source": "files/src/app/page-client.tsx", "target": "src/app/page-client.tsx" },
+    { "source": "files/src/app/bundles/[id]/page.tsx", "target": "src/app/bundles/[id]/page.tsx" },
+    { "source": "files/src/app/deploy/[id]/page.tsx", "target": "src/app/deploy/[id]/page.tsx" },
+    { "source": "files/src/components/BundleCard.tsx", "target": "src/components/BundleCard.tsx" },
+    { "source": "files/src/components/BundleGrid.tsx", "target": "src/components/BundleGrid.tsx" },
+    { "source": "files/src/components/SearchFilters.tsx", "target": "src/components/SearchFilters.tsx" },
+    { "source": "files/src/components/AgentsMdPreview.tsx", "target": "src/components/AgentsMdPreview.tsx" },
+    { "source": "files/src/components/DeployFlow.tsx", "target": "src/components/DeployFlow.tsx" },
+    { "source": "files/src/lib/catalog.ts", "target": "src/lib/catalog.ts" },
+    { "source": "files/src/lib/search.ts", "target": "src/lib/search.ts" },
+    { "source": "files/src/styles/globals.css", "target": "src/styles/globals.css" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "package.json" },
+    { "type": "file-exists", "path": "next.config.js" },
+    { "type": "file-exists", "path": "tsconfig.json" },
+    { "type": "file-exists", "path": "src/app/layout.tsx" },
+    { "type": "file-exists", "path": "src/app/page.tsx" },
+    { "type": "file-exists", "path": "src/app/bundles/[id]/page.tsx" },
+    { "type": "file-exists", "path": "src/app/deploy/[id]/page.tsx" },
+    { "type": "file-exists", "path": "src/components/BundleCard.tsx" },
+    { "type": "file-exists", "path": "src/components/AgentsMdPreview.tsx" },
+    { "type": "file-exists", "path": "src/components/DeployFlow.tsx" },
+    { "type": "file-exists", "path": "src/lib/catalog.ts" },
+    { "type": "file-exists", "path": "src/lib/search.ts" },
+    { "type": "file-exists", "path": "src/lib/parse-blocks.ts" },
+    { "type": "file-exists", "path": "src/lib/blocks-to-artifacts.tsx" }
+  ],
+  "contextHints": {
+    "commands": [
+      "pnpm dev",
+      "pnpm build",
+      "pnpm start"
+    ],
+    "entrypoints": [
+      "src/app/page.tsx",
+      "src/app/bundles/[id]/page.tsx",
+      "src/app/deploy/[id]/page.tsx"
+    ],
+    "extensionPoints": [
+      "src/lib/catalog.ts",
+      "src/components/DeployFlow.tsx",
+      "src/components/AgentsMdPreview.tsx"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "agent-marketplace-ui",
+      "agent-catalog-ui",
+      "agent-bundle-browser",
+      "agent-store-ui",
+      "bundle-marketplace-app"
+    ],
+    "tier2": [
+      "bundle-discovery",
+      "agent-install-flow",
+      "marketplace-search",
+      "bundle-detail-page",
+      "agent-card-grid"
+    ],
+    "tier3": [
+      "marketplace"
+    ],
+    "archetypes": [
+      "catalog-ui"
+    ]
+  }
+}

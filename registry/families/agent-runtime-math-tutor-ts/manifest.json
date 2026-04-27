@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-math-tutor-ts",
-  "description": "Voice-first math tutor agent bundle \u2014 calculus, algebra, and general math tutoring with step-by-step explanations and adaptive problem generation. Explicitly NOT a substitute for a certified math teacher or exam proctor. Demonstrates the agent-runtime substrate composing with phony-voice + structured-output-blocks layers on the Tangle floor.",
+  "description": "Voice-first math tutor agent bundle — calculus, algebra, and general math tutoring with step-by-step explanations and adaptive problem generation. Explicitly NOT a substitute for a certified math teacher or exam proctor. Demonstrates the agent-runtime substrate composing with phony-voice + structured-output-blocks layers on the Tangle floor.",
   "tags": [
     "agent-runtime",
     "math-tutor",
@@ -60,6 +60,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

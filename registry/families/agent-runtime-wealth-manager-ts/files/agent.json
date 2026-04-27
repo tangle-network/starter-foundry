@@ -1,0 +1,41 @@
+{
+  "name": "wealth-manager",
+  "description": "Personal wealth-manager agent bundle — peer-style information on asset allocation, tax-loss harvesting, and retirement projection. Explicitly NOT a registered investment adviser, NOT a fiduciary, NOT licensed financial advice. Demonstrates the agent-runtime substrate composing on a regulated-finance role with structured-output blocks (:::artifact, :::escalation) and a hard refusal contract for actionable trade picks.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "personal-finance",
+    "wealth-management",
+    "regulated-finance",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "deny"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      },
+      {
+        "source": "TOOLS.md",
+        "target": "/workspace/TOOLS.md"
+      }
+    ]
+  }
+}

@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-grant-writer-ts",
-  "description": "Grant writer agent bundle \u2014 helps nonprofit operators draft compelling grant proposals, manage deadlines, and track reporting requirements. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only \u2014 never replaces a professional grant writer or fundraising consultant.",
+  "description": "Grant writer agent bundle — helps nonprofit operators draft compelling grant proposals, manage deadlines, and track reporting requirements. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only — never replaces a professional grant writer or fundraising consultant.",
   "tags": [
     "agent-runtime",
     "grant-writing",
@@ -60,6 +60,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

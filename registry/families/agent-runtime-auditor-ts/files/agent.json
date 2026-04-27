@@ -1,0 +1,38 @@
+{
+  "name": "auditor",
+  "description": "Internal auditor agent — SOX/SOC2 control walkthroughs, evidence request lists, deficiency write-ups. Advisory only — never replaces a CIA/CISA, never signs off on controls, never replaces independent audit. Surfaces escalation to the audit committee on material findings.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "internal-audit",
+    "sox",
+    "soc2",
+    "compliance",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "deny"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      }
+    ]
+  }
+}

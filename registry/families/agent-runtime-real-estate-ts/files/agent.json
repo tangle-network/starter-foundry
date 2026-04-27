@@ -1,0 +1,40 @@
+{
+  "name": "real-estate",
+  "description": "Real-estate advisor agent bundle — explicitly NOT a licensed real-estate broker. Drafts comparable-market-analysis worksheets, cap-rate / NOI / cash-on-cash math, and offer-strategy frameworks for the user's own decision-making. Jurisdiction-agnostic; all binding-decision support (offer drafting, escrow, title, tenant disputes, HOA interpretation, jurisdiction-specific tax/title) escalates to a licensed agent. Fair Housing Act compliant: analyzes property attributes only, never neighborhood social characteristics.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "real-estate",
+    "advisory",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "deny"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      },
+      {
+        "source": "TOOLS.md",
+        "target": "/workspace/TOOLS.md"
+      }
+    ]
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "name": "ml-research",
+  "description": "ML Research Assistant agent bundle — literature review, experiment design, and result interpretation. Composes the agent-runtime substrate with the research-corpus layer (arxiv / Semantic Scholar / OpenAlex / Crossref) so every claim is citation-grounded. Advisory only — never replaces the operator's own expertise or peer review.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "ml-research",
+    "literature-review",
+    "experiment-design",
+    "research-assistant",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "ask"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      },
+      {
+        "source": "TOOLS.md",
+        "target": "/workspace/TOOLS.md"
+      }
+    ]
+  }
+}

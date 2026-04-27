@@ -1,0 +1,42 @@
+{
+  "name": "illustrator",
+  "description": "Voice-first creative illustrator agent bundle — art direction, visual style development, and composition guidance. NOT a substitute for a professional art director, creative director, or licensed illustrator. Demonstrates the agent-runtime substrate composing with tangle + structured-output-blocks layers on the Tangle floor.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "illustrator",
+    "art-direction",
+    "creative-illustration",
+    "voice-first",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "ask"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      },
+      {
+        "source": "TOOLS.md",
+        "target": "/workspace/TOOLS.md"
+      }
+    ]
+  }
+}

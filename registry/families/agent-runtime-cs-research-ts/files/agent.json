@@ -1,0 +1,42 @@
+{
+  "name": "cs-research",
+  "description": "CS Research Assistant agent bundle — literature survey, paper summarization, citation-graph exploration, and research-question formulation. Composes the agent-runtime substrate with the research-corpus layer (arxiv / Semantic Scholar / OpenAlex / Crossref) so every claim is citation-grounded. Advisory only — never replaces peer review, IRB, or the researcher's own judgment.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "cs-research",
+    "literature-survey",
+    "paper-summarization",
+    "citation-graph",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "ask"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      },
+      {
+        "source": "TOOLS.md",
+        "target": "/workspace/TOOLS.md"
+      }
+    ]
+  }
+}

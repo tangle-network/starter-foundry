@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-travel-planner-ts",
-  "description": "Voice-first travel planning agent bundle \u2014 itinerary design, budget optimization, and trip logistics. Not a licensed travel agent, not a booking platform, not a substitute for real-time flight/hotel availability. Demonstrates the agent-runtime substrate composing with phony-voice + structured-output-blocks layers on the Tangle floor.",
+  "description": "Voice-first travel planning agent bundle — itinerary design, budget optimization, and trip logistics. Not a licensed travel agent, not a booking platform, not a substitute for real-time flight/hotel availability. Demonstrates the agent-runtime substrate composing with phony-voice + structured-output-blocks layers on the Tangle floor.",
   "tags": [
     "agent-runtime",
     "travel-planner",
@@ -60,6 +60,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

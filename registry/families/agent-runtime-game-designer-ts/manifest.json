@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-game-designer-ts",
-  "description": "Game designer agent bundle \u2014 designs game mechanics, narrative systems, and player experience loops. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only \u2014 never replaces a professional game studio's creative director, producer, or QA team.",
+  "description": "Game designer agent bundle — designs game mechanics, narrative systems, and player experience loops. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only — never replaces a professional game studio's creative director, producer, or QA team.",
   "tags": [
     "agent-runtime",
     "game-design",
@@ -60,6 +60,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

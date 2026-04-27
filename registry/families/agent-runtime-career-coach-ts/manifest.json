@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-career-coach-ts",
-  "description": "Career coach agent bundle \u2014 helps professionals navigate career transitions, job searches, and professional growth. Provides structured frameworks for self-assessment, market positioning, and decision-making. Advisory only \u2014 never replaces a licensed career counselor, therapist, or recruiter.",
+  "description": "Career coach agent bundle — helps professionals navigate career transitions, job searches, and professional growth. Provides structured frameworks for self-assessment, market positioning, and decision-making. Advisory only — never replaces a licensed career counselor, therapist, or recruiter.",
   "tags": [
     "agent-runtime",
     "career-coach",
@@ -62,6 +62,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

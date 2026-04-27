@@ -1,0 +1,41 @@
+{
+  "name": "architect",
+  "description": "Software architecture advisor agent bundle — system design, trade-off analysis, and architecture decision records. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only — never replaces hands-on engineering leadership or board-level technical diligence.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "software-architecture",
+    "advisory-agent",
+    "architect",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "ask"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      },
+      {
+        "source": "TOOLS.md",
+        "target": "/workspace/TOOLS.md"
+      }
+    ]
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "name": "pharmacist",
+  "description": "Pharmacist reference agent bundle — drug information, interaction checks, and medication therapy management. NOT a substitute for a licensed pharmacist, physician, or other healthcare professional. Advisory only. Emits non-licensed/non-fiduciary language and includes escalation blocks. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "pharmacist",
+    "drug-reference",
+    "medication-therapy-management",
+    "advisory",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "deny"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      },
+      {
+        "source": "TOOLS.md",
+        "target": "/workspace/TOOLS.md"
+      }
+    ]
+  }
+}

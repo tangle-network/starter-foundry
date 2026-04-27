@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-cs-tutor-ts",
-  "description": "CS tutoring agent bundle \u2014 teaches programming fundamentals, data structures, algorithms, and debugging. Composes the agent-runtime substrate with the blocks output layer on the Tangle floor. Advisory only \u2014 never replaces a human instructor or academic advisor.",
+  "description": "CS tutoring agent bundle — teaches programming fundamentals, data structures, algorithms, and debugging. Composes the agent-runtime substrate with the blocks output layer on the Tangle floor. Advisory only — never replaces a human instructor or academic advisor.",
   "tags": [
     "agent-runtime",
     "cs-tutor",
@@ -60,6 +60,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

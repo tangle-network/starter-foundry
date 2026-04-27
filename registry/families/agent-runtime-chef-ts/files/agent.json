@@ -1,0 +1,41 @@
+{
+  "name": "chef",
+  "description": "Voice-first personal chef agent bundle — meal planning, recipe development, technique guidance, and kitchen workflow optimization. Not a registered dietitian, not a food-safety inspector, not a substitute for medical nutrition therapy. Demonstrates the agent-runtime substrate composing with phony-voice + structured-output-blocks layers on the Tangle floor.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "personal-chef",
+    "culinary",
+    "voice-first",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "ask"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      },
+      {
+        "source": "TOOLS.md",
+        "target": "/workspace/TOOLS.md"
+      }
+    ]
+  }
+}

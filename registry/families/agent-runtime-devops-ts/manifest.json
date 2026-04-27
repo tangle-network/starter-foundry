@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-devops-ts",
-  "description": "DevOps / SRE agent bundle \u2014 incident response, runbook automation, and infrastructure-as-code review. Composes the agent-runtime substrate with the structured-output-blocks layer on the Tangle floor. Advisory only \u2014 never replaces the operator's on-call rotation or production access.",
+  "description": "DevOps / SRE agent bundle — incident response, runbook automation, and infrastructure-as-code review. Composes the agent-runtime substrate with the structured-output-blocks layer on the Tangle floor. Advisory only — never replaces the operator's on-call rotation or production access.",
   "tags": [
     "agent-runtime",
     "devops",
@@ -62,6 +62,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

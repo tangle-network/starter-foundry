@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-chemistry-research-ts",
-  "description": "Chemistry research assistant agent bundle \u2014 literature search, reaction planning, and data extraction from chemical databases. Composes the agent-runtime substrate with the research-corpus layer (PubChem, ChemSpider, RSC, ACS) so every claim is citation-grounded. Advisory only \u2014 never replaces a licensed chemist, lab safety officer, or regulatory professional.",
+  "description": "Chemistry research assistant agent bundle — literature search, reaction planning, and data extraction from chemical databases. Composes the agent-runtime substrate with the research-corpus layer (PubChem, ChemSpider, RSC, ACS) so every claim is citation-grounded. Advisory only — never replaces a licensed chemist, lab safety officer, or regulatory professional.",
   "tags": [
     "agent-runtime",
     "chemistry-research",
@@ -67,6 +67,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

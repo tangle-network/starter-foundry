@@ -1,0 +1,41 @@
+{
+  "name": "grant-writer",
+  "description": "Grant writer agent bundle — helps nonprofit operators draft compelling grant proposals, manage deadlines, and track reporting requirements. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only — never replaces a professional grant writer or fundraising consultant.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "grant-writing",
+    "nonprofit",
+    "advisory-agent",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "ask"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      },
+      {
+        "source": "TOOLS.md",
+        "target": "/workspace/TOOLS.md"
+      }
+    ]
+  }
+}

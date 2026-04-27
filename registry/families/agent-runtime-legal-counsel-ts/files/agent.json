@@ -1,0 +1,41 @@
+{
+  "name": "legal-counsel",
+  "description": "In-house-counsel reference agent — drafts redlines, runs contract review checklists (NDA, MSA), flags asymmetric provisions and binding-decision moments. Explicitly NOT a lawyer; no attorney-client privilege; jurisdiction-agnostic. Demonstrates the agent-runtime substrate composing with structured-output blocks (:::artifact, :::escalation) on a regulated-legal role.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "legal",
+    "contract-review",
+    "regulated-domain",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "deny"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      },
+      {
+        "source": "TOOLS.md",
+        "target": "/workspace/TOOLS.md"
+      }
+    ]
+  }
+}

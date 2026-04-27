@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-history-tutor-ts",
-  "description": "Voice-first history tutor agent bundle \u2014 primary-source analysis, historiographic debate, and timeline reasoning. Explicitly NOT a substitute for a credentialed history teacher, not a source of original archival research, not a replacement for peer-reviewed scholarship. Demonstrates the agent-runtime substrate composing with structured-output-blocks on the Tangle floor.",
+  "description": "Voice-first history tutor agent bundle — primary-source analysis, historiographic debate, and timeline reasoning. Explicitly NOT a substitute for a credentialed history teacher, not a source of original archival research, not a replacement for peer-reviewed scholarship. Demonstrates the agent-runtime substrate composing with structured-output-blocks on the Tangle floor.",
   "tags": [
     "agent-runtime",
     "history-tutor",
@@ -61,6 +61,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

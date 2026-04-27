@@ -1,0 +1,40 @@
+{
+  "name": "research",
+  "description": "Greenfield agent-runtime bundle: research-assistant agent that reads templates from its own filesystem, runs daily cron, and emits structured proposal blocks. Demonstrates the full agent-runtime substrate end-to-end with no external extraction source.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "research",
+    "cloudflare-worker",
+    "greenfield"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "ask"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      },
+      {
+        "source": "TOOLS.md",
+        "target": "/workspace/TOOLS.md"
+      }
+    ]
+  }
+}

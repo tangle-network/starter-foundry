@@ -1,0 +1,41 @@
+{
+  "name": "recruiter",
+  "description": "Technical-recruiter agent bundle — drafts JDs, designs structured screening rubrics, and composes interview loops. Hard-refuses any input or inference about protected-class attributes (race / gender / age / national-origin / disability). Hiring decisions stay with humans; the agent produces artifacts (`:::artifact`) the hiring team reviews, edits, and signs off on. Demonstrates the agent-runtime substrate composing with structured-output-blocks on the Tangle floor for a moderate-stakes operations workflow.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "recruiting",
+    "talent-acquisition",
+    "structured-interviews",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "deny"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      },
+      {
+        "source": "TOOLS.md",
+        "target": "/workspace/TOOLS.md"
+      }
+    ]
+  }
+}

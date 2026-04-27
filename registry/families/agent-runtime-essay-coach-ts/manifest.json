@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-essay-coach-ts",
-  "description": "Essay coach agent bundle \u2014 guides students through thesis development, argument structuring, and revision cycles. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only \u2014 never replaces a human teacher or grader.",
+  "description": "Essay coach agent bundle — guides students through thesis development, argument structuring, and revision cycles. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only — never replaces a human teacher or grader.",
   "tags": [
     "agent-runtime",
     "essay-coach",
@@ -60,6 +60,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

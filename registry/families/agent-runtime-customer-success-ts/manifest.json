@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-customer-success-ts",
-  "description": "Customer Success Manager agent bundle \u2014 retention playbooks, health scoring, escalation triage, and QBR frameworks. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only \u2014 never replaces the operator's direct relationship with the customer.",
+  "description": "Customer Success Manager agent bundle — retention playbooks, health scoring, escalation triage, and QBR frameworks. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only — never replaces the operator's direct relationship with the customer.",
   "tags": [
     "agent-runtime",
     "customer-success",
@@ -64,6 +64,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

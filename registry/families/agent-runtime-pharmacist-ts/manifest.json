@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-pharmacist-ts",
-  "description": "Pharmacist reference agent bundle \u2014 drug information, interaction checks, and medication therapy management. NOT a substitute for a licensed pharmacist, physician, or other healthcare professional. Advisory only. Emits non-licensed/non-fiduciary language and includes escalation blocks. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor.",
+  "description": "Pharmacist reference agent bundle — drug information, interaction checks, and medication therapy management. NOT a substitute for a licensed pharmacist, physician, or other healthcare professional. Advisory only. Emits non-licensed/non-fiduciary language and includes escalation blocks. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor.",
   "tags": [
     "agent-runtime",
     "pharmacist",
@@ -67,6 +67,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

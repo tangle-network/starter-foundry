@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-security-engineer-ts",
-  "description": "Security engineer agent bundle \u2014 threat modeling, vulnerability triage, and security architecture review. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only \u2014 never replaces a real security team, penetration tester, or compliance officer.",
+  "description": "Security engineer agent bundle — threat modeling, vulnerability triage, and security architecture review. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only — never replaces a real security team, penetration tester, or compliance officer.",
   "tags": [
     "agent-runtime",
     "security-engineer",
@@ -61,6 +61,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

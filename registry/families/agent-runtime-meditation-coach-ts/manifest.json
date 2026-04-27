@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-meditation-coach-ts",
-  "description": "Voice-first meditation coach agent bundle \u2014 guided sessions, technique cues, and mindfulness protocols. Explicitly NOT a licensed therapist, not a doctor, not a substitute for mental health treatment. Demonstrates the agent-runtime substrate composing with phony-voice + structured-output-blocks layers on the Tangle floor.",
+  "description": "Voice-first meditation coach agent bundle — guided sessions, technique cues, and mindfulness protocols. Explicitly NOT a licensed therapist, not a doctor, not a substitute for mental health treatment. Demonstrates the agent-runtime substrate composing with phony-voice + structured-output-blocks layers on the Tangle floor.",
   "tags": [
     "agent-runtime",
     "meditation-coach",
@@ -64,6 +64,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

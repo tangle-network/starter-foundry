@@ -1,0 +1,36 @@
+{
+  "name": "screenwriter",
+  "description": "Screenwriting craft agent — beat-out, logline, scene rewrite. Three-act and limited-series structure literate. Ships craft-of-screenwriting methodology, not generic 'write a script' affordances.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "screenwriting",
+    "creative",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "ask"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      }
+    ]
+  }
+}

@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-therapist-ts",
-  "description": "Voice-first peer-support agent bundle \u2014 explicitly NOT a therapist replacement. Listens, runs validated screeners (PHQ-9 / GAD-7), surfaces escalation paths to real clinicians for any moderate-or-above band or crisis-language detection. Demonstrates the agent-runtime substrate composing with phony-voice + clinical-screeners + structured-output-blocks layers on the Tangle floor.",
+  "description": "Voice-first peer-support agent bundle — explicitly NOT a therapist replacement. Listens, runs validated screeners (PHQ-9 / GAD-7), surfaces escalation paths to real clinicians for any moderate-or-above band or crisis-language detection. Demonstrates the agent-runtime substrate composing with phony-voice + clinical-screeners + structured-output-blocks layers on the Tangle floor.",
   "tags": [
     "agent-runtime",
     "peer-support",
@@ -84,6 +84,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-illustrator-ts",
-  "description": "Voice-first creative illustrator agent bundle \u2014 art direction, visual style development, and composition guidance. NOT a substitute for a professional art director, creative director, or licensed illustrator. Demonstrates the agent-runtime substrate composing with tangle + structured-output-blocks layers on the Tangle floor.",
+  "description": "Voice-first creative illustrator agent bundle — art direction, visual style development, and composition guidance. NOT a substitute for a professional art director, creative director, or licensed illustrator. Demonstrates the agent-runtime substrate composing with tangle + structured-output-blocks layers on the Tangle floor.",
   "tags": [
     "agent-runtime",
     "illustrator",
@@ -61,6 +61,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

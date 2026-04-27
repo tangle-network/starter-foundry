@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-designer-ts",
-  "description": "Product design agent bundle \u2014 UX strategy, design critique, and prototyping guidance. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only \u2014 never replaces the operator's design team or user research.",
+  "description": "Product design agent bundle — UX strategy, design critique, and prototyping guidance. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only — never replaces the operator's design team or user research.",
   "tags": [
     "agent-runtime",
     "product-design",
@@ -61,6 +61,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

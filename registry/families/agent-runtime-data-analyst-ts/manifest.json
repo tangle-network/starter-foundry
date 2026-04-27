@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-data-analyst-ts",
-  "description": "Data analyst agent bundle \u2014 SQL, Python, and visualization for ad-hoc analytics, dashboards, and data-quality checks. Composes the agent-runtime substrate with the tangle layer and structured-output-blocks. Advisory only \u2014 never replaces a dedicated data-engineering or BI team.",
+  "description": "Data analyst agent bundle — SQL, Python, and visualization for ad-hoc analytics, dashboards, and data-quality checks. Composes the agent-runtime substrate with the tangle layer and structured-output-blocks. Advisory only — never replaces a dedicated data-engineering or BI team.",
   "tags": [
     "agent-runtime",
     "data-analyst",
@@ -64,6 +64,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

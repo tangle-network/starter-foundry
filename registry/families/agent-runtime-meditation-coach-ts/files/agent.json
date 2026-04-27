@@ -1,0 +1,41 @@
+{
+  "name": "meditation-coach",
+  "description": "Voice-first meditation coach agent bundle — guided sessions, technique cues, and mindfulness protocols. Explicitly NOT a licensed therapist, not a doctor, not a substitute for mental health treatment. Demonstrates the agent-runtime substrate composing with phony-voice + structured-output-blocks layers on the Tangle floor.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "meditation-coach",
+    "mindfulness",
+    "voice-first",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "ask"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      },
+      {
+        "source": "TOOLS.md",
+        "target": "/workspace/TOOLS.md"
+      }
+    ]
+  }
+}

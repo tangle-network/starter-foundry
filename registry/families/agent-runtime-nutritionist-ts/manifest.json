@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-nutritionist-ts",
-  "description": "Registered-dietitian-level nutrition advisor agent bundle \u2014 meal planning, macro targets, and evidence-based dietary guidance. Explicitly NOT a licensed RD, not a doctor, not a therapist. Advisory only \u2014 never replaces the user's physician, RD, or mental-health professional. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor.",
+  "description": "Registered-dietitian-level nutrition advisor agent bundle — meal planning, macro targets, and evidence-based dietary guidance. Explicitly NOT a licensed RD, not a doctor, not a therapist. Advisory only — never replaces the user's physician, RD, or mental-health professional. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor.",
   "tags": [
     "agent-runtime",
     "nutritionist",
@@ -62,6 +62,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-engineering-manager-ts",
-  "description": "Engineering manager agent bundle \u2014 1:1 cadence, sprint planning, incident post-mortems, and technical-debt triage. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only \u2014 never replaces the operator's own judgment, team, or HR processes.",
+  "description": "Engineering manager agent bundle — 1:1 cadence, sprint planning, incident post-mortems, and technical-debt triage. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only — never replaces the operator's own judgment, team, or HR processes.",
   "tags": [
     "agent-runtime",
     "engineering-manager",
@@ -65,6 +65,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

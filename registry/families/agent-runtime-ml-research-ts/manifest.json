@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-ml-research-ts",
-  "description": "ML Research Assistant agent bundle \u2014 literature review, experiment design, and result interpretation. Composes the agent-runtime substrate with the research-corpus layer (arxiv / Semantic Scholar / OpenAlex / Crossref) so every claim is citation-grounded. Advisory only \u2014 never replaces the operator's own expertise or peer review.",
+  "description": "ML Research Assistant agent bundle — literature review, experiment design, and result interpretation. Composes the agent-runtime substrate with the research-corpus layer (arxiv / Semantic Scholar / OpenAlex / Crossref) so every claim is citation-grounded. Advisory only — never replaces the operator's own expertise or peer review.",
   "tags": [
     "agent-runtime",
     "ml-research",
@@ -65,6 +65,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

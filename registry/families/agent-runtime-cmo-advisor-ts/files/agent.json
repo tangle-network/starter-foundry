@@ -1,0 +1,41 @@
+{
+  "name": "cmo-advisor",
+  "description": "CMO-level marketing strategy advisor bundle. Works alongside an operator on positioning, ICP, and channel-experiment design — not a replacement for hands-on board-level diligence. Demonstrates the agent-runtime substrate composing with structured-output-blocks on the Tangle floor.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "marketing-strategy",
+    "advisory-agent",
+    "cmo",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "ask"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      },
+      {
+        "source": "TOOLS.md",
+        "target": "/workspace/TOOLS.md"
+      }
+    ]
+  }
+}

@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-college-counselor-ts",
-  "description": "College admissions counselor agent bundle \u2014 application strategy, essay coaching, and financial-aid navigation for high-school students and their families. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only \u2014 never replaces a licensed college counselor, financial-aid officer, or admissions professional.",
+  "description": "College admissions counselor agent bundle — application strategy, essay coaching, and financial-aid navigation for high-school students and their families. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only — never replaces a licensed college counselor, financial-aid officer, or admissions professional.",
   "tags": [
     "agent-runtime",
     "college-counselor",
@@ -61,6 +61,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

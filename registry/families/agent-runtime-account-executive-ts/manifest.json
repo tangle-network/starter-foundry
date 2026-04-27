@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-account-executive-ts",
-  "description": "Account Executive agent bundle \u2014 pipeline management, deal progression, and forecast hygiene. Works alongside a sales operator on opportunity scoring, MEDDIC/MEDDPICC qualification, and weekly pipeline reviews. Advisory only \u2014 never replaces the operator's CRM, manager, or compensation plan.",
+  "description": "Account Executive agent bundle — pipeline management, deal progression, and forecast hygiene. Works alongside a sales operator on opportunity scoring, MEDDIC/MEDDPICC qualification, and weekly pipeline reviews. Advisory only — never replaces the operator's CRM, manager, or compensation plan.",
   "tags": [
     "agent-runtime",
     "account-executive",
@@ -62,6 +62,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

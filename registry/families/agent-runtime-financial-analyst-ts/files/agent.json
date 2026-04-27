@@ -1,0 +1,41 @@
+{
+  "name": "financial-analyst",
+  "description": "Financial analyst agent bundle — equity research, financial modeling, and investment memo generation. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only — never replaces a licensed financial advisor, CPA, or fiduciary.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "financial-analyst",
+    "equity-research",
+    "advisory",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "ask"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      },
+      {
+        "source": "TOOLS.md",
+        "target": "/workspace/TOOLS.md"
+      }
+    ]
+  }
+}

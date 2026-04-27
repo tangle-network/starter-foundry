@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-math-research-ts",
-  "description": "Math research assistant agent bundle \u2014 helps with literature review, proof verification, and mathematical reasoning. Composes the agent-runtime substrate with the research-corpus layer (arxiv / Semantic Scholar / OpenAlex / Crossref) so any claim is citation-grounded. Advisory only \u2014 never replaces peer review or domain expertise.",
+  "description": "Math research assistant agent bundle — helps with literature review, proof verification, and mathematical reasoning. Composes the agent-runtime substrate with the research-corpus layer (arxiv / Semantic Scholar / OpenAlex / Crossref) so any claim is citation-grounded. Advisory only — never replaces peer review or domain expertise.",
   "tags": [
     "agent-runtime",
     "math-research",
@@ -65,6 +65,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

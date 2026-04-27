@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-product-manager-ts",
-  "description": "Product management agent bundle \u2014 helps operators define product strategy, prioritize features, and run discovery cycles. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only \u2014 never replaces the operator's product team or board.",
+  "description": "Product management agent bundle — helps operators define product strategy, prioritize features, and run discovery cycles. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only — never replaces the operator's product team or board.",
   "tags": [
     "agent-runtime",
     "product-management",
@@ -61,6 +61,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

@@ -1,0 +1,41 @@
+{
+  "name": "tax",
+  "description": "Tax-prep agent bundle — drafts filings, tracks deadlines, never substitutes for a CPA. Demonstrates the agent-runtime substrate composing on a regulated-domain role with structured-output blocks (:::filing, :::deadline, :::question) and a strict refusal contract.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "tax",
+    "fintech",
+    "regulated-domain",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "deny"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      },
+      {
+        "source": "TOOLS.md",
+        "target": "/workspace/TOOLS.md"
+      }
+    ]
+  }
+}

@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-photographer-ts",
-  "description": "Creative photographer agent bundle \u2014 composition coaching, lighting setup design, and post-production workflow guidance. Works alongside a photographer as a thinking partner for shot planning, gear selection, and creative direction. Not a substitute for hands-on experience or professional critique.",
+  "description": "Creative photographer agent bundle — composition coaching, lighting setup design, and post-production workflow guidance. Works alongside a photographer as a thinking partner for shot planning, gear selection, and creative direction. Not a substitute for hands-on experience or professional critique.",
   "tags": [
     "agent-runtime",
     "photographer",
@@ -62,6 +62,10 @@
     ]
   },
   "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
     {
       "source": "files/system-prompt.md",
       "target": "system-prompt.md"

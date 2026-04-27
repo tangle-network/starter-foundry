@@ -1,0 +1,42 @@
+{
+  "name": "history-tutor",
+  "description": "Voice-first history tutor agent bundle — primary-source analysis, historiographic debate, and timeline reasoning. Explicitly NOT a substitute for a credentialed history teacher, not a source of original archival research, not a replacement for peer-reviewed scholarship. Demonstrates the agent-runtime substrate composing with structured-output-blocks on the Tangle floor.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "history-tutor",
+    "education",
+    "primary-sources",
+    "historiography",
+    "cloudflare-worker"
+  ],
+  "prompt": {
+    "systemPromptFile": "system-prompt.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "ask"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "methodology/",
+        "target": "/workspace/methodology/"
+      },
+      {
+        "source": "README.md",
+        "target": "/workspace/README.md"
+      },
+      {
+        "source": "TOOLS.md",
+        "target": "/workspace/TOOLS.md"
+      }
+    ]
+  }
+}

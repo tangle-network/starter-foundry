@@ -180,6 +180,8 @@ const FAMILY_PROMPTS: Record<string, string> = {
     'Build a sandbox-app sandbox workspace on tangle sandbox SDK with editor, file tree, and terminal',
   'agent-debug-ui-ts':
     'Build an agent-debug-ui live-trace-debugger for sse-stream tool-call-inspector and step-through-agent replay',
+  'agent-marketplace-ui-ts':
+    'Build an agent-marketplace-ui agent-bundle-browser with bundle-detail-page agent-install-flow and marketplace-search',
   'agent-runtime-veterinarian-ts':
     'Build a vet-agent veterinarian agent for pet-health husbandry-reference, vaccination-framework, and emergency-triage (not a licensed DVM)',
   'agent-runtime-relationship-coach-ts':

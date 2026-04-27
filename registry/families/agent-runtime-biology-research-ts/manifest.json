@@ -71,5 +71,19 @@
         "description": "TODO: primary file agents must replace."
       }
     ]
-  }
+  },
+  "includes": [
+    "agent-base:secure",
+    "agent-base:tangle",
+    "agent-base:memory",
+    "agent-base:scheduler",
+    "agent-base:mcp-registry",
+    "agent-channels:telegram",
+    "agent-channels:discord",
+    "agent-channels:slack",
+    "agent-channels:whatsapp",
+    "agent-channels:imessage",
+    "agent-channels:gmail",
+    "agent-channels:linear"
+  ]
 }

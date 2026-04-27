@@ -1,6 +1,6 @@
 {
   "id": "multi-agent-startup-team-ts",
-  "description": "Curated multi-agent startup leadership team — CEO / CTO / CMO / HR / CFO-advisor with hand-tuned coordination protocols, explicit handoff blocks, and a default-respondent routing rule. Single deploy, five roles, baked-in cadence: weekly review (CEO), 1:1 + tech-debt triage (CTO), positioning + channel experiments (CMO), recruiting loop + interview rubric (HR), burn / runway / fundraise prep (CFO). Each role's system prompt explicitly references the others and routes via :::handoff blocks rather than improvising.",
+  "description": "Curated multi-agent startup leadership team \u2014 CEO / CTO / CMO / HR / CFO-advisor with hand-tuned coordination protocols, explicit handoff blocks, and a default-respondent routing rule. Single deploy, five roles, baked-in cadence: weekly review (CEO), 1:1 + tech-debt triage (CTO), positioning + channel experiments (CMO), recruiting loop + interview rubric (HR), burn / runway / fundraise prep (CFO). Each role's system prompt explicitly references the others and routes via :::handoff blocks rather than improvising.",
   "tags": [
     "multi-agent",
     "team",
@@ -18,7 +18,17 @@
   "includes": [
     "agent-base:tangle",
     "agent-base:secure",
-    "agent-output:blocks"
+    "agent-output:blocks",
+    "agent-base:memory",
+    "agent-base:scheduler",
+    "agent-base:mcp-registry",
+    "agent-channels:telegram",
+    "agent-channels:discord",
+    "agent-channels:slack",
+    "agent-channels:whatsapp",
+    "agent-channels:imessage",
+    "agent-channels:gmail",
+    "agent-channels:linear"
   ],
   "defaults": {
     "projectType": "multi-agent-startup-team",
@@ -80,7 +90,13 @@
     ],
     "team": {
       "defaultRespondent": "ceo",
-      "roles": ["ceo", "cto", "cmo", "hr", "cfo-advisor"],
+      "roles": [
+        "ceo",
+        "cto",
+        "cmo",
+        "hr",
+        "cfo-advisor"
+      ],
       "agentsConfigPath": "agents.json",
       "orchestratorPromptPath": "AGENTS.md"
     }

@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-career-coach-ts",
-  "description": "Career coach agent bundle — helps professionals navigate career transitions, job searches, and professional growth. Provides structured frameworks for self-assessment, market positioning, and decision-making. Advisory only — never replaces a licensed career counselor, therapist, or recruiter.",
+  "description": "Career coach agent bundle \u2014 helps professionals navigate career transitions, job searches, and professional growth. Provides structured frameworks for self-assessment, market positioning, and decision-making. Advisory only \u2014 never replaces a licensed career counselor, therapist, or recruiter.",
   "tags": [
     "agent-runtime",
     "career-coach",
@@ -18,7 +18,17 @@
   "includes": [
     "agent-base:tangle",
     "agent-base:secure",
-    "agent-output:blocks"
+    "agent-output:blocks",
+    "agent-base:memory",
+    "agent-base:scheduler",
+    "agent-base:mcp-registry",
+    "agent-channels:telegram",
+    "agent-channels:discord",
+    "agent-channels:slack",
+    "agent-channels:whatsapp",
+    "agent-channels:imessage",
+    "agent-channels:gmail",
+    "agent-channels:linear"
   ],
   "defaults": {
     "projectType": "agent-runtime-career-coach",

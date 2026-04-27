@@ -41,6 +41,68 @@ export type AgentPermission = 'allow' | 'ask' | 'deny'
 export const DEFAULT_WORKSPACE_ROOT = '/home/agent'
 
 /**
+ * Supported harness backends. The deploy script translates workspace-file
+ * filenames per harness so a single bundle can target multiple runtimes.
+ *
+ * - `opencode` (default) — auto-loads `AGENTS.md`, `agents.json`, `.mcp.json`
+ * - `claude-code`       — auto-loads `CLAUDE.md`; cross-compat AGENTS.md
+ *                          symlink/copy is emitted alongside; `.mcp.json` native
+ * - `hermes`            — auto-loads `AGENTS.md`; MCP path is partial (see
+ *                          `docs/issues/sandbox-sdk-deploy-hooks.md`)
+ *
+ * @public
+ */
+export type Harness = 'opencode' | 'claude-code' | 'hermes'
+
+/**
+ * Default harness when neither the bundle nor the CLI flag specifies one.
+ *
+ * @public
+ */
+export const DEFAULT_HARNESS: Harness = 'opencode'
+
+/**
+ * Per-harness workspace filename selection. Centralised so callers can not
+ * accidentally hand-roll filename mapping inconsistently with the deploy
+ * script.
+ *
+ * @public
+ */
+export function workspaceFilenames(harness: Harness): {
+  systemPromptFile: string
+  subagentsFile: string
+  mcpFile: string
+} {
+  if (harness === 'claude-code') {
+    return { systemPromptFile: 'CLAUDE.md', subagentsFile: 'agents.json', mcpFile: '.mcp.json' }
+  }
+  // opencode + hermes both default to the AGENTS.md + .mcp.json layout. The
+  // hermes MCP path is partial — see docs/issues/sandbox-sdk-deploy-hooks.md.
+  return { systemPromptFile: 'AGENTS.md', subagentsFile: 'agents.json', mcpFile: '.mcp.json' }
+}
+
+/**
+ * Resolve the effective harness from a bundle, with optional CLI override.
+ *
+ * Resolution order: CLI override > bundle.harness > DEFAULT_HARNESS.
+ *
+ * @public
+ * @throws when an unknown harness identifier is supplied
+ */
+export function resolveHarness(
+  bundle: Pick<AgentBundleProfile, 'harness'>,
+  override?: string,
+): Harness {
+  const candidate = override ?? bundle.harness ?? DEFAULT_HARNESS
+  if (candidate !== 'opencode' && candidate !== 'claude-code' && candidate !== 'hermes') {
+    throw new Error(
+      `unknown harness "${candidate}"; expected one of: opencode, claude-code, hermes`,
+    )
+  }
+  return candidate
+}
+
+/**
  * A single resource file (or directory) to materialise inside the sandbox.
  */
 export interface BundleResource {
@@ -77,6 +139,11 @@ export interface AgentBundleProfile {
   description?: string
   version: string
   tags?: string[]
+  /**
+   * Default harness for this bundle. CLI `--harness` flag overrides.
+   * Affects which workspace filenames the deploy script emits.
+   */
+  harness?: Harness
   workspace?: {
     root?: string
   }
@@ -94,6 +161,17 @@ export interface AgentBundleProfile {
   subagents?: Record<string, SubagentBundle>
   resources?: {
     files?: BundleResource[]
+  }
+  /**
+   * Optional pre/post deploy hooks. The deploy script runs:
+   *  - `pre`  LOCALLY in the user's CWD before sandbox creation
+   *  - `post` INSIDE THE SANDBOX after files are written, before any
+   *           `box.task()` invocation
+   * Paths are relative to the bundle root.
+   */
+  hooks?: {
+    pre?: string
+    post?: string
   }
 }
 
@@ -491,19 +569,45 @@ async function buildOpenCodeAgentsJson(
 }
 
 /**
- * Compute the list of files the deploy script must `box.files.write`
- * into the sandbox at `<workspace.root>`:
+ * Build the harness-native MCP registry file content from the bundle's
+ * `mcp` field. Returns `undefined` when the bundle declares no MCP servers.
+ */
+function buildMcpRegistry(bundle: AgentBundleProfile): string | undefined {
+  if (!bundle.mcp || Object.keys(bundle.mcp).length === 0) return undefined
+  return JSON.stringify({ mcpServers: bundle.mcp }, null, 2) + '\n'
+}
+
+/**
+ * Options for `toWorkspaceFiles`.
  *
- * - `<workspace.root>/AGENTS.md`   — orchestrator system prompt
- *                                    (auto-loaded by the harness)
+ * @public
+ */
+export interface ToWorkspaceFilesOptions {
+  /**
+   * Harness override. Resolution order:
+   *   override > bundle.harness > DEFAULT_HARNESS
+   */
+  harness?: Harness
+}
+
+/**
+ * Compute the list of files the deploy script must `box.files.write`
+ * into the sandbox at `<workspace.root>`. Filenames are harness-aware:
+ *
+ * - `<workspace.root>/<systemPromptFile>` — orchestrator system prompt
+ *      AGENTS.md (opencode, hermes) or CLAUDE.md (claude-code)
  * - `<workspace.root>/agents.json` — multi-agent bundles only;
- *                                    OpenCode subagent definitions
- *                                    (auto-loaded by `loadAgentsConfig`)
+ *      OpenCode subagent definitions (auto-loaded by `loadAgentsConfig`)
+ * - `<workspace.root>/.mcp.json`   — when bundle.mcp is non-empty
  * - One file per `resources.files[]` entry, target defaulting to
  *   `<workspace.root>/<source>` when not specified.
  *
+ * For `claude-code` mode the harness reads CLAUDE.md natively. We ALSO emit
+ * an AGENTS.md copy so the workspace stays portable when the operator flips
+ * the harness backend (e.g. claude-code -> opencode at a later deploy).
+ *
  * Single-agent bundles do NOT emit `agents.json`. Their orchestrator
- * prompt is the AGENTS.md content (also pushed via the SDK
+ * prompt is the system-prompt-file content (also pushed via the SDK
  * `AgentProfile.prompt.systemPrompt` for a full-replacement system
  * prompt — equivalent content, two delivery channels).
  *
@@ -512,29 +616,53 @@ async function buildOpenCodeAgentsJson(
 export async function toWorkspaceFiles(
   bundle: AgentBundleProfile,
   bundleDir: string,
+  options: ToWorkspaceFilesOptions = {},
 ): Promise<WorkspaceFile[]> {
   const workspaceRoot = resolveWorkspaceRoot(bundle)
+  const harness = resolveHarness(bundle, options.harness)
+  const names = workspaceFilenames(harness)
   const out: WorkspaceFile[] = []
 
-  // 1. AGENTS.md — orchestrator system prompt at the workspace root
+  // 1. System prompt — harness-native filename at the workspace root.
   const systemPromptContent = await resolveSystemPrompt(bundle, bundleDir)
   if (systemPromptContent) {
     out.push({
-      targetPath: join(workspaceRoot, 'AGENTS.md'),
+      targetPath: join(workspaceRoot, names.systemPromptFile),
       content: systemPromptContent,
     })
+    // For claude-code mode also emit an AGENTS.md copy for cross-harness
+    // portability. The SDK currently has no symlink primitive; emit BOTH
+    // copies so neither harness reads stale or missing content if the
+    // operator flips backends after deploy.
+    if (harness === 'claude-code') {
+      out.push({
+        targetPath: join(workspaceRoot, 'AGENTS.md'),
+        content: systemPromptContent,
+      })
+    }
   }
 
-  // 2. agents.json — multi-agent bundles only
+  // 2. agents.json — multi-agent bundles only. Shape is OpenCode native;
+  //    Claude Code reads it from the workspace root too.
   if (bundle.subagents && Object.keys(bundle.subagents).length > 0) {
     const agentsJson = await buildOpenCodeAgentsJson(bundle, bundleDir)
     out.push({
-      targetPath: join(workspaceRoot, 'agents.json'),
+      targetPath: join(workspaceRoot, names.subagentsFile),
       content: agentsJson,
     })
   }
 
-  // 3. resources.files[] — methodology/, README.md, role assets, etc.
+  // 3. .mcp.json — harness-aware MCP registry. Emitted only when the
+  //    bundle declares servers in `mcp`.
+  const mcpContent = buildMcpRegistry(bundle)
+  if (mcpContent) {
+    out.push({
+      targetPath: join(workspaceRoot, names.mcpFile),
+      content: mcpContent,
+    })
+  }
+
+  // 4. resources.files[] — methodology/, README.md, role assets, etc.
   for (const resource of bundle.resources?.files ?? []) {
     const resolved = await resolveResource(resource, bundleDir, workspaceRoot)
     for (const mount of resolved) {

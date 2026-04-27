@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-cs-research-ts",
-  "description": "CS Research Assistant agent bundle — literature survey, paper summarization, citation-graph exploration, and research-question formulation. Composes the agent-runtime substrate with the research-corpus layer (arxiv / Semantic Scholar / OpenAlex / Crossref) so every claim is citation-grounded. Advisory only — never replaces peer review, IRB, or the researcher's own judgment.",
+  "description": "CS Research Assistant agent bundle \u2014 literature survey, paper summarization, citation-graph exploration, and research-question formulation. Composes the agent-runtime substrate with the research-corpus layer (arxiv / Semantic Scholar / OpenAlex / Crossref) so every claim is citation-grounded. Advisory only \u2014 never replaces peer review, IRB, or the researcher's own judgment.",
   "tags": [
     "agent-runtime",
     "cs-research",
@@ -18,7 +18,17 @@
     "agent-base:tangle",
     "agent-base:secure",
     "agent-tools:research-corpus",
-    "agent-output:blocks"
+    "agent-output:blocks",
+    "agent-base:memory",
+    "agent-base:scheduler",
+    "agent-base:mcp-registry",
+    "agent-channels:telegram",
+    "agent-channels:discord",
+    "agent-channels:slack",
+    "agent-channels:whatsapp",
+    "agent-channels:imessage",
+    "agent-channels:gmail",
+    "agent-channels:linear"
   ],
   "defaults": {
     "projectType": "agent-runtime-cs-research",

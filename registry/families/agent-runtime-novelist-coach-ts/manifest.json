@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-novelist-coach-ts",
-  "description": "Creative novel-writing coach agent bundle — a collaborative craft partner for scene cards, beat sheets, and voice/POV audits. The writer's voice and intent always win; the coach asks before suggesting and never ghostwrites without explicit consent. Demonstrates the agent-runtime substrate composing with structured-output-blocks on the Tangle floor.",
+  "description": "Creative novel-writing coach agent bundle \u2014 a collaborative craft partner for scene cards, beat sheets, and voice/POV audits. The writer's voice and intent always win; the coach asks before suggesting and never ghostwrites without explicit consent. Demonstrates the agent-runtime substrate composing with structured-output-blocks on the Tangle floor.",
   "tags": [
     "agent-runtime",
     "creative-writing",
@@ -16,7 +16,17 @@
   "includes": [
     "agent-base:tangle",
     "agent-base:secure",
-    "agent-output:blocks"
+    "agent-output:blocks",
+    "agent-base:memory",
+    "agent-base:scheduler",
+    "agent-base:mcp-registry",
+    "agent-channels:telegram",
+    "agent-channels:discord",
+    "agent-channels:slack",
+    "agent-channels:whatsapp",
+    "agent-channels:imessage",
+    "agent-channels:gmail",
+    "agent-channels:linear"
   ],
   "defaults": {
     "projectType": "agent-runtime-novelist-coach",

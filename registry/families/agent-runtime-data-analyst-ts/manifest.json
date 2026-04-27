@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-data-analyst-ts",
-  "description": "Data analyst agent bundle — SQL, Python, and visualization for ad-hoc analytics, dashboards, and data-quality checks. Composes the agent-runtime substrate with the tangle layer and structured-output-blocks. Advisory only — never replaces a dedicated data-engineering or BI team.",
+  "description": "Data analyst agent bundle \u2014 SQL, Python, and visualization for ad-hoc analytics, dashboards, and data-quality checks. Composes the agent-runtime substrate with the tangle layer and structured-output-blocks. Advisory only \u2014 never replaces a dedicated data-engineering or BI team.",
   "tags": [
     "agent-runtime",
     "data-analyst",
@@ -18,7 +18,17 @@
   "includes": [
     "agent-base:tangle",
     "agent-base:secure",
-    "agent-output:blocks"
+    "agent-output:blocks",
+    "agent-base:memory",
+    "agent-base:scheduler",
+    "agent-base:mcp-registry",
+    "agent-channels:telegram",
+    "agent-channels:discord",
+    "agent-channels:slack",
+    "agent-channels:whatsapp",
+    "agent-channels:imessage",
+    "agent-channels:gmail",
+    "agent-channels:linear"
   ],
   "defaults": {
     "projectType": "agent-runtime-data-analyst",

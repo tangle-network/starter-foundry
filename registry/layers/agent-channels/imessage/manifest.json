@@ -1,0 +1,102 @@
+{
+  "id": "imessage",
+  "slot": "agent-channels",
+  "description": "iMessage channel adapter via the BlueBubbles HTTP relay (https://bluebubbles.app). Apple does not expose a server-side iMessage API; BlueBubbles is the standard community workaround that runs on a macOS host you control. receive() polls /api/v1/message/<chatGuid>; send() POSTs to /api/v1/message/text. Honest gap: pure-cloud iMessage is impossible \u2014 this layer requires a Mac with BlueBubbles configured.",
+  "appliesTo": [
+    "agent-runtime-account-executive-ts",
+    "agent-runtime-architect-ts",
+    "agent-runtime-auditor-ts",
+    "agent-runtime-biology-research-ts",
+    "agent-runtime-business-partner-ts",
+    "agent-runtime-career-coach-ts",
+    "agent-runtime-chef-ts",
+    "agent-runtime-chemistry-research-ts",
+    "agent-runtime-cmo-advisor-ts",
+    "agent-runtime-college-counselor-ts",
+    "agent-runtime-cs-research-ts",
+    "agent-runtime-cs-tutor-ts",
+    "agent-runtime-customer-success-ts",
+    "agent-runtime-data-analyst-ts",
+    "agent-runtime-designer-ts",
+    "agent-runtime-devops-ts",
+    "agent-runtime-doctor-ts",
+    "agent-runtime-engineering-manager-ts",
+    "agent-runtime-essay-coach-ts",
+    "agent-runtime-financial-analyst-ts",
+    "agent-runtime-fitness-coach-ts",
+    "agent-runtime-friend-ts",
+    "agent-runtime-game-designer-ts",
+    "agent-runtime-grant-writer-ts",
+    "agent-runtime-history-tutor-ts",
+    "agent-runtime-illustrator-ts",
+    "agent-runtime-language-tutor-ts",
+    "agent-runtime-legal-counsel-ts",
+    "agent-runtime-math-research-ts",
+    "agent-runtime-math-tutor-ts",
+    "agent-runtime-mediator-ts",
+    "agent-runtime-meditation-coach-ts",
+    "agent-runtime-ml-research-ts",
+    "agent-runtime-music-producer-ts",
+    "agent-runtime-novelist-coach-ts",
+    "agent-runtime-nutritionist-ts",
+    "agent-runtime-pentester-ts",
+    "agent-runtime-pharmacist-ts",
+    "agent-runtime-photographer-ts",
+    "agent-runtime-physics-research-ts",
+    "agent-runtime-product-manager-ts",
+    "agent-runtime-real-estate-ts",
+    "agent-runtime-recruiter-ts",
+    "agent-runtime-relationship-coach-ts",
+    "agent-runtime-research",
+    "agent-runtime-sales-engineer-ts",
+    "agent-runtime-screenwriter-ts",
+    "agent-runtime-security-engineer-ts",
+    "agent-runtime-tax-ts",
+    "agent-runtime-therapist-ts",
+    "agent-runtime-travel-planner-ts",
+    "agent-runtime-veterinarian-ts",
+    "agent-runtime-wealth-manager-ts",
+    "multi-agent-creative-studio-ts",
+    "multi-agent-legal-ops-ts",
+    "multi-agent-product-ops-ts",
+    "multi-agent-research-lab-ts",
+    "multi-agent-startup-team-ts"
+  ],
+  "provides": [
+    "channel:imessage"
+  ],
+  "defaults": {
+    "channelId": "imessage",
+    "transport": "bluebubbles-http",
+    "envVars": [
+      "BLUEBUBBLES_SERVER_URL",
+      "BLUEBUBBLES_PASSWORD"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/channels/imessage.ts",
+      "target": "channels/imessage.ts"
+    },
+    {
+      "source": "files/channels/imessage.env.example",
+      "target": "channels/imessage.env.example"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "src/channels/imessage.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/channels/imessage.env.example"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": [
+      "src/channels/imessage.ts"
+    ],
+    "commands": []
+  }
+}

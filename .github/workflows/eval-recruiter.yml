@@ -1,0 +1,106 @@
+name: eval-recruiter
+
+# Gen-16: live eval against agent-runtime-recruiter-ts via the committed
+# example workspace under examples/recruiter-eval-workspace. Runs on:
+#   - PR touching the recruiter family, the eval layer, or the example workspace
+#   - workflow_dispatch (manual)
+#   - schedule (daily 06:00 UTC) — catches model drift independent of code change
+#   - push to main — refresh scorecard on merge
+#
+# Gating: the live LLM eval step only runs when the TANGLE_ROUTER_KEY repo
+# secret is set. When absent, the workflow logs a structured warning and
+# exits 0 — it does NOT fail PRs. Set the secret to unlock live measurement.
+
+on:
+  pull_request:
+    paths:
+      - 'registry/families/agent-runtime-recruiter-ts/**'
+      - 'registry/families/agent-eval-harness-ts/**'
+      - 'registry/layers/agent-eval/**'
+      - 'examples/recruiter-eval-workspace/**'
+      - '.github/workflows/eval-recruiter.yml'
+      - 'scripts/sync-example-workspaces.ts'
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'registry/families/agent-runtime-recruiter-ts/**'
+      - 'registry/families/agent-eval-harness-ts/**'
+      - 'registry/layers/agent-eval/**'
+      - 'examples/recruiter-eval-workspace/**'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+      - name: install
+        run: pnpm install --frozen-lockfile
+      - name: build
+        run: pnpm build
+      - name: sync example workspace from registry
+        run: pnpm exec tsx scripts/sync-example-workspaces.ts
+      - name: run live eval (gated on TANGLE_ROUTER_KEY)
+        id: live
+        env:
+          TANGLE_ROUTER_KEY: ${{ secrets.TANGLE_ROUTER_KEY }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        working-directory: examples/recruiter-eval-workspace
+        run: |
+          if [ -z "${TANGLE_ROUTER_KEY}" ]; then
+            echo "::warning::TANGLE_ROUTER_KEY not set as repo secret. Skipping workspace install + live eval — agent_eval_meta_pass_rate will remain 'unmeasured'. Set the secret to enable live measurement."
+            echo "ran=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # @tangle-network/sandbox-sdk + sandbox-ui live on GH Packages, not public npm.
+          # Auth via the workflow's GITHUB_TOKEN (read-only on this repo's packages).
+          cat > .npmrc <<EOF
+          @tangle-network:registry=https://npm.pkg.github.com
+          //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+          EOF
+          pnpm install --no-frozen-lockfile
+          pnpm eval || true
+          rm -f .npmrc
+          echo "ran=true" >> "$GITHUB_OUTPUT"
+      - name: upload scorecard artifact
+        if: steps.live.outputs.ran == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: recruiter-eval-scorecard
+          path: examples/recruiter-eval-workspace/.evolve/scorecard.json
+          if-no-files-found: warn
+      - name: copy scorecard to root + commit on main
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.live.outputs.ran == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          DATE=$(date -u +%Y-%m-%d)
+          mkdir -p .evolve/eval-runs/recruiter
+          cp examples/recruiter-eval-workspace/.evolve/scorecard.json .evolve/eval-runs/recruiter/${DATE}.json || true
+          # Refresh repo-level scorecard with the new agent_eval_meta_pass_rate value.
+          pnpm exec tsx scripts/refresh-scorecard.ts || true
+          if git diff --exit-code .evolve/scorecard.json .evolve/eval-runs/recruiter/${DATE}.json > /dev/null 2>&1; then
+            echo "no scorecard changes to commit"
+            exit 0
+          fi
+          git config user.name "tangle-bot"
+          git config user.email "bot@tangle.tools"
+          git add .evolve/eval-runs/recruiter/${DATE}.json .evolve/scorecard.json
+          git commit -m "chore(eval): recruiter scorecard ${DATE}"
+          git push

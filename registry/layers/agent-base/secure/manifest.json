@@ -53,7 +53,8 @@
     "agent-runtime-therapist-ts",
     "agent-runtime-travel-planner-ts",
     "agent-runtime-veterinarian-ts",
-    "agent-runtime-wealth-manager-ts"
+    "agent-runtime-wealth-manager-ts",
+    "multi-agent-research-lab-ts"
   ],
   "provides": [
     "secure:secrets",

@@ -1,0 +1,208 @@
+{
+  "id": "multi-agent-research-lab-ts",
+  "description": "Curated cross-domain research lab — Lab Director + physics/chemistry/biology researchers with hand-tuned interdisciplinary handoff protocols. Citation-grounded, no diagnosis, no peer-review replacement.",
+  "tags": [
+    "multi-agent",
+    "research",
+    "literature",
+    "cross-domain",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "multi-agent",
+    "surface": "multi-agent-team"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-tools:research-corpus",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "multi-agent-research-lab",
+    "agentName": "research-lab",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "research:paper-search",
+          "research:citation-graph"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "research-question-formulation",
+      "cross-domain-synthesis",
+      "literature-triage",
+      "arxiv-literature-search",
+      "experimental-design",
+      "reaction-mechanism-analysis",
+      "crossref-literature-search",
+      "protein-structure-analysis",
+      "bioinformatics-survey"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "low",
+    "advisoryOnly": true,
+    "outboundDomains": [
+      "api.tangle.tools",
+      "export.arxiv.org",
+      "api.semanticscholar.org",
+      "api.openalex.org",
+      "api.crossref.org",
+      "pubchem.ncbi.nlm.nih.gov",
+      "www.chemspider.com",
+      "rest.uniprot.org",
+      "www.ebi.ac.uk",
+      "eutils.ncbi.nlm.nih.gov"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ],
+    "defaultRespondent": "lab-director"
+  },
+  "files": [
+    {
+      "source": "files/coordination-protocol.md",
+      "target": "coordination-protocol.md"
+    },
+    {
+      "source": "files/agent-roster.json",
+      "target": "agent-roster.json"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/roles/lab-director/system-prompt.md",
+      "target": "roles/lab-director/system-prompt.md"
+    },
+    {
+      "source": "files/roles/lab-director/methodology/research-question-formulation.md",
+      "target": "roles/lab-director/methodology/research-question-formulation.md"
+    },
+    {
+      "source": "files/roles/lab-director/methodology/cross-domain-synthesis.md",
+      "target": "roles/lab-director/methodology/cross-domain-synthesis.md"
+    },
+    {
+      "source": "files/roles/lab-director/methodology/literature-triage.md",
+      "target": "roles/lab-director/methodology/literature-triage.md"
+    },
+    {
+      "source": "files/roles/physics-researcher/system-prompt.md",
+      "target": "roles/physics-researcher/system-prompt.md"
+    },
+    {
+      "source": "files/roles/physics-researcher/methodology/arxiv-literature-search.md",
+      "target": "roles/physics-researcher/methodology/arxiv-literature-search.md"
+    },
+    {
+      "source": "files/roles/physics-researcher/methodology/experimental-design.md",
+      "target": "roles/physics-researcher/methodology/experimental-design.md"
+    },
+    {
+      "source": "files/roles/chemistry-researcher/system-prompt.md",
+      "target": "roles/chemistry-researcher/system-prompt.md"
+    },
+    {
+      "source": "files/roles/chemistry-researcher/methodology/reaction-mechanism-analysis.md",
+      "target": "roles/chemistry-researcher/methodology/reaction-mechanism-analysis.md"
+    },
+    {
+      "source": "files/roles/chemistry-researcher/methodology/crossref-literature-search.md",
+      "target": "roles/chemistry-researcher/methodology/crossref-literature-search.md"
+    },
+    {
+      "source": "files/roles/biology-researcher/system-prompt.md",
+      "target": "roles/biology-researcher/system-prompt.md"
+    },
+    {
+      "source": "files/roles/biology-researcher/methodology/protein-structure-analysis.md",
+      "target": "roles/biology-researcher/methodology/protein-structure-analysis.md"
+    },
+    {
+      "source": "files/roles/biology-researcher/methodology/bioinformatics-survey.md",
+      "target": "roles/biology-researcher/methodology/bioinformatics-survey.md"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "coordination-protocol.md"
+    },
+    {
+      "type": "file-exists",
+      "path": "agent-roster.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "roles/lab-director/system-prompt.md"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "roles/lab-director/system-prompt.md"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "roles/physics-researcher/system-prompt.md"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "roles/chemistry-researcher/system-prompt.md"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "roles/biology-researcher/system-prompt.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "coordination-protocol.md",
+      "roles/lab-director/system-prompt.md"
+    ],
+    "extensionPoints": [
+      "roles/",
+      "agent-roster.json"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "research-lab-team",
+      "research-lab-agent",
+      "interdisciplinary-research-team",
+      "cross-domain-research-pod"
+    ],
+    "tier2": [
+      "arxiv",
+      "crossref",
+      "openalex",
+      "literature-survey",
+      "interdisciplinary",
+      "cross-domain-citation"
+    ],
+    "tier3": [
+      "agent"
+    ],
+    "archetypes": [
+      "multi-agent-team",
+      "research-pod"
+    ]
+  }
+}

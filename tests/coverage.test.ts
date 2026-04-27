@@ -268,6 +268,8 @@ const FAMILY_PROMPTS: Record<string, string> = {
     'Build a research-lab-team interdisciplinary cross-domain-research-pod with arxiv crossref openalex literature-survey across multiple domains',
   'multi-agent-creative-studio-ts':
     'Build a creative-studio-team multi-agent cross-medium-creative-team for arrangement-review beat-out scene-card and storyboard-protocol',
+  'multi-agent-startup-team-ts':
+    'Build a startup-team-agent leadership-team-agent exec-pod with CEO CTO CMO HR CFO advisor — team-cadence weekly-review okr-design decision-journal burn-runway recruiting-loop',
 }
 
 for (const [family, prompt] of Object.entries(FAMILY_PROMPTS)) {

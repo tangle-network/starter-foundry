@@ -56,7 +56,8 @@
     "agent-runtime-wealth-manager-ts",
     "multi-agent-creative-studio-ts",
     "multi-agent-legal-ops-ts",
-    "multi-agent-product-ops-ts"
+    "multi-agent-product-ops-ts",
+    "multi-agent-startup-team-ts"
   ],
   "provides": [
     "secure:secrets",

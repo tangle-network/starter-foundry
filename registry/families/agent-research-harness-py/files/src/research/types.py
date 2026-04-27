@@ -95,7 +95,14 @@ class ScreeningRow(BaseModel):
 
 
 class ValidationVerdict(BaseModel):
-    """Per-hypothesis validator output."""
+    """Per-hypothesis validator output.
+
+    `p_value` is the raw two-sided Welch p; `q_value` is the
+    Benjamini–Hochberg-adjusted q across the hypothesis family in this
+    run. Verdicts use `q_value` so the family-wise false-promote rate is
+    bounded at the configured FDR. Both fields ship so consumers can
+    audit raw vs corrected significance.
+    """
 
     hypothesis_id: str
     n_reps: int
@@ -105,6 +112,8 @@ class ValidationVerdict(BaseModel):
     ci_lower: float
     ci_upper: float
     cohens_d: float
+    p_value: float | None = None
+    q_value: float | None = None
     n_errors: int
     verdict: Literal["winner", "neutral", "loser", "insufficient-data"]
 

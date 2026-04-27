@@ -67,7 +67,8 @@ When the operator says "compare":
 
 1. `python -m eval compare baseline.json head.json --alpha 0.05`
 2. If exit non-zero, list every regressed flow with `cohen_d`,
-   `welch_p`, and `bootstrap_ci_low/high`.
+   `welch_p`, and `diff_ci_low/high` (CI on `head − baseline`, not on the
+   head mean alone — the latter was the Gen-15 muffled-gate).
 
 ## Tangle integration (sandbox-driven runs)
 

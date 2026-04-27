@@ -885,7 +885,7 @@ export async function invokeJudgeFleet(args: {
   })
 
   const unanimousPass = byJudge.length > 0 && byJudge.every((j) => j.passed)
-  const overall = byJudge.length > 0 ? byJudge.reduce((a, j) => a + j.score, 0) / byJudge.length : 0
+  const overall = byJudge.length > 0 ? byJudge.reduce((a, j) => a + j.score, 0) / byJudge.length : 0 // muffle-ok: fleet-skipped path returns overall=0 with byJudge=[] (early return above); callers disambiguate by byJudge.length
 
   return { unanimousPass, byJudge, overall, wallMs }
 }

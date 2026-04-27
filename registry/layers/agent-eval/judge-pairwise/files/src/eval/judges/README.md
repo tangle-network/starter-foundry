@@ -15,10 +15,27 @@ the rubric scale isn't preserved.
 
 LLM judges score the candidate they see first higher than the same
 candidate shown second. Without position correction, every comparison is
-biased toward whichever variant the harness happens to put in slot A. The
-runner here always produces a verdict that requires agreement across BOTH
-orderings — disagreement collapses to `'tie'` and surfaces as a positional
-bias signal in the report.
+biased toward whichever variant the harness happens to put in slot A.
+
+The runner invokes the supplied `judge` function **twice per scenario** —
+once with `(first: A, second: B)` and once with `(first: B, second: A)` —
+and only declares a winner when the SAME variant wins in both orderings.
+Disagreement collapses to `'tie'` and surfaces as a positional bias
+signal in the report. Score reuse across orderings is forbidden by
+construction; the API requires a real `judge` callable.
+
+## Judge contract
+
+```ts
+const judge: PairwiseJudge = async ({ first, second, scenarioId }) => {
+  // Run your LLM/human/learned judge here. Return both scores in 0..1.
+  return { firstScore: 0.82, secondScore: 0.79 }
+}
+```
+
+Implementations MUST treat `first` and `second` as opaque presentation
+slots; sorting/normalising by `variantId` inside the judge erases the
+position-bias signal that this layer exists to surface.
 
 ## When to use
 

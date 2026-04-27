@@ -1,0 +1,13 @@
+// Fixture for findFakeEffectSize. The cohensD: 0 sits inside an object
+// literal that also declares reps: 1 — n=1 has no Cohen's d, so 0 is
+// fabricated.
+ranked.push({
+  hypothesisId: hypothesis.id,
+  reps: 1,
+  meanScore,
+  delta,
+  cohensD: 0,
+  meanCostUsd,
+})
+// Acceptable: reps = 5 → real estimate, no muffle.
+const okShape = { reps: 5, cohensD: 0 }

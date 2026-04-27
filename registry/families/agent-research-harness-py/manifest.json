@@ -1,0 +1,199 @@
+{
+  "id": "agent-research-harness-py",
+  "description": "Python research harness — propose hypotheses, screen cheaply (1 rep), validate winners (5 rep) with bootstrap CI + Cohen's d. Each hypothesis runs in an isolated tangle-sandbox so treatments cannot contaminate each other. Statistical math (scipy.stats) mirrors the TS sibling family byte-for-byte; verdicts are stable across languages.",
+  "tags": [
+    "agent-runtime",
+    "research-harness",
+    "experimentation",
+    "tangle-sandbox",
+    "scipy",
+    "python"
+  ],
+  "taxonomy": {
+    "language": "python",
+    "runtime": "python",
+    "surface": "research-runner"
+  },
+  "defaults": {
+    "projectType": "agent-research-harness-py",
+    "agentName": "research-harness",
+    "outboundDomains": [
+      "router.tangle.tools",
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY",
+      "TANGLE_SANDBOX_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
+    {
+      "source": "files/AGENTS.md",
+      "target": "AGENTS.md"
+    },
+    {
+      "source": "files/pyproject.toml",
+      "target": "pyproject.toml"
+    },
+    {
+      "source": "files/requirements.txt",
+      "target": "requirements.txt"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/src/research/__init__.py",
+      "target": "src/research/__init__.py"
+    },
+    {
+      "source": "files/src/research/__main__.py",
+      "target": "src/research/__main__.py"
+    },
+    {
+      "source": "files/src/research/cli.py",
+      "target": "src/research/cli.py"
+    },
+    {
+      "source": "files/src/research/runner.py",
+      "target": "src/research/runner.py"
+    },
+    {
+      "source": "files/src/research/proposer.py",
+      "target": "src/research/proposer.py"
+    },
+    {
+      "source": "files/src/research/screener.py",
+      "target": "src/research/screener.py"
+    },
+    {
+      "source": "files/src/research/validator.py",
+      "target": "src/research/validator.py"
+    },
+    {
+      "source": "files/src/research/sandbox_runner.py",
+      "target": "src/research/sandbox_runner.py"
+    },
+    {
+      "source": "files/hypotheses/queue.json",
+      "target": "hypotheses/queue.json"
+    },
+    {
+      "source": "files/hypotheses/example.json",
+      "target": "hypotheses/example.json"
+    },
+    {
+      "source": "files/hypotheses/README.md",
+      "target": "hypotheses/README.md"
+    },
+    {
+      "source": "files/tests/__init__.py",
+      "target": "tests/__init__.py"
+    },
+    {
+      "source": "files/tests/test_screener.py",
+      "target": "tests/test_screener.py"
+    },
+    {
+      "source": "files/tests/test_validator.py",
+      "target": "tests/test_validator.py"
+    },
+    {
+      "source": "files/tests/test_sandbox.py",
+      "target": "tests/test_sandbox.py"
+    },
+    {
+      "source": "files/.github/workflows/research.yml",
+      "target": ".github/workflows/research.yml"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "AGENTS.md"
+    },
+    {
+      "type": "file-exists",
+      "path": "pyproject.toml"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/research/__main__.py"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "AGENTS.md"
+    },
+    {
+      "type": "python-compile",
+      "path": "src/research/runner.py"
+    },
+    {
+      "type": "python-compile",
+      "path": "src/research/validator.py"
+    },
+    {
+      "type": "python-compile",
+      "path": "src/research/screener.py"
+    },
+    {
+      "type": "python-compile",
+      "path": "src/research/sandbox_runner.py"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "python -m research propose",
+      "python -m research screen",
+      "python -m research validate",
+      "python -m research sweep"
+    ],
+    "entrypoints": [
+      "src/research/__main__.py",
+      "AGENTS.md"
+    ],
+    "extensionPoints": [
+      "hypotheses/queue.json",
+      "research-results/"
+    ]
+  },
+  "keywords": [
+    "research-harness",
+    "experimentation",
+    "hypothesis-testing",
+    "ab-testing",
+    "tangle-sandbox",
+    "scipy"
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "research-harness-py",
+      "python-research-loop",
+      "auto-research-python",
+      "python-experiment-runner",
+      "hypothesis-screener-python",
+      "scipy-research-harness"
+    ],
+    "tier2": [
+      "bootstrap-ci",
+      "cohen-d",
+      "hypothesis-queue",
+      "screen-validate-loop",
+      "isolated-experiment-sandbox"
+    ],
+    "tier3": [
+      "experimentation",
+      "ab-testing",
+      "research"
+    ],
+    "archetypes": [
+      "research-runner",
+      "experiment-loop"
+    ]
+  }
+}

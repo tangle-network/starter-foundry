@@ -1,0 +1,45 @@
+{
+  "name": "research-harness",
+  "description": "Python research harness — autonomous propose / screen / validate loop. Each hypothesis is materialized as an isolated tangle-sandbox run so treatments cannot leak into each other. Bootstrap CI + Cohen's d math from scipy.stats; verdicts mirror the TS sibling family.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-runtime",
+    "research-harness",
+    "experimentation",
+    "tangle-sandbox",
+    "scipy",
+    "python"
+  ],
+  "prompt": {
+    "systemPromptFile": "AGENTS.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "allow",
+    "shell.exec": "ask",
+    "network": "ask"
+  },
+  "resources": {
+    "files": [
+      {
+        "source": "src/"
+      },
+      {
+        "source": "hypotheses/"
+      },
+      {
+        "source": "pyproject.toml"
+      },
+      {
+        "source": "requirements.txt"
+      },
+      {
+        "source": "README.md"
+      }
+    ]
+  }
+}

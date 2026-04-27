@@ -1,0 +1,48 @@
+{
+  "id": "judge-rubric",
+  "group": "agent-eval",
+  "description": "Multi-dimensional LLM-as-judge rubric runner. Wraps `JudgeRunner` + `JudgeRubric` + `calibrateJudge` from @tangle-network/agent-eval. Accepts a rubric definition (named dimensions with anchors + weights) and emits per-scenario judge scores. Calibration flow is mandatory before a judge can gate CI — uncalibrated judges are signal, not ground truth.",
+  "appliesTo": [
+    "agent-eval-harness-ts",
+    "agent-research-harness-ts"
+  ],
+  "provides": ["eval:judge-rubric"],
+  "requires": ["eval:scenarios"],
+  "defaults": {
+    "judgesDir": "judges",
+    "calibrationDir": ".evolve/agent-eval/judge-calibrations",
+    "defaultJudgeModel": "claude-sonnet-4-5",
+    "defaultJudgeTemperature": "0"
+  },
+  "files": [
+    {
+      "source": "files/src/eval/judges/rubric-runner.ts",
+      "target": "src/eval/judges/rubric-runner.ts"
+    },
+    {
+      "source": "files/src/eval/judges/README.md",
+      "target": "src/eval/judges/README.md"
+    },
+    {
+      "source": "files/judges/rubric.example.ts",
+      "target": "judges/rubric.example.ts"
+    }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "src/eval/judges/rubric-runner.ts" },
+    { "type": "file-exists", "path": "src/eval/judges/README.md" },
+    { "type": "file-exists", "path": "judges/rubric.example.ts" }
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "eval-rubric-judge",
+      "agent-eval-judge-rubric",
+      "rubric-runner-layer",
+      "calibrated-judge-rubric"
+    ],
+    "tier2": ["judge-calibration", "rubric-dimensions", "weighted-judge-score"]
+  },
+  "contextHints": {
+    "extensionPoints": ["src/eval/judges/rubric-runner.ts", "judges/"]
+  }
+}

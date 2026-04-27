@@ -1,0 +1,20 @@
+{
+  "name": "{{projectName}}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "eval": "tsx src/eval/cli.ts run",
+    "eval:compare": "tsx src/eval/cli.ts compare",
+    "eval:gate": "tsx src/eval/regression/cli.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@tangle-network/agent-eval": "^0.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.9.0"
+  }
+}

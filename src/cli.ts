@@ -3,22 +3,27 @@
 import process from 'node:process'
 
 import { evaluateAgents } from './lib/agent-runners.js'
-import { createAuditBundle } from './lib/eval/audit.js'
-import { batchExport } from './lib/eval/batch-export.js'
-import { benchmarkStarter } from './lib/eval/benchmark.js'
 import { buildCatalog } from './lib/catalog.js'
 import { composeFromPrompt } from './lib/compose-prompt.js'
 import { composeStarter } from './lib/compose.js'
 import { createContextPack } from './lib/context-pack.js'
+import { createAuditBundle } from './lib/eval/audit.js'
+import { batchExport } from './lib/eval/batch-export.js'
+import { benchmarkStarter } from './lib/eval/benchmark.js'
+import { runProofSuite } from './lib/eval/prove.js'
 import { fattenStarter } from './lib/fatten.js'
 import { readJson } from './lib/fs.js'
 import { runPromptCorpus } from './lib/prompt-e2e.js'
 import { planPrompt } from './lib/prompt-planner.js'
-import { runProofSuite } from './lib/eval/prove.js'
 import { listRegistry, loadProjectSpec } from './lib/registry.js'
 import { createRelease } from './lib/release.js'
 import { selectStarter } from './lib/selection.js'
 import { validateStarter } from './lib/validate.js'
+import {
+  composePresetWorkspace,
+  listWorkspacePresets,
+  WORKSPACE_PRESETS,
+} from './lib/workspace-presets.js'
 import {
   benchmarkWorkspace,
   composeWorkspace,
@@ -84,6 +89,8 @@ function usage(): string {
     '  mine [--corpus <path>] [--out <path>] [--provider <groq|anthropic|openai>]',
     '  bench --spec <path> [--runs <n>] [--out <dir>]',
     '  workspace-compose --spec <path> --out <dir>',
+    '  workspace-compose --preset <id> --out <dir> [--name <ws>] [--app <fid>] [--agent <fid>] [--eval <fid>] [--research <fid>]',
+    '  workspace-presets',
     '  workspace-context --spec <path> [--out <dir>]',
     '  workspace-bench --spec <path> [--runs <n>] [--out <dir>]',
     '  prompt-e2e --corpus <path> [--out <dir>]',
@@ -232,13 +239,54 @@ async function main(): Promise<void> {
     }
 
     case 'workspace-compose': {
-      if (!options.spec || !options.out)
-        throw new Error('workspace-compose requires --spec and --out')
+      if (!options.out) throw new Error('workspace-compose requires --out')
+
+      if (options.preset) {
+        const presetId = String(options.preset)
+        const preset = WORKSPACE_PRESETS.find((p) => p.id === presetId)
+        if (!preset) {
+          const known = WORKSPACE_PRESETS.map((p) => p.id).join(', ')
+          throw new Error(`Unknown preset "${presetId}". Known: ${known}`)
+        }
+        const choices: Record<string, string> = {}
+        for (const slot of preset.slots) {
+          const flag = options[slot.id]
+          if (typeof flag === 'string') choices[slot.id] = flag
+        }
+        const workspaceName = options.name ? String(options.name) : presetId
+        const result = await composePresetWorkspace({
+          presetId,
+          choices,
+          workspaceName,
+          userPrompt: options.prompt ? String(options.prompt) : undefined,
+          outDir: String(options.out),
+        })
+        print(result, true)
+        break
+      }
+
+      if (!options.spec) throw new Error('workspace-compose requires --spec (or --preset <id>)')
 
       const spec = await readJson<WorkspaceSpec>(String(options.spec))
       const result = await composeWorkspace({ spec, outDir: String(options.out) })
 
       print(result, true)
+      break
+    }
+
+    case 'workspace-presets': {
+      const presets = listWorkspacePresets().map((p) => ({
+        id: p.id,
+        description: p.description,
+        slots: p.slots.map((s) => ({
+          id: s.id,
+          required: s.required,
+          choose: s.choose,
+          default: s.default ?? null,
+        })),
+        topLevelScripts: p.topLevelScripts,
+      }))
+      print(presets, true)
       break
     }
 

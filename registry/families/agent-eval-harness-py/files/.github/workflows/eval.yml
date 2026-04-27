@@ -1,0 +1,70 @@
+name: eval
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: pytest + example eval
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install (with dev extras)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: pytest
+        run: pytest -q
+
+      - name: Run example eval (driver=local, no judge)
+        run: |
+          python -m eval run \
+            --scenarios scenarios \
+            --out artifacts/scorecard.json \
+            --driver local \
+            --product agent-eval-harness-py-ci
+
+      - name: Upload scorecard artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scorecard
+          path: artifacts/scorecard.json
+          if-no-files-found: error
+
+      - name: Regression gate (vs main baseline if present)
+        if: github.event_name == 'pull_request'
+        env:
+          BASELINE_URL: https://raw.githubusercontent.com/${{ github.repository }}/main/artifacts/scorecard.json
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          if curl -fsSL "$BASELINE_URL" -o artifacts/baseline.json 2>/dev/null; then
+            python -m eval compare artifacts/baseline.json artifacts/scorecard.json \
+              --out artifacts/gate-report.json
+          else
+            echo "[eval.compare] no baseline at $BASELINE_URL; first-run skip"
+          fi
+
+      - name: Upload gate report
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-report
+          path: artifacts/gate-report.json
+          if-no-files-found: ignore

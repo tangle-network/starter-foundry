@@ -1,0 +1,65 @@
+name: research-harness
+
+on:
+  schedule:
+    # Nightly screener pass over the queue. UTC.
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'screen | validate | sweep'
+        required: true
+        default: 'screen'
+        type: choice
+        options:
+          - screen
+          - validate
+          - sweep
+      candidates:
+        description: 'Comma-separated hypothesis ids (validate only)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run research-harness
+        env:
+          TANGLE_ROUTER_KEY: ${{ secrets.TANGLE_ROUTER_KEY }}
+          RESEARCH_RESULTS_DIR: research-results
+        run: |
+          MODE="${{ github.event.inputs.mode || 'screen' }}"
+          case "$MODE" in
+            screen)   pnpm research:screen ;;
+            validate) pnpm research:validate --candidates "${{ github.event.inputs.candidates }}" ;;
+            sweep)    pnpm research:sweep ;;
+            *) echo "unknown mode: $MODE" >&2; exit 1 ;;
+          esac
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: research-results-${{ github.run_id }}
+          path: research-results/
+          retention-days: 30

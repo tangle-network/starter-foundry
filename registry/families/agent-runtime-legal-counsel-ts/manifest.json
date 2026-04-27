@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-legal-counsel-ts",
-  "description": "In-house-counsel reference agent — drafts redlines, runs contract review checklists (NDA, MSA), flags asymmetric provisions and binding-decision moments. Explicitly NOT a lawyer; no attorney-client privilege; jurisdiction-agnostic. Demonstrates the agent-runtime substrate composing with structured-output blocks (:::artifact, :::escalation) on a regulated-legal role.",
+  "description": "In-house-counsel reference agent \u2014 drafts redlines, runs contract review checklists (NDA, MSA), flags asymmetric provisions and binding-decision moments. Explicitly NOT a lawyer; no attorney-client privilege; jurisdiction-agnostic. Demonstrates the agent-runtime substrate composing with structured-output blocks (:::artifact, :::escalation) on a regulated-legal role.",
   "tags": [
     "agent-runtime",
     "legal",
@@ -17,7 +17,17 @@
     "agent-base:tangle",
     "agent-base:secure",
     "agent-base:privacy",
-    "agent-output:blocks"
+    "agent-output:blocks",
+    "agent-base:memory",
+    "agent-base:scheduler",
+    "agent-base:mcp-registry",
+    "agent-channels:telegram",
+    "agent-channels:discord",
+    "agent-channels:slack",
+    "agent-channels:whatsapp",
+    "agent-channels:imessage",
+    "agent-channels:gmail",
+    "agent-channels:linear"
   ],
   "defaults": {
     "projectType": "agent-runtime-legal-counsel",

@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-screenwriter-ts",
-  "description": "Screenwriting craft agent — beat-out, logline, scene rewrite. Three-act and limited-series structure literate. Ships craft-of-screenwriting methodology, not generic 'write a script' affordances.",
+  "description": "Screenwriting craft agent \u2014 beat-out, logline, scene rewrite. Three-act and limited-series structure literate. Ships craft-of-screenwriting methodology, not generic 'write a script' affordances.",
   "tags": [
     "agent-runtime",
     "screenwriting",
@@ -15,7 +15,17 @@
   "includes": [
     "agent-base:tangle",
     "agent-base:secure",
-    "agent-output:blocks"
+    "agent-output:blocks",
+    "agent-base:memory",
+    "agent-base:scheduler",
+    "agent-base:mcp-registry",
+    "agent-channels:telegram",
+    "agent-channels:discord",
+    "agent-channels:slack",
+    "agent-channels:whatsapp",
+    "agent-channels:imessage",
+    "agent-channels:gmail",
+    "agent-channels:linear"
   ],
   "defaults": {
     "projectType": "agent-runtime-screenwriter",

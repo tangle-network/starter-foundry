@@ -1,21 +1,95 @@
 {
   "id": "linear",
   "slot": "agent-channels",
-  "description": "Linear channel adapter — webhook receive (Issue + Comment events, HMAC-SHA256 signature verified against Linear-Signature header) + GraphQL commentCreate send via api.linear.app/graphql with bearer auth. Composes with any agent-runtime bundle. Set LINEAR_API_KEY and LINEAR_WEBHOOK_SECRET at deploy.",
-  "appliesTo": [],
-  "provides": ["channel:linear"],
-  "requires": ["secure:webhook-in"],
+  "description": "Linear channel adapter \u2014 webhook receive (Issue + Comment events, HMAC-SHA256 signature verified against Linear-Signature header) + GraphQL commentCreate send via api.linear.app/graphql with bearer auth. Composes with any agent-runtime bundle. Set LINEAR_API_KEY and LINEAR_WEBHOOK_SECRET at deploy.",
+  "appliesTo": [
+    "agent-runtime-account-executive-ts",
+    "agent-runtime-architect-ts",
+    "agent-runtime-auditor-ts",
+    "agent-runtime-biology-research-ts",
+    "agent-runtime-business-partner-ts",
+    "agent-runtime-career-coach-ts",
+    "agent-runtime-chef-ts",
+    "agent-runtime-chemistry-research-ts",
+    "agent-runtime-cmo-advisor-ts",
+    "agent-runtime-college-counselor-ts",
+    "agent-runtime-cs-research-ts",
+    "agent-runtime-cs-tutor-ts",
+    "agent-runtime-customer-success-ts",
+    "agent-runtime-data-analyst-ts",
+    "agent-runtime-designer-ts",
+    "agent-runtime-devops-ts",
+    "agent-runtime-doctor-ts",
+    "agent-runtime-engineering-manager-ts",
+    "agent-runtime-essay-coach-ts",
+    "agent-runtime-financial-analyst-ts",
+    "agent-runtime-fitness-coach-ts",
+    "agent-runtime-friend-ts",
+    "agent-runtime-game-designer-ts",
+    "agent-runtime-grant-writer-ts",
+    "agent-runtime-history-tutor-ts",
+    "agent-runtime-illustrator-ts",
+    "agent-runtime-language-tutor-ts",
+    "agent-runtime-legal-counsel-ts",
+    "agent-runtime-math-research-ts",
+    "agent-runtime-math-tutor-ts",
+    "agent-runtime-mediator-ts",
+    "agent-runtime-meditation-coach-ts",
+    "agent-runtime-ml-research-ts",
+    "agent-runtime-music-producer-ts",
+    "agent-runtime-novelist-coach-ts",
+    "agent-runtime-nutritionist-ts",
+    "agent-runtime-pentester-ts",
+    "agent-runtime-pharmacist-ts",
+    "agent-runtime-photographer-ts",
+    "agent-runtime-physics-research-ts",
+    "agent-runtime-product-manager-ts",
+    "agent-runtime-real-estate-ts",
+    "agent-runtime-recruiter-ts",
+    "agent-runtime-relationship-coach-ts",
+    "agent-runtime-research",
+    "agent-runtime-sales-engineer-ts",
+    "agent-runtime-screenwriter-ts",
+    "agent-runtime-security-engineer-ts",
+    "agent-runtime-tax-ts",
+    "agent-runtime-therapist-ts",
+    "agent-runtime-travel-planner-ts",
+    "agent-runtime-veterinarian-ts",
+    "agent-runtime-wealth-manager-ts",
+    "multi-agent-creative-studio-ts",
+    "multi-agent-legal-ops-ts",
+    "multi-agent-product-ops-ts",
+    "multi-agent-research-lab-ts",
+    "multi-agent-startup-team-ts"
+  ],
+  "provides": [
+    "channel:linear"
+  ],
+  "requires": [
+    "secure:webhook-in"
+  ],
   "defaults": {
     "channelLinearAvailable": true
   },
   "files": [
-    { "source": "files/channels/linear.ts", "target": "channels/linear.ts" },
-    { "source": "files/channels/linear.env.example", "target": "channels/linear.env.example" }
+    {
+      "source": "files/channels/linear.ts",
+      "target": "channels/linear.ts"
+    },
+    {
+      "source": "files/channels/linear.env.example",
+      "target": "channels/linear.env.example"
+    }
   ],
   "validationChecks": [
-    { "type": "file-exists", "path": "channels/linear.ts" }
+    {
+      "type": "file-exists",
+      "path": "channels/linear.ts"
+    }
   ],
   "contextHints": {
-    "extensionPoints": ["channels/linear.ts"]
+    "extensionPoints": [
+      "channels/linear.ts"
+    ]
   }
 }

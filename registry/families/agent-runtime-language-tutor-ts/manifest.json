@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-language-tutor-ts",
-  "description": "Voice-first language tutor agent bundle — Krashen-aligned comprehensible input + spaced-repetition methodology, CEFR-calibrated to the learner's current level. Default target language is Spanish; configurable via `defaults.targetLanguage` (es / ja / fr / zh / etc.). Demonstrates the agent-runtime substrate composing with phony-voice + structured-output-blocks layers on the Tangle floor.",
+  "description": "Voice-first language tutor agent bundle \u2014 Krashen-aligned comprehensible input + spaced-repetition methodology, CEFR-calibrated to the learner's current level. Default target language is Spanish; configurable via `defaults.targetLanguage` (es / ja / fr / zh / etc.). Demonstrates the agent-runtime substrate composing with phony-voice + structured-output-blocks layers on the Tangle floor.",
   "tags": [
     "agent-runtime",
     "language-tutor",
@@ -17,7 +17,17 @@
     "agent-base:tangle",
     "agent-base:secure",
     "agent-tools:phony-voice",
-    "agent-output:blocks"
+    "agent-output:blocks",
+    "agent-base:memory",
+    "agent-base:scheduler",
+    "agent-base:mcp-registry",
+    "agent-channels:telegram",
+    "agent-channels:discord",
+    "agent-channels:slack",
+    "agent-channels:whatsapp",
+    "agent-channels:imessage",
+    "agent-channels:gmail",
+    "agent-channels:linear"
   ],
   "defaults": {
     "projectType": "agent-runtime-language-tutor",

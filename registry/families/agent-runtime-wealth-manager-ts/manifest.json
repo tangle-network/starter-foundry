@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-wealth-manager-ts",
-  "description": "Personal wealth-manager agent bundle — peer-style information on asset allocation, tax-loss harvesting, and retirement projection. Explicitly NOT a registered investment adviser, NOT a fiduciary, NOT licensed financial advice. Demonstrates the agent-runtime substrate composing on a regulated-finance role with structured-output blocks (:::artifact, :::escalation) and a hard refusal contract for actionable trade picks.",
+  "description": "Personal wealth-manager agent bundle \u2014 peer-style information on asset allocation, tax-loss harvesting, and retirement projection. Explicitly NOT a registered investment adviser, NOT a fiduciary, NOT licensed financial advice. Demonstrates the agent-runtime substrate composing on a regulated-finance role with structured-output blocks (:::artifact, :::escalation) and a hard refusal contract for actionable trade picks.",
   "tags": [
     "agent-runtime",
     "personal-finance",
@@ -17,7 +17,17 @@
     "agent-base:tangle",
     "agent-base:secure",
     "agent-base:privacy",
-    "agent-output:blocks"
+    "agent-output:blocks",
+    "agent-base:memory",
+    "agent-base:scheduler",
+    "agent-base:mcp-registry",
+    "agent-channels:telegram",
+    "agent-channels:discord",
+    "agent-channels:slack",
+    "agent-channels:whatsapp",
+    "agent-channels:imessage",
+    "agent-channels:gmail",
+    "agent-channels:linear"
   ],
   "defaults": {
     "projectType": "agent-runtime-wealth-manager",

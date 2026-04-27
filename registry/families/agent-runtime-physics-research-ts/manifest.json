@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-physics-research-ts",
-  "description": "Physics research assistant agent bundle — literature search, citation-grounded analysis, and experimental design support. Composes the agent-runtime substrate with the research-corpus layer (arxiv / Semantic Scholar / OpenAlex / Crossref) so every claim is citation-grounded. Advisory only — never replaces peer review, ethics board, or professional judgment.",
+  "description": "Physics research assistant agent bundle \u2014 literature search, citation-grounded analysis, and experimental design support. Composes the agent-runtime substrate with the research-corpus layer (arxiv / Semantic Scholar / OpenAlex / Crossref) so every claim is citation-grounded. Advisory only \u2014 never replaces peer review, ethics board, or professional judgment.",
   "tags": [
     "agent-runtime",
     "physics-research",
@@ -17,7 +17,17 @@
   "includes": [
     "agent-base:tangle",
     "agent-tools:research-corpus",
-    "agent-output:blocks"
+    "agent-output:blocks",
+    "agent-base:memory",
+    "agent-base:scheduler",
+    "agent-base:mcp-registry",
+    "agent-channels:telegram",
+    "agent-channels:discord",
+    "agent-channels:slack",
+    "agent-channels:whatsapp",
+    "agent-channels:imessage",
+    "agent-channels:gmail",
+    "agent-channels:linear"
   ],
   "defaults": {
     "projectType": "agent-runtime-physics-research",

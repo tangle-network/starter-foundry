@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-sales-engineer-ts",
-  "description": "Sales Engineer agent bundle — technical pre-sales, demo engineering, proof-of-concept design, and competitive technical positioning. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only — never replaces the operator's actual sales process, legal review, or pricing authority.",
+  "description": "Sales Engineer agent bundle \u2014 technical pre-sales, demo engineering, proof-of-concept design, and competitive technical positioning. Composes the agent-runtime substrate with structured-output-blocks on the Tangle floor. Advisory only \u2014 never replaces the operator's actual sales process, legal review, or pricing authority.",
   "tags": [
     "agent-runtime",
     "sales-engineering",
@@ -17,7 +17,17 @@
   "includes": [
     "agent-base:tangle",
     "agent-base:secure",
-    "agent-output:blocks"
+    "agent-output:blocks",
+    "agent-base:memory",
+    "agent-base:scheduler",
+    "agent-base:mcp-registry",
+    "agent-channels:telegram",
+    "agent-channels:discord",
+    "agent-channels:slack",
+    "agent-channels:whatsapp",
+    "agent-channels:imessage",
+    "agent-channels:gmail",
+    "agent-channels:linear"
   ],
   "defaults": {
     "projectType": "agent-runtime-sales-engineer",

@@ -1,11 +1,12 @@
 {
   "id": "imessage",
   "slot": "agent-channels",
-  "description": "iMessage channel adapter via the BlueBubbles HTTP relay (https://bluebubbles.app). Apple does not expose a server-side iMessage API; BlueBubbles is the standard community workaround that runs on a macOS host you control. receive() polls /api/v1/message/<chatGuid>; send() POSTs to /api/v1/message/text. Honest gap: pure-cloud iMessage is impossible — this layer requires a Mac with BlueBubbles configured.",
+  "description": "iMessage channel adapter via the BlueBubbles HTTP relay (https://bluebubbles.app). Apple does not expose a server-side iMessage API; BlueBubbles is the standard community workaround that runs on a macOS host you control. receive() polls /api/v1/message/<chatGuid>; send() POSTs to /api/v1/message/text. Honest gap: pure-cloud iMessage is impossible \u2014 this layer requires a Mac with BlueBubbles configured.",
   "appliesTo": [
     "agent-runtime-account-executive-ts",
     "agent-runtime-architect-ts",
     "agent-runtime-auditor-ts",
+    "agent-runtime-biology-research-ts",
     "agent-runtime-business-partner-ts",
     "agent-runtime-career-coach-ts",
     "agent-runtime-chef-ts",

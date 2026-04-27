@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-math-tutor-ts",
-  "description": "Voice-first math tutor agent bundle — calculus, algebra, and general math tutoring with step-by-step explanations and adaptive problem generation. Explicitly NOT a substitute for a certified math teacher or exam proctor. Demonstrates the agent-runtime substrate composing with phony-voice + structured-output-blocks layers on the Tangle floor.",
+  "description": "Voice-first math tutor agent bundle \u2014 calculus, algebra, and general math tutoring with step-by-step explanations and adaptive problem generation. Explicitly NOT a substitute for a certified math teacher or exam proctor. Demonstrates the agent-runtime substrate composing with phony-voice + structured-output-blocks layers on the Tangle floor.",
   "tags": [
     "agent-runtime",
     "math-tutor",
@@ -16,7 +16,17 @@
   "includes": [
     "agent-base:tangle",
     "agent-base:secure",
-    "agent-output:blocks"
+    "agent-output:blocks",
+    "agent-base:memory",
+    "agent-base:scheduler",
+    "agent-base:mcp-registry",
+    "agent-channels:telegram",
+    "agent-channels:discord",
+    "agent-channels:slack",
+    "agent-channels:whatsapp",
+    "agent-channels:imessage",
+    "agent-channels:gmail",
+    "agent-channels:linear"
   ],
   "defaults": {
     "projectType": "agent-runtime-math-tutor",

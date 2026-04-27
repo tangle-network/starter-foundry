@@ -1,6 +1,6 @@
 {
   "id": "multi-agent-product-ops-ts",
-  "description": "Curated product-ops team — PM, Designer, Eng Manager, Customer Success with hand-tuned weekly cadence and feature-development handoffs.",
+  "description": "Curated product-ops team \u2014 PM, Designer, Eng Manager, Customer Success with hand-tuned weekly cadence and feature-development handoffs.",
   "tags": [
     "multi-agent",
     "product-ops",
@@ -16,7 +16,17 @@
   "includes": [
     "agent-base:tangle",
     "agent-base:secure",
-    "agent-output:blocks"
+    "agent-output:blocks",
+    "agent-base:memory",
+    "agent-base:scheduler",
+    "agent-base:mcp-registry",
+    "agent-channels:telegram",
+    "agent-channels:discord",
+    "agent-channels:slack",
+    "agent-channels:whatsapp",
+    "agent-channels:imessage",
+    "agent-channels:gmail",
+    "agent-channels:linear"
   ],
   "defaults": {
     "projectType": "multi-agent-product-ops",
@@ -72,27 +82,74 @@
     ]
   },
   "files": [
-    { "source": "files/agent.json", "target": "agent.json" },
-    { "source": "files/AGENTS.md", "target": "AGENTS.md" },
-    { "source": "files/agents.json", "target": "agents.json" },
-    { "source": "files/README.md", "target": "README.md" },
-
-    { "source": "files/roles/pm/AGENTS.md", "target": "roles/pm/AGENTS.md" },
-    { "source": "files/roles/pm/methodology/discovery-cycle.md", "target": "roles/pm/methodology/discovery-cycle.md" },
-    { "source": "files/roles/pm/methodology/prioritization-rice.md", "target": "roles/pm/methodology/prioritization-rice.md" },
-    { "source": "files/roles/pm/methodology/prd-template.md", "target": "roles/pm/methodology/prd-template.md" },
-
-    { "source": "files/roles/designer/AGENTS.md", "target": "roles/designer/AGENTS.md" },
-    { "source": "files/roles/designer/methodology/design-critique.md", "target": "roles/designer/methodology/design-critique.md" },
-    { "source": "files/roles/designer/methodology/ux-strategy.md", "target": "roles/designer/methodology/ux-strategy.md" },
-
-    { "source": "files/roles/eng-manager/AGENTS.md", "target": "roles/eng-manager/AGENTS.md" },
-    { "source": "files/roles/eng-manager/methodology/tech-feasibility-scoping.md", "target": "roles/eng-manager/methodology/tech-feasibility-scoping.md" },
-    { "source": "files/roles/eng-manager/methodology/sprint-planning.md", "target": "roles/eng-manager/methodology/sprint-planning.md" },
-
-    { "source": "files/roles/customer-success/AGENTS.md", "target": "roles/customer-success/AGENTS.md" },
-    { "source": "files/roles/customer-success/methodology/churn-risk-analysis.md", "target": "roles/customer-success/methodology/churn-risk-analysis.md" },
-    { "source": "files/roles/customer-success/methodology/qbr-prep.md", "target": "roles/customer-success/methodology/qbr-prep.md" }
+    {
+      "source": "files/agent.json",
+      "target": "agent.json"
+    },
+    {
+      "source": "files/AGENTS.md",
+      "target": "AGENTS.md"
+    },
+    {
+      "source": "files/agents.json",
+      "target": "agents.json"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/roles/pm/AGENTS.md",
+      "target": "roles/pm/AGENTS.md"
+    },
+    {
+      "source": "files/roles/pm/methodology/discovery-cycle.md",
+      "target": "roles/pm/methodology/discovery-cycle.md"
+    },
+    {
+      "source": "files/roles/pm/methodology/prioritization-rice.md",
+      "target": "roles/pm/methodology/prioritization-rice.md"
+    },
+    {
+      "source": "files/roles/pm/methodology/prd-template.md",
+      "target": "roles/pm/methodology/prd-template.md"
+    },
+    {
+      "source": "files/roles/designer/AGENTS.md",
+      "target": "roles/designer/AGENTS.md"
+    },
+    {
+      "source": "files/roles/designer/methodology/design-critique.md",
+      "target": "roles/designer/methodology/design-critique.md"
+    },
+    {
+      "source": "files/roles/designer/methodology/ux-strategy.md",
+      "target": "roles/designer/methodology/ux-strategy.md"
+    },
+    {
+      "source": "files/roles/eng-manager/AGENTS.md",
+      "target": "roles/eng-manager/AGENTS.md"
+    },
+    {
+      "source": "files/roles/eng-manager/methodology/tech-feasibility-scoping.md",
+      "target": "roles/eng-manager/methodology/tech-feasibility-scoping.md"
+    },
+    {
+      "source": "files/roles/eng-manager/methodology/sprint-planning.md",
+      "target": "roles/eng-manager/methodology/sprint-planning.md"
+    },
+    {
+      "source": "files/roles/customer-success/AGENTS.md",
+      "target": "roles/customer-success/AGENTS.md"
+    },
+    {
+      "source": "files/roles/customer-success/methodology/churn-risk-analysis.md",
+      "target": "roles/customer-success/methodology/churn-risk-analysis.md"
+    },
+    {
+      "source": "files/roles/customer-success/methodology/qbr-prep.md",
+      "target": "roles/customer-success/methodology/qbr-prep.md"
+    }
   ],
   "contextHints": {
     "commands": [],

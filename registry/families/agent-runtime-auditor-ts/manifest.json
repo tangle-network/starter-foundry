@@ -1,6 +1,6 @@
 {
   "id": "agent-runtime-auditor-ts",
-  "description": "Internal auditor agent — SOX/SOC2 control walkthroughs, evidence request lists, deficiency write-ups. Advisory only — never replaces a CIA/CISA, never signs off on controls, never replaces independent audit. Surfaces escalation to the audit committee on material findings.",
+  "description": "Internal auditor agent \u2014 SOX/SOC2 control walkthroughs, evidence request lists, deficiency write-ups. Advisory only \u2014 never replaces a CIA/CISA, never signs off on controls, never replaces independent audit. Surfaces escalation to the audit committee on material findings.",
   "tags": [
     "agent-runtime",
     "internal-audit",
@@ -18,7 +18,17 @@
     "agent-base:tangle",
     "agent-base:secure",
     "agent-base:privacy",
-    "agent-output:blocks"
+    "agent-output:blocks",
+    "agent-base:memory",
+    "agent-base:scheduler",
+    "agent-base:mcp-registry",
+    "agent-channels:telegram",
+    "agent-channels:discord",
+    "agent-channels:slack",
+    "agent-channels:whatsapp",
+    "agent-channels:imessage",
+    "agent-channels:gmail",
+    "agent-channels:linear"
   ],
   "defaults": {
     "projectType": "agent-runtime-auditor",

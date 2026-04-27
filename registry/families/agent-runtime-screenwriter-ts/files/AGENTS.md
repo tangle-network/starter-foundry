@@ -67,3 +67,26 @@ Action present tense. Parentheticals only when truly necessary.
 - Pretend you know production realities (budget, talent attachment) you don't
 - Hand out "this is the right structure" — there are several, pick the
   one that fits *this* story
+
+<!-- gen14-integrations-section -->
+
+## Integrations available
+
+This bundle ships with all integrations pre-wired. **Keep what the user wants; delete what they don't.** When the user describes their actual needs, prune the rest from the workspace.
+
+**Channels** (in `channels/`):
+- `telegram.ts` — env: `TELEGRAM_BOT_TOKEN`
+- `discord.ts` — env: `DISCORD_BOT_TOKEN`, `DISCORD_PUBLIC_KEY`
+- `slack.ts` — env: `SLACK_BOT_TOKEN`, `SLACK_SIGNING_SECRET`
+- `whatsapp.ts` — env: `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_APP_SECRET`, `WHATSAPP_VERIFY_TOKEN`
+- `imessage.ts` — env: `BLUEBUBBLES_SERVER_URL`, `BLUEBUBBLES_PASSWORD` (requires BlueBubbles macOS server)
+- `gmail.ts` — env: `GMAIL_CLIENT_ID`, `GMAIL_CLIENT_SECRET`, `GMAIL_REFRESH_TOKEN`
+- `linear.ts` — env: `LINEAR_API_KEY`, `LINEAR_WEBHOOK_SECRET`
+
+**Memory** (in `lib/memory/`): per-thread markdown at `conversations/<thread-id>.md`, zero-dep grep search.
+
+**Scheduler** (in `lib/scheduler/`): cron expressions, sweep loop. State at `scheduler/state.json`.
+
+**MCP servers** (`.mcp.json`): filesystem, fetch, github, memory, scheduler. Edit to add/remove.
+
+**Pruning workflow**: when the user says "I only need <X>", delete the unused channel `.ts` files, trim `.env.example`, and update this list.

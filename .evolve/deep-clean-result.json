@@ -1,0 +1,71 @@
+{
+  "timestamp": "2026-04-26T00:00:00Z",
+  "summary": "deep-clean Phases 1-4 \u2014 pre-live greenfield grooming",
+  "before": {
+    "weakTypes": 55,
+    "debtMarkers": 18,
+    "tryCatchBlocks": 44,
+    "historicalMentions": 23,
+    "circularDeps": 0,
+    "typeErrors": 0,
+    "knipUnusedFiles": 7,
+    "knipUnusedExports": 7,
+    "knipUnusedTypes": 4,
+    "tests": {
+      "pass": 930,
+      "fail": 0,
+      "todo": 1
+    },
+    "srcLOC": 23026
+  },
+  "after": {
+    "weakTypes": 55,
+    "debtMarkers": 18,
+    "tryCatchBlocks": 44,
+    "historicalMentions": 0,
+    "circularDeps": 0,
+    "typeErrors": 0,
+    "knipUnusedFiles": 0,
+    "knipUnusedExports": 1,
+    "knipUnusedTypes": 22,
+    "tests": {
+      "pass": 930,
+      "fail": 0,
+      "todo": 1
+    },
+    "srcLOC": 23015
+  },
+  "delta": {
+    "historicalMentions": -23,
+    "knipUnusedFiles": -7,
+    "knipUnusedExports": -6,
+    "srcLOC": -11,
+    "weakTypes": 0,
+    "knipUnusedTypes": "+18 (knip's deeper report exposed pre-existing types not introduced by this PR; all internal-use types in already-existing modules)"
+  },
+  "phases": {
+    "phase1_structure": {
+      "circularDeps": "0 (already clean \u2014 verified via madge)",
+      "sharedTypes": "no consolidation needed (src/types/ already split per CLAUDE.md)",
+      "deduplication": "5 jscpd clones \u2014 all 2-instance pairs in same file or near-identical intent. Skipped per skill rule (DRY only at 3+ instances or clearly shared intent)."
+    },
+    "phase2_strengthen": {
+      "weakTypes": "audited \u2014 every `as any` and `as unknown` is at a documented trust boundary (HF transformers dynamic import, Node version compat, JSON.parse error handlers).",
+      "deadCode": "knip's 7 'unused files' all false-positives (referenced via dist/*.js dynamic imports from tests/scripts). Removed @deprecated VisualAuditResult alias.",
+      "errorHandling": "0 silent catches. 1 warn-then-continue catch (vb-feedback parse) is correct \u2014 caller-known nullable return."
+    },
+    "phase3_polish": {
+      "aiSlop": "0 in code/docs (5 hits in src are inside brand-voice transformer regex, intentional)",
+      "historicalMentions": "23 \u2192 0. Greenfield-rewrote docs/specs/agent-base-secure.md, docs/architecture/agent-bundles.md. Stripped v0.10.x / v0.11.0 framing from docs/cookbooks/deploy-agent-runtime-research.md and docs/cookbooks/deploy-multi-agent-startup-team.md. Deleted docs/cookbooks/dogfood-multi-agent-validation.md (entirely a GAP report against deleted families). Cleaned registry/families/agent-runtime-music-producer-ts/files/TOOLS.md.",
+      "deprecatedPaths": "Removed @deprecated VisualAuditResult alias, 'legacy' framing from src/types/registry.ts and src/lib/selection.ts, 'backward compat' from src/types.ts.",
+      "formatting": "prettier applied to changed src/ files only; tests/ + scripts/ noise reverted to keep PR focused."
+    },
+    "phase4_measure": "delta table above"
+  },
+  "verification": {
+    "typecheck": "pass (0 errors)",
+    "tests": "930 pass / 0 fail / 1 todo (unchanged from baseline)",
+    "lint": "0 errors / 246 warnings (warnings are stylistic-strict, non-blocking per CLAUDE.md)",
+    "circularDeps": "0 (madge)"
+  }
+}

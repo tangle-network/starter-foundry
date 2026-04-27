@@ -1,0 +1,130 @@
+{
+  "id": "multi-agent-product-ops-ts",
+  "description": "Curated product-ops team — PM, Designer, Eng Manager, Customer Success with hand-tuned weekly cadence and feature-development handoffs.",
+  "tags": [
+    "multi-agent",
+    "product-ops",
+    "weekly-cadence",
+    "feature-team-agent",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "multi-agent",
+    "surface": "multi-agent-team"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "multi-agent-product-ops",
+    "agentName": "product-ops-team",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": [
+          "discovery-cycle",
+          "prioritization-rice",
+          "prd-template",
+          "design-critique",
+          "ux-strategy",
+          "tech-feasibility-scoping",
+          "sprint-planning",
+          "churn-risk-analysis",
+          "qbr-prep"
+        ]
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "discovery-cycle",
+      "prioritization-rice",
+      "prd-template",
+      "design-critique",
+      "ux-strategy",
+      "tech-feasibility-scoping",
+      "sprint-planning",
+      "churn-risk-analysis",
+      "qbr-prep"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "moderate",
+    "advisoryOnly": true,
+    "outboundDomains": [
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    { "source": "files/coordination-protocol.md", "target": "coordination-protocol.md" },
+    { "source": "files/agent-roster.json", "target": "agent-roster.json" },
+    { "source": "files/README.md", "target": "README.md" },
+
+    { "source": "files/roles/pm/system-prompt.md", "target": "roles/pm/system-prompt.md" },
+    { "source": "files/roles/pm/methodology/discovery-cycle.md", "target": "roles/pm/methodology/discovery-cycle.md" },
+    { "source": "files/roles/pm/methodology/prioritization-rice.md", "target": "roles/pm/methodology/prioritization-rice.md" },
+    { "source": "files/roles/pm/methodology/prd-template.md", "target": "roles/pm/methodology/prd-template.md" },
+
+    { "source": "files/roles/designer/system-prompt.md", "target": "roles/designer/system-prompt.md" },
+    { "source": "files/roles/designer/methodology/design-critique.md", "target": "roles/designer/methodology/design-critique.md" },
+    { "source": "files/roles/designer/methodology/ux-strategy.md", "target": "roles/designer/methodology/ux-strategy.md" },
+
+    { "source": "files/roles/eng-manager/system-prompt.md", "target": "roles/eng-manager/system-prompt.md" },
+    { "source": "files/roles/eng-manager/methodology/tech-feasibility-scoping.md", "target": "roles/eng-manager/methodology/tech-feasibility-scoping.md" },
+    { "source": "files/roles/eng-manager/methodology/sprint-planning.md", "target": "roles/eng-manager/methodology/sprint-planning.md" },
+
+    { "source": "files/roles/customer-success/system-prompt.md", "target": "roles/customer-success/system-prompt.md" },
+    { "source": "files/roles/customer-success/methodology/churn-risk-analysis.md", "target": "roles/customer-success/methodology/churn-risk-analysis.md" },
+    { "source": "files/roles/customer-success/methodology/qbr-prep.md", "target": "roles/customer-success/methodology/qbr-prep.md" }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "coordination-protocol.md",
+      "agent-roster.json"
+    ],
+    "extensionPoints": [
+      "roles/",
+      "src/lib/tools/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "product-ops-team",
+      "product-ops-pod",
+      "product-development-team-agent",
+      "feature-team-agent"
+    ],
+    "tier2": [
+      "discovery-cycle",
+      "prioritization-rice",
+      "sprint-planning",
+      "qbr-prep",
+      "design-critique",
+      "weekly-cadence"
+    ],
+    "tier3": [
+      "agent"
+    ],
+    "archetypes": [
+      "multi-agent-team",
+      "product-pod"
+    ]
+  }
+}

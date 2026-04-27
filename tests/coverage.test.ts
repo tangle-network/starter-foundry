@@ -258,6 +258,8 @@ const FAMILY_PROMPTS: Record<string, string> = {
     'Build a trip planner agent with packing-list and multi-city itinerary design',
   'agent-runtime-chef-ts':
     'Build a chef-agent for recipe-development and kitchen-workflow with technique-guidance',
+  'multi-agent-creative-studio-ts':
+    'Build a creative-studio-team multi-agent cross-medium-creative-team for arrangement-review beat-out scene-card and storyboard-protocol',
 }
 
 for (const [family, prompt] of Object.entries(FAMILY_PROMPTS)) {

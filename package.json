@@ -1,6 +1,6 @@
 {
   "name": "@tangle-network/starter-foundry",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Deterministic project scaffold engine for AI coding platforms",
   "type": "module",
   "license": "UNLICENSED",

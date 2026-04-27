@@ -81,24 +81,20 @@
       "target": "agent.json"
     },
     {
-      "source": "files/orchestrator-system-prompt.md",
-      "target": "orchestrator-system-prompt.md"
+      "source": "files/AGENTS.md",
+      "target": "AGENTS.md"
     },
     {
-      "source": "files/coordination-protocol.md",
-      "target": "coordination-protocol.md"
-    },
-    {
-      "source": "files/agent-roster.json",
-      "target": "agent-roster.json"
+      "source": "files/agents.json",
+      "target": "agents.json"
     },
     {
       "source": "files/README.md",
       "target": "README.md"
     },
     {
-      "source": "files/roles/lab-director/system-prompt.md",
-      "target": "roles/lab-director/system-prompt.md"
+      "source": "files/roles/lab-director/AGENTS.md",
+      "target": "roles/lab-director/AGENTS.md"
     },
     {
       "source": "files/roles/lab-director/methodology/research-question-formulation.md",
@@ -113,8 +109,8 @@
       "target": "roles/lab-director/methodology/literature-triage.md"
     },
     {
-      "source": "files/roles/physics-researcher/system-prompt.md",
-      "target": "roles/physics-researcher/system-prompt.md"
+      "source": "files/roles/physics-researcher/AGENTS.md",
+      "target": "roles/physics-researcher/AGENTS.md"
     },
     {
       "source": "files/roles/physics-researcher/methodology/arxiv-literature-search.md",
@@ -125,8 +121,8 @@
       "target": "roles/physics-researcher/methodology/experimental-design.md"
     },
     {
-      "source": "files/roles/chemistry-researcher/system-prompt.md",
-      "target": "roles/chemistry-researcher/system-prompt.md"
+      "source": "files/roles/chemistry-researcher/AGENTS.md",
+      "target": "roles/chemistry-researcher/AGENTS.md"
     },
     {
       "source": "files/roles/chemistry-researcher/methodology/reaction-mechanism-analysis.md",
@@ -137,8 +133,8 @@
       "target": "roles/chemistry-researcher/methodology/crossref-literature-search.md"
     },
     {
-      "source": "files/roles/biology-researcher/system-prompt.md",
-      "target": "roles/biology-researcher/system-prompt.md"
+      "source": "files/roles/biology-researcher/AGENTS.md",
+      "target": "roles/biology-researcher/AGENTS.md"
     },
     {
       "source": "files/roles/biology-researcher/methodology/protein-structure-analysis.md",
@@ -152,42 +148,43 @@
   "validationChecks": [
     {
       "type": "file-exists",
-      "path": "coordination-protocol.md"
+      "path": "AGENTS.md"
     },
     {
       "type": "file-exists",
-      "path": "agent-roster.json"
+      "path": "agents.json"
     },
     {
       "type": "file-exists",
-      "path": "roles/lab-director/system-prompt.md"
+      "path": "roles/lab-director/AGENTS.md"
     },
     {
       "type": "agents-md-valid",
-      "path": "roles/lab-director/system-prompt.md"
+      "path": "roles/lab-director/AGENTS.md"
     },
     {
       "type": "agents-md-valid",
-      "path": "roles/physics-researcher/system-prompt.md"
+      "path": "roles/physics-researcher/AGENTS.md"
     },
     {
       "type": "agents-md-valid",
-      "path": "roles/chemistry-researcher/system-prompt.md"
+      "path": "roles/chemistry-researcher/AGENTS.md"
     },
     {
       "type": "agents-md-valid",
-      "path": "roles/biology-researcher/system-prompt.md"
+      "path": "roles/biology-researcher/AGENTS.md"
     }
   ],
   "contextHints": {
     "commands": [],
     "entrypoints": [
-      "coordination-protocol.md",
-      "roles/lab-director/system-prompt.md"
+      "AGENTS.md",
+      "agents.json",
+      "roles/lab-director/AGENTS.md"
     ],
     "extensionPoints": [
       "roles/",
-      "agent-roster.json"
+      "AGENTS.md"
     ]
   },
   "tieredKeywords": {

@@ -2,10 +2,18 @@
 /**
  * Deploy an agent bundle to a Tangle sandbox.
  *
- * Reads `agent.json` + referenced markdown from a bundle directory, translates
- * to the SDK's portable AgentProfile, creates a sandbox via
- * `@tangle-network/sandbox`, materialises every resource file inside the box
- * via `box.files.write`, and (optionally) runs an initial task.
+ * Reads `agent.json` + referenced markdown from a bundle directory, then:
+ *  1. Builds the SDK's portable `AgentProfile` (single-agent system prompt,
+ *     subagent profiles, model defaults, tools, permissions). This is passed
+ *     as `backend.profile` to `client.create()` — full-replacement system
+ *     prompt at the SDK layer.
+ *  2. Computes harness-native workspace files for `<workspace.root>` (default
+ *     `/home/agent`):
+ *       - `AGENTS.md`   — auto-loaded by every supported harness
+ *                         (OpenCode, Claude Code, Hermes, Codex, Amp, Kimi)
+ *       - `agents.json` — multi-agent bundles only; OpenCode subagent shape
+ *       - resource files (methodology/, README.md, role assets, …)
+ *  3. Creates the sandbox and `box.files.write`s every workspace file.
  *
  * Usage:
  *   pnpm deploy-agent \
@@ -24,8 +32,11 @@ import { argv, env, exit, stdout } from 'node:process'
 
 import {
   loadAgentBundle,
+  resolveWorkspaceRoot,
   toAgentProfile,
+  toWorkspaceFiles,
   type AgentProfileMirror,
+  type WorkspaceFile,
 } from '../src/lib/agent-bundle.js'
 
 interface CliArgs {
@@ -107,7 +118,15 @@ function printUsage(): void {
   --base-url <url>         sandbox API base url (or set TANGLE_SANDBOX_BASE_URL)
   --task <prompt>          optional initial agent task to run after deploy
   --image <image>          base image (default node:20)
-  --dry-run                build the AgentProfile + print it, do not call the SDK
+  --dry-run                build the AgentProfile + list workspace files, do not call the SDK
+
+The deploy:
+  1. Validates agent.json against registry/_schemas/agent.schema.json
+  2. Builds the SDK AgentProfile (used as backend.profile for the runtime)
+  3. Computes harness-native workspace files (AGENTS.md auto-loaded by the
+     harness; agents.json for multi-agent OpenCode subagents)
+  4. Creates the sandbox and box.files.write's each workspace file at the
+     resolved workspace root (default /home/agent)
 `)
 }
 
@@ -153,20 +172,26 @@ async function main(): Promise<void> {
   const bundleDir = resolve(args.bundle)
   stdout.write(`[deploy-agent] loading bundle: ${bundleDir}\n`)
   const bundle = await loadAgentBundle(bundleDir)
+  const workspaceRoot = resolveWorkspaceRoot(bundle)
   const profile = await toAgentProfile(bundle, bundleDir)
-  const fileCount = profile.resources?.files?.length ?? 0
+  const workspaceFiles = await toWorkspaceFiles(bundle, bundleDir)
   const subagentCount = Object.keys(profile.subagents ?? {}).length
   stdout.write(
     `[deploy-agent] profile built: ` +
       `name=${profile.name} ` +
+      `workspace=${workspaceRoot} ` +
       `systemPrompt=${profile.prompt?.systemPrompt ? `${profile.prompt.systemPrompt.length} chars` : 'none'} ` +
       `subagents=${subagentCount} ` +
-      `files=${fileCount}\n`,
+      `workspace-files=${workspaceFiles.length}\n`,
   )
 
   if (args.dryRun) {
     stdout.write('[deploy-agent] --dry-run: AgentProfile follows\n')
     stdout.write(JSON.stringify(profile, null, 2) + '\n')
+    stdout.write('[deploy-agent] --dry-run: workspace files that would be written:\n')
+    for (const f of workspaceFiles) {
+      stdout.write(`  ${f.targetPath}  (${f.content.length} bytes)\n`)
+    }
     return
   }
 
@@ -188,11 +213,7 @@ async function main(): Promise<void> {
     await box.waitFor('running')
   }
 
-  for (const mount of profile.resources?.files ?? []) {
-    if (mount.resource.kind !== 'inline') continue
-    await box.files.write(mount.path, mount.resource.content)
-    stdout.write(`[deploy-agent] wrote ${mount.path} (${mount.resource.content.length} bytes)\n`)
-  }
+  await writeWorkspaceFiles(box, workspaceFiles)
 
   if (args.task) {
     stdout.write(`[deploy-agent] running task: ${args.task}\n`)
@@ -208,6 +229,13 @@ async function main(): Promise<void> {
       `  const box = await client.get('${box.id}')\n` +
       `  await box.task('your prompt here')\n`,
   )
+}
+
+async function writeWorkspaceFiles(box: SandboxLike, files: WorkspaceFile[]): Promise<void> {
+  for (const f of files) {
+    await box.files.write(f.targetPath, f.content)
+    stdout.write(`[deploy-agent] wrote ${f.targetPath} (${f.content.length} bytes)\n`)
+  }
 }
 
 main().catch((err: unknown) => {

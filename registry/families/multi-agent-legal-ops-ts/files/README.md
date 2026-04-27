@@ -12,24 +12,24 @@ A team-bundle filesystem:
 
 ```
 multi-agent-legal-ops-ts/
-  coordination-protocol.md       # routing contract — read this first
-  agent-roster.json              # role table — programmatic source of truth
+  AGENTS.md                      # orchestrator system prompt + Coordination section — read this first
+  agents.json                    # OpenCode-native subagent registry consumed by the Tangle sandbox sidecar
   README.md
   roles/
     paralegal-intake/
-      system-prompt.md           # NOT giving advice; runs intake + conflict + summary
+      AGENTS.md                  # NOT giving advice; runs intake + conflict + summary
       methodology/
         intake-checklist.md
         conflict-check.md
         fact-pattern-summary.md
     legal-counsel/
-      system-prompt.md           # not a lawyer; no privilege; jurisdiction-agnostic
+      AGENTS.md                  # not a lawyer; no privilege; jurisdiction-agnostic
       methodology/
         contract-redline.md
         nda-msa-review.md
         regulatory-research.md
     auditor/
-      system-prompt.md           # never signs off; advisory not assurance
+      AGENTS.md                  # never signs off; advisory not assurance
       methodology/
         control-walkthrough.md
         deficiency-write-up.md
@@ -47,8 +47,8 @@ Composes:
 
 ## What makes it a team, not a pile of agents
 
-The differentiating content is `coordination-protocol.md`. It
-defines:
+The differentiating content is the `## Coordination` section in
+`AGENTS.md`. It defines:
 
 1. **Default routing** — every request lands at paralegal-intake first
 2. **Hand-off rules** — deterministic, rule-based, with structured
@@ -89,17 +89,22 @@ one of these emits `:::escalation` and stops drafting:
 6. Audit findings of fraud, management override, or pervasive failure
 7. Filings requiring bar admission
 
-See `coordination-protocol.md` section 4 for the full triggers.
+See the `## Coordination` section in `AGENTS.md` (Hard escalations
+sub-section) for the full triggers.
 
 ## How a sandbox spawns it
 
-1. The host loads `agent-roster.json` and routes the first inbound
-   message to `defaultRespondent` (paralegal-intake).
-2. Intake reads `roles/paralegal-intake/system-prompt.md`, surfaces
+1. The Tangle sandbox sidecar loads `agents.json` and registers each
+   subagent. The orchestrator's `AGENTS.md` is the team-level system
+   prompt; it routes the first inbound message to `defaultRespondent`
+   (paralegal-intake).
+2. Intake's prompt (inline in `agents.json`, mirrored from
+   `roles/paralegal-intake/AGENTS.md`) surfaces
    `:::session-disclaimer`, runs the intake checklist + conflict
    check + fact-pattern summary, and emits a `:::handoff` packet.
-3. The host routes the handoff to the named role (counsel or
-   auditor), which loads its own system-prompt + methodology.
+3. The host routes the handoff to the named subagent (counsel or
+   auditor), which uses its own inline `prompt` + per-role
+   methodology files in `roles/<role>/methodology/`.
 4. Cross-role hand-offs (counsel ↔ auditor) follow the same shape;
    the host enforces that hand-off packets carry redacted PII.
 5. Every egress block passes `assertNoPII` — fail-closed.
@@ -115,17 +120,19 @@ See `coordination-protocol.md` section 4 for the full triggers.
 
 ## Extension points
 
-- `roles/<role>/system-prompt.md` — adjust role refusals, output
-  blocks. Re-run `agents-md-valid` after edits.
-- `roles/<role>/methodology/*.md` — refine the per-capability method
-  (e.g. add a SaaS-specific data-protection annex review under
-  legal-counsel).
-- `coordination-protocol.md` — adjust the routing contract.
+- `roles/<role>/AGENTS.md` — adjust role refusals, output blocks.
+  Re-run `agents-md-valid` after edits, then regenerate
+  `agents.json` so the inline `prompt` mirrors the file.
+- `roles/<role>/methodology/*.md` — refine the per-capability
+  method (e.g. add a SaaS-specific data-protection annex review
+  under legal-counsel).
+- `AGENTS.md` (`## Coordination`) — adjust the routing contract.
   Hand-off triggers are deterministic; if a real-world matter type
   doesn't fit, add a rule, do not improvise at runtime.
-- `agent-roster.json` — add a fourth role (e.g. privacy officer,
-  contracts ops) with its own system-prompt + methodology dir; the
-  host reads the roster as the source of truth.
+- `agents.json` — add a fourth role (e.g. privacy officer,
+  contracts ops) with its own subagent entry (description, inline
+  `prompt`, `tools`, `permission`) plus a `roles/<new>/` directory;
+  the sidecar reads `agents.json` as the source of truth.
 
 ## Why composes with `agent-base:privacy`
 

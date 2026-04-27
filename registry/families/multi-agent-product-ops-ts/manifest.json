@@ -73,37 +73,36 @@
   },
   "files": [
     { "source": "files/agent.json", "target": "agent.json" },
-    { "source": "files/orchestrator-system-prompt.md", "target": "orchestrator-system-prompt.md" },
-    { "source": "files/coordination-protocol.md", "target": "coordination-protocol.md" },
-    { "source": "files/agent-roster.json", "target": "agent-roster.json" },
+    { "source": "files/AGENTS.md", "target": "AGENTS.md" },
+    { "source": "files/agents.json", "target": "agents.json" },
     { "source": "files/README.md", "target": "README.md" },
 
-    { "source": "files/roles/pm/system-prompt.md", "target": "roles/pm/system-prompt.md" },
+    { "source": "files/roles/pm/AGENTS.md", "target": "roles/pm/AGENTS.md" },
     { "source": "files/roles/pm/methodology/discovery-cycle.md", "target": "roles/pm/methodology/discovery-cycle.md" },
     { "source": "files/roles/pm/methodology/prioritization-rice.md", "target": "roles/pm/methodology/prioritization-rice.md" },
     { "source": "files/roles/pm/methodology/prd-template.md", "target": "roles/pm/methodology/prd-template.md" },
 
-    { "source": "files/roles/designer/system-prompt.md", "target": "roles/designer/system-prompt.md" },
+    { "source": "files/roles/designer/AGENTS.md", "target": "roles/designer/AGENTS.md" },
     { "source": "files/roles/designer/methodology/design-critique.md", "target": "roles/designer/methodology/design-critique.md" },
     { "source": "files/roles/designer/methodology/ux-strategy.md", "target": "roles/designer/methodology/ux-strategy.md" },
 
-    { "source": "files/roles/eng-manager/system-prompt.md", "target": "roles/eng-manager/system-prompt.md" },
+    { "source": "files/roles/eng-manager/AGENTS.md", "target": "roles/eng-manager/AGENTS.md" },
     { "source": "files/roles/eng-manager/methodology/tech-feasibility-scoping.md", "target": "roles/eng-manager/methodology/tech-feasibility-scoping.md" },
     { "source": "files/roles/eng-manager/methodology/sprint-planning.md", "target": "roles/eng-manager/methodology/sprint-planning.md" },
 
-    { "source": "files/roles/customer-success/system-prompt.md", "target": "roles/customer-success/system-prompt.md" },
+    { "source": "files/roles/customer-success/AGENTS.md", "target": "roles/customer-success/AGENTS.md" },
     { "source": "files/roles/customer-success/methodology/churn-risk-analysis.md", "target": "roles/customer-success/methodology/churn-risk-analysis.md" },
     { "source": "files/roles/customer-success/methodology/qbr-prep.md", "target": "roles/customer-success/methodology/qbr-prep.md" }
   ],
   "contextHints": {
     "commands": [],
     "entrypoints": [
-      "coordination-protocol.md",
-      "agent-roster.json"
+      "AGENTS.md",
+      "agents.json"
     ],
     "extensionPoints": [
       "roles/",
-      "src/lib/tools/"
+      "AGENTS.md"
     ]
   },
   "tieredKeywords": {

@@ -81,8 +81,8 @@
     "team": {
       "defaultRespondent": "ceo",
       "roles": ["ceo", "cto", "cmo", "hr", "cfo-advisor"],
-      "rosterPath": "agent-roster.json",
-      "coordinationProtocolPath": "coordination-protocol.md"
+      "agentsConfigPath": "agents.json",
+      "orchestratorPromptPath": "AGENTS.md"
     }
   },
   "files": [
@@ -91,24 +91,20 @@
       "target": "agent.json"
     },
     {
-      "source": "files/orchestrator-system-prompt.md",
-      "target": "orchestrator-system-prompt.md"
+      "source": "files/AGENTS.md",
+      "target": "AGENTS.md"
     },
     {
-      "source": "files/agent-roster.json",
-      "target": "agent-roster.json"
-    },
-    {
-      "source": "files/coordination-protocol.md",
-      "target": "coordination-protocol.md"
+      "source": "files/agents.json",
+      "target": "agents.json"
     },
     {
       "source": "files/README.md",
       "target": "README.md"
     },
     {
-      "source": "files/roles/ceo/system-prompt.md",
-      "target": "roles/ceo/system-prompt.md"
+      "source": "files/roles/ceo/AGENTS.md",
+      "target": "roles/ceo/AGENTS.md"
     },
     {
       "source": "files/roles/ceo/methodology/weekly-review.md",
@@ -123,8 +119,8 @@
       "target": "roles/ceo/methodology/okr-design.md"
     },
     {
-      "source": "files/roles/cto/system-prompt.md",
-      "target": "roles/cto/system-prompt.md"
+      "source": "files/roles/cto/AGENTS.md",
+      "target": "roles/cto/AGENTS.md"
     },
     {
       "source": "files/roles/cto/methodology/one-on-one-cadence.md",
@@ -139,8 +135,8 @@
       "target": "roles/cto/methodology/architecture-decision.md"
     },
     {
-      "source": "files/roles/cmo/system-prompt.md",
-      "target": "roles/cmo/system-prompt.md"
+      "source": "files/roles/cmo/AGENTS.md",
+      "target": "roles/cmo/AGENTS.md"
     },
     {
       "source": "files/roles/cmo/methodology/positioning-canvas.md",
@@ -151,8 +147,8 @@
       "target": "roles/cmo/methodology/channel-experiment-design.md"
     },
     {
-      "source": "files/roles/hr/system-prompt.md",
-      "target": "roles/hr/system-prompt.md"
+      "source": "files/roles/hr/AGENTS.md",
+      "target": "roles/hr/AGENTS.md"
     },
     {
       "source": "files/roles/hr/methodology/recruiting-loop-design.md",
@@ -163,8 +159,8 @@
       "target": "roles/hr/methodology/interview-rubric.md"
     },
     {
-      "source": "files/roles/cfo-advisor/system-prompt.md",
-      "target": "roles/cfo-advisor/system-prompt.md"
+      "source": "files/roles/cfo-advisor/AGENTS.md",
+      "target": "roles/cfo-advisor/AGENTS.md"
     },
     {
       "source": "files/roles/cfo-advisor/methodology/burn-runway-model.md",
@@ -178,51 +174,51 @@
   "validationChecks": [
     {
       "type": "file-exists",
-      "path": "agent-roster.json"
+      "path": "AGENTS.md"
     },
     {
       "type": "file-exists",
-      "path": "coordination-protocol.md"
+      "path": "agents.json"
     },
     {
       "type": "file-exists",
-      "path": "roles/ceo/system-prompt.md"
+      "path": "roles/ceo/AGENTS.md"
     },
     {
       "type": "file-exists",
-      "path": "roles/cto/system-prompt.md"
+      "path": "roles/cto/AGENTS.md"
     },
     {
       "type": "file-exists",
-      "path": "roles/cmo/system-prompt.md"
+      "path": "roles/cmo/AGENTS.md"
     },
     {
       "type": "file-exists",
-      "path": "roles/hr/system-prompt.md"
+      "path": "roles/hr/AGENTS.md"
     },
     {
       "type": "file-exists",
-      "path": "roles/cfo-advisor/system-prompt.md"
+      "path": "roles/cfo-advisor/AGENTS.md"
     },
     {
       "type": "agents-md-valid",
-      "path": "roles/ceo/system-prompt.md"
+      "path": "roles/ceo/AGENTS.md"
     },
     {
       "type": "agents-md-valid",
-      "path": "roles/cto/system-prompt.md"
+      "path": "roles/cto/AGENTS.md"
     },
     {
       "type": "agents-md-valid",
-      "path": "roles/cmo/system-prompt.md"
+      "path": "roles/cmo/AGENTS.md"
     },
     {
       "type": "agents-md-valid",
-      "path": "roles/hr/system-prompt.md"
+      "path": "roles/hr/AGENTS.md"
     },
     {
       "type": "agents-md-valid",
-      "path": "roles/cfo-advisor/system-prompt.md"
+      "path": "roles/cfo-advisor/AGENTS.md"
     },
     {
       "type": "schedule-valid",
@@ -232,12 +228,12 @@
   "contextHints": {
     "commands": [],
     "entrypoints": [
-      "agent-roster.json",
-      "coordination-protocol.md"
+      "AGENTS.md",
+      "agents.json"
     ],
     "extensionPoints": [
       "roles/",
-      "coordination-protocol.md"
+      "AGENTS.md"
     ]
   },
   "keywords": [

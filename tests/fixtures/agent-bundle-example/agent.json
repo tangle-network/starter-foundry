@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "tags": ["research", "single-agent"],
   "prompt": {
-    "systemPromptFile": "system-prompt.md",
+    "systemPromptFile": "AGENTS.md",
     "instructions": ["Cite every source.", "Refuse to invent data."]
   },
   "model": {
@@ -22,9 +22,6 @@
     "webfetch": "deny"
   },
   "resources": {
-    "files": [
-      { "source": "system-prompt.md", "target": "system-prompt.md" },
-      { "source": "methodology", "target": "methodology" }
-    ]
+    "files": [{ "source": "methodology" }]
   }
 }

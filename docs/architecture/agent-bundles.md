@@ -10,24 +10,43 @@
 
 An **agent bundle** is a folder of files this repo composes from a family + layers:
 
-- `system-prompt.md` (or `roles/<id>/system-prompt.md` for multi-agent)
+- `AGENTS.md` — the orchestrator's system prompt, auto-injected by the in-sandbox harness (see "Why these file names" below)
+- `agents.json` — OpenCode-native subagent registry (multi-agent only)
 - `methodology/*.md` — capability playbooks the agent reads at runtime
-- `agent.json` — a thin [`AgentProfile`][agent-profile] declaration
-- supporting content: `TOOLS.md`, `README.md`, `coordination-protocol.md` (multi-agent only), etc.
+- `agent.json` — a thin [`AgentProfile`][agent-profile] declaration consumed by the sandbox SDK
+- supporting content: `TOOLS.md`, `README.md`, `roles/<id>/AGENTS.md` (multi-agent per-role prompts), etc.
 
 A bundle is **not** an HTTP server. It does **not** ship `worker.ts`, `wrangler.jsonc`, an Express app, or a chat endpoint. It is a content payload deployed **into** a Tangle sandbox, where an OpenCode/Claude agent loop (run by sandbox-sdk) reads the files and acts on them.
 
 The runtime contract lives in the sandbox SDK, not in this repo:
 
-- `client.create({ backend: { profile } })` provisions the container with the right agent backend (`opencode` / `claude-code` / `codex`).
-- `box.files.write(...)` materializes the bundle into the sandbox's workspace.
-- `box.task("…")` invokes the in-sandbox agent loop — the OpenCode/Claude process reads `system-prompt.md`, picks a methodology entry, and runs to completion.
+- `client.create({ backend: { profile } })` provisions the container with the right agent backend (`opencode` / `claude-code` / `codex` / `hermes` / `amp` / `kimi-code`).
+- `box.files.write(...)` materializes the bundle into the workspace at `/home/agent/`.
+- `box.task("…")` invokes the in-sandbox agent loop — the harness reads `AGENTS.md` (and `agents.json` if present), picks a methodology entry, and runs to completion.
 
 The sandbox SDK's own [`task()` doc-comment][sandbox-task] is the contract:
 
 > Note: The agent (OpenCode/Claude) handles multi-turn execution internally. Most tasks complete in a single call.
 
 That is the entire runtime story. There is nothing for starter-foundry to host.
+
+## Why these file names: harness conventions
+
+The in-sandbox harness — OpenCode (default), Claude Code, Hermes, Codex, Amp, Kimi-Code — auto-discovers two files at the workspace root and wires them into the agent loop without any explicit instruction from the deploy script:
+
+- **`AGENTS.md`** is read on session start and concatenated into every agent's system prompt. See `apps/sidecar/src/agents/base-agent.ts:170` in `agent-dev-container` — `loadAgentsMarkdown()` reads `AGENTS.md` from disk and `buildSystemPrompt()` injects it ahead of the role-specific prompt.
+- **`agents.json`** is the OpenCode subagent registry. `apps/sidecar/src/agents/subagents/load-agents-config.ts` searches a fixed list of paths (workspace root included) for `agents.json`, parses it, and registers each entry as a callable subagent in the harness.
+
+Bundles emit these exact filenames so the harness picks them up with zero glue. Custom names (`system-prompt.md`, `agent-roster.json`, `coordination-protocol.md`) are not read by anything — they would require us to ship a parallel loader inside every bundle, which is what the harness already does for free.
+
+The canonical workspace root is **`/home/agent`**, defined by `getDefaultWorkspaceRoot()` in `apps/sidecar/src/constants.ts:106`. Every file the bundle ships lands under that prefix.
+
+## What the deploy script writes vs. what's pushed via SDK
+
+Two things look like duplication; they aren't. They're defense in depth against harness skew.
+
+- **`AGENTS.md`** — written to the filesystem at `/home/agent/AGENTS.md` via `box.files.write(...)`, AND the same content is passed via `AgentProfile.prompt.systemPrompt` to the SDK. The harness reads the file as part of session bootstrap; the SDK call ensures the prompt is injected even if a future harness or backend skips file injection. Either path alone is sufficient; together, the prompt is unmissable.
+- **`agents.json`** — filesystem-only at `/home/agent/agents.json`. `AgentProfile.subagents` exists in the SDK and is also populated, but the OpenCode harness reads `agents.json` directly when it boots, so the file must be there. We populate the SDK field as well so non-OpenCode backends (Claude, Hermes) that consume `AgentProfile.subagents` get the same registry.
 
 ## Deploy flow
 
@@ -41,9 +60,10 @@ That is the entire runtime story. There is nothing for starter-foundry to host.
 +-----------------------------+
 |  /tmp/<bundle>/             |
 |    agent.json               |   AgentProfile (single or multi-agent)
-|    system-prompt.md         |
+|    AGENTS.md                |   orchestrator system prompt
+|    agents.json              |   subagent registry (multi-agent only)
 |    methodology/*.md         |
-|    roles/<id>/...           |   (multi-agent only)
+|    roles/<id>/AGENTS.md     |   (multi-agent per-role prompts)
 +--------------+--------------+
                |
                v   pnpm exec tsx scripts/deploy-agent-bundle.ts \
@@ -54,11 +74,12 @@ That is the entire runtime story. There is nothing for starter-foundry to host.
 |                  Tangle Sandbox                          |
 |                                                          |
 |   1. client.create({ backend: { profile: agent.json } }) |
-|   2. box.files.write(...) for every bundle file          |
+|   2. box.files.write(...) at /home/agent/AGENTS.md,      |
+|      /home/agent/agents.json, /home/agent/methodology/.. |
 |   3. box.backend.update(...)  (optional — refresh prompt)|
 |                                                          |
-|   sandbox container now hosts: opencode/claude agent     |
-|   + bundle contents in /workspace                        |
+|   sandbox container now hosts: opencode/claude harness   |
+|   + bundle contents at /home/agent/                      |
 +--------------+-------------------------------------------+
                |
                v
@@ -84,7 +105,7 @@ A single-agent bundle ships one `agent.json` whose contents are an [`AgentProfil
   "version": "0.1.0",
   "tags": ["research", "literature-survey"],
   "prompt": {
-    "systemPrompt": "@file:system-prompt.md",
+    "systemPrompt": "@file:AGENTS.md",
     "instructions": [
       "When the user asks for a survey, follow methodology/literature-survey.md.",
       "When drafting a proposal, follow methodology/proposal-drafting.md.",
@@ -107,11 +128,11 @@ A single-agent bundle ships one `agent.json` whose contents are an [`AgentProfil
   "resources": {
     "files": [
       {
-        "path": "system-prompt.md",
+        "path": "AGENTS.md",
         "resource": {
           "kind": "inline",
-          "name": "system-prompt",
-          "content": "@file:system-prompt.md"
+          "name": "agents-md",
+          "content": "@file:AGENTS.md"
         }
       },
       {
@@ -135,22 +156,22 @@ A single-agent bundle ships one `agent.json` whose contents are an [`AgentProfil
 }
 ```
 
-`@file:` is a deploy-script convention — it inlines the named file's contents at deploy time. Bundles ship their files alongside `agent.json`; the deploy script translates `@file:` refs into the [`AgentProfileResourceRef`][resource-ref] inline shape the sandbox expects.
+`@file:` is a deploy-script convention — it inlines the named file's contents at deploy time. Bundles ship their files alongside `agent.json`; the deploy script translates `@file:` refs into the [`AgentProfileResourceRef`][resource-ref] inline shape the sandbox expects, and writes them to the filesystem under `/home/agent/`.
 
 Annotated fields:
 
 | Field                           | Purpose                                                                             | SDK link                                       |
 | ------------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------- |
-| `prompt.systemPrompt`           | Replaces the backend's default system prompt                                        | [`AgentProfilePrompt`][agent-profile]          |
+| `prompt.systemPrompt`           | Replaces the backend's default system prompt; mirror of `AGENTS.md` content         | [`AgentProfilePrompt`][agent-profile]          |
 | `prompt.instructions`           | Appended to the active prompt; cheap way to layer behavior on top of `systemPrompt` | same                                           |
 | `tools`                         | Capability allowlist (record of `name → bool`)                                      | [`AgentProfile.tools`][agent-profile]          |
 | `permissions`                   | Per-tool policy: `allow` / `ask` / `deny`                                           | [`AgentProfilePermissionValue`][agent-profile] |
 | `model.default` / `model.small` | Backend hints; the in-sandbox agent picks based on task                             | [`AgentProfileModelHints`][agent-profile]      |
-| `resources.files`               | Files materialized into the agent workspace before execution                        | [`AgentProfileFileMount`][agent-profile]       |
+| `resources.files`               | Files materialized into the agent workspace at `/home/agent/` before execution      | [`AgentProfileFileMount`][agent-profile]       |
 
 ## `agent.json` — multi-agent shape
 
-Multi-agent bundles use the `subagents` field of `AgentProfile`. The SDK supports this natively — `AgentProfile.subagents` is `Record<string, AgentSubagentProfile>` ([source][agent-profile]). A multi-agent bundle ships a single `agent.json` with one orchestrator system prompt and N subagent entries:
+Multi-agent bundles use the `subagents` field of `AgentProfile`. The SDK supports this natively — `AgentProfile.subagents` is `Record<string, AgentSubagentProfile>` ([source][agent-profile]). A multi-agent bundle ships a single `agent.json` with one orchestrator system prompt and N subagent entries, plus a sibling `agents.json` at the workspace root that the OpenCode harness reads directly.
 
 ```json
 {
@@ -159,7 +180,7 @@ Multi-agent bundles use the `subagents` field of `AgentProfile`. The SDK support
   "description": "5-role startup advisory team — CEO orchestrates, delegates to CTO/CMO/HR/CFO-Advisor.",
   "version": "0.1.0",
   "prompt": {
-    "systemPrompt": "@file:roles/ceo/system-prompt.md",
+    "systemPrompt": "@file:AGENTS.md",
     "instructions": [
       "You are the CEO and default respondent for this team.",
       "When a question is primarily technical, delegate to the cto subagent.",
@@ -174,26 +195,26 @@ Multi-agent bundles use the `subagents` field of `AgentProfile`. The SDK support
   "subagents": {
     "cto": {
       "description": "Engineering 1:1s, sprint pace, tech-debt triage, architecture decisions.",
-      "prompt": "@file:roles/cto/system-prompt.md",
+      "prompt": "@file:roles/cto/AGENTS.md",
       "tools": { "read": true, "write": true },
       "maxSteps": 12
     },
     "cmo": {
       "description": "Positioning, ICP, channel experiments, growth scoreboards.",
-      "prompt": "@file:roles/cmo/system-prompt.md",
+      "prompt": "@file:roles/cmo/AGENTS.md",
       "tools": { "read": true, "write": true },
       "maxSteps": 12
     },
     "hr": {
       "description": "JD drafting, structured interview design, comp-band hygiene. Refuses protected-class questions.",
-      "prompt": "@file:roles/hr/system-prompt.md",
+      "prompt": "@file:roles/hr/AGENTS.md",
       "tools": { "read": true, "write": true },
       "maxSteps": 12,
       "metadata": { "biasSafeguards": { "protectedClassRefusal": true } }
     },
     "cfo-advisor": {
       "description": "Burn/runway, unit economics, fundraise prep. Not a licensed advisor.",
-      "prompt": "@file:roles/cfo-advisor/system-prompt.md",
+      "prompt": "@file:roles/cfo-advisor/AGENTS.md",
       "tools": { "read": true, "write": true },
       "maxSteps": 12,
       "metadata": { "notALicensedAdvisor": true }
@@ -202,36 +223,47 @@ Multi-agent bundles use the `subagents` field of `AgentProfile`. The SDK support
   "resources": {
     "files": [
       {
-        "path": "coordination-protocol.md",
-        "resource": {
-          "kind": "inline",
-          "name": "coordination",
-          "content": "@file:coordination-protocol.md"
-        }
+        "path": "AGENTS.md",
+        "resource": { "kind": "inline", "name": "agents-md", "content": "@file:AGENTS.md" }
+      },
+      {
+        "path": "agents.json",
+        "resource": { "kind": "inline", "name": "agents-json", "content": "@file:agents.json" }
       }
     ]
   }
 }
 ```
 
-The OpenCode/Claude backend's native subagent feature handles delegation — there is no `:::handoff` parser to write, no roster loader, no chat handler. The orchestrator's `prompt.systemPrompt` IS the lead role; `subagents` are the rest. `coordination-protocol.md` is mounted via `resources.files`; the orchestrator reads it like any methodology guide. Subagent invocation is native to OpenCode/Claude; the orchestrator's instructions are the routing table; the agent loop dispatches.
+The sibling `agents.json` is the OpenCode-native subagent registry — same `id → { description, prompt, tools, … }` shape as `AgentProfile.subagents`, but read directly from disk by the harness:
+
+```json
+{
+  "cto":         { "description": "…", "prompt": "roles/cto/AGENTS.md",         "tools": { "read": true, "write": true } },
+  "cmo":         { "description": "…", "prompt": "roles/cmo/AGENTS.md",         "tools": { "read": true, "write": true } },
+  "hr":          { "description": "…", "prompt": "roles/hr/AGENTS.md",          "tools": { "read": true, "write": true } },
+  "cfo-advisor": { "description": "…", "prompt": "roles/cfo-advisor/AGENTS.md", "tools": { "read": true, "write": true } }
+}
+```
+
+The orchestrator's coordination rules (delegation triggers, output conventions, hand-off vocabulary) live inside `AGENTS.md` itself — there is no separate `coordination-protocol.md`. The harness's native subagent feature handles delegation; there is no `:::handoff` parser to write, no roster loader, no chat handler. The orchestrator's `AGENTS.md` IS the lead role; `subagents` are the rest.
 
 ## What a bundle does **not** need
 
 If you are tempted to add any of these to a bundle, stop:
 
-- ❌ `src/worker.ts`, `src/index.ts`, `src/server.ts` — the sandbox is the server.
-- ❌ `wrangler.jsonc`, `vite.config.ts` for serving HTTP — N/A.
-- ❌ A chat-route handler that calls `chatViaRouter()` — `box.task()` calls the model.
-- ❌ A custom roster loader / `:::handoff` parser / role dispatcher — `subagents` is the SDK feature for that.
-- ❌ A `package.json` with `wrangler` / `hono` / `@tangle-network/sandbox-ui` deps — the bundle is content; the runtime is the SDK consumer's process, not the bundle's.
+- `src/worker.ts`, `src/index.ts`, `src/server.ts` — the sandbox is the server.
+- `wrangler.jsonc`, `vite.config.ts` for serving HTTP — N/A.
+- A chat-route handler that calls `chatViaRouter()` — `box.task()` calls the model.
+- A custom roster loader / `:::handoff` parser / role dispatcher — `subagents` (and `agents.json`) is the harness feature for that.
+- A `package.json` with `wrangler` / `hono` / `@tangle-network/sandbox-ui` deps — the bundle is content; the runtime is the SDK consumer's process, not the bundle's.
+- Custom file names like `system-prompt.md`, `agent-roster.json`, `coordination-protocol.md` — the harness does not read those.
 
 ## Coordination protocol (`:::handoff`, `:::escalation`, `:::artifact`)
 
 These fenced-block conventions are **agent-output hints**, not wire protocols. They appear in:
 
-- The orchestrator's system prompt (telling the agent how to format mid-stream signals).
-- `coordination-protocol.md` (mounted as a resource file the orchestrator reads).
+- The orchestrator's `AGENTS.md` (telling the agent how to format mid-stream signals).
 - The `parseBlocks()` helper any consumer can run on the final string for downstream UI rendering.
 
 Nothing parses them server-side. When the orchestrator emits `:::handoff to: cto`, the **same agent loop** decides what to do next — usually invoking the `cto` subagent inline. External code does not re-dispatch; the SDK doesn't see these blocks. The hints exist for the agent's own output structure and for downstream UI parsers; the dispatch is handled inside the sandbox.

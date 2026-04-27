@@ -12,7 +12,7 @@
     "cloudflare-worker"
   ],
   "prompt": {
-    "systemPromptFile": "system-prompt.md"
+    "systemPromptFile": "AGENTS.md"
   },
   "tools": {
     "filesystem": true,
@@ -27,16 +27,13 @@
   "resources": {
     "files": [
       {
-        "source": "methodology/",
-        "target": "/workspace/methodology/"
+        "source": "methodology/"
       },
       {
-        "source": "README.md",
-        "target": "/workspace/README.md"
+        "source": "README.md"
       },
       {
-        "source": "TOOLS.md",
-        "target": "/workspace/TOOLS.md"
+        "source": "TOOLS.md"
       }
     ]
   }

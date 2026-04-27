@@ -3,13 +3,21 @@
  *
  * A "bundle" is a directory holding an `agent.json` plus the markdown system
  * prompts and methodology files referenced from it. The deploy script reads
- * the bundle, validates against `registry/_schemas/agent.schema.json`, then
- * translates the bundle-side shape into the SDK's portable `AgentProfile`
- * (which the sandbox runtime consumes as `backend.profile`).
+ * the bundle, validates against `registry/_schemas/agent.schema.json`, then:
  *
- * Architectural note: starter-foundry no longer wraps bundles in a custom
- * Vite/Hono server. Every Tangle sandbox already runs an OpenCode/Claude
- * agent loop (see `box.task()`); the bundle just configures it.
+ * 1. Translates the bundle-side shape into the SDK's portable `AgentProfile`
+ *    (consumed as `backend.profile` by the sandbox runtime — used for the
+ *    full-replacement system prompt, subagent profiles, model defaults, etc).
+ * 2. Emits harness-native workspace files at `<workspace.root>` (default
+ *    `/home/agent`): `AGENTS.md` (auto-loaded by every supported harness —
+ *    OpenCode, Claude Code, Hermes, Codex, Amp, Kimi-Code), and — for
+ *    multi-agent bundles only — `agents.json` (OpenCode subagent definitions).
+ *    Plus every entry from `resources.files[]`.
+ *
+ * `AGENTS.md` and `agents.json` are auto-discovered by the in-sandbox harness
+ * (see `apps/sidecar/src/agents/base-agent.ts:170` and
+ * `apps/sidecar/src/agents/subagents/load-agents-config.ts`). The bundle's
+ * job is to put them where the harness expects them.
  *
  * @public
  */
@@ -26,20 +34,30 @@ import { fileURLToPath } from 'node:url'
 export type AgentPermission = 'allow' | 'ask' | 'deny'
 
 /**
+ * Default sandbox workspace root. Matches the harness convention
+ * (`AGENT_WORKSPACE_ROOT=/home/agent` per
+ * `apps/sidecar/src/constants.ts`).
+ */
+export const DEFAULT_WORKSPACE_ROOT = '/home/agent'
+
+/**
  * A single resource file (or directory) to materialise inside the sandbox.
  */
 export interface BundleResource {
   /** Path relative to the bundle root. May be a file or a directory. */
   source: string
   /**
-   * Path inside the sandbox. If relative, treated as relative to /workspace.
-   * Defaults to `/workspace/<source>` when omitted.
+   * Path inside the sandbox. If relative, treated as relative to the
+   * resolved workspace root. Defaults to `<workspace.root>/<source>` when
+   * omitted.
    */
-  target: string
+  target?: string
 }
 
 /**
- * Bundle-side subagent declaration. Translates to `AgentSubagentProfile`.
+ * Bundle-side subagent declaration. Translates to:
+ *  - `AgentProfile.subagents[id]` (SDK side)
+ *  - one entry in the emitted `<workspace.root>/agents.json` (harness side)
  */
 export interface SubagentBundle {
   description?: string
@@ -47,6 +65,7 @@ export interface SubagentBundle {
   model?: string
   tools?: Record<string, boolean>
   permissions?: Record<string, AgentPermission>
+  temperature?: number
   maxSteps?: number
 }
 
@@ -58,6 +77,9 @@ export interface AgentBundleProfile {
   description?: string
   version: string
   tags?: string[]
+  workspace?: {
+    root?: string
+  }
   prompt: {
     systemPromptFile?: string
     instructions?: string[]
@@ -125,6 +147,40 @@ export interface AgentProfileFileMountMirror {
     | { kind: 'inline'; name: string; content: string }
     | { kind: 'github'; path: string; ref?: string; name?: string }
   executable?: boolean
+}
+
+/**
+ * One file the deploy script must `box.files.write` into the sandbox.
+ *
+ * Distinct from `AgentProfileFileMountMirror`: workspace files are the
+ * harness-native artefacts (AGENTS.md, agents.json, methodology/*) emitted
+ * verbatim — not declared on the AgentProfile.
+ *
+ * @public
+ */
+export interface WorkspaceFile {
+  /** Absolute path inside the sandbox. */
+  targetPath: string
+  /** UTF-8 string content (binary file copies are not currently supported). */
+  content: string
+}
+
+/**
+ * Shape of a single entry in the OpenCode `agents.json` file.
+ *
+ * Verified against `apps/sidecar/agents.json` and
+ * `apps/sidecar/src/agents/subagents/load-agents-config.ts`. Keys are the
+ * harness contract — not invented here.
+ *
+ * @public
+ */
+export interface OpenCodeSubagentConfig {
+  mode: 'subagent'
+  description?: string
+  prompt: string
+  temperature?: number
+  tools?: Record<string, boolean>
+  permission?: Record<string, AgentPermission>
 }
 
 // --- Schema validation (minimal, matches scripts/validate-registry.ts) ---
@@ -252,6 +308,16 @@ export async function resolveSystemPrompt(
   return readFile(abs, 'utf8')
 }
 
+/**
+ * Resolve the workspace root from a bundle, falling back to the harness
+ * default (`/home/agent`).
+ *
+ * @public
+ */
+export function resolveWorkspaceRoot(bundle: AgentBundleProfile): string {
+  return bundle.workspace?.root ?? DEFAULT_WORKSPACE_ROOT
+}
+
 // --- Translator -----------------------------------------------------------
 
 interface ResolvedFileMount {
@@ -264,19 +330,20 @@ interface ResolvedFileMount {
  * Walk a `BundleResource` (file or directory) and produce one inline-resource
  * mount per file. Directories are walked recursively.
  *
- * Target paths normalise to absolute sandbox paths under `/workspace`.
+ * Target paths normalise to absolute sandbox paths under the workspace root.
  */
 async function resolveResource(
   resource: BundleResource,
   bundleDir: string,
+  workspaceRoot: string,
 ): Promise<ResolvedFileMount[]> {
   const sourceAbs = isAbsolute(resource.source) ? resource.source : join(bundleDir, resource.source)
   const stats = await stat(sourceAbs)
   const targetRoot = resource.target
     ? isAbsolute(resource.target)
       ? resource.target
-      : join('/workspace', resource.target)
-    : join('/workspace', resource.source)
+      : join(workspaceRoot, resource.target)
+    : join(workspaceRoot, resource.source)
 
   if (stats.isFile()) {
     const content = await readFile(sourceAbs, 'utf8')
@@ -322,6 +389,7 @@ export async function toAgentProfile(
   bundle: AgentBundleProfile,
   bundleDir: string,
 ): Promise<AgentProfileMirror> {
+  const workspaceRoot = resolveWorkspaceRoot(bundle)
   const systemPrompt = await resolveSystemPrompt(bundle, bundleDir)
 
   const resolvedSubagents: Record<string, AgentSubagentProfileMirror> = {}
@@ -344,7 +412,7 @@ export async function toAgentProfile(
 
   const fileMounts: AgentProfileFileMountMirror[] = []
   for (const resource of bundle.resources?.files ?? []) {
-    const resolved = await resolveResource(resource, bundleDir)
+    const resolved = await resolveResource(resource, bundleDir, workspaceRoot)
     for (const mount of resolved) {
       const name = relative(bundleDir, mount.source) || mount.path
       fileMounts.push({
@@ -383,4 +451,96 @@ export async function toAgentProfile(
   }
 
   return profile
+}
+
+// --- Workspace-file emit (harness-native) ---------------------------------
+
+/**
+ * Build the OpenCode-shape `agents.json` content for a multi-agent bundle.
+ *
+ * Shape verified against `apps/sidecar/agents.json` (the canonical example
+ * shipped with the sidecar) and `load-agents-config.ts`:
+ *
+ *   { <subagent-id>: { mode, description, prompt, temperature?, tools?, permission? } }
+ *
+ * The prompt is INLINE (full markdown content), not a path. `permission`
+ * is singular per the harness contract, even though the bundle-side spec
+ * uses plural `permissions` (we translate at the boundary).
+ */
+async function buildOpenCodeAgentsJson(
+  bundle: AgentBundleProfile,
+  bundleDir: string,
+): Promise<string> {
+  const out: Record<string, OpenCodeSubagentConfig> = {}
+  for (const [id, sub] of Object.entries(bundle.subagents ?? {})) {
+    const promptAbs = isAbsolute(sub.systemPromptFile)
+      ? sub.systemPromptFile
+      : join(bundleDir, sub.systemPromptFile)
+    const promptContent = await readFile(promptAbs, 'utf8')
+    const entry: OpenCodeSubagentConfig = {
+      mode: 'subagent',
+      ...(sub.description !== undefined ? { description: sub.description } : {}),
+      prompt: promptContent,
+      ...(sub.temperature !== undefined ? { temperature: sub.temperature } : {}),
+      ...(sub.tools ? { tools: sub.tools } : {}),
+      ...(sub.permissions ? { permission: sub.permissions } : {}),
+    }
+    out[id] = entry
+  }
+  return JSON.stringify(out, null, 2) + '\n'
+}
+
+/**
+ * Compute the list of files the deploy script must `box.files.write`
+ * into the sandbox at `<workspace.root>`:
+ *
+ * - `<workspace.root>/AGENTS.md`   — orchestrator system prompt
+ *                                    (auto-loaded by the harness)
+ * - `<workspace.root>/agents.json` — multi-agent bundles only;
+ *                                    OpenCode subagent definitions
+ *                                    (auto-loaded by `loadAgentsConfig`)
+ * - One file per `resources.files[]` entry, target defaulting to
+ *   `<workspace.root>/<source>` when not specified.
+ *
+ * Single-agent bundles do NOT emit `agents.json`. Their orchestrator
+ * prompt is the AGENTS.md content (also pushed via the SDK
+ * `AgentProfile.prompt.systemPrompt` for a full-replacement system
+ * prompt — equivalent content, two delivery channels).
+ *
+ * @public
+ */
+export async function toWorkspaceFiles(
+  bundle: AgentBundleProfile,
+  bundleDir: string,
+): Promise<WorkspaceFile[]> {
+  const workspaceRoot = resolveWorkspaceRoot(bundle)
+  const out: WorkspaceFile[] = []
+
+  // 1. AGENTS.md — orchestrator system prompt at the workspace root
+  const systemPromptContent = await resolveSystemPrompt(bundle, bundleDir)
+  if (systemPromptContent) {
+    out.push({
+      targetPath: join(workspaceRoot, 'AGENTS.md'),
+      content: systemPromptContent,
+    })
+  }
+
+  // 2. agents.json — multi-agent bundles only
+  if (bundle.subagents && Object.keys(bundle.subagents).length > 0) {
+    const agentsJson = await buildOpenCodeAgentsJson(bundle, bundleDir)
+    out.push({
+      targetPath: join(workspaceRoot, 'agents.json'),
+      content: agentsJson,
+    })
+  }
+
+  // 3. resources.files[] — methodology/, README.md, role assets, etc.
+  for (const resource of bundle.resources?.files ?? []) {
+    const resolved = await resolveResource(resource, bundleDir, workspaceRoot)
+    for (const mount of resolved) {
+      out.push({ targetPath: mount.path, content: mount.content })
+    }
+  }
+
+  return out
 }

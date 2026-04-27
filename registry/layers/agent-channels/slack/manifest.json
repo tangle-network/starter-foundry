@@ -1,0 +1,21 @@
+{
+  "id": "slack",
+  "slot": "agent-channels",
+  "description": "Slack channel adapter — Events API webhook (HMAC-verified) + chat.postMessage send. Composes with any agent-runtime bundle. Set SLACK_BOT_TOKEN and SLACK_SIGNING_SECRET at deploy. Verifies the v0 signature scheme per Slack's signing-secret spec; rejects requests outside the 5-minute replay window.",
+  "appliesTo": [],
+  "provides": ["channel:slack"],
+  "requires": ["secure:webhook-in"],
+  "defaults": {
+    "channelSlackAvailable": true
+  },
+  "files": [
+    { "source": "files/channels/slack.ts", "target": "channels/slack.ts" },
+    { "source": "files/channels/slack.env.example", "target": "channels/slack.env.example" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "channels/slack.ts" }
+  ],
+  "contextHints": {
+    "extensionPoints": ["channels/slack.ts"]
+  }
+}

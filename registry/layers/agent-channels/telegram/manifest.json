@@ -1,0 +1,21 @@
+{
+  "id": "telegram",
+  "slot": "agent-channels",
+  "description": "Telegram bot adapter — webhook receive + send. Composes with any agent-runtime bundle. Set TELEGRAM_BOT_TOKEN at deploy. The in-sandbox agent registers a webhook with Telegram, receives updates via the agent's HTTP server, and sends replies via the Bot API.",
+  "appliesTo": [],
+  "provides": ["channel:telegram"],
+  "requires": ["secure:webhook-in"],
+  "defaults": {
+    "channelTelegramAvailable": true
+  },
+  "files": [
+    { "source": "files/channels/telegram.ts", "target": "channels/telegram.ts" },
+    { "source": "files/channels/telegram.env.example", "target": "channels/telegram.env.example" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "channels/telegram.ts" }
+  ],
+  "contextHints": {
+    "extensionPoints": ["channels/telegram.ts"]
+  }
+}

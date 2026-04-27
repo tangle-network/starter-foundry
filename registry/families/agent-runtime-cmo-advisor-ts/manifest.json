@@ -70,8 +70,8 @@
       "target": "agent.json"
     },
     {
-      "source": "files/system-prompt.md",
-      "target": "system-prompt.md"
+      "source": "files/AGENTS.md",
+      "target": "AGENTS.md"
     },
     {
       "source": "files/methodology/index.json",
@@ -101,7 +101,7 @@
   "validationChecks": [
     {
       "type": "file-exists",
-      "path": "system-prompt.md"
+      "path": "AGENTS.md"
     },
     {
       "type": "file-exists",
@@ -109,7 +109,7 @@
     },
     {
       "type": "agents-md-valid",
-      "path": "system-prompt.md"
+      "path": "AGENTS.md"
     },
     {
       "type": "methodology-index-valid",
@@ -127,7 +127,7 @@
   "contextHints": {
     "commands": [],
     "entrypoints": [
-      "system-prompt.md"
+      "AGENTS.md"
     ],
     "extensionPoints": [
       "templates/",

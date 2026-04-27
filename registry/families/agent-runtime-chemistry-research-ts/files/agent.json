@@ -11,7 +11,7 @@
     "cloudflare-worker"
   ],
   "prompt": {
-    "systemPromptFile": "system-prompt.md"
+    "systemPromptFile": "AGENTS.md"
   },
   "tools": {
     "filesystem": true,

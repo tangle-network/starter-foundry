@@ -50,7 +50,6 @@
   "agent-runtime-rust": "agent-service-rust",
   "agent-webapp": "fullstack-ts",
   "langgraph-multi-agent-python": "agent-service-py",
-  "langgraph-agent-platform-ts": "agent-service-ts",
   "mastra-agent-studio": "agent-service-ts",
   "openai-realtime-voice-agent": "agent-service-ts",
   "browser-automation-agent": "playwright-worker",

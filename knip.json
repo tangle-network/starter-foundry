@@ -10,17 +10,22 @@
     "src/training/variant_b/generate.ts",
     "src/training/variant_b/judge.ts",
     "src/training/template_v1/run.ts",
+    "src/training/family_proposer/propose.ts",
+    "src/training/capability_proposer/propose.ts",
     "src/eval/replay.ts",
     "src/eval/diagnoser.ts",
-    "src/eval/propose.ts"
+    "src/eval/propose.ts",
+    "src/eval/scaffold-bridge.ts",
+    "src/lib/buildout-traces.ts",
+    "src/lib/capability-inferrer.ts",
+    "src/lib/promoter-gates.ts",
+    "src/lib/template-quality.ts",
+    "src/lib/vb-outcomes.ts"
   ],
-  "project": [
-    "src/**/*.ts",
-    "scripts/**/*.ts",
-    "tests/**/*.test.ts"
-  ],
-  "ignore": [
-    "registry/**",
-    "src/types/registry-schemas.generated.ts"
-  ]
+  "project": ["src/**/*.ts", "scripts/**/*.ts", "tests/**/*.test.ts"],
+  "ignore": ["registry/**", "src/types/registry-schemas.generated.ts"],
+  "ignoreExportsUsedInFile": true,
+  "paths": {
+    "../dist/*": ["src/*"]
+  }
 }

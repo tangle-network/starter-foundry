@@ -1,8 +1,0 @@
-{
-  "id": "agent-runtime-physics-research-ts",
-  "description": "Framework layer for agent-runtime-physics-research-ts.",
-  "appliesTo": [
-    "agent-runtime-physics-research-ts"
-  ],
-  "files": []
-}

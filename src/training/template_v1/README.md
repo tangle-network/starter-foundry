@@ -3,7 +3,7 @@
 ## Flow
 
 ```
-.evolve/template-rewrites/<tmpl>.jsonl  (mined by scripts/mine-template-rewrites.mjs)
+.evolve/template-rewrites/<tmpl>.jsonl  (one-shot mined tuples — current corpus)
     │
     ▼
 harvest.ts        — group tuples by (family, template), extract common patterns
@@ -27,11 +27,10 @@ promote.ts        — emit a PR to the registry with (a) the new template,
 
 ## Status
 
-- `scripts/mine-template-rewrites.mjs` — DONE. Mines 253 tuples across 7 templates
-  from the current corpus (as of 2026-04-20).
-- `harvest.ts` / `synthesize.ts` / `judge.ts` / `audit.ts` / `promote.ts` — TODO,
-  next session. Each is ~100 LOC atop the existing `src/training/variant_b/`
-  AxFlow infrastructure.
+- `.evolve/template-rewrites/*.jsonl` — 253 tuples across 7 templates,
+  mined from the corpus as of 2026-04-20 (one-shot harvest; no live
+  re-mining script is shipped with the repo).
+- `harvest.ts` / `synthesize.ts` / `judge.ts` / `audit.ts` / `run.ts` — shipped.
 
 ## Why this matters
 
@@ -40,11 +39,10 @@ hand-craft templates. We're building a pipeline that generates better
 templates from observed agent behavior — so the repo's template quality
 improves with every buildout, without human editing.
 
-## Running (once implemented)
+## Running
 
 ```bash
 pnpm build
-node scripts/mine-template-rewrites.mjs  # refresh tuples
 pnpm tsx src/training/template_v1/run.ts --template src/App.tsx --family react-vite-ts --dry-run
 #                                          ↑ can target any of the 7 mined templates
 ```

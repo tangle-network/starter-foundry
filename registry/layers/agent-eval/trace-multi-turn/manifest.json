@@ -1,0 +1,70 @@
+{
+  "id": "trace-multi-turn",
+  "slot": "agent-eval",
+  "description": "Multi-turn trajectory eval. Composes @tangle-network/agent-eval's Trajectory + TrajectoryStep + StepRubric + buildTrajectory + gradeSemanticStatus to drive a multi-turn rollout against an agent endpoint, capture per-turn spans, and grade each step independently. Per-turn scoring exposes WHERE quality degrades (Turn 3? Turn 5?) and emits a convergence-turn (first turn meeting threshold) so regressions surface as 'Turn 3 dropped from 0.82 → 0.61' rather than a flat aggregate. Composes on top of agent-eval:scenarios and agent-eval:judge-rubric — reuses the same scenario corpus and dimension-level rubric primitives.",
+  "appliesTo": [],
+  "provides": [
+    "eval:trace-multi-turn"
+  ],
+  "requires": [
+    "eval:scenarios",
+    "eval:judge-rubric"
+  ],
+  "defaults": {
+    "multiTurnMaxTurns": 8,
+    "multiTurnConvergenceThreshold": 0.7,
+    "multiTurnTimeoutMs": 60000
+  },
+  "packageDeps": {
+    "dependencies": {
+      "@tangle-network/agent-eval": "^0.13.0"
+    }
+  },
+  "files": [
+    {
+      "source": "files/src/eval/trace/trajectory-runner.ts",
+      "target": "src/eval/trace/trajectory-runner.ts"
+    },
+    {
+      "source": "files/src/eval/trace/per-turn-scorer.ts",
+      "target": "src/eval/trace/per-turn-scorer.ts"
+    },
+    {
+      "source": "files/src/eval/trace/example-rubric.ts",
+      "target": "src/eval/trace/example-rubric.ts"
+    },
+    {
+      "source": "files/src/eval/trace/README.md",
+      "target": "src/eval/trace/README.md"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "src/eval/trace/trajectory-runner.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/eval/trace/per-turn-scorer.ts"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": [
+      "src/eval/trace/trajectory-runner.ts",
+      "src/eval/trace/example-rubric.ts"
+    ]
+  },
+  "keywords": [
+    "multi-turn eval",
+    "trace scoring",
+    "trajectory eval",
+    "per-turn rubric",
+    "step rubric",
+    "convergence turn",
+    "trajectory step"
+  ],
+  "tieredKeywords": {
+    "tier1": ["multi-turn eval", "trace scoring", "trajectory eval", "per-turn rubric"],
+    "tier2": ["step rubric", "convergence turn", "trajectory step"]
+  }
+}

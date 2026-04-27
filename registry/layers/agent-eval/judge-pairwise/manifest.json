@@ -1,0 +1,71 @@
+{
+  "id": "judge-pairwise",
+  "slot": "agent-eval",
+  "description": "Pairwise A-vs-B evaluation with position-bias correction. Composes @tangle-network/agent-eval's PairwiseSteeringOptimizer plus positionalBias / verbosityBias / selfPreference adversarial checks. Each judgment runs both A-vs-B AND B-vs-A; positional swap exposes judge ordering bias, verbosityBias surfaces length-correlated scoring, selfPreference flags judge bias toward its own model family. Use when comparing two variants of a prompt / model / agent and the absolute scores from rubric evaluation are too noisy to declare a winner.",
+  "appliesTo": [],
+  "provides": [
+    "eval:judge-pairwise"
+  ],
+  "requires": [
+    "eval:scenarios"
+  ],
+  "defaults": {
+    "pairwisePositionSwap": true,
+    "pairwiseMinRows": 5,
+    "pairwiseBackend": "deterministic"
+  },
+  "packageDeps": {
+    "dependencies": {
+      "@tangle-network/agent-eval": "^0.13.0"
+    }
+  },
+  "files": [
+    {
+      "source": "files/src/eval/judges/pairwise-runner.ts",
+      "target": "src/eval/judges/pairwise-runner.ts"
+    },
+    {
+      "source": "files/src/eval/judges/pairwise-cli.ts",
+      "target": "src/eval/judges/pairwise-cli.ts"
+    },
+    {
+      "source": "files/src/eval/judges/pairwise.example.ts",
+      "target": "src/eval/judges/pairwise.example.ts"
+    },
+    {
+      "source": "files/src/eval/judges/README.md",
+      "target": "src/eval/judges/README.md"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "src/eval/judges/pairwise-runner.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/eval/judges/pairwise-cli.ts"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "tsx src/eval/judges/pairwise-cli.ts <variant-a-dir> <variant-b-dir>"
+    ],
+    "extensionPoints": [
+      "src/eval/judges/pairwise-runner.ts"
+    ]
+  },
+  "keywords": [
+    "pairwise eval",
+    "pairwise judge",
+    "position bias correction",
+    "position swap",
+    "verbosity bias",
+    "self-preference bias",
+    "a-vs-b judging"
+  ],
+  "tieredKeywords": {
+    "tier1": ["pairwise eval", "pairwise judge", "position bias correction"],
+    "tier2": ["position swap", "verbosity bias", "self-preference bias", "a-vs-b judging"]
+  }
+}

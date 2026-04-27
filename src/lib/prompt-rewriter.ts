@@ -147,9 +147,7 @@ export function rewritePrompt(args: RewriteArgs): Promise<RewriteResult | null> 
 // Product-brief path: replaces the narrow rewriter with a rich brief. Returns
 // the canonical prompt (for the router) and the full brief (for the build plan
 // and context pack). Cached and keyed separately from the narrow rewriter.
-export async function rewriteViaBrief(
-  args: RewriteArgs,
-): Promise<{
+export async function rewriteViaBrief(args: RewriteArgs): Promise<{
   canonicalPrompt: string
   brief: ProductBrief
   cacheHit: boolean

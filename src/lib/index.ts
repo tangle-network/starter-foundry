@@ -75,8 +75,6 @@ export {
   isClean as visualIsClean,
 } from './visual-regression.js'
 export type { VisualSnapshot, VisualDiff, VisualFileEntry } from './visual-regression.js'
-/** @deprecated renamed to VisualSnapshot. */
-export type { VisualSnapshot as VisualAuditResult } from './visual-regression.js'
 export { estimateBuildoutCost, loadRateTable } from './cost.js'
 export type { CostEstimate, ModelRate, CostRateTable } from './cost.js'
 export { createTelemetryStream } from './telemetry/stream.js'

@@ -3,14 +3,8 @@
 End-to-end walkthrough: take the `agent-runtime-research` family, compose it
 with `composeStarter`, deploy it into a Tangle sandbox via
 `scripts/deploy-agent-bundle.ts`, and call `box.task(...)` for a real LLM
-response.
-
-> This file replaces the v0.10.x version of itself, which documented a
-> "compose → run a Worker" path that never worked. The runtime substrate
-> the old version was trying to scaffold (`src/worker.ts`,
-> `wrangler.jsonc`, `chatViaRouter()` callers) is not the right
-> abstraction — see [`docs/architecture/agent-bundles.md`](../architecture/agent-bundles.md)
-> for why. A bundle is content; the sandbox is the runtime.
+response. A bundle is content; the sandbox is the runtime — see
+[`docs/architecture/agent-bundles.md`](../architecture/agent-bundles.md).
 
 ## What you need
 
@@ -184,75 +178,27 @@ model, and returns the final response.
 
 ## Time-to-first-response
 
-**Live deploy is gated on `TANGLE_SANDBOX_API_KEY`.** This worktree does
-not export the key; the dogfood verdict for the runtime path is
-therefore **GAP, not PROOF**, and we mark it as such honestly. What we
-_can_ assert with current evidence:
+**Live deploy is gated on `TANGLE_SANDBOX_API_KEY`.** Without the key,
+operators get a typed auth error from the SDK and stop — there is no
+mock fallback (see [`docs/DESIGN-INVARIANTS.md`](../DESIGN-INVARIANTS.md)
+on fail-loud).
 
-- **Compose latency** (verified, deterministic): **~0.6 s** from a cold
-  process, **~5 ms** with a warm cache.
-- **Validate latency** (verified): `pnpm exec tsx
-scripts/validate-registry.ts` runs the schema check across all 163
-  families in **~250 ms**.
-- **Sandbox create p50** (per
-  [`agent-dev-container` SDK README][sdk-readme]): typically a few
-  seconds, dominated by container provisioning.
+Local-only assertions (verified, deterministic):
+
+- **Compose latency**: ~0.6 s from a cold process, ~5 ms with a warm cache.
+- **Validate latency**: `pnpm exec tsx scripts/validate-registry.ts` runs
+  the schema check across all 163 families in ~250 ms.
+- **Sandbox create p50** (per [`agent-dev-container` SDK README][sdk-readme]):
+  typically a few seconds, dominated by container provisioning.
 - **`box.task()` first-response latency**: dominated by the LLM call;
-  for `claude-sonnet-4-20250514` against `router.tangle.tools`, prior
-  in-repo measurements landed in the 3–6 s range for a ~1k-token prompt
-  (the v0.10.x dogfood report: 4568 ms HTTP 200 with 1416 total tokens —
-  that path was a custom Worker, but the LLM call itself is the same in
-  this corrected path).
-
-When `TANGLE_SANDBOX_API_KEY` is exported and the deploy succeeds, this
-file should be re-run and the actual end-to-end timing recorded here.
-That update is tracked in [`docs/ROADMAP.md`](../ROADMAP.md) under
-"Live deploy proof".
-
-## What works in this worktree without a key
-
-- `composeStarter` end-to-end on this family: **PASS** (~0.6 s, 22 files,
-  deterministic).
-- `pnpm exec tsx scripts/validate-registry.ts`: **PASS** (163 families).
-- `pnpm typecheck`: **PASS**.
-- `pnpm test`: **PASS** on the last green run; this PR adds no new
-  tests because the schema/deploy-script work lives on the sister-agent
-  track.
-
-## What is gated on `TANGLE_SANDBOX_API_KEY`
-
-- Step 3 — `client.create(...)` requires real credentials.
-- Step 4 — `box.task(...)` requires a running sandbox.
-- The end-to-end timing measurement in this file.
-
-There is no mock fallback. Operators run this with a real key, or they
-get a typed auth error and stop. That is deliberate — see
-[`docs/DESIGN-INVARIANTS.md`](../DESIGN-INVARIANTS.md) on fail-loud.
-
-## What changed from the v0.10.x version of this file
-
-The previous version of this cookbook documented eight gaps — no
-`src/worker.ts`, no `wrangler.jsonc`, no `package.json`, throwing
-`spawnAgentSandbox()` / `searchPapers()` stubs, etc. **Six of those
-eight gaps were gaps in the wrong premise**, not in the family. The
-bundle does not need a Worker, a wrangler config, a package.json, or
-local fetch wrappers, because the bundle is not a deployable webapp; it
-is content for an in-sandbox agent.
-
-The two real gaps that survive the rewrite:
-
-1. The `methodology/index.json` shape (`{ entries: [...] }`) needs to
-   match whatever `registry/_schemas/agent.schema.json` declares — the
-   sister-agent track is aligning these.
-2. `scripts/agent-runtime-bundle-check.ts` is stale (it asks for
-   `templates/index.json` instead of `methodology/index.json`).
-   Tracked separately.
+  for `claude-sonnet-4-20250514` against `router.tangle.tools`, in-repo
+  measurements land in the 3–6 s range for a ~1k-token prompt.
 
 ## Related
 
 - [`docs/architecture/agent-bundles.md`](../architecture/agent-bundles.md) — why this works the way it does.
 - [`docs/cookbooks/deploy-multi-agent-startup-team.md`](./deploy-multi-agent-startup-team.md) — the multi-agent variant of this same flow.
-- [`docs/specs/agent-base-secure.md`](../specs/agent-base-secure.md) — the in-process security helpers a bundle author can use; v0.11.0 correction at the bottom.
+- [`docs/specs/agent-base-secure.md`](../specs/agent-base-secure.md) — the in-process security helpers a bundle author can use.
 
 [resource-ref]: https://github.com/tangle-network/agent-dev-container/blob/main/products/sandbox/sdk/src/agent-profile.ts#L17-L28
 [sdk-readme]: https://github.com/tangle-network/agent-dev-container/blob/main/products/sandbox/sdk/README.md

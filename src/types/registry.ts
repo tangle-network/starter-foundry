@@ -119,7 +119,7 @@ export interface FamilyManifest extends ManifestBase {
    * Format: `<group>:<id>` matching the layer registry.
    */
   includes?: LayerId[]
-  /** Flat keywords for prompt routing (legacy — prefer tieredKeywords). */
+  /** Flat keyword list. When `tieredKeywords` is also present, the tiered scorer takes precedence. */
   keywords?: string[]
   /** Tiered keywords for weighted scoring. tier1 (4pts): framework names. tier2 (2pts): domain terms. tier3 (1pt): generic. archetypes (3pts): product patterns. */
   tieredKeywords?: {

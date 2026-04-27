@@ -38,6 +38,3 @@ The agent's job includes building tools when the measurement doesn't exist. New 
 
 Cap on total domain tools per deployment: ~10. More than that and the agent is fragmenting; collapse.
 
-## Reference implementations
-
-If the operator wants a starting point, the prior version of this bundle shipped 5 reference scripts under `tools/` (analyze-audio, compare-tracks, extract-stems, arrangement-map, find-references). They're available in git history at `agent-runtime-music-producer-ts@v0.1.x` for cherry-picking.

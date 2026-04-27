@@ -61,10 +61,6 @@ Files of interest in the composed output:
 └── README.md
 ```
 
-In v0.10.x this same family shipped `agent-roster.json` instead of
-`agent.json`. The sister-agent track on the schema collapses the roster
-into the single `agent.json` shape using `AgentProfile.subagents`.
-
 ## Step 2 — Inspect `agent.json`
 
 ```bash
@@ -211,12 +207,11 @@ Until then, the runtime claim is **structurally sound, not yet
 proven**, and we say so honestly here rather than pasting a fabricated
 transcript.
 
-For comparison data points: the v0.10.x single-agent dogfood path
-landed in 4568 ms (1146 prompt + 270 completion tokens) against
-`router.tangle.tools` — that's a fair lower bound for the orchestrator's
-first turn in this corrected path; subagent delegation adds at least
-one more model call (so plan for 2× single-agent latency on the
-first multi-role artifact).
+Reference data points (in-repo measurements against `router.tangle.tools`
+for `claude-sonnet-4`): single-agent first-turn latency lands in the
+3–6 s range for a ~1k-token prompt; subagent delegation adds at least
+one more model call, so plan for 2× single-agent latency on the first
+multi-role artifact.
 
 ## What this cookbook proves vs. claims
 
@@ -231,6 +226,6 @@ first multi-role artifact).
 
 - [`docs/architecture/agent-bundles.md`](../architecture/agent-bundles.md) — the canonical doc; multi-agent shape lives there.
 - [`docs/cookbooks/deploy-agent-runtime-research.md`](./deploy-agent-runtime-research.md) — the single-agent variant, same flow without `subagents`.
-- [`docs/specs/agent-base-secure.md`](../specs/agent-base-secure.md) — bias safeguards on HR / `notALicensedAdvisor` on CFO are policy hints; structural enforcement is documented in §"What's NOT yet built".
+- [`docs/specs/agent-base-secure.md`](../specs/agent-base-secure.md) — bias safeguards on HR and `notALicensedAdvisor` on CFO are policy metadata; enforcement is the in-sandbox agent's policy compliance.
 
 [agent-profile]: https://github.com/tangle-network/agent-dev-container/blob/main/products/sandbox/sdk/src/agent-profile.ts

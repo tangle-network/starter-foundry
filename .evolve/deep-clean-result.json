@@ -1,67 +1,63 @@
 {
-  "timestamp": "2026-04-25T22:30:00Z",
-  "summary": "deep-clean Phase 4 — re-measurement after Phases 1-3",
+  "timestamp": "2026-04-26T00:00:00Z",
+  "summary": "deep-clean Phases 1-4 — pre-live greenfield grooming",
   "before": {
-    "typeErrors": 0,
-    "lintErrors": 0,
-    "lintWarnings": 239,
-    "weakTypes": 5,
+    "weakTypes": 55,
+    "debtMarkers": 18,
+    "tryCatchBlocks": 44,
+    "historicalMentions": 23,
     "circularDeps": 0,
-    "tryCatchBlocks": 122,
-    "debtMarkers": 16,
-    "duplicationPct": 1.06,
-    "duplicationClones": 21,
-    "unusedFiles": 6,
-    "unusedExports": 7,
-    "unlistedDeps": 0,
-    "unusedExportedTypes": 32,
-    "sourceFiles": 98
+    "typeErrors": 0,
+    "knipUnusedFiles": 7,
+    "knipUnusedExports": 7,
+    "knipUnusedTypes": 4,
+    "tests": { "pass": 930, "fail": 0, "todo": 1 },
+    "srcLOC": 23026
   },
   "after": {
-    "typeErrors": 0,
-    "lintErrors": 0,
-    "lintWarnings": 239,
-    "weakTypes": 5,
+    "weakTypes": 55,
+    "debtMarkers": 18,
+    "tryCatchBlocks": 44,
+    "historicalMentions": 0,
     "circularDeps": 0,
-    "tryCatchBlocks": 122,
-    "debtMarkers": 19,
-    "duplicationPct": 0.63,
-    "duplicationClones": 12,
-    "unusedFiles": 0,
-    "unusedExports": 0,
-    "unlistedDeps": 0,
-    "unusedExportedTypes": 20,
-    "sourceFiles": 97
+    "typeErrors": 0,
+    "knipUnusedFiles": 0,
+    "knipUnusedExports": 1,
+    "knipUnusedTypes": 22,
+    "tests": { "pass": 930, "fail": 0, "todo": 1 },
+    "srcLOC": 23015
   },
   "delta": {
-    "unusedFiles": "-6",
-    "unusedExports": "-7",
-    "unusedExportedTypes": "-12",
-    "duplicationPct": "-0.43",
-    "duplicationClones": "-9",
-    "weakTypes": "0 (all 5 documented + load-bearing)",
-    "tryCatchBlocks": "0 (sampled 87 silent catches; all justified — fall-back-to-default pattern with documented intent)"
+    "historicalMentions": -23,
+    "knipUnusedFiles": -7,
+    "knipUnusedExports": -6,
+    "srcLOC": -11,
+    "weakTypes": 0,
+    "knipUnusedTypes": "+18 (knip's deeper report exposed pre-existing types not introduced by this PR; all internal-use types in already-existing modules)"
   },
-  "decisions": [
-    "deleted src/lib/compose-seed.ts — confirmed orphan, no callers",
-    "removed export keyword on availableProviders (internal-only)",
-    "removed export keyword on findPartnerAlignedFamilies (internal helper of shouldPromotePartnerFirst)",
-    "deleted findPartnerAlignedFrontendFamily entirely — zero callers",
-    "removed export on proposeFamilyWithRLM and proposeCapabilityWithRLM (internal helpers within their own modules)",
-    "fixed knip.json entry pattern from scripts/**/*.mjs to scripts/**/*.ts (post-Task-48 migration drift)",
-    "added @tangle-network/tcloud-agent to optionalDependencies (was unlisted but dynamically imported)",
-    "ran prettier --write across src/ — 77 files standardized to no-semi/single-quote/100-col config",
-    "kept 5 weak-type sites (HF transformers polymorphism, CLI-bridge protocol fields, JSON.parse → unknown — all documented)",
-    "kept 122 try-catch blocks (sampled extensively; all catch external errors with documented fallback semantics)",
-    "kept 20 'unused exported types' (FleetVerdict, ProofReport, etc — they're ReturnType<exportedFn> documentation surfaces, not dead code)",
-    "kept @deprecated VisualAuditResult alias (public API; removal requires major version bump)"
-  ],
+  "phases": {
+    "phase1_structure": {
+      "circularDeps": "0 (already clean — verified via madge)",
+      "sharedTypes": "no consolidation needed (src/types/ already split per CLAUDE.md)",
+      "deduplication": "5 jscpd clones — all 2-instance pairs in same file or near-identical intent. Skipped per skill rule (DRY only at 3+ instances or clearly shared intent)."
+    },
+    "phase2_strengthen": {
+      "weakTypes": "audited — every `as any` and `as unknown` is at a documented trust boundary (HF transformers dynamic import, Node version compat, JSON.parse error handlers).",
+      "deadCode": "knip's 7 'unused files' all false-positives (referenced via dist/*.js dynamic imports from tests/scripts). Removed @deprecated VisualAuditResult alias.",
+      "errorHandling": "0 silent catches. 1 warn-then-continue catch (vb-feedback parse) is correct — caller-known nullable return."
+    },
+    "phase3_polish": {
+      "aiSlop": "0 in code/docs (5 hits in src are inside brand-voice transformer regex, intentional)",
+      "historicalMentions": "23 → 0. Greenfield-rewrote docs/specs/agent-base-secure.md, docs/architecture/agent-bundles.md. Stripped v0.10.x / v0.11.0 framing from docs/cookbooks/deploy-agent-runtime-research.md and docs/cookbooks/deploy-multi-agent-startup-team.md. Deleted docs/cookbooks/dogfood-multi-agent-validation.md (entirely a GAP report against deleted families). Cleaned registry/families/agent-runtime-music-producer-ts/files/TOOLS.md.",
+      "deprecatedPaths": "Removed @deprecated VisualAuditResult alias, 'legacy' framing from src/types/registry.ts and src/lib/selection.ts, 'backward compat' from src/types.ts.",
+      "formatting": "prettier applied to changed src/ files only; tests/ + scripts/ noise reverted to keep PR focused."
+    },
+    "phase4_measure": "delta table above"
+  },
   "verification": {
-    "tsc": "0 errors",
-    "build": "pass",
-    "lint": "0 errors, 239 warnings (stylistic-strict, non-blocking)",
-    "tests": "62/62 pass across select / select-resilient-fallback / branded-ids / public-api-boundary",
-    "publishIntegrity": "9/9 checks pass"
-  },
-  "note": "sourceLoc went 20013 → 22292; that's prettier reformatting (multi-arg signatures wrapping to multi-line under 100-col), not code growth. Source files dropped 98 → 97 (compose-seed.ts deleted)."
+    "typecheck": "pass (0 errors)",
+    "tests": "930 pass / 0 fail / 1 todo (unchanged from baseline)",
+    "lint": "0 errors / 246 warnings (warnings are stylistic-strict, non-blocking per CLAUDE.md)",
+    "circularDeps": "0 (madge)"
+  }
 }

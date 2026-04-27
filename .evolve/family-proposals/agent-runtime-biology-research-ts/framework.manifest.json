@@ -1,8 +1,0 @@
-{
-  "id": "agent-runtime-biology-research-ts",
-  "description": "Framework layer for agent-runtime-biology-research-ts.",
-  "appliesTo": [
-    "agent-runtime-biology-research-ts"
-  ],
-  "files": []
-}

@@ -89,6 +89,22 @@
       "target": "templates/experimental-design.md"
     },
     {
+      "source": "files/methodology/index.json",
+      "target": "methodology/index.json"
+    },
+    {
+      "source": "files/methodology/literature-search.md",
+      "target": "methodology/literature-search.md"
+    },
+    {
+      "source": "files/methodology/citation-analysis.md",
+      "target": "methodology/citation-analysis.md"
+    },
+    {
+      "source": "files/methodology/experimental-design.md",
+      "target": "methodology/experimental-design.md"
+    },
+    {
       "source": "files/wrangler.toml",
       "target": "wrangler.toml"
     },

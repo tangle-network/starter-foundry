@@ -1,0 +1,100 @@
+{
+  "id": "agent-research-harness-ts",
+  "description": "Node-only TS bundle that operationalises the /research skill — hypothesis-driven prompt + steering optimization on top of @tangle-network/agent-eval@^0.13.0. Reads hypotheses from hypotheses/queue.json, runs a cheap screener pass (1-rep across all hypotheses), promotes the top deltas to a multi-rep validator pass with bootstrap-CI gates, and writes structured results under research-results/. Composes the eval-harness's auto-research layer (OptimizationLoop + runPromptEvolution + paretoFrontier). Operator-facing CLI: `pnpm research propose|screen|validate|sweep`.",
+  "tags": [
+    "research-harness",
+    "agent-eval",
+    "optimization-loop",
+    "prompt-evolution",
+    "hypothesis-loop",
+    "node",
+    "typescript"
+  ],
+  "taxonomy": {
+    "language": "typescript",
+    "runtime": "node",
+    "surface": "research-runner"
+  },
+  "defaults": {
+    "projectType": "agent-research-harness",
+    "appName": "my-research-harness",
+    "publicVars": [
+      "RESEARCH_RESULTS_DIR",
+      "TANGLE_ROUTER_KEY"
+    ],
+    "resultsDir": "research-results",
+    "screenerReps": 1,
+    "validatorReps": 5
+  },
+  "files": [
+    { "source": "files/agent.json", "target": "agent.json" },
+    { "source": "files/AGENTS.md", "target": "AGENTS.md" },
+    { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/README.md", "target": "README.md" },
+    { "source": "files/src/research/runner.ts", "target": "src/research/runner.ts" },
+    { "source": "files/src/research/proposer.ts", "target": "src/research/proposer.ts" },
+    { "source": "files/src/research/screener.ts", "target": "src/research/screener.ts" },
+    { "source": "files/src/research/validator.ts", "target": "src/research/validator.ts" },
+    { "source": "files/src/research/cli.ts", "target": "src/research/cli.ts" },
+    { "source": "files/src/research/types.ts", "target": "src/research/types.ts" },
+    { "source": "files/hypotheses/queue.json", "target": "hypotheses/queue.json" },
+    { "source": "files/hypotheses/example.json", "target": "hypotheses/example.json" },
+    { "source": "files/hypotheses/README.md", "target": "hypotheses/README.md" },
+    { "source": "files/.github/workflows/research.yml", "target": ".github/workflows/research.yml" },
+    { "source": "files/tests/research-runner.test.ts", "target": "tests/research-runner.test.ts" }
+  ],
+  "validationChecks": [
+    { "type": "file-exists", "path": "AGENTS.md" },
+    { "type": "file-exists", "path": "agent.json" },
+    { "type": "file-exists", "path": "package.json" },
+    { "type": "file-exists", "path": "src/research/runner.ts" },
+    { "type": "file-exists", "path": "src/research/proposer.ts" },
+    { "type": "file-exists", "path": "src/research/screener.ts" },
+    { "type": "file-exists", "path": "src/research/validator.ts" },
+    { "type": "file-exists", "path": "src/research/cli.ts" },
+    { "type": "file-exists", "path": "hypotheses/queue.json" },
+    { "type": "file-exists", "path": "tests/research-runner.test.ts" },
+    { "type": "agents-md-valid", "path": "AGENTS.md" }
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "research-harness-ts",
+      "agent-research-harness",
+      "auto-research-loop",
+      "prompt-evolution-loop",
+      "hypothesis-research-loop"
+    ],
+    "tier2": [
+      "screener-validator",
+      "bootstrap-ci-gate",
+      "pareto-research-frontier",
+      "propose-review-research"
+    ],
+    "tier3": [
+      "research runner"
+    ],
+    "archetypes": [
+      "research-runner",
+      "optimization-harness"
+    ]
+  },
+  "contextHints": {
+    "commands": [
+      "pnpm research propose",
+      "pnpm research screen",
+      "pnpm research validate",
+      "pnpm research sweep"
+    ],
+    "entrypoints": [
+      "src/research/cli.ts",
+      "AGENTS.md"
+    ],
+    "extensionPoints": [
+      "src/research/proposer.ts",
+      "src/research/screener.ts",
+      "src/research/validator.ts",
+      "hypotheses/queue.json"
+    ]
+  }
+}

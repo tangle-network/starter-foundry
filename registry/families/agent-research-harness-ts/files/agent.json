@@ -1,0 +1,31 @@
+{
+  "name": "research-harness",
+  "description": "Hypothesis-driven research harness — reads hypotheses/queue.json, runs screener + validator passes on top of @tangle-network/agent-eval optimization primitives, writes results to research-results/.",
+  "version": "0.1.0",
+  "tags": [
+    "research-harness",
+    "agent-eval",
+    "optimization-loop",
+    "hypothesis-loop"
+  ],
+  "prompt": {
+    "systemPromptFile": "AGENTS.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "deny"
+  },
+  "resources": {
+    "files": [
+      { "source": "hypotheses/" },
+      { "source": "README.md" },
+      { "source": "src/research/" }
+    ]
+  }
+}

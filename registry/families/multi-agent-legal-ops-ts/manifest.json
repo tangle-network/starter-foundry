@@ -1,0 +1,200 @@
+{
+  "id": "multi-agent-legal-ops-ts",
+  "description": "Curated 3-role legal-ops team — paralegal intake, in-house counsel reference, and internal-audit advisor coordinated under one coordination protocol. High-stakes domain with baked-in disclaimers (not-a-lawyer, no attorney-client privilege, never signs off on controls), structured handoffs (intake → counsel for advice, intake → auditor for SOX/SOC2/process compliance, counsel → auditor on material weakness discovered during contract review), and PII flow gated through agent-base:privacy. Composes agent-base:tangle, agent-base:secure, agent-base:privacy, agent-output:blocks. The team substrate above three single-role legal/audit families.",
+  "tags": [
+    "multi-agent",
+    "team",
+    "legal-ops",
+    "compliance",
+    "audit",
+    "regulated-domain",
+    "high-stakes"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "multi-agent",
+    "surface": "multi-agent-team"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-base:privacy",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "multi-agent-legal-ops",
+    "teamName": "legal-ops-pod",
+    "publicVars": [
+      "AGENT_NAME",
+      "TEAM_NAME"
+    ],
+    "stakes": "high",
+    "disclaimerRequired": true,
+    "defaultRespondent": "paralegal-intake",
+    "notLawyer": true,
+    "attorneyClientPrivilege": false,
+    "outboundDomains": [
+      "api.tangle.tools",
+      "law.cornell.edu"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/coordination-protocol.md",
+      "target": "coordination-protocol.md"
+    },
+    {
+      "source": "files/agent-roster.json",
+      "target": "agent-roster.json"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/roles/paralegal-intake/system-prompt.md",
+      "target": "roles/paralegal-intake/system-prompt.md"
+    },
+    {
+      "source": "files/roles/paralegal-intake/methodology/intake-checklist.md",
+      "target": "roles/paralegal-intake/methodology/intake-checklist.md"
+    },
+    {
+      "source": "files/roles/paralegal-intake/methodology/conflict-check.md",
+      "target": "roles/paralegal-intake/methodology/conflict-check.md"
+    },
+    {
+      "source": "files/roles/paralegal-intake/methodology/fact-pattern-summary.md",
+      "target": "roles/paralegal-intake/methodology/fact-pattern-summary.md"
+    },
+    {
+      "source": "files/roles/legal-counsel/system-prompt.md",
+      "target": "roles/legal-counsel/system-prompt.md"
+    },
+    {
+      "source": "files/roles/legal-counsel/methodology/contract-redline.md",
+      "target": "roles/legal-counsel/methodology/contract-redline.md"
+    },
+    {
+      "source": "files/roles/legal-counsel/methodology/nda-msa-review.md",
+      "target": "roles/legal-counsel/methodology/nda-msa-review.md"
+    },
+    {
+      "source": "files/roles/legal-counsel/methodology/regulatory-research.md",
+      "target": "roles/legal-counsel/methodology/regulatory-research.md"
+    },
+    {
+      "source": "files/roles/auditor/system-prompt.md",
+      "target": "roles/auditor/system-prompt.md"
+    },
+    {
+      "source": "files/roles/auditor/methodology/control-walkthrough.md",
+      "target": "roles/auditor/methodology/control-walkthrough.md"
+    },
+    {
+      "source": "files/roles/auditor/methodology/deficiency-write-up.md",
+      "target": "roles/auditor/methodology/deficiency-write-up.md"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "coordination-protocol.md"
+    },
+    {
+      "type": "file-exists",
+      "path": "agent-roster.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "roles/paralegal-intake/system-prompt.md"
+    },
+    {
+      "type": "file-exists",
+      "path": "roles/legal-counsel/system-prompt.md"
+    },
+    {
+      "type": "file-exists",
+      "path": "roles/auditor/system-prompt.md"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "roles/paralegal-intake/system-prompt.md"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "roles/legal-counsel/system-prompt.md"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "roles/auditor/system-prompt.md"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "coordination-protocol.md",
+      "agent-roster.json",
+      "roles/paralegal-intake/system-prompt.md",
+      "roles/legal-counsel/system-prompt.md",
+      "roles/auditor/system-prompt.md"
+    ],
+    "extensionPoints": [
+      "roles/",
+      "roles/paralegal-intake/methodology/",
+      "roles/legal-counsel/methodology/",
+      "roles/auditor/methodology/"
+    ]
+  },
+  "tieredKeywords": {
+    "tier1": [
+      "legal-ops-team",
+      "legal-team-agent",
+      "compliance-team-agent",
+      "legal-and-audit-pod",
+      "legal-ops-pod",
+      "multi-agent-legal-ops"
+    ],
+    "tier2": [
+      "paralegal-intake",
+      "contract-redline",
+      "control-walkthrough",
+      "deficiency-write-up",
+      "conflict-check",
+      "fact-pattern-summary",
+      "nda-msa-review",
+      "regulatory-research",
+      "intake-checklist"
+    ],
+    "tier3": [
+      "agent"
+    ],
+    "archetypes": [
+      "multi-agent-team",
+      "regulated-domain"
+    ]
+  },
+  "buildHints": {
+    "whenToUse": "When the product is a coordinated 3-role legal-ops team — paralegal intake triages requests and routes to in-house counsel for contract advice or to internal audit for SOX/SOC2/process compliance. Use when the user asks for a 'legal-ops team', 'compliance team agent', 'legal and audit pod', or describes a workflow that spans intake + advisory + audit. For a single role, prefer agent-runtime-legal-counsel-ts or agent-runtime-auditor-ts.",
+    "firstSteps": [
+      "Read coordination-protocol.md — defines the request flow (intake first, then counsel OR auditor).",
+      "Each role has a system-prompt.md with mandatory disclaimers. Do NOT remove the disclaimer block.",
+      "PII flowing through any role passes agent-base:privacy redaction before persistence — see src/lib/privacy/.",
+      "Default respondent is paralegal-intake; counsel and auditor are reachable only via documented hand-offs."
+    ],
+    "gotchas": [
+      "Nothing in this team has attorney-client privilege. Every paralegal-intake session must surface this on first turn.",
+      "The auditor never signs off on controls — drafts only; a credentialed CIA/CISA reviews and signs.",
+      "Counsel → auditor hand-off fires when contract review surfaces a material weakness in the counterparty's or client's ICFR; do not silently work around it.",
+      "Roles share PII redaction primitives but DO NOT share state — each role keeps its own session log."
+    ],
+    "architectureNotes": [
+      "Bundle layout: coordination-protocol.md + agent-roster.json + roles/<role>/system-prompt.md + roles/<role>/methodology/*.md.",
+      "agent-roster.json is the routing table — disclaimerRequired=true and stakes=high are read at session-start to surface disclaimers.",
+      "Composes with agent-base:privacy because every role handles client PII; with agent-output:blocks for :::artifact / :::escalation / :::question / :::filing block emission."
+    ]
+  }
+}

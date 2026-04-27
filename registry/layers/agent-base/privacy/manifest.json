@@ -8,7 +8,8 @@
     "agent-runtime-wealth-manager-ts",
     "agent-runtime-auditor-ts",
     "agent-runtime-recruiter-ts",
-    "agent-runtime-doctor-ts"
+    "agent-runtime-doctor-ts",
+    "multi-agent-legal-ops-ts"
   ],
   "provides": [
     "privacy:detect",

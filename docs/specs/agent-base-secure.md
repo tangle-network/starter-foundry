@@ -104,6 +104,45 @@ These are real gaps, not minor. Read this before treating the layer as "producti
 
 Each of these is in the layer's roadmap. Until they ship, treat the layer as **a fail-closed footgun reducer that makes accidents loud** — not a security boundary.
 
+## Architectural correction (v0.11.0)
+
+The v0.10.x version of this spec listed five "load-bearing infrastructure" gaps (gateway pubkey directory, external audit sink, egress controller, privacy-layer wiring, structural disclaimer enforcement). Most of those flip status under the corrected agent-bundle model. See [`docs/architecture/agent-bundles.md`](../architecture/agent-bundles.md) for the full architectural shift; the relevant mapping:
+
+| Prior gap | Status under v0.11.0 |
+|---|---|
+| Gateway Ed25519 pubkey directory + `identity.verify()` | **N/A in this layer.** Identity verification is the sandbox-sdk + Tangle gateway's responsibility. The gateway injects `TANGLE_AGENT_IDENTITY_JSON`; the agent loop trusts it because the sandbox boundary is the trust boundary. The in-process `identity.verify()` becomes a thin assertion that the env var is well-formed and unexpired — no in-process pubkey directory needed. |
+| External audit sink | **Moved to sandbox-side.** The sandbox's structured logging + the gateway's audit pipeline are the source of truth. The hash-chain primitive here becomes an *in-process helper* an agent's own code can call when it needs an additional locally-verifiable record (e.g. for an artifact requested by a `:::escalation` block). It is no longer trying to be a standalone audit system. |
+| Egress controller at SDK boundary | **N/A in this layer.** `client.create({ allowedDomains: [...] })` and the OS sandbox's network-egress whitelist are the actual boundary. `webhook-out` becomes a convenience wrapper around `fetch()` for code inside the sandbox; bundles that bypass it just hit whatever the SDK-level egress allows. |
+| `agent-base:privacy` wired into bundles | **Still relevant** — PII redaction is content-policy logic, not infrastructure. Continues to ship in the 6 high-stakes bundles' `includes[]`. |
+| Structural disclaimer enforcement | **Still relevant** — reframed as `AgentProfile.permissions` policy + orchestrator instructions (e.g. CFO-advisor's `notALicensedAdvisor: true` metadata + a refusal-pattern instruction). Enforcement is the in-sandbox agent's policy compliance, not an external gate. |
+
+### What `agent-base:secure` is in v0.11.0
+
+A small set of **in-process TypeScript helpers** that code running **inside a Tangle sandbox** can use:
+
+- `SecureString` — protect against accidental `console.log` / Sentry leakage of secret values inside the agent's own code.
+- `audit.log()` / `audit.verifyDay()` — locally-verifiable hash chain when the agent itself wants to keep a tamper-evident record of its actions.
+- `workspace` path-traversal helper — a defensive guard for agent code that constructs file paths from model output.
+- `webhook-in` HMAC verifier — when the agent receives a callback from another in-sandbox or peer agent.
+- `webhook-out` HMAC signer + retry/circuit-breaker — convenience around the agent's `fetch()` calls to peers.
+- `schedule` cron-handler registry — when the agent runs a recurring job inside its sandbox.
+
+Every primitive is in-process; none are network services. The layer ships as files mounted via `AgentProfile.resources.files` (or auto-included when a family declares `includes: ["agent-base:secure"]`), and the in-sandbox agent imports them as a normal module.
+
+### What's removed
+
+- The **"platform pretense"** wrapping packs in a custom server (the v0.10.x premise behind PRs #85, #86, #87) is gone. There is no `agent-platform-ts` worker reading `agent-roster.json`. There is no `agent-orchestrator-service-ts` Hono app dispatching `:::handoff` blocks. Both wrong-abstraction families are being removed by the sister-agent track; this spec stops referencing them as runtime substrate.
+- The "external audit sink" design TBD is no longer this layer's problem; if it's anyone's, it's the sandbox/gateway's.
+- The "egress controller at SDK boundary" gap is closed by sandbox-sdk's own `allowedDomains`.
+
+### Cross-references
+
+- [`docs/architecture/agent-bundles.md`](../architecture/agent-bundles.md) — the corrected model, end-to-end.
+- [`docs/cookbooks/deploy-agent-runtime-research.md`](../cookbooks/deploy-agent-runtime-research.md) — single-agent deploy path that uses (or opts out of) this layer.
+- [`docs/cookbooks/deploy-multi-agent-startup-team.md`](../cookbooks/deploy-multi-agent-startup-team.md) — multi-agent path; HR's `protectedClassRefusal` and CFO's `notALicensedAdvisor` are policy metadata, not enforced by this layer.
+
+The original v0.10.x sections above are preserved verbatim for historical context. Treat anything in §"What's NOT yet built" through the lens of this correction: items 1–3 are largely N/A; items 4–5 remain.
+
 ## Related
 
 - `agent-base:privacy` — PII detection + redaction layer; wired into the 6 high-stakes bundles' `includes[]` (legal-counsel, tax, wealth-manager, auditor, recruiter, doctor). Low-stakes bundles intentionally opt out.

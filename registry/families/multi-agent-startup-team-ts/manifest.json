@@ -1,0 +1,279 @@
+{
+  "id": "multi-agent-startup-team-ts",
+  "description": "Curated multi-agent startup leadership team — CEO / CTO / CMO / HR / CFO-advisor with hand-tuned coordination protocols, explicit handoff blocks, and a default-respondent routing rule. Single deploy, five roles, baked-in cadence: weekly review (CEO), 1:1 + tech-debt triage (CTO), positioning + channel experiments (CMO), recruiting loop + interview rubric (HR), burn / runway / fundraise prep (CFO). Each role's system prompt explicitly references the others and routes via :::handoff blocks rather than improvising.",
+  "tags": [
+    "multi-agent",
+    "team",
+    "startup",
+    "advisory",
+    "exec-pod",
+    "leadership-team-agent",
+    "cloudflare-worker"
+  ],
+  "taxonomy": {
+    "language": "markdown",
+    "runtime": "multi-agent",
+    "surface": "multi-agent-team"
+  },
+  "includes": [
+    "agent-base:tangle",
+    "agent-base:secure",
+    "agent-output:blocks"
+  ],
+  "defaults": {
+    "projectType": "multi-agent-startup-team",
+    "agentName": "startup-team",
+    "publicVars": [
+      "AGENT_NAME"
+    ],
+    "routes": [
+      {
+        "path": "/api/chat",
+        "auth": "bearer",
+        "callsTools": []
+      },
+      {
+        "path": "/api/health",
+        "auth": "none",
+        "callsTools": []
+      }
+    ],
+    "declaredCapabilities": [
+      "team-coordination-protocol",
+      "weekly-review",
+      "decision-journal",
+      "okr-design",
+      "one-on-one-cadence",
+      "tech-debt-triage",
+      "architecture-decision",
+      "positioning-canvas",
+      "channel-experiment-design",
+      "recruiting-loop-design",
+      "interview-rubric",
+      "burn-runway-model",
+      "fundraise-prep"
+    ],
+    "runtime": {
+      "sandbox": "tangle",
+      "noNewPrivileges": true,
+      "capDrop": "ALL"
+    },
+    "stakes": "moderate",
+    "advisoryOnly": true,
+    "schedule": [
+      {
+        "id": "scheduled-1",
+        "cron": "0 14 * * 1",
+        "capability": "weekly-review"
+      },
+      {
+        "id": "scheduled-2",
+        "cron": "0 15 * * 5",
+        "capability": "burn-runway-model"
+      }
+    ],
+    "outboundDomains": [
+      "api.tangle.tools"
+    ],
+    "secrets": [
+      "TANGLE_ROUTER_KEY"
+    ],
+    "team": {
+      "defaultRespondent": "ceo",
+      "roles": ["ceo", "cto", "cmo", "hr", "cfo-advisor"],
+      "rosterPath": "agent-roster.json",
+      "coordinationProtocolPath": "coordination-protocol.md"
+    }
+  },
+  "files": [
+    {
+      "source": "files/agent-roster.json",
+      "target": "agent-roster.json"
+    },
+    {
+      "source": "files/coordination-protocol.md",
+      "target": "coordination-protocol.md"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/roles/ceo/system-prompt.md",
+      "target": "roles/ceo/system-prompt.md"
+    },
+    {
+      "source": "files/roles/ceo/methodology/weekly-review.md",
+      "target": "roles/ceo/methodology/weekly-review.md"
+    },
+    {
+      "source": "files/roles/ceo/methodology/decision-journal.md",
+      "target": "roles/ceo/methodology/decision-journal.md"
+    },
+    {
+      "source": "files/roles/ceo/methodology/okr-design.md",
+      "target": "roles/ceo/methodology/okr-design.md"
+    },
+    {
+      "source": "files/roles/cto/system-prompt.md",
+      "target": "roles/cto/system-prompt.md"
+    },
+    {
+      "source": "files/roles/cto/methodology/one-on-one-cadence.md",
+      "target": "roles/cto/methodology/one-on-one-cadence.md"
+    },
+    {
+      "source": "files/roles/cto/methodology/tech-debt-triage.md",
+      "target": "roles/cto/methodology/tech-debt-triage.md"
+    },
+    {
+      "source": "files/roles/cto/methodology/architecture-decision.md",
+      "target": "roles/cto/methodology/architecture-decision.md"
+    },
+    {
+      "source": "files/roles/cmo/system-prompt.md",
+      "target": "roles/cmo/system-prompt.md"
+    },
+    {
+      "source": "files/roles/cmo/methodology/positioning-canvas.md",
+      "target": "roles/cmo/methodology/positioning-canvas.md"
+    },
+    {
+      "source": "files/roles/cmo/methodology/channel-experiment-design.md",
+      "target": "roles/cmo/methodology/channel-experiment-design.md"
+    },
+    {
+      "source": "files/roles/hr/system-prompt.md",
+      "target": "roles/hr/system-prompt.md"
+    },
+    {
+      "source": "files/roles/hr/methodology/recruiting-loop-design.md",
+      "target": "roles/hr/methodology/recruiting-loop-design.md"
+    },
+    {
+      "source": "files/roles/hr/methodology/interview-rubric.md",
+      "target": "roles/hr/methodology/interview-rubric.md"
+    },
+    {
+      "source": "files/roles/cfo-advisor/system-prompt.md",
+      "target": "roles/cfo-advisor/system-prompt.md"
+    },
+    {
+      "source": "files/roles/cfo-advisor/methodology/burn-runway-model.md",
+      "target": "roles/cfo-advisor/methodology/burn-runway-model.md"
+    },
+    {
+      "source": "files/roles/cfo-advisor/methodology/fundraise-prep.md",
+      "target": "roles/cfo-advisor/methodology/fundraise-prep.md"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "agent-roster.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "coordination-protocol.md"
+    },
+    {
+      "type": "file-exists",
+      "path": "roles/ceo/system-prompt.md"
+    },
+    {
+      "type": "file-exists",
+      "path": "roles/cto/system-prompt.md"
+    },
+    {
+      "type": "file-exists",
+      "path": "roles/cmo/system-prompt.md"
+    },
+    {
+      "type": "file-exists",
+      "path": "roles/hr/system-prompt.md"
+    },
+    {
+      "type": "file-exists",
+      "path": "roles/cfo-advisor/system-prompt.md"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "roles/ceo/system-prompt.md"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "roles/cto/system-prompt.md"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "roles/cmo/system-prompt.md"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "roles/hr/system-prompt.md"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "roles/cfo-advisor/system-prompt.md"
+    },
+    {
+      "type": "schedule-valid",
+      "path": "manifest.json"
+    }
+  ],
+  "contextHints": {
+    "commands": [],
+    "entrypoints": [
+      "agent-roster.json",
+      "coordination-protocol.md"
+    ],
+    "extensionPoints": [
+      "roles/",
+      "coordination-protocol.md"
+    ]
+  },
+  "keywords": [
+    "startup-team",
+    "executive-team",
+    "leadership-team",
+    "founders-team",
+    "exec-pod",
+    "multi-agent-team",
+    "advisory-pod",
+    "team-cadence"
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "startup-team-agent",
+      "startup team agent",
+      "executive-team-agent",
+      "executive team agent",
+      "leadership-team-agent",
+      "leadership team agent",
+      "founders-team-agent",
+      "founders team agent",
+      "exec-pod",
+      "exec pod",
+      "advisory-pod"
+    ],
+    "tier2": [
+      "team-cadence",
+      "team cadence",
+      "multi-role-team",
+      "co-founder-pod",
+      "ceo-cto-cmo",
+      "burn-runway",
+      "okr-design",
+      "decision-journal",
+      "weekly-review",
+      "recruiting-loop"
+    ],
+    "tier3": [
+      "agent"
+    ],
+    "archetypes": [
+      "multi-agent-team",
+      "advisory-pod"
+    ]
+  }
+}

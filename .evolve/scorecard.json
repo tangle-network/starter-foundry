@@ -1,8 +1,8 @@
 {
   "product": "starter-foundry",
-  "timestamp": "2026-04-26T00:20:24.057Z",
+  "timestamp": "2026-04-27T17:19:38.251Z",
   "coverage": "25/29 flows measured",
-  "aggregate": 0.648,
+  "aggregate": 0.698,
   "inputs": [
     {
       "path": ".evolve/buildout-analysis.json",
@@ -18,7 +18,7 @@
     },
     {
       "path": ".evolve/buildout-analysis-internal.json",
-      "mtime": "2026-04-26T00:13:37.733Z"
+      "mtime": "2026-04-27T17:06:04.441Z"
     },
     {
       "path": ".evolve/agent-eval/2026-04-23/three-layer-report.json",
@@ -141,7 +141,7 @@
     },
     {
       "name": "families",
-      "value": 116,
+      "value": 164,
       "target": 40,
       "status": "pass",
       "productValueClaim": "Number of distinct family archetypes the router can route to. Breadth = more prompts find a good home.",
@@ -165,17 +165,17 @@
     },
     {
       "name": "catalog_breadth_agent_runtime",
-      "value": 13,
+      "value": 53,
       "target": 50,
-      "status": "fail",
+      "status": "pass",
       "productValueClaim": "Count of distinct agent-runtime bundles in the registry. Each bundle = one role (CMO advisor / wealth manager / music producer / etc.) the operator can compose without authoring a new manifest. When this moves, the share of unrouteable BA prompts that map to fallback-static drops, and agent-runtime becomes a real product category instead of a 3-seed proof-of-concept.",
       "direction": "higher-better"
     },
     {
       "name": "catalog_breadth_agent_ui",
-      "value": 3,
+      "value": 6,
       "target": 6,
-      "status": "fail",
+      "status": "pass",
       "productValueClaim": "Count of UI scaffolds that compose over agent-runtime bundles or the Tangle sandbox SDK directly. Each unlocks a new product category: single-agent app, multi-agent dashboard, non-agent workspace (editor / audit-tool / REPL / file-browser). When this moves, operators can ship visible UX in hours instead of weeks of glue code.",
       "direction": "higher-better"
     },

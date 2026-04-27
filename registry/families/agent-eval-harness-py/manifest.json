@@ -1,0 +1,209 @@
+{
+  "id": "agent-eval-harness-py",
+  "description": "Python eval harness for agent-under-test scoring. Loads scenarios, runs them against an agent (URL or local fn) inside an isolated tangle-sandbox, scores with multi-dim LLM judges via router.tangle.tools, emits a scorecard.json that matches the TS sibling 1:1 (cross-language compare works), and gates regression with bootstrap CI + Cohen's d + Welch's t-test (scipy). Operator entrypoint: `python -m eval run`.",
+  "tags": [
+    "agent-eval",
+    "python",
+    "eval-harness",
+    "llm-judge",
+    "tangle-sandbox",
+    "regression-gate"
+  ],
+  "taxonomy": {
+    "language": "python",
+    "runtime": "python",
+    "surface": "eval-runner"
+  },
+  "defaults": {
+    "projectType": "agent-eval-harness-py",
+    "entrypoint": "python -m eval",
+    "routerBaseUrl": "https://router.tangle.tools/v1",
+    "judgeModel": "anthropic/claude-sonnet-4.5",
+    "bootstrapResamples": 1000,
+    "bootstrapAlpha": 0.05,
+    "secrets": [
+      "TANGLE_ROUTER_KEY",
+      "TANGLE_SANDBOX_API_KEY"
+    ]
+  },
+  "files": [
+    {
+      "source": "files/pyproject.toml",
+      "target": "pyproject.toml"
+    },
+    {
+      "source": "files/requirements.txt",
+      "target": "requirements.txt"
+    },
+    {
+      "source": "files/README.md",
+      "target": "README.md"
+    },
+    {
+      "source": "files/AGENTS.md",
+      "target": "AGENTS.md"
+    },
+    {
+      "source": "files/src/eval/__init__.py",
+      "target": "src/eval/__init__.py"
+    },
+    {
+      "source": "files/src/eval/__main__.py",
+      "target": "src/eval/__main__.py"
+    },
+    {
+      "source": "files/src/eval/cli.py",
+      "target": "src/eval/cli.py"
+    },
+    {
+      "source": "files/src/eval/runner.py",
+      "target": "src/eval/runner.py"
+    },
+    {
+      "source": "files/src/eval/scorecard.py",
+      "target": "src/eval/scorecard.py"
+    },
+    {
+      "source": "files/src/eval/sandbox_runner.py",
+      "target": "src/eval/sandbox_runner.py"
+    },
+    {
+      "source": "files/src/eval/regression.py",
+      "target": "src/eval/regression.py"
+    },
+    {
+      "source": "files/src/eval/judges/__init__.py",
+      "target": "src/eval/judges/__init__.py"
+    },
+    {
+      "source": "files/src/eval/judges/rubric.py",
+      "target": "src/eval/judges/rubric.py"
+    },
+    {
+      "source": "files/src/eval/judges/example_judge.py",
+      "target": "src/eval/judges/example_judge.py"
+    },
+    {
+      "source": "files/scenarios/__init__.py",
+      "target": "scenarios/__init__.py"
+    },
+    {
+      "source": "files/scenarios/example.py",
+      "target": "scenarios/example.py"
+    },
+    {
+      "source": "files/tests/__init__.py",
+      "target": "tests/__init__.py"
+    },
+    {
+      "source": "files/tests/test_runner.py",
+      "target": "tests/test_runner.py"
+    },
+    {
+      "source": "files/tests/test_regression.py",
+      "target": "tests/test_regression.py"
+    },
+    {
+      "source": "files/tests/test_sandbox.py",
+      "target": "tests/test_sandbox.py"
+    },
+    {
+      "source": "files/.github/workflows/eval.yml",
+      "target": ".github/workflows/eval.yml"
+    }
+  ],
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "pyproject.toml"
+    },
+    {
+      "type": "file-exists",
+      "path": "AGENTS.md"
+    },
+    {
+      "type": "agents-md-valid",
+      "path": "AGENTS.md"
+    },
+    {
+      "type": "python-compile",
+      "path": "src/eval/runner.py"
+    },
+    {
+      "type": "python-compile",
+      "path": "src/eval/scorecard.py"
+    },
+    {
+      "type": "python-compile",
+      "path": "src/eval/regression.py"
+    },
+    {
+      "type": "python-compile",
+      "path": "src/eval/sandbox_runner.py"
+    },
+    {
+      "type": "python-compile",
+      "path": "src/eval/cli.py"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "python -m eval run --scenarios scenarios/ --out scorecard.json",
+      "python -m eval compare baseline.json head.json",
+      "pytest -q"
+    ],
+    "entrypoints": [
+      "src/eval/__main__.py",
+      "AGENTS.md"
+    ],
+    "extensionPoints": [
+      "scenarios/",
+      "src/eval/judges/"
+    ]
+  },
+  "keywords": [
+    "agent-eval",
+    "python eval",
+    "llm-as-judge",
+    "scorecard",
+    "regression-gate",
+    "bootstrap-ci",
+    "tangle-sandbox",
+    "cohen-d",
+    "welch-t-test"
+  ],
+  "tieredKeywords": {
+    "tier1": [
+      "agent-eval-python",
+      "agent eval python",
+      "python-eval-runner",
+      "python eval runner",
+      "eval-harness-py",
+      "eval harness python",
+      "python eval harness",
+      "agent eval harness py"
+    ],
+    "tier2": [
+      "llm-as-judge",
+      "llm as judge",
+      "scorecard",
+      "regression-gate",
+      "regression gate",
+      "bootstrap ci",
+      "cohen d",
+      "welch t-test",
+      "scipy stats",
+      "agent under test"
+    ],
+    "tier3": [
+      "eval",
+      "judge",
+      "rubric",
+      "bench"
+    ],
+    "archetypes": [
+      "eval-runner",
+      "agent-evaluator"
+    ]
+  }
+}

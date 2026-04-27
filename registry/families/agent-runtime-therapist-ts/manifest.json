@@ -97,6 +97,18 @@
       "target": "methodology/listening-protocol.md"
     },
     {
+      "source": "files/methodology/screener-phq9.md",
+      "target": "methodology/screener-phq9.md"
+    },
+    {
+      "source": "files/methodology/screener-gad7.md",
+      "target": "methodology/screener-gad7.md"
+    },
+    {
+      "source": "files/methodology/escalation-protocol.md",
+      "target": "methodology/escalation-protocol.md"
+    },
+    {
       "source": "files/README.md",
       "target": "README.md"
     },

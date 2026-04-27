@@ -64,6 +64,7 @@
     "sync:warm-list:write": "tsx scripts/sync-warm-list.ts --write",
     "audit:visual": "tsx scripts/visual-audit.ts",
     "validate:registry": "tsx scripts/validate-registry.ts",
+    "deploy-agent": "tsx scripts/deploy-agent-bundle.ts",
     "new:family": "tsx scripts/new-family.ts",
     "new:capability": "tsx scripts/new-capability.ts",
     "new:partner": "tsx scripts/new-partner.ts",

@@ -5,10 +5,10 @@
   "appliesTo": [
     "agent-debug-ui-ts",
     "agent-eval-ui-ts",
+    "agent-marketplace-ui-ts",
     "agent-with-ui-ts",
     "orchestrator-with-ui-ts",
-    "sandbox-app-ts",
-    "agent-marketplace-ui-ts"
+    "sandbox-app-ts"
   ],
   "provides": [
     "ui:blocks-parser",

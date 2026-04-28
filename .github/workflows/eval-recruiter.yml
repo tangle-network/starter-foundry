@@ -80,13 +80,21 @@ jobs:
         run: pnpm exec tsx scripts/sync-example-workspaces.ts
 
       # Gen-16.1 audit CRIT A2 — bootstrap lockfile from CI's GITHUB_TOKEN
-      # if the committed lockfile is missing. This makes the cleanup-branch
-      # roundtrip work without local GH-Packages auth: the operator pushes,
-      # CI generates the lockfile + commits it to the PR branch on the
-      # first run, then frozen-lockfile is the steady state.
+      # if the committed lockfile is missing. Gated on TANGLE_ROUTER_KEY
+      # because the workspace dep tree mixes registries:
+      #   - app/*   needs @tangle-network/{sandbox-sdk,sandbox-ui} (GH Packages only)
+      #   - eval/*  needs @tangle-network/agent-eval (public npm only)
+      # pnpm has no clean per-package registry override; routing
+      # @tangle-network → GH Packages 404s on agent-eval. Long-term fix:
+      # dual-publish sandbox-sdk + sandbox-ui to public npm. Until then,
+      # bootstrap only runs when an operator has set TANGLE_ROUTER_KEY
+      # (signaling intent to actually run the eval). Operator may also
+      # generate + commit the lockfile locally with both registry
+      # credentials; the rest of CI then runs --frozen-lockfile.
       - name: bootstrap pnpm-lock.yaml when missing
-        if: hashFiles('examples/recruiter-eval-workspace/pnpm-lock.yaml') == ''
+        if: hashFiles('examples/recruiter-eval-workspace/pnpm-lock.yaml') == '' && env.TANGLE_ROUTER_KEY != ''
         env:
+          TANGLE_ROUTER_KEY: ${{ secrets.TANGLE_ROUTER_KEY }}
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ github.token }}
         working-directory: examples/recruiter-eval-workspace
@@ -105,6 +113,12 @@ jobs:
             git commit -m "chore(eval): bootstrap recruiter-eval-workspace lockfile" || true
             git push origin HEAD:${{ github.head_ref }} || echo "::warning::could not push lockfile to PR branch"
           fi
+      - name: skip bootstrap (TANGLE_ROUTER_KEY not set)
+        if: hashFiles('examples/recruiter-eval-workspace/pnpm-lock.yaml') == '' && env.TANGLE_ROUTER_KEY == ''
+        env:
+          TANGLE_ROUTER_KEY: ${{ secrets.TANGLE_ROUTER_KEY }}
+        run: |
+          echo "::warning::TANGLE_ROUTER_KEY not set — skipping lockfile bootstrap (the workspace dep tree mixes public npm + GH Packages and can't resolve without both credentials AND meaningful eval intent). The lockfile will be generated on the first CI run after the secret is added, OR the operator may run 'pnpm install --lockfile-only' inside examples/recruiter-eval-workspace/ locally with both registries configured."
 
       - name: run live eval (gated on TANGLE_ROUTER_KEY)
         id: live

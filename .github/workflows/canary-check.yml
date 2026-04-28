@@ -1,0 +1,90 @@
+name: canary-check
+
+# Daily statistical canary scan over .evolve/runs.jsonl. Detects:
+#   - silent stage failure (consecutive typecheck=false runs)
+#   - score-calibration drift (KS over searchScore)
+#   - failure-mode distribution shift (chi-square over failureMode)
+#
+# Exits 0 on clean, 2 on alerts. Workflow fails on alerts so the issue
+# surfaces in the GitHub Actions UI; the JSON report is uploaded as an
+# artifact for triage.
+
+on:
+  schedule:
+    # 09:30 UTC daily — 30 minutes after snapshot-deprecation-check so
+    # they don't pile up on the same minute.
+    - cron: '30 9 * * *'
+  workflow_dispatch:
+    inputs:
+      days:
+        description: 'Trailing window to scan (positional, not real-time).'
+        type: string
+        default: '7'
+      all:
+        description: 'Scan the entire runs.jsonl instead of trailing window.'
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: canary scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: install
+        run: pnpm install --frozen-lockfile
+
+      - name: build
+        run: pnpm build
+
+      - name: scan
+        id: scan
+        run: |
+          set +e
+          if [ "${{ inputs.all }}" = "true" ]; then
+            pnpm exec tsx scripts/canary-check.ts --all > canary-report.json
+          else
+            DAYS="${{ inputs.days || '7' }}"
+            pnpm exec tsx scripts/canary-check.ts --days "$DAYS" > canary-report.json
+          fi
+          STATUS=$?
+          echo "status=$STATUS" >> "$GITHUB_OUTPUT"
+          echo "--- canary-report.json ---"
+          cat canary-report.json
+          # Exit 1 to fail the workflow only on hard error (status 1).
+          # Exit 0 on alert (status 2) — we surface alerts via the
+          # uploaded artifact + a final fail step below to keep the
+          # error code distinct from infra failures.
+          if [ "$STATUS" = "1" ]; then
+            exit 1
+          fi
+          exit 0
+
+      - name: upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: canary-report-${{ github.run_id }}
+          path: canary-report.json
+          retention-days: 30
+
+      - name: fail on alerts
+        if: steps.scan.outputs.status == '2'
+        run: |
+          echo "::error::canary-check fired one or more alerts. See artifact canary-report-${{ github.run_id }}."
+          exit 1

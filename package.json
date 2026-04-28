@@ -107,6 +107,7 @@
     "check:bare-alias": "tsx scripts/check-bare-alias.ts",
     "check:cost-ceiling": "tsx scripts/check-run-cost-ceiling.ts",
     "check:profile-coherence": "tsx scripts/check-profile-coherence.ts",
+    "canary": "tsx scripts/canary-check.ts",
     "migrate:experiments": "tsx scripts/migrate-experiments-to-run-records.ts",
     "prepare": "husky"
   },

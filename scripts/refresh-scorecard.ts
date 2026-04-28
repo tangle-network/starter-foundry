@@ -694,23 +694,42 @@ const flows = [
   // the operator action transparently.
   ...(() => {
     // Gen-16 live recruiter eval scorecard.
+    //
+    // Gen-16.1 (audit A1, C3, scanner extension): the recruiter scorecard
+    // shape allows `aggregate: null` + `status: 'unmeasured'` flows. We
+    // MUST check those discriminants BEFORE reading any numeric field —
+    // a sibling `status: 'unmeasured'` co-located with a numeric `value`
+    // is the muffled-gate measurement-layer pattern (sibling-field variant).
+    // The aggregate is treated as live ONLY when sc.aggregate is finite
+    // AND at least one flow is measured (excludes the all-unmeasured
+    // degenerate where a future bug emits aggregate: 0).
     const recruiterScorecardPath = join(
       REPO,
       'examples/recruiter-eval-workspace/.evolve/scorecard.json',
     )
     let recruiterAggregate: number | null = null
     let recruiterJudgeUnanimous: number | null = null
+    let recruiterFileExists = false
+    let recruiterAllUnmeasured = false
     if (existsSync(recruiterScorecardPath)) {
+      recruiterFileExists = true
       try {
         const sc = JSON.parse(readFileSync(recruiterScorecardPath, 'utf8'))
-        if (typeof sc.aggregate === 'number') recruiterAggregate = sc.aggregate
+        const flowsArr = Array.isArray(sc.flows) ? sc.flows : []
+        const measured = flowsArr.filter((f: { status?: string }) => f.status !== 'unmeasured')
+        recruiterAllUnmeasured = flowsArr.length > 0 && measured.length === 0
+        if (
+          typeof sc.aggregate === 'number' &&
+          Number.isFinite(sc.aggregate) &&
+          measured.length > 0
+        ) {
+          recruiterAggregate = sc.aggregate
+        }
         // Per-scenario unanimous: every flow whose status === 'pass' counts;
         // the eval-runner emits one flow per scenario. unanimous = all-pass.
-        const flowsArr = Array.isArray(sc.flows) ? sc.flows : []
-        const scored = flowsArr.filter((f: { status?: string }) => f.status !== 'unmeasured')
-        if (scored.length > 0) {
-          const allPass = scored.filter((f: { status?: string }) => f.status === 'pass').length
-          recruiterJudgeUnanimous = Number((allPass / scored.length).toFixed(4))
+        if (measured.length > 0) {
+          const allPass = measured.filter((f: { status?: string }) => f.status === 'pass').length
+          recruiterJudgeUnanimous = Number((allPass / measured.length).toFixed(4))
         }
       } catch {
         /* malformed — leave null */
@@ -745,7 +764,19 @@ const flows = [
         : typeof scaffoldMeanMeta === 'number'
           ? Number(scaffoldMeanMeta.toFixed(4))
           : null
-    const metaSource = recruiterAggregate !== null ? 'recruiter-live' : 'scaffold-meta'
+    // Gen-16.1: distinguish "scorecard exists but every flow is unmeasured"
+    // from "no scorecard yet" so the operator sees that the eval ran but
+    // all judges short-circuited (e.g., TANGLE_ROUTER_KEY missing).
+    const metaSource =
+      recruiterAggregate !== null
+        ? 'recruiter-live'
+        : recruiterFileExists && recruiterAllUnmeasured
+          ? 'recruiter-unmeasured'
+          : recruiterFileExists
+            ? 'recruiter-empty'
+            : typeof scaffoldMeanMeta === 'number'
+              ? 'scaffold-meta'
+              : 'no-source'
 
     return [
       {
@@ -762,7 +793,7 @@ const flows = [
         target: 0.85,
         productValueClaim:
           recruiterAggregate !== null
-            ? 'Live aggregate pass rate from the committed recruiter eval workspace (examples/recruiter-eval-workspace). When this moves above 0.85: proof that a starter-foundry bundle composed via the standard preset achieves measurable quality on real router.tangle.tools calls. Closes the measure-improve loop — every future bundle\'s quality becomes measurable, not anecdotal.'
+            ? "Live aggregate pass rate from the committed recruiter eval workspace (examples/recruiter-eval-workspace). When this moves above 0.85: proof that a starter-foundry bundle composed via the standard preset achieves measurable quality on real router.tangle.tools calls. Closes the measure-improve loop — every future bundle's quality becomes measurable, not anecdotal."
             : 'Mean LLM-judge meta_score on scaffold quality — correctness + completeness + idiomatic layout + production-readiness per the scaffold rubric. Null when judge disabled (--no-judge) or no runs yet. Will switch to the live recruiter eval aggregate once examples/recruiter-eval-workspace/.evolve/scorecard.json exists.',
         direction: 'higher-better',
         notes: `source=${metaSource}`,

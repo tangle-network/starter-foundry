@@ -5,10 +5,25 @@
 // Why programmatic: the artifact wrapper is a deterministic shape contract.
 // No LLM judgment is needed; an LLM call here would be cost + variance for
 // no signal.
+//
+// Regex shape (Gen-16.1 audit B2 fix): the artifact block convention puts
+// `:::artifact` on its OWN line as the opener and `:::` on its own line as
+// the terminator. The previous regex `:::artifact\b([\s\S]*?):::/` closed
+// on any inline `:::` — including a `:::note` block inside the body, or
+// the literal string `:::stop` written in the agent's response. The
+// multiline anchor variant below requires line-anchored delimiters so an
+// inline `:::` cannot terminate the block.
 
 import type { JudgeFn, JudgeScore } from '@tangle-network/agent-eval'
 
-const ARTIFACT_BLOCK = /:::artifact\b([\s\S]*?):::/
+/**
+ * Line-anchored artifact block regex. Both `:::artifact` (the opener) and
+ * the closing `:::` must sit on a line by themselves (with optional
+ * trailing whitespace). The body is everything between, lazily matched.
+ *
+ * Multiline (`m` flag) anchors `^` and `$` to line starts/ends.
+ */
+const ARTIFACT_BLOCK = /^:::artifact\s*$\r?\n([\s\S]*?)\r?\n^:::\s*$/m
 
 const judge: JudgeFn = async (_tc, input): Promise<JudgeScore[]> => {
   const responses = input.turns.map((t) => t.agentResponse).join('\n\n---\n\n')
@@ -19,7 +34,8 @@ const judge: JudgeFn = async (_tc, input): Promise<JudgeScore[]> => {
         judgeName: 'artifact-shape',
         dimension: 'artifact-shape',
         score: 0,
-        reasoning: 'No `:::artifact ... :::` block found in any turn response.',
+        reasoning:
+          'No `:::artifact` block found with line-anchored delimiters. Both opener `:::artifact` and closing `:::` must sit on their own line.',
       },
     ]
   }
@@ -63,3 +79,4 @@ const judge: JudgeFn = async (_tc, input): Promise<JudgeScore[]> => {
 }
 
 export default judge
+export { ARTIFACT_BLOCK }

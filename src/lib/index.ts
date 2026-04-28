@@ -86,6 +86,50 @@ export { isVersionRolledBack, getLastKnownGoodVersion, listRollbacks } from './v
 export type { RollbackRecord } from './version-history.js'
 export { seedForSpec, seededRng, buildLockFile, verifyLockMatches } from './eval/reproducibility.js'
 export type { SeededRng, ComposeLockFile } from './eval/reproducibility.js'
+
+// Gen-17: RunRecord substrate + HeldOutGate + snapshot lock + profile system.
+// Hand-typed shim that matches agent-eval v0.16's API exactly so the swap is
+// rename-only (`import { ... } from '@tangle-network/agent-eval'`).
+export {
+  isPinnedModel,
+  makeRunRecord,
+  RunRecordValidationError,
+  validateRunRecord,
+  HISTORICAL_SNAPSHOT,
+  sha256,
+} from './run-record.js'
+export type {
+  RunRecord,
+  RunRecordOutcome,
+  RunRecordSource,
+  RunRecordSplitTag,
+  RunRecordTokenUsage,
+  MakeRunRecordInput,
+} from './run-record.js'
+export { HeldOutGate } from './held-out-gate.js'
+export type { HeldOutGateConfig, GateDecision, GateEvidence, GateVerdict } from './held-out-gate.js'
+export {
+  resolveSnapshot,
+  listKnownSnapshots,
+  refreshSnapshots,
+  seedRoles,
+  SNAPSHOTS_LOCK_PATH,
+} from './snapshot-resolver.js'
+export type {
+  SnapshotEntry,
+  SnapshotsLock,
+  RefreshOptions,
+  RefreshReport,
+  RefreshReportEntry,
+  AnthropicModelEntry,
+  AnthropicModelsResponse,
+} from './snapshot-resolver.js'
+export { loadProfile, listProfileNames, diffProfiles, PROFILES_DIR } from './profile-loader.js'
+export type { RawProfile, ResolvedProfile, LoadProfileOptions } from './profile-loader.js'
+export { appendRunRecord, readRunRecords, iterRunRecords, RUNS_JSONL_PATH } from './run-record-store.js'
+export { emitRunRecord } from './eval/emit-run-record.js'
+export type { EmitRunRecordInput } from './eval/emit-run-record.js'
+
 export type {
   ComposeSpec,
   WorkspaceSpec,

@@ -100,6 +100,14 @@
     "sla:rollup": "tsx scripts/sla-rollup.ts",
     "rollback:version": "tsx scripts/rollback-version.ts",
     "gen:types": "tsx scripts/gen-types-from-schemas.ts",
+    "gate": "node dist/cli.js gate",
+    "export-runs": "node dist/cli.js export-runs",
+    "profiles": "node dist/cli.js profiles",
+    "refresh-snapshots": "node dist/cli.js refresh-snapshots",
+    "check:bare-alias": "tsx scripts/check-bare-alias.ts",
+    "check:cost-ceiling": "tsx scripts/check-run-cost-ceiling.ts",
+    "check:profile-coherence": "tsx scripts/check-profile-coherence.ts",
+    "migrate:experiments": "tsx scripts/migrate-experiments-to-run-records.ts",
     "prepare": "husky"
   },
   "lint-staged": {

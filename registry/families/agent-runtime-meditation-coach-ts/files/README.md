@@ -13,7 +13,7 @@ A voice-first meditation coach agent bundle for guided sessions, technique cues,
 
 Deploy to Cloudflare Workers with the Tangle runtime. Set the following environment variables:
 
-- `TANGLE_ROUTER_KEY`
+- `TANGLE_API_KEY`
 - `PHONY_API_KEY`
 
 ## Routes

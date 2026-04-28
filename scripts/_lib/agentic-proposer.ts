@@ -15,6 +15,9 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, statS
 import { dirname, join, relative, resolve } from 'node:path'
 import { tmpdir } from 'node:os'
 import { randomBytes } from 'node:crypto'
+import { createRequire } from 'node:module'
+
+const requireFromHere = createRequire(import.meta.url)
 
 // ──────────────────────────────────────────────────────────────────
 // Dynamic tcloud-agent loader
@@ -466,6 +469,27 @@ ${lastTurn}
 // package registries (the sandbox bridge enforces that out-of-band).
 // Model is env-driven so nightly can bisect models without code change.
 
+/**
+ * Resolve the proposer model. Order:
+ *   1. EVOLVE_MODEL env (explicit override)
+ *   2. .evolve/profiles/default-proposer.profile.json via loadProfile() —
+ *      this returns `<alias>@<snapshot>` form when the lock is populated.
+ *   3. Fall back to the bare alias when neither is available (pre-`--apply`
+ *      bootstrap state). Loud stderr when this branch is taken.
+ */
+function resolveProposerModel() {
+  if (process.env.EVOLVE_MODEL) return process.env.EVOLVE_MODEL
+  try {
+    // Lazy import — agentic-proposer.ts runs from `scripts/_lib/` so dist/
+    // resolves to `../../dist/`.
+    const { loadProfile } = requireFromHere('../../dist/lib/profile-loader.js')
+    return loadProfile('default-proposer').model
+  } catch (e) {
+    process.stderr.write(`agentic-proposer: profile resolution failed (${(e instanceof Error ? e.message : String(e))}) — falling back to bare alias\n`)
+    return 'claude-sonnet-4-6'
+  }
+}
+
 export function buildAgentProfile({ name, systemPrompt }) {
   return {
     name,
@@ -473,7 +497,7 @@ export function buildAgentProfile({ name, systemPrompt }) {
     prompt: { systemPrompt },
     model: {
       provider: 'anthropic',
-      default: process.env.EVOLVE_MODEL ?? 'claude-sonnet-4-6',
+      default: resolveProposerModel(),
     },
     permissions: { Bash: 'allow', Read: 'allow', Write: 'allow', Edit: 'allow', Grep: 'allow' },
     tools: { Bash: true, Read: true, Write: true, Edit: true, Grep: true },

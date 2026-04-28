@@ -40,7 +40,7 @@
     "publicVars": [
       "EVAL_TARGET_BASE_URL",
       "EVAL_THRESHOLD",
-      "TANGLE_ROUTER_KEY"
+      "TANGLE_API_KEY"
     ],
     "evalThreshold": "0.7"
   },

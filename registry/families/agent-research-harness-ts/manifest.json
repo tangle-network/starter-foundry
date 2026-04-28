@@ -28,7 +28,7 @@
     "appName": "my-research-harness",
     "publicVars": [
       "RESEARCH_RESULTS_DIR",
-      "TANGLE_ROUTER_KEY"
+      "TANGLE_API_KEY"
     ],
     "resultsDir": "research-results",
     "screenerReps": 1,

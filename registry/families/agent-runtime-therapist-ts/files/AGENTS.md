@@ -6,7 +6,7 @@ allowedDomains:
   - api.tangle.tools
   - 988lifeline.org
 allowedEnv:
-  - TANGLE_ROUTER_KEY
+  - TANGLE_API_KEY
   - PHONY_API_KEY
 notTherapist: true
 escalationRequired: true

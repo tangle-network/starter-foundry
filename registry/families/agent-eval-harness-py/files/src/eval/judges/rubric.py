@@ -12,7 +12,7 @@ Failure modes are explicit:
 - JSON parse error → same.
 - Missing dimension in the response → same (the run records ``unmeasured``,
   not a fabricated score).
-- ``TANGLE_ROUTER_KEY`` unset → raise ``RuntimeError``; the runner converts
+- ``TANGLE_API_KEY`` unset → raise ``RuntimeError``; the runner converts
   to a top-level ``[blocked]``.
 """
 
@@ -83,7 +83,7 @@ class RubricJudge:
     dimensions: list[RubricDimension]
     model: str = DEFAULT_MODEL
     base_url: str = DEFAULT_BASE_URL
-    api_key_env: str = "TANGLE_ROUTER_KEY"
+    api_key_env: str = "TANGLE_API_KEY"
     timeout_sec: float = DEFAULT_TIMEOUT_SEC
     system_prompt: str = (
         "You are a strict eval judge. Given an input, the expected output, "

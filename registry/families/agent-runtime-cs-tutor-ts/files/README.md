@@ -5,7 +5,7 @@ A Cloudflare Worker agent that provides CS tutoring: explains concepts, debugs c
 ## Getting Started
 
 1. Install dependencies: `npm install`
-2. Set environment variables: `TANGLE_ROUTER_KEY`
+2. Set environment variables: `TANGLE_API_KEY`
 3. Deploy: `npx wrangler deploy`
 
 ## Routes

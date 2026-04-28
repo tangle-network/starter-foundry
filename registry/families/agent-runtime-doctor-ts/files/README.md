@@ -23,7 +23,7 @@ This agent provides general health information for educational purposes only. It
 
 Set the following environment variables:
 
-- `TANGLE_ROUTER_KEY` — API key for Tangle router.
+- `TANGLE_API_KEY` — API key for Tangle router.
 - `AGENT_NAME` — Agent name (default: "doctor").
 
 ## Templates

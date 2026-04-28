@@ -22,7 +22,7 @@ A voice-first math tutor agent bundle for calculus, algebra, and general math tu
 ## Configuration
 
 ### Environment Variables
-- `TANGLE_ROUTER_KEY`: API key for Tangle router
+- `TANGLE_API_KEY`: API key for Tangle router
 - `AGENT_NAME`: Name of the agent (default: math-tutor)
 
 ### Allowed Domains

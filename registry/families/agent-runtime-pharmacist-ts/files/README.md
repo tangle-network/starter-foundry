@@ -18,7 +18,7 @@ Send requests to `/api/chat` with a Bearer token. The agent will respond with st
 ## Configuration
 
 Set the following environment variables:
-- `TANGLE_ROUTER_KEY`: Your Tangle router key
+- `TANGLE_API_KEY`: Your Tangle router key
 - `DRUGBANK_API_KEY`: API key for DrugBank (optional, for enhanced data)
 
 ## Disclaimer

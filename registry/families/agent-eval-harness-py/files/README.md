@@ -32,7 +32,7 @@ agent + offline judge — useful for smoke tests.
 To run with the LLM-judge:
 
 ```bash
-export TANGLE_ROUTER_KEY=sk-tan-...
+export TANGLE_API_KEY=sk-tan-...
 python -m eval run --scenarios scenarios --out scorecard.json
 ```
 

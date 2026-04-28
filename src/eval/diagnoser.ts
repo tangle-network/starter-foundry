@@ -132,7 +132,7 @@ export async function diagnoseGaps(
   const llm = opts.llm ?? (isLLMAvailable() ? createLLM() : null)
   if (!llm) {
     throw new Error(
-      'diagnoseGaps requires an LLM. Set TANGLE_ROUTER_USER_KEY or another provider key in env.',
+      'diagnoseGaps requires an LLM. Set TANGLE_API_KEY or another provider key in env.',
     )
   }
 

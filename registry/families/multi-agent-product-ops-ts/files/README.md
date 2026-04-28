@@ -53,7 +53,7 @@ product team, board, HR, legal, security, or finance counsel.
 
 Required environment variables:
 
-- `TANGLE_ROUTER_KEY` — API key for the Tangle router
+- `TANGLE_API_KEY` — API key for the Tangle router
 
 The bundle composes on the Cloudflare Worker substrate via:
 

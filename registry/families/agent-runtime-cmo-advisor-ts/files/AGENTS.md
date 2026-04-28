@@ -5,7 +5,7 @@ domain: marketing-strategy
 allowedDomains:
   - api.tangle.tools
 allowedEnv:
-  - TANGLE_ROUTER_KEY
+  - TANGLE_API_KEY
 version: 0.1.0
 ---
 

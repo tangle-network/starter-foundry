@@ -20,7 +20,7 @@ Deploy on Cloudflare Workers with the Tangle agent-runtime substrate.
 
 ### Environment Variables
 
-- `TANGLE_ROUTER_KEY` — Required for Tangle integration
+- `TANGLE_API_KEY` — Required for Tangle integration
 
 ## Development
 

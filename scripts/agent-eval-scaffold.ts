@@ -10,7 +10,7 @@
 //      build_score from harness result
 //   5. agent-eval runAssertions(snapshot) → structural pass rate
 //   6. optional: LLM judge (createLlmReviewer + recordMetaScore) for
-//      meta_score — gated on TANGLE_ROUTER_USER_KEY / ANTHROPIC_API_KEY
+//      meta_score — gated on TANGLE_API_KEY / ANTHROPIC_API_KEY
 //   7. scoreProject via agent-eval's three-layer-eval → kind='scaffold-only'
 //
 // Output: .evolve/agent-eval/<YYYY-MM-DD>/
@@ -44,8 +44,14 @@ import { isLLMAvailable } from '../dist/lib/llm.js'
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 
 const argv = process.argv.slice(2)
-const FAMILY_FILTER = (() => { const i = argv.indexOf('--family'); return i >= 0 ? argv[i + 1] : null })()
-const SAMPLE_SIZE = (() => { const i = argv.indexOf('--sample'); return i >= 0 ? Number(argv[i + 1]) : null })()
+const FAMILY_FILTER = (() => {
+  const i = argv.indexOf('--family')
+  return i >= 0 ? argv[i + 1] : null
+})()
+const SAMPLE_SIZE = (() => {
+  const i = argv.indexOf('--sample')
+  return i >= 0 ? Number(argv[i + 1]) : null
+})()
 const NO_JUDGE = argv.includes('--no-judge')
 const QUIET = argv.includes('--quiet')
 
@@ -77,7 +83,11 @@ if (SAMPLE_SIZE && SAMPLE_SIZE < selected.length) {
   const famQuota = Math.ceil(SAMPLE_SIZE * 0.7)
   const wkQuota = Math.min(SAMPLE_SIZE - famQuota, wks.length)
   // Reservoir-free: shuffle via seeded hash for reproducibility.
-  const shuffled = (arr) => arr.map((x) => [hashString(x.id), x]).sort((a, b) => a[0] - b[0]).map(([, x]) => x)
+  const shuffled = (arr) =>
+    arr
+      .map((x) => [hashString(x.id), x])
+      .sort((a, b) => a[0] - b[0])
+      .map(([, x]) => x)
   selected = [...shuffled(fams).slice(0, famQuota), ...shuffled(wks).slice(0, wkQuota)]
 }
 
@@ -105,7 +115,10 @@ const store = new InMemoryTraceStore()
 const costTracker = new CostTracker()
 const runReports = []
 
-if (!QUIET) console.log(`agent-eval-scaffold: ${selected.length} seeds, out=${outDir.replace(REPO + '/', '')}`)
+if (!QUIET)
+  console.log(
+    `agent-eval-scaffold: ${selected.length} seeds, out=${outDir.replace(REPO + '/', '')}`,
+  )
 
 for (const seed of selected) {
   const t0 = Date.now()
@@ -119,7 +132,10 @@ for (const seed of selected) {
     // For this first ship we grade the "primary" project only.
     const primary = plan.spec.projects[0]
     if (!primary) {
-      appendFileSync(tracesPath, JSON.stringify({ seed: seed.id, error: 'empty workspace projects' }) + '\n')
+      appendFileSync(
+        tracesPath,
+        JSON.stringify({ seed: seed.id, error: 'empty workspace projects' }) + '\n',
+      )
       continue
     }
     await evalSeed({ seed, projectId, spec: primary.spec })
@@ -135,7 +151,10 @@ for (const seed of selected) {
     } catch (err) {
       // Compose failure → record as a failed build with zero score.
       const msg = err?.message?.slice(0, 500) ?? String(err)
-      appendFileSync(tracesPath, JSON.stringify({ seed: seed.id, phase: 'compose', pass: false, error: msg }) + '\n')
+      appendFileSync(
+        tracesPath,
+        JSON.stringify({ seed: seed.id, phase: 'compose', pass: false, error: msg }) + '\n',
+      )
       if (!QUIET) console.error(`[${seed.id}] compose failed: ${msg}`)
       return
     }
@@ -157,7 +176,10 @@ for (const seed of selected) {
       shipResult = await session.ship({ harness: prep.harness })
     } catch (err) {
       const msg = err?.message?.slice(0, 500) ?? String(err)
-      appendFileSync(tracesPath, JSON.stringify({ seed: seed.id, phase: 'ship', pass: false, error: msg }) + '\n')
+      appendFileSync(
+        tracesPath,
+        JSON.stringify({ seed: seed.id, phase: 'ship', pass: false, error: msg }) + '\n',
+      )
       prep.cleanup()
       return
     }
@@ -174,7 +196,10 @@ for (const seed of selected) {
         pass: structural.pass,
         score: structural.score,
         total: prep.assertions.length,
-        failures: structural.results.filter((r) => !r.pass).slice(0, 10).map((r) => r.detail ?? 'unnamed'),
+        failures: structural.results
+          .filter((r) => !r.pass)
+          .slice(0, 10)
+          .map((r) => r.detail ?? 'unnamed'),
       }) + '\n',
     )
 
@@ -199,25 +224,31 @@ for (const seed of selected) {
         // of record + markOutcome. No-ops if verdict.usage is absent
         // (e.g. compile-gate short-circuit — no LLM spend to track).
         costTracker.recordVerdict(verdict, seed.id, { phase: 'meta-judge' })
-        appendFileSync(tracesPath, JSON.stringify({
-          seed: seed.id,
-          projectId,
-          phase: 'meta-judge',
-          overall: verdict.overall,
-          verdict: verdict.verdict,
-          dimensions: {
-            correctness: verdict.correctness,
-            completeness: verdict.completeness,
-            idiomatic: verdict.idiomatic,
-            productionReady: verdict.productionReady,
-            overScaffold: verdict.overScaffold,
-          },
-          issues: verdict.issues,
-          usage: verdict.usage ?? null,
-        }) + '\n')
+        appendFileSync(
+          tracesPath,
+          JSON.stringify({
+            seed: seed.id,
+            projectId,
+            phase: 'meta-judge',
+            overall: verdict.overall,
+            verdict: verdict.verdict,
+            dimensions: {
+              correctness: verdict.correctness,
+              completeness: verdict.completeness,
+              idiomatic: verdict.idiomatic,
+              productionReady: verdict.productionReady,
+              overScaffold: verdict.overScaffold,
+            },
+            issues: verdict.issues,
+            usage: verdict.usage ?? null,
+          }) + '\n',
+        )
       } catch (err) {
         const msg = err?.message?.slice(0, 500) ?? String(err)
-        appendFileSync(tracesPath, JSON.stringify({ seed: seed.id, phase: 'meta-judge', error: msg }) + '\n')
+        appendFileSync(
+          tracesPath,
+          JSON.stringify({ seed: seed.id, phase: 'meta-judge', error: msg }) + '\n',
+        )
         if (!QUIET) console.error(`  [${seed.id}] meta-judge failed: ${msg}`)
       }
     }
@@ -229,10 +260,18 @@ for (const seed of selected) {
     prep.cleanup()
 
     const dt = Date.now() - t0
-    runReports.push({ seed: seed.id, projectId, wallMs: dt, structuralScore: structural.score, buildScore: shipResult.result?.score ?? 0 })
+    runReports.push({
+      seed: seed.id,
+      projectId,
+      wallMs: dt,
+      structuralScore: structural.score,
+      buildScore: shipResult.result?.score ?? 0,
+    })
     if (!QUIET) {
       const mark = shipResult.result?.passed ? '✓' : '✗'
-      console.log(`  ${mark} ${seed.id.padEnd(30)} build=${(shipResult.result?.score ?? 0).toFixed(2)} struct=${structural.score.toFixed(2)} (${(dt/1000).toFixed(1)}s)`)
+      console.log(
+        `  ${mark} ${seed.id.padEnd(30)} build=${(shipResult.result?.score ?? 0).toFixed(2)} struct=${structural.score.toFixed(2)} (${(dt / 1000).toFixed(1)}s)`,
+      )
     }
   }
 }

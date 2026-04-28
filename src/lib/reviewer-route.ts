@@ -1,8 +1,6 @@
-// Reviewer route selection shared by every propose/review adapter. Picks the
-// highest-fidelity provider available: direct Anthropic → direct Groq →
-// tangle-router (OpenAI-compatible, rate-limited on free tier). The router
-// path is last because a local driver doesn't need the governance/billing
-// plane — and its 6k TPM free-tier cap starves long runs.
+// Reviewer route selection shared by every propose/review adapter.
+
+import { loadProfile } from './profile-loader.js'
 
 interface ReviewerRoute {
   url: string
@@ -11,12 +9,23 @@ interface ReviewerRoute {
   headers: Record<string, string>
 }
 
+/** Resolve the default reviewer model from `default-judge` profile (Gen-17). */
+function defaultReviewerModel(): string {
+  try {
+    return loadProfile('default-judge').model
+  } catch {
+    // Pre-`--apply` bootstrap: fall back to bare alias. The CI bare-alias
+    // scan covers RunRecords; reviewer routes are call-site, not record.
+    return 'claude-sonnet-4-6'
+  }
+}
+
 export function selectReviewerRoute(overrideModel?: string | null): ReviewerRoute | null {
   const env = process.env
   if (env.ANTHROPIC_API_KEY) {
     return {
       url: 'https://api.anthropic.com/v1/messages',
-      model: overrideModel ?? 'claude-sonnet-4-6',
+      model: overrideModel ?? defaultReviewerModel(),
       style: 'anthropic',
       headers: {
         'x-api-key': env.ANTHROPIC_API_KEY,
@@ -36,13 +45,13 @@ export function selectReviewerRoute(overrideModel?: string | null): ReviewerRout
       },
     }
   }
-  if (env.TANGLE_ROUTER_USER_KEY) {
+  if (env.TANGLE_API_KEY) {
     return {
       url: 'https://router.tangle.tools/v1/chat/completions',
       model: overrideModel ?? 'llama-3.1-8b-instant',
       style: 'openai',
       headers: {
-        Authorization: `Bearer ${env.TANGLE_ROUTER_USER_KEY}`,
+        Authorization: `Bearer ${env.TANGLE_API_KEY}`,
         'content-type': 'application/json',
       },
     }

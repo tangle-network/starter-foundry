@@ -21,7 +21,7 @@ Deploy as a Cloudflare Worker. The agent exposes two routes:
 ## Configuration
 
 Required environment variables:
-- `TANGLE_ROUTER_KEY`: API key for Tangle router
+- `TANGLE_API_KEY`: API key for Tangle router
 
 Optional:
 - `AGENT_NAME`: Override agent name (default: sales-engineer)

@@ -34,17 +34,22 @@ import type { WorkspaceSpec } from './types.js'
 interface ParsedArgs {
   command: string
   options: Record<string, string | boolean>
+  positional: string[]
 }
 
 function parseArgs(argv: string[]): ParsedArgs {
   const args = argv.slice(2)
   const command = args[0] ?? ''
   const options: Record<string, string | boolean> = {}
+  const positional: string[] = []
 
   for (let index = 1; index < args.length; index += 1) {
     const token = args[index]
 
-    if (!token.startsWith('--')) continue
+    if (!token.startsWith('--')) {
+      positional.push(token)
+      continue
+    }
 
     const key = token.slice(2)
     const next = args[index + 1]
@@ -57,7 +62,7 @@ function parseArgs(argv: string[]): ParsedArgs {
     }
   }
 
-  return { command, options }
+  return { command, options, positional }
 }
 
 function print(value: unknown, jsonMode: boolean): void {
@@ -100,6 +105,12 @@ function usage(): string {
     '  release --spec <path> [--out <dir>] [--runs <n>]',
     '  batch-export --out <dir> [--mapping <path>] [--filter <names>] [--fatten] [--skip-validate] [--concurrency <n>]',
     '  fatten --spec <path> --out <dir>',
+    '  gate <baseline.jsonl> <candidate.jsonl> [--baseline-key <name>]',
+    '  export-runs [--month YYYY-MM] [--out <path>]',
+    '  profiles list',
+    '  profiles show <name>',
+    '  profiles diff <a> <b>',
+    '  refresh-snapshots [--check | --apply]',
     '',
     'Flags:',
     '  --json    Print structured JSON',
@@ -107,7 +118,7 @@ function usage(): string {
 }
 
 async function main(): Promise<void> {
-  const { command, options } = parseArgs(process.argv)
+  const { command, options, positional } = parseArgs(process.argv)
   const jsonMode = Boolean(options.json)
 
   switch (command) {
@@ -346,10 +357,36 @@ async function main(): Promise<void> {
       if (!options.spec) throw new Error('audit requires --spec')
 
       const spec = await loadProjectSpec(String(options.spec))
+      const startedAt = Date.now()
       const result = await createAuditBundle({
         spec,
         outDir: options.out ? String(options.out) : null,
       })
+
+      // Gen-17: emit one RunRecord per audit invocation. The audit bundle
+      // is a pure-deterministic compose+context render (no LLM call), so
+      // costUsd/token usage are zero — the value of recording it is the
+      // commit/promptHash/configHash trail for `pnpm gate` baselines.
+      try {
+        const { emitRunRecord } = await import('./lib/eval/emit-run-record.js')
+        emitRunRecord({
+          experimentId: 'audit',
+          candidateId: spec.family ?? 'unknown',
+          profile: 'default',
+          promptText: result.contextPath,
+          configObject: spec,
+          wallMs: Date.now() - startedAt,
+          costUsd: 0,
+          tokenUsage: { input: 0, output: 0 },
+          outcome: { searchScore: 1, raw: { bundleEmitted: true } },
+          skipSnapshotResolve: true,
+        })
+      } catch (e) {
+        // Soft-fail: if the snapshot lock isn't set up yet, the audit
+        // result still ships; we surface the gap loudly to stderr instead
+        // of silently swallowing it (muffled-gate rule).
+        process.stderr.write(`audit: RunRecord emission skipped — ${(e as Error).message}\n`)
+      }
 
       print(result, true)
       break
@@ -452,6 +489,49 @@ async function main(): Promise<void> {
       const result = await fattenStarter(outDir)
 
       print(result, true)
+      break
+    }
+
+    case 'gate': {
+      const { runGate } = await import('./lib/cli/gate.js')
+      const exitCode = await runGate({
+        baselinePath: positional[0],
+        candidatePath: positional[1],
+        baselineKey: options['baseline-key'] ? String(options['baseline-key']) : undefined,
+        json: jsonMode,
+      })
+      process.exit(exitCode)
+      break
+    }
+
+    case 'export-runs': {
+      const { runExport } = await import('./lib/cli/export-runs.js')
+      await runExport({
+        month: options.month ? String(options.month) : null,
+        outPath: options.out ? String(options.out) : null,
+        json: jsonMode,
+      })
+      break
+    }
+
+    case 'profiles': {
+      const { runProfiles } = await import('./lib/cli/profiles.js')
+      await runProfiles({
+        sub: positional[0] ?? 'list',
+        args: positional.slice(1),
+        json: jsonMode,
+      })
+      break
+    }
+
+    case 'refresh-snapshots': {
+      const { runRefreshSnapshots } = await import('./lib/cli/refresh-snapshots.js')
+      const exitCode = await runRefreshSnapshots({
+        check: Boolean(options.check),
+        apply: Boolean(options.apply),
+        json: jsonMode,
+      })
+      process.exit(exitCode)
       break
     }
 

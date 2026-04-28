@@ -5,7 +5,7 @@ domain: education-language
 allowedDomains:
   - api.tangle.tools
 allowedEnv:
-  - TANGLE_ROUTER_KEY
+  - TANGLE_API_KEY
   - PHONY_API_KEY
 voiceFirst: true
 version: 0.1.0

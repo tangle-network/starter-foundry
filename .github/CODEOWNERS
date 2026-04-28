@@ -1,0 +1,5 @@
+# Operator-gated paths. Any PR that touches these files requires review from
+# @drewstone before merge. Maintained as part of Gen-17 RunRecord substrate.
+
+.evolve/profiles/*           @drewstone
+.evolve/snapshots.lock.json  @drewstone

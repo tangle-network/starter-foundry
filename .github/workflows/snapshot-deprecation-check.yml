@@ -1,0 +1,56 @@
+name: snapshot-deprecation-check
+
+on:
+  schedule:
+    # Daily at 09:00 UTC.
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: snapshot deprecation check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: install
+        run: pnpm install --frozen-lockfile
+
+      - name: build
+        run: pnpm build
+
+      - name: refresh-snapshots --check
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          # Operators run --apply locally (CODEOWNERS-gated). CI only checks.
+          # Empty lock state is OK — exit 0; populated lock state is checked
+          # against the live API.
+          if [ ! -s .evolve/snapshots.lock.json ]; then
+            echo "snapshots.lock.json missing — nothing to check"
+            exit 0
+          fi
+          ROLES=$(jq '.roles | length' .evolve/snapshots.lock.json)
+          if [ "$ROLES" = "0" ]; then
+            echo "snapshots.lock.json has no pinned roles — nothing to check"
+            exit 0
+          fi
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "ANTHROPIC_API_KEY secret missing — cannot check (treating as warning)"
+            exit 0
+          fi
+          pnpm refresh-snapshots --check

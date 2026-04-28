@@ -526,7 +526,7 @@ export interface ScaffoldMetaVerdict {
  *   - structured error reporting when the LLM refuses schema compliance
  *
  * Routes through `createLLM` which uses router.tangle.tools when
- * TANGLE_ROUTER_USER_KEY is set (preferred — centralized spend + governance),
+ * TANGLE_API_KEY is set (preferred — centralized spend + governance),
  * else falls back to direct provider keys.
  */
 

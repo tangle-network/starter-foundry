@@ -15,7 +15,7 @@ This bundle provides a structured methodology for customer success operations. I
 
 ## Usage
 
-Deploy as a Cloudflare Worker. Set `TANGLE_ROUTER_KEY` environment variable. The agent exposes:
+Deploy as a Cloudflare Worker. Set `TANGLE_API_KEY` environment variable. The agent exposes:
 
 - `POST /api/chat` — authenticated chat endpoint
 - `GET /api/health` — health check

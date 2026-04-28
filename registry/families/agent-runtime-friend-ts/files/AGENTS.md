@@ -5,7 +5,7 @@ domain: social-companion
 allowedDomains:
   - api.tangle.tools
 allowedEnv:
-  - TANGLE_ROUTER_KEY
+  - TANGLE_API_KEY
   - PHONY_API_KEY
 notTherapist: true
 escalationRequired: true

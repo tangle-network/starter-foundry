@@ -12,7 +12,7 @@ A math research assistant agent bundle for literature review, proof verification
 Deploy on Cloudflare Workers with the Tangle runtime.
 
 ## Configuration
-Set `TANGLE_ROUTER_KEY` environment variable.
+Set `TANGLE_API_KEY` environment variable.
 
 ## Disclaimer
 This agent is an advisory tool and does not replace peer review or domain expertise.

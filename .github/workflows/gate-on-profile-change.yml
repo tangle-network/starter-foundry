@@ -1,0 +1,65 @@
+name: gate-on-profile-change
+
+on:
+  pull_request:
+    paths:
+      - '.evolve/profiles/**'
+
+jobs:
+  require-gate:
+    name: require HeldOutGate PROMOTE or bypass label
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: check for bootstrap state (empty snapshot lock)
+        id: bootstrap
+        run: |
+          LOCK=.evolve/snapshots.lock.json
+          if [ ! -f "$LOCK" ]; then
+            echo "bootstrap=true" >> "$GITHUB_OUTPUT"
+            echo "No snapshot lock — bootstrap state, skipping gate requirement"
+            exit 0
+          fi
+          ROLES=$(jq '.roles | length' "$LOCK")
+          if [ "$ROLES" = "0" ]; then
+            echo "bootstrap=true" >> "$GITHUB_OUTPUT"
+            echo "Snapshot lock has no resolved roles — bootstrap state, skipping gate requirement"
+          else
+            echo "bootstrap=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: check for bypass label
+        id: bypass
+        if: steps.bootstrap.outputs.bootstrap != 'true'
+        env:
+          LABELS: ${{ toJson(github.event.pull_request.labels) }}
+        run: |
+          if echo "$LABELS" | grep -qE '"name":\s*"bypass-gate(:|")'; then
+            echo "bypass=true" >> "$GITHUB_OUTPUT"
+            echo "Bypass label present — skipping gate requirement"
+          else
+            echo "bypass=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: require gate-decision check
+        if: steps.bootstrap.outputs.bootstrap != 'true' && steps.bypass.outputs.bypass != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Require a check named "gate-decision" with conclusion "success"
+          # on this PR's head SHA. Operators attach this by running
+          # `pnpm gate baseline.jsonl candidate.jsonl` and posting the
+          # PROMOTE result as a check via gh api.
+          SHA="${{ github.event.pull_request.head.sha }}"
+          OUTCOME=$(gh api repos/${{ github.repository }}/commits/$SHA/check-runs \
+            --jq '.check_runs[] | select(.name == "gate-decision") | .conclusion' | head -n1)
+          if [ "$OUTCOME" = "success" ]; then
+            echo "gate-decision check is success — OK"
+            exit 0
+          fi
+          echo "Profile change detected. A 'gate-decision' check (conclusion=success) is required, OR add the 'bypass-gate' label with a reason." >&2
+          exit 1

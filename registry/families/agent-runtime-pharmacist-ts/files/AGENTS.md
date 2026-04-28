@@ -8,7 +8,7 @@ allowedDomains:
   - api.fda.gov
   - pubmed.ncbi.nlm.nih.gov
 allowedEnv:
-  - TANGLE_ROUTER_KEY
+  - TANGLE_API_KEY
   - DRUGBANK_API_KEY
 advisoryOnly: true
 escalationRequired: true

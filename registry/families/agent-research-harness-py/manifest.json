@@ -22,7 +22,7 @@
       "api.tangle.tools"
     ],
     "secrets": [
-      "TANGLE_ROUTER_KEY",
+      "TANGLE_API_KEY",
       "TANGLE_SANDBOX_KEY"
     ]
   },

@@ -87,9 +87,9 @@ def propose(
     to persist the new entries.
     """
     cfg = config or ProposerConfig()
-    key = api_key or os.environ.get("TANGLE_ROUTER_KEY", "")
+    key = api_key or os.environ.get("TANGLE_API_KEY", "")
     if not key:
-        raise RuntimeError("TANGLE_ROUTER_KEY is required for propose()")
+        raise RuntimeError("TANGLE_API_KEY is required for propose()")
 
     body = {
         "model": cfg.model,

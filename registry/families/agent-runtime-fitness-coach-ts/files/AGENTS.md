@@ -5,7 +5,7 @@ domain: fitness-health
 allowedDomains:
   - api.tangle.tools
 allowedEnv:
-  - TANGLE_ROUTER_KEY
+  - TANGLE_API_KEY
   - PHONY_API_KEY
 notPhysicalTherapist: true
 notMedicalAdvice: true

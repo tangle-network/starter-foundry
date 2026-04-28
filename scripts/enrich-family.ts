@@ -11,19 +11,23 @@
 //   - review:            LLM via tangle-router, JSON-only, NEVER overturns verify
 //
 // Usage:
-//   TANGLE_ROUTER_USER_KEY=... node scripts/enrich-family.ts --family hipaa-compliance-pack
+//   TANGLE_API_KEY=... node scripts/enrich-family.ts --family hipaa-compliance-pack
 //   node scripts/enrich-family.ts --family <id> --max-shots 3 --builder-model sonnet
 
 import { spawnSync, spawn } from 'node:child_process'
-import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync, cpSync } from 'node:fs'
+import {
+  readFileSync,
+  writeFileSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  statSync,
+  cpSync,
+} from 'node:fs'
 import { dirname, join, resolve, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createHash } from 'node:crypto'
-import {
-  runProposeReview,
-  createLlmReviewer,
-  jsonlReviewStore,
-} from '@tangle-network/agent-eval'
+import { runProposeReview, createLlmReviewer, jsonlReviewStore } from '@tangle-network/agent-eval'
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const argv = process.argv.slice(2)
@@ -49,7 +53,11 @@ function selectReviewerRoute() {
     return {
       url: 'https://api.anthropic.com/v1/messages',
       model: reviewerModel ?? 'claude-sonnet-4-6',
-      auth: { header: 'x-api-key', value: process.env.ANTHROPIC_API_KEY, extra: { 'anthropic-version': '2023-06-01' } },
+      auth: {
+        header: 'x-api-key',
+        value: process.env.ANTHROPIC_API_KEY,
+        extra: { 'anthropic-version': '2023-06-01' },
+      },
       style: 'anthropic',
     }
   }
@@ -61,11 +69,11 @@ function selectReviewerRoute() {
       style: 'openai',
     }
   }
-  if (process.env.TANGLE_ROUTER_USER_KEY) {
+  if (process.env.TANGLE_API_KEY) {
     return {
       url: 'https://router.tangle.tools/v1/chat/completions',
       model: reviewerModel ?? 'llama-3.1-8b-instant',
-      auth: { header: 'Authorization', value: `Bearer ${process.env.TANGLE_ROUTER_USER_KEY}` },
+      auth: { header: 'Authorization', value: `Bearer ${process.env.TANGLE_API_KEY}` },
       style: 'openai',
     }
   }
@@ -84,7 +92,9 @@ mkdirSync(dirname(memoryPath), { recursive: true })
 
 const reviewerRoute = selectReviewerRoute()
 if (!reviewerRoute) {
-  console.error('No reviewer API key available. Set ANTHROPIC_API_KEY, GROQ_API_KEY, or TANGLE_ROUTER_USER_KEY.')
+  console.error(
+    'No reviewer API key available. Set ANTHROPIC_API_KEY, GROQ_API_KEY, or TANGLE_API_KEY.',
+  )
   process.exit(2)
 }
 
@@ -181,7 +191,10 @@ async function propose(input) {
   if (dryRun) {
     console.log('[dry-run] would invoke claude builder with prompt:')
     console.log(prompt)
-    return { state: { familyId, familyDir }, traceSummary: { dryRun: true, added: [], changed: [], removed: [] } }
+    return {
+      state: { familyId, familyDir },
+      traceSummary: { dryRun: true, added: [], changed: [], removed: [] },
+    }
   }
 
   const t0 = Date.now()
@@ -189,10 +202,14 @@ async function propose(input) {
     'claude',
     [
       '-p',
-      '--permission-mode', 'acceptEdits',
-      '--model', builderModel,
-      '--add-dir', familyDir,
-      '--output-format', 'text',
+      '--permission-mode',
+      'acceptEdits',
+      '--model',
+      builderModel,
+      '--add-dir',
+      familyDir,
+      '--output-format',
+      'text',
       prompt,
     ],
     { cwd: REPO, encoding: 'utf8', timeout: 15 * 60 * 1000 },
@@ -205,7 +222,9 @@ async function propose(input) {
 
   const after = snapshotFamily()
   const diff = diffSnapshots(before, after)
-  console.log(`[propose shot=${shot}] +${diff.added.length} ~${diff.changed.length} -${diff.removed.length} files (${dur}ms)`)
+  console.log(
+    `[propose shot=${shot}] +${diff.added.length} ~${diff.changed.length} -${diff.removed.length} files (${dur}ms)`,
+  )
 
   return {
     state: { familyId, familyDir },
@@ -240,8 +259,10 @@ async function verify(_state) {
     'node',
     [
       'scripts/audit-scaffold-quality.ts',
-      '--layer', layerId,
-      '--out', outFile,
+      '--layer',
+      layerId,
+      '--out',
+      outFile,
       // Gen-1 strict verifier: compile clean ISN'T enough. Also run `pnpm
       // build` (bundler errors, dead imports) and the family's declared
       // validationChecks (ground-truth file-exists + validate-*.mjs).
@@ -261,7 +282,11 @@ async function verify(_state) {
   const report = JSON.parse(readFileSync(outFile, 'utf8'))
   const row = report.audits.find((a) => a.layerId === layerId)
   if (!row) {
-    return { pass: false, failingLayers: ['not-audited'], details: { hint: 'layer not found in audit' } }
+    return {
+      pass: false,
+      failingLayers: ['not-audited'],
+      details: { hint: 'layer not found in audit' },
+    }
   }
   if (row.skipped) {
     return { pass: false, failingLayers: [`skipped:${row.skipped}`], details: row }
@@ -302,7 +327,9 @@ async function routerJson({ system, user }) {
       ? {
           model,
           system,
-          messages: [{ role: 'user', content: `${user}\n\nReturn JSON only, no prose outside the object.` }],
+          messages: [
+            { role: 'user', content: `${user}\n\nReturn JSON only, no prose outside the object.` },
+          ],
           max_tokens: 2048,
           temperature: 0.2,
         }
@@ -328,7 +355,10 @@ async function routerJson({ system, user }) {
       : json.choices?.[0]?.message?.content
   if (typeof content !== 'string') throw new Error('reviewer returned no text content')
   // Anthropic will sometimes wrap the JSON in ```json fences despite the instruction.
-  const stripped = content.trim().replace(/^```(?:json)?\s*/, '').replace(/```\s*$/, '')
+  const stripped = content
+    .trim()
+    .replace(/^```(?:json)?\s*/, '')
+    .replace(/```\s*$/, '')
   return JSON.parse(stripped)
 }
 

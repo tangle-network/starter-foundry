@@ -14,7 +14,7 @@ pattern = "/api/health"
 methods = ["GET"]
 
 [[env]]
-name = "TANGLE_ROUTER_KEY"
+name = "TANGLE_API_KEY"
 value = ""
 
 [[env]]

@@ -4,7 +4,7 @@ An advisory agent for engineering managers: 1:1 cadence, sprint planning, incide
 
 ## Usage
 
-Deploy as a Cloudflare Worker. Set `TANGLE_ROUTER_KEY` environment variable.
+Deploy as a Cloudflare Worker. Set `TANGLE_API_KEY` environment variable.
 
 ## Capabilities
 

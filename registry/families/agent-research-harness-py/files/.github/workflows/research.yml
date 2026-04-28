@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
-      TANGLE_ROUTER_KEY: ${{ secrets.TANGLE_ROUTER_KEY }}
+      TANGLE_API_KEY: ${{ secrets.TANGLE_API_KEY }}
       TANGLE_SANDBOX_KEY: ${{ secrets.TANGLE_SANDBOX_KEY }}
     steps:
       - uses: actions/checkout@v4
@@ -33,7 +33,7 @@ jobs:
         run: pytest -q
 
       - name: Sweep (propose -> screen -> validate)
-        if: env.TANGLE_ROUTER_KEY != '' && env.TANGLE_SANDBOX_KEY != ''
+        if: env.TANGLE_API_KEY != '' && env.TANGLE_SANDBOX_KEY != ''
         run: python -m research sweep --reps 5 --top-k 3
 
       - name: Upload results

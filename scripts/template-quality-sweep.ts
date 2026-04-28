@@ -13,7 +13,7 @@
 //
 // CI invocation:
 //   ANTHROPIC_API_KEY=... node scripts/template-quality-sweep.ts --top 5
-//   # or fall back to TANGLE_ROUTER_USER_KEY
+//   # or fall back to TANGLE_API_KEY
 // Local dry-run:
 //   node scripts/template-quality-sweep.ts --top 3 --dry-run
 
@@ -37,7 +37,9 @@ const DRY_RUN = flag('--dry-run')
 const LLM_ONLY = flag('--llm-only')
 
 if (!existsSync(ANALYSIS)) {
-  console.error('✗ .evolve/buildout-analysis.json missing. Run `node scripts/run-buildout-pipeline.ts` first.')
+  console.error(
+    '✗ .evolve/buildout-analysis.json missing. Run `node scripts/run-buildout-pipeline.ts` first.',
+  )
   process.exit(2)
 }
 
@@ -128,7 +130,7 @@ for (const entry of topFiles) {
   console.log(`  template source: ${preferred.sourcePath}`)
 
   const env = { ...process.env }
-  if (LLM_ONLY && !env.TANGLE_ROUTER_USER_KEY && !env.ANTHROPIC_API_KEY) {
+  if (LLM_ONLY && !env.TANGLE_API_KEY && !env.ANTHROPIC_API_KEY) {
     sweepResults.push({
       scaffoldFile,
       timesRewritten: entry.timesRewritten,
@@ -204,4 +206,6 @@ const promotable = sweepResults.filter((r) => r.report?.decision === 'promotable
 const ran = sweepResults.filter((r) => r.status === 'ran').length
 const shotsTotal = sweepResults.reduce((acc, r) => acc + (r.report?.loop?.shotsUsed ?? 0), 0)
 const looped = sweepResults.filter((r) => (r.report?.loop?.shotsUsed ?? 0) > 1).length
-console.log(`  ran: ${ran}, promotable: ${promotable}, multi-shot runs: ${looped}, shots total: ${shotsTotal}`)
+console.log(
+  `  ran: ${ran}, promotable: ${promotable}, multi-shot runs: ${looped}, shots total: ${shotsTotal}`,
+)

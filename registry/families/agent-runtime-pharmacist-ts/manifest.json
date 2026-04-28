@@ -72,7 +72,7 @@
       "pubmed.ncbi.nlm.nih.gov"
     ],
     "secrets": [
-      "TANGLE_ROUTER_KEY",
+      "TANGLE_API_KEY",
       "DRUGBANK_API_KEY"
     ]
   },

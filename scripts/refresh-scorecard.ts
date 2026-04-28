@@ -683,7 +683,7 @@ const flows = [
   //   1. Gen-16 — live recruiter eval scorecard at
   //      examples/recruiter-eval-workspace/.evolve/scorecard.json. This is
   //      the operator-driven loop: any operator runs `pnpm eval` once with
-  //      TANGLE_ROUTER_KEY set; the file appears; agent_eval_meta_pass_rate
+  //      TANGLE_API_KEY set; the file appears; agent_eval_meta_pass_rate
   //      starts reflecting REAL scenario-against-LLM grades.
   //   2. Gen-4 — agent-eval scaffold three-layer-report.json (compose +
   //      install + build + scaffold-quality judge) under .evolve/agent-eval/.
@@ -766,7 +766,7 @@ const flows = [
           : null
     // Gen-16.1: distinguish "scorecard exists but every flow is unmeasured"
     // from "no scorecard yet" so the operator sees that the eval ran but
-    // all judges short-circuited (e.g., TANGLE_ROUTER_KEY missing).
+    // all judges short-circuited (e.g., TANGLE_API_KEY missing).
     const metaSource =
       recruiterAggregate !== null
         ? 'recruiter-live'

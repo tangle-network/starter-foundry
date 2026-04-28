@@ -12,7 +12,7 @@ team-roles:
 allowedDomains:
   - api.tangle.tools
 allowedEnv:
-  - TANGLE_ROUTER_KEY
+  - TANGLE_API_KEY
 notHiringManager: true
 biasRefusalRequired: true
 advisoryOnly: true

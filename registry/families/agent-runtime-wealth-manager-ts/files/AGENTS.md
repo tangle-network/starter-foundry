@@ -7,7 +7,7 @@ allowedDomains:
   - sec.gov
   - irs.gov
 allowedEnv:
-  - TANGLE_ROUTER_KEY
+  - TANGLE_API_KEY
 notFiduciary: true
 regulatoryDisclaimer: true
 version: 0.1.0

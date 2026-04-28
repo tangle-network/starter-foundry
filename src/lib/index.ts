@@ -129,6 +129,14 @@ export type { RawProfile, ResolvedProfile, LoadProfileOptions } from './profile-
 export { appendRunRecord, readRunRecords, iterRunRecords, RUNS_JSONL_PATH } from './run-record-store.js'
 export { emitRunRecord } from './eval/emit-run-record.js'
 export type { EmitRunRecordInput } from './eval/emit-run-record.js'
+export { runCanaries } from './run-canaries.js'
+export type {
+  CanaryAlert,
+  CanaryKind,
+  CanaryOptions,
+  CanaryReport,
+  CanarySeverity,
+} from './run-canaries.js'
 
 export type {
   ComposeSpec,

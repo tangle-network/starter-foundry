@@ -13,7 +13,8 @@
   },
   "model": {
     "provider": "anthropic",
-    "model": "claude-sonnet-4-5"
+    "model": "claude-sonnet-4-5-20250929",
+    "_pinNote": "Pinned to a real Anthropic dated snapshot (matches the form in src/lib/snapshot-resolver.ts comments, line 6/30). The Anthropic SDK accepts dated snapshots as literal model ids — bare aliases like 'claude-sonnet-4-5' silently remap and break run reproducibility, which is the failure mode Gen-17 closed for runs.jsonl. Refresh by running pnpm refresh-snapshots --apply."
   },
   "permissions": {
     "Read": "allow",

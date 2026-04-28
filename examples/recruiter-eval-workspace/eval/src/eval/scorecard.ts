@@ -6,26 +6,40 @@
 // translation. Extra dashboard fields (sourceMtime, stale, etc.) are
 // only relevant when the parent repo aggregates multiple inputs — for a
 // standalone harness, the runner's outputs are the single source.
+//
+// Gen-16.1 (audit A1 + C3): `unmeasured` is now a first-class status.
+// Aggregators MUST exclude unmeasured flows from the denominator and
+// MUST emit `aggregate: null` (NOT 0) when nothing measurable ran. The
+// parent refresh-scorecard.ts checks `aggregate` against null AND scans
+// for unmeasured flows so a partial-measurement run surfaces transparently.
 
 import { writeFile, mkdir } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
 export type FlowDirection = 'higher-better' | 'lower-better'
-export type FlowStatus = 'pass' | 'fail' | 'skip'
+export type FlowStatus = 'pass' | 'fail' | 'skip' | 'unmeasured'
 
 export interface ScorecardFlow {
   name: string
-  value: number
+  /** Null when status is 'unmeasured' (no measurement, not a fake-zero).
+   *  Numeric only for measured flows. */
+  value: number | null
   target: number
   status: FlowStatus
   productValueClaim: string
   direction: FlowDirection
+  notes?: string
 }
 
 export interface Scorecard {
   product: string
   timestamp: string
-  aggregate: number
+  /** Aggregate over MEASURED flows only. Null when zero flows measured. */
+  aggregate: number | null
+  /** Count of measured flows (denominator for `aggregate`). */
+  measuredCount: number
+  /** Count of flows whose status === 'unmeasured'. */
+  unmeasuredCount: number
   coverage: string
   flows: ScorecardFlow[]
 }
@@ -44,13 +58,13 @@ export async function readScorecard(path: string): Promise<Scorecard> {
 export interface ScorecardDiff {
   baseline: Scorecard
   head: Scorecard
-  aggregateDelta: number
+  aggregateDelta: number | null
   perFlow: Array<{
     name: string
     baseline: number | null
     head: number | null
     delta: number | null
-    status: 'improved' | 'regressed' | 'stable' | 'introduced' | 'removed'
+    status: 'improved' | 'regressed' | 'stable' | 'introduced' | 'removed' | 'unmeasured'
   }>
 }
 
@@ -67,6 +81,13 @@ export function diffScorecards(baseline: Scorecard, head: Scorecard): ScorecardD
     const b = baselineByName.get(name)
     const h = headByName.get(name)
     if (b && h) {
+      // Either side unmeasured → delta is null and status is
+      // 'unmeasured' so the dashboard treats it as a coverage gap, not
+      // a regression.
+      if (b.value === null || h.value === null) {
+        perFlow.push({ name, baseline: b.value, head: h.value, delta: null, status: 'unmeasured' })
+        continue
+      }
       const delta = h.value - b.value
       let status: ScorecardDiff['perFlow'][number]['status'] = 'stable'
       if (Math.abs(delta) >= STABILITY_EPSILON) {
@@ -80,10 +101,9 @@ export function diffScorecards(baseline: Scorecard, head: Scorecard): ScorecardD
       perFlow.push({ name, baseline: null, head: h.value, delta: null, status: 'introduced' })
     }
   }
-  return {
-    baseline,
-    head,
-    aggregateDelta: head.aggregate - baseline.aggregate,
-    perFlow,
-  }
+  const aggregateDelta =
+    baseline.aggregate === null || head.aggregate === null
+      ? null
+      : head.aggregate - baseline.aggregate
+  return { baseline, head, aggregateDelta, perFlow }
 }

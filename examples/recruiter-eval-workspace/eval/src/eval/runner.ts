@@ -9,8 +9,13 @@
 //      command via SubprocessSandboxDriver, emits a Run, persists spans
 //      via FileSystemTraceStore.
 //   4. Run every JudgeFn in `judges/*.judge.ts` over the collected
-//      ScenarioResult; aggregate via `JudgeRunner` when sandbox-graded.
-//   5. Emit a scorecard via `writeScorecard` (see scorecard.ts).
+//      ScenarioResult. Aggregate via `aggregateJudgeScores` so any judge
+//      returning `status: 'unmeasured'` (e.g. the rubric-quality LLM
+//      judge when TANGLE_ROUTER_KEY is absent) is EXCLUDED from the
+//      mean — never averaged in as a fake zero. See
+//      `judges/aggregate.ts` and .evolve/patterns/muffled-gate.md.
+//   5. Emit a scorecard via `writeScorecard` (see scorecard.ts). Flow
+//      values are `number | null`; `null` means unmeasured, never 0.
 //
 // All primitives come from the published package — this file is the
 // integration glue, not new measurement infra.
@@ -26,6 +31,10 @@ import {
   type Scenario,
   type TestGradedScenario,
   type TestGradedRunResult,
+  type JudgeFn,
+  type JudgeInput,
+  type JudgeScore,
+  type CollectedArtifacts,
 } from '@tangle-network/agent-eval'
 import { writeScorecard, type ScorecardFlow } from './scorecard.js'
 
@@ -58,11 +67,14 @@ interface LoadedScenario {
 interface ScenarioOutcome {
   scenarioId: string
   pass: boolean
-  score: number
+  /** Null when no measurable judge produced a score. */
+  score: number | null
   durationMs: number
   failureClass: string | null
   filePath: string
   runId: string
+  measuredJudgeCount: number
+  unmeasuredJudgeCount: number
 }
 
 const HERE = dirname(fileURLToPath(import.meta.url))
@@ -95,12 +107,31 @@ async function loadScenariosFrom(dir: string): Promise<LoadedScenario[]> {
   return out
 }
 
-// Translate a Scenario into a TestGradedScenario — the bridge between
-// the conversational scenario shape and the test-graded-runner shape.
-//
-// Default policy: every scenario's first turn is POST-ed at the target
-// URL's /chat route, and the response is checked for non-empty content.
-// Override by editing the testCommand in your scenario file's tags.
+interface LoadedJudge {
+  fn: JudgeFn
+  filePath: string
+}
+
+async function loadJudgesFrom(dir: string): Promise<LoadedJudge[]> {
+  let entries: string[]
+  try {
+    entries = await readdir(dir)
+  } catch {
+    return []
+  }
+  const out: LoadedJudge[] = []
+  for (const entry of entries) {
+    if (!entry.endsWith('.judge.ts') && !entry.endsWith('.judge.js')) continue
+    const filePath = join(dir, entry)
+    const url = pathToFileURL(isAbsolute(filePath) ? filePath : resolve(filePath)).href
+    const mod = (await import(url)) as { default?: JudgeFn }
+    if (typeof mod.default !== 'function') continue
+    out.push({ fn: mod.default, filePath })
+  }
+  return out
+}
+
+// Translate a Scenario into a TestGradedScenario.
 function toTestGraded(scenario: Scenario, targetUrl: string): TestGradedScenario {
   const customTestCommand = (scenario as Scenario & { testCommand?: string }).testCommand
   const firstTurn = scenario.turns[0]
@@ -127,11 +158,39 @@ export interface RunReport {
   variantId?: string
   scenarioCount: number
   passCount: number
-  aggregate: number
+  /** Aggregate over MEASURED scenarios only. Null when zero measured. */
+  aggregate: number | null
+  measuredScenarioCount: number
+  unmeasuredScenarioCount: number
   threshold: number
   outcomes: ScenarioOutcome[]
   tracesDir: string
   scorecardPath: string
+}
+
+/** Aggregate measured-only mean. Mirrors `eval/judges/aggregate.ts`'s
+ * `aggregateJudgeScores` so the same contract applies at every layer. */
+function aggregateScenarios(outcomes: ScenarioOutcome[]): {
+  mean: number | null
+  measuredCount: number
+  unmeasuredCount: number
+} {
+  let sum = 0
+  let measured = 0
+  let unmeasured = 0
+  for (const o of outcomes) {
+    if (o.score === null || !Number.isFinite(o.score)) {
+      unmeasured += 1
+      continue
+    }
+    sum += o.score
+    measured += 1
+  }
+  return {
+    mean: measured > 0 ? sum / measured : null,
+    measuredCount: measured,
+    unmeasuredCount: unmeasured,
+  }
 }
 
 export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
@@ -139,6 +198,7 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
   const targetUrl = opts.targetUrl ?? process.env.EVAL_TARGET_BASE_URL ?? 'http://127.0.0.1:8787'
   const threshold = opts.threshold ?? Number(process.env.EVAL_THRESHOLD ?? '0.7')
   const scenariosDir = opts.scenariosDir ?? join(projectRoot, 'scenarios')
+  const judgesDir = opts.judgesDir ?? join(projectRoot, 'judges')
   const tracesDir = opts.tracesDir ?? join(projectRoot, '.evolve', 'agent-eval', 'traces')
   const experimentsDir =
     opts.experimentsDir ?? join(projectRoot, '.evolve', 'agent-eval', 'experiments')
@@ -146,11 +206,9 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
   const variantId = opts.variantId ?? process.env.EVAL_VARIANT_ID
 
   const traceStore = new FileSystemTraceStore({ dir: tracesDir })
-  // Experiment store is created so callers can persist experiment metadata
-  // alongside traces; its mere existence ensures the dir is created.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const _experimentStore = new FileSystemExperimentStore({ dir: experimentsDir })
-  const driver = new SubprocessSandboxDriver({ cwd: projectRoot })
+  const driver = new SubprocessSandboxDriver({ cwd: projectRoot }) // muffle-ok: agent-eval 0.7.1+ honors constructor cwd as fallback when HarnessConfig.cwd is unset; runTestGradedScenario does not thread per-call cwd here, so the constructor arg is the active value.
 
   const loaded = await loadScenariosFrom(scenariosDir)
   if (loaded.length === 0) {
@@ -158,6 +216,8 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
       `eval-harness: no scenarios loaded from ${scenariosDir}. Drop a *.scenario.ts file with a default-exported Scenario.`,
     )
   }
+
+  const judges = await loadJudgesFrom(judgesDir)
 
   const outcomes: ScenarioOutcome[] = []
   for (const { scenario, filePath } of loaded) {
@@ -175,40 +235,103 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
         failureClass: 'harness_error',
         filePath,
         runId: '',
+        measuredJudgeCount: 0,
+        unmeasuredJudgeCount: 0,
       })
       console.error(`  ✗ ${scenario.id} — harness error: ${(err as Error).message}`)
       continue
     }
+
+    // Run every judge over this scenario. Each JudgeFn returns one or
+    // more JudgeScore[]; we aggregate measured-only via the local
+    // aggregator so unmeasured signals don't pollute the per-scenario
+    // score.
+    const judgeScores: JudgeScore[] = []
+    if (judges.length > 0) {
+      const judgeInput: JudgeInput = {
+        scenario,
+        turns: [],
+        artifacts: {
+          vaultFiles: [],
+          blocksExtracted: [],
+          codeBlocks: [],
+          toolCalls: [],
+        } as CollectedArtifacts,
+      }
+      for (const j of judges) {
+        try {
+          const out = await j.fn(undefined as never, judgeInput)
+          judgeScores.push(...out)
+        } catch (err) {
+          console.warn(`  ! judge ${j.filePath} threw: ${(err as Error).message}`)
+        }
+      }
+    }
+    let measuredJudgeCount = 0
+    let unmeasuredJudgeCount = 0
+    let judgeSum = 0
+    for (const s of judgeScores) {
+      const status = (s as JudgeScore & { status?: string }).status
+      if (status === 'unmeasured' || !Number.isFinite(s.score)) {
+        unmeasuredJudgeCount += 1
+        continue
+      }
+      judgeSum += s.score
+      measuredJudgeCount += 1
+    }
+    const combined =
+      measuredJudgeCount > 0 ? (result.score + judgeSum) / (1 + measuredJudgeCount) : result.score
+
     outcomes.push({
       scenarioId: scenario.id,
       pass: result.pass,
-      score: result.score,
+      score: combined,
       durationMs: Date.now() - startedAt,
       failureClass: result.failureClass ?? null,
       filePath,
       runId: result.runId,
+      measuredJudgeCount,
+      unmeasuredJudgeCount,
     })
     const mark = result.pass ? '✓' : '✗'
-    console.log(`  ${mark} ${scenario.id} — score=${result.score.toFixed(3)}`)
+    const detail =
+      unmeasuredJudgeCount > 0
+        ? ` (${measuredJudgeCount} measured + ${unmeasuredJudgeCount} unmeasured judge${
+            unmeasuredJudgeCount === 1 ? '' : 's'
+          })`
+        : ''
+    console.log(`  ${mark} ${scenario.id} — score=${combined.toFixed(3)}${detail}`)
   }
 
   const passCount = outcomes.filter((o) => o.pass).length
-  const aggregate = outcomes.reduce((a, o) => a + o.score, 0) / Math.max(outcomes.length, 1)
+  const agg = aggregateScenarios(outcomes)
 
   const flows: ScorecardFlow[] = outcomes.map((o) => ({
     name: o.scenarioId,
     value: o.score,
     target: 1.0,
-    status: o.pass ? 'pass' : 'fail',
+    status:
+      o.score === null || !Number.isFinite(o.score)
+        ? ('unmeasured' as const)
+        : o.pass
+          ? ('pass' as const)
+          : ('fail' as const),
     direction: 'higher-better',
     productValueClaim: `Scenario "${o.scenarioId}" — pass rate against the agent under test.`,
+    ...(o.unmeasuredJudgeCount > 0
+      ? {
+          notes: `judges: ${o.measuredJudgeCount} measured, ${o.unmeasuredJudgeCount} unmeasured`,
+        }
+      : {}),
   }))
   const report: RunReport = {
     timestamp: new Date().toISOString(),
     variantId,
     scenarioCount: outcomes.length,
     passCount,
-    aggregate,
+    aggregate: agg.mean,
+    measuredScenarioCount: agg.measuredCount,
+    unmeasuredScenarioCount: agg.unmeasuredCount,
     threshold,
     outcomes,
     tracesDir,
@@ -217,12 +340,15 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
   await writeScorecard(scorecardPath, {
     product: process.env.EVAL_PRODUCT_NAME ?? 'eval-harness',
     timestamp: report.timestamp,
-    aggregate,
-    coverage: `${passCount}/${outcomes.length} scenarios passed`,
+    aggregate: agg.mean,
+    measuredCount: agg.measuredCount,
+    unmeasuredCount: agg.unmeasuredCount,
+    coverage: `${passCount}/${outcomes.length} scenarios passed (${agg.measuredCount} measured)`,
     flows,
   })
+  const aggDisplay = agg.mean === null ? 'unmeasured' : agg.mean.toFixed(3)
   console.log(
-    `\naggregate=${aggregate.toFixed(3)} pass=${passCount}/${outcomes.length} threshold=${threshold}`,
+    `\naggregate=${aggDisplay} pass=${passCount}/${outcomes.length} measured=${agg.measuredCount} unmeasured=${agg.unmeasuredCount} threshold=${threshold}`,
   )
   return report
 }
@@ -232,7 +358,17 @@ if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
   const projectRoot = process.env.EVAL_PROJECT_ROOT ?? DEFAULT_ROOT
   runHarness({ projectRoot })
     .then((r) => {
-      process.exitCode = r.aggregate < r.threshold ? 1 : 0
+      // CI gate semantics: unmeasured aggregate => exit 0 (don't block
+      // PR on a missing key), but log loudly. Measured aggregate is
+      // gated on the threshold.
+      if (r.aggregate === null) {
+        console.warn(
+          'aggregate is unmeasured — gate skipped, no measurement to compare to threshold.',
+        )
+        process.exitCode = 0
+      } else {
+        process.exitCode = r.aggregate < r.threshold ? 1 : 0
+      }
     })
     .catch((err) => {
       console.error('[runner] fatal:', err)

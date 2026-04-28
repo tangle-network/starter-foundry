@@ -221,3 +221,34 @@ When the second example workspace lands, generalize
 `scripts/sync-example-workspaces.ts` — add an entry to its `EXAMPLES`
 array. The script handles diff-and-rewrite for any preset-shaped file
 without touching user-authored scenarios or judges.
+
+## Step 5 (Gen-17): emit RunRecords + run the gate
+
+Each scenario × variant emission appends a `RunRecord` to
+`.evolve/runs.jsonl` so the `HeldOutGate` can decide promote vs revert.
+Use `emitRunRecord` from `src/lib/eval/emit-run-record.ts`:
+
+```ts
+import { emitRunRecord } from '@tangle-network/starter-foundry'
+
+emitRunRecord({
+  experimentId: `eval/${bundleId}`,
+  candidateId: `${scenarioId}.${variantId}`,
+  profile: 'default-judge',                // pulls model + ceiling from the profile
+  promptText: scenario.prompt,
+  configObject: judgeConfig,
+  wallMs,
+  costUsd,
+  tokenUsage,
+  outcome: { searchScore, raw: { rubricPass, refusalCorrect } },
+})
+```
+
+Then, on the candidate branch:
+
+```bash
+pnpm gate baseline.jsonl candidate.jsonl
+```
+
+See `docs/cookbooks/run-records-and-gates.md` for the full gate runbook.
+

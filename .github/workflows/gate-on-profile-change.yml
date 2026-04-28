@@ -15,8 +15,26 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: check for bootstrap state (empty snapshot lock)
+        id: bootstrap
+        run: |
+          LOCK=.evolve/snapshots.lock.json
+          if [ ! -f "$LOCK" ]; then
+            echo "bootstrap=true" >> "$GITHUB_OUTPUT"
+            echo "No snapshot lock — bootstrap state, skipping gate requirement"
+            exit 0
+          fi
+          ROLES=$(jq '.roles | length' "$LOCK")
+          if [ "$ROLES" = "0" ]; then
+            echo "bootstrap=true" >> "$GITHUB_OUTPUT"
+            echo "Snapshot lock has no resolved roles — bootstrap state, skipping gate requirement"
+          else
+            echo "bootstrap=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: check for bypass label
         id: bypass
+        if: steps.bootstrap.outputs.bootstrap != 'true'
         env:
           LABELS: ${{ toJson(github.event.pull_request.labels) }}
         run: |
@@ -28,7 +46,7 @@ jobs:
           fi
 
       - name: require gate-decision check
-        if: steps.bypass.outputs.bypass != 'true'
+        if: steps.bootstrap.outputs.bootstrap != 'true' && steps.bypass.outputs.bypass != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

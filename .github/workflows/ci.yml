@@ -55,6 +55,12 @@ jobs:
       - name: typecheck + build
         run: pnpm build
 
+      - name: gen17 invariants — bare-alias scan, profile coherence, cost ceiling
+        run: |
+          pnpm exec tsx scripts/check-bare-alias.ts
+          pnpm exec tsx scripts/check-profile-coherence.ts
+          pnpm exec tsx scripts/check-run-cost-ceiling.ts
+
       - name: unit + integration tests
         # Serial test execution enforced in package.json (workspace benchmarks
         # + http-start validation checks reserve ephemeral ports and race

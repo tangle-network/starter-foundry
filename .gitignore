@@ -64,3 +64,9 @@ report/
 .evolve/vb-feedback/*-2*.json
 .evolve/vb-feedback/*-2*.jsonl
 .evolve/auto-loop.jsonl
+
+# Gen 17: RunRecord substrate. `.evolve/runs.jsonl` is high-volume local
+# state; exported monthly by `.github/workflows/runs-export.yml`. Per-month
+# exports also stay local — they're regenerated on demand.
+.evolve/runs.jsonl
+.evolve/runs-*.jsonl

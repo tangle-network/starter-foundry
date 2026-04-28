@@ -151,3 +151,13 @@ test('repo default profiles resolve cleanly (skipSnapshotResolve)', () => {
   assert.equal(proposer.role, 'proposer')
   assert.deepEqual(proposer.chain, ['default', 'default-proposer'])
 })
+
+test('rejects unsafe profile names (path traversal + odd chars)', () => {
+  for (const bad of ['../etc/passwd', '..', './foo', 'has space', 'CapsName', '-leading-dash', '']) {
+    assert.throws(
+      () => loadProfile(bad, { skipSnapshotResolve: true }),
+      /invalid profile name/,
+      `should reject "${bad}"`,
+    )
+  }
+})

@@ -56,7 +56,12 @@ export interface LoadProfileOptions {
   skipSnapshotResolve?: boolean
 }
 
+const SAFE_NAME = /^[a-z][a-z0-9-]*$/
+
 function profilePath(name: string, profilesDir: string): string {
+  if (!SAFE_NAME.test(name)) {
+    throw new Error(`invalid profile name "${name}" — must match /^[a-z][a-z0-9-]*$/`)
+  }
   return resolvePath(profilesDir, `${name}.profile.json`)
 }
 

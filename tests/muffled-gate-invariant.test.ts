@@ -45,6 +45,14 @@ const SCAN_FILES = [
   'registry/families/agent-research-harness-ts/files/src/research/validator.ts',
   'registry/families/agent-eval-harness-py/files/src/eval/regression.py',
   'registry/layers/agent-eval/judge-pairwise/files/src/eval/judges/pairwise-runner.ts',
+  // Gen-16.1 — measurement-layer surfaces. The recruiter eval workspace
+  // judges + runner + scorecard ALL emit measured/unmeasured signals
+  // and are exposed to the sibling-field unmeasured pattern.
+  'examples/recruiter-eval-workspace/eval/judges/rubric-quality.judge.ts',
+  'examples/recruiter-eval-workspace/eval/judges/aggregate.ts',
+  'examples/recruiter-eval-workspace/eval/src/eval/runner.ts',
+  'examples/recruiter-eval-workspace/eval/src/eval/scorecard.ts',
+  'scripts/refresh-scorecard.ts',
 ]
 
 /**
@@ -67,6 +75,95 @@ const findPermissiveKindDefault: MuffledFinder = (file, text) => {
         line: i + 1,
         lineText: line.trim(),
         pattern: 'permissive-kind-default (?? "starter"/"workspace")',
+      })
+    }
+  }
+  return out
+}
+
+/**
+ * Gen-16.1 — sibling-field unmeasured pattern (audit CRIT A1 + scanner
+ * extension). The Gen-15 scanner finders catch single-field
+ * "literal-true-pass" / "fallback-to-pass" — but a NEW pattern shipped
+ * in Gen-16: an object literal that combines `status: 'unmeasured'` (or
+ * the bare string 'unmeasured') with a numeric sibling field
+ * (`score: 0`, `value: 0`, `aggregate: 0`, `score: 1`, etc.). When an
+ * aggregator naively averages the numeric field, the unmeasured signal
+ * becomes a measured number — the muffled-gate measurement-layer bug
+ * in disguise.
+ *
+ * Heuristic: scan for any LITERAL `'unmeasured'` (or `"unmeasured"`)
+ * within ±5 lines of a property whose value is a numeric literal that
+ * is NOT `null`. False positives can be opted out with
+ * `// muffle-ok: <reason>` on either the unmeasured line OR the
+ * numeric line.
+ *
+ * Intentional shape that this does NOT flag:
+ *   { status: 'unmeasured', score: null }     — null sibling, OK
+ *   { status: 'unmeasured', score: NaN }      — Number.NaN is not a numeric literal in source text
+ *   { status: 'unmeasured', score: Number.NaN } — same
+ *
+ * Shape that DOES flag (the bug we just fixed):
+ *   { status: 'unmeasured', score: 0 }        — sibling-field unmeasured
+ *   { status: 'unmeasured', value: 0, ... }   — same with `value`
+ *   { score: 0, reasoning: '...returned unmeasured...' } — Gen-16 shipped form
+ */
+const findSiblingFieldUnmeasured: MuffledFinder = (file, text) => {
+  const out = []
+  const lines = text.split('\n')
+  // Numeric-literal property: `name: <digits>`. Property names commonly
+  // misused: score, value, aggregate, mean, rate, count. Wide net by
+  // design — a numeric next to 'unmeasured' is suspect.
+  const numericPropRe =
+    /\b(score|value|aggregate|mean|rate|count|pct|percent|fraction|ratio)\s*:\s*(-?\d+(?:\.\d+)?)\b/
+  // The 'unmeasured' signal can sit in TWO places:
+  //   (a) discriminator: status: 'unmeasured' / kind: 'unmeasured'
+  //   (b) reasoning/error text: reasoning: '... returned unmeasured ...'
+  // Both are sibling-field-unmeasured candidates. The strict literal
+  // form (a) AND the lax in-string form (b) both must trigger; the
+  // audit's CRIT A1 was an instance of (b) — `score: 0` next to
+  // `reasoning: '... unmeasured ...'`.
+  const strictRe = /['"]unmeasured['"]/
+  const laxRe = /['"][^'"]*\bunmeasured\b[^'"]*['"]/
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]!
+    if (line.includes('muffle-ok:')) continue
+    const stripped = line.trim()
+    if (stripped.startsWith('//') || stripped.startsWith('*')) continue
+    if (!strictRe.test(line) && !laxRe.test(line)) continue
+    // Window: ±5 lines, excluding the unmeasured line itself.
+    const start = Math.max(0, i - 5)
+    const end = Math.min(lines.length, i + 6)
+    for (let j = start; j < end; j++) {
+      if (j === i) continue
+      const sib = lines[j]!
+      if (sib.includes('muffle-ok:')) continue
+      const sibStripped = sib.trim()
+      if (sibStripped.startsWith('//') || sibStripped.startsWith('*')) continue
+      const m = numericPropRe.exec(sib)
+      if (!m) continue
+      // Boundary: don't cross a standalone `}` between the two anchors.
+      // Heuristic ensures unrelated objects in the same file don't
+      // cross-flag.
+      const lo = Math.min(i, j)
+      const hi = Math.max(i, j)
+      let crossedBoundary = false
+      for (let k = lo + 1; k < hi; k++) {
+        const inner = lines[k]!.trim()
+        if (inner === '}' || inner === '},' || inner === '},;' || inner.startsWith('};')) {
+          crossedBoundary = true
+          break
+        }
+      }
+      if (crossedBoundary) continue
+      out.push({
+        file,
+        line: j + 1,
+        lineText: sib.trim(),
+        pattern:
+          "sibling-field-unmeasured (numeric '" +
+          m[1] +
+          "' next to 'unmeasured' — naive aggregator will treat the number as measured; use null instead)",
       })
     }
   }
@@ -227,6 +324,7 @@ describe('muffled-gate invariant', () => {
         findUnmeasuredZero,
         findDegenerateCi,
         findFakeEffectSize,
+        findSiblingFieldUnmeasured,
       ],
       autoDerive: {
         roots: ['src', 'scripts'],
@@ -280,6 +378,119 @@ describe('muffled-gate invariant', () => {
     const cmd = mod.HARNESS_CONFIGS.typescript!.testCommand as string
     assert.doesNotMatch(cmd, /\|\| true/)
     assert.match(cmd, /tsc\s+--noEmit/)
+  })
+
+  // Gen-16.1 — sibling-field unmeasured finder unit tests. The bug from
+  // PR #131 (audit CRIT A1) shipped a `score: 0` next to a 'unmeasured'
+  // reasoning string; the existing Gen-15 finders missed it because
+  // they were tied to specific shapes (ternary, degenerate-CI, Cohen's d).
+  // This finder is the generalized object-literal scanner.
+  test('findSiblingFieldUnmeasured flags { status: "unmeasured", score: 0 }', () => {
+    const bad = `
+const judge = async () => {
+  return [
+    {
+      judgeName: 'rubric-quality',
+      score: 0,
+      reasoning: 'TANGLE_ROUTER_KEY not set',
+      status: 'unmeasured',
+    },
+  ]
+}
+`
+    const good = `
+const judge = async () => {
+  return [
+    {
+      judgeName: 'rubric-quality',
+      score: null,
+      reasoning: 'TANGLE_ROUTER_KEY not set',
+      status: 'unmeasured',
+    },
+  ]
+}
+`
+    const goodNaN = `
+const judge = async () => {
+  return [
+    {
+      score: Number.NaN,
+      status: 'unmeasured',
+    },
+  ]
+}
+`
+    const badFindings = findSiblingFieldUnmeasured('test/bad.ts', bad)
+    assert.ok(
+      badFindings.length >= 1,
+      `expected ≥1 finding for { score: 0, status: 'unmeasured' }, got ${badFindings.length}`,
+    )
+    assert.match(badFindings[0]!.pattern, /sibling-field-unmeasured/)
+    assert.match(badFindings[0]!.lineText, /score:\s*0/)
+
+    const goodFindings = findSiblingFieldUnmeasured('test/good.ts', good)
+    assert.equal(goodFindings.length, 0, '`score: null` is the safe shape — must not flag')
+
+    const goodNaNFindings = findSiblingFieldUnmeasured('test/goodNaN.ts', goodNaN)
+    assert.equal(
+      goodNaNFindings.length,
+      0,
+      '`score: Number.NaN` is the safe sentinel — must not flag (no numeric literal)',
+    )
+  })
+
+  test('findSiblingFieldUnmeasured detects Gen-16 reasoning-string variant (audit CRIT A1)', () => {
+    // Exact shape that shipped in Gen-16 PR #131. The pattern is `score: 0`
+    // adjacent to `reasoning: '... unmeasured ...'` — sibling-field
+    // unmeasured where the discriminator lives in the reasoning string.
+    const gen16Bug = `
+const judge = async () => {
+  return [
+    {
+      judgeName: 'rubric-quality',
+      dimension: 'rubric-quality',
+      score: 0,
+      reasoning: 'TANGLE_ROUTER_KEY not set — judge returned unmeasured. Set the secret to enable live LLM grading.',
+    },
+  ]
+}
+`
+    const findings = findSiblingFieldUnmeasured('test/gen16.ts', gen16Bug)
+    assert.ok(
+      findings.length >= 1,
+      'Gen-16 reasoning-string variant must flag (the audit CRIT A1 case)',
+    )
+  })
+
+  test('findSiblingFieldUnmeasured does not cross object-literal boundaries', () => {
+    const text = `
+const a = {
+  status: 'unmeasured',
+  score: null,
+}
+
+const b = {
+  name: 'something-else',
+  value: 0,
+}
+`
+    const findings = findSiblingFieldUnmeasured('test/two-objs.ts', text)
+    assert.equal(
+      findings.length,
+      0,
+      `two unrelated objects must not cross-flag; got ${findings.length}: ${findings.map((f) => f.lineText).join(' | ')}`,
+    )
+  })
+
+  test('findSiblingFieldUnmeasured respects // muffle-ok: escape hatch', () => {
+    const text = `
+const probably_intentional = {
+  status: 'unmeasured',
+  score: 0, // muffle-ok: legacy scaffold-meta path; null support lands in PR #133
+}
+`
+    const findings = findSiblingFieldUnmeasured('test/escaped.ts', text)
+    assert.equal(findings.length, 0, '// muffle-ok: must suppress the finding')
   })
 })
 

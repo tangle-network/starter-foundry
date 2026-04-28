@@ -131,6 +131,41 @@ a proposal and returns pass/fail):
 If any answer reveals a muffle, fix it before merging. The invariant
 test catches #1, #3, #4, #5 mechanically; #2 needs human review.
 
+## Sibling-field unmeasured (Gen-16.1 — 2026-04-27)
+
+A new sub-shape surfaced in Gen-16's recruiter eval workspace and was
+caught by the post-merge audit (PR #131). The pattern: an object literal
+declares `status: 'unmeasured'` (or any literal `'unmeasured'` string)
+co-located with a numeric sibling field — e.g. `score: 0`,
+`value: 0`, `aggregate: 0`. Naive aggregators read the numeric field
+without checking the discriminant, so the unmeasured signal becomes a
+measured zero in the rollup. The Gen-15 scanner finders catch
+`testCommand: 'true'` (literal-true-pass) and `command || true`
+(fallback-to-pass) but NOT this object-literal shape — they were field-
+scoped, not object-scoped.
+
+| Bad shape | Why it lies | Fix |
+|---|---|---|
+| `{ status: 'unmeasured', score: 0 }` | aggregator averages `score` as a fail | `score: null` (or `Number.NaN`) |
+| `{ status: 'unmeasured', value: 0, ... }` | dashboard treats 0 as the floor | `value: null` |
+| `{ ...result, status: 'unmeasured' }` where `result.score` is numeric | discriminator added but data unchanged | rebuild `result` with null, or filter at boundary |
+| `{ score: 0, reasoning: '... returned unmeasured ...' }` | unmeasured signal lives in a sibling string field, not a discriminator | use `unmeasuredScore()` helper returning `score: NaN, status: 'unmeasured'` |
+
+**Mechanically prevented by:** `findSiblingFieldUnmeasured` in
+`tests/muffled-gate-invariant.test.ts`. Heuristic: any `'unmeasured'`
+string literal (or the word `unmeasured` inside a string) within ±5
+lines of a `score|value|aggregate|mean|...: <numeric-literal>`
+property in the same object literal flags. False positives suppressed
+with `// muffle-ok: <reason>`. The boundary heuristic uses standalone
+`}` as the object-end so unrelated objects in the same file don't
+cross-flag.
+
+**Live instance (closed in Gen-16.1, PR #132):**
+
+| # | Shape | Location | Closed in |
+|---|---|---|---|
+| 11 | sibling-field-unmeasured | `examples/recruiter-eval-workspace/eval/judges/rubric-quality.judge.ts` — `score: 0` next to `'unmeasured'` reasoning | Gen-16.1 — refactored onto `buildRubricJudge` + `unmeasuredScore()` helper returning `score: NaN, status: 'unmeasured'` |
+
 ## Measurement-layer variant
 
 Same shape in a different layer. A gate that fails silently ships bad

@@ -45,7 +45,7 @@ jobs:
 
       - name: Run research-harness
         env:
-          TANGLE_ROUTER_KEY: ${{ secrets.TANGLE_ROUTER_KEY }}
+          TANGLE_API_KEY: ${{ secrets.TANGLE_API_KEY }}
           RESEARCH_RESULTS_DIR: research-results
         run: |
           MODE="${{ github.event.inputs.mode || 'screen' }}"

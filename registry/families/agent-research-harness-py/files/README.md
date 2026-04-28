@@ -50,7 +50,7 @@ tests/
 
 Required:
 
-- `TANGLE_ROUTER_KEY` — for the proposer's LLM calls (router.tangle.tools)
+- `TANGLE_API_KEY` — for the proposer's LLM calls (router.tangle.tools)
 - `TANGLE_SANDBOX_KEY` — for tangle-sandbox client
 
 ## Quality contract

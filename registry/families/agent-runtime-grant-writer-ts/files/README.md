@@ -10,7 +10,7 @@ An agent-runtime bundle that helps nonprofit operators draft grant proposals, ma
 
 ## Usage
 
-Deploy as a Cloudflare Worker with the Tangle router. Set `TANGLE_ROUTER_KEY` in environment variables.
+Deploy as a Cloudflare Worker with the Tangle router. Set `TANGLE_API_KEY` in environment variables.
 
 ## Advisory Only
 

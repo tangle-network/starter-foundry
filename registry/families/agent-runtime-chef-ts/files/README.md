@@ -17,7 +17,7 @@ Voice-first personal chef agent bundle — meal planning, recipe development, te
 
 ## Environment Variables
 
-- `TANGLE_ROUTER_KEY` — API key for Tangle router
+- `TANGLE_API_KEY` — API key for Tangle router
 - `PHONY_API_KEY` — API key for phony-voice service
 
 ## Routes

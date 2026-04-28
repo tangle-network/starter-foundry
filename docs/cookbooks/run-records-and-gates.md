@@ -16,25 +16,25 @@ One JSON object per line. The shape:
 
 ```ts
 interface RunRecord {
-  runId: string                            // crypto.randomUUID()
-  experimentId: string                     // logical experiment grouping
-  candidateId: string                      // identifies the variant
-  seed: number                             // for reproducibility
-  model: string                            // <alias>@<snapshot> form ONLY
-  promptHash: string                       // sha256 of effective prompt
-  configHash: string                       // sha256 of role config
-  commitSha: string                        // git rev-parse HEAD
+  runId: string // crypto.randomUUID()
+  experimentId: string // logical experiment grouping
+  candidateId: string // identifies the variant
+  seed: number // for reproducibility
+  model: string // <alias>@<snapshot> form ONLY
+  promptHash: string // sha256 of effective prompt
+  configHash: string // sha256 of role config
+  commitSha: string // git rev-parse HEAD
   wallMs: number
   costUsd: number
   tokenUsage: { input: number; output: number }
   outcome: {
-    searchScore: number                    // primary objective in [0,1]
-    holdoutScore?: number                  // optional, present when held-out eval ran
-    raw: Record<string, number | boolean>  // domain-specific subscores
+    searchScore: number // primary objective in [0,1]
+    holdoutScore?: number // optional, present when held-out eval ran
+    raw: Record<string, number | boolean> // domain-specific subscores
   }
   splitTag: 'search' | 'holdout' | 'historical'
-  failureMode?: string                     // first failing stage name
-  source: 'foundry' | 'vb'                 // verticalbench coupling
+  failureMode?: string // first failing stage name
+  source: 'foundry' | 'vb' // verticalbench coupling
 }
 ```
 
@@ -98,7 +98,7 @@ the Tangle router catalog.
 **Operator (CODEOWNERS-gated):**
 
 ```bash
-TANGLE_ROUTER_KEY=sk-tan-... pnpm refresh-snapshots --apply
+TANGLE_API_KEY=sk-tan-... pnpm refresh-snapshots --apply
 ```
 
 Listing flows through the `@tangle-network/tcloud` SDK
@@ -108,7 +108,7 @@ the org meter is not an option.
 
 ### CLI bridge (runtime chat calls only)
 
-The Tangle Router exposes a *cli-bridge* short-circuit for chat calls —
+The Tangle Router exposes a _cli-bridge_ short-circuit for chat calls —
 rewrites `model` to `bridge/<harness>/<model>` and drives a
 subscription-backed CLI (Claude Code, opencode, codex, kimi-code, etc.)
 as an OpenAI-compatible harness. Useful for local dev (zero marginal cost
@@ -126,8 +126,8 @@ listing source. Profiles opt in per-role:
   "bridge": {
     "harness": "claude-code",
     "model": "sonnet",
-    "unlock": "${BRIDGE_UNLOCK}"
-  }
+    "unlock": "${BRIDGE_UNLOCK}",
+  },
 }
 ```
 

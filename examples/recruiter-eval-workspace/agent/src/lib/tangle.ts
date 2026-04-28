@@ -18,12 +18,15 @@ export interface RouterChatOptions {
 }
 
 export async function chatViaRouter(opts: RouterChatOptions): Promise<Response> {
-  const apiKey = process.env['TANGLE_ROUTER_KEY']
-  if (!apiKey) throw new Error('TANGLE_ROUTER_KEY not set — bundles must route LLM calls through router.tangle.tools')
+  const apiKey = process.env['TANGLE_API_KEY']
+  if (!apiKey)
+    throw new Error(
+      'TANGLE_API_KEY not set — bundles must route LLM calls through router.tangle.tools',
+    )
   return fetch(`${LLM_ROUTER_URL}/v1/chat/completions`, {
     method: 'POST',
     headers: {
-      'authorization': `Bearer ${apiKey}`,
+      authorization: `Bearer ${apiKey}`,
       'content-type': 'application/json',
     },
     body: JSON.stringify({
@@ -52,5 +55,7 @@ export async function spawnAgentSandbox(_opts: SandboxSpawnOptions): Promise<San
   // Implementation imports @tangle-network/sandbox-sdk at runtime; this
   // module declares the contract so the bundle's compose-time validators
   // can assert the shape without needing the SDK on the classpath.
-  throw new Error('spawnAgentSandbox: import @tangle-network/sandbox-sdk and wire its createSandbox() here')
+  throw new Error(
+    'spawnAgentSandbox: import @tangle-network/sandbox-sdk and wire its createSandbox() here',
+  )
 }

@@ -9,7 +9,7 @@ An agent-runtime bundle that provides ML research assistance: literature review,
 - **result-interpretation**: Honest interpretation of results, including limitations.
 
 ## Usage
-Deploy on Cloudflare Workers with the Tangle runtime. Set `TANGLE_ROUTER_KEY` in environment variables.
+Deploy on Cloudflare Workers with the Tangle runtime. Set `TANGLE_API_KEY` in environment variables.
 
 ## Routes
 - `POST /api/chat` — Main chat endpoint (bearer auth).

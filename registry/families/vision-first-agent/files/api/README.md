@@ -53,7 +53,7 @@ app.use(express.json({ limit: '10mb' }))
 
 const client = new Anthropic({
   baseURL: 'https://router.tangle.tools/anthropic',
-  apiKey: process.env.TANGLE_ROUTER_USER_KEY,
+  apiKey: process.env.TANGLE_API_KEY,
 })
 
 app.post('/api/vision', async (req, res) => {

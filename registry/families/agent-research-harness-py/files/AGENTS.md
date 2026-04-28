@@ -6,7 +6,7 @@ allowedDomains:
   - router.tangle.tools
   - api.tangle.tools
 allowedEnv:
-  - TANGLE_ROUTER_KEY
+  - TANGLE_API_KEY
   - TANGLE_SANDBOX_KEY
 version: 0.1.0
 ---

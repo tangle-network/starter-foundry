@@ -108,7 +108,7 @@
       "rainn.org"
     ],
     "secrets": [
-      "TANGLE_ROUTER_KEY",
+      "TANGLE_API_KEY",
       "PHONY_API_KEY"
     ]
   },

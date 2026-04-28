@@ -35,7 +35,9 @@ function parseArgs(argv) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2))
-  const { loadTraces, replayTrace, buildReport } = await import(path.join(ROOT, 'dist', 'eval', 'replay.js'))
+  const { loadTraces, replayTrace, buildReport } = await import(
+    path.join(ROOT, 'dist', 'eval', 'replay.js')
+  )
   const { diagnoseGaps } = await import(path.join(ROOT, 'dist', 'eval', 'diagnoser.js'))
   const { proposeEdit } = await import(path.join(ROOT, 'dist', 'eval', 'propose.js'))
   const { loadRegistry } = await import(path.join(ROOT, 'dist', 'lib', 'registry.js'))
@@ -47,13 +49,17 @@ async function main() {
   const traces = await loadTraces(path.join(ROOT, '.evolve', 'traces'))
   const results = []
   for (const t of traces) {
-    try { results.push(await replayTrace(t)) } catch {}
+    try {
+      results.push(await replayTrace(t))
+    } catch {}
   }
   const report = buildReport(results, commit)
   const reportPath = path.join(ROOT, '.evolve', 'buildout-analysis-internal.json')
   await fs.writeFile(reportPath, JSON.stringify(report, null, 2))
   const s = report.summary
-  process.stdout.write(`      ${s.totalPreventedInstalls}/${s.totalHistoricalInstalls} prevented (${(s.preventionRate * 100).toFixed(1)}%)  remaining: ${s.totalRemainingGapInstalls}\n\n`)
+  process.stdout.write(
+    `      ${s.totalPreventedInstalls}/${s.totalHistoricalInstalls} prevented (${(s.preventionRate * 100).toFixed(1)}%)  remaining: ${s.totalRemainingGapInstalls}\n\n`,
+  )
 
   // 2) diagnose
   process.stdout.write(`[2/3] diagnose remaining gaps\n`)
@@ -65,11 +71,17 @@ async function main() {
   const { clusterGaps } = await import(path.join(ROOT, 'dist', 'eval', 'diagnoser.js'))
   let proposals = []
   if (!isLLMAvailable()) {
-    process.stdout.write(`      no LLM provider configured — emitting deterministic cluster list only\n`)
-    process.stdout.write(`      set TANGLE_ROUTER_USER_KEY (preferred) or ANTHROPIC_API_KEY / GROQ_API_KEY to enable LLM diagnosis\n`)
+    process.stdout.write(
+      `      no LLM provider configured — emitting deterministic cluster list only\n`,
+    )
+    process.stdout.write(
+      `      set TANGLE_API_KEY (preferred) or ANTHROPIC_API_KEY / GROQ_API_KEY to enable LLM diagnosis\n`,
+    )
     const clusters = clusterGaps(report).filter((c) => c.totalTimesRemaining >= args.minImpact)
     for (const c of clusters) {
-      process.stdout.write(`      [cluster ${c.id}] ${c.totalTimesRemaining} installs: ${c.packages.map((p) => p.name).join(', ')}\n`)
+      process.stdout.write(
+        `      [cluster ${c.id}] ${c.totalTimesRemaining} installs: ${c.packages.map((p) => p.name).join(', ')}\n`,
+      )
     }
     process.stdout.write(`\n`)
   } else {
@@ -81,7 +93,9 @@ async function main() {
   }
   for (let i = 0; i < proposals.length; i++) {
     const p = proposals[i]
-    process.stdout.write(`      [${i + 1}] ${p.clusterId}  conf=${p.confidence.toFixed(2)}  impact=${p.expectedImpact}  → ${p.suggestedCapability}\n`)
+    process.stdout.write(
+      `      [${i + 1}] ${p.clusterId}  conf=${p.confidence.toFixed(2)}  impact=${p.expectedImpact}  → ${p.suggestedCapability}\n`,
+    )
     process.stdout.write(`          ${p.rootCause}\n`)
   }
   process.stdout.write(`\n`)
@@ -92,19 +106,27 @@ async function main() {
     .slice(0, Number.isFinite(args.top) ? args.top : proposals.length)
   process.stdout.write(`[3/3] propose edits  ${args.dispatch ? '(DISPATCH)' : '(DRY-RUN)'}\n`)
   if (proposals.length === 0) {
-    process.stdout.write(`      no LLM proposals available (diagnoser stage was skipped) — nothing to dispatch\n`)
-    process.stdout.write(`      to dispatch: set TCLOUD_API_KEY + BRIDGE_UNLOCK then run with --dispatch\n`)
+    process.stdout.write(
+      `      no LLM proposals available (diagnoser stage was skipped) — nothing to dispatch\n`,
+    )
+    process.stdout.write(
+      `      to dispatch: set TCLOUD_API_KEY + BRIDGE_UNLOCK then run with --dispatch\n`,
+    )
     return
   }
   if (dispatchable.length === 0) {
-    process.stdout.write(`      no proposals clear impact/confidence floor (${args.minImpact}/${args.minConfidence})\n`)
+    process.stdout.write(
+      `      no proposals clear impact/confidence floor (${args.minImpact}/${args.minConfidence})\n`,
+    )
     return
   }
   for (const p of dispatchable) {
     const r = await proposeEdit(p, { dryRun: !args.dispatch })
     if (args.dispatch) {
       process.stdout.write(`      ${p.clusterId}  session=${r.resumeKey}\n`)
-      process.stdout.write(`      response: ${String(r.response).slice(0, 300).replaceAll('\n', '\n                ')}\n\n`)
+      process.stdout.write(
+        `      response: ${String(r.response).slice(0, 300).replaceAll('\n', '\n                ')}\n\n`,
+      )
     } else {
       process.stdout.write(`      ${p.clusterId}  session=${r.resumeKey}  (dry-run, task queued)\n`)
     }

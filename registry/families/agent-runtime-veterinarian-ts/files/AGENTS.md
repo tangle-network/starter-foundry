@@ -7,7 +7,7 @@ allowedDomains:
   - avma.org
   - fda.gov/cvm
 allowedEnv:
-  - TANGLE_ROUTER_KEY
+  - TANGLE_API_KEY
 notLicensedVet: true
 regulatoryDisclaimer: true
 version: 0.1.0

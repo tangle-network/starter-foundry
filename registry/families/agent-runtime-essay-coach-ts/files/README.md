@@ -17,7 +17,7 @@ Deploy to Cloudflare Workers. The agent exposes two routes:
 ## Configuration
 
 Set the following environment variables:
-- `TANGLE_ROUTER_KEY` — API key for Tangle router
+- `TANGLE_API_KEY` — API key for Tangle router
 
 ## Disclaimer
 

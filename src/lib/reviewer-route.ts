@@ -1,8 +1,4 @@
-// Reviewer route selection shared by every propose/review adapter. Picks the
-// highest-fidelity provider available: direct Anthropic → direct Groq →
-// tangle-router (OpenAI-compatible, rate-limited on free tier). The router
-// path is last because a local driver doesn't need the governance/billing
-// plane — and its 6k TPM free-tier cap starves long runs.
+// Reviewer route selection shared by every propose/review adapter.
 
 import { loadProfile } from './profile-loader.js'
 
@@ -49,13 +45,13 @@ export function selectReviewerRoute(overrideModel?: string | null): ReviewerRout
       },
     }
   }
-  if (env.TANGLE_ROUTER_USER_KEY) {
+  if (env.TANGLE_API_KEY) {
     return {
       url: 'https://router.tangle.tools/v1/chat/completions',
       model: overrideModel ?? 'llama-3.1-8b-instant',
       style: 'openai',
       headers: {
-        Authorization: `Bearer ${env.TANGLE_ROUTER_USER_KEY}`,
+        Authorization: `Bearer ${env.TANGLE_API_KEY}`,
         'content-type': 'application/json',
       },
     }

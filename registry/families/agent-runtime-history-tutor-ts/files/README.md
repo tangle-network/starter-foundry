@@ -11,7 +11,7 @@ A Cloudflare Worker agent that provides history tutoring: primary-source analysi
 ## Setup
 
 1. Install dependencies: `npm install`
-2. Configure environment variables: `TANGLE_ROUTER_KEY`
+2. Configure environment variables: `TANGLE_API_KEY`
 3. Deploy: `npx wrangler deploy`
 
 ## Usage

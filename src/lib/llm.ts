@@ -37,7 +37,7 @@ const FALLBACK_ORDER: LLMProvider[] = [
 ]
 
 function envKey(provider: LLMProvider): string | undefined {
-  if (provider === 'tangle-router') return process.env.TANGLE_ROUTER_USER_KEY
+  if (provider === 'tangle-router') return process.env.TANGLE_API_KEY
   if (provider === 'groq') return process.env.GROQ_API_KEY
   if (provider === 'anthropic') return process.env.ANTHROPIC_API_KEY
   if (provider === 'together') return process.env.TOGETHER_API_KEY
@@ -48,9 +48,7 @@ function envKey(provider: LLMProvider): string | undefined {
 function detectProvider(): LLMProvider | null {
   const explicit = process.env.STARTER_FOUNDRY_LLM_PROVIDER as LLMProvider | undefined
   if (explicit && envKey(explicit)) return explicit
-  // Tangle router is the preferred path for Tangle projects — routes through
-  // the billing/governance/observability plane instead of direct provider APIs.
-  if (process.env.TANGLE_ROUTER_USER_KEY) return 'tangle-router'
+  if (process.env.TANGLE_API_KEY) return 'tangle-router'
   if (process.env.ANTHROPIC_API_KEY) return 'anthropic'
   if (process.env.GROQ_API_KEY) return 'groq'
   if (process.env.TOGETHER_API_KEY) return 'together'
@@ -194,9 +192,7 @@ function buildFallbackChain(primary: LLMProvider, opts: LLMOptions): AxAIService
 export function createLLM(opts: LLMOptions = {}): AxAIService {
   const provider = opts.provider ?? detectProvider()
   if (!provider) {
-    throw new Error(
-      'No LLM provider configured. Set TANGLE_ROUTER_USER_KEY (preferred for Tangle) or a direct provider key.',
-    )
+    throw new Error('No LLM provider configured. Set TANGLE_API_KEY or a direct provider key.')
   }
   // Fallback-by-default: if caller didn't pin a provider AND didn't opt-out
   // AND ≥2 providers are configured, build a resilient chain. Single-key

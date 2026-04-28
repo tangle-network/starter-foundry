@@ -12,7 +12,7 @@ This bundle provides a security engineer advisory agent that helps with threat m
 Deploy to Tangle and interact via the `/api/chat` endpoint with a bearer token.
 
 ## Configuration
-- `TANGLE_ROUTER_KEY`: Required for Tangle integration.
+- `TANGLE_API_KEY`: Required for Tangle integration.
 - `AGENT_NAME`: Set to `security-engineer`.
 
 ## Templates

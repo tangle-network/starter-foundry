@@ -14,7 +14,7 @@ This bundle provides a chemistry research assistant that helps chemists, student
 
 ## Usage
 
-Deploy on Cloudflare Workers with the Tangle runtime. Set the `TANGLE_ROUTER_KEY` environment variable.
+Deploy on Cloudflare Workers with the Tangle runtime. Set the `TANGLE_API_KEY` environment variable.
 
 ## Advisory Only
 

@@ -42,7 +42,7 @@ const app = express()
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 20 * 1024 * 1024 } })
 const client = new Anthropic({
   baseURL: 'https://router.tangle.tools/anthropic',
-  apiKey: process.env.TANGLE_ROUTER_USER_KEY,
+  apiKey: process.env.TANGLE_API_KEY,
 })
 
 app.post('/api/multimodal', upload.fields([{ name: 'image' }, { name: 'audio' }]), async (req, res) => {

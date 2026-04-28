@@ -20,7 +20,7 @@
 //   node scripts/llm-buildout-diagnose.ts           # runs LLM, writes reports
 //   node scripts/llm-buildout-diagnose.ts --dry-run # compute input only
 //
-// Env: TANGLE_ROUTER_USER_KEY or ANTHROPIC_API_KEY required. Exits 0
+// Env: TANGLE_API_KEY or ANTHROPIC_API_KEY required. Exits 0
 // with a no-op message when no key is configured (safe in CI).
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
@@ -41,12 +41,10 @@ if (!existsSync(ANALYSIS)) {
 }
 
 const hasKey =
-  process.env['TANGLE_ROUTER_USER_KEY'] ||
-  process.env['ANTHROPIC_API_KEY'] ||
-  process.env['GROQ_API_KEY']
+  process.env['TANGLE_API_KEY'] || process.env['ANTHROPIC_API_KEY'] || process.env['GROQ_API_KEY']
 
 if (!hasKey && !DRY_RUN) {
-  console.log('no LLM key (TANGLE_ROUTER_USER_KEY / ANTHROPIC_API_KEY / GROQ_API_KEY) — skipping')
+  console.log('no LLM key (TANGLE_API_KEY / ANTHROPIC_API_KEY / GROQ_API_KEY) — skipping')
   process.exit(0)
 }
 
@@ -95,11 +93,17 @@ if (existsSync(TRACES)) {
           addedDirs: (e.addedDirs ?? []).slice(0, 5),
           rewrittenFiles: (e.rewrittenFiles ?? []).slice(0, 10),
           outcomeShort: e.outcome
-            ? { allPass: e.outcome.allPass, failingLayers: e.outcome.failingLayers, shotsRun: e.outcome.shotsRun }
+            ? {
+                allPass: e.outcome.allPass,
+                failingLayers: e.outcome.failingLayers,
+                shotsRun: e.outcome.shotsRun,
+              }
             : null,
         })
       }
-    } catch { /* skip malformed */ }
+    } catch {
+      /* skip malformed */
+    }
   }
   for (const arr of Object.values(perScenario)) sampledTraces.push(...arr)
 }

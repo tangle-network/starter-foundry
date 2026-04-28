@@ -18,7 +18,7 @@ Deploy as a Cloudflare Worker. Routes:
 ## Configuration
 
 Set environment variables:
-- `TANGLE_ROUTER_KEY` — Tangle router key
+- `TANGLE_API_KEY` — Tangle router key
 - `PHONY_API_KEY` — Phony voice API key
 
 ## Disclaimer

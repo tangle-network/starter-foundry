@@ -12,7 +12,7 @@ Multi-agent orchestration with supervisor/worker handoffs. Use when ONE LLM call
 
 ## First moves
 
-- Set the router API key: `export OPENAI_API_KEY=$TANGLE_ROUTER_KEY` — agents call via router.tangle.tools, NOT OpenAI directly.
+- Set the router API key: `export OPENAI_API_KEY=$TANGLE_API_KEY` — agents call via router.tangle.tools, NOT OpenAI directly.
 - Add a new specialist: create `src/agents/<name>.ts` exporting a `run<Name>(state)` function. Register it in supervisor.ts's node graph.
 - Extend `SwarmState` in src/state.ts when adding fields the new agent reads/writes. Use the Annotation<T>({ reducer }) pattern — reducers determine how updates merge.
 - The supervisor is rule-based (src/supervisor.ts). Swap to an LLM-driven supervisor by replacing `supervise()` with an LLM call if the routing is non-obvious.

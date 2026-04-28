@@ -11,7 +11,7 @@
 //   4. Run every JudgeFn in `judges/*.judge.ts` over the collected
 //      ScenarioResult. Aggregate via `aggregateJudgeScores` so any judge
 //      returning `status: 'unmeasured'` (e.g. the rubric-quality LLM
-//      judge when TANGLE_ROUTER_KEY is absent) is EXCLUDED from the
+//      judge when TANGLE_API_KEY is absent) is EXCLUDED from the
 //      mean — never averaged in as a fake zero. See
 //      `judges/aggregate.ts` and .evolve/patterns/muffled-gate.md.
 //   5. Emit a scorecard via `writeScorecard` (see scorecard.ts). Flow

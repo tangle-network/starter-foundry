@@ -161,10 +161,10 @@ function daysUntil(isoDate: string): number | null {
  * option (memory: `billing-architecture-one-meter`).
  */
 async function defaultFetcher(): Promise<AnthropicModelsResponse> {
-  const apiKey = process.env.TANGLE_ROUTER_KEY
+  const apiKey = process.env.TANGLE_API_KEY
   if (!apiKey) {
     throw new Error(
-      'TANGLE_ROUTER_KEY required for `pnpm refresh-snapshots --apply`. ' +
+      'TANGLE_API_KEY required for `pnpm refresh-snapshots --apply`. ' +
         'Listing flows through TCloud SDK against router.tangle.tools (canonical ' +
         'billing meter). See `docs/cookbooks/run-records-and-gates.md`.',
     )
@@ -187,7 +187,10 @@ function hashResponse(response: AnthropicModelsResponse): string {
  * the API response. Strategy: pick the model whose id starts with the alias
  * stem (e.g. `claude-sonnet-4-`) and has the latest date suffix.
  */
-function pickSnapshot(alias: string, response: AnthropicModelsResponse): AnthropicModelEntry | null {
+function pickSnapshot(
+  alias: string,
+  response: AnthropicModelsResponse,
+): AnthropicModelEntry | null {
   // Stem = alias minus a trailing version number suffix. We look for ids
   // that start with the alias stem and contain a YYYYMMDD suffix.
   const aliasStem = alias.replace(/-\d+(-\d+)?$/, '')
@@ -239,7 +242,9 @@ export async function refreshSnapshots(opts: RefreshOptions): Promise<RefreshRep
         daysUntilDeprecation: entry.deprecatesAt ? daysUntil(entry.deprecatesAt) : null,
       }
       entries.push(e)
-      errors.push(`role "${logicalName}": no current snapshot for alias "${entry.alias}" — refresh required`)
+      errors.push(
+        `role "${logicalName}": no current snapshot for alias "${entry.alias}" — refresh required`,
+      )
       continue
     }
     const newSnapshot = picked.id
@@ -247,9 +252,13 @@ export async function refreshSnapshots(opts: RefreshOptions): Promise<RefreshRep
     const days = deprecatesAt ? daysUntil(deprecatesAt) : null
     const status = newSnapshot === entry.snapshot ? 'unchanged' : 'updated'
     if (days !== null && days < 0) {
-      errors.push(`role "${logicalName}": pinned snapshot "${entry.snapshot}" deprecated ${Math.abs(days)} days ago`)
+      errors.push(
+        `role "${logicalName}": pinned snapshot "${entry.snapshot}" deprecated ${Math.abs(days)} days ago`,
+      )
     } else if (days !== null && days < DEPRECATION_WARN_DAYS) {
-      warnings.push(`role "${logicalName}": pinned snapshot "${entry.snapshot}" deprecates in ${days} days`)
+      warnings.push(
+        `role "${logicalName}": pinned snapshot "${entry.snapshot}" deprecates in ${days} days`,
+      )
     }
     entries.push({
       logicalName,

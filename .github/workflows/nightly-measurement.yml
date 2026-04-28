@@ -73,7 +73,7 @@ jobs:
 
       - name: LLM buildout diagnosis (no-op without key)
         env:
-          TANGLE_ROUTER_USER_KEY: ${{ secrets.TANGLE_ROUTER_USER_KEY }}
+          TANGLE_API_KEY: ${{ secrets.TANGLE_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: pnpm exec tsx scripts/llm-buildout-diagnose.ts || true
 

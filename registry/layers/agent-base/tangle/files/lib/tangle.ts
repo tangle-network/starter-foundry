@@ -18,8 +18,8 @@ export interface RouterChatOptions {
 }
 
 export async function chatViaRouter(opts: RouterChatOptions): Promise<Response> {
-  const apiKey = process.env['TANGLE_ROUTER_KEY']
-  if (!apiKey) throw new Error('TANGLE_ROUTER_KEY not set — bundles must route LLM calls through router.tangle.tools')
+  const apiKey = process.env['TANGLE_API_KEY']
+  if (!apiKey) throw new Error('TANGLE_API_KEY not set — bundles must route LLM calls through router.tangle.tools')
   return fetch(`${LLM_ROUTER_URL}/v1/chat/completions`, {
     method: 'POST',
     headers: {

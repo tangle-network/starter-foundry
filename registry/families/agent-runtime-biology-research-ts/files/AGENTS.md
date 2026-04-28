@@ -11,7 +11,7 @@ allowedDomains:
   - api.openalex.org
   - export.arxiv.org
 allowedEnv:
-  - TANGLE_ROUTER_KEY
+  - TANGLE_API_KEY
 advisoryOnly: true
 version: 0.1.0
 ---

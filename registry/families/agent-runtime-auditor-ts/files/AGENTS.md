@@ -5,7 +5,7 @@ domain: ops-audit
 allowedDomains:
   - api.tangle.tools
 allowedEnv:
-  - TANGLE_ROUTER_KEY
+  - TANGLE_API_KEY
 notAuditor: true
 escalationRequired: true
 version: 0.1.0

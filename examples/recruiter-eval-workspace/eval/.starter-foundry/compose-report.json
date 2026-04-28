@@ -30,11 +30,7 @@
     "scorecardDir": ".evolve",
     "tracesDir": ".evolve/agent-eval/traces",
     "experimentsDir": ".evolve/agent-eval/experiments",
-    "publicVars": [
-      "EVAL_TARGET_BASE_URL",
-      "EVAL_THRESHOLD",
-      "TANGLE_ROUTER_KEY"
-    ],
+    "publicVars": ["EVAL_TARGET_BASE_URL", "EVAL_THRESHOLD", "TANGLE_API_KEY"],
     "evalThreshold": "0.7",
     "scenariosDir": "scenarios",
     "tangleBase": true,
@@ -225,11 +221,7 @@
       "pnpm typecheck",
       "pnpm eval:gate baseline.json head.json"
     ],
-    "entrypoints": [
-      "src/eval/runner.ts",
-      "src/eval/cli.ts",
-      "src/lib/tangle.ts"
-    ],
+    "entrypoints": ["src/eval/runner.ts", "src/eval/cli.ts", "src/lib/tangle.ts"],
     "preview": null,
     "extensionPoints": [
       "scenarios/",

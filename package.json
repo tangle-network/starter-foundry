@@ -127,7 +127,8 @@
     "prettier": "^3.8.3",
     "tsx": "^4.21.0",
     "typescript": "^5.7.0",
-    "typescript-eslint": "^8.59.0"
+    "typescript-eslint": "^8.59.0",
+    "yaml": "^2.8.3"
   },
   "dependencies": {
     "@ax-llm/ax": "^19.0.45",

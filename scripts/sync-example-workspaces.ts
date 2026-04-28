@@ -14,7 +14,7 @@
 // Currently handles `examples/recruiter-eval-workspace`. Generalize when a
 // second example workspace is added (small registry list at top of file).
 
-import { mkdtemp, readFile, writeFile, rm, mkdir } from 'node:fs/promises'
+import { mkdtemp, readFile, writeFile, rm, mkdir, rename, unlink } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, relative, resolve } from 'node:path'
@@ -73,6 +73,34 @@ async function readIfExists(path: string): Promise<string | null> {
   }
 }
 
+/**
+ * Atomically write {target} ← {content} via tmp+rename so a crash mid-write
+ * never leaves a partial file. Uses a sibling tmp in the same dir to
+ * guarantee fs.rename is atomic (cross-fs renames can't be).
+ *
+ * Gen-16.1 audit MEDIUM B5: previously direct writeFile, which could
+ * truncate a managed file if the syncer was killed mid-multi-file run.
+ */
+async function atomicWrite(target: string, content: string): Promise<void> {
+  await mkdir(dirname(target), { recursive: true })
+  // A tmp suffix that includes the pid keeps concurrent syncers (an
+  // operator running locally + a CI run) from clobbering each other's
+  // tmp file. The sibling-dir guarantee is preserved.
+  const tmpFile = `${target}.tmp.${process.pid}`
+  try {
+    await writeFile(tmpFile, content, 'utf8')
+    await rename(tmpFile, target)
+  } catch (err) {
+    // Best-effort cleanup on failure so we don't leak .tmp.<pid> files.
+    try {
+      await unlink(tmpFile)
+    } catch {
+      /* ignore — tmp may not exist */
+    }
+    throw err
+  }
+}
+
 async function syncOne(spec: ExampleWorkspaceSpec): Promise<SyncReport> {
   const tmp = await mkdtemp(join(tmpdir(), 'sf-sync-'))
   try {
@@ -84,6 +112,17 @@ async function syncOne(spec: ExampleWorkspaceSpec): Promise<SyncReport> {
     })
     const changed: string[] = []
     const unchanged: string[] = []
+    // Two-phase: stage all .tmp files first, then rename them. If any
+    // staging step fails, no managed file is touched. If a rename fails
+    // partway through, the workspace is still consistent at the
+    // file-content level (each managed file is either fully old or
+    // fully new — never half-written).
+    interface Pending {
+      rel: string
+      target: string
+      fresh: string
+    }
+    const pending: Pending[] = []
     for (const rel of spec.managedPaths) {
       const fresh = await readIfExists(join(tmp, rel))
       if (fresh === null) continue
@@ -93,9 +132,17 @@ async function syncOne(spec: ExampleWorkspaceSpec): Promise<SyncReport> {
         unchanged.push(rel)
         continue
       }
-      await mkdir(dirname(target), { recursive: true })
-      await writeFile(target, fresh, 'utf8')
-      changed.push(rel)
+      pending.push({ rel, target, fresh })
+    }
+    // Phase 1: write .tmp staging files.
+    for (const p of pending) {
+      await mkdir(dirname(p.target), { recursive: true })
+      await writeFile(`${p.target}.tmp.${process.pid}`, p.fresh, 'utf8')
+    }
+    // Phase 2: atomic rename each into place.
+    for (const p of pending) {
+      await rename(`${p.target}.tmp.${process.pid}`, p.target)
+      changed.push(p.rel)
     }
     return { outDir: spec.outDir, changed, unchanged }
   } finally {
@@ -103,11 +150,15 @@ async function syncOne(spec: ExampleWorkspaceSpec): Promise<SyncReport> {
   }
 }
 
+export { atomicWrite }
+
 async function main() {
   let totalChanged = 0
   for (const spec of EXAMPLES) {
     if (!existsSync(spec.outDir)) {
-      console.error(`[sync] target missing: ${relative(REPO, spec.outDir)} — re-run workspace-compose first`)
+      console.error(
+        `[sync] target missing: ${relative(REPO, spec.outDir)} — re-run workspace-compose first`,
+      )
       process.exitCode = 1
       continue
     }

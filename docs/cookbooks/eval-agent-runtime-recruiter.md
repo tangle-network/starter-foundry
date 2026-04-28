@@ -9,17 +9,27 @@ this cookbook against `agent-runtime-recruiter-ts`.
 
 ## What you need
 
-| Thing                                | For                                   |
-| ------------------------------------ | ------------------------------------- |
-| Node ≥ 22 + `pnpm`                   | running compose + the eval harness    |
-| `pnpm install` from the repo root    | engine itself                         |
-| `TANGLE_ROUTER_KEY` env var          | the live LLM judge (`rubric-quality`) |
-| Repo secret `TANGLE_ROUTER_KEY`      | unlocks the CI eval workflow          |
+| Thing                               | For                                                                                            |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Node ≥ 22 + `pnpm`                  | running compose + the eval harness                                                             |
+| `pnpm install` from the repo root   | engine itself                                                                                  |
+| `TANGLE_ROUTER_KEY` env var         | the live LLM judge (`rubric-quality`)                                                          |
+| Repo secret `TANGLE_ROUTER_KEY`     | unlocks the CI eval workflow                                                                   |
+| `TANGLE_ROUTER_BASE_URL` (optional) | override `https://router.tangle.tools` — set when proxying through your own gateway            |
+| `RUBRIC_JUDGE_MODEL` (optional)     | override `claude-sonnet-4-6` — the model the rubric judge calls (must be available at the URL) |
 
 If `TANGLE_ROUTER_KEY` is absent, the LLM judge returns a structured
-`unmeasured` rather than fake-success — the loop surfaces the operator
-action transparently. The other two judges (`artifact-shape`,
-`refusal-correctness`) are programmatic and run with no network.
+`unmeasured` shape (`score: NaN`, `status: 'unmeasured'`, plus a
+`reasoning` string referencing the missing key) — never fake-success.
+The aggregator at `eval/judges/aggregate.ts` skips unmeasured scores so
+the workspace mean reflects only what was actually measured. The other
+two judges (`artifact-shape`, `refusal-correctness`) are programmatic
+and run with no network.
+
+The two override env vars (`TANGLE_ROUTER_BASE_URL`, `RUBRIC_JUDGE_MODEL`)
+are read inside `eval/judges/rubric-quality.judge.ts`; both default to
+the canonical values above. Document them in `examples/recruiter-eval-workspace/.env.example`
+when the operator needs to override.
 
 ## Step 1 — Compose the workspace
 
@@ -110,10 +120,16 @@ LLM-as-judge calls go through `router.tangle.tools` (OpenAI-compatible at
 `/v1/chat/completions`). Use `claude-sonnet-4-6`. Always JSON-mode + a
 regex fallback so a malformed judge response degrades gracefully.
 
-The `rubric-quality.judge.ts` returns `{ status: 'unmeasured', reason:
-'TANGLE_ROUTER_KEY not set' }` when the env var is absent. Do this for any
+The `rubric-quality.judge.ts` returns the canonical unmeasured score
+shape — one entry per dimension, each with `score: NaN`, `status:
+'unmeasured'`, and a `reasoning` string that names the missing env var.
+Aggregators (`eval/judges/aggregate.ts`, `eval/src/eval/runner.ts`,
+`scripts/refresh-scorecard.ts`) skip unmeasured entries; the
+`agent_eval_meta_pass_rate` flow surfaces as `null` with `notes:
+source=recruiter-unmeasured` rather than as a fake `0`. Do this for any
 LLM judge you author — it is the no-fake-success contract from
-`docs/DESIGN-INVARIANTS.md`.
+`docs/DESIGN-INVARIANTS.md` and the muffled-gate measurement-layer rule
+in `.evolve/patterns/muffled-gate.md`.
 
 ## Step 4 — Wire CI
 

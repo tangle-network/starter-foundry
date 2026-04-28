@@ -4,6 +4,8 @@
 // path is last because a local driver doesn't need the governance/billing
 // plane — and its 6k TPM free-tier cap starves long runs.
 
+import { loadProfile } from './profile-loader.js'
+
 interface ReviewerRoute {
   url: string
   model: string
@@ -11,12 +13,23 @@ interface ReviewerRoute {
   headers: Record<string, string>
 }
 
+/** Resolve the default reviewer model from `default-judge` profile (Gen-17). */
+function defaultReviewerModel(): string {
+  try {
+    return loadProfile('default-judge').model
+  } catch {
+    // Pre-`--apply` bootstrap: fall back to bare alias. The CI bare-alias
+    // scan covers RunRecords; reviewer routes are call-site, not record.
+    return 'claude-sonnet-4-6'
+  }
+}
+
 export function selectReviewerRoute(overrideModel?: string | null): ReviewerRoute | null {
   const env = process.env
   if (env.ANTHROPIC_API_KEY) {
     return {
       url: 'https://api.anthropic.com/v1/messages',
-      model: overrideModel ?? 'claude-sonnet-4-6',
+      model: overrideModel ?? defaultReviewerModel(),
       style: 'anthropic',
       headers: {
         'x-api-key': env.ANTHROPIC_API_KEY,

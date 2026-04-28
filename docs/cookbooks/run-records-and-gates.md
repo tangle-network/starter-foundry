@@ -92,15 +92,50 @@ pnpm profiles diff default default-judge
 ## Refreshing the snapshot lock
 
 `.evolve/snapshots.lock.json` is the source of truth. Profiles declare
-`logicalModel`; the lock pins each logical name to a dated snapshot
-returned by the live Anthropic models API.
+`logicalModel`; the lock pins each logical name to a dated snapshot from
+the Tangle router catalog.
 
 **Operator (CODEOWNERS-gated):**
 
 ```bash
-# requires ANTHROPIC_API_KEY in env
-pnpm refresh-snapshots --apply
+TANGLE_ROUTER_KEY=sk-tan-... pnpm refresh-snapshots --apply
 ```
+
+Listing flows through the `@tangle-network/tcloud` SDK
+(`new TCloudClient({ apiKey }).models()`) against `router.tangle.tools` —
+the canonical billing meter. There is no direct-Anthropic path: bypassing
+the org meter is not an option.
+
+### CLI bridge (runtime chat calls only)
+
+The Tangle Router exposes a *cli-bridge* short-circuit for chat calls —
+rewrites `model` to `bridge/<harness>/<model>` and drives a
+subscription-backed CLI (Claude Code, opencode, codex, kimi-code, etc.)
+as an OpenAI-compatible harness. Useful for local dev (zero marginal cost
+per token; uses the operator's existing subscription) and for SOTA access
+where the harness has it before the API does.
+
+CLI bridge is a **routing flag on individual chat calls**, not a separate
+listing source. Profiles opt in per-role:
+
+```jsonc
+{
+  "extends": "default",
+  "role": "judge-rubric",
+  "logicalModel": "stable-sonnet-4-6",
+  "bridge": {
+    "harness": "claude-code",
+    "model": "sonnet",
+    "unlock": "${BRIDGE_UNLOCK}"
+  }
+}
+```
+
+When the profile has a `bridge` block, the loader passes `BridgeOptions`
+through to TCloud SDK chat calls. The snapshot lock is unchanged — the
+profile still pins `stable-sonnet-4-6` to its dated router snapshot for
+audit; the bridge flag just tells the router to route the call through
+the local harness instead of billing-metered inference.
 
 **CI (daily cron in `.github/workflows/snapshot-deprecation-check.yml`):**
 

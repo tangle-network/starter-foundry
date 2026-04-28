@@ -1,7 +1,7 @@
 /**
  * Snapshot resolver tests — uses an injected fetcher (the ONLY allowed mock,
- * standing in for the Anthropic models API process boundary). Live integration
- * with the real API runs only when ANTHROPIC_API_KEY is set in env.
+ * standing in for the Tangle router model-list process boundary). Live
+ * integration with the real router runs only when TANGLE_ROUTER_KEY is set.
  */
 
 import assert from 'node:assert/strict'
@@ -39,10 +39,10 @@ function freshLock(): { dir: string; lockPath: string } {
   return { dir, lockPath }
 }
 
-// MOCK: Anthropic models API process boundary. Standing in for
-// `https://api.anthropic.com/v1/models` per CLAUDE.md "Real-system tests"
+// MOCK: TCloud SDK / router model-list process boundary. Standing in for
+// `new TCloudClient({ apiKey }).models()` per CLAUDE.md "Real-system tests"
 // rule (only allowed mock = process boundary). Integration test below
-// hits the real API when ANTHROPIC_API_KEY is set.
+// hits the real router when TANGLE_ROUTER_KEY is set.
 function fakeFetcher(ids: string[]): () => Promise<AnthropicModelsResponse> {
   return async () => ({
     data: ids.map((id) => ({ id, display_name: id })),
@@ -163,8 +163,8 @@ test('resolveSnapshot throws on unknown role', async () => {
   }
 })
 
-// Live integration. Skipped unless ANTHROPIC_API_KEY is set.
-test('refreshSnapshots live API integration', { skip: !process.env.ANTHROPIC_API_KEY }, async () => {
+// Live integration. Skipped unless TANGLE_ROUTER_KEY is set.
+test('refreshSnapshots live router integration', { skip: !process.env.TANGLE_ROUTER_KEY }, async () => {
   const { dir, lockPath } = freshLock()
   try {
     _resetSnapshotCache()

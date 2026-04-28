@@ -14,6 +14,8 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve as resolvePath } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { TCloudClient } from '@tangle-network/tcloud'
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
@@ -148,28 +150,30 @@ function daysUntil(isoDate: string): number | null {
 }
 
 /**
- * Default fetcher — calls `https://api.anthropic.com/v1/models` with the
- * `ANTHROPIC_API_KEY` env var. We deliberately do NOT use the SDK to keep
- * this dependency-light and the substitution surface small for tests.
+ * Default fetcher — Tangle router model list via TCloud SDK. Single source
+ * of truth for snapshot ids; the CLI bridge is a router feature (rewrites
+ * `model` to `bridge/<harness>/<model>`) used for runtime *chat* calls,
+ * not for model-list discovery — listing always comes from the router's
+ * catalog. Profiles select bridge routing per-call via `BridgeOptions`,
+ * not via a separate fetcher.
+ *
+ * No direct-Anthropic path: bypassing the org's billing meter is not an
+ * option (memory: `billing-architecture-one-meter`).
  */
 async function defaultFetcher(): Promise<AnthropicModelsResponse> {
-  const key = process.env.ANTHROPIC_API_KEY
-  if (!key) {
+  const apiKey = process.env.TANGLE_ROUTER_KEY
+  if (!apiKey) {
     throw new Error(
-      'ANTHROPIC_API_KEY env var required for `pnpm refresh-snapshots --apply`. ' +
-      'See `docs/cookbooks/run-records-and-gates.md` for the operator runbook.',
+      'TANGLE_ROUTER_KEY required for `pnpm refresh-snapshots --apply`. ' +
+        'Listing flows through TCloud SDK against router.tangle.tools (canonical ' +
+        'billing meter). See `docs/cookbooks/run-records-and-gates.md`.',
     )
   }
-  const response = await fetch('https://api.anthropic.com/v1/models?limit=1000', {
-    headers: {
-      'x-api-key': key,
-      'anthropic-version': '2023-06-01',
-    },
-  })
-  if (!response.ok) {
-    throw new Error(`Anthropic models API ${response.status}: ${await response.text()}`)
+  const client = new TCloudClient({ apiKey })
+  const models = await client.models()
+  return {
+    data: models.map((m) => ({ id: m.id, display_name: m.name })),
   }
-  return (await response.json()) as AnthropicModelsResponse
 }
 
 function hashResponse(response: AnthropicModelsResponse): string {

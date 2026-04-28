@@ -37,7 +37,7 @@ Providers:
 { "reply": "what the agent says back" }
 ```
 
-Use `router.tangle.tools` (set `TANGLE_ROUTER_USER_KEY` on the server) so
+Use `router.tangle.tools` (set `TANGLE_API_KEY` on the server) so
 you get provider failover and unified billing without vendor lock-in.
 
 ### `POST /api/tts`

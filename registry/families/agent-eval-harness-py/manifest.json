@@ -22,7 +22,7 @@
     "bootstrapResamples": 1000,
     "bootstrapAlpha": 0.05,
     "secrets": [
-      "TANGLE_ROUTER_KEY",
+      "TANGLE_API_KEY",
       "TANGLE_SANDBOX_API_KEY"
     ]
   },

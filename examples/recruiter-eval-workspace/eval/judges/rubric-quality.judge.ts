@@ -19,7 +19,7 @@
 // only when the κ / Pearson / MAE thresholds are met.
 //
 // Cookbook contract (docs/cookbooks/eval-agent-runtime-recruiter.md):
-// the shape returned when TANGLE_ROUTER_KEY is absent is the SINGLE
+// the shape returned when TANGLE_API_KEY is absent is the SINGLE
 // canonical `unmeasured` shape — `score: NaN, status: 'unmeasured'` —
 // and that's what every aggregator + scorecard counter in the loop must
 // skip.
@@ -136,9 +136,9 @@ const judge: JudgeFn = async (tc, input): Promise<JudgeScore[]> => {
   // scorecard, workspace runner, judge-fleet aggregator) MUST skip
   // these — see `eval/judges/aggregate.ts` and
   // `.evolve/patterns/muffled-gate.md`.
-  if (!process.env.TANGLE_ROUTER_KEY) {
+  if (!process.env.TANGLE_API_KEY) {
     const reason =
-      'TANGLE_ROUTER_KEY not set — judge returned unmeasured. Set the secret to enable live LLM grading.'
+      'TANGLE_API_KEY not set — judge returned unmeasured. Set the secret to enable live LLM grading.'
     return [
       unmeasuredScore({ judgeName: 'rubric-quality', dimension: 'coverage', reason }),
       unmeasuredScore({ judgeName: 'rubric-quality', dimension: 'bias-resistance', reason }),

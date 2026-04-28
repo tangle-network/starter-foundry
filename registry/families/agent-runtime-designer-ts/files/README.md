@@ -10,7 +10,7 @@ Product design agent bundle — UX strategy, design critique, and prototyping gu
 
 ## Usage
 
-Deploy as a Cloudflare Worker. Set `TANGLE_ROUTER_KEY` environment variable. The agent exposes two routes:
+Deploy as a Cloudflare Worker. Set `TANGLE_API_KEY` environment variable. The agent exposes two routes:
 - `POST /api/chat` — main chat endpoint (bearer auth)
 - `GET /api/health` — health check
 

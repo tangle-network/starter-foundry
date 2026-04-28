@@ -6,7 +6,7 @@ allowedDomains:
   - api.tangle.tools
   - irs.gov
 allowedEnv:
-  - TANGLE_ROUTER_KEY
+  - TANGLE_API_KEY
 notCpa: true
 circular230Notice: true
 version: 0.1.0

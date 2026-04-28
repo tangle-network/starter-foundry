@@ -41,7 +41,7 @@
       "api.crossref.org"
     ],
     "allowedEnv": [
-      "TANGLE_ROUTER_KEY"
+      "TANGLE_API_KEY"
     ],
     "publicVars": [
       "AGENT_NAME"

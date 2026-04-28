@@ -7,7 +7,7 @@ allowedDomains:
   - router.tangle.tools
   - sandbox.tangle.tools
 allowedEnv:
-  - TANGLE_ROUTER_KEY
+  - TANGLE_API_KEY
   - TANGLE_SANDBOX_API_KEY
   - EVAL_JUDGE_MODEL
   - EVAL_OUT
@@ -44,7 +44,7 @@ A run is correct when **all** of these hold:
 
 Stop and surface a `[blocked]` (literal token) when:
 
-- `TANGLE_ROUTER_KEY` is unset and a judge requires it.
+- `TANGLE_API_KEY` is unset and a judge requires it.
 - `TANGLE_SANDBOX_API_KEY` is unset and `--driver sandbox` is selected.
 - A scenario module fails to import (`ImportError`); never auto-rewrite the
   scenario.

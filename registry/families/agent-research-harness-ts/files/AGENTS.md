@@ -6,7 +6,7 @@ allowedDomains:
   - api.tangle.tools
   - router.tangle.tools
 allowedEnv:
-  - TANGLE_ROUTER_KEY
+  - TANGLE_API_KEY
   - RESEARCH_RESULTS_DIR
 version: 0.1.0
 ---

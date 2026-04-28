@@ -13,12 +13,12 @@ this cookbook against `agent-runtime-recruiter-ts`.
 | ----------------------------------- | ---------------------------------------------------------------------------------------------- |
 | Node ≥ 22 + `pnpm`                  | running compose + the eval harness                                                             |
 | `pnpm install` from the repo root   | engine itself                                                                                  |
-| `TANGLE_ROUTER_KEY` env var         | the live LLM judge (`rubric-quality`)                                                          |
-| Repo secret `TANGLE_ROUTER_KEY`     | unlocks the CI eval workflow                                                                   |
+| `TANGLE_API_KEY` env var            | the live LLM judge (`rubric-quality`)                                                          |
+| Repo secret `TANGLE_API_KEY`        | unlocks the CI eval workflow                                                                   |
 | `TANGLE_ROUTER_BASE_URL` (optional) | override `https://router.tangle.tools` — set when proxying through your own gateway            |
 | `RUBRIC_JUDGE_MODEL` (optional)     | override `claude-sonnet-4-6` — the model the rubric judge calls (must be available at the URL) |
 
-If `TANGLE_ROUTER_KEY` is absent, the LLM judge returns a structured
+If `TANGLE_API_KEY` is absent, the LLM judge returns a structured
 `unmeasured` shape (`score: NaN`, `status: 'unmeasured'`, plus a
 `reasoning` string referencing the missing key) — never fake-success.
 The aggregator at `eval/judges/aggregate.ts` skips unmeasured scores so
@@ -49,7 +49,7 @@ Time: **~2 s wall**. Files written:
 examples/recruiter-eval-workspace/
 ├── package.json                    # workspace root, top-level scripts
 ├── pnpm-workspace.yaml             # 3-package workspace
-├── .env.example                    # TANGLE_ROUTER_KEY + EVAL_TARGET_URL
+├── .env.example                    # TANGLE_API_KEY + EVAL_TARGET_URL
 ├── .github/workflows/ci.yml        # per-workspace CI (composed from preset)
 ├── README.md                       # operator-facing
 ├── app/                            # agent-with-ui-ts shell
@@ -141,7 +141,7 @@ copy and adapt:
 - **Triggers**: PR (paths-filtered to the bundle + the eval layer + the
   example workspace), `workflow_dispatch`, daily cron at `0 6 * * *`,
   push to main.
-- **Gating**: the live eval step is gated on the `TANGLE_ROUTER_KEY`
+- **Gating**: the live eval step is gated on the `TANGLE_API_KEY`
   repo secret. When absent, the workflow logs a warning and exits 0 —
   it does **not** fail PRs.
 - **Artifact**: `eval/.evolve/scorecard.json` uploaded.
@@ -214,10 +214,40 @@ The 4 steps generalize:
 3. Author bundle-specific judges only if the default rubric doesn't
    capture the contract. Two judges (artifact-shape, refusal-correctness)
    are reusable — copy them.
-4. Add the CI workflow gated on `TANGLE_ROUTER_KEY`. Use the recruiter
+4. Add the CI workflow gated on `TANGLE_API_KEY`. Use the recruiter
    workflow as the template.
 
 When the second example workspace lands, generalize
 `scripts/sync-example-workspaces.ts` — add an entry to its `EXAMPLES`
 array. The script handles diff-and-rewrite for any preset-shaped file
 without touching user-authored scenarios or judges.
+
+## Step 5 (Gen-17): emit RunRecords + run the gate
+
+Each scenario × variant emission appends a `RunRecord` to
+`.evolve/runs.jsonl` so the `HeldOutGate` can decide promote vs revert.
+Use `emitRunRecord` from `src/lib/eval/emit-run-record.ts`:
+
+```ts
+import { emitRunRecord } from '@tangle-network/starter-foundry'
+
+emitRunRecord({
+  experimentId: `eval/${bundleId}`,
+  candidateId: `${scenarioId}.${variantId}`,
+  profile: 'default-judge', // pulls model + ceiling from the profile
+  promptText: scenario.prompt,
+  configObject: judgeConfig,
+  wallMs,
+  costUsd,
+  tokenUsage,
+  outcome: { searchScore, raw: { rubricPass, refusalCorrect } },
+})
+```
+
+Then, on the candidate branch:
+
+```bash
+pnpm gate baseline.jsonl candidate.jsonl
+```
+
+See `docs/cookbooks/run-records-and-gates.md` for the full gate runbook.

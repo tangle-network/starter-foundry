@@ -49,7 +49,10 @@ test('collect node: coverageGaps lists capabilities that are missed most', async
       limit: 20,
       includeHeldOut: false,
     })
-    assert.ok(result.coverageGaps.length > 0, 'expected at least one coverage gap on unoptimized planner')
+    assert.ok(
+      result.coverageGaps.length > 0,
+      'expected at least one coverage gap on unoptimized planner',
+    )
     const top = result.coverageGaps[0]!
     assert.ok(top.missCount >= 1)
     assert.ok(top.capability.startsWith('capability:'))
@@ -61,20 +64,44 @@ test('collect node: coverageGaps lists capabilities that are missed most', async
 test('train node: corpus-mined instruction contains routing rules for top-missed capabilities', () => {
   const fakeTraces = [
     {
-      scenarioId: 'a', corpus: 'ideasai' as const, prompt: 'I want an AI chatbot for kids with bedtime stories',
-      partner: null, expectedFamily: 'fullstack-ts',
-      expectedCapabilities: ['capability:ai-chat-ui', 'capability:layout-chat', 'capability:tailwind'],
-      actualFamily: 'fullstack-ts', actualCapabilities: ['capability:tailwind'],
-      kindMatch: true, familyMatch: true, capabilityHit: 0.33,
-      latencyMs: 1, error: null, timestamp: new Date().toISOString(),
+      scenarioId: 'a',
+      corpus: 'ideasai' as const,
+      prompt: 'I want an AI chatbot for kids with bedtime stories',
+      partner: null,
+      expectedFamily: 'fullstack-ts',
+      expectedCapabilities: [
+        'capability:ai-chat-ui',
+        'capability:layout-chat',
+        'capability:tailwind',
+      ],
+      actualFamily: 'fullstack-ts',
+      actualCapabilities: ['capability:tailwind'],
+      kindMatch: true,
+      familyMatch: true,
+      capabilityHit: 0.33,
+      latencyMs: 1,
+      error: null,
+      timestamp: new Date().toISOString(),
     },
     {
-      scenarioId: 'b', corpus: 'ideasai' as const, prompt: 'A sentiment analysis dashboard for customer voice calls',
-      partner: null, expectedFamily: 'api-service',
-      expectedCapabilities: ['capability:ai-chat-ui', 'capability:layout-dashboard', 'capability:chart-widget'],
-      actualFamily: 'api-service', actualCapabilities: [],
-      kindMatch: true, familyMatch: true, capabilityHit: 0,
-      latencyMs: 1, error: null, timestamp: new Date().toISOString(),
+      scenarioId: 'b',
+      corpus: 'ideasai' as const,
+      prompt: 'A sentiment analysis dashboard for customer voice calls',
+      partner: null,
+      expectedFamily: 'api-service',
+      expectedCapabilities: [
+        'capability:ai-chat-ui',
+        'capability:layout-dashboard',
+        'capability:chart-widget',
+      ],
+      actualFamily: 'api-service',
+      actualCapabilities: [],
+      kindMatch: true,
+      familyMatch: true,
+      capabilityHit: 0,
+      latencyMs: 1,
+      error: null,
+      timestamp: new Date().toISOString(),
     },
   ]
   const instruction = buildCorpusMinedInstruction(fakeTraces, [
@@ -92,20 +119,69 @@ test('train node: corpus-mined instruction contains routing rules for top-missed
 
 test('generate node: mines candidate archetypes from trace co-occurrences', async () => {
   const traces = [
-    { scenarioId: 'a', corpus: 'ideasai' as const, prompt: 'AI story generator app', partner: null, expectedFamily: 'fullstack-ts',
-      expectedCapabilities: ['capability:ai-chat-ui', 'capability:layout-chat', 'capability:tailwind'],
-      actualFamily: 'fullstack-ts', actualCapabilities: ['capability:tailwind'],
-      kindMatch: true, familyMatch: true, capabilityHit: 0.33, latencyMs: 1, error: null, timestamp: new Date().toISOString() },
-    { scenarioId: 'b', corpus: 'ideasai' as const, prompt: 'Another AI chat story thing', partner: null, expectedFamily: 'fullstack-ts',
-      expectedCapabilities: ['capability:ai-chat-ui', 'capability:layout-chat', 'capability:tailwind'],
-      actualFamily: null, actualCapabilities: [],
-      kindMatch: false, familyMatch: false, capabilityHit: 0, latencyMs: 1, error: null, timestamp: new Date().toISOString() },
-    { scenarioId: 'c', corpus: 'ideasai' as const, prompt: 'Chat and story and characters', partner: null, expectedFamily: 'fullstack-ts',
+    {
+      scenarioId: 'a',
+      corpus: 'ideasai' as const,
+      prompt: 'AI story generator app',
+      partner: null,
+      expectedFamily: 'fullstack-ts',
+      expectedCapabilities: [
+        'capability:ai-chat-ui',
+        'capability:layout-chat',
+        'capability:tailwind',
+      ],
+      actualFamily: 'fullstack-ts',
+      actualCapabilities: ['capability:tailwind'],
+      kindMatch: true,
+      familyMatch: true,
+      capabilityHit: 0.33,
+      latencyMs: 1,
+      error: null,
+      timestamp: new Date().toISOString(),
+    },
+    {
+      scenarioId: 'b',
+      corpus: 'ideasai' as const,
+      prompt: 'Another AI chat story thing',
+      partner: null,
+      expectedFamily: 'fullstack-ts',
+      expectedCapabilities: [
+        'capability:ai-chat-ui',
+        'capability:layout-chat',
+        'capability:tailwind',
+      ],
+      actualFamily: null,
+      actualCapabilities: [],
+      kindMatch: false,
+      familyMatch: false,
+      capabilityHit: 0,
+      latencyMs: 1,
+      error: null,
+      timestamp: new Date().toISOString(),
+    },
+    {
+      scenarioId: 'c',
+      corpus: 'ideasai' as const,
+      prompt: 'Chat and story and characters',
+      partner: null,
+      expectedFamily: 'fullstack-ts',
       expectedCapabilities: ['capability:ai-chat-ui', 'capability:layout-chat'],
-      actualFamily: null, actualCapabilities: [],
-      kindMatch: false, familyMatch: false, capabilityHit: 0, latencyMs: 1, error: null, timestamp: new Date().toISOString() },
+      actualFamily: null,
+      actualCapabilities: [],
+      kindMatch: false,
+      familyMatch: false,
+      capabilityHit: 0,
+      latencyMs: 1,
+      error: null,
+      timestamp: new Date().toISOString(),
+    },
   ]
-  const throwing = { chat: async () => { throw new Error('no-llm') }, getId: () => 'noop' } as unknown as Parameters<typeof generateNode>[0]['llm']
+  const throwing = {
+    chat: async () => {
+      throw new Error('no-llm')
+    },
+    getId: () => 'noop',
+  } as unknown as Parameters<typeof generateNode>[0]['llm']
   const out = await generateNode({ registryRoot: 'registry', traces, llm: throwing })
   assert.ok(out.candidates.length > 0, 'expected at least one mined candidate')
   const coocc = out.candidates.find((c) => c.source === 'cooccurrence')
@@ -117,12 +193,24 @@ test('judge node (deterministic): scores candidates and marks high-utility ones 
   const tmpJudge = path.join(await mkTmp('judge'), 'variant_b.jsonl')
   const out = await judgeNode({
     candidates: [
-      { id: 'bundle-aichatui-layoutchat', description: 'AI chat + layout', family: 'fullstack-ts',
+      {
+        id: 'bundle-aichatui-layoutchat',
+        description: 'AI chat + layout',
+        family: 'fullstack-ts',
         capabilities: ['capability:ai-chat-ui', 'capability:layout-chat'],
         promptKeywords: ['chat', 'story', 'voice', 'assistant', 'kids', 'messag'],
-        rationale: 'strong cooccurrence', source: 'cooccurrence' },
-      { id: 'gap-thin', description: 'thin gap', family: 'fullstack-ts',
-        capabilities: ['capability:tailwind'], promptKeywords: ['x'], rationale: '', source: 'coverage-gap' },
+        rationale: 'strong cooccurrence',
+        source: 'cooccurrence',
+      },
+      {
+        id: 'gap-thin',
+        description: 'thin gap',
+        family: 'fullstack-ts',
+        capabilities: ['capability:tailwind'],
+        promptKeywords: ['x'],
+        rationale: '',
+        source: 'coverage-gap',
+      },
     ],
     judgePath: tmpJudge,
     useLLM: false,
@@ -137,10 +225,46 @@ test('judge node (deterministic): scores candidates and marks high-utility ones 
 test('rank node: Pareto-sorts and marks frontier', async () => {
   const { ranked } = await rankNode({
     scored: [
-      { candidate: { id: 'a', description: '', family: 'f', capabilities: ['capability:x'], promptKeywords: [], rationale: '', source: 'cooccurrence' },
-        score: { utility: 0.9, specificity: 0.8, novelty: 0.8, rubric: 0.8, composite: 0.83, promotable: true, notes: '' } },
-      { candidate: { id: 'b', description: '', family: 'f', capabilities: ['capability:x'], promptKeywords: [], rationale: '', source: 'cooccurrence' },
-        score: { utility: 0.4, specificity: 0.4, novelty: 0.4, rubric: 0.4, composite: 0.4, promotable: false, notes: '' } },
+      {
+        candidate: {
+          id: 'a',
+          description: '',
+          family: 'f',
+          capabilities: ['capability:x'],
+          promptKeywords: [],
+          rationale: '',
+          source: 'cooccurrence',
+        },
+        score: {
+          utility: 0.9,
+          specificity: 0.8,
+          novelty: 0.8,
+          rubric: 0.8,
+          composite: 0.83,
+          promotable: true,
+          notes: '',
+        },
+      },
+      {
+        candidate: {
+          id: 'b',
+          description: '',
+          family: 'f',
+          capabilities: ['capability:x'],
+          promptKeywords: [],
+          rationale: '',
+          source: 'cooccurrence',
+        },
+        score: {
+          utility: 0.4,
+          specificity: 0.4,
+          novelty: 0.4,
+          rubric: 0.4,
+          composite: 0.4,
+          promotable: false,
+          notes: '',
+        },
+      },
     ],
   })
   assert.equal(ranked[0]!.candidate.id, 'a')
@@ -154,16 +278,40 @@ test('promote node: writes manifests and is idempotent', async () => {
     await fs.mkdir(path.join(registryRoot, 'layers', 'capability'), { recursive: true })
     const out = await promoteNode({
       ranked: [
-        { rank: 1, paretoFrontier: true,
-          candidate: { id: 'test-archetype', description: 'test', family: 'fullstack-ts',
-            capabilities: ['capability:tailwind'], promptKeywords: ['test'], rationale: 'test', source: 'coverage-gap' },
-          score: { utility: 0.9, specificity: 0.9, novelty: 0.9, rubric: 0.9, composite: 0.9, promotable: true, notes: '' } },
+        {
+          rank: 1,
+          paretoFrontier: true,
+          candidate: {
+            id: 'test-archetype',
+            description: 'test',
+            family: 'fullstack-ts',
+            capabilities: ['capability:tailwind'],
+            promptKeywords: ['test'],
+            rationale: 'test',
+            source: 'coverage-gap',
+          },
+          score: {
+            utility: 0.9,
+            specificity: 0.9,
+            novelty: 0.9,
+            rubric: 0.9,
+            composite: 0.9,
+            promotable: true,
+            notes: '',
+          },
+        },
       ],
       registryRoot,
       maxPromotions: 4,
     })
     assert.equal(out.promoted.length, 1)
-    const manifestPath = path.join(registryRoot, 'layers', 'capability', 'test-archetype', 'manifest.json')
+    const manifestPath = path.join(
+      registryRoot,
+      'layers',
+      'capability',
+      'test-archetype',
+      'manifest.json',
+    )
     const raw = await fs.readFile(manifestPath, 'utf8')
     const manifest = JSON.parse(raw)
     assert.equal(manifest.id, 'test-archetype')
@@ -172,10 +320,28 @@ test('promote node: writes manifests and is idempotent', async () => {
     // idempotent
     const again = await promoteNode({
       ranked: [
-        { rank: 1, paretoFrontier: true,
-          candidate: { id: 'test-archetype', description: 'test', family: 'fullstack-ts',
-            capabilities: ['capability:tailwind'], promptKeywords: ['test'], rationale: 'test', source: 'coverage-gap' },
-          score: { utility: 0.9, specificity: 0.9, novelty: 0.9, rubric: 0.9, composite: 0.9, promotable: true, notes: '' } },
+        {
+          rank: 1,
+          paretoFrontier: true,
+          candidate: {
+            id: 'test-archetype',
+            description: 'test',
+            family: 'fullstack-ts',
+            capabilities: ['capability:tailwind'],
+            promptKeywords: ['test'],
+            rationale: 'test',
+            source: 'coverage-gap',
+          },
+          score: {
+            utility: 0.9,
+            specificity: 0.9,
+            novelty: 0.9,
+            rubric: 0.9,
+            composite: 0.9,
+            promotable: true,
+            notes: '',
+          },
+        },
       ],
       registryRoot,
       maxPromotions: 4,
@@ -201,12 +367,17 @@ test('brief-loader (deterministic mode): probe-first — rewrites weak-baseline 
         optimizerType: 'variant_b.corpus-mined',
         bestScore: 0.6,
         instruction: 'ALWAYS include capability:ai-chat-ui when AI-driven.',
-        signature: 'userPrompt:string, knownFamilies:string[], knownCapabilities:string[] -> canonicalPrompt:string',
+        signature:
+          'userPrompt:string, knownFamilies:string[], knownCapabilities:string[] -> canonicalPrompt:string',
         promptShape: 'brief',
         trainedAt: new Date().toISOString(),
         trainingTraceCount: 1,
         knownFamilies: ['fullstack-ts'],
-        knownCapabilities: ['capability:tailwind', 'capability:layout-chat', 'capability:ai-chat-ui'],
+        knownCapabilities: [
+          'capability:tailwind',
+          'capability:layout-chat',
+          'capability:ai-chat-ui',
+        ],
         artifactFormatVersion: 1,
         optimizationTime: 0,
         totalRounds: 0,
@@ -220,7 +391,8 @@ test('brief-loader (deterministic mode): probe-first — rewrites weak-baseline 
       // so the probe-first gate kicks in and rewrites to the ai-chat-dashboard
       // archetype canonical.
       const result = await generateProductBrief({
-        prompt: 'Build me an AI tool that analyzes customer service call recordings and identifies sentiment patterns and escalation triggers',
+        prompt:
+          'Build me an AI tool that analyzes customer service call recordings and identifies sentiment patterns and escalation triggers',
         partner: null,
         knownFamilies: ['fullstack-ts'],
         knownCapabilities: [],
@@ -253,12 +425,17 @@ test('brief-loader (deterministic mode): passthrough — leaves strong-baseline 
         optimizerType: 'variant_b.corpus-mined',
         bestScore: 0.6,
         instruction: '',
-        signature: 'userPrompt:string, knownFamilies:string[], knownCapabilities:string[] -> canonicalPrompt:string',
+        signature:
+          'userPrompt:string, knownFamilies:string[], knownCapabilities:string[] -> canonicalPrompt:string',
         promptShape: 'brief',
         trainedAt: new Date().toISOString(),
         trainingTraceCount: 1,
-        knownFamilies: [], knownCapabilities: [],
-        artifactFormatVersion: 1, optimizationTime: 0, totalRounds: 0, converged: false,
+        knownFamilies: [],
+        knownCapabilities: [],
+        artifactFormatVersion: 1,
+        optimizationTime: 0,
+        totalRounds: 0,
+        converged: false,
       }),
     )
     process.env['VARIANT_B_DETERMINISTIC_ONLY'] = '1'
@@ -272,7 +449,11 @@ test('brief-loader (deterministic mode): passthrough — leaves strong-baseline 
         knownCapabilities: [],
       })
       assert.ok(result)
-      assert.equal(result!.brief.canonicalPrompt, original, 'Solana prompts must pass through unchanged')
+      assert.equal(
+        result!.brief.canonicalPrompt,
+        original,
+        'Solana prompts must pass through unchanged',
+      )
     } finally {
       uninstallLoader()
       __setTestBrief(null)
@@ -288,7 +469,7 @@ test('runTrainingLoop: end-to-end offline (corpus-mined fallback, no LLM require
   // this subtest. The variant must still produce a usable artifact because
   // the corpus-mined path runs without an LLM.
   const saved = {
-    TANGLE_ROUTER_USER_KEY: process.env['TANGLE_ROUTER_USER_KEY'],
+    TANGLE_API_KEY: process.env['TANGLE_API_KEY'],
     ANTHROPIC_API_KEY: process.env['ANTHROPIC_API_KEY'],
     OPENAI_API_KEY: process.env['OPENAI_API_KEY'],
     GROQ_API_KEY: process.env['GROQ_API_KEY'],
@@ -297,7 +478,7 @@ test('runTrainingLoop: end-to-end offline (corpus-mined fallback, no LLM require
     GOOGLE_AI_KEY: process.env['GOOGLE_AI_KEY'],
   }
   try {
-    delete process.env['TANGLE_ROUTER_USER_KEY']
+    delete process.env['TANGLE_API_KEY']
     delete process.env['ANTHROPIC_API_KEY']
     delete process.env['OPENAI_API_KEY']
     delete process.env['GROQ_API_KEY']

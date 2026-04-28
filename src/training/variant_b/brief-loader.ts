@@ -4,7 +4,7 @@
 // the LLM path. The optimizer's learned instruction + demos are applied to
 // a fresh ax program, which is then forwarded on each brief call.
 //
-// If LLM is unavailable (no TANGLE_ROUTER_USER_KEY), the loader installs a
+// If LLM is unavailable (no TANGLE_API_KEY), the loader installs a
 // deterministic fallback brief that uses the optimized instruction as a
 // template — enough to still move capHit since the canonicalPrompt is
 // constructed from mined keyword→capability mappings.

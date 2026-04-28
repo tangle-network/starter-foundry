@@ -12,7 +12,7 @@
 // Usage:
 //   node scripts/llm-enrich-capability-inference.ts [--sample 30] [--corpus <path>]
 //
-// Requires TANGLE_ROUTER_USER_KEY / ANTHROPIC_API_KEY. No-op without.
+// Requires TANGLE_API_KEY / ANTHROPIC_API_KEY. No-op without.
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
@@ -29,7 +29,7 @@ function arg(k, fb) {
 const SAMPLE_SIZE = parseInt(arg('--sample', '30'), 10)
 const CORPUS_PATH = arg('--corpus') ?? join(REPO, 'corpus/ideasai-prompts.json')
 
-if (!process.env['TANGLE_ROUTER_USER_KEY'] && !process.env['ANTHROPIC_API_KEY']) {
+if (!process.env['TANGLE_API_KEY'] && !process.env['ANTHROPIC_API_KEY']) {
   console.log('no LLM key — skipping capability enrichment')
   process.exit(0)
 }
@@ -84,7 +84,10 @@ Family: ${projectSpec.family}
 Currently attached capabilities: ${attachedCaps.join(', ') || '(none)'}
 
 Capability catalog (id — description):
-${capCatalog.map((c) => `  ${c.id}: ${c.description}`).join('\n').slice(0, 3500)}
+${capCatalog
+  .map((c) => `  ${c.id}: ${c.description}`)
+  .join('\n')
+  .slice(0, 3500)}
 
 Question: Given this prompt, what capability set SHOULD be attached? Output JSON:
 {

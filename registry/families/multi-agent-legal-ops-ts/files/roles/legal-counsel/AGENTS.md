@@ -7,7 +7,7 @@ allowedDomains:
   - api.tangle.tools
   - law.cornell.edu
 allowedEnv:
-  - TANGLE_ROUTER_KEY
+  - TANGLE_API_KEY
 notLawyer: true
 attorneyClientPrivilege: false
 piiBoundary: agent-base:privacy

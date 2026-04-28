@@ -54,7 +54,7 @@ test('example workspace exists with expected file shape', () => {
   assert.ok(existsSync(join(WORKSPACE, 'pnpm-workspace.yaml')))
   assert.ok(existsSync(join(WORKSPACE, '.env.example')))
   const envExample = readFileSync(join(WORKSPACE, '.env.example'), 'utf8')
-  assert.match(envExample, /TANGLE_ROUTER_KEY=/, '.env.example must declare TANGLE_ROUTER_KEY')
+  assert.match(envExample, /TANGLE_API_KEY=/, '.env.example must declare TANGLE_API_KEY')
   assert.match(envExample, /EVAL_TARGET_URL=/, '.env.example must declare EVAL_TARGET_URL')
   assert.ok(existsSync(join(WORKSPACE, 'README.md')))
   for (const sub of ['app', 'agent', 'eval']) {
@@ -121,7 +121,7 @@ test('all 3 judges present, parse, and instantiate as functions', async () => {
   }
 })
 
-test('rubric-quality judge returns unmeasured (status + NaN) when TANGLE_ROUTER_KEY is absent', async () => {
+test('rubric-quality judge returns unmeasured (status + NaN) when TANGLE_API_KEY is absent', async () => {
   // Gen-16.1 (audit CRIT A1): the judge MUST NOT return score: 0 when
   // unmeasured. Score: 0 averages into aggregates as a real fail; the
   // canonical unmeasured shape is `score: NaN, status: 'unmeasured'`
@@ -137,8 +137,8 @@ test('rubric-quality judge returns unmeasured (status + NaN) when TANGLE_ROUTER_
       },
     ) => Promise<Array<{ score: number; reasoning: string; status?: string }>>
   }
-  const prevKey = process.env.TANGLE_ROUTER_KEY
-  delete process.env.TANGLE_ROUTER_KEY
+  const prevKey = process.env.TANGLE_API_KEY
+  delete process.env.TANGLE_API_KEY
   try {
     const scores = await mod.default({} as unknown, {
       scenario: { id: 'test', thesis: 'test' },
@@ -147,7 +147,7 @@ test('rubric-quality judge returns unmeasured (status + NaN) when TANGLE_ROUTER_
     })
     assert.ok(scores.length >= 1, 'judge must return at least one score even when unmeasured')
     assert.ok(
-      /TANGLE_ROUTER_KEY/.test(scores[0].reasoning),
+      /TANGLE_API_KEY/.test(scores[0].reasoning),
       'unmeasured judge must reference the missing env var',
     )
     // Audit-corrected contract: NaN score (not zero) AND status='unmeasured'.
@@ -161,7 +161,7 @@ test('rubric-quality judge returns unmeasured (status + NaN) when TANGLE_ROUTER_
       assert.equal(s.status, 'unmeasured', 'unmeasured judge must set status: "unmeasured"')
     }
   } finally {
-    if (prevKey !== undefined) process.env.TANGLE_ROUTER_KEY = prevKey
+    if (prevKey !== undefined) process.env.TANGLE_API_KEY = prevKey
   }
 })
 
@@ -395,7 +395,7 @@ test('refusal-correctness rejects bare-conjunction reframe (audit B3)', async ()
   assert.equal(r2[0].score, 0.4, 'substantive reframe without explicit refusal earns 0.4')
 })
 
-test('CI workflow YAML parses + has triggers + gates on TANGLE_ROUTER_KEY (audit B4)', async () => {
+test('CI workflow YAML parses + has triggers + gates on TANGLE_API_KEY (audit B4)', async () => {
   // Gen-16.1 audit MEDIUM B4: previously asserted via regex, which
   // would pass on YAML that GitHub Actions rejects at parse time. Now:
   // parse with `yaml` and assert on the structured object.
@@ -485,11 +485,11 @@ test('CI workflow YAML parses + has triggers + gates on TANGLE_ROUTER_KEY (audit
     'sync step MUST set SYNC_FAIL_ON_DRIFT=1 to fail CI on registry→workspace drift',
   )
 
-  // TANGLE_ROUTER_KEY secret (textual assertion).
+  // TANGLE_API_KEY secret (textual assertion).
   assert.match(
     text,
-    /\$\{\{\s*secrets\.TANGLE_ROUTER_KEY\s*\}\}/,
-    'workflow must reference secrets.TANGLE_ROUTER_KEY',
+    /\$\{\{\s*secrets\.TANGLE_API_KEY\s*\}\}/,
+    'workflow must reference secrets.TANGLE_API_KEY',
   )
 
   // pnpm eval invocation
@@ -597,7 +597,7 @@ test('scorecard counter wires agent_eval_meta_pass_rate from recruiter scorecard
     assert.equal(unanimousFlow.value, 1, 'all 2/2 scenarios pass → unanimous = 1')
 
     // 3. CRIT A1 verification: when the recruiter scorecard exists but
-    // every flow is unmeasured (e.g. TANGLE_ROUTER_KEY missing in CI),
+    // every flow is unmeasured (e.g. TANGLE_API_KEY missing in CI),
     // agent_eval_meta_pass_rate MUST come back as null/unmeasured —
     // NOT as 0 or any synthetic number.
     writeFileSync(

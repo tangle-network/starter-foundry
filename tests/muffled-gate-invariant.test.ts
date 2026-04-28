@@ -392,7 +392,7 @@ const judge = async () => {
     {
       judgeName: 'rubric-quality',
       score: 0,
-      reasoning: 'TANGLE_ROUTER_KEY not set',
+      reasoning: 'TANGLE_API_KEY not set',
       status: 'unmeasured',
     },
   ]
@@ -404,7 +404,7 @@ const judge = async () => {
     {
       judgeName: 'rubric-quality',
       score: null,
-      reasoning: 'TANGLE_ROUTER_KEY not set',
+      reasoning: 'TANGLE_API_KEY not set',
       status: 'unmeasured',
     },
   ]
@@ -450,7 +450,7 @@ const judge = async () => {
       judgeName: 'rubric-quality',
       dimension: 'rubric-quality',
       score: 0,
-      reasoning: 'TANGLE_ROUTER_KEY not set — judge returned unmeasured. Set the secret to enable live LLM grading.',
+      reasoning: 'TANGLE_API_KEY not set — judge returned unmeasured. Set the secret to enable live LLM grading.',
     },
   ]
 }

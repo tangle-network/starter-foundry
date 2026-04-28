@@ -5,7 +5,7 @@ domain: agent-evaluation
 allowedDomains:
   - api.tangle.tools
 allowedEnv:
-  - TANGLE_ROUTER_KEY
+  - TANGLE_API_KEY
   - EVAL_TARGET_BASE_URL
   - EVAL_THRESHOLD
 version: 0.1.0

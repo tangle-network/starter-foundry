@@ -6,7 +6,7 @@ domain: eng-mgmt
 allowedDomains:
   - api.tangle.tools
 allowedEnv:
-  - TANGLE_ROUTER_KEY
+  - TANGLE_API_KEY
 advisoryOnly: true
 escalationRequired: true
 version: 0.1.0

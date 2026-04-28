@@ -1,0 +1,53 @@
+name: runs-export
+
+on:
+  schedule:
+    # Monthly on the 1st at 06:00 UTC.
+    - cron: '0 6 1 * *'
+  workflow_dispatch:
+    inputs:
+      month:
+        description: 'YYYY-MM month to export (defaults to last month)'
+        required: false
+
+jobs:
+  export:
+    name: export runs.jsonl monthly artifact
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: install
+        run: pnpm install --frozen-lockfile
+
+      - name: build
+        run: pnpm build
+
+      - name: compute month
+        id: month
+        run: |
+          if [ -n "${{ github.event.inputs.month }}" ]; then
+            echo "value=${{ github.event.inputs.month }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=$(date -u -d 'last month' +%Y-%m)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: export
+        run: pnpm export-runs --month ${{ steps.month.outputs.value }} --out .evolve/runs-${{ steps.month.outputs.value }}.jsonl
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: runs-${{ steps.month.outputs.value }}
+          path: .evolve/runs-${{ steps.month.outputs.value }}.jsonl
+          retention-days: 365
+          if-no-files-found: warn

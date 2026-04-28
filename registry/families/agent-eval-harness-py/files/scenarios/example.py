@@ -3,7 +3,7 @@
 This scenario uses a deterministic local agent (no LLM) so CI can run it
 offline. Replace ``agent_fn`` with an HTTP call or sandbox driver in real use.
 
-To enable the rubric judge, set ``TANGLE_ROUTER_KEY`` and pass
+To enable the rubric judge, set ``TANGLE_API_KEY`` and pass
 ``--driver local`` (the local driver still consults the judge — only the
 agent-under-test is local).
 """

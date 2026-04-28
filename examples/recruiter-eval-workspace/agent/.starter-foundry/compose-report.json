@@ -34,18 +34,12 @@
     "crateName": "recruiter_eval_workspace_agent",
     "projectType": "agent-runtime-recruiter",
     "agentName": "technical-recruiter",
-    "publicVars": [
-      "AGENT_NAME"
-    ],
+    "publicVars": ["AGENT_NAME"],
     "routes": [
       {
         "path": "/api/chat",
         "auth": "bearer",
-        "callsTools": [
-          "jd-drafter",
-          "rubric-builder",
-          "loop-composer"
-        ]
+        "callsTools": ["jd-drafter", "rubric-builder", "loop-composer"]
       },
       {
         "path": "/api/health",
@@ -53,11 +47,7 @@
         "callsTools": []
       }
     ],
-    "declaredCapabilities": [
-      "jd-drafting",
-      "screening-rubric-design",
-      "interview-loop-design"
-    ],
+    "declaredCapabilities": ["jd-drafting", "screening-rubric-design", "interview-loop-design"],
     "runtime": {
       "sandbox": "tangle",
       "noNewPrivileges": true,
@@ -76,12 +66,8 @@
         "capability": "jd-drafting"
       }
     ],
-    "outboundDomains": [
-      "api.tangle.tools"
-    ],
-    "secrets": [
-      "TANGLE_ROUTER_KEY"
-    ],
+    "outboundDomains": ["api.tangle.tools"],
+    "secrets": ["TANGLE_API_KEY"],
     "tangleBase": true,
     "llmRouterUrl": "https://router.tangle.tools",
     "sandboxProvider": "tangle",
@@ -100,38 +86,17 @@
     "webhookOutCircuitBreakerThreshold": 5,
     "webhookOutCircuitBreakerCooldownSec": 60,
     "privacyLayer": true,
-    "structuredDetectors": [
-      "ssn",
-      "email",
-      "phone",
-      "credit-card",
-      "ip",
-      "api-key",
-      "dob"
-    ],
+    "structuredDetectors": ["ssn", "email", "phone", "credit-card", "ip", "api-key", "dob"],
     "semanticBackend": "none-by-default-opt-in-via-bundle",
     "structuredOutputBlocks": true,
-    "blockTypes": [
-      "proposal",
-      "filing",
-      "artifact",
-      "screener-result",
-      "escalation",
-      "survey"
-    ],
+    "blockTypes": ["proposal", "filing", "artifact", "screener-result", "escalation", "survey"],
     "memoryEnabled": true,
     "conversationsDir": "/home/agent/conversations",
     "schedulerEnabled": true,
     "schedulerStatePath": "/home/agent/scheduler/state.json",
     "schedulerSweepIntervalMs": 60000,
     "mcpRegistryPath": "/home/agent/.mcp.json",
-    "mcpServers": [
-      "filesystem",
-      "fetch",
-      "github",
-      "memory",
-      "scheduler"
-    ],
+    "mcpServers": ["filesystem", "fetch", "github", "memory", "scheduler"],
     "channelTelegramAvailable": true,
     "channelDiscordAvailable": true,
     "channelSlackAvailable": true,
@@ -139,10 +104,7 @@
     "graphApiVersion": "v18.0",
     "graphApiBase": "https://graph.facebook.com",
     "signatureHeader": "x-hub-signature-256",
-    "envVars": [
-      "BLUEBUBBLES_SERVER_URL",
-      "BLUEBUBBLES_PASSWORD"
-    ],
+    "envVars": ["BLUEBUBBLES_SERVER_URL", "BLUEBUBBLES_PASSWORD"],
     "transport": "bluebubbles-http",
     "channelGmailAvailable": true,
     "channelLinearAvailable": true
@@ -350,10 +312,7 @@
   ],
   "contextHints": {
     "commands": [],
-    "entrypoints": [
-      "AGENTS.md",
-      "src/lib/tangle.ts"
-    ],
+    "entrypoints": ["AGENTS.md", "src/lib/tangle.ts"],
     "preview": null,
     "extensionPoints": [
       "templates/",

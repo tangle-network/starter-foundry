@@ -243,9 +243,7 @@ async function main(): Promise<void> {
 
   const route = selectReviewerRoute()
   if (!route) {
-    console.error(
-      'No reviewer key available (ANTHROPIC_API_KEY / GROQ_API_KEY / TANGLE_ROUTER_USER_KEY).',
-    )
+    console.error('No reviewer key available (ANTHROPIC_API_KEY / GROQ_API_KEY / TANGLE_API_KEY).')
     process.exit(2)
   }
   console.log(`reviewer: ${route.style} → ${route.model}`)

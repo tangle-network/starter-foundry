@@ -6,7 +6,7 @@ allowedDomains:
   - api.tangle.tools
   - musicbrainz.org
 allowedEnv:
-  - TANGLE_ROUTER_KEY
+  - TANGLE_API_KEY
   - PHONY_API_KEY
 creativeCollaborator: true
 overridesArtist: false

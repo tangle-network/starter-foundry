@@ -48,7 +48,7 @@
       "law.cornell.edu"
     ],
     "secrets": [
-      "TANGLE_ROUTER_KEY"
+      "TANGLE_API_KEY"
     ]
   },
   "files": [

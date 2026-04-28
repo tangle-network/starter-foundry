@@ -6,7 +6,7 @@ team: legal-ops-pod
 allowedDomains:
   - api.tangle.tools
 allowedEnv:
-  - TANGLE_ROUTER_KEY
+  - TANGLE_API_KEY
 notLawyer: true
 attorneyClientPrivilege: false
 piiBoundary: agent-base:privacy

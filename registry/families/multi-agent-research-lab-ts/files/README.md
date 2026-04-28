@@ -81,4 +81,4 @@ synthesis.
 Composes against the `agent-base:tangle`, `agent-base:secure`,
 `agent-tools:research-corpus`, and `agent-output:blocks` layers.
 Deploy on Cloudflare Workers with the Tangle runtime. Set
-`TANGLE_ROUTER_KEY`.
+`TANGLE_API_KEY`.

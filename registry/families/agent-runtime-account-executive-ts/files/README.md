@@ -5,7 +5,7 @@ Account Executive agent bundle — pipeline management, deal progression, and fo
 ## Getting Started
 
 1. Install dependencies: `npm install`
-2. Set environment variables: `TANGLE_ROUTER_KEY`
+2. Set environment variables: `TANGLE_API_KEY`
 3. Run locally: `npm run dev`
 4. Deploy: `npm run deploy`
 

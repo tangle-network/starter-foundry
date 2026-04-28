@@ -21,7 +21,7 @@ Deploy on Cloudflare Workers with the Tangle agent-runtime substrate. The agent 
 ## Configuration
 
 Set the following environment variables:
-- `TANGLE_ROUTER_KEY` — API key for Tangle router
+- `TANGLE_API_KEY` — API key for Tangle router
 - `AGENT_NAME` — agent name (default: photographer)
 
 ## Templates

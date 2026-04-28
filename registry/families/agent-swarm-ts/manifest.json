@@ -140,7 +140,7 @@
   "buildHints": {
     "whenToUse": "Multi-agent orchestration with supervisor/worker handoffs. Use when ONE LLM call isn't enough \u2014 research agents that delegate to search/analyze/summarize roles, triage+specialist support, document pipelines. For a single agent with tool use, use `agent-service-ts` instead.",
     "firstSteps": [
-      "Set the router API key: `export OPENAI_API_KEY=$TANGLE_ROUTER_KEY` \u2014 agents call via router.tangle.tools, NOT OpenAI directly.",
+      "Set the router API key: `export OPENAI_API_KEY=$TANGLE_API_KEY` \u2014 agents call via router.tangle.tools, NOT OpenAI directly.",
       "Add a new specialist: create `src/agents/<name>.ts` exporting a `run<Name>(state)` function. Register it in supervisor.ts's node graph.",
       "Extend `SwarmState` in src/state.ts when adding fields the new agent reads/writes. Use the Annotation<T>({ reducer }) pattern \u2014 reducers determine how updates merge.",
       "The supervisor is rule-based (src/supervisor.ts). Swap to an LLM-driven supervisor by replacing `supervise()` with an LLM call if the routing is non-obvious.",

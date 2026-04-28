@@ -7,7 +7,7 @@ allowedDomains:
   - irs.gov
   - hud.gov
 allowedEnv:
-  - TANGLE_ROUTER_KEY
+  - TANGLE_API_KEY
 notLicensedAgent: true
 jurisdictionAgnostic: true
 disclaimerRequired: true

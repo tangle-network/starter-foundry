@@ -41,7 +41,7 @@ jobs:
         env:
           EVAL_TARGET_BASE_URL: ${{ vars.EVAL_TARGET_BASE_URL }}
           EVAL_THRESHOLD: ${{ vars.EVAL_THRESHOLD || '0.7' }}
-          TANGLE_ROUTER_KEY: ${{ secrets.TANGLE_ROUTER_KEY }}
+          TANGLE_API_KEY: ${{ secrets.TANGLE_API_KEY }}
         run: pnpm eval
 
       - name: upload scorecard

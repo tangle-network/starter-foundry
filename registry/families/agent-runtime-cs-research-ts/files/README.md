@@ -19,7 +19,7 @@ A Cloudflare Worker agent that assists with computer science research: literatur
 - `GET /api/health` — No auth
 
 ## Environment Variables
-- `TANGLE_ROUTER_KEY` (required)
+- `TANGLE_API_KEY` (required)
 - `AGENT_NAME` (public)
 
 ## Usage

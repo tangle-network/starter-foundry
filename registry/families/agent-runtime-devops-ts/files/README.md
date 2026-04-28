@@ -12,7 +12,7 @@ This bundle provides a DevOps engineer agent that helps operators with:
 ## Getting Started
 
 1. Deploy the worker to Cloudflare
-2. Set the `TANGLE_ROUTER_KEY` environment variable
+2. Set the `TANGLE_API_KEY` environment variable
 3. Configure routes in your Tangle router
 
 ## Capabilities

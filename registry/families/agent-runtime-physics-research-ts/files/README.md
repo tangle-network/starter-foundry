@@ -10,7 +10,7 @@ An agent-runtime bundle for physics research assistance: literature search, cita
 
 ## Usage
 
-Deploy as a Cloudflare Worker. Set the `TANGLE_ROUTER_KEY` environment variable. The agent exposes two routes:
+Deploy as a Cloudflare Worker. Set the `TANGLE_API_KEY` environment variable. The agent exposes two routes:
 
 - `POST /api/chat` — Main chat endpoint (requires bearer token)
 - `GET /api/health` — Health check

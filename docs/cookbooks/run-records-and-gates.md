@@ -51,7 +51,7 @@ workflow `runs-export.yml` uploads it as a long-retention artifact.
 ## When to run `pnpm gate`
 
 Any time a prompt or profile change accumulates ~3+ paired runs against
-a baseline. The gate composes from agent-eval@0.13's
+a baseline. The gate composes from current agent-eval
 `bootstrapCi`/`pairedTTest`/`cohensD`/`benjaminiHochberg` primitives —
 no reimplementation, no eyeballed p-values.
 

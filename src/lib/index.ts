@@ -87,9 +87,8 @@ export type { RollbackRecord } from './version-history.js'
 export { seedForSpec, seededRng, buildLockFile, verifyLockMatches } from './eval/reproducibility.js'
 export type { SeededRng, ComposeLockFile } from './eval/reproducibility.js'
 
-// Gen-17: RunRecord substrate + HeldOutGate + snapshot lock + profile system.
-// Hand-typed shim that matches agent-eval v0.16's API exactly so the swap is
-// rename-only (`import { ... } from '@tangle-network/agent-eval'`).
+// Local compatibility exports for existing starter-foundry callers. New eval
+// scaffolds import the canonical primitives from @tangle-network/agent-eval.
 export {
   isPinnedModel,
   makeRunRecord,
@@ -126,7 +125,12 @@ export type {
 } from './snapshot-resolver.js'
 export { loadProfile, listProfileNames, diffProfiles, PROFILES_DIR } from './profile-loader.js'
 export type { RawProfile, ResolvedProfile, LoadProfileOptions } from './profile-loader.js'
-export { appendRunRecord, readRunRecords, iterRunRecords, RUNS_JSONL_PATH } from './run-record-store.js'
+export {
+  appendRunRecord,
+  readRunRecords,
+  iterRunRecords,
+  RUNS_JSONL_PATH,
+} from './run-record-store.js'
 export { emitRunRecord } from './eval/emit-run-record.js'
 export type { EmitRunRecordInput } from './eval/emit-run-record.js'
 export { runCanaries } from './run-canaries.js'

@@ -3,7 +3,7 @@
  * thresholds, overfit-gap REVERT path, BH correction.
  *
  * No mocked stats — uses the real `bootstrapCi` / `pairedTTest` / `cohensD` /
- * `benjaminiHochberg` from agent-eval@0.13.
+ * `benjaminiHochberg` from current agent-eval.
  */
 
 import assert from 'node:assert/strict'
@@ -48,60 +48,75 @@ test('HOLD when n < minProductiveRuns', () => {
 test('PROMOTE on a clear positive delta with adequate effect size', () => {
   const gate = new HeldOutGate({ baselineKey: 'b', seed: 1 })
   // Large, consistent improvement: candidate ~0.9, baseline ~0.5
-  const baseline = makeBatch([0.50, 0.52, 0.48, 0.51, 0.49, 0.53, 0.50, 0.48])
-  const candidate = makeBatch([0.90, 0.92, 0.88, 0.91, 0.89, 0.93, 0.90, 0.88])
+  const baseline = makeBatch([0.5, 0.52, 0.48, 0.51, 0.49, 0.53, 0.5, 0.48])
+  const candidate = makeBatch([0.9, 0.92, 0.88, 0.91, 0.89, 0.93, 0.9, 0.88])
   const decision = gate.evaluate(candidate, baseline)
-  assert.equal(decision.verdict, 'PROMOTE', `expected PROMOTE got ${decision.verdict}: ${decision.reason}`)
+  assert.equal(
+    decision.verdict,
+    'PROMOTE',
+    `expected PROMOTE got ${decision.verdict}: ${decision.reason}`,
+  )
   assert.ok(decision.evidence.cohensD > 0.5)
   assert.ok(decision.evidence.pairedDeltaMedian > 0)
 })
 
 test('REVERT on overfit (held-out gap exceeds threshold)', () => {
   const gate = new HeldOutGate({ baselineKey: 'b', overfitGapThreshold: 0.2, seed: 1 })
-  const baseline = makeBatch([0.50, 0.52, 0.48, 0.51, 0.49, 0.53])
+  const baseline = makeBatch([0.5, 0.52, 0.48, 0.51, 0.49, 0.53])
   // Candidate scores 0.95 on search but only 0.5 on held-out → overfit gap = 0.45
-  const candidate = makeBatch(
-    [0.95, 0.95, 0.95, 0.95, 0.95, 0.95],
-    { holdout: [0.50, 0.50, 0.50, 0.50, 0.50, 0.50] },
-  )
+  const candidate = makeBatch([0.95, 0.95, 0.95, 0.95, 0.95, 0.95], {
+    holdout: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+  })
   const decision = gate.evaluate(candidate, baseline)
-  assert.equal(decision.verdict, 'REVERT', `expected REVERT got ${decision.verdict}: ${decision.reason}`)
+  assert.equal(
+    decision.verdict,
+    'REVERT',
+    `expected REVERT got ${decision.verdict}: ${decision.reason}`,
+  )
   assert.match(decision.reason, /overfit-gap/)
   assert.ok(decision.evidence.overfitGap !== null && decision.evidence.overfitGap >= 0.2)
 })
 
 test('REVERT on significantly worse paired-delta', () => {
   const gate = new HeldOutGate({ baselineKey: 'b', seed: 1 })
-  const baseline = makeBatch([0.90, 0.92, 0.88, 0.91, 0.89, 0.93, 0.90, 0.88])
-  const candidate = makeBatch([0.50, 0.52, 0.48, 0.51, 0.49, 0.53, 0.50, 0.48])
+  const baseline = makeBatch([0.9, 0.92, 0.88, 0.91, 0.89, 0.93, 0.9, 0.88])
+  const candidate = makeBatch([0.5, 0.52, 0.48, 0.51, 0.49, 0.53, 0.5, 0.48])
   const decision = gate.evaluate(candidate, baseline)
-  assert.equal(decision.verdict, 'REVERT', `expected REVERT got ${decision.verdict}: ${decision.reason}`)
+  assert.equal(
+    decision.verdict,
+    'REVERT',
+    `expected REVERT got ${decision.verdict}: ${decision.reason}`,
+  )
   assert.ok(decision.evidence.pairedDeltaMedian < 0)
 })
 
-test('HOLD when delta exists but Cohen\'s d below threshold', () => {
+test("HOLD when delta exists but Cohen's d below threshold", () => {
   // Pick widely-spread distributions so the effect size is small even with
   // a positive mean delta. Threshold set high so d falls below it.
   const gate = new HeldOutGate({ baselineKey: 'b', cohensDThreshold: 5.0, seed: 1 })
-  const baseline = makeBatch([0.10, 0.30, 0.50, 0.70, 0.90, 0.45, 0.55, 0.65])
-  const candidate = makeBatch([0.20, 0.40, 0.60, 0.80, 0.95, 0.55, 0.65, 0.75])
+  const baseline = makeBatch([0.1, 0.3, 0.5, 0.7, 0.9, 0.45, 0.55, 0.65])
+  const candidate = makeBatch([0.2, 0.4, 0.6, 0.8, 0.95, 0.55, 0.65, 0.75])
   const decision = gate.evaluate(candidate, baseline)
-  assert.equal(decision.verdict, 'HOLD', `expected HOLD got ${decision.verdict}: ${decision.reason}`)
+  assert.equal(
+    decision.verdict,
+    'HOLD',
+    `expected HOLD got ${decision.verdict}: ${decision.reason}`,
+  )
   assert.ok(Math.abs(decision.evidence.cohensD) < 5.0)
 })
 
 test('BH correction applies q-value when applyBHCorrection: true', () => {
   const gate = new HeldOutGate({ baselineKey: 'b', applyBHCorrection: true, seed: 1 })
-  const baseline = makeBatch([0.50, 0.52, 0.48, 0.51, 0.49, 0.53])
-  const candidate = makeBatch([0.90, 0.92, 0.88, 0.91, 0.89, 0.93])
+  const baseline = makeBatch([0.5, 0.52, 0.48, 0.51, 0.49, 0.53])
+  const candidate = makeBatch([0.9, 0.92, 0.88, 0.91, 0.89, 0.93])
   const decision = gate.evaluate(candidate, baseline)
   assert.notEqual(decision.evidence.qValueBh, null)
 })
 
 test('q-value is null when applyBHCorrection: false', () => {
   const gate = new HeldOutGate({ baselineKey: 'b', applyBHCorrection: false, seed: 1 })
-  const baseline = makeBatch([0.50, 0.52, 0.48, 0.51, 0.49, 0.53])
-  const candidate = makeBatch([0.90, 0.92, 0.88, 0.91, 0.89, 0.93])
+  const baseline = makeBatch([0.5, 0.52, 0.48, 0.51, 0.49, 0.53])
+  const candidate = makeBatch([0.9, 0.92, 0.88, 0.91, 0.89, 0.93])
   const decision = gate.evaluate(candidate, baseline)
   assert.equal(decision.evidence.qValueBh, null)
 })

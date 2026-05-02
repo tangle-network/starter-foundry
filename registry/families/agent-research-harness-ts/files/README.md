@@ -1,6 +1,6 @@
 # research-harness
 
-Hypothesis-driven research harness on top of `@tangle-network/agent-eval@^0.13.0`.
+Hypothesis-driven research harness on top of `@tangle-network/agent-eval@^0.19.0`.
 
 ## What this bundle is
 
@@ -11,7 +11,7 @@ bundle drives the optimizer that runs variants against it.
 
 It composes the upstream agent-eval primitives:
 
-- `OptimizationLoop` — N steering bundles → FDR-corrected pairwise
+- `PairwiseSteeringOptimizer` — N scored steering variants → ranked
   winner.
 - `runPromptEvolution` — population-based reflective mutation across
   generations with Pareto + crowding-distance survivor selection.

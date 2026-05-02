@@ -1,7 +1,7 @@
 /**
  * HeldOutGate — promote/hold/revert decision over a candidate vs baseline.
  *
- * Composes from `@tangle-network/agent-eval@0.13.0` primitives:
+ * Composes from `@tangle-network/agent-eval@0.19.0` primitives:
  *   - `bootstrapCi` for paired-delta CI
  *   - `pairedTTest` for paired p-value
  *   - `cohensD` for effect size
@@ -29,7 +29,13 @@
  * @public
  */
 
-import { benjaminiHochberg, bootstrapCi, cohensD, pairedTTest, welchsTTest } from '@tangle-network/agent-eval'
+import {
+  benjaminiHochberg,
+  bootstrapCi,
+  cohensD,
+  pairedTTest,
+  welchsTTest,
+} from '@tangle-network/agent-eval'
 
 import type { RunRecord } from './run-record.js'
 
@@ -105,7 +111,9 @@ function mean(xs: number[]): number {
 
 /** Average outcome.holdoutScore over runs where it's defined, else null. */
 function meanHoldoutScore(runs: readonly RunRecord[]): number | null {
-  const xs = runs.map((r) => r.outcome.holdoutScore).filter((v): v is number => typeof v === 'number')
+  const xs = runs
+    .map((r) => r.outcome.holdoutScore)
+    .filter((v): v is number => typeof v === 'number')
   if (xs.length === 0) return null
   return mean(xs)
 }
@@ -228,15 +236,21 @@ export class HeldOutGate {
         `paired-delta ${pairedDeltaMedian.toFixed(4)} >= ${this.cfg.pairedDeltaThreshold}, ` +
           `cohen's d ${d.toFixed(3)} >= ${this.cfg.cohensDThreshold}, ` +
           `p=${effectiveP.toFixed(4)} < ${this.cfg.alpha}` +
-          (overfitGap !== null ? `, overfit-gap ${overfitGap.toFixed(4)} < ${this.cfg.overfitGapThreshold}` : ''),
+          (overfitGap !== null
+            ? `, overfit-gap ${overfitGap.toFixed(4)} < ${this.cfg.overfitGapThreshold}`
+            : ''),
         evidence,
       )
     }
 
     // HOLD with explanation
     const reasons: string[] = []
-    if (!positiveDelta) reasons.push(`paired-delta ${pairedDeltaMedian.toFixed(4)} < ${this.cfg.pairedDeltaThreshold}`)
-    if (!adequateEffect) reasons.push(`|cohen's d| ${Math.abs(d).toFixed(3)} < ${this.cfg.cohensDThreshold}`)
+    if (!positiveDelta)
+      reasons.push(
+        `paired-delta ${pairedDeltaMedian.toFixed(4)} < ${this.cfg.pairedDeltaThreshold}`,
+      )
+    if (!adequateEffect)
+      reasons.push(`|cohen's d| ${Math.abs(d).toFixed(3)} < ${this.cfg.cohensDThreshold}`)
     if (!significant) reasons.push(`p=${effectiveP.toFixed(4)} >= ${this.cfg.alpha}`)
     return this.decision('HOLD', `insufficient evidence: ${reasons.join('; ')}`, evidence)
   }

@@ -7,7 +7,7 @@
  *   3. Drive the validator (5 reps / passed-floor hypotheses) with
  *      bootstrap-CI gates.
  *   4. Persist artifacts to `research-results/<runId>/`.
- *   5. (Optional) Compose `OptimizationLoop` from agent-eval for the
+ *   5. (Optional) Compose `PairwiseSteeringOptimizer` from agent-eval for the
  *      steering-bundle variant pathway when the operator passes
  *      `--steering`.
  *
@@ -21,9 +21,10 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 
 import {
-  OptimizationLoop,
-  type OptimizationLoopConfig,
-  type OptimizationLoopResult,
+  PairwiseSteeringOptimizer,
+  type SteeringOptimizationResult,
+  type SteeringOptimizationRow,
+  type SteeringOptimizerConfig,
 } from '@tangle-network/agent-eval'
 
 import { screen, type ScreenerOptions } from './screener.js'
@@ -202,13 +203,12 @@ export async function runSweep(options: SweepOptions): Promise<SweepReport> {
 
 /**
  * Steering-bundle pathway — direct pass-through to agent-eval's
- * `OptimizationLoop`. Use when the consumer has enumerated steering
- * bundles (vs hypothesis-driven treatments). FDR-corrected pairwise
- * winner with statistical sign-off baked in.
+ * `PairwiseSteeringOptimizer`. Use when the consumer has enumerated steering
+ * bundles (vs hypothesis-driven treatments).
  */
 export async function runSteeringLoop(
-  config: OptimizationLoopConfig,
-): Promise<OptimizationLoopResult> {
-  const loop = new OptimizationLoop()
-  return loop.run(config)
+  rows: SteeringOptimizationRow[],
+  config?: SteeringOptimizerConfig,
+): Promise<SteeringOptimizationResult> {
+  return new PairwiseSteeringOptimizer().optimize(rows, config)
 }

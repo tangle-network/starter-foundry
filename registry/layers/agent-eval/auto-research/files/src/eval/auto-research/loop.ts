@@ -1,36 +1,47 @@
 /**
  * auto-research:loop — composable optimization loop.
  *
- * Wraps `OptimizationLoop` + `runPromptEvolution` from
- * `@tangle-network/agent-eval@^0.13.0`. The eval-harness layers (scenarios,
+ * Wraps the 0.19 optimization primitives from
+ * `@tangle-network/agent-eval@^0.19.0`. The eval-harness layers (scenarios,
  * judge-rubric, regression) supply the measurement substrate; this module
  * supplies the optimizer that drives variants against it.
  *
  * Two entrypoints:
  *
  *   - `runSteeringOptimization` — N steering bundles × M scenarios → winner
- *     by FDR-corrected pairwise testing. Use when variants are already
- *     enumerated and the question is "which one wins?".
+ *     by observed aggregate score. Use when variants are already enumerated
+ *     and the question is "which one wins?".
+ *
+ *   - `runMultiShotTrajectoryOptimization` — GEPA-style optimization for a
+ *     variable-length agent task. Use this for chat agents, browser/coding
+ *     agents, and autoresearch loops where one trial is a whole trajectory.
  *
  *   - `runEvolution` — population-based reflective mutation. Use when the
- *     consumer wants the loop to GENERATE variants from a seed population +
- *     a mutator (LLM-driven typically).
+ *     consumer wants the loop to GENERATE variants for a narrow prompt-only
+ *     surface. Prefer `runMultiShotTrajectoryOptimization` for product loops.
  *
  * Both pass through to agent-eval primitives unchanged so callers can read
  * the upstream docs and trust their semantics.
  */
 
 import {
-  OptimizationLoop,
+  PairwiseSteeringOptimizer,
+  runMultiShotOptimization,
   runPromptEvolution,
-  type OptimizationLoopConfig,
-  type OptimizationLoopResult,
+  type MultiShotOptimizationConfig,
+  type MultiShotOptimizationResult,
   type PromptEvolutionConfig,
   type PromptEvolutionResult,
+  type SteeringOptimizationRow,
+  type SteeringOptimizationResult,
+  type SteeringOptimizerConfig,
 } from '@tangle-network/agent-eval'
 
-export interface SteeringOptimizationInput extends OptimizationLoopConfig {}
-export interface SteeringOptimizationOutput extends OptimizationLoopResult {}
+export interface SteeringOptimizationInput {
+  rows: SteeringOptimizationRow[]
+  config?: SteeringOptimizerConfig
+}
+export interface SteeringOptimizationOutput extends SteeringOptimizationResult {}
 
 /**
  * Run a single-shot steering-bundle optimization. The provided `evaluate`
@@ -38,10 +49,23 @@ export interface SteeringOptimizationOutput extends OptimizationLoopResult {}
  * scenarios + judge-rubric layers and return a `RunScore`.
  */
 export async function runSteeringOptimization(
-  config: SteeringOptimizationInput,
+  input: SteeringOptimizationInput,
 ): Promise<SteeringOptimizationOutput> {
-  const loop = new OptimizationLoop()
-  return loop.run(config)
+  return new PairwiseSteeringOptimizer().optimize(input.rows, input.config)
+}
+
+/**
+ * Run GEPA-style optimization over full agent trajectories.
+ *
+ * This is the default for real agents. A single trial may contain one turn or
+ * many turns; the runner owns execution, the scorer emits actionable side
+ * information, and agent-eval owns paired seeds, Pareto selection, and optional
+ * holdout promotion.
+ */
+export async function runMultiShotTrajectoryOptimization<P>(
+  config: MultiShotOptimizationConfig<P>,
+): Promise<MultiShotOptimizationResult<P>> {
+  return runMultiShotOptimization(config)
 }
 
 /**
@@ -50,8 +74,9 @@ export async function runSteeringOptimization(
  * children given trace evidence). Pareto-selected, crowding-distance
  * tie-broken, generation-by-generation.
  *
- * NOTE: this is the right primitive for the research-harness validator pass
- * once a hypothesis screens in. Screening (cheap 1-rep) belongs upstream.
+ * NOTE: use this for narrow prompt/signature surfaces. Product agents should
+ * usually use `runMultiShotTrajectoryOptimization` so the optimizer sees the
+ * whole task trajectory and ASI, not a surrogate scalar.
  */
 export async function runEvolution<P>(
   config: PromptEvolutionConfig<P>,
@@ -60,8 +85,11 @@ export async function runEvolution<P>(
 }
 
 export type {
-  OptimizationLoopConfig,
-  OptimizationLoopResult,
+  MultiShotOptimizationConfig,
+  MultiShotOptimizationResult,
   PromptEvolutionConfig,
   PromptEvolutionResult,
+  SteeringOptimizationRow,
+  SteeringOptimizationResult,
+  SteeringOptimizerConfig,
 } from '@tangle-network/agent-eval'

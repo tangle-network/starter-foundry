@@ -1,11 +1,11 @@
 # auto-research
 
-Composable optimization layer over `@tangle-network/agent-eval@^0.13.0`.
+Composable optimization layer over `@tangle-network/agent-eval@^0.19.0`.
 
-Wraps the upstream primitives (`OptimizationLoop`, `runPromptEvolution`,
-`runProposeReview`, `paretoFrontier`, `paretoFrontierWithCrowding`) into a
-small surface a research-harness family can compose without re-deriving
-the agent-eval API.
+Wraps the upstream primitives (`PairwiseSteeringOptimizer`,
+`runMultiShotOptimization`, `runPromptEvolution`, `runProposeReview`,
+`paretoFrontier`, `paretoFrontierWithCrowding`) into a small surface a
+research-harness family can compose without re-deriving the agent-eval API.
 
 ## Capabilities
 
@@ -21,6 +21,7 @@ supplies the optimizer that drives variants against that substrate.
 ```ts
 import {
   runSteeringOptimization,
+  runMultiShotTrajectoryOptimization,
   runEvolution,
   proposeReview,
   frontier,
@@ -35,7 +36,27 @@ const result = await runSteeringOptimization({
   trialsPerScenario: 3,
 })
 
-// 2. Reflective hypothesis → final state via propose/verify/review.
+// 2. Variable-length agent trajectory optimization.
+const optimized = await runMultiShotTrajectoryOptimization({
+  runId: `research-${Date.now()}`,
+  target: 'agent-system-prompt',
+  seedVariants: [{ id: 'baseline', label: 'baseline', generation: 0, payload: baselinePayload }],
+  searchScenarioIds: scenarios.map((s) => s.id),
+  reps: 2,
+  generations: 3,
+  populationSize: 4,
+  runner: {
+    run: ({ variant, scenarioId, seed }) => harness.runTrajectory({ variant, scenarioId, seed }),
+  },
+  scorer: {
+    score: ({ run }) => scoreTrajectoryWithAsi(run),
+  },
+  mutateAdapter,
+  gate,
+})
+deploy(optimized.promotedVariant.payload)
+
+// 3. Reflective hypothesis → final state via propose/verify/review.
 const report = await proposeReview({
   goal: 'reduce judge-rubric failures on category=tool-use',
   initialState: { promptVersion: 'v1' },
@@ -44,7 +65,7 @@ const report = await proposeReview({
   review: ...,
 })
 
-// 3. Pareto-non-dominated points across (quality, cost, latency).
+// 4. Pareto-non-dominated points across (quality, cost, latency).
 const f = frontier([
   { variantId: 'A', quality: 0.81, costUsd: 0.12, wallSeconds: 4.1 },
   { variantId: 'B', quality: 0.83, costUsd: 0.40, wallSeconds: 6.0 },

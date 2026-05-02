@@ -19,6 +19,8 @@
 //   - Tier1 keywords overlap with another family — routing ambiguity.
 //   - The runner's TS imports an export that no longer exists in
 //     @tangle-network/agent-eval (covered by typecheck).
+//   - The auto-research scaffold must keep the 0.19 multi-shot adapter as
+//     the product-agent default, not regress to prompt-only evolution.
 
 import test from 'node:test'
 import assert from 'node:assert/strict'
@@ -126,13 +128,13 @@ test('agent.json points systemPromptFile at AGENTS.md', () => {
   )
 })
 
-test('package.json declares @tangle-network/agent-eval ^0.13.0 dep', () => {
+test('package.json declares @tangle-network/agent-eval ^0.19.0 dep', () => {
   const pkg = JSON.parse(readFileSync(join(FAMILY_DIR, 'files/package.json'), 'utf8'))
   const dep = pkg.dependencies?.['@tangle-network/agent-eval']
   assert.match(
     dep ?? '',
-    /^\^?0\.13\./,
-    `package.json must depend on @tangle-network/agent-eval ^0.13.x; got ${dep}`,
+    /^\^?0\.19\./,
+    `package.json must depend on @tangle-network/agent-eval ^0.19.x; got ${dep}`,
   )
   assert.ok(pkg.scripts?.eval, 'pnpm eval script must be wired')
   assert.ok(pkg.scripts?.['eval:gate'], 'pnpm eval:gate script must be wired')
@@ -256,6 +258,34 @@ test('every layer file declared in manifest.files exists on disk', () => {
       `agent-eval:${layerId} declares files[] that don't exist:\n  ${missing.join('\n  ')}`,
     )
   }
+})
+
+test('auto-research layer exports the 0.19 multi-shot trajectory optimizer', () => {
+  const loop = readFileSync(
+    join(LAYERS_DIR, 'auto-research/files/src/eval/auto-research/loop.ts'),
+    'utf8',
+  )
+  assert.match(loop, /\brunMultiShotOptimization\b/, 'loop must import runMultiShotOptimization')
+  assert.match(
+    loop,
+    /export async function runMultiShotTrajectoryOptimization/,
+    'loop must expose the scaffold-level multi-shot wrapper',
+  )
+  assert.match(
+    loop,
+    /promot|holdout|actionable side/i,
+    'loop docs must preserve promotion/ASI semantics for generated harnesses',
+  )
+
+  const barrel = readFileSync(
+    join(LAYERS_DIR, 'auto-research/files/src/eval/auto-research/index.ts'),
+    'utf8',
+  )
+  assert.match(
+    barrel,
+    /\brunMultiShotTrajectoryOptimization\b/,
+    'barrel must re-export the multi-shot wrapper',
+  )
 })
 
 test('tier1 keywords are eval-suffixed multi-word phrases (no bare nouns)', () => {

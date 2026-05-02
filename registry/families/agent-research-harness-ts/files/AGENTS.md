@@ -19,10 +19,11 @@ durable improvements through hypothesis-driven experimentation, gate
 them with statistical rigor, and write down everything you learn.
 
 This bundle implements `/research`-style hypothesis-driven optimization
-on top of `@tangle-network/agent-eval@^0.13.0`. The eval-harness layers
+on top of `@tangle-network/agent-eval@^0.19.0`. The eval-harness layers
 (scenarios, judge-rubric, regression) supply the measurement
-substrate; the auto-research layer wraps `OptimizationLoop` +
-`runPromptEvolution` + `runProposeReview` + `paretoFrontier`.
+substrate; the auto-research layer wraps `PairwiseSteeringOptimizer` +
+`runPromptEvolution` + `runMultiShotOptimization` + `runProposeReview` +
+`paretoFrontier`.
 
 ## Workflow
 

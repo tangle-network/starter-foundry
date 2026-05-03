@@ -128,7 +128,7 @@ test('agent.json points systemPromptFile at AGENTS.md', () => {
   )
 })
 
-test('package.json declares @tangle-network/agent-eval ^0.19.0 dep', () => {
+test('package.json declares @tangle-network/agent-eval ^0.19.1 dep', () => {
   const pkg = JSON.parse(readFileSync(join(FAMILY_DIR, 'files/package.json'), 'utf8'))
   const dep = pkg.dependencies?.['@tangle-network/agent-eval']
   assert.match(

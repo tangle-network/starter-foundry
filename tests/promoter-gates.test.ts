@@ -153,12 +153,12 @@ describe('declared-dep-used', () => {
         join(dir, 'package.json'),
         JSON.stringify({
           name: 'scaffold',
-          dependencies: { '@tangle-network/agent-eval': '^0.19.0' },
+          dependencies: { '@tangle-network/agent-eval': '^0.19.1' },
         }),
       )
       writeFile(join(dir, 'src/index.ts'), `export const x = 1\n`)
       const manifest = {
-        packageDeps: { dependencies: { '@tangle-network/agent-eval': '^0.19.0' } },
+        packageDeps: { dependencies: { '@tangle-network/agent-eval': '^0.19.1' } },
       }
       const res = checkDeclaredDepUsed({ manifest, composedDir: dir })
       assert.equal(res.status, 'fail')

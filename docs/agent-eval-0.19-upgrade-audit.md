@@ -4,7 +4,7 @@ Branch audited: `main`
 
 ## Current State
 
-- Package pins are `@tangle-network/agent-eval` `^0.19.0` in the root, example workspace, and scaffold families.
+- Package pins are `@tangle-network/agent-eval` `^0.19.1` in the root, example workspace, and scaffold families.
 - The scaffold registry already exposes:
   - eval harness templates
   - auto-research layer

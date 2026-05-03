@@ -11,10 +11,15 @@ bundle drives the optimizer that runs variants against it.
 
 It composes the upstream agent-eval primitives:
 
+- `runMultiShotOptimization` — default path for optimizing full
+  variable-length agent trajectories, including single-turn tasks as
+  `n=1`.
+- `MultiShotVariant` — one payload shape for single-shot and multi-shot
+  optimization runs.
 - `PairwiseSteeringOptimizer` — N scored steering variants → ranked
   winner.
-- `runPromptEvolution` — population-based reflective mutation across
-  generations with Pareto + crowding-distance survivor selection.
+- `runPromptEvolution` — lower-level reflective mutation for narrow
+  prompt-only surfaces.
 - `runProposeReview` — propose / verify / review inner loop for the
   hypothesis proposer.
 - `paretoFrontier` + `paretoFrontierWithCrowding` — multi-objective
@@ -78,7 +83,9 @@ const runner: ScenarioRunner = {
   scenarioIds: ['math-1', 'math-2', 'math-3', 'tools-a', 'tools-b'],
   runTrial: async ({ hypothesis, scenarioId, rep }) => {
     // Apply hypothesis.treatment to the agent, run the scenario via your
-    // eval-harness, return the score.
+    // eval-harness, return the score. For agents, prefer wrapping this
+    // same execution as a MultiShotRun so the optimizer can consume the
+    // full trajectory and ASI.
     const out = await myEvalHarness.run({ scenarioId, treatment: hypothesis?.treatment })
     return {
       scenarioId,

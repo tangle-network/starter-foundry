@@ -1,6 +1,6 @@
-# agent-eval 0.19 Upgrade Audit
+# agent-eval Integration State
 
-Branch audited: `main`
+Last reviewed: 2026-05-03
 
 ## Current State
 
@@ -10,7 +10,6 @@ Branch audited: `main`
   - auto-research layer
   - trace multi-turn layer
   - run records and gates
-- Pre-existing local changes already touch many agent-eval scaffold files.
 - Stale historical docs/comments still reference `0.7.x`, `0.13`, and `0.17`.
 
 ## What Is Good
@@ -21,7 +20,7 @@ Branch audited: `main`
 
 ## What Is Not 10/10 Yet
 
-- The scaffold still presents `runPromptEvolution` as the main evolution path for research harnesses. For real multi-turn agents, the default should now be `runMultiShotOptimization`.
+- Historical changelog entries and generated example docs still mention older package lines. That is acceptable in archive/changelog contexts, but active templates should teach the 0.19.1 path.
 - Historical migration docs are useful for archaeology but dangerous as onboarding material.
 - Some generated comments still encode old bug/version details that should not be copied into new projects.
 
@@ -35,9 +34,9 @@ Branch audited: `main`
 
 ## Blockers
 
-- Finish the existing scaffold edits and ensure tests cover generated 0.19 code.
-- Remove old version guidance from active docs and comments.
-- Add an example where `n=1` single-shot and variable `n>1` multi-shot both use the same `MultiShotVariant` path.
+- Keep generated research docs multi-shot-first.
+- Remove old version guidance from active docs and comments when it is not changelog/archive material.
+- Ensure scaffold tests cover generated 0.19.1 code.
 
 ## Release Readiness
 

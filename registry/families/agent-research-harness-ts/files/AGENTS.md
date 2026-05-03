@@ -22,8 +22,13 @@ This bundle implements `/research`-style hypothesis-driven optimization
 on top of `@tangle-network/agent-eval@^0.19.1`. The eval-harness layers
 (scenarios, judge-rubric, regression) supply the measurement
 substrate; the auto-research layer wraps `PairwiseSteeringOptimizer` +
-`runPromptEvolution` + `runMultiShotOptimization` + `runProposeReview` +
+`runMultiShotOptimization` + `runPromptEvolution` + `runProposeReview` +
 `paretoFrontier`.
+
+Use `runMultiShotOptimization` as the default optimization path for
+agent behavior. A single-turn task is still a `MultiShotVariant` with
+one shot; multi-turn tasks use the same variant payload and longer
+traces. Use `runPromptEvolution` only for narrow prompt-only surfaces.
 
 ## Workflow
 

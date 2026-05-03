@@ -2,8 +2,8 @@
 
 Composable optimization layer over `@tangle-network/agent-eval@^0.19.1`.
 
-Wraps the upstream primitives (`PairwiseSteeringOptimizer`,
-`runMultiShotOptimization`, `runPromptEvolution`, `runProposeReview`,
+Wraps the upstream primitives (`runMultiShotOptimization`,
+`PairwiseSteeringOptimizer`, `runPromptEvolution`, `runProposeReview`,
 `paretoFrontier`, `paretoFrontierWithCrowding`) into a small surface a
 research-harness family can compose without re-deriving the agent-eval API.
 
@@ -36,7 +36,8 @@ const result = await runSteeringOptimization({
   trialsPerScenario: 3,
 })
 
-// 2. Variable-length agent trajectory optimization.
+// 2. Variable-length agent trajectory optimization. Use the same
+// MultiShotVariant path for n=1 single-turn tasks and n>1 conversations.
 const optimized = await runMultiShotTrajectoryOptimization({
   runId: `research-${Date.now()}`,
   target: 'agent-system-prompt',

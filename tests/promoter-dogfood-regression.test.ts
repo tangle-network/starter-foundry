@@ -47,7 +47,7 @@ describe('promoter dogfood regression (PR #55 shape)', () => {
             version: '0.0.1',
             scripts: { start: 'node server.mjs' },
             dependencies: {
-              '@tangle-network/agent-eval': '^0.19.0',
+              '@tangle-network/agent-eval': '^0.19.1',
               // Another dep that IS imported — proves the gate isn't just
               // reporting every package.json entry as unused.
               express: '^4.18.0',
@@ -77,7 +77,7 @@ export default app
         id: 'agent-eval',
         packageDeps: {
           dependencies: {
-            '@tangle-network/agent-eval': '^0.19.0',
+            '@tangle-network/agent-eval': '^0.19.1',
           },
         },
       }

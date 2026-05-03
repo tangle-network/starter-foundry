@@ -1,7 +1,7 @@
 /**
  * HeldOutGate — promote/hold/revert decision over a candidate vs baseline.
  *
- * Composes from `@tangle-network/agent-eval@0.19.0` primitives:
+ * Composes from `@tangle-network/agent-eval@0.19.1` primitives:
  *   - `bootstrapCi` for paired-delta CI
  *   - `pairedTTest` for paired p-value
  *   - `cohensD` for effect size

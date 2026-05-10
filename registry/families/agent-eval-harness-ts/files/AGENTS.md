@@ -8,6 +8,10 @@ allowedEnv:
   - TANGLE_API_KEY
   - EVAL_TARGET_BASE_URL
   - EVAL_THRESHOLD
+  - EVAL_INTEGRITY
+  - EVAL_LLM_BASE_URL
+  - EVAL_LLM_API_KEY
+  - EVAL_LLM_PROVIDER
 version: 0.1.0
 ---
 
@@ -24,8 +28,8 @@ locally and CI gates regressions on it.
 
 ## How you work
 
-The harness is a thin shell over `@tangle-network/agent-eval` (already
-in `dependencies`). Reuse its primitives — do not reinvent.
+The harness is a thin shell over `@tangle-network/agent-eval@^0.23.0`
+(already in `dependencies`). Reuse its primitives — do not reinvent.
 
 - **Scenarios** are typed objects (`Scenario` from agent-eval). Author
   one file per scenario in `scenarios/*.ts`. Each scenario declares
@@ -34,14 +38,34 @@ in `dependencies`). Reuse its primitives — do not reinvent.
   `judges/*.ts`. Use `createCustomJudge`, `createSemanticConceptJudge`,
   or `createIntentMatchJudge` from agent-eval. Calibrate against a
   golden set with `calibrateJudge` before relying on the score.
-- **Runner** lives in `src/eval/runner.ts`. It loads scenarios, runs
-  each via `runTestGradedScenario` or `executeScenario`, fans judges
-  out via `JudgeRunner`, persists traces to `FileSystemTraceStore`,
-  and aggregates a `scorecard.json` via `summarize`.
+- **Runner** lives in `src/eval/runner.ts` (smoke-test path) and
+  `src/eval/campaign.ts` (campaign path).
+  - `runHarness` (smoke) loads scenarios, runs each via
+    `runTestGradedScenario`, persists traces to `FileSystemTraceStore`,
+    and aggregates `scorecard.json`. Capture-integrity directives 1–3
+    fire by default; directive 4 (analyst hook) is unavailable on this
+    path because `runTestGradedScenario` constructs its own emitter.
+  - `runCampaign` (sweep) wraps `runEvalCampaign` and wires all four
+    capture-integrity directives by construction. Use it when you have
+    variants × seeds and need a paired-evidence verdict.
 - **Regression gate** lives in `src/eval/regression/` (composed from
   the `eval:regression` layer). It compares two scorecards via
   `bootstrapCi` + `welchsTTest` + `compareToBaseline` and exits 0
   (PROMOTE) / 1 (REVERT) / 2 (HOLD).
+
+## Capture integrity is REQUIRED for launch-grade adoption
+
+Every run wires:
+1. **`RawProviderSink`** — `FileSystemRawProviderSink` per scenario.
+2. **`assertLlmRoute`** at preflight (when `EVAL_LLM_BASE_URL` is set).
+3. **`assertRunCaptured`** after every run — surfaces issues on the
+   outcome row by default (`EVAL_INTEGRITY=log`).
+4. **`onRunComplete` hooks** — campaign path only.
+
+Skipping a directive means the run is descriptive, not anchoring — a
+launch reviewer can't distinguish "we measured a real win" from "we
+measured nothing on the wrong route." Document the reason inline if
+you skip one.
 
 ## Operator commands
 

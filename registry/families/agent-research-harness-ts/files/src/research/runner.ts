@@ -26,6 +26,11 @@ import {
   type SteeringOptimizationRow,
   type SteeringOptimizerConfig,
 } from '@tangle-network/agent-eval'
+import {
+  analyzeOptimizationResult,
+  type AnalyzeOptimizationResultOptions,
+  type AnalyzeOptimizationResultReport,
+} from '@tangle-network/agent-eval/rl'
 
 import { screen, type ScreenerOptions } from './screener.js'
 import { validate, type ValidatorOptions } from './validator.js'
@@ -212,3 +217,45 @@ export async function runSteeringLoop(
 ): Promise<SteeringOptimizationResult> {
   return new PairwiseSteeringOptimizer().optimize(rows, config)
 }
+
+/**
+ * Bridge an optimization sweep output (`PromptEvolutionResult` or
+ * `MultiShotOptimizationResult`) to the canonical 0.23 RL artifact set:
+ * `RunRecord[]`, DPO/PPO preference triples, verifiable reward signals,
+ * reward-hacking diagnosis, and (when a `comparator` candidate id is
+ * supplied) an anytime-valid sequential interim verdict.
+ *
+ * Why this lives here:
+ *
+ *   - It's the natural callsite right after `runMultiShotOptimization`
+ *     or `runPromptEvolution` returns — the result is in scope, the
+ *     adapter context is in scope, and the consumer has just finished
+ *     a sweep.
+ *
+ *   - Reward-hacking diagnosis runs at sweep-level (it needs the cohort
+ *     of variants, not a single run). Wiring it in the family runner
+ *     guarantees consumers see the verdict on every research cycle
+ *     rather than having to remember to call it.
+ *
+ *   - Preference triples + verifiable rewards are the exchange currency
+ *     to a TRL / prime-rl / in-house DPO trainer. Emitting them by
+ *     default closes the auto-research → policy update loop.
+ *
+ * Idempotent and read-only with respect to the optimization result.
+ *
+ * Reference wiring:
+ *   - `agent-builder/src/lib/.server/eval/auto-research-runner.ts`
+ *     (cycles 763–803 — the RL-bridge invocation after `runEvolution`).
+ *   - `@tangle-network/agent-eval/src/rl/auto-research.ts` for the
+ *     primitive's contract.
+ */
+export async function analyzeSweep(
+  options: AnalyzeOptimizationResultOptions,
+): Promise<AnalyzeOptimizationResultReport> {
+  return analyzeOptimizationResult(options)
+}
+
+export type {
+  AnalyzeOptimizationResultOptions,
+  AnalyzeOptimizationResultReport,
+} from '@tangle-network/agent-eval/rl'

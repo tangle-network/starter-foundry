@@ -37,9 +37,14 @@
     "scorecardDir": ".evolve",
     "tracesDir": ".evolve/agent-eval/traces",
     "experimentsDir": ".evolve/agent-eval/experiments",
+    "rawEventsDir": ".evolve/agent-eval/raw-events",
     "publicVars": [
       "EVAL_TARGET_BASE_URL",
       "EVAL_THRESHOLD",
+      "EVAL_INTEGRITY",
+      "EVAL_LLM_BASE_URL",
+      "EVAL_LLM_API_KEY",
+      "EVAL_LLM_PROVIDER",
       "TANGLE_API_KEY"
     ],
     "evalThreshold": "0.7"
@@ -53,6 +58,7 @@
     { "source": "files/src/eval/runner.ts", "target": "src/eval/runner.ts" },
     { "source": "files/src/eval/scorecard.ts", "target": "src/eval/scorecard.ts" },
     { "source": "files/src/eval/cli.ts", "target": "src/eval/cli.ts" },
+    { "source": "files/src/eval/campaign.ts", "target": "src/eval/campaign.ts" },
     { "source": "files/scenarios/.gitkeep", "target": "scenarios/.gitkeep" },
     { "source": "files/scenarios/example.scenario.ts", "target": "scenarios/example.scenario.ts" },
     { "source": "files/judges/example.judge.ts", "target": "judges/example.judge.ts" },
@@ -66,6 +72,7 @@
     { "type": "file-exists", "path": "src/eval/runner.ts" },
     { "type": "file-exists", "path": "src/eval/scorecard.ts" },
     { "type": "file-exists", "path": "src/eval/cli.ts" },
+    { "type": "file-exists", "path": "src/eval/campaign.ts" },
     { "type": "file-exists", "path": "scenarios/example.scenario.ts" },
     { "type": "file-exists", "path": "judges/example.judge.ts" },
     { "type": "file-exists", "path": ".github/workflows/eval.yml" }

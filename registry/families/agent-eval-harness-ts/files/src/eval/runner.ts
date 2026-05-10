@@ -12,6 +12,20 @@
 //      ScenarioResult; aggregate via `JudgeRunner` when sandbox-graded.
 //   5. Emit a scorecard via `writeScorecard` (see scorecard.ts).
 //
+// Capture integrity (agent-eval 0.21+):
+//   - Allocates a `FileSystemRawProviderSink` per run, rooted under
+//     `<tracesDir>/raw-events/<runId>/`. LLM-as-judge call sites that
+//     read `globalThis.__agentEvalRawSink` (or that consumers wire
+//     explicitly) auto-capture every provider HTTP request/response.
+//   - When `EVAL_LLM_BASE_URL` is set the runner calls `assertLlmRoute`
+//     at preflight so the sweep fails loud if it would silently fall
+//     back to the public router.
+//   - After every `runTestGradedScenario` the runner calls
+//     `assertRunCaptured` to verify the run wrote the expected spans
+//     (and, when judges ran, that every LlmSpan has a matching raw
+//     `request` event). Integrity issues are surfaced on the outcome
+//     row but only fail the scenario when `EVAL_INTEGRITY=strict`.
+//
 // All primitives come from the published package — this file is the
 // integration glue, not new measurement infra.
 
@@ -21,11 +35,19 @@ import {
   FileSystemTraceStore,
   FileSystemExperimentStore,
   SubprocessSandboxDriver,
+  assertLlmRoute,
+  LlmRouteAssertionError,
   runTestGradedScenario,
   type Scenario,
   type TestGradedScenario,
   type TestGradedRunResult,
 } from '@tangle-network/agent-eval'
+import {
+  FileSystemRawProviderSink,
+  assertRunCaptured,
+  type RawProviderSink,
+  type RunIntegrityReport,
+} from '@tangle-network/agent-eval/traces'
 // Single source of truth for scenario loading: the agent-eval:scenarios
 // layer composes `src/eval/scenario-loader.ts` next to this runner. Pre-fix
 // the family re-implemented a weaker loader inline (no shape validation),
@@ -33,6 +55,8 @@ import {
 // "extend, don't duplicate", the runner imports the layer's loader.
 import { loadScenarios, type LoadedScenario } from './scenario-loader.js'
 import { writeScorecard, type ScorecardFlow } from './scorecard.js'
+
+export type IntegrityMode = 'off' | 'log' | 'strict'
 
 export interface RunnerOptions {
   /** Project root — defaults to cwd of the runner. */
@@ -49,10 +73,40 @@ export interface RunnerOptions {
   tracesDir?: string
   /** Override experiments dir (default: <root>/.evolve/agent-eval/experiments). */
   experimentsDir?: string
+  /**
+   * Root for per-run `FileSystemRawProviderSink` directories. Default:
+   * `<tracesDir>/../raw-events`. Disabled when `integrityMode` is `'off'`.
+   */
+  rawEventsDir?: string
   /** Where the project-level scorecard.json lands. */
   scorecardPath?: string
   /** Variant label tagged onto every Run for A/B compares. */
   variantId?: string
+  /**
+   * Capture-integrity behaviour after each `runTestGradedScenario`:
+   *
+   *   - `'off'`   — skip raw-sink wiring and `assertRunCaptured`.
+   *   - `'log'`   — assert and surface issues on the outcome row, but do
+   *                 NOT downgrade the scenario verdict. (default)
+   *   - `'strict'`— integrity issues mark the scenario as failed with
+   *                 `failureClass='integrity'`.
+   *
+   * Honours `EVAL_INTEGRITY` env var when unset.
+   */
+  integrityMode?: IntegrityMode
+  /**
+   * Optional LLM client options carried only for the preflight route guard.
+   * When `baseUrl` is set the runner calls `assertLlmRoute` once before any
+   * scenario runs so the sweep fails loud if it would silently fall back
+   * to the public router. Mirrors the `LlmClientOptions` shape from
+   * agent-eval; pass `{ baseUrl, provider, apiKey }` for the LLM judge
+   * route you actually want to exercise.
+   */
+  llmOpts?: {
+    baseUrl?: string
+    provider?: string
+    apiKey?: string
+  }
 }
 
 interface ScenarioOutcome {
@@ -63,6 +117,24 @@ interface ScenarioOutcome {
   failureClass: string | null
   filePath: string
   runId: string
+  /**
+   * Capture-integrity issues observed at run-end. Empty in the common
+   * happy-path case. Surfaced on the row so a launch reviewer can spot
+   * runs that completed structurally but lost their forensic evidence.
+   */
+  integrityIssues?: string[]
+}
+
+/**
+ * Lightweight RawProviderSink handle exposed on `globalThis` for ad-hoc
+ * LLM-judge wiring. A judge call site can read this to pass `rawSink`
+ * into `callLlm` without the runner having to know about the judge. The
+ * canonical pattern is to wire `rawSink` explicitly via dependency
+ * injection — this hook exists so the example judge auto-captures.
+ */
+declare global {
+  // eslint-disable-next-line no-var
+  var __agentEvalRawSink: RawProviderSink | undefined
 }
 
 const HERE = dirname(fileURLToPath(import.meta.url))
@@ -108,7 +180,18 @@ export interface RunReport {
   threshold: number
   outcomes: ScenarioOutcome[]
   tracesDir: string
+  rawEventsDir: string | null
   scorecardPath: string
+  integrityMode: IntegrityMode
+  /** Per-run integrity reports, indexed by runId. */
+  integrityReports: Record<string, RunIntegrityReport>
+}
+
+function resolveIntegrityMode(opt: IntegrityMode | undefined): IntegrityMode {
+  if (opt) return opt
+  const env = (process.env.EVAL_INTEGRITY ?? '').toLowerCase()
+  if (env === 'off' || env === 'log' || env === 'strict') return env
+  return 'log'
 }
 
 export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
@@ -119,8 +202,36 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
   const tracesDir = opts.tracesDir ?? join(projectRoot, '.evolve', 'agent-eval', 'traces')
   const experimentsDir =
     opts.experimentsDir ?? join(projectRoot, '.evolve', 'agent-eval', 'experiments')
+  const rawEventsDir =
+    opts.rawEventsDir ?? join(projectRoot, '.evolve', 'agent-eval', 'raw-events')
   const scorecardPath = opts.scorecardPath ?? join(projectRoot, '.evolve', 'scorecard.json')
   const variantId = opts.variantId ?? process.env.EVAL_VARIANT_ID
+  const integrityMode = resolveIntegrityMode(opts.integrityMode)
+
+  // ── 0.21 Directive 2: assert the route at preflight ───────────────────
+  // Pure function; no I/O. Only runs when a baseUrl is supplied (env or
+  // opts) — the eval-harness ships with no LLM judge by default, so we
+  // don't want to block users who never call an LLM. When a route IS
+  // declared, fail loud before any scenario runs.
+  const llmBaseUrl = opts.llmOpts?.baseUrl ?? process.env.EVAL_LLM_BASE_URL
+  const llmApiKey = opts.llmOpts?.apiKey ?? process.env.EVAL_LLM_API_KEY ?? process.env.TANGLE_API_KEY
+  const llmProvider = opts.llmOpts?.provider ?? process.env.EVAL_LLM_PROVIDER
+  if (llmBaseUrl) {
+    try {
+      assertLlmRoute(
+        { baseUrl: llmBaseUrl, apiKey: llmApiKey, provider: llmProvider },
+        { requireExplicitBaseUrl: true, requireAuth: true },
+      )
+    } catch (err) {
+      if (err instanceof LlmRouteAssertionError) {
+        throw new Error(
+          `eval-harness: preflight route check failed (code=${err.code}). ` +
+            `Set EVAL_LLM_BASE_URL + auth, or unset to skip the check. ${err.message}`,
+        )
+      }
+      throw err
+    }
+  }
 
   const traceStore = new FileSystemTraceStore({ dir: tracesDir })
   // Experiment store is created so callers can persist experiment metadata
@@ -136,10 +247,26 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
     )
   }
 
+  const integrityReports: Record<string, RunIntegrityReport> = {}
   const outcomes: ScenarioOutcome[] = []
   for (const { scenario, filePath } of loaded) {
     const tgs = toTestGraded(scenario, targetUrl)
     const startedAt = Date.now()
+
+    // ── 0.21 Directive 1: per-run RawProviderSink ──────────────────────
+    // Allocated even when no LLM judge runs — the cost is one (possibly
+    // empty) NDJSON file per scenario, and the alternative is a silent
+    // partial-capture bug the next time someone wires in an LLM judge.
+    // Exposed via globalThis so the ad-hoc judge call sites in this
+    // template's `judges/` dir pick it up without explicit plumbing.
+    let rawSink: RawProviderSink | undefined
+    if (integrityMode !== 'off') {
+      rawSink = new FileSystemRawProviderSink({
+        dir: join(rawEventsDir, scenario.id),
+      })
+      globalThis.__agentEvalRawSink = rawSink
+    }
+
     let result: TestGradedRunResult
     try {
       result = await runTestGradedScenario(tgs, traceStore, { driver, variantId })
@@ -155,18 +282,47 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
       })
       console.error(`  ✗ ${scenario.id} — harness error: ${(err as Error).message}`)
       continue
+    } finally {
+      // Always drop the global handle so the next scenario gets its own
+      // sink (or none, when integrity is off).
+      globalThis.__agentEvalRawSink = undefined
     }
+
+    // ── 0.21 Directive 3: assert the run captured before declaring done ─
+    // Read-only. We do NOT set `requireRawCoverageOfLlmSpans` because
+    // the test-graded path may not call any LLM at all (the default
+    // testCommand is a curl). When an LLM judge IS wired the sink will
+    // be populated and consumers can tighten this in `runIntegrityExpect`.
+    let integrityIssues: string[] | undefined
+    if (integrityMode !== 'off' && result.runId) {
+      const report = await assertRunCaptured(traceStore, result.runId, {
+        rawSink,
+        // requireOutcome: the harness always sets pass/score, so this is
+        // a cheap belt-and-suspenders check.
+        requireOutcome: true,
+      })
+      integrityReports[result.runId] = report
+      if (!report.ok) {
+        integrityIssues = report.issues.map((i) => i.code)
+      }
+    }
+
+    const integrityFailed = integrityMode === 'strict' && integrityIssues !== undefined
     outcomes.push({
       scenarioId: scenario.id,
-      pass: result.pass,
-      score: result.score,
+      pass: integrityFailed ? false : result.pass,
+      score: integrityFailed ? 0 : result.score,
       durationMs: Date.now() - startedAt,
-      failureClass: result.failureClass ?? null,
+      failureClass: integrityFailed ? 'integrity' : (result.failureClass ?? null),
       filePath,
       runId: result.runId,
+      ...(integrityIssues ? { integrityIssues } : {}),
     })
-    const mark = result.pass ? '✓' : '✗'
-    console.log(`  ${mark} ${scenario.id} — score=${result.score.toFixed(3)}`)
+    const mark = integrityFailed ? '✗' : result.pass ? '✓' : '✗'
+    const integritySuffix = integrityIssues ? ` (integrity: ${integrityIssues.join(', ')})` : ''
+    console.log(
+      `  ${mark} ${scenario.id} — score=${result.score.toFixed(3)}${integritySuffix}`,
+    )
   }
 
   const passCount = outcomes.filter((o) => o.pass).length
@@ -189,7 +345,10 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
     threshold,
     outcomes,
     tracesDir,
+    rawEventsDir: integrityMode === 'off' ? null : rawEventsDir,
     scorecardPath,
+    integrityMode,
+    integrityReports,
   }
   await writeScorecard(scorecardPath, {
     product: process.env.EVAL_PRODUCT_NAME ?? 'eval-harness',
@@ -198,8 +357,15 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
     coverage: `${passCount}/${outcomes.length} scenarios passed`,
     flows,
   })
+  const integritySummary =
+    integrityMode === 'off'
+      ? 'integrity=off'
+      : `integrity=${integrityMode} ` +
+        `${Object.values(integrityReports).filter((r) => !r.ok).length}/${
+          Object.keys(integrityReports).length
+        } flagged`
   console.log(
-    `\naggregate=${aggregate.toFixed(3)} pass=${passCount}/${outcomes.length} threshold=${threshold}`,
+    `\naggregate=${aggregate.toFixed(3)} pass=${passCount}/${outcomes.length} threshold=${threshold} ${integritySummary}`,
   )
   return report
 }

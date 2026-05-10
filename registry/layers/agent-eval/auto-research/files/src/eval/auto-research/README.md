@@ -1,11 +1,12 @@
 # auto-research
 
-Composable optimization layer over `@tangle-network/agent-eval@^0.19.1`.
+Composable optimization layer over `@tangle-network/agent-eval@^0.23.0`.
 
 Wraps the upstream primitives (`runMultiShotOptimization`,
 `PairwiseSteeringOptimizer`, `runPromptEvolution`, `runProposeReview`,
-`paretoFrontier`, `paretoFrontierWithCrowding`) into a small surface a
-research-harness family can compose without re-deriving the agent-eval API.
+`paretoFrontier`, `paretoFrontierWithCrowding`) plus the 0.23 RL bridge
+(`analyzeOptimizationResult`) into a small surface a research-harness
+family can compose without re-deriving the agent-eval API.
 
 ## Capabilities
 
@@ -71,7 +72,34 @@ const f = frontier([
   { variantId: 'A', quality: 0.81, costUsd: 0.12, wallSeconds: 4.1 },
   { variantId: 'B', quality: 0.83, costUsd: 0.40, wallSeconds: 6.0 },
 ])
+
+// 5. (0.23 RL bridge) Convert the sweep into canonical RunRecords +
+//     DPO/PPO preference triples + reward-hacking diagnosis +
+//     anytime-valid sequential interim verdict. Call AFTER the
+//     optimizer returns; do NOT plumb inside it.
+import { analyzeOptimization } from './eval/auto-research/index.js'
+
+const rl = await analyzeOptimization({
+  result: optimized,                                  // PromptEvolutionResult | MultiShotOptimizationResult
+  ctx: {
+    commitSha: process.env.GIT_SHA!,
+    model: 'claude-sonnet-4-6@2025-04-15',           // snapshot, not bare alias
+    promptHash: hashPrompt(baselinePayload),
+    configHash: hashConfig(optimizerConfig),
+    splitTag: 'search',
+  },
+  comparator: 'baseline',
+  preferences: { minMargin: 0.05 },
+})
+// rl.runs                              → RunRecord[] (canonical, hashed)
+// rl.preferences.pairs                 → DPO/PPO training rows
+// rl.rewardHacking.verdict             → 'clean' | 'suspect' | ...
+// rl.interimConfidence?.recommendation → anytime-valid promote/reject
 ```
+
+The 0.23 RL bridge is what closes the auto-research loop into a
+trainer-consumable artifact set. Reference wiring lives in
+`agent-builder/src/lib/.server/eval/auto-research-runner.ts`.
 
 ## What this layer does NOT do
 

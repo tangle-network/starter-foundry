@@ -1,6 +1,6 @@
 {
   "id": "agent-research-harness-ts",
-  "description": "Node-only TS bundle that operationalises the /research skill — hypothesis-driven prompt + steering optimization on top of @tangle-network/agent-eval@^0.19.1. Reads hypotheses from hypotheses/queue.json, runs a cheap screener pass (1-rep across all hypotheses), promotes the top deltas to a multi-rep validator pass with bootstrap-CI gates, and writes structured results under research-results/. Composes the eval-harness's auto-research layer (PairwiseSteeringOptimizer + runPromptEvolution + runMultiShotOptimization + paretoFrontier). Operator-facing CLI: `pnpm research propose|screen|validate|sweep`.",
+  "description": "Node-only TS bundle that operationalises the /research skill — hypothesis-driven prompt + steering optimization on top of @tangle-network/agent-eval@^0.23.0. Reads hypotheses from hypotheses/queue.json, runs a cheap screener pass (1-rep across all hypotheses), promotes the top deltas to a multi-rep validator pass with bootstrap-CI gates, and writes structured results under research-results/. Composes the eval-harness's auto-research layer (PairwiseSteeringOptimizer + runPromptEvolution + runMultiShotOptimization + paretoFrontier) plus the 0.23 RL bridge (analyzeOptimizationResult → RunRecord[] + DPO/PPO preferences + reward-hacking diagnosis + anytime-valid sequential verdicts). Operator-facing CLI: `pnpm research propose|screen|validate|sweep`.",
   "tags": [
     "research-harness",
     "agent-eval",

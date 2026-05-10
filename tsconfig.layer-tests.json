@@ -16,12 +16,19 @@
     "registry/layers/agent-eval/redteam/files/src/eval/redteam/runner.ts",
     "registry/layers/agent-eval/redteam/files/src/eval/redteam/categories.ts",
     "registry/layers/agent-eval/redteam/files/tests/*.test.ts",
+    "registry/layers/agent-eval/auto-research/files/src/eval/auto-research/loop.ts",
+    "registry/layers/agent-eval/auto-research/files/src/eval/auto-research/index.ts",
+    "registry/layers/agent-eval/auto-research/files/src/eval/auto-research/propose-review.ts",
+    "registry/layers/agent-eval/auto-research/files/src/eval/auto-research/pareto.ts",
     "registry/families/agent-research-harness-ts/files/src/research/types.ts",
     "registry/families/agent-research-harness-ts/files/src/research/screener.ts",
     "registry/families/agent-research-harness-ts/files/src/research/validator.ts",
+    "registry/families/agent-research-harness-ts/files/src/research/runner.ts",
     "registry/families/agent-research-harness-ts/files/tests/*.test.ts",
     "registry/layers/agent-eval/scenarios/files/src/eval/scenario-loader.ts",
     "registry/layers/agent-eval/scenarios/files/src/eval/scenario-types.ts",
+    "registry/families/agent-eval-harness-ts/files/src/eval/scorecard.ts",
+    "registry/families/agent-eval-harness-ts/files/src/eval/campaign.ts",
     "registry/families/agent-eval-harness-ts/files/tests/**/*.ts"
   ]
 }

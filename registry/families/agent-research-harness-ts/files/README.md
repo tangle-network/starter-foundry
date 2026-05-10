@@ -1,6 +1,6 @@
 # research-harness
 
-Hypothesis-driven research harness on top of `@tangle-network/agent-eval@^0.19.1`.
+Hypothesis-driven research harness on top of `@tangle-network/agent-eval@^0.23.0`.
 
 ## What this bundle is
 
@@ -26,6 +26,14 @@ It composes the upstream agent-eval primitives:
   filtering across (quality, cost, latency).
 - `bootstrapCi` + `cohensD` — statistical sign-off in the validator
   pass.
+- **`analyzeOptimizationResult`** (agent-eval 0.23 RL bridge, exposed
+  here as `analyzeSweep`) — converts a `runMultiShotOptimization` /
+  `runPromptEvolution` output into the canonical RL artifact set:
+  `RunRecord[]`, DPO/PPO preference triples ready for TRL / prime-rl,
+  verifiable reward signals, reward-hacking diagnosis, and (when a
+  `comparator` is supplied) an anytime-valid sequential interim verdict.
+  Call after the optimizer returns; idempotent and read-only with
+  respect to the sweep result.
 
 ## Workflow
 
@@ -103,6 +111,43 @@ await runSweep({
   runner,
 })
 ```
+
+## Closing the loop into RL training (agent-eval 0.23+)
+
+After a `runMultiShotTrajectoryOptimization` / `runEvolution` sweep,
+call `analyzeSweep` to emit the canonical RL artifact set:
+
+```ts
+import { runMultiShotTrajectoryOptimization } from './src/eval/auto-research/loop.js'
+import { analyzeSweep } from './src/research/runner.js'
+
+const optimized = await runMultiShotTrajectoryOptimization(config)
+
+const rl = await analyzeSweep({
+  result: optimized,
+  ctx: {
+    commitSha: process.env.GIT_SHA!,
+    model: 'claude-sonnet-4-6@2025-04-15',     // snapshot, not bare alias
+    promptHash: hashPrompt(seedPayload),
+    configHash: hashConfig(config),
+    splitTag: 'search',
+  },
+  comparator: 'baseline',
+  preferences: { minMargin: 0.05 },
+})
+
+// rl.runs                              → RunRecord[] (validated, costed)
+// rl.preferences.pairs                 → DPO/PPO/KTO training rows
+// rl.rewardSignals                     → verifiable reward per run
+// rl.rewardHacking.verdict             → 'clean' | 'suspect' | ...
+// rl.interimConfidence?.recommendation → anytime-valid promote/reject
+```
+
+Reference wiring lives in
+`agent-builder/src/lib/.server/eval/auto-research-runner.ts` —
+specifically the post-`runEvolution` RL-bridge invocation. The
+artifact set is what closes the auto-research loop into a TRL /
+prime-rl / in-house DPO trainer.
 
 ## Tests
 

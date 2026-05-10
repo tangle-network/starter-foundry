@@ -128,13 +128,17 @@ test('agent.json points systemPromptFile at AGENTS.md', () => {
   )
 })
 
-test('package.json declares @tangle-network/agent-eval ^0.19.1 dep', () => {
+test('package.json declares a current @tangle-network/agent-eval (^0.23+) dep', () => {
   const pkg = JSON.parse(readFileSync(join(FAMILY_DIR, 'files/package.json'), 'utf8'))
   const dep = pkg.dependencies?.['@tangle-network/agent-eval']
+  // 0.21 introduced capture integrity, 0.22 added EvalCampaign + replay,
+  // 0.23 added the RL bridge subpath. The template wires all three, so
+  // ^0.23 is the lower bound — earlier versions don't export the
+  // primitives the runner/campaign import.
   assert.match(
     dep ?? '',
-    /^\^?0\.19\./,
-    `package.json must depend on @tangle-network/agent-eval ^0.19.x; got ${dep}`,
+    /^\^?0\.(2[3-9]|[3-9]\d)\./,
+    `package.json must depend on @tangle-network/agent-eval ^0.23+; got ${dep}`,
   )
   assert.ok(pkg.scripts?.eval, 'pnpm eval script must be wired')
   assert.ok(pkg.scripts?.['eval:gate'], 'pnpm eval:gate script must be wired')
@@ -154,6 +158,56 @@ test('runner.ts imports the agent-eval primitives we claim to compose', () => {
       `runner.ts must import ${symbol} from @tangle-network/agent-eval`,
     )
   }
+})
+
+test('runner.ts wires the 0.21 capture-integrity directives', () => {
+  // Each primitive maps to one of the four directives in
+  // SKILL.md § Capture integrity. Removing one reintroduces the
+  // shipped-bug class (raw events lost / wrong route used silently /
+  // partial capture undetected). The template must wire them by default
+  // — see registry/families/agent-eval-harness-ts/files/AGENTS.md.
+  const src = readFileSync(join(FAMILY_DIR, 'files/src/eval/runner.ts'), 'utf8')
+  for (const symbol of [
+    'FileSystemRawProviderSink', // Directive 1
+    'assertLlmRoute', // Directive 2
+    'assertRunCaptured', // Directive 3
+  ]) {
+    assert.match(
+      src,
+      new RegExp(`\\b${symbol}\\b`),
+      `runner.ts must wire ${symbol} (capture-integrity directive)`,
+    )
+  }
+  // The /traces subpath is the canonical import path for the integrity
+  // surface — main barrel doesn't re-export FileSystemRawProviderSink.
+  assert.match(
+    src,
+    /@tangle-network\/agent-eval\/traces/,
+    'runner.ts must import integrity primitives from the /traces subpath',
+  )
+})
+
+test('campaign.ts wraps runEvalCampaign with capture integrity by construction (0.22)', () => {
+  const path = join(FAMILY_DIR, 'files/src/eval/campaign.ts')
+  assert.ok(existsSync(path), 'campaign.ts must ship with the eval-harness template')
+  const src = readFileSync(path, 'utf8')
+  // 0.22 EvalCampaign + replay: the canonical entrypoint for benchmark sweeps
+  assert.match(
+    src,
+    /\brunEvalCampaign\b/,
+    'campaign.ts must import runEvalCampaign from agent-eval',
+  )
+  // Capture integrity wired by construction — see eval-campaign.ts in agent-eval
+  assert.match(
+    src,
+    /\bFileSystemRawProviderSink\b/,
+    'campaign.ts must wire FileSystemRawProviderSink via rawSinkFactory',
+  )
+  assert.match(
+    src,
+    /rawSinkFactory/,
+    'campaign.ts must pass rawSinkFactory so every run gets per-run raw capture',
+  )
 })
 
 test('CI workflow runs typecheck + eval and uploads scorecard artifact', () => {
@@ -260,7 +314,7 @@ test('every layer file declared in manifest.files exists on disk', () => {
   }
 })
 
-test('auto-research layer exports the 0.19 multi-shot trajectory optimizer', () => {
+test('auto-research layer exports the multi-shot trajectory optimizer + 0.23 RL bridge', () => {
   const loop = readFileSync(
     join(LAYERS_DIR, 'auto-research/files/src/eval/auto-research/loop.ts'),
     'utf8',
@@ -277,6 +331,25 @@ test('auto-research layer exports the 0.19 multi-shot trajectory optimizer', () 
     'loop docs must preserve promotion/ASI semantics for generated harnesses',
   )
 
+  // 0.23 RL bridge: analyzeOptimizationResult is the canonical post-sweep
+  // primitive. Reference wiring lives in agent-builder's auto-research
+  // runner — see SKILL.md "Closing the loop into RL training".
+  assert.match(
+    loop,
+    /\banalyzeOptimizationResult\b/,
+    'loop must import analyzeOptimizationResult from @tangle-network/agent-eval/rl',
+  )
+  assert.match(
+    loop,
+    /@tangle-network\/agent-eval\/rl/,
+    'loop must import the RL bridge from the /rl subpath',
+  )
+  assert.match(
+    loop,
+    /export async function analyzeOptimization\b/,
+    'loop must expose analyzeOptimization as the scaffold-level RL-bridge entrypoint',
+  )
+
   const barrel = readFileSync(
     join(LAYERS_DIR, 'auto-research/files/src/eval/auto-research/index.ts'),
     'utf8',
@@ -286,6 +359,7 @@ test('auto-research layer exports the 0.19 multi-shot trajectory optimizer', () 
     /\brunMultiShotTrajectoryOptimization\b/,
     'barrel must re-export the multi-shot wrapper',
   )
+  assert.match(barrel, /\banalyzeOptimization\b/, 'barrel must re-export the RL-bridge wrapper')
 })
 
 test('tier1 keywords are eval-suffixed multi-word phrases (no bare nouns)', () => {

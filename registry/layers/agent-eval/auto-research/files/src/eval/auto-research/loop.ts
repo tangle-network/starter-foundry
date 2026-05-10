@@ -1,12 +1,12 @@
 /**
  * auto-research:loop — composable optimization loop.
  *
- * Wraps the 0.19 optimization primitives from
- * `@tangle-network/agent-eval@^0.19.1`. The eval-harness layers (scenarios,
- * judge-rubric, regression) supply the measurement substrate; this module
- * supplies the optimizer that drives variants against it.
+ * Wraps the optimization primitives from `@tangle-network/agent-eval@^0.23.0`.
+ * The eval-harness layers (scenarios, judge-rubric, regression) supply the
+ * measurement substrate; this module supplies the optimizer that drives
+ * variants against it.
  *
- * Two entrypoints:
+ * Three optimization entrypoints:
  *
  *   - `runSteeringOptimization` — N steering bundles × M scenarios → winner
  *     by observed aggregate score. Use when variants are already enumerated
@@ -20,8 +20,21 @@
  *     consumer wants the loop to GENERATE variants for a narrow prompt-only
  *     surface. Prefer `runMultiShotTrajectoryOptimization` for product loops.
  *
- * Both pass through to agent-eval primitives unchanged so callers can read
- * the upstream docs and trust their semantics.
+ * Plus the 0.23 RL bridge:
+ *
+ *   - `analyzeOptimizationResult` — converts an optimization sweep output
+ *     (`PromptEvolutionResult` or `MultiShotOptimizationResult`) into the
+ *     canonical RL artifact set: `RunRecord[]`, preference triples ready
+ *     for DPO/PPO/KTO, verifiable reward signals, reward-hacking diagnosis,
+ *     and an anytime-valid sequential verdict. Idempotent and read-only
+ *     with respect to the sweep result — call after the optimizer returns.
+ *
+ * Both optimization entrypoints pass through to agent-eval primitives
+ * unchanged so callers can read the upstream docs and trust their
+ * semantics. The RL bridge is wired here so families inherit the
+ * launch-decision-grade artifact set by default — see
+ * `agent-builder/src/lib/.server/eval/auto-research-runner.ts` for the
+ * canonical reference wiring.
  */
 
 import {
@@ -36,6 +49,11 @@ import {
   type SteeringOptimizationResult,
   type SteeringOptimizerConfig,
 } from '@tangle-network/agent-eval'
+import {
+  analyzeOptimizationResult,
+  type AnalyzeOptimizationResultOptions,
+  type AnalyzeOptimizationResultReport,
+} from '@tangle-network/agent-eval/rl'
 
 export interface SteeringOptimizationInput {
   rows: SteeringOptimizationRow[]
@@ -84,6 +102,43 @@ export async function runEvolution<P>(
   return runPromptEvolution(config)
 }
 
+/**
+ * Bridge an optimization sweep output to the canonical RL artifact set —
+ * `RunRecord[]`, preference triples (chosen/rejected for DPO/PPO/KTO),
+ * verifiable reward signals, reward-hacking diagnosis, and (when a
+ * comparator candidate is supplied) an anytime-valid sequential verdict.
+ *
+ * Accepts either a `PromptEvolutionResult` or a `MultiShotOptimizationResult`
+ * — the function detects which by structural typing.
+ *
+ * Idempotent and read-only with respect to the optimization result. Call
+ * *after* `runMultiShotTrajectoryOptimization` / `runEvolution` returns; do
+ * NOT plumb it inside the optimizer.
+ *
+ * @example
+ *   const evo = await runMultiShotTrajectoryOptimization(config)
+ *   const rl = await analyzeOptimization({
+ *     result: evo,
+ *     ctx: {
+ *       commitSha: process.env.GIT_SHA!,
+ *       model: 'claude-sonnet-4-6@2025-04-15',
+ *       promptHash: hashPrompt(config.seedPrompts),
+ *       configHash: hashConfig(config),
+ *       splitTag: 'search',
+ *     },
+ *     comparator: 'baseline',
+ *     preferences: { minMargin: 0.05 },
+ *   })
+ *   // rl.preferences.pairs → DPO/PPO training rows
+ *   // rl.rewardHacking.verdict → 'clean' | 'suspect' | ...
+ *   // rl.interimConfidence?.recommendation.decision → 'promote' | 'reject' | 'continue'
+ */
+export async function analyzeOptimization(
+  options: AnalyzeOptimizationResultOptions,
+): Promise<AnalyzeOptimizationResultReport> {
+  return analyzeOptimizationResult(options)
+}
+
 export type {
   MultiShotOptimizationConfig,
   MultiShotOptimizationResult,
@@ -93,3 +148,8 @@ export type {
   SteeringOptimizationResult,
   SteeringOptimizerConfig,
 } from '@tangle-network/agent-eval'
+
+export type {
+  AnalyzeOptimizationResultOptions,
+  AnalyzeOptimizationResultReport,
+} from '@tangle-network/agent-eval/rl'

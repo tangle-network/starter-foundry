@@ -15,7 +15,7 @@
     {
       "id": "router-tangle",
       "baseUrl": "https://router.tangle.tools",
-      "credentialKey": "TANGLE_ROUTER_API_KEY",
+      "credentialKey": "TANGLE_API_KEY",
       "note": "Tangle's own router — prefer this so billing + observability stays inside the platform."
     }
   ],

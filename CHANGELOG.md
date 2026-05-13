@@ -1,13 +1,39 @@
 # CHANGELOG
 
+## v0.12.0 (2026-05-13, @ 009c1f3)
+
+**Generated range:** `v0.11.0..HEAD`
+
+### Capabilities
+
+- **agent-eval 0.23 across templates** (#137, #138) — bumps `@tangle-network/agent-eval` to `^0.23.0` and wires multi-shot research scaffolds into starter templates. `MultiShotRunner`, `MultiShotScorer`, `runMultiShotOptimization`, `paretoFrontier`, and `toRunRecord()` are now first-class in the research scaffold flow.
+- **Supply-chain hardening** (#140) — `minimum-release-age=4320` (72 h public-registry quarantine) shipped in foundry + all templates. Mitigates the freshly-published-malicious-package class of supply-chain attack.
+- **Env rename: `TANGLE_ROUTER_API_KEY` → `TANGLE_API_KEY`** (#139) — canonical name across the fleet; old name still readable for back-compat in the migration window.
+- **Tangle agent packages refresh** (#136) — coordinated bump across the tangle agent set.
+
+### Compatibility
+
+- No breaking API changes for blueprint-agent consumers — `getCuratedScaffoldContext`, `emitBuildoutEvent`, `compose-prompt` CLI surfaces unchanged from v0.11.0 (see `docs/issues/blueprint-agent-starter-foundry-integration.md`, post-v0.11.0 audit).
+- Family count: 161 → 168 (7 new entries in `registry/families/`, all additive).
+
+### Commits (5)
+
+- chore(security): pnpm minimumReleaseAge=4320 in foundry + all templates (#140) (009c1f3)
+- chore(env): rename TANGLE_ROUTER_API_KEY → TANGLE_API_KEY (#139) (71deea2)
+- feat(templates): wire agent-eval 0.21–0.23 features into starter templates (#138) (9aa0b8e)
+- chore(deps): bump @tangle-network/agent-eval ^0.19.1 -> ^0.23.0 (#137) (71cbdee)
+- chore: update Tangle agent packages (#136) (96912c5)
+
 ## v0.7.2 (2026-04-25, @ 1f504fc)
 
 **Generated range:** `v0.7.0..HEAD`
 
 ### New capabilities
-- `capability:agent-eval` — Ships a reproducible agent-eval harness into the scaffold: starter scenarios, a deterministic + optional LLM-judge runner that talks to the 
+
+- `capability:agent-eval` — Ships a reproducible agent-eval harness into the scaffold: starter scenarios, a deterministic + optional LLM-judge runner that talks to the
 
 ### Commits (33)
+
 - feat(gen10): agentic-dispatch closed loop — judge fleet + dispatch + auto-loop wiring (#70) (1f504fc)
 - feat(consume-vb-feedback): augment any vibecoder — first scaffold-side attribution loop (#69) (c8322b6)
 - chore: bump to 0.7.1 — agent-eval 0.7.2 consumption + Gen 8-9 arc (#68) (6c58533)
@@ -43,10 +69,12 @@
 - chore(cleanup): remove 5 already-promoted proposal drafts from .evolve/ (3aa711c)
 
 ### Registry state at HEAD
+
 - families: 100
 - capabilities: 110
 - partners: 19
 
 ### Consumer action items
+
 - Ensure your bench container has the toolchains any new families require (e.g. `bun`, `deno`, `wasm-pack`, `vllm`).
 - Re-emit your buildout traces via `emitBuildoutEvent` — new family IDs will be classified by the detector.

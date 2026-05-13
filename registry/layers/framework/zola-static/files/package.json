@@ -8,5 +8,9 @@
     "check": "zola check",
     "validate": "node validate-zola.mjs"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "pnpm": {
+    "minimumReleaseAge": 4320,
+    "minimumReleaseAgeExclude": []
+  }
 }

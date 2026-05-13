@@ -11,5 +11,9 @@
     "typescript": "^5.9.0",
     "@types/chrome": "^0.0.280",
     "@types/node": "^20.17.0"
+  },
+  "pnpm": {
+    "minimumReleaseAge": 4320,
+    "minimumReleaseAgeExclude": []
   }
 }

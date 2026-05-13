@@ -2,5 +2,9 @@
   "name": "{{packageName}}",
   "version": "0.1.0",
   "private": true,
-  "type": "module"
+  "type": "module",
+  "pnpm": {
+    "minimumReleaseAge": 4320,
+    "minimumReleaseAgeExclude": []
+  }
 }

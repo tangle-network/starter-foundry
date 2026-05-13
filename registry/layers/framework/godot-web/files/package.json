@@ -11,5 +11,9 @@
   "devDependencies": {
     "serve": "^14.2.0",
     "typescript": "^5.4.0"
+  },
+  "pnpm": {
+    "minimumReleaseAge": 4320,
+    "minimumReleaseAgeExclude": []
   }
 }

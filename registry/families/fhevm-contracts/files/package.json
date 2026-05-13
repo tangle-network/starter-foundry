@@ -12,5 +12,9 @@
     "@fhevm/solidity": "^0.11.1",
     "@fhevm/hardhat-plugin": "latest",
     "@fhevm-sdk/core": "^0.1.6"
+  },
+  "pnpm": {
+    "minimumReleaseAge": 4320,
+    "minimumReleaseAgeExclude": []
   }
 }

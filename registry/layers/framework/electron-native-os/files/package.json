@@ -26,5 +26,9 @@
     "react-dom": "^18.3.1",
     "typescript": "^5.6.3",
     "vite": "^5.4.10"
+  },
+  "pnpm": {
+    "minimumReleaseAge": 4320,
+    "minimumReleaseAgeExclude": []
   }
 }

@@ -92,8 +92,13 @@ test('every JS-family package.json template pins vite (direct or overrides)', ()
     if (!existsSync(pkgPath)) continue
     const pkg = JSON.parse(readFileSync(pkgPath, 'utf8')) as Record<string, unknown>
     // Families that declare no dependencies at all have nothing to defend against.
+    // The `pnpm` block only counts as "has deps" if it carries an overrides map;
+    // a bare supply-chain-hardening block (minimumReleaseAge, etc.) does not
+    // introduce any installed deps and should not require a vite pin.
+    const pnpmBlock = (pkg as { pnpm?: { overrides?: unknown } }).pnpm
+    const pnpmHasOverrides = !!(pnpmBlock && pnpmBlock.overrides)
     const hasAnyDeps =
-      pkg.dependencies || pkg.devDependencies || pkg.overrides || (pkg as { pnpm?: unknown }).pnpm
+      pkg.dependencies || pkg.devDependencies || pkg.overrides || pnpmHasOverrides
     if (!hasAnyDeps) continue
     if (!hasVitePin(pkg)) missing.push(family)
   }

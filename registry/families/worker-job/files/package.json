@@ -5,5 +5,9 @@
   "scripts": {
     "start": "node worker.mjs",
     "validate": "node --check worker.mjs"
+  },
+  "pnpm": {
+    "minimumReleaseAge": 4320,
+    "minimumReleaseAgeExclude": []
   }
 }

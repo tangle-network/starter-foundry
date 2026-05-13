@@ -4,5 +4,9 @@
   "type": "module",
   "scripts": {
     "start": "node server.mjs"
+  },
+  "pnpm": {
+    "minimumReleaseAge": 4320,
+    "minimumReleaseAgeExclude": []
   }
 }

@@ -9,5 +9,9 @@
   },
   "devDependencies": {
     "hugo-extended": "^0.127.0"
+  },
+  "pnpm": {
+    "minimumReleaseAge": 4320,
+    "minimumReleaseAgeExclude": []
   }
 }

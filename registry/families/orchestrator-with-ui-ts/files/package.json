@@ -26,5 +26,9 @@
   },
   "overrides": {
     "vite": "^5.4.10"
+  },
+  "pnpm": {
+    "minimumReleaseAge": 4320,
+    "minimumReleaseAgeExclude": []
   }
 }

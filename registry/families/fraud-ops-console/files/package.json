@@ -32,6 +32,8 @@
   "pnpm": {
     "overrides": {
       "vite": "^5.4.10"
-    }
+    },
+    "minimumReleaseAge": 4320,
+    "minimumReleaseAgeExclude": []
   }
 }

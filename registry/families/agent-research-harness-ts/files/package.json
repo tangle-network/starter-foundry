@@ -27,5 +27,9 @@
   },
   "engines": {
     "node": ">=20"
+  },
+  "pnpm": {
+    "minimumReleaseAge": 4320,
+    "minimumReleaseAgeExclude": []
   }
 }

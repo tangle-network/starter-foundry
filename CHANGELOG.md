@@ -8,7 +8,7 @@
 
 - **agent-eval 0.23 across templates** (#137, #138) — bumps `@tangle-network/agent-eval` to `^0.23.0` and wires multi-shot research scaffolds into starter templates. `MultiShotRunner`, `MultiShotScorer`, `runMultiShotOptimization`, `paretoFrontier`, and `toRunRecord()` are now first-class in the research scaffold flow.
 - **Supply-chain hardening** (#140) — `minimum-release-age=4320` (72 h public-registry quarantine) shipped in foundry + all templates. Mitigates the freshly-published-malicious-package class of supply-chain attack.
-- **Env rename: `TANGLE_ROUTER_API_KEY` → `TANGLE_API_KEY`** (#139) — canonical name across the fleet; old name still readable for back-compat in the migration window.
+- **Env rename: `TANGLE_API_KEY` → `TANGLE_API_KEY`** (#139) — canonical name across the fleet; old name still readable for back-compat in the migration window.
 - **Tangle agent packages refresh** (#136) — coordinated bump across the tangle agent set.
 
 ### Compatibility
@@ -19,7 +19,7 @@
 ### Commits (5)
 
 - chore(security): pnpm minimumReleaseAge=4320 in foundry + all templates (#140) (009c1f3)
-- chore(env): rename TANGLE_ROUTER_API_KEY → TANGLE_API_KEY (#139) (71deea2)
+- chore(env): rename TANGLE_API_KEY → TANGLE_API_KEY (#139) (71deea2)
 - feat(templates): wire agent-eval 0.21–0.23 features into starter templates (#138) (9aa0b8e)
 - chore(deps): bump @tangle-network/agent-eval ^0.19.1 -> ^0.23.0 (#137) (71cbdee)
 - chore: update Tangle agent packages (#136) (96912c5)

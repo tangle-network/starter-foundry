@@ -17,11 +17,30 @@ import {
   gradeSemanticStatus,
   type LayerStatus,
   type Severity,
-  type StepContext,
-  type StepRubric,
   type Trajectory,
   type TrajectoryStep,
 } from '@tangle-network/agent-eval'
+
+// StepRubric / StepContext are no longer re-exported from the top-level
+// barrel as of agent-eval 0.30.0 (PrmGrader is the only public surface).
+// Mirror the shapes here so this layer template stays self-contained and
+// can be shipped into consumer apps without depending on internal modules.
+export interface StepContext {
+  trajectory: Trajectory
+  step: TrajectoryStep
+  prior: TrajectoryStep[]
+  next: TrajectoryStep[]
+}
+export interface StepRubric {
+  id: string
+  kinds?: Array<TrajectoryStep['span']['kind']>
+  weight?: number
+  grade: (ctx: StepContext) => Promise<{
+    score: number
+    rationale?: string
+    evidence?: string
+  } | null>
+}
 
 export type PerTurnStatus = 'measured' | 'unmeasured'
 

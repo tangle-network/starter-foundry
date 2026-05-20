@@ -18,18 +18,42 @@
 //   node scripts/promote-capability-proposal.ts --id foo-capability
 //   node scripts/promote-capability-proposal.ts --all [--dry-run] [--no-pr]
 
-import { appendFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs'
+import {
+  appendFileSync,
+  cpSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { tmpdir } from 'node:os'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
-import { InMemoryTraceStore, BuilderSession, SubprocessSandboxDriver, scoreProject } from '@tangle-network/agent-eval'
+import {
+  InMemoryTraceStore,
+  SandboxHarness,
+  SubprocessSandboxDriver,
+  TraceEmitter,
+  RunCritic,
+} from '@tangle-network/agent-eval'
 import { HARNESS_CONFIGS } from '../dist/eval/scaffold-bridge.js'
-import { checkDeclaredDepUsed, checkScaffoldRuns, checkEvalScores } from '../dist/lib/promoter-gates.js'
+import {
+  checkDeclaredDepUsed,
+  checkScaffoldRuns,
+  checkEvalScores,
+} from '../dist/lib/promoter-gates.js'
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const argv = process.argv.slice(2)
-const ID = (() => { const i = argv.indexOf('--id'); return i >= 0 ? argv[i + 1] : null })()
+const ID = (() => {
+  const i = argv.indexOf('--id')
+  return i >= 0 ? argv[i + 1] : null
+})()
 const ALL = argv.includes('--all')
 const DRY_RUN = argv.includes('--dry-run')
 
@@ -46,20 +70,39 @@ if (!existsSync(proposalsDir)) {
 const targets = ALL
   ? readdirSync(proposalsDir).filter((d) => {
       const p = join(proposalsDir, d)
-      try { return statSync(p).isDirectory() && existsSync(join(p, 'manifest.json')) } catch { return false }
+      try {
+        return statSync(p).isDirectory() && existsSync(join(p, 'manifest.json'))
+      } catch {
+        return false
+      }
     })
   : [ID]
 
 const governorLog = join(REPO, '.evolve/governor.jsonl')
 const impactLog = join(REPO, '.evolve/generation-impact.jsonl')
 function logGovernor(entry) {
-  try { appendFileSync(governorLog, JSON.stringify({ ts: new Date().toISOString(), source: 'promote-capability-proposal', ...entry }) + '\n') } catch { /* noop */ }
+  try {
+    appendFileSync(
+      governorLog,
+      JSON.stringify({
+        ts: new Date().toISOString(),
+        source: 'promote-capability-proposal',
+        ...entry,
+      }) + '\n',
+    )
+  } catch {
+    /* noop */
+  }
 }
 function logImpact(entry) {
   // Test runs pollute generation-impact.jsonl with fixture-driven
   // failures. Same no-op discipline as promote-family-proposal.
   if (process.env.STARTER_FOUNDRY_SYNTHETIC_RUN === '1') return
-  try { appendFileSync(impactLog, JSON.stringify({ ts: new Date().toISOString(), ...entry }) + '\n') } catch { /* noop */ }
+  try {
+    appendFileSync(impactLog, JSON.stringify({ ts: new Date().toISOString(), ...entry }) + '\n')
+  } catch {
+    /* noop */
+  }
 }
 
 const results = []
@@ -70,7 +113,14 @@ for (const id of targets) {
 
 console.log('\n━━━━ capability promotion summary ━━━━')
 for (const r of results) {
-  const mark = r.gateReached === 'promoted' ? '✓' : r.gateReached === 'compose-pass' ? '◐' : r.gateReached === 'schema-pass' ? '·' : '✗'
+  const mark =
+    r.gateReached === 'promoted'
+      ? '✓'
+      : r.gateReached === 'compose-pass'
+        ? '◐'
+        : r.gateReached === 'schema-pass'
+          ? '·'
+          : '✗'
   console.log(`  ${mark} ${r.id.padEnd(30)} gate=${r.gateReached.padEnd(15)} ${r.message}`)
 }
 const promoted = results.filter((r) => r.gateReached === 'promoted').length
@@ -86,7 +136,10 @@ async function promoteOne(id) {
   const manifest = loadJson(join(draftDir, 'manifest.json'))
   const schemaErrors = validateCapabilitySchema(draftDir, id, manifest)
   if (schemaErrors.length > 0) {
-    writeFileSync(join(draftDir, 'validation-errors.json'), JSON.stringify({ gate: 'schema', errors: schemaErrors }, null, 2))
+    writeFileSync(
+      join(draftDir, 'validation-errors.json'),
+      JSON.stringify({ gate: 'schema', errors: schemaErrors }, null, 2),
+    )
     return fail(id, 'schema-fail', `schema: ${schemaErrors.length} errors`)
   }
   console.log(`  ✓ ${id} schema-pass`)
@@ -106,8 +159,15 @@ async function promoteOne(id) {
     // Rebuild dist so CLI sees the new capability.
     const buildRes = spawnSync('pnpm', ['build'], { cwd: REPO, encoding: 'utf8' })
     if (buildRes.status !== 0) {
-      writeFileSync(join(draftDir, 'validation-errors.json'), JSON.stringify({ gate: 'build-prep', error: buildRes.stderr.slice(-2000) }, null, 2))
-      return fail(id, 'schema-pass', `typecheck failed staging capability: ${buildRes.stderr.slice(-300)}`)
+      writeFileSync(
+        join(draftDir, 'validation-errors.json'),
+        JSON.stringify({ gate: 'build-prep', error: buildRes.stderr.slice(-2000) }, null, 2),
+      )
+      return fail(
+        id,
+        'schema-pass',
+        `typecheck failed staging capability: ${buildRes.stderr.slice(-300)}`,
+      )
     }
     // Pick target family — first appliesTo entry where BOTH family AND
     // matching framework layer exist. Family id can differ from framework
@@ -116,14 +176,31 @@ async function promoteOne(id) {
     const appliesTo = Array.isArray(manifest.appliesTo) ? manifest.appliesTo : []
     let targetFamily = null
     for (const fam of appliesTo) {
-      if (existsSync(join(REPO, 'registry/families', fam)) && existsSync(join(REPO, 'registry/layers/framework', fam))) {
+      if (
+        existsSync(join(REPO, 'registry/families', fam)) &&
+        existsSync(join(REPO, 'registry/layers/framework', fam))
+      ) {
         targetFamily = fam
         break
       }
     }
     if (!targetFamily) {
-      writeFileSync(join(draftDir, 'validation-errors.json'), JSON.stringify({ gate: 'compose', error: `no appliesTo family has a matching framework layer: ${appliesTo.join(', ')}` }, null, 2))
-      return fail(id, 'schema-pass', `no appliesTo family has matching framework layer: ${appliesTo.join(', ')}`)
+      writeFileSync(
+        join(draftDir, 'validation-errors.json'),
+        JSON.stringify(
+          {
+            gate: 'compose',
+            error: `no appliesTo family has a matching framework layer: ${appliesTo.join(', ')}`,
+          },
+          null,
+          2,
+        ),
+      )
+      return fail(
+        id,
+        'schema-pass',
+        `no appliesTo family has matching framework layer: ${appliesTo.join(', ')}`,
+      )
     }
     // Compose family + this capability.
     const spec = {
@@ -136,19 +213,34 @@ async function promoteOne(id) {
     }
     const specPath = join(composeTmp, 'spec.json')
     writeFileSync(specPath, JSON.stringify(spec))
-    const composeRes = spawnSync('node', ['dist/cli.js', 'compose', '--spec', specPath, '--out', join(composeTmp, 'out'), '--json'], {
-      cwd: REPO,
-      encoding: 'utf8',
-    })
+    const composeRes = spawnSync(
+      'node',
+      ['dist/cli.js', 'compose', '--spec', specPath, '--out', join(composeTmp, 'out'), '--json'],
+      {
+        cwd: REPO,
+        encoding: 'utf8',
+      },
+    )
     if (composeRes.status !== 0) {
-      writeFileSync(join(draftDir, 'validation-errors.json'), JSON.stringify({ gate: 'compose', error: composeRes.stderr.slice(-2000), targetFamily }, null, 2))
+      writeFileSync(
+        join(draftDir, 'validation-errors.json'),
+        JSON.stringify(
+          { gate: 'compose', error: composeRes.stderr.slice(-2000), targetFamily },
+          null,
+          2,
+        ),
+      )
       return fail(id, 'schema-pass', `compose failed: ${composeRes.stderr.slice(-300)}`)
     }
     composedOutDir = join(composeTmp, 'out')
     composedLayers = [`framework:${targetFamily}`, `capability:${id}`]
     console.log(`  ✓ ${id} compose-pass (on ${targetFamily})`)
   } finally {
-    try { rmSync(registryCapDir, { recursive: true, force: true }) } catch { /* noop */ }
+    try {
+      rmSync(registryCapDir, { recursive: true, force: true })
+    } catch {
+      /* noop */
+    }
   }
 
   // Gate 3: build — score the composed scaffold via agent-eval.
@@ -160,17 +252,42 @@ async function promoteOne(id) {
     const harnessConfig = { ...harnessConfigForFamily(family), cwd: composedOutDir }
     const store = new InMemoryTraceStore()
     const driver = new SubprocessSandboxDriver()
-    const session = new BuilderSession(store, { projectId: `promote-cap:${id}` }, driver)
-    await session.startChat()
-    const shipResult = await session.ship({ harness: harnessConfig })
-    await session.endChat({
-      pass: shipResult.result?.passed ?? false,
-      score: shipResult.result?.score ?? 0,
+    const harness = new SandboxHarness(driver)
+    const emitter = new TraceEmitter(store)
+    const run = await emitter.startRun({ projectId: `promote-cap:${id}`, layer: 'app-build' })
+    const harnessResult = await harness.run(harnessConfig, emitter)
+    await emitter.endRun({
+      pass: harnessResult.passed,
+      score: harnessResult.score,
     })
-    buildReport = await scoreProject(store, `promote-cap:${id}`)
+    const shipResult = { result: harnessResult }
+    const critic = new RunCritic()
+    const critScore = await critic.score(store, run.runId)
+    buildReport = {
+      kind: 'scaffold-only' as const,
+      buildScore: harnessResult.score,
+      complete: harnessResult.passed,
+      runScore: critScore,
+    }
     if (!shipResult.result?.passed) {
-      writeFileSync(join(draftDir, 'validation-errors.json'), JSON.stringify({ gate: 'build', buildReport, stdout: shipResult.result?.test?.stdout?.slice(-2000) ?? '', stderr: shipResult.result?.test?.stderr?.slice(-2000) ?? '' }, null, 2))
-      return fail(id, 'compose-pass', `build failed: score=${(shipResult.result?.score ?? 0).toFixed(2)}`)
+      writeFileSync(
+        join(draftDir, 'validation-errors.json'),
+        JSON.stringify(
+          {
+            gate: 'build',
+            buildReport,
+            stdout: shipResult.result?.test?.stdout?.slice(-2000) ?? '',
+            stderr: shipResult.result?.test?.stderr?.slice(-2000) ?? '',
+          },
+          null,
+          2,
+        ),
+      )
+      return fail(
+        id,
+        'compose-pass',
+        `build failed: score=${(shipResult.result?.score ?? 0).toFixed(2)}`,
+      )
     }
     console.log(`  ✓ ${id} build-pass (score=${shipResult.result.score.toFixed(2)})`)
 
@@ -186,30 +303,49 @@ async function promoteOne(id) {
     })
     if (dogfoodOutcome.failure) return dogfoodOutcome.failure
   } catch (err) {
-    writeFileSync(join(draftDir, 'validation-errors.json'), JSON.stringify({ gate: 'build', error: err?.message ?? String(err) }, null, 2))
+    writeFileSync(
+      join(draftDir, 'validation-errors.json'),
+      JSON.stringify({ gate: 'build', error: err?.message ?? String(err) }, null, 2),
+    )
     return fail(id, 'compose-pass', `build threw: ${err?.message ?? err}`)
   } finally {
-    try { rmSync(composeTmp, { recursive: true, force: true }) } catch { /* noop */ }
+    try {
+      rmSync(composeTmp, { recursive: true, force: true })
+    } catch {
+      /* noop */
+    }
   }
 
-  if (DRY_RUN) return ok(id, 'promoted', 'dry-run: all gates passed, skipping copy', { buildReport })
+  if (DRY_RUN)
+    return ok(id, 'promoted', 'dry-run: all gates passed, skipping copy', { buildReport })
 
   try {
     mkdirSync(dirname(registryCapDir), { recursive: true })
     cpSync(draftDir, registryCapDir, { recursive: true })
     for (const noise of ['.meta.json', 'validation-errors.json']) {
       const p = join(registryCapDir, noise)
-      try { if (existsSync(p)) rmSync(p) } catch { /* noop */ }
+      try {
+        if (existsSync(p)) rmSync(p)
+      } catch {
+        /* noop */
+      }
     }
   } catch (err) {
     return fail(id, 'compose-pass', `promote copy failed: ${err?.message ?? err}`)
   }
 
-  writeFileSync(join(draftDir, 'promoted.json'), JSON.stringify({
-    ts: new Date().toISOString(),
-    registryPath: `registry/layers/capability/${id}`,
-    buildScore: buildReport?.buildScore,
-  }, null, 2))
+  writeFileSync(
+    join(draftDir, 'promoted.json'),
+    JSON.stringify(
+      {
+        ts: new Date().toISOString(),
+        registryPath: `registry/layers/capability/${id}`,
+        buildScore: buildReport?.buildScore,
+      },
+      null,
+      2,
+    ),
+  )
   logImpact({
     event: 'capability-promoted',
     id,
@@ -219,7 +355,9 @@ async function promoteOne(id) {
         const meta = loadJson(join(draftDir, '.meta.json'))
         if (!meta?.generatedAt) return null
         return Number(((Date.now() - Date.parse(meta.generatedAt)) / 3_600_000).toFixed(1))
-      } catch { return null }
+      } catch {
+        return null
+      }
     })(),
   })
   logGovernor({ event: 'capability-promoted', id, buildScore: buildReport?.buildScore })
@@ -228,18 +366,28 @@ async function promoteOne(id) {
 
 // ── helpers ──────────────────────────────────────────────────────────
 function loadJson(p) {
-  try { return JSON.parse(readFileSync(p, 'utf8')) } catch { return null }
+  try {
+    return JSON.parse(readFileSync(p, 'utf8'))
+  } catch {
+    return null
+  }
 }
 
 function validateCapabilitySchema(draftDir, id, manifest) {
   const errors = []
   if (!manifest) return [{ path: 'manifest.json', error: 'missing or invalid JSON' }]
-  if (manifest.id !== id) errors.push({ path: 'manifest.json', error: `id mismatch: manifest.id=${manifest.id} but dir=${id}` })
-  if (!manifest.description || manifest.description.length < 20) errors.push({ path: 'manifest.json', error: 'description missing or <20 chars' })
+  if (manifest.id !== id)
+    errors.push({
+      path: 'manifest.json',
+      error: `id mismatch: manifest.id=${manifest.id} but dir=${id}`,
+    })
+  if (!manifest.description || manifest.description.length < 20)
+    errors.push({ path: 'manifest.json', error: 'description missing or <20 chars' })
   if (!Array.isArray(manifest.appliesTo) || manifest.appliesTo.length === 0) {
     errors.push({ path: 'manifest.json', error: 'appliesTo must be a non-empty array' })
   }
-  if (!Array.isArray(manifest.files)) errors.push({ path: 'manifest.json', error: 'files[] must be an array' })
+  if (!Array.isArray(manifest.files))
+    errors.push({ path: 'manifest.json', error: 'files[] must be an array' })
   const text = JSON.stringify(manifest)
   if (text.includes('TODO:') || text.includes('TODO ')) {
     errors.push({ path: 'manifest.json', error: 'TODO placeholders present' })
@@ -262,8 +410,8 @@ function harnessConfigForFamily(familyManifest) {
   if (!config) {
     throw new Error(
       `harnessConfigForFamily: unsupported taxonomy.language '${language}' for family ` +
-      `${familyManifest?.id ?? '<unknown>'}. Add it to HARNESS_CONFIGS in ` +
-      `src/eval/scaffold-bridge.ts (strict, fail-loud testCommand) before promoting.`,
+        `${familyManifest?.id ?? '<unknown>'}. Add it to HARNESS_CONFIGS in ` +
+        `src/eval/scaffold-bridge.ts (strict, fail-loud testCommand) before promoting.`,
     )
   }
   return config
@@ -288,21 +436,42 @@ async function runDogfoodGates({ id, draftDir, composedOutDir, manifest, compose
   const depUsed = checkDeclaredDepUsed({ manifest, composedDir: composedOutDir })
   if (depUsed.status === 'fail') {
     writeFileSync(join(draftDir, 'validation-errors.json'), JSON.stringify(depUsed, null, 2))
-    return { failure: fail(id, 'declared-dep-used', depUsed.message ?? `unused deps: ${(depUsed.unusedDeps ?? []).join(', ')}`) }
+    return {
+      failure: fail(
+        id,
+        'declared-dep-used',
+        depUsed.message ?? `unused deps: ${(depUsed.unusedDeps ?? []).join(', ')}`,
+      ),
+    }
   }
-  console.log(`  ${depUsed.status === 'pass' ? '✓' : '·'} ${id} declared-dep-used: ${depUsed.status}${depUsed.status === 'skipped' ? ` (${depUsed.reason})` : ''}`)
+  console.log(
+    `  ${depUsed.status === 'pass' ? '✓' : '·'} ${id} declared-dep-used: ${depUsed.status}${depUsed.status === 'skipped' ? ` (${depUsed.reason})` : ''}`,
+  )
 
-  const composesAgentEval = composedLayers.some((l) => l === 'capability:agent-eval' || l.endsWith(':agent-eval'))
+  const composesAgentEval = composedLayers.some(
+    (l) => l === 'capability:agent-eval' || l.endsWith(':agent-eval'),
+  )
   const runsResult = await checkScaffoldRuns({
     composedDir: composedOutDir,
     manifest,
     options: { keepProcess: composesAgentEval },
   })
   if (runsResult.status === 'fail') {
-    writeFileSync(join(draftDir, 'validation-errors.json'), JSON.stringify({ ...runsResult, process: undefined }, null, 2))
-    return { failure: fail(id, 'scaffold-runs', runsResult.message ?? runsResult.reason ?? 'scaffold failed to boot') }
+    writeFileSync(
+      join(draftDir, 'validation-errors.json'),
+      JSON.stringify({ ...runsResult, process: undefined }, null, 2),
+    )
+    return {
+      failure: fail(
+        id,
+        'scaffold-runs',
+        runsResult.message ?? runsResult.reason ?? 'scaffold failed to boot',
+      ),
+    }
   }
-  console.log(`  ${runsResult.status === 'pass' ? '✓' : '·'} ${id} scaffold-runs: ${runsResult.status}${runsResult.status === 'skipped' ? ` (${runsResult.reason})` : ''}`)
+  console.log(
+    `  ${runsResult.status === 'pass' ? '✓' : '·'} ${id} scaffold-runs: ${runsResult.status}${runsResult.status === 'skipped' ? ` (${runsResult.reason})` : ''}`,
+  )
 
   try {
     if (runsResult.status === 'pass' && composesAgentEval && runsResult.port) {
@@ -314,13 +483,25 @@ async function runDogfoodGates({ id, draftDir, composedOutDir, manifest, compose
       })
       if (evalResult.status === 'fail') {
         writeFileSync(join(draftDir, 'validation-errors.json'), JSON.stringify(evalResult, null, 2))
-        return { failure: fail(id, 'eval-scores', evalResult.message ?? evalResult.reason ?? 'eval scores below threshold') }
+        return {
+          failure: fail(
+            id,
+            'eval-scores',
+            evalResult.message ?? evalResult.reason ?? 'eval scores below threshold',
+          ),
+        }
       }
-      console.log(`  ${evalResult.status === 'pass' ? '✓' : '·'} ${id} eval-scores: ${evalResult.status}${evalResult.status === 'skipped' ? ` (${evalResult.reason})` : ''}`)
+      console.log(
+        `  ${evalResult.status === 'pass' ? '✓' : '·'} ${id} eval-scores: ${evalResult.status}${evalResult.status === 'skipped' ? ` (${evalResult.reason})` : ''}`,
+      )
     }
   } finally {
     if (runsResult.status === 'pass' && runsResult.process) {
-      try { runsResult.process.kill() } catch { /* noop */ }
+      try {
+        runsResult.process.kill()
+      } catch {
+        /* noop */
+      }
     }
   }
   return { failure: null }

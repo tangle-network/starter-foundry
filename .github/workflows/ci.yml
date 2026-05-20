@@ -13,7 +13,7 @@ concurrency:
 jobs:
   build-test:
     name: build + test
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, staging-runner]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -69,7 +69,7 @@ jobs:
 
   matrix-eval:
     name: router matrix eval (deterministic, no key)
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, staging-runner]
     timeout-minutes: 10
     needs: build-test
     steps:

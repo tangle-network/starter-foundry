@@ -44,9 +44,10 @@ import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import {
   InMemoryTraceStore,
-  BuilderSession,
+  SandboxHarness,
   SubprocessSandboxDriver,
-  scoreProject,
+  TraceEmitter,
+  RunCritic,
 } from '@tangle-network/agent-eval'
 import { snapshotScaffold, invokeMetaJudge, HARNESS_CONFIGS } from '../dist/eval/scaffold-bridge.js'
 import {
@@ -327,14 +328,23 @@ async function promoteOne(id) {
     const harnessConfig = { ...harnessConfigForFamily(family), cwd: composedOutDir }
     const store = new InMemoryTraceStore()
     const driver = new SubprocessSandboxDriver()
-    const session = new BuilderSession(store, { projectId: `promote:${id}` }, driver)
-    await session.startChat()
-    const shipResult = await session.ship({ harness: harnessConfig })
-    await session.endChat({
-      pass: shipResult.result?.passed ?? false,
-      score: shipResult.result?.score ?? 0,
+    const harness = new SandboxHarness(driver)
+    const emitter = new TraceEmitter(store)
+    const run = await emitter.startRun({ projectId: `promote:${id}`, layer: 'app-build' })
+    const harnessResult = await harness.run(harnessConfig, emitter)
+    await emitter.endRun({
+      pass: harnessResult.passed,
+      score: harnessResult.score,
     })
-    buildReport = await scoreProject(store, `promote:${id}`)
+    const shipResult = { result: harnessResult }
+    const critic = new RunCritic()
+    const critScore = await critic.score(store, run.runId)
+    buildReport = {
+      kind: 'scaffold-only' as const,
+      buildScore: harnessResult.score,
+      complete: harnessResult.passed,
+      runScore: critScore,
+    }
     if (!shipResult.result?.passed) {
       writeFileSync(
         join(draftDir, 'validation-errors.json'),

@@ -12,9 +12,9 @@ import assert from 'node:assert/strict'
 
 import {
   scorePerTurn,
+  type StepRubric,
 } from '../src/eval/trace/per-turn-scorer.js'
 import type {
-  StepRubric,
   Trajectory,
   TrajectoryStep,
   Span,

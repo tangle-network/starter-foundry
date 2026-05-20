@@ -29,26 +29,36 @@ function fakeComponents(overrides: { family?: any; layers?: any[] } = {}) {
 
 describe('scaffold-bridge: makeHarnessConfig language dispatch', () => {
   test('typescript → pnpm install + validate/build', () => {
-    const h = makeHarnessConfig(fakeComponents({ family: { taxonomy: { language: 'typescript', surface: 'frontend' } } }))
+    const h = makeHarnessConfig(
+      fakeComponents({ family: { taxonomy: { language: 'typescript', surface: 'frontend' } } }),
+    )
     assert.match(h.setupCommand!, /pnpm install/)
     assert.match(h.testCommand!, /pnpm/)
   })
   test('rust → cargo fetch + cargo check', () => {
-    const h = makeHarnessConfig(fakeComponents({ family: { taxonomy: { language: 'rust', surface: 'zkvm' } } }))
+    const h = makeHarnessConfig(
+      fakeComponents({ family: { taxonomy: { language: 'rust', surface: 'zkvm' } } }),
+    )
     assert.match(h.setupCommand!, /cargo fetch/)
     assert.match(h.testCommand!, /cargo check/)
   })
   test('go → go mod tidy + go build + vet', () => {
-    const h = makeHarnessConfig(fakeComponents({ family: { taxonomy: { language: 'go', surface: 'api' } } }))
+    const h = makeHarnessConfig(
+      fakeComponents({ family: { taxonomy: { language: 'go', surface: 'api' } } }),
+    )
     assert.match(h.setupCommand!, /go mod tidy/)
     assert.match(h.testCommand!, /go build/)
   })
   test('move → aptos move compile --dev', () => {
-    const h = makeHarnessConfig(fakeComponents({ family: { taxonomy: { language: 'move', surface: 'contracts' } } }))
+    const h = makeHarnessConfig(
+      fakeComponents({ family: { taxonomy: { language: 'move', surface: 'contracts' } } }),
+    )
     assert.match(h.testCommand!, /aptos move compile --dev/)
   })
   test('solidity → forge build', () => {
-    const h = makeHarnessConfig(fakeComponents({ family: { taxonomy: { language: 'solidity', surface: 'contracts' } } }))
+    const h = makeHarnessConfig(
+      fakeComponents({ family: { taxonomy: { language: 'solidity', surface: 'contracts' } } }),
+    )
     assert.match(h.testCommand!, /forge build/)
   })
   test('unknown language → throws (never silent-pass)', () => {
@@ -57,7 +67,10 @@ describe('scaffold-bridge: makeHarnessConfig language dispatch', () => {
     // the caller to explicitly add the language to HARNESS_CONFIGS with
     // a strict command before proposing a scaffold against it.
     assert.throws(
-      () => makeHarnessConfig(fakeComponents({ family: { taxonomy: { language: 'zig', surface: 'firmware' } } })),
+      () =>
+        makeHarnessConfig(
+          fakeComponents({ family: { taxonomy: { language: 'zig', surface: 'firmware' } } }),
+        ),
       /unsupported taxonomy\.language/,
     )
   })
@@ -67,8 +80,12 @@ describe('scaffold-bridge: manifestComplianceAssertions', () => {
   test('emits one assertion per unique file target across family + layers', () => {
     const c = fakeComponents({
       family: {
-        id: 'f', taxonomy: { language: 'typescript', surface: 'frontend' },
-        files: [{ source: 'a', target: 'src/main.ts' }, { source: 'b', target: 'package.json' }],
+        id: 'f',
+        taxonomy: { language: 'typescript', surface: 'frontend' },
+        files: [
+          { source: 'a', target: 'src/main.ts' },
+          { source: 'b', target: 'package.json' },
+        ],
       },
       layers: [
         { group: 'capability', id: 'x', files: [{ source: 'c', target: 'src/x.ts' }] },
@@ -85,7 +102,15 @@ describe('scaffold-bridge: manifestComplianceAssertions', () => {
     }
   })
   test('empty components → empty assertions array', () => {
-    const assertions = manifestComplianceAssertions(fakeComponents({ family: { id: 'empty', taxonomy: { language: 'typescript', surface: 'frontend' }, files: [] } }))
+    const assertions = manifestComplianceAssertions(
+      fakeComponents({
+        family: {
+          id: 'empty',
+          taxonomy: { language: 'typescript', surface: 'frontend' },
+          files: [],
+        },
+      }),
+    )
     assert.equal(assertions.length, 0)
   })
 })
@@ -155,8 +180,12 @@ describe('scaffold-bridge: buildScaffoldMetaPrompt', () => {
     const prompt = buildScaffoldMetaPrompt({
       userPrompt: 'Build a React dashboard',
       composedSpec: {
-        projectName: 'test', family: 'react-vite-ts', layers: ['framework:react-vite-ts', 'capability:tailwind'],
-        partner: null, slots: {}, variables: {},
+        projectName: 'test',
+        family: 'react-vite-ts',
+        layers: ['framework:react-vite-ts', 'capability:tailwind'],
+        partner: null,
+        slots: {},
+        variables: {},
       } as any,
       snapshot: {
         files: {
@@ -188,7 +217,14 @@ describe('scaffold-bridge: buildScaffoldMetaPrompt', () => {
     const bigContent = 'x'.repeat(10_000)
     const prompt = buildScaffoldMetaPrompt({
       userPrompt: 'test',
-      composedSpec: { projectName: 't', family: 'react-vite-ts', layers: [], partner: null, slots: {}, variables: {} } as any,
+      composedSpec: {
+        projectName: 't',
+        family: 'react-vite-ts',
+        layers: [],
+        partner: null,
+        slots: {},
+        variables: {},
+      } as any,
       snapshot: { files: { 'package.json': bigContent }, rows: {}, kv: {} },
     })
     // Truncation marker must appear — judge needs to know content is partial
@@ -199,7 +235,14 @@ describe('scaffold-bridge: buildScaffoldMetaPrompt', () => {
   test('empty file list renders without crashing', () => {
     const prompt = buildScaffoldMetaPrompt({
       userPrompt: 'empty scaffold',
-      composedSpec: { projectName: 't', family: 'f', layers: [], partner: null, slots: {}, variables: {} } as any,
+      composedSpec: {
+        projectName: 't',
+        family: 'f',
+        layers: [],
+        partner: null,
+        slots: {},
+        variables: {},
+      } as any,
       snapshot: { files: {}, rows: {}, kv: {} },
     })
     assert.match(prompt, /empty scaffold/)
@@ -215,9 +258,17 @@ describe('scaffold-bridge: invokeMetaJudge compile-gate', () => {
   test('buildOutcome.passed=false short-circuits to verdict=fail without LLM call', async () => {
     const result = await invokeMetaJudge({
       userPrompt: 'kyc onboarding starter',
-      composedSpec: { family: 'kyc-onboarding', layers: ['framework:kyc-onboarding'], projectName: 't' } as any,
+      composedSpec: {
+        family: 'kyc-onboarding',
+        layers: ['framework:kyc-onboarding'],
+        projectName: 't',
+      } as any,
       snapshot: { files: { 'src/main.ts': 'import x from y' }, rows: {}, kv: {} },
-      buildOutcome: { passed: false, phase: 'typecheck', stderr: "src/main.ts(1,10): error TS1005: '>' expected." },
+      buildOutcome: {
+        passed: false,
+        phase: 'typecheck',
+        stderr: "src/main.ts(1,10): error TS1005: '>' expected.",
+      },
     })
     assert.equal(result.verdict, 'fail')
     assert.equal(result.overall, 0)
@@ -232,7 +283,8 @@ describe('scaffold-bridge: invokeMetaJudge compile-gate', () => {
   test('buildOutcome.passed=false includes stderr tail in issue description', async () => {
     // Use a realistic-sized stderr (~300 chars) — under the 500-char tail
     // limit so the actual error survives. Real tsc stderr is usually <1KB.
-    const stderr = 'src/main.tsx(7,25): error TS2339: Property \'createRoot\' does not exist on type \'typeof import("...")\''
+    const stderr =
+      "src/main.tsx(7,25): error TS2339: Property 'createRoot' does not exist on type 'typeof import(\"...\")'"
     const result = await invokeMetaJudge({
       userPrompt: 'fraud-ops React 17 regression',
       composedSpec: { family: 'fraud-ops-console', layers: [], projectName: 't' } as any,
@@ -262,7 +314,10 @@ describe('scaffold-bridge: invokeMetaJudge compile-gate', () => {
     ])
     // Either timed out (LLM call started, no key) or errored (also LLM-path).
     // What it MUST NOT be: a verdict='fail' with rationale mentioning compile-gate.
-    if ((winner as any).verdict === 'fail' && /compile-gate/.test(String((winner as any).rationale ?? ''))) {
+    if (
+      (winner as any).verdict === 'fail' &&
+      /compile-gate/.test(String((winner as any).rationale ?? ''))
+    ) {
       assert.fail('short-circuit fired when buildOutcome.passed=true')
     }
   })
@@ -280,7 +335,10 @@ describe('scaffold-bridge: invokeMetaJudge compile-gate', () => {
       judgePromise,
       new Promise((resolve) => setTimeout(() => resolve({ timedOut: true }), 200)),
     ])
-    if ((winner as any).verdict === 'fail' && /compile-gate/.test(String((winner as any).rationale ?? ''))) {
+    if (
+      (winner as any).verdict === 'fail' &&
+      /compile-gate/.test(String((winner as any).rationale ?? ''))
+    ) {
       assert.fail('short-circuit fired when buildOutcome was omitted')
     }
   })
@@ -298,7 +356,11 @@ describe('promote-family-proposal harness: strict TS gate', () => {
     // verify it directly.
     const mod = await import('../dist/eval/scaffold-bridge.js')
     const testCmd = mod.HARNESS_CONFIGS.typescript!.testCommand as string
-    assert.doesNotMatch(testCmd, /\|\| true/, `testCommand must not swallow with || true — got: ${testCmd}`)
+    assert.doesNotMatch(
+      testCmd,
+      /\|\| true/,
+      `testCommand must not swallow with || true — got: ${testCmd}`,
+    )
     assert.match(testCmd, /tsc\s+--noEmit/, `testCommand must run tsc --noEmit — got: ${testCmd}`)
   })
 
@@ -352,14 +414,13 @@ describe('promote-family-proposal harness: strict TS gate', () => {
     )
   })
 
-  test('agent-eval driver end-to-end: HarnessConfig.cwd is actually honored at spawn time (Gen 8b behavioral)', async () => {
+  test('agent-eval driver end-to-end: HarnessConfig.cwd is actually honored at spawn time', async () => {
     // Source-grep guards above defend against regressions in the *fix shape*.
-    // This test defends against regressions in the *semantics we rely on*:
-    // if a future agent-eval release starts ignoring config.cwd (or honoring
-    // the constructor arg instead), the source-grep tests still pass but the
-    // compile-gate silently runs in the wrong dir again. A real spawn against
-    // a tmpdir catches that immediately.
-    const { InMemoryTraceStore, BuilderSession, SubprocessSandboxDriver } =
+    // This test defends against the *semantics we rely on*: if SandboxHarness
+    // starts ignoring config.cwd (or honoring the constructor arg instead),
+    // source-grep tests still pass but the compile-gate silently runs in the
+    // wrong dir. A real spawn against a tmpdir catches that immediately.
+    const { TraceEmitter, InMemoryTraceStore, SandboxHarness, SubprocessSandboxDriver } =
       await import('@tangle-network/agent-eval')
     // macOS tmpdir is a symlink (/var/folders → /private/var/folders); `pwd`
     // in bash follows it, so compare against the resolved realpath or the
@@ -368,10 +429,11 @@ describe('promote-family-proposal harness: strict TS gate', () => {
     try {
       const store = new InMemoryTraceStore()
       const driver = new SubprocessSandboxDriver()
-      const session = new BuilderSession(store, { projectId: 'gen8b-behavioral' }, driver)
-      await session.startChat()
-      const shipResult = await session.ship({
-        harness: {
+      const harness = new SandboxHarness(driver)
+      const emitter = new TraceEmitter(store)
+      await emitter.startRun({ projectId: 'harness-cwd-behavioral' })
+      const result = await harness.run(
+        {
           setupCommand: 'true',
           // Exits 0 iff the subprocess runs in `dir`. If HarnessConfig.cwd
           // is dropped and spawn inherits the Node cwd (starter-foundry),
@@ -380,13 +442,14 @@ describe('promote-family-proposal harness: strict TS gate', () => {
           cwd: dir,
           timeoutMs: 10_000,
         },
-      })
-      await session.endChat({ pass: shipResult.result?.passed ?? false, score: shipResult.result?.score ?? 0 })
+        emitter,
+      )
+      await emitter.endRun({ pass: result.passed, score: result.score })
       assert.equal(
-        shipResult.result?.passed,
+        result.passed,
         true,
         `HarnessConfig.cwd was not honored — subprocess exited in wrong dir. ` +
-          `exitCode=${shipResult.result?.test?.exitCode}, stderr=${shipResult.result?.test?.stderr ?? ''}`,
+          `exitCode=${result.test?.exitCode}, stderr=${result.test?.stderr ?? ''}`,
       )
     } finally {
       rmSync(dir, { recursive: true, force: true })

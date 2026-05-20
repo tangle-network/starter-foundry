@@ -30,9 +30,10 @@ import { join, resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
   InMemoryTraceStore,
-  BuilderSession,
+  SandboxHarness,
   SubprocessSandboxDriver,
-  scoreAllProjects,
+  TraceEmitter,
+  RunCritic,
   runAssertions,
   CostTracker,
 } from '@tangle-network/agent-eval'
@@ -161,28 +162,28 @@ for (const seed of selected) {
 
     // cwd is baked into prep.harness by prepareScaffoldForEval. Do NOT
     // pass it to the driver constructor — SubprocessSandboxDriver.exec
-    // reads cwd from the per-call HarnessConfig (agent-eval@0.7.0), so a
-    // constructor arg is silently dropped. That was the Gen 8b promoter
-    // bug and it lived here in the runtime path until Round 0 post-Gen-9.
+    // reads cwd from the per-call HarnessConfig, so a constructor arg
+    // is silently dropped.
     const driver = new SubprocessSandboxDriver()
-    const session = new BuilderSession(store, { projectId }, driver)
-    await session.startChat()
+    const harness = new SandboxHarness(driver)
+    const emitter = new TraceEmitter(store)
+    await emitter.startRun({ projectId, layer: 'app-build' })
 
-    // Ship = install + build, as configured per-family in the bridge.
-    // BuilderSession emits an app-build child run with outcome.score from
-    // the harness's testsPassed / testsTotal ratio.
-    let shipResult
+    // install + build, as configured per-family in the bridge.
+    let harnessResult
     try {
-      shipResult = await session.ship({ harness: prep.harness })
+      harnessResult = await harness.run(prep.harness, emitter)
     } catch (err) {
       const msg = err?.message?.slice(0, 500) ?? String(err)
       appendFileSync(
         tracesPath,
         JSON.stringify({ seed: seed.id, phase: 'ship', pass: false, error: msg }) + '\n',
       )
+      await emitter.endRun({ pass: false, score: 0, notes: msg })
       prep.cleanup()
       return
     }
+    const shipResult = { result: harnessResult }
 
     // Structural correctness — runAssertions against snapshot files that
     // the manifest says should exist. Complements the build score: build
@@ -215,10 +216,13 @@ for (const seed of selected) {
           composedSpec: spec,
           snapshot: prep.snapshot,
         })
-        await session.recordMetaScore(
-          verdict.overall,
-          `verdict=${verdict.verdict}; issues=${verdict.issues.length}`,
-        )
+        await emitter.recordJudge({
+          name: 'meta-judge',
+          status: 'ok',
+          endedAt: Date.now(),
+          score: verdict.overall,
+          notes: `verdict=${verdict.verdict}; issues=${verdict.issues.length}`,
+        } as any)
         // Record into CostTracker so cost-summary.json actually populates.
         // Uses agent-eval 0.7.2's recordVerdict helper — one call instead
         // of record + markOutcome. No-ops if verdict.usage is absent
@@ -253,7 +257,7 @@ for (const seed of selected) {
       }
     }
 
-    await session.endChat({
+    await emitter.endRun({
       pass: shipResult.result?.passed ?? false,
       score: shipResult.result?.score ?? 0,
     })
@@ -276,8 +280,24 @@ for (const seed of selected) {
   }
 }
 
-// ── aggregate + write report ──────────────────────────────────────
-const threeLayer = await scoreAllProjects(store)
+// aggregate + write report. RunCritic scores each app-build run; we then
+// fold per-seed runReports into a three-layer-style rollup. The 0.30.x
+// substrate retired the bundled scoreAllProjects rollup, so we compose
+// it locally from the trace store.
+const critic = new RunCritic()
+const allRuns = (await (store as any).listRuns?.({ layer: 'app-build' })) ?? []
+const threeLayer = []
+for (const r of allRuns) {
+  const score = await critic.score(store, r.runId)
+  threeLayer.push({
+    projectId: r.projectId,
+    runId: r.runId,
+    kind: 'scaffold-only',
+    buildScore: r.outcome?.score ?? score.success,
+    metaScore: score.finalGate,
+    complete: r.outcome?.pass === true,
+  })
+}
 const reportPath = join(outDir, 'three-layer-report.json')
 const costSummaryPath = join(outDir, 'cost-summary.json')
 

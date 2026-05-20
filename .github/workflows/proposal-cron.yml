@@ -27,7 +27,7 @@ concurrency:
 jobs:
   capabilities:
     name: propose + promote capabilities (demand-driven RLM)
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, staging-runner]
     permissions:
       contents: write
       pull-requests: write
@@ -79,7 +79,7 @@ jobs:
 
   families:
     name: propose + promote families (demand-driven RLM)
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, staging-runner]
     permissions:
       contents: write
       pull-requests: write
@@ -127,7 +127,7 @@ jobs:
 
   template-candidates:
     name: open template candidate PRs
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, staging-runner]
     permissions:
       contents: write
       pull-requests: write

@@ -1,6 +1,6 @@
 /**
  * sandbox-client.ts — typed seam between this scaffold and the
- * `@tangle-network/sandbox-sdk` runtime that owns the box.
+ * `@tangle-network/sandbox` runtime that owns the box.
  *
  * The scaffold ships with INTENTIONALLY-UNWIRED placeholder hooks. They
  * compile, they expose the right TypeScript shapes for the rest of the
@@ -44,7 +44,7 @@ export interface SandboxHandle {
  * TODO: replace the body with the real sandbox-sdk constructor. The
  * canonical call shape is something like:
  *
- *   import { Sandbox } from '@tangle-network/sandbox-sdk'
+ *   import { Sandbox } from '@tangle-network/sandbox'
  *   const client = await Sandbox.connect({ baseUrl: apiUrl, token, sandboxId })
  *
  * Until then this throws so callers don't ship a broken bundle that
@@ -60,7 +60,7 @@ export async function connectToSandbox(
   // and assign the resulting client into `client`.
   throw new Error(
     'connectToSandbox is unwired. See src/lib/sandbox-client.ts — replace ' +
-      'this stub with the real @tangle-network/sandbox-sdk connect call.',
+      'this stub with the real @tangle-network/sandbox connect call.',
   )
 }
 

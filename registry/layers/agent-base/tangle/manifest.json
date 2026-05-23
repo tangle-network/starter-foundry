@@ -75,7 +75,7 @@
     "llmRouterUrl": "https://router.tangle.tools",
     "sandboxProvider": "tangle",
     "tcloudAvailable": true,
-    "tangleSandboxSdk": "@tangle-network/sandbox-sdk",
+    "tangleSandbox": "@tangle-network/sandbox",
     "tcloudSdk": "@tangle-network/tcloud"
   },
   "files": [

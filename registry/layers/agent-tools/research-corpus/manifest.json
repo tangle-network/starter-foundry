@@ -1,7 +1,7 @@
 {
   "id": "research-corpus",
   "slot": "agent-tools",
-  "description": "Research-corpus tool kit: arxiv / Semantic Scholar / OpenAlex / Crossref clients via @tangle-network/sandbox-sdk shell-out + a citation-graph walker. Stack on agent-runtime-research-* bundles and any analyst role that needs paper-search.",
+  "description": "Research-corpus tool kit: arxiv / Semantic Scholar / OpenAlex / Crossref clients via @tangle-network/sandbox shell-out + a citation-graph walker. Stack on agent-runtime-research-* bundles and any analyst role that needs paper-search.",
   "appliesTo": [
     "agent-runtime-business-partner-ts",
     "agent-runtime-chemistry-research-ts",

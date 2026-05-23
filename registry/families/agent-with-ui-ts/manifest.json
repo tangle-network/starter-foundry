@@ -1,6 +1,6 @@
 {
   "id": "agent-with-ui-ts",
-  "description": "React + Vite + sandbox-ui scaffold for a single agent-runtime bundle. Wires `@tangle-network/sandbox-sdk` session events into `SandboxWorkbench`'s chat + artifact surface, with a built-in :::output-block parser (via agent-output/blocks-renderer). NOTE: src/lib/parse-blocks.ts and src/lib/blocks-to-artifacts.tsx are provided by the ui-adapter:blocks-renderer layer at compose time — they are NOT duplicated in this family's files[] but ARE asserted by validationChecks because the layer composes them in.",
+  "description": "React + Vite + sandbox-ui scaffold for a single agent-runtime bundle. Wires `@tangle-network/sandbox` session events into `SandboxWorkbench`'s chat + artifact surface, with a built-in :::output-block parser (via agent-output/blocks-renderer). NOTE: src/lib/parse-blocks.ts and src/lib/blocks-to-artifacts.tsx are provided by the ui-adapter:blocks-renderer layer at compose time — they are NOT duplicated in this family's files[] but ARE asserted by validationChecks because the layer composes them in.",
   "tags": [
     "agent-ui",
     "react",

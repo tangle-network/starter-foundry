@@ -19,7 +19,7 @@ Non-agent workspace app on Tangle sandbox SDK. Workspace-first layout (file tree
 - `FileTree` + `FilePreview` (left pane, driven by the sandbox SDK file API)
 - `DocumentEditorPane` (center pane, `backend="local"` by default)
 - `TerminalPanel` (bottom pane, read-only line stream)
-- `lib/sandbox-client.ts` — typed wrapper around `@tangle-network/sandbox-sdk` with TODO seams clearly documented for each hook
+- `lib/sandbox-client.ts` — typed wrapper around `@tangle-network/sandbox` with TODO seams clearly documented for each hook
 
 ## Switching `appKind`
 

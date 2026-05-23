@@ -8,7 +8,7 @@ This bundle is the "single agent with UI" archetype. It composes:
 
 - `@tangle-network/sandbox-ui` — `SandboxWorkbench` layout, `ChatContainer`,
   `useSdkSession` event reducer.
-- `@tangle-network/sandbox-sdk` — your transport to the sandbox running the
+- `@tangle-network/sandbox` — your transport to the sandbox running the
   agent-runtime bundle.
 - `ui-adapter:blocks-renderer` (auto-composed) — parses `:::artifact`,
   `:::escalation`, `:::screener-result`, `:::audio-cue`, `:::suggestion`,
@@ -63,11 +63,11 @@ VITE_SANDBOX_API_TOKEN='sk-tan-...'          # operator key, scoped to this agen
 
 `App.tsx` accepts an `invoker: AgentInvoker` prop. The scaffold itself ships
 no transport — you wire it once based on which agent-runtime bundle you're
-driving. Minimum implementation against `@tangle-network/sandbox-sdk`:
+driving. Minimum implementation against `@tangle-network/sandbox`:
 
 ```tsx
 // src/main.tsx
-import { connectSandbox } from '@tangle-network/sandbox-sdk'
+import { connectSandbox } from '@tangle-network/sandbox'
 
 const sandbox = await connectSandbox({
   baseUrl: import.meta.env.VITE_SANDBOX_API_URL!,

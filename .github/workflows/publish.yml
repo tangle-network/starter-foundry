@@ -39,7 +39,7 @@ permissions:
 jobs:
   publish:
     name: Publish to GitHub Packages
-    runs-on: [self-hosted, staging-runner]
+    runs-on: [self-hosted, ci-linux]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4

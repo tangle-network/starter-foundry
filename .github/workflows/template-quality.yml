@@ -30,7 +30,7 @@ permissions:
 
 jobs:
   sweep:
-    runs-on: [self-hosted, staging-runner]
+    runs-on: [self-hosted, ci-linux]
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4

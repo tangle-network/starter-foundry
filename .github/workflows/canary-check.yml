@@ -32,7 +32,7 @@ concurrency:
 jobs:
   check:
     name: canary scan
-    runs-on: [self-hosted, staging-runner]
+    runs-on: [self-hosted, ci-linux]
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4

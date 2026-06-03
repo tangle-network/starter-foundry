@@ -27,6 +27,12 @@ jobs:
           node-version: '22'
           cache: 'pnpm'
 
+      - name: reap stale anvil (shared-runner foundryup guard)
+        # foundryup refuses to install while an anvil process is alive; on the
+        # shared self-hosted runner a prior job's anvil can linger and bail this
+        # install. Clear it before foundry-toolchain runs.
+        run: pkill -9 -f '/anvil( |$)' 2>/dev/null || true
+
       - uses: foundry-rs/foundry-toolchain@v1
         with:
           version: stable

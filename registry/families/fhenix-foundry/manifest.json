@@ -1,0 +1,31 @@
+{
+  "id": "fhenix-foundry",
+  "description": "Fhenix FHE Solidity starter on Foundry — encrypted on-chain computation that builds with `forge build` (CoFHE vendored).",
+  "tags": ["fhenix", "fhe", "solidity", "privacy", "contracts", "foundry"],
+  "taxonomy": { "language": "solidity", "runtime": "fhenix", "surface": "contracts" },
+  "slots": {},
+  "includes": ["framework:fhenix-foundry"],
+  "defaults": {
+    "contractName": "FHEVault",
+    "projectType": "contracts",
+    "encryptionScheme": "CoFHE",
+    "fhenixNetwork": "nitrogen"
+  },
+  "validationChecks": [
+    { "type": "file-exists", "path": "foundry.toml" },
+    { "type": "file-exists", "path": "src/{{contractName}}.sol" },
+    { "type": "command-success", "command": ["forge", "build"] }
+  ],
+  "contextHints": {
+    "commands": ["forge build", "forge test"],
+    "entrypoints": ["src/{{contractName}}.sol", "test/{{contractName}}.t.sol", "script/Deploy.s.sol"],
+    "preview": null,
+    "extensionPoints": ["src/{{contractName}}.sol", "test/{{contractName}}.t.sol", "script/Deploy.s.sol"]
+  },
+  "keywords": ["fhenix", "fhe", "fully homomorphic", "encrypted computation", "euint", "ebool", "cofhe", "cofhejs", "sealed-bid", "private voting", "confidential defi"],
+  "tieredKeywords": {
+    "tier1": ["fhenix", "fhe", "fully homomorphic", "cofhe"],
+    "tier2": ["encrypted computation", "encrypted auction", "encrypted balance", "private stablecoin", "euint", "ebool", "sealed-bid", "private voting", "confidential defi"],
+    "tier3": []
+  }
+}

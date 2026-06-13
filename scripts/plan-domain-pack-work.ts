@@ -134,20 +134,21 @@ function readScenarioSeeds(root: string): ScenarioSeed[] {
   const seeds: ScenarioSeed[] = []
   for (const file of listScenarioFiles(root)) {
     const text = readFileSync(file, 'utf8')
-    const leavesStart = text.search(/\bleaves\s*:/)
-    const head = leavesStart >= 0 ? text.slice(0, leavesStart) : text
-    const seedId = extractStringProperty(head, 'id')
-    if (!seedId) continue
-    const seedText = extractStringLiterals(text).join(' ')
-    seeds.push({
-      id: seedId,
-      category: extractStringProperty(head, 'category') ?? undefined,
-      partner: extractStringProperty(head, 'partner') ?? undefined,
-      scaffoldFamily: extractStringProperty(head, 'scaffoldFamily') ?? undefined,
-      file,
-      text: seedText,
-      leaves: extractLeaves(text),
-    })
+    for (const block of seedObjectBlocks(text)) {
+      const leavesStart = block.search(/\bleaves\s*:/)
+      const head = leavesStart >= 0 ? block.slice(0, leavesStart) : block
+      const seedId = extractStringProperty(head, 'id')
+      if (!seedId) continue
+      seeds.push({
+        id: seedId,
+        category: extractStringProperty(head, 'category') ?? undefined,
+        partner: extractStringProperty(head, 'partner') ?? undefined,
+        scaffoldFamily: extractStringProperty(head, 'scaffoldFamily') ?? undefined,
+        file,
+        text: extractStringLiterals(head).join(' '),
+        leaves: extractLeaves(block),
+      })
+    }
   }
   return seeds
 }
@@ -191,6 +192,23 @@ function extractLeaves(text: string): ScenarioLeaf[] {
       }
     })
     .filter((leaf): leaf is ScenarioLeaf => leaf !== null)
+}
+
+function seedObjectBlocks(text: string): string[] {
+  const blocks: string[] = []
+  for (let i = 0; i < text.length; i += 1) {
+    i = skipTrivia(text, i)
+    if (text[i] !== '{') continue
+    const end = findMatching(text, i, '{', '}')
+    if (end < 0) break
+    const block = text.slice(i, end + 1)
+    const leavesStart = block.search(/\bleaves\s*:/)
+    if (leavesStart >= 0 && extractStringProperty(block.slice(0, leavesStart), 'id')) {
+      blocks.push(block)
+    }
+    i = end
+  }
+  return blocks
 }
 
 function findPropertyArrayStart(text: string, property: string): number {
@@ -410,63 +428,54 @@ function buildCandidates({
   seeds: ScenarioSeed[]
 }): DomainPackWorkCandidate[] {
   const candidates: DomainPackWorkCandidate[] = []
+  const seenCandidateIds = new Set<string>()
   for (const group of groups) {
     const evidence = evidenceForGroup(group, seeds)
     if (evidence.length === 0) continue
 
-    const verticalIds = unique(evidence.map((item) => item.seed.id))
-    const partnerIds = unique(evidence.map((item) => item.seed.partner).filter(isString))
-    const selectedEvidence = evidence.slice(0, MAX_LEAVES_PER_CANDIDATE)
-    const leafIds = splitLeaves(unique(selectedEvidence.map((item) => item.leaf.id)))
-    const intendedStarter = intendedStarterFor(group, registry, evidence)
-    const registryFiles = unique(group.entries.map(({ entry }) => registryFileFor(entry)))
-    const sourceFiles = unique(selectedEvidence.map((item) => relative(REPO, item.seed.file)))
-    const routingPrompts = unique(
-      group.entries.flatMap(({ entry }) =>
-        (entry.pack.routingPrompts ?? []).map((prompt) => prompt.prompt),
-      ),
-    )
-    const validationCommands = unique(
-      group.entries.flatMap(({ entry }) => entry.pack.validationCommands ?? []),
-    )
-    const authenticitySignals = unique(
-      group.entries.flatMap(({ entry }) => entry.pack.authenticitySignals ?? []),
+    addCandidate(
+      candidates,
+      seenCandidateIds,
+      candidateFromEvidence({ id: group.id, group, entries: group.entries, registry, evidence }),
     )
 
-    candidates.push({
-      id: group.id,
-      status: 'candidate',
-      domain: group.domain,
-      ambiguityGroup: group.ambiguityGroup,
-      verticalIds,
-      leafIds,
-      partnerIds,
-      failureEvidence: [
-        {
-          source: 'blueprint-agent-scenarios',
-          bucket: 'vertical-leaf-demand',
-          count: evidence.length,
-        },
-      ],
-      intendedStarter,
-      routingPrompts,
-      validationCommands,
-      authenticitySignals,
-      registryFiles,
-      filesToModify: unique([
-        ...registryFiles,
-        'tests/domain-packs.test.ts',
-        'tests/coverage.test.ts',
-      ]),
-      gatesToRun: unique([
-        'pnpm exec tsx scripts/validate-registry.ts',
-        'pnpm build',
-        'pnpm exec tsc -p tsconfig.test.json',
-        'node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js',
-        ...validationCommands,
-      ]),
-      sourceFiles,
-    })
+    for (const entry of group.entries) {
+      const entryGroup: DomainGroup = {
+        ...group,
+        id: entryCandidateId(group, entry),
+        domain: entry.entry.pack.domain,
+        entries: [entry],
+      }
+      const entryEvidence = evidenceForGroup(entryGroup, seeds)
+      if (entryEvidence.length === 0) continue
+      addCandidate(
+        candidates,
+        seenCandidateIds,
+        candidateFromEvidence({
+          id: entryGroup.id,
+          group: entryGroup,
+          entries: entryGroup.entries,
+          registry,
+          evidence: entryEvidence,
+        }),
+      )
+    }
+
+    const evidenceBySeed = groupEvidenceBySeed(evidence)
+    for (const [seedId, seedEvidence] of evidenceBySeed) {
+      if (seedEvidence.length < MIN_LEAVES) continue
+      addCandidate(
+        candidates,
+        seenCandidateIds,
+        candidateFromEvidence({
+          id: `${group.id}-${slug(seedId)}`,
+          group,
+          entries: group.entries,
+          registry,
+          evidence: seedEvidence,
+        }),
+      )
+    }
   }
 
   return candidates.sort((left, right) => {
@@ -476,19 +485,152 @@ function buildCandidates({
   })
 }
 
+function addCandidate(
+  candidates: DomainPackWorkCandidate[],
+  seen: Set<string>,
+  candidate: DomainPackWorkCandidate,
+): void {
+  if (seen.has(candidate.id)) return
+  seen.add(candidate.id)
+  candidates.push(candidate)
+}
+
+function candidateFromEvidence({
+  id,
+  group,
+  entries,
+  registry,
+  evidence,
+}: {
+  id: string
+  group: DomainGroup
+  entries: GroupEntry[]
+  registry: Registry
+  evidence: Evidence[]
+}): DomainPackWorkCandidate {
+  const verticalIds = unique(evidence.map((item) => item.seed.id))
+  const partnerIds = unique(evidence.map((item) => item.seed.partner).filter(isString))
+  const selectedEvidence = evidence.slice(0, MAX_LEAVES_PER_CANDIDATE)
+  const leafIds = splitLeaves(unique(selectedEvidence.map((item) => item.leaf.id)))
+  const candidateGroup: DomainGroup = {
+    ...group,
+    id,
+    entries,
+    domain: commonDomain(
+      id,
+      entries.map(({ entry }) => entry.pack.domain),
+    ),
+  }
+  const intendedStarter = intendedStarterFor(candidateGroup, registry, evidence)
+  const registryFiles = unique(entries.map(({ entry }) => registryFileFor(entry)))
+  const sourceFiles = unique(selectedEvidence.map((item) => relative(REPO, item.seed.file)))
+  const routingPrompts = unique(
+    entries.flatMap(({ entry }) =>
+      (entry.pack.routingPrompts ?? []).map((prompt) => prompt.prompt),
+    ),
+  )
+  const validationCommands = unique(
+    entries.flatMap(({ entry }) => entry.pack.validationCommands ?? []),
+  )
+  const authenticitySignals = unique(
+    entries.flatMap(({ entry }) => entry.pack.authenticitySignals ?? []),
+  )
+
+  return {
+    id,
+    status: 'candidate',
+    domain: candidateGroup.domain,
+    ambiguityGroup: group.ambiguityGroup,
+    verticalIds,
+    leafIds,
+    partnerIds,
+    failureEvidence: [
+      {
+        source: 'blueprint-agent-scenarios',
+        bucket: 'vertical-leaf-demand',
+        count: evidence.length,
+      },
+    ],
+    intendedStarter,
+    routingPrompts,
+    validationCommands,
+    authenticitySignals,
+    registryFiles,
+    filesToModify: unique([
+      ...registryFiles,
+      'tests/domain-packs.test.ts',
+      'tests/coverage.test.ts',
+    ]),
+    gatesToRun: unique([
+      'pnpm exec tsx scripts/validate-registry.ts',
+      'pnpm build',
+      'pnpm exec tsc -p tsconfig.test.json',
+      'node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js',
+      ...validationCommands,
+    ]),
+    sourceFiles,
+  }
+}
+
+function entryCandidateId(group: DomainGroup, entry: GroupEntry): string {
+  return `${group.id}-${slug(entry.entry.ownerId)}`
+}
+
+function groupEvidenceBySeed(evidence: Evidence[]): Map<string, Evidence[]> {
+  const bySeed = new Map<string, Evidence[]>()
+  for (const item of evidence) {
+    const bucket = bySeed.get(item.seed.id) ?? []
+    bucket.push(item)
+    bySeed.set(item.seed.id, bucket)
+  }
+  return new Map(
+    [...bySeed.entries()].sort((left, right) => {
+      const leftScore = sum(left[1].map((item) => item.score))
+      const rightScore = sum(right[1].map((item) => item.score))
+      return rightScore - leftScore || left[0].localeCompare(right[0])
+    }),
+  )
+}
+
+function sum(values: number[]): number {
+  return values.reduce((total, value) => total + value, 0)
+}
+
+function slug(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+}
+
 function evidenceForGroup(group: DomainGroup, seeds: ScenarioSeed[]): Evidence[] {
   const evidence: Evidence[] = []
   for (const seed of seeds) {
     const seedScore = scoreText(seed.text, group)
     for (const leaf of seed.leaves) {
-      const score = scoreText(`${seed.text} ${leaf.text} ${leaf.tags.join(' ')}`, group)
-      if (Math.max(seedScore.evidence, score.evidence) <= 0) continue
-      evidence.push({ seed, leaf, score: Math.max(seedScore.score, score.score) })
+      const leafScore = scoreText(leafEvidenceText(seed, leaf), group)
+      if (leafScore.evidence <= 0) continue
+      evidence.push({ seed, leaf, score: leafScore.score + Math.min(seedScore.score, 6) })
     }
   }
   return evidence.sort(
     (left, right) => right.score - left.score || left.leaf.id.localeCompare(right.leaf.id),
   )
+}
+
+function leafEvidenceText(seed: ScenarioSeed, leaf: ScenarioLeaf): string {
+  return [
+    seed.id,
+    seed.category,
+    seed.partner,
+    seed.scaffoldFamily,
+    leaf.loadBearingArtifact,
+    leaf.expectedFamily,
+    leaf.text,
+    leaf.tags.join(' '),
+  ]
+    .filter(isString)
+    .join(' ')
 }
 
 function scoreText(text: string, group: DomainGroup): { score: number; evidence: number } {

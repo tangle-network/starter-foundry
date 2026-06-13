@@ -31,6 +31,8 @@ bridges, and a clear consumer path back into blueprint-agent.
   Zama fhEVM.
 - [x] Add bridge proof metadata and routing tests across distinct surfaces.
 - [x] Add a candidate queue/scratch interface for parallel domain-pack work.
+- [x] Expand the candidate queue from broad proof rows to current-corpus
+  parallel rows (`25` emitted from `319` parsed blueprint-agent seeds).
 - [x] Verify blueprint-agent can consume the routed packs through the sibling
   starter-foundry CLI path.
 
@@ -54,6 +56,9 @@ bridges, and a clear consumer path back into blueprint-agent.
 - [x] Tests
 - [x] Blueprint-agent reintegration check
 - [x] GitHub issue update
+- [x] Candidate queue scale-out for #150: parser now handles multiple seed
+  objects per file, requires leaf-level evidence, and emits group, entry, and
+  seed-shard rows without provider-specific branches.
 
 ## Verification
 
@@ -66,6 +71,17 @@ bridges, and a clear consumer path back into blueprint-agent.
 - [x] `STARTER_FOUNDRY_CLI=/home/drew/code/starter-foundry/dist/cli.js pnpm tsx --test scripts/experiments/lib/__tests__/scaffold-compose.test.ts`
 - [x] Changed-file Prettier check
 - [x] `pnpm lint --quiet`
+- [x] `pnpm exec tsx --test tests/plan-domain-pack-work.test.ts` -> 2/2
+  passing, including current blueprint-agent corpus count `>= 10`.
+
+Current `.evolve/domain-pack-candidates.json` evidence:
+
+- `scenariosScanned`: 319
+- `domainGroupsScanned`: 4
+- `candidates`: 25
+- Includes FHE rows for `fhenix-foundry`, `fhenix-contracts`,
+  `fhevm-contracts`, FHE capability rows, LayerZero OFT bridge contracts, bridge
+  UI, and per-seed bridge shards.
 
 Known repo-wide gate note: `pnpm verify` currently stops at `format:check`
 because the repository has unrelated pre-existing Prettier drift across many
@@ -73,7 +89,6 @@ files. Changed files in this branch pass targeted Prettier.
 
 ## Open Follow-up Candidates
 
-- Add more domain-pack metadata beyond the first FHE and bridge proof groups.
 - Promote generated `.evolve/domain-pack-candidates.json` rows into parallel
   implementation issues/PRs after this foundation lands.
 - Add the cheap VB smoke gate from issue #148 once the current starter-foundry

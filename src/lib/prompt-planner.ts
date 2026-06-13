@@ -1,4 +1,4 @@
-import type { Registry } from '../types.js'
+import type { FamilyManifest, Registry, TaxonomyFields } from '../types.js'
 import type { ComposeSpec, WorkspaceSpec, PromptPlan, ProjectEntry } from '../types.js'
 
 import { detectDomainPackAmbiguity, scoreDomainPackFamilies } from './domain-packs.js'
@@ -66,7 +66,7 @@ interface LaneDetection {
   move: boolean
   tangle: boolean
   avs: boolean
-  stylus: boolean
+  domainContract: boolean
   zk: boolean
   mcp: boolean
   dspy: boolean
@@ -77,7 +77,22 @@ interface LaneDetection {
   implicitWorker: boolean
 }
 
-function detectLanes(text: string, partner: string | null): LaneDetection {
+interface DomainContractChoice {
+  family: string
+  layers: string[]
+  taxonomy?: TaxonomyFields
+}
+
+interface DomainContractOptions {
+  familyOnly?: boolean
+}
+
+function detectLanes(
+  prompt: string,
+  text: string,
+  partner: string | null,
+  registry: Registry,
+): LaneDetection {
   const hasApiRaw = hasAny(text, API_SIGNALS)
   const apiIsFalsePositive =
     hasApiRaw && !hasAny(text, STRONG_API_TERMS) && hasAny(text, FRAMEWORK_API_TERMS)
@@ -93,14 +108,15 @@ function detectLanes(text: string, partner: string | null): LaneDetection {
   const move = hasAny(text, ['move', 'aptos', 'sui'])
   const tangle = detectLane(text, 'tangle')
   const avs = detectLane(text, 'avs')
-  const stylus = detectLane(text, 'stylus')
+  const domainContract =
+    selectDomainContractFamily(prompt, partner, registry, { familyOnly: true }) !== null
   const zk = detectLane(text, 'zk')
   const mcp = detectLane(text, 'mcp')
   const dspy = detectLane(text, 'dspy')
   const x402 = detectLane(text, 'x402')
   const evmInfra = detectLane(text, 'evm-infra')
 
-  const hasProtocol = evm || solana || tangle || avs || stylus || evmInfra
+  const hasProtocol = evm || solana || tangle || avs || domainContract || evmInfra
   const commerceSupportApi =
     !api &&
     frontend &&
@@ -142,7 +158,7 @@ function detectLanes(text: string, partner: string | null): LaneDetection {
     move,
     tangle,
     avs,
-    stylus,
+    domainContract,
     zk,
     mcp,
     dspy,
@@ -166,7 +182,7 @@ function shouldBeWorkspace(lanes: LaneDetection, text: string, partner: string |
     move,
     tangle,
     avs,
-    stylus,
+    domainContract,
     zk,
     mcp,
     dspy,
@@ -177,7 +193,7 @@ function shouldBeWorkspace(lanes: LaneDetection, text: string, partner: string |
     implicitWorker,
   } = lanes
   const runtimeCount = [evm, solana, move].filter(Boolean).length
-  const protocolLanes = [tangle, avs, stylus, zk, mcp, dspy, x402]
+  const protocolLanes = [tangle, avs, domainContract, zk, mcp, dspy, x402]
 
   // Plain agent/protocol without other surfaces → single starter
   const onlyAgent =
@@ -200,7 +216,7 @@ function shouldBeWorkspace(lanes: LaneDetection, text: string, partner: string |
     !move &&
     !tangle &&
     !avs &&
-    !stylus &&
+    !domainContract &&
     !zk &&
     !mcp &&
     !dspy &&
@@ -225,7 +241,7 @@ function shouldBeWorkspace(lanes: LaneDetection, text: string, partner: string |
     move,
     tangle,
     avs,
-    stylus,
+    domainContract,
     zk,
     mcp,
     dspy,
@@ -245,7 +261,7 @@ function shouldBeWorkspace(lanes: LaneDetection, text: string, partner: string |
     (frontend && agent) ||
     (frontend && api && apiChoice !== null && apiChoice.family !== 'api-service') ||
     (frontend && implicitApi) ||
-    (implicitApi && (evm || solana || move || tangle || avs || stylus)) ||
+    (implicitApi && (evm || solana || move || tangle || avs || domainContract)) ||
     implicitWorker ||
     (hasAny(text, WORKSPACE_SIGNALS) && laneCount > 1)
   )
@@ -286,23 +302,47 @@ function selectDomainContractFamily(
   prompt: string,
   partner: string | null,
   registry: Registry,
-): { family: string; layers: string[] } | null {
+  options: DomainContractOptions = {},
+): DomainContractChoice | null {
   const text = prompt.toLowerCase()
   const hardhatExplicit = detectHardhatExplicit(text)
   const matches = scoreDomainPackFamilies({ prompt, partner, registry })
   const ambiguity = detectDomainPackAmbiguity(matches)
   for (const match of matches) {
+    if (options.familyOnly && match.layers?.length) continue
     if (ambiguity?.families.includes(match.family)) continue
     const family = registry.families.get(match.family)
-    if (family?.taxonomy?.language !== 'solidity') continue
-    if (family.taxonomy.surface !== 'contracts') continue
-    if (hardhatExplicit && match.family !== 'hardhat-contracts') continue
+    if (family?.taxonomy?.surface !== 'contracts') continue
+    const runtime = family.domainPack?.domain.runtime ?? family.taxonomy.runtime
+    if (hardhatExplicit && runtime !== 'hardhat') continue
     const layers = [
       ...new Set([...frameworkLayersForFamily(registry, match.family), ...(match.layers ?? [])]),
     ]
-    return { family: match.family, layers }
+    return { family: match.family, layers, taxonomy: family.taxonomy }
   }
   return null
+}
+
+function contractProjectIdentity(
+  choice: DomainContractChoice | null,
+  family: FamilyManifest,
+): {
+  id: string
+  path: string
+} {
+  if (family.taxonomy?.language === 'solidity') return { id: 'evm', path: 'contracts/evm' }
+
+  const id =
+    (
+      choice?.taxonomy?.runtime ??
+      choice?.taxonomy?.language ??
+      family.taxonomy?.runtime ??
+      'contract'
+    )
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'contract'
+  return { id, path: `contracts/${id}` }
 }
 
 function collectProtocolProjects(
@@ -361,33 +401,31 @@ function collectProtocolProjects(
     )
   }
 
-  if (lanes.stylus) {
-    projects.push(
-      buildProtocolProject(
-        'stylus',
-        'contracts/stylus',
-        'stylus-contracts',
-        ['framework:stylus-contracts'],
-        prompt,
-        partner,
-        { contractName: 'StylusPool' },
-      ),
-    )
-  }
-
-  if (lanes.evm) {
+  if (lanes.evm || lanes.domainContract) {
     const domainContract = selectDomainContractFamily(prompt, partner, registry)
     const family =
       domainContract?.family ??
       (detectHardhatExplicit(text) ? 'hardhat-contracts' : 'forge-contracts')
-    const layers = domainContract?.layers ?? buildEvmContractLayers(text)
-    const variables = buildEvmContractVariables(text)
-    if (domainContract && variables.contractName === 'Counter') {
-      delete variables.contractName
+    const familyManifest = registry.families.get(family)
+    if (familyManifest) {
+      const layers = domainContract?.layers ?? buildEvmContractLayers(text)
+      const variables = buildEvmContractVariables(text)
+      if (domainContract && variables.contractName === 'Counter') {
+        delete variables.contractName
+      }
+      const identity = contractProjectIdentity(domainContract, familyManifest)
+      projects.push(
+        buildProtocolProject(
+          identity.id,
+          identity.path,
+          family,
+          layers,
+          prompt,
+          partner,
+          variables,
+        ),
+      )
     }
-    projects.push(
-      buildProtocolProject('evm', 'contracts/evm', family, layers, prompt, partner, variables),
-    )
   }
 
   if (lanes.solana) {
@@ -526,7 +564,7 @@ function buildWorkspacePromptPlan({
   text: string
   registry: Registry
 }): PromptPlan | null {
-  const lanes = detectLanes(text, partner)
+  const lanes = detectLanes(prompt, text, partner, registry)
   if (!shouldBeWorkspace(lanes, text, partner)) return null
 
   const projects: ProjectEntry[] = []

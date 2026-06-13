@@ -65,7 +65,9 @@ interface SmokeReport {
     prompts: Array<{
       prompt: string
       expectedFamily: string
+      expectedLayers: string[]
       actualFamily: string | null
+      actualLayers: string[]
       ok: boolean
     }>
   }
@@ -228,21 +230,29 @@ function checkRouting(candidate: DomainPackWorkCandidate): SmokeReport['routing'
       timeoutMs,
     )
     let actualFamily: string | null = null
+    let actualLayers: string[] = []
     if (result.status === 'passed' && result.stdoutTail) {
       const jsonStart = result.stdoutTail.indexOf('{')
       if (jsonStart >= 0) {
         try {
-          actualFamily = JSON.parse(result.stdoutTail.slice(jsonStart)).spec?.family ?? null
+          const parsed = JSON.parse(result.stdoutTail.slice(jsonStart))
+          actualFamily = parsed.spec?.family ?? null
+          actualLayers = Array.isArray(parsed.spec?.layers) ? parsed.spec.layers : []
         } catch {
           actualFamily = null
+          actualLayers = []
         }
       }
     }
+    const expectedLayers = candidate.intendedStarter.layers
+    const layersOk = expectedLayers.every((layer) => actualLayers.includes(layer))
     return {
       prompt,
       expectedFamily: candidate.intendedStarter.family,
+      expectedLayers,
       actualFamily,
-      ok: actualFamily === candidate.intendedStarter.family,
+      actualLayers,
+      ok: actualFamily === candidate.intendedStarter.family && layersOk,
     }
   })
   return {

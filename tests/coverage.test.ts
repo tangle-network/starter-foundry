@@ -450,7 +450,7 @@ const CAP_PROMPTS: Record<string, { prompt: string; family: string }> = {
     family: 'forge-contracts',
   },
   'capability:evm-layerzero-oft': {
-    prompt: 'Build a LayerZero OFT bridge token',
+    prompt: 'Build a LayerZero OFT bridge token with Foundry',
     family: 'forge-contracts',
   },
   'capability:evm-protocol-api': {
@@ -657,7 +657,7 @@ const CAP_PROMPTS: Record<string, { prompt: string; family: string }> = {
   },
   'capability:crypto-bridge-ui': {
     prompt: 'Build a cross-chain bridge transfer UI with Wormhole',
-    family: 'nextjs-ts',
+    family: 'react-vite-ts',
   },
   'capability:crypto-portfolio-ui': {
     prompt: 'Build a React wallet portfolio tracker for token balances',

@@ -67,6 +67,30 @@ test('domain-pack scorer routes Zama fhEVM to the Zama family', async () => {
   assert.equal(result.spec.family, 'fhevm-contracts')
 })
 
+test('layer domain-pack metadata routes bridge UI prompts to a frontend starter', async () => {
+  const result = await selectStarter({
+    prompt: 'Build a cross-chain bridge transfer UI with Wormhole',
+    partner: null,
+  })
+
+  assert.equal(result.routingRisk, 'safe')
+  assert.equal(result.spec.family, 'react-vite-ts')
+  assert.ok(result.spec.layers?.includes('framework:react-vite-ts'))
+  assert.ok(result.spec.layers?.includes('capability:crypto-bridge-ui'))
+})
+
+test('layer domain-pack metadata keeps LayerZero OFT prompts on the contract starter', async () => {
+  const result = await selectStarter({
+    prompt: 'Build a LayerZero OFT bridge token with Foundry',
+    partner: null,
+  })
+
+  assert.equal(result.routingRisk, 'safe')
+  assert.equal(result.spec.family, 'forge-contracts')
+  assert.ok(result.spec.layers?.includes('framework:forge-foundation'))
+  assert.ok(result.spec.layers?.includes('capability:evm-layerzero-oft'))
+})
+
 test('generic FHE prompts are surfaced as ambiguous instead of arbitrary provider choice', async () => {
   const registry = await loadRegistry()
   const matches = scoreDomainPackFamilies({

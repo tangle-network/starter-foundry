@@ -10,7 +10,38 @@ bridges, and a clear consumer path back into blueprint-agent.
 
 ## Current State
 
-- Branch: `feat/fhe-runtime-capability-variants`.
+- Latest active branch: `feat/domain-pack-surface-routing` (PR #171 merged into
+  `main` as `2e98dc3` on 2026-06-13).
+- Latest shipped slice:
+  - PR #171: generic surface-aware domain-pack routing. Domain packs now respect
+    explicit prompt surface intent, bridge manifests cover contract/UI/indexer
+    surfaces, and the duplicate surface vocabulary review nit was addressed by
+    moving shared surface classes/signals into `src/lib/planner/signals.ts`.
+  - Cross-domain regression caught before merge: plain Remix framework routing
+    was briefly interpreted as `web + api` because `route/routes` were too broad
+    as API surface terms. Narrowed to `api route/api routes`; full local and CI
+    router suites passed.
+- Latest scored evidence:
+  - Bridge scored run
+    `.evolve/domain-pack-runs/issue-157-scored-results/bridge-scored-post-170.json`
+    failed promotion: train `ethena-cross-chain-usde` scored `0.727` but had
+    `0/1` completion pass rate; holdout `lz-oft-balance-tracker` produced no
+    parseable score because cli-bridge/opencode health timed out during that
+    leaf.
+  - FHE Foundry scored run
+    `.evolve/domain-pack-runs/issue-157-scored-results/fhe-foundry-scored-post-170.json`
+    failed promotion: routing passed, compose passed `2/2`, authenticity signals
+    hit `444`, train scored `0.919`, holdout scored `0.921`, but both splits had
+    `0/1` completion pass rate.
+  - Current inference: prompt-to-project routing is no longer the first
+    bottleneck for these two lanes. The next bottleneck is the generated
+    scaffold/task/eval contract failing completion-verifier despite high semantic
+    and artifact scores.
+- Issue tracking:
+  - #148 updated with PR #171 merge and verification evidence.
+  - #153 is closed.
+  - #157 updated with bridge and FHE scored-run numbers/failures.
+  - #165 updated with the generic router/factory scale-out note.
 - Merged foundation:
   - `9834df9` / PR #149: metadata-driven domain-pack foundation.
   - `f6feb44` / PR #156: deterministic train/holdout smoke gate.
@@ -24,7 +55,10 @@ bridges, and a clear consumer path back into blueprint-agent.
   `.evolve/governor.jsonl`, `.evolve/scorecard.json`.
 - Issue #148 is open with the full RFC/spec and canonical v3 execution tracker:
   https://github.com/tangle-network/starter-foundry/issues/148#issuecomment-4698561503
-- Open child lanes: #152 FHE runtime compatibility, #153 bridge proof pack
+- Open child lanes: #152 FHE runtime compatibility, #157 scored promotion, #158
+  parallel candidate promotion loop, #165 scale metadata-driven pack factory.
+  Closed child lane: #153 bridge proof pack expansion.
+- Historical child lanes: #152 FHE runtime compatibility, #153 bridge proof pack
   expansion, #154 hardcode migration, #157 scored promotion, #158 parallel
   candidate promotion loop.
 
@@ -229,6 +263,47 @@ Known repo-wide gate note: `pnpm format:check` currently stops because the
 repository has unrelated pre-existing Prettier drift across 117 files outside
 this PR. Changed files in this branch were Prettier-written and pass
 `git diff --check`.
+
+Current scaffold-evidence reintegration slice:
+
+- Finding: #157 scored artifacts proved routing/compose, but did not always
+  prove that the selected domain pack reached the downstream VB scaffold
+  artifact. This was material for bridge: the saved scored train artifact showed
+  `react-vite-ts+evm-infra-ts+forge-contracts` and no
+  `capability:evm-layerzero-oft` domain guidance, so a score could not be
+  interpreted as a LayerZero/OFT scaffold result.
+- Starter Foundry local change: scored promotion now records scaffold evidence
+  per leaf, aggregates `scaffoldPassCount`/`scaffoldFailCount`, and fails closed
+  when the observed VB `scaffold-compose.json` lacks the candidate's expected
+  family/layers/capabilities.
+- Blueprint Agent local change: `composeScaffoldInWorkdir` now preserves
+  `.starter-foundry/compose-report.json` `domainPackGuidance`, and
+  `sandbox-driver` persists it into run-artifact `scaffold-compose.json` with
+  `projects`.
+- Replay evidence with the stricter gate:
+  - FHE `fhe-contracts-fhenix-foundry`: scaffold evidence passes 1/1 train and
+    1/1 holdout; scores `0.919` train and `0.921` holdout still fail because
+    completion pass rate is `0/1` on both splits.
+  - Bridge `bridge-contracts-capability-evm-layerzero-oft`: train score
+    `0.727` still fails completion, and now correctly fails scaffold evidence
+    because `capability:evm-layerzero-oft` was absent from the saved VB artifact;
+    holdout remains unparseable.
+- Verification:
+  - `blueprint-agent`: `pnpm exec tsx --test scripts/experiments/lib/__tests__/scaffold-compose.test.ts`
+    -> 18/18 passing, including 315 vertical compose smoke.
+  - `blueprint-agent`: `git diff --check` -> pass.
+  - `blueprint-agent`: `pnpm exec tsc -p scripts/experiments/tsconfig.check.json --pretty false`
+    remains blocked by pre-existing missing
+    `agent-dev-container/products/sandbox/sdk/dist/index.js` imports.
+  - `starter-foundry`: `pnpm exec tsc --noEmit --pretty false` -> pass.
+  - `starter-foundry`: `pnpm exec tsc -p tsconfig.test.json --pretty false` -> pass.
+  - `starter-foundry`: `pnpm exec tsx --test tests/domain-pack-smoke.test.ts`
+    -> 7/7 passing.
+  - `starter-foundry`: `pnpm exec tsx --test tests/domain-pack-smoke.test.ts tests/domain-pack-run.test.ts`
+    -> 11/11 passing after aligning the scored controller fixture with the new
+    scaffold-evidence artifact contract.
+  - `starter-foundry`: `pnpm exec prettier --check scripts/domain-pack-smoke.ts tests/domain-pack-smoke.test.ts`
+    -> pass.
 
 ## Open Follow-up Candidates
 

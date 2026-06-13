@@ -1,0 +1,296 @@
+{
+  "icp": "AUTO-RESEARCH",
+  "vertical": "fhenix-fhe",
+  "realnessByProfile": [
+    {
+      "profileId": "cc-sonnet",
+      "n": 1,
+      "meanScore": 0.8,
+      "hitRate": 0,
+      "hitRateCi95": [
+        0,
+        0.7934567085261071
+      ],
+      "gatedCount": 0
+    },
+    {
+      "profileId": "cc-sonnet@generic",
+      "n": 1,
+      "meanScore": 0.8,
+      "hitRate": 0,
+      "hitRateCi95": [
+        0,
+        0.7934567085261071
+      ],
+      "gatedCount": 0
+    },
+    {
+      "profileId": "oc-glm51",
+      "n": 1,
+      "meanScore": 0.8,
+      "hitRate": 0,
+      "hitRateCi95": [
+        0,
+        0.7934567085261071
+      ],
+      "gatedCount": 0
+    },
+    {
+      "profileId": "oc-glm51@generic",
+      "n": 1,
+      "meanScore": 0.82,
+      "hitRate": 0,
+      "hitRateCi95": [
+        0,
+        0.7934567085261071
+      ],
+      "gatedCount": 0
+    }
+  ],
+  "gatedCells": [],
+  "autoresearch": {
+    "normalizedRuns": [
+      {
+        "suiteId": "verticalbench:fhenix-fhe",
+        "suiteName": "Fhenix FHE dApps",
+        "source": "verticalbench",
+        "vertical": "fhenix-fhe",
+        "taskKind": "product-build",
+        "task": {
+          "id": "fhenix-confidential-lending-vault",
+          "name": "Confidential collateralized lending vault",
+          "prompt": "An over-collateralized lending market on Fhenix where each account holds encrypted collateral and debt as euint64. borrow(inEuint64 amt) computes the health factor FHE.div(FHE.mul(collateral, ltvBps), newDebt) and gates it with FHE.gte(hf, MIN_HF) and FHE.select so unsafe borrows net zero. A keeper liquidate uses FHE.req on an underwater ebool to authorize seizure, surfaced via FHE.decrypt. Borrowers read their position via FHE.sealoutput under a permit. A plaintext-position dashboard with no euint health-factor math, FHE.req gate, or sealed reads is a shim; the artifact compiles under forge.",
+          "difficulty": "extreme",
+          "vertical": "fhenix-fhe",
+          "taskKind": "product-build",
+          "source": "verticalbench",
+          "tags": [
+            "fhenix",
+            "fhe",
+            "lending",
+            "collateral",
+            "confidential-defi"
+          ],
+          "native": {
+            "expectedFamily": "",
+            "expectedIndustry": "",
+            "metadata": {}
+          }
+        },
+        "trace": {
+          "runId": "driver-fhenix-confidential-lending-vault-1781379333334",
+          "taskId": "fhenix-confidential-lending-vault",
+          "startedAt": "2026-06-13T19:35:33.333Z",
+          "endedAt": "2026-06-13T19:54:39.788Z",
+          "wallMs": 1146454,
+          "stopReason": "max-shots",
+          "actions": [
+            {
+              "index": 0,
+              "kind": "state-check",
+              "name": "preview",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "preview succeeded"
+            },
+            {
+              "index": 1,
+              "kind": "eval",
+              "name": "verification-shot-1",
+              "status": "fail",
+              "durationMs": 1005808,
+              "detail": "failing layers: typecheck, lint, domain, completion-verifier"
+            },
+            {
+              "index": 2,
+              "kind": "tool-call",
+              "name": "Bash",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=65"
+            },
+            {
+              "index": 3,
+              "kind": "tool-call",
+              "name": "ToolSearch",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=2"
+            },
+            {
+              "index": 4,
+              "kind": "tool-call",
+              "name": "Read",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=19"
+            },
+            {
+              "index": 5,
+              "kind": "tool-call",
+              "name": "WebFetch",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=47"
+            },
+            {
+              "index": 6,
+              "kind": "tool-call",
+              "name": "Write",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=12"
+            },
+            {
+              "index": 7,
+              "kind": "tool-call",
+              "name": "Edit",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=5"
+            },
+            {
+              "index": 8,
+              "kind": "tool-call",
+              "name": "Agent",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=1"
+            }
+          ],
+          "artifacts": [
+            "verificationByShot"
+          ],
+          "requiredArtifacts": [],
+          "costUsd": null,
+          "tokenUsage": {
+            "input": 49,
+            "output": 47006,
+            "cacheRead": 0
+          },
+          "finalState": {
+            "outcome": "max-shots",
+            "previewSucceeded": true,
+            "completenessScore": 1,
+            "auditScore": 10,
+            "convergedAt": null,
+            "shotsUsed": 1
+          },
+          "native": {
+            "driverName": "driver-baseline",
+            "scaffoldChosen": null,
+            "scaffoldMatchKind": "none",
+            "runtime": "sandbox-sdk",
+            "factoryRunId": "cc-sonnet-fhenix-confidential-lending-vault-r0"
+          }
+        },
+        "eval": {
+          "taskId": "fhenix-confidential-lending-vault",
+          "status": "fail",
+          "score": 0.582,
+          "outcome": "unknown",
+          "layers": [
+            {
+              "layer": "typecheck",
+              "status": "fail"
+            },
+            {
+              "layer": "lint",
+              "status": "fail"
+            },
+            {
+              "layer": "domain",
+              "status": "fail"
+            },
+            {
+              "layer": "completion-verifier",
+              "status": "fail"
+            }
+          ],
+          "gaps": [
+            "typecheck",
+            "lint",
+            "domain",
+            "completion-verifier",
+            "max-shots"
+          ],
+          "native": {
+            "verificationByShot": [
+              {
+                "shot": 1,
+                "blendedScore": 0.582,
+                "allPass": false,
+                "failCount": 4,
+                "passCount": 5,
+                "failingLayers": [
+                  "typecheck",
+                  "lint",
+                  "domain",
+                  "completion-verifier"
+                ],
+                "shotWallMs": 1005808,
+                "shotCostUsd": 0,
+                "inputTokens": 49,
+                "outputTokens": 47006,
+                "fileCountAfter": 103,
+                "reviewerConfidence": null,
+                "reviewerShouldContinue": null,
+                "toolCallsByName": {
+                  "Bash": 65,
+                  "ToolSearch": 2,
+                  "Read": 19,
+                  "WebFetch": 47,
+                  "Write": 12,
+                  "Edit": 5,
+                  "Agent": 1
+                },
+                "toolCallSuccesses": 0,
+                "toolCallFailures": 0,
+                "failingLayerFindings": [
+                  {
+                    "layer": "typecheck",
+                    "severity": "major",
+                    "message": "[node-pnpm@apps/web] typecheck failed (exit 2)"
+                  },
+                  {
+                    "layer": "typecheck",
+                    "severity": "major",
+                    "message": "[node-npm@apps/web] typecheck failed (exit 2)"
+                  },
+                  {
+                    "layer": "domain",
+                    "severity": "critical",
+                    "message": "fhenixjs or fhenix SDK in dependencies: no file matching package.json contains required pattern"
+                  },
+                  {
+                    "layer": "domain",
+                    "severity": "critical",
+                    "message": "custom-build failed (exit 2): npm warn Unknown env config \"verify-deps-before-run\". This will stop working in the next major version of npm.\n(node:3456931) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+                  }
+                ]
+              }
+            ],
+            "intentMatch": null
+          }
+        }
+      }
+    ],
+    "findings": [
+      {
+        "kind": "missing-domain-integration",
+        "severity": "low",
+        "taskIds": [
+          "fhenix-confidential-lending-vault"
+        ],
+        "evidence": "domain: fhenixjs or fhenix SDK in dependencies: no file matching package.json contains required pattern | domain: custom-build failed (exit 2): npm warn Unknown env config \"verify-deps-before-run\". This will stop working in the next major version of npm.\n(node:3456931) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n",
+        "proposedFixClass": "product"
+      }
+    ]
+  },
+  "diagnostics": {
+    "cellCount": 4,
+    "profileCount": 4,
+    "enrichedCells": 0,
+    "warnings": []
+  }
+}

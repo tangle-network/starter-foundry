@@ -1,0 +1,200 @@
+{
+  "matrixId": "mtx_mqcqajkw_c4e7bb22",
+  "nMeasurable": 4,
+  "nTotal": 4,
+  "perVertical": [
+    {
+      "verticalId": "ethena-stablecoin",
+      "n": 4,
+      "passRate": 0,
+      "passRateCi95": [
+        0,
+        0.48990002040399916
+      ]
+    }
+  ],
+  "perHarness": [
+    {
+      "runtime": "sandbox-sdk",
+      "n": 4,
+      "passRate": 0,
+      "passRateCi95": [
+        0,
+        0.48990002040399916
+      ],
+      "infraErrorRate": 0
+    }
+  ],
+  "scaffoldMatch": [
+    {
+      "kind": "none",
+      "n": 4,
+      "passRate": 0,
+      "passRateCi95": [
+        0,
+        0.48990002040399916
+      ]
+    }
+  ],
+  "toolUse": [
+    {
+      "tool": "Bash",
+      "calls": 116,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "Read",
+      "calls": 91,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "Write",
+      "calls": 81,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "Edit",
+      "calls": 27,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "TodoWrite",
+      "calls": 7,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "Grep",
+      "calls": 2,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "Glob",
+      "calls": 1,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    }
+  ],
+  "intentVsBlended": [],
+  "reviewerLift": [],
+  "perShotCost": [
+    {
+      "shot": 1,
+      "meanInputTokens": 179,
+      "meanOutputTokens": 22261.5,
+      "meanCostUsd": 0,
+      "n": 4
+    }
+  ],
+  "failureLayersByProfile": [
+    {
+      "profileId": "claude-code · sonnet",
+      "layer": "lint",
+      "count": 1
+    },
+    {
+      "profileId": "claude-code · sonnet",
+      "layer": "domain",
+      "count": 1
+    },
+    {
+      "profileId": "claude-code · sonnet",
+      "layer": "semantic",
+      "count": 1
+    },
+    {
+      "profileId": "claude-code · sonnet",
+      "layer": "completion-verifier",
+      "count": 1
+    },
+    {
+      "profileId": "claude-code · sonnet @generic",
+      "layer": "lint",
+      "count": 1
+    },
+    {
+      "profileId": "claude-code · sonnet @generic",
+      "layer": "domain",
+      "count": 1
+    },
+    {
+      "profileId": "claude-code · sonnet @generic",
+      "layer": "semantic",
+      "count": 1
+    },
+    {
+      "profileId": "claude-code · sonnet @generic",
+      "layer": "completion-verifier",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1",
+      "layer": "typecheck",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1",
+      "layer": "lint",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1",
+      "layer": "domain",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1",
+      "layer": "semantic",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1",
+      "layer": "completion-verifier",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1 @generic",
+      "layer": "typecheck",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1 @generic",
+      "layer": "lint",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1 @generic",
+      "layer": "domain",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1 @generic",
+      "layer": "semantic",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1 @generic",
+      "layer": "completion-verifier",
+      "count": 1
+    }
+  ]
+}

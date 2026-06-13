@@ -1,0 +1,25 @@
+{
+  "vertical": "fhenix-fhe",
+  "roster": "smoke",
+  "searchArms": [
+    "default"
+  ],
+  "skillArms": [
+    "none"
+  ],
+  "personaArms": [
+    "generic",
+    "none"
+  ],
+  "personaCrossed": true,
+  "profiles": 2,
+  "leaves": 1,
+  "reps": 1,
+  "totalCells": 2,
+  "measurable": 2,
+  "rankedByComposite": true,
+  "durationMs": 2977898,
+  "resumed": 0,
+  "executed": 2,
+  "generatedAt": "2026-06-13T14:16:58.993Z"
+}

@@ -1,0 +1,128 @@
+{
+  "id": "cryptography-primitives",
+  "category": "research",
+  "subcategory": "cryptography",
+  "partner": "academic",
+  "name": "Cryptography Primitives — build cryptographic algorithms from specifications",
+  "description": "Research-grade implementations of cryptographic primitives from NIST standards, IETF RFCs, and seminal papers. AES, SHA-256, Ed25519, Merkle trees, secret sharing, pairing-based signatures, and zero-knowledge proofs. Constant-time implementations, correct finite field arithmetic, and security against known attacks.",
+  "seedPromptTemplate": "Implement {{description}}\n\nDifficulty: {{difficulty}}. Tags: {{tags}}.\n\nResearch-grade implementation from the specification. Constant-time operations where security-critical. Test vectors from the standard. No external crypto libraries — build from raw arithmetic.",
+  "validator": {
+    "domainAssertions": [
+      {
+        "label": "implements crypto from raw arithmetic",
+        "fileGlob": "**/*.{rs,py,ts,go,c,cpp}",
+        "mustContain": "(GF(|mod_pow|modular|field_element|FieldElement|BigInt|big_int)",
+        "minFiles": 1
+      },
+      {
+        "label": "standard test vectors verified",
+        "fileGlob": "**/*.{rs,py,ts,go}",
+        "mustContain": "(test_vector|NIST|RFC|FIPS|known_answer|kat)",
+        "minFiles": 1
+      },
+      {
+        "label": "constant-time operations considered",
+        "fileGlob": "**/*.{rs,py,ts,go,c}",
+        "mustContain": "(constant.time|ct_|timing|side.channel|bitslice|cmov)"
+      },
+      {
+        "label": "no use of external crypto libraries for core",
+        "fileGlob": "**/*.{rs,py,ts,go}",
+        "mustNotContain": "(from cryptography|import hashlib.sha256|require(['\"]crypto['\"]).create)"
+      },
+      {
+        "label": "specification referenced (RFC, FIPS, paper)",
+        "fileGlob": "**/*.{rs,py,ts,go,md}",
+        "mustContain": "(RFC d{4}|FIPS d{3}|NIST SP|arXiv:|doi:|et al.)"
+      }
+    ],
+    "securityGates": [
+      {
+        "label": "no hardcoded private keys or secrets",
+        "check": "no-hardcoded-secrets"
+      },
+      {
+        "label": "no eval/exec on cryptographic input",
+        "check": "no-eval"
+      },
+      {
+        "label": "input validation on key sizes and message formats",
+        "check": "input-validation"
+      }
+    ],
+    "customBuild": {
+      "command": "npx tsc --noEmit",
+      "timeoutMs": 60000
+    },
+    "semanticRubric": "You are evaluating a research-grade cryptographic primitives implementation built by an AI coding agent. Score STRICTLY on:\n1. Algorithm implemented from the specification (FIPS, RFC, paper) — NOT wrapping OpenSSL/libsodium/hashlib.\n2. Finite field arithmetic correct: modular addition, multiplication, inversion over the specified prime — NOT using floating-point.\n3. Test vectors from the official standard verified: exact match for all intermediate and final values — NOT custom-generated test cases only.\n4. Constant-time operations for security-critical paths: no secret-dependent branches or memory access — NOT variable-time comparison or lookup.\n5. Key generation follows the specification: correct random sampling, clamping, and validation — NOT using insecure random sources.\n6. Padding and encoding match the standard exactly (PKCS, OAEP, Keccak padding rules) — NOT ad-hoc padding.\n7. Error handling: invalid inputs (wrong key size, malformed ciphertext) rejected explicitly — NOT silently producing wrong output.\n8. Paper/RFC cited in comments with specific section references for each algorithm step.\n9. Numerical edge cases handled: point at infinity, zero scalar, degenerate inputs.\n10. Performance: operations benchmarked with throughput numbers, comparison to reference implementations.\nScore 0 if the implementation wraps an existing crypto library (hashlib, OpenSSL, ring).\nScore 0 if no standard test vectors are verified.\nScore 0 if finite field arithmetic uses floating-point numbers.\nScore 0 if the specification (RFC/FIPS/paper) is not referenced."
+  },
+  "preferredDependencies": [
+    {
+      "name": "zod",
+      "reason": "Schema validation"
+    }
+  ],
+  "leaves": [
+    {
+      "id": "crypto-fhe-bfv",
+      "name": "BFV fully homomorphic encryption scheme (Fan & Vercauteren 2012)",
+      "difficulty": "extreme",
+      "description": "Implement the BFV (Brakerski/Fan-Vercauteren) homomorphic encryption scheme from Fan & Vercauteren (2012) \"Somewhat Practical Fully Homomorphic Encryption.\" Build the RLWE-based scheme over the ring R_q = Z_q[x]/(x^n+1) where n is a power of 2. Implement key generation (secret s←χ_key, public key pk=(-a·s+e, a)), encryption (ct=(Δm+e₁+pk₀·u, e₂+pk₁·u)), and decryption (m=⌊t/q·(ct₀+ct₁·s)⌉ mod t). Build homomorphic addition (add ciphertexts component-wise) and multiplication (tensor product + relinearization using evaluation keys). Implement NTT (Number Theoretic Transform) for efficient polynomial multiplication in R_q. Handle noise growth and compute the noise budget.",
+      "expectedFamily": "",
+      "expectedIndustry": "research",
+      "tags": [
+        "bfv",
+        "fhe",
+        "homomorphic",
+        "rlwe"
+      ],
+      "expectedConcepts": [
+        {
+          "name": "RLWE ring",
+          "keywords": [
+            "R_q",
+            "Z_q[x]/(x^n+1)",
+            "cyclotomic",
+            "ring"
+          ]
+        },
+        {
+          "name": "encrypt/decrypt",
+          "keywords": [
+            "Δm",
+            "rounding",
+            "⌊t/q⌉",
+            "noise"
+          ],
+          "complexity": "compute"
+        },
+        {
+          "name": "homomorphic operations",
+          "keywords": [
+            "homomorphic add",
+            "homomorphic multiply",
+            "relinearization"
+          ]
+        },
+        {
+          "name": "NTT",
+          "keywords": [
+            "NTT",
+            "Number Theoretic Transform",
+            "polynomial multiplication"
+          ],
+          "complexity": "compute"
+        },
+        {
+          "name": "noise budget",
+          "keywords": [
+            "noise",
+            "budget",
+            "growth",
+            "modulus switching"
+          ]
+        }
+      ]
+    }
+  ]
+}

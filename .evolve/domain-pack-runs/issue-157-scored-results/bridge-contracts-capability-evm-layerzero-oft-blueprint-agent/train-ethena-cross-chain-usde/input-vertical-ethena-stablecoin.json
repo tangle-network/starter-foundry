@@ -1,0 +1,162 @@
+{
+  "id": "ethena-stablecoin",
+  "category": "crypto",
+  "subcategory": "defi",
+  "partner": "ethena",
+  "name": "Ethena — USDe, sUSDe, and delta-neutral yield",
+  "description": "Ethena surfaces: USDe minting via EthenaMinting (deposit stETH/USDT → mint USDe), sUSDe staking yield via StakedUSDeV2 (ERC-4626 deposit, cooldownAssets, cooldownShares, unstake), Internet Bond mechanism (delta-neutral hedging visualization), cooldown period management, ENA governance (staking, sENA, voting), and the reserve fund.",
+  "seedPromptTemplate": "Build {{description}}\n\nDifficulty: {{difficulty}}. Tags: {{tags}}.\n\nProduction-shape 0-to-1 Ethena surface. Ship working UI, real stablecoin primitives, domain-accurate copy. Skip placeholders.",
+  "validator": {
+    "domainAssertions": [
+      {
+        "label": "viem or ethers in dependencies for Ethena interaction",
+        "fileGlob": "package.json",
+        "mustContain": "viem",
+        "minFiles": 1
+      },
+      {
+        "label": "USDe or sUSDe contract reference",
+        "fileGlob": "src/**/*.{ts,tsx}",
+        "mustContain": "USDe"
+      },
+      {
+        "label": "StakedUSDeV2 or ERC-4626 deposit interaction",
+        "fileGlob": "src/**/*.{ts,tsx}",
+        "mustContain": "stake"
+      },
+      {
+        "label": "cooldown or unstake function reference",
+        "fileGlob": "src/**/*.{ts,tsx}",
+        "mustContain": "cooldown"
+      },
+      {
+        "label": "EthenaMinting or mint/redeem function call",
+        "fileGlob": "src/**/*.{ts,tsx}",
+        "mustContain": "mint"
+      }
+    ],
+    "securityGates": [
+      {
+        "label": "no hardcoded private keys",
+        "check": "no-hardcoded-secrets"
+      },
+      {
+        "label": "no eval() or Function()",
+        "check": "no-eval"
+      },
+      {
+        "label": "no innerHTML in stablecoin UI",
+        "check": "no-innerhtml"
+      },
+      {
+        "label": "minting amounts and collateral types validated",
+        "check": "input-validation"
+      },
+      {
+        "label": "no hardcoded Ethena contract addresses without config",
+        "check": "custom",
+        "fileGlob": "src/**/*.{ts,tsx}",
+        "pattern": "0x9D39A5DE30e57443BfF2A8307A4256c8797A3497"
+      }
+    ],
+    "customBuild": {
+      "command": "npx tsc --noEmit",
+      "timeoutMs": 60000
+    },
+    "semanticRubric": "You are evaluating an Ethena (USDe/sUSDe) stablecoin application. Score STRICTLY on these criteria:\n\n1. USDE MINTING: Code interacts with EthenaMinting contract for minting USDe by depositing collateral (stETH, wBETH, rETH, USDT). Uses the correct mint() function with order parameters (order_type, benefactor, beneficiary, collateral_asset, collateral_amount, usde_amount). Score 0 if USDe minting bypasses EthenaMinting contract.\n2. SUSDE STAKING (ERC-4626): sUSDe staking uses StakedUSDeV2 contract with ERC-4626 methods: deposit(assets, receiver) for staking USDe→sUSDe, and the cooldown flow for unstaking. Score 0 if sUSDe is treated as a standard ERC-20 transfer instead of ERC-4626 vault.\n3. COOLDOWN MECHANISM: Unstaking follows the cooldown pattern: cooldownAssets(assets) or cooldownShares(shares) to initiate, wait the cooldown period (7 days default), then unstake(receiver) to claim. Score 0 if cooldown is skipped or if the app calls withdraw() directly.\n4. EXCHANGE RATE: Displays the sUSDe/USDe exchange rate correctly via StakedUSDeV2.convertToAssets() or convertToShares(). Shows the yield accrual over time. Score 0 if the exchange rate is hardcoded to 1:1.\n5. DELTA-NEUTRAL EXPLANATION: If showing the Internet Bond mechanism, correctly explains the delta-neutral strategy (spot collateral + short perpetual position). Shows the yield sources (staking yield + funding rate income). Score 0 if the app claims USDe is collateralized like USDC without explaining the delta-neutral mechanism.\n6. ENA GOVERNANCE: If governance features present, interacts with ENA token staking (sENA) and voting. Shows ENA balance, staking APY, and voting power.\n7. RESERVE FUND: If displaying protocol health, shows the reserve fund size and its role as backstop against negative funding rates.\n8. COLLATERAL TYPES: Supports the correct Ethena collateral types (stETH, wBETH, rETH, USDT). Validates collateral addresses per chain. Score 0 if the app accepts arbitrary ERC-20 tokens as collateral.\n9. AMOUNT VALIDATION: Minting amounts validated against minimum thresholds. sUSDe deposit/withdraw amounts checked against vault capacity. Score 0 if amounts accept negative values.\n10. ERROR HANDLING: Handles Ethena-specific failures: cooldown not elapsed, minting cap reached, collateral not whitelisted, slippage on off-exchange settlement. Does not silently swallow contract reverts.\n\nScore 0 if the app uses USDC/USDT direct staking instead of Ethena USDe/sUSDe.\nScore 0 if private keys are hardcoded in source files.\nScore 0 if the app does not handle the cooldown period for sUSDe unstaking."
+  },
+  "preferredDependencies": [
+    {
+      "name": "ethena-sdk",
+      "reason": "Ethena SDK for minting/redeeming USDe and staking operations",
+      "alternative": "raw ethers/viem with Ethena contract ABIs"
+    }
+  ],
+  "leaves": [
+    {
+      "id": "ethena-cross-chain-usde",
+      "name": "Cross-chain USDe bridge interface",
+      "difficulty": "hard",
+      "description": "A bridge interface for USDe across chains: bridge USDe from Ethereum to L2s (Arbitrum, Optimism, Base, Blast, Mantle) using LayerZero OFT (Omnichain Fungible Token) standard. Show the bridge transaction flow, estimated time, and display USDe balances across all supported chains. Include sUSDe cross-chain availability and the chain-specific yield opportunities (DeFi integrations on each chain).",
+      "expectedFamily": "",
+      "expectedIndustry": "",
+      "tags": [
+        "ethena",
+        "usde",
+        "bridge",
+        "cross-chain",
+        "layerzero"
+      ],
+      "expectedConcepts": [
+        {
+          "name": "layerzero bridge",
+          "keywords": [
+            "LayerZero",
+            "OFT",
+            "bridge",
+            "cross-chain"
+          ]
+        },
+        {
+          "name": "l2 chains",
+          "keywords": [
+            "Arbitrum",
+            "Optimism",
+            "Base",
+            "Blast",
+            "Mantle"
+          ]
+        },
+        {
+          "name": "bridge flow",
+          "keywords": [
+            "bridge",
+            "transaction",
+            "estimated time"
+          ],
+          "complexity": "integrate"
+        },
+        {
+          "name": "cross-chain balance",
+          "keywords": [
+            "balances",
+            "all chains",
+            "chain-specific"
+          ]
+        },
+        {
+          "name": "Ethena SDK integration",
+          "keywords": [
+            "sUSDe",
+            "stakedUSDe"
+          ],
+          "complexity": "integrate"
+        },
+        {
+          "name": "Ethena protocol math",
+          "keywords": [
+            "delta hedge",
+            "mint/redeem"
+          ],
+          "complexity": "compute"
+        },
+        {
+          "name": "Ethena relay flow",
+          "keywords": [
+            "funding basis",
+            "custody account"
+          ],
+          "complexity": "integrate"
+        },
+        {
+          "name": "Ethena result rendering",
+          "keywords": [
+            "Ethena",
+            "USDe"
+          ],
+          "complexity": "render"
+        }
+      ]
+    }
+  ]
+}

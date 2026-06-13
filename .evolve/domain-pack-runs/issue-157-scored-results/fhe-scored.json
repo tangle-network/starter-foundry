@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-13T14:24:28.097Z",
+  "candidateId": "fhe-contracts-fhenix-foundry",
+  "candidateFile": "/home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/fhe-candidates.json",
+  "status": "failed",
+  "samples": {
+    "train": [
+      "fhenix-sealed-bid-auction"
+    ],
+    "holdout": [
+      "fhenix-confidential-lending-vault"
+    ]
+  },
+  "routing": {
+    "status": "passed",
+    "prompts": [
+      {
+        "prompt": "Build a Fhenix Foundry sealed-bid auction contract with CoFHE encrypted bids",
+        "expectedFamily": "fhenix-foundry",
+        "expectedLayers": [
+          "framework:fhenix-foundry"
+        ],
+        "actualFamily": "fhenix-foundry",
+        "actualLayers": [
+          "framework:fhenix-foundry"
+        ],
+        "ok": true
+      }
+    ]
+  },
+  "compose": {
+    "passed": 2,
+    "failed": 0,
+    "minFileCount": 9
+  },
+  "authenticity": {
+    "signals": [
+      "FHE.add",
+      "FHE.allow",
+      "FHE.asEuint",
+      "FHE.select",
+      "InEuint",
+      "cofhejs",
+      "ebool",
+      "encrypted balance",
+      "euint",
+      "private voting",
+      "sealed bid"
+    ],
+    "totalHits": 340,
+    "perSample": [
+      {
+        "leafId": "fhenix-sealed-bid-auction",
+        "hits": {
+          "FHE.add": 2,
+          "FHE.allow": 5,
+          "FHE.asEuint": 3,
+          "FHE.select": 1,
+          "InEuint": 18,
+          "cofhejs": 2,
+          "ebool": 28,
+          "encrypted balance": 0,
+          "euint": 111,
+          "private voting": 0,
+          "sealed bid": 0
+        },
+        "total": 170
+      },
+      {
+        "leafId": "fhenix-confidential-lending-vault",
+        "hits": {
+          "FHE.add": 2,
+          "FHE.allow": 5,
+          "FHE.asEuint": 3,
+          "FHE.select": 1,
+          "InEuint": 18,
+          "cofhejs": 2,
+          "ebool": 28,
+          "encrypted balance": 0,
+          "euint": 111,
+          "private voting": 0,
+          "sealed bid": 0
+        },
+        "total": 170
+      }
+    ]
+  },
+  "validationCommands": [],
+  "blueprintAgent": [],
+  "scoredPromotion": {
+    "mode": "scored",
+    "status": "failed",
+    "shots": 1,
+    "reps": 1,
+    "minScore": 0.5,
+    "baselineScore": null,
+    "maxHoldoutRegression": 0,
+    "train": {
+      "n": 1,
+      "min": 0.7407142857142857,
+      "median": 0.7407142857142857,
+      "p90": 0.7407142857142857,
+      "max": 0.7407142857142857,
+      "passCount": 0,
+      "failCount": 1,
+      "scorePassCount": 1,
+      "scoreFailCount": 0,
+      "completionPassCount": 0,
+      "completionFailCount": 1
+    },
+    "holdout": {
+      "n": 1,
+      "min": 0.8857142857142856,
+      "median": 0.8857142857142856,
+      "p90": 0.8857142857142856,
+      "max": 0.8857142857142856,
+      "passCount": 0,
+      "failCount": 1,
+      "scorePassCount": 1,
+      "scoreFailCount": 0,
+      "completionPassCount": 0,
+      "completionFailCount": 1
+    },
+    "leaves": [
+      {
+        "split": "train",
+        "leafId": "fhenix-sealed-bid-auction",
+        "status": "passed",
+        "outDir": ".evolve/domain-pack-runs/issue-157-scored-results/fhe/train-fhenix-sealed-bid-auction",
+        "command": null,
+        "score": 0.7407142857142857,
+        "passed": false,
+        "scorePassed": true,
+        "completionPassRate": 0,
+        "completionPassed": false,
+        "profileId": "oc-glm51@generic",
+        "rankBasis": "hit-rate",
+        "costUsd": null,
+        "durationMs": 2977898
+      },
+      {
+        "split": "holdout",
+        "leafId": "fhenix-confidential-lending-vault",
+        "status": "passed",
+        "outDir": ".evolve/domain-pack-runs/issue-157-scored-results/fhe/holdout-fhenix-confidential-lending-vault",
+        "command": null,
+        "score": 0.8857142857142856,
+        "passed": false,
+        "scorePassed": true,
+        "completionPassRate": 0,
+        "completionPassed": false,
+        "profileId": "oc-glm51",
+        "rankBasis": "hit-rate",
+        "costUsd": null,
+        "durationMs": 2698132
+      }
+    ],
+    "failures": [
+      "1 train scored run(s) without a completion pass",
+      "1 holdout scored run(s) without a completion pass"
+    ]
+  },
+  "failures": [
+    "scored promotion failed: 1 train scored run(s) without a completion pass",
+    "scored promotion failed: 1 holdout scored run(s) without a completion pass"
+  ]
+}

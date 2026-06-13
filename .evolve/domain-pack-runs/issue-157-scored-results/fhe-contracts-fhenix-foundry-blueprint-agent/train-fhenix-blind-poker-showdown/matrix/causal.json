@@ -1,0 +1,180 @@
+{
+  "matrixId": "mtx_mqcr99au_15e1bbed",
+  "nMeasurable": 4,
+  "nTotal": 4,
+  "perVertical": [
+    {
+      "verticalId": "fhenix-fhe",
+      "n": 4,
+      "passRate": 0,
+      "passRateCi95": [
+        0,
+        0.48990002040399916
+      ]
+    }
+  ],
+  "perHarness": [
+    {
+      "runtime": "sandbox-sdk",
+      "n": 4,
+      "passRate": 0,
+      "passRateCi95": [
+        0,
+        0.48990002040399916
+      ],
+      "infraErrorRate": 0
+    }
+  ],
+  "scaffoldMatch": [
+    {
+      "kind": "none",
+      "n": 4,
+      "passRate": 0,
+      "passRateCi95": [
+        0,
+        0.48990002040399916
+      ]
+    }
+  ],
+  "toolUse": [
+    {
+      "tool": "Bash",
+      "calls": 199,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "WebFetch",
+      "calls": 83,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "Read",
+      "calls": 49,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "Write",
+      "calls": 31,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "Edit",
+      "calls": 17,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "ToolSearch",
+      "calls": 3,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "TodoWrite",
+      "calls": 3,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    }
+  ],
+  "intentVsBlended": [],
+  "reviewerLift": [],
+  "perShotCost": [
+    {
+      "shot": 1,
+      "meanInputTokens": 466,
+      "meanOutputTokens": 54428,
+      "meanCostUsd": 0,
+      "n": 3
+    }
+  ],
+  "failureLayersByProfile": [
+    {
+      "profileId": "claude-code · sonnet",
+      "layer": "typecheck",
+      "count": 1
+    },
+    {
+      "profileId": "claude-code · sonnet",
+      "layer": "lint",
+      "count": 1
+    },
+    {
+      "profileId": "claude-code · sonnet",
+      "layer": "domain",
+      "count": 1
+    },
+    {
+      "profileId": "claude-code · sonnet",
+      "layer": "completion-verifier",
+      "count": 1
+    },
+    {
+      "profileId": "claude-code · sonnet @generic",
+      "layer": "typecheck",
+      "count": 1
+    },
+    {
+      "profileId": "claude-code · sonnet @generic",
+      "layer": "lint",
+      "count": 1
+    },
+    {
+      "profileId": "claude-code · sonnet @generic",
+      "layer": "domain",
+      "count": 1
+    },
+    {
+      "profileId": "claude-code · sonnet @generic",
+      "layer": "semantic",
+      "count": 1
+    },
+    {
+      "profileId": "claude-code · sonnet @generic",
+      "layer": "completion-verifier",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1",
+      "layer": "typecheck",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1",
+      "layer": "lint",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1",
+      "layer": "domain",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1",
+      "layer": "semantic",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1",
+      "layer": "completion-verifier",
+      "count": 1
+    }
+  ]
+}

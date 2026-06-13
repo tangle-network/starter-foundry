@@ -1,0 +1,13 @@
+{
+  "collectionId": "ethena-stablecoin",
+  "name": "VerticalBench: ethena-stablecoin",
+  "grain": "vertical",
+  "visibility": "internal",
+  "partnerId": null,
+  "tags": [
+    "ethena-stablecoin"
+  ],
+  "createdAt": "2026-06-13T19:08:28.420Z",
+  "updatedAt": "2026-06-13T19:08:28.420Z",
+  "submissions": []
+}

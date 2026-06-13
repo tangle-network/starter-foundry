@@ -1,0 +1,238 @@
+{
+  "icp": "AUTO-RESEARCH",
+  "vertical": "layerzero-omnichain",
+  "realnessByProfile": [
+    {
+      "profileId": "cc-sonnet@generic",
+      "n": 0,
+      "meanScore": null,
+      "hitRate": null,
+      "hitRateCi95": null,
+      "gatedCount": 0
+    }
+  ],
+  "gatedCells": [],
+  "autoresearch": {
+    "normalizedRuns": [
+      {
+        "suiteId": "verticalbench:layerzero-omnichain",
+        "suiteName": "LayerZero V2 — omnichain messaging and token standards",
+        "source": "verticalbench",
+        "vertical": "layerzero-omnichain",
+        "taskKind": "product-build",
+        "task": {
+          "id": "lz-oft-balance-tracker",
+          "name": "LayerZero OFT multi-chain balance tracker",
+          "prompt": "A wallet-connected balance viewer for an OFT across all deployed chains. For each chain where the OFT or OFTAdapter is deployed, show the user's token balance, chain name, and whether the deployment is OFT (burn-and-mint) or OFTAdapter (lock-and-unlock). Display aggregate cross-chain total and highlight the chain with the largest holding.",
+          "difficulty": "hard",
+          "vertical": "layerzero-omnichain",
+          "taskKind": "product-build",
+          "source": "verticalbench",
+          "tags": [
+            "cross-chain",
+            "layerzero",
+            "oft",
+            "balance",
+            "tracker"
+          ],
+          "native": {
+            "expectedFamily": "",
+            "expectedIndustry": "crypto",
+            "metadata": {}
+          }
+        },
+        "trace": {
+          "runId": "driver-lz-oft-balance-tracker-1781368809245",
+          "taskId": "lz-oft-balance-tracker",
+          "startedAt": "2026-06-13T16:40:09.245Z",
+          "endedAt": "2026-06-13T16:59:34.031Z",
+          "wallMs": 1164786,
+          "stopReason": "max-shots",
+          "actions": [
+            {
+              "index": 0,
+              "kind": "state-check",
+              "name": "preview",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "preview succeeded"
+            },
+            {
+              "index": 1,
+              "kind": "eval",
+              "name": "verification-shot-1",
+              "status": "fail",
+              "durationMs": 1031415,
+              "detail": "failing layers: lint, domain, semantic, completion-verifier"
+            },
+            {
+              "index": 2,
+              "kind": "tool-call",
+              "name": "Bash",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=23"
+            },
+            {
+              "index": 3,
+              "kind": "tool-call",
+              "name": "Read",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=13"
+            },
+            {
+              "index": 4,
+              "kind": "tool-call",
+              "name": "Write",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=31"
+            }
+          ],
+          "artifacts": [
+            "verificationByShot"
+          ],
+          "requiredArtifacts": [],
+          "costUsd": null,
+          "tokenUsage": {
+            "input": 64,
+            "output": 64299,
+            "cacheRead": 0
+          },
+          "finalState": {
+            "outcome": "max-shots",
+            "previewSucceeded": true,
+            "completenessScore": 1,
+            "auditScore": 10,
+            "convergedAt": null,
+            "shotsUsed": 1
+          },
+          "native": {
+            "driverName": "driver-baseline",
+            "scaffoldChosen": null,
+            "scaffoldMatchKind": "none",
+            "runtime": "sandbox-sdk",
+            "factoryRunId": "cc-sonnet@generic-lz-oft-balance-tracker-r0"
+          }
+        },
+        "eval": {
+          "taskId": "lz-oft-balance-tracker",
+          "status": "fail",
+          "score": 0.532,
+          "outcome": "unknown",
+          "layers": [
+            {
+              "layer": "lint",
+              "status": "fail"
+            },
+            {
+              "layer": "domain",
+              "status": "fail"
+            },
+            {
+              "layer": "semantic",
+              "status": "fail"
+            },
+            {
+              "layer": "completion-verifier",
+              "status": "fail"
+            }
+          ],
+          "gaps": [
+            "lint",
+            "domain",
+            "semantic",
+            "completion-verifier",
+            "max-shots"
+          ],
+          "native": {
+            "verificationByShot": [
+              {
+                "shot": 1,
+                "blendedScore": 0.532,
+                "allPass": false,
+                "failCount": 4,
+                "passCount": 4,
+                "failingLayers": [
+                  "lint",
+                  "domain",
+                  "semantic",
+                  "completion-verifier"
+                ],
+                "shotWallMs": 1031415,
+                "shotCostUsd": 0,
+                "inputTokens": 64,
+                "outputTokens": 64299,
+                "fileCountAfter": 62,
+                "reviewerConfidence": null,
+                "reviewerShouldContinue": null,
+                "toolCallsByName": {
+                  "Bash": 23,
+                  "Read": 13,
+                  "Write": 31
+                },
+                "toolCallSuccesses": 0,
+                "toolCallFailures": 0,
+                "failingLayerFindings": [
+                  {
+                    "layer": "domain",
+                    "severity": "critical",
+                    "message": "@layerzerolabs/lz-evm-oapp-v2 declared in package.json: no file matching package.json contains required pattern"
+                  },
+                  {
+                    "layer": "domain",
+                    "severity": "critical",
+                    "message": "OApp, OFT, or ONFT contract pattern referenced: no file matching **/*.{sol,ts,tsx} contains required pattern"
+                  },
+                  {
+                    "layer": "semantic",
+                    "severity": "critical",
+                    "message": "concept \"multi-chain balances\" (score 0.0): No frontend code exists; served HTML is a blank shell. Contracts have balanceOf but no multi-chain aggregation logic."
+                  },
+                  {
+                    "layer": "semantic",
+                    "severity": "critical",
+                    "message": "concept \"aggregate total\" (score 0.0): No code computes or displays a cross-chain total balance."
+                  },
+                  {
+                    "layer": "semantic",
+                    "severity": "critical",
+                    "message": "concept \"chain list\" (score 0.0): No frontend or contract enumerates deployed chains; bridge-config.json is a stub."
+                  }
+                ]
+              }
+            ],
+            "intentMatch": null
+          }
+        }
+      }
+    ],
+    "findings": [
+      {
+        "kind": "semantic-mismatch",
+        "severity": "low",
+        "taskIds": [
+          "lz-oft-balance-tracker"
+        ],
+        "evidence": "semantic | semantic: concept \"multi-chain balances\" (score 0.0): No frontend code exists; served HTML is a blank shell. Contracts have balanceOf but no multi-chain aggregation logic. | semantic: concept \"aggregate total\" (score 0.0): No code computes or displays a cross-chain total balance. | semantic: concept \"chain list\" (score 0.0): No frontend or contract enumerates deployed chains; bridge-config.json is a stub.",
+        "proposedFixClass": "evaluator"
+      },
+      {
+        "kind": "missing-domain-integration",
+        "severity": "low",
+        "taskIds": [
+          "lz-oft-balance-tracker"
+        ],
+        "evidence": "semantic: concept \"chain list\" (score 0.0): No frontend or contract enumerates deployed chains; bridge-config.json is a stub.",
+        "proposedFixClass": "product"
+      }
+    ]
+  },
+  "diagnostics": {
+    "cellCount": 1,
+    "profileCount": 1,
+    "enrichedCells": 0,
+    "warnings": []
+  }
+}

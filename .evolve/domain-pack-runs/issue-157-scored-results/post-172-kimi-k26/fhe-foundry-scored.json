@@ -1,0 +1,235 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-13T21:55:48.264Z",
+  "candidateId": "fhe-contracts-fhenix-foundry",
+  "candidateFile": "/home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/candidates-post-170.json",
+  "status": "failed",
+  "samples": {
+    "train": [
+      "fhenix-blind-poker-showdown"
+    ],
+    "holdout": [
+      "fhenix-confidential-lending-vault"
+    ]
+  },
+  "routing": {
+    "status": "passed",
+    "prompts": [
+      {
+        "prompt": "Build a Fhenix Foundry sealed-bid auction contract with CoFHE encrypted bids",
+        "expectedFamily": "fhenix-foundry",
+        "expectedLayers": [
+          "framework:fhenix-foundry"
+        ],
+        "actualFamily": "fhenix-foundry",
+        "actualLayers": [
+          "framework:fhenix-foundry",
+          "capability:fhe-foundry-sealed-auction"
+        ],
+        "ok": true
+      }
+    ]
+  },
+  "compose": {
+    "passed": 2,
+    "failed": 0,
+    "minFileCount": 9
+  },
+  "authenticity": {
+    "signals": [
+      "FHE.add",
+      "FHE.allow",
+      "FHE.asEuint",
+      "FHE.select",
+      "InEuint",
+      "cofhejs",
+      "ebool",
+      "encrypted balance",
+      "euint",
+      "private voting",
+      "sealed bid"
+    ],
+    "totalHits": 444,
+    "perSample": [
+      {
+        "leafId": "fhenix-blind-poker-showdown",
+        "hits": {
+          "FHE.add": 6,
+          "FHE.allow": 9,
+          "FHE.asEuint": 7,
+          "FHE.select": 5,
+          "InEuint": 22,
+          "cofhejs": 6,
+          "ebool": 32,
+          "encrypted balance": 4,
+          "euint": 123,
+          "private voting": 4,
+          "sealed bid": 4
+        },
+        "total": 222
+      },
+      {
+        "leafId": "fhenix-confidential-lending-vault",
+        "hits": {
+          "FHE.add": 6,
+          "FHE.allow": 9,
+          "FHE.asEuint": 7,
+          "FHE.select": 5,
+          "InEuint": 22,
+          "cofhejs": 6,
+          "ebool": 32,
+          "encrypted balance": 4,
+          "euint": 123,
+          "private voting": 4,
+          "sealed bid": 4
+        },
+        "total": 222
+      }
+    ]
+  },
+  "validationCommands": [],
+  "blueprintAgent": [],
+  "scoredPromotion": {
+    "mode": "scored",
+    "status": "failed",
+    "shots": 1,
+    "reps": 1,
+    "minScore": 0.5,
+    "baselineScore": null,
+    "maxHoldoutRegression": 0,
+    "train": {
+      "n": 0,
+      "min": null,
+      "median": null,
+      "p90": null,
+      "max": null,
+      "passCount": 0,
+      "failCount": 1,
+      "scorePassCount": 0,
+      "scoreFailCount": 1,
+      "completionPassCount": 0,
+      "completionFailCount": 1,
+      "scaffoldPassCount": 0,
+      "scaffoldFailCount": 1
+    },
+    "holdout": {
+      "n": 0,
+      "min": null,
+      "median": null,
+      "p90": null,
+      "max": null,
+      "passCount": 0,
+      "failCount": 1,
+      "scorePassCount": 0,
+      "scoreFailCount": 1,
+      "completionPassCount": 0,
+      "completionFailCount": 1,
+      "scaffoldPassCount": 0,
+      "scaffoldFailCount": 1
+    },
+    "leaves": [
+      {
+        "split": "train",
+        "leafId": "fhenix-blind-poker-showdown",
+        "status": "failed",
+        "outDir": ".evolve/domain-pack-runs/issue-157-scored-results/post-172-kimi-k26/fhe-contracts-fhenix-foundry-blueprint-agent/train-fhenix-blind-poker-showdown",
+        "command": {
+          "command": "pnpm tsx scripts/experiments/vb-run.ts --leaf 'fhenix-blind-poker-showdown' --shots 1 --reps 1 --parallel 1 --runtime 'claude-local' --roster 'kimi-only' --exclude 'kc-kfc' --driver-persona 'none' --out '/home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-172-kimi-k26/fhe-contracts-fhenix-foundry-blueprint-agent/train-fhenix-blind-poker-showdown'",
+          "cwd": "/home/drew/code/blueprint-agent",
+          "status": "failed",
+          "exitCode": 1,
+          "durationMs": 5880,
+          "stdoutTail": "\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\nexcluded 1 base(s): kc-kfc\n════════════════════════════════════════════════════════════════════════\n VERTICAL MATRIX — fhenix-fhe  (partner=fhenix)\n════════════════════════════════════════════════════════════════════════\nprofiles:    1  [kc-k26]\nleaves:      1  (selector: all; pool 1 hand-authored)\nbackend:     cli-bridge\nreps:        1   shots/leaf: 1   verify: full\nskill arms:  none   driver-persona: none\nliveness:    progress-idle + transport-idle govern termination; wall backstop: 90m\nrun budget:  max-run UNBOUNDED · max-cost UNBOUNDED\nTOTAL CELLS: 1   concurrency: 1\nsearch arms: default\nout:         /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-172-kimi-k26/fhe-contracts-fhenix-foundry-blueprint-agent/train-fhenix-blind-poker-showdown/matrix\ncheckpoints: /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-172-kimi-k26/fhe-contracts-fhenix-foundry-blueprint-agent/train-fhenix-blind-poker-showdown/matrix/checkpoints  (resume-safe — rerun to continue)\n════════════════════════════════════════════════════════════════════════\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n",
+          "stderrTail": "s file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-run] registry selection: 1 verticals, 1 leaves\n[vb-run] runtime=claude-local roster=kimi-only exclude=kc-kfc driverPersona=none shots=1 reps=1 parallel=1\n[vb-run] out=/home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-172-kimi-k26/fhe-contracts-fhenix-foundry-blueprint-agent/train-fhenix-blind-poker-showdown\n\n[vb-run] === fhenix-fhe (1 leaves) ===\n[vb-run] launching run-vertical-matrix for vertical=fhenix-fhe scenarios=1\n(node:419417) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:419508) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:419542) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[preflight] resolved model config:\n  coder    : kimi-code/kimi-k2.6 (via cli-bridge)\n  reviewer : via=router model=moonshotai/kimi-k2.6\n  semantic : deepseek/deepseek-chat base=https://router.tangle.tools\n  router   : https://router.tangle.tools\n[preflight] ERROR: VB_CLI_BRIDGE_BEARER is required when VB_CODER_VIA_CLI_BRIDGE=true. Failing closed avoids routing coder traffic through an unintended fallback.\n(node:419542) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[preflight] router probe: GET https://router.tangle.tools/v1/models → 200 JSON ok\n[preflight] chat probe: POST https://router.tangle.tools/v1/chat/completions → 200 ok (reviewer path live)\n[preflight] cli-bridge probe FAILED: VB_CLI_BRIDGE_BEARER is missing; cannot probe authenticated /v1/models.\n[preflight] aborting — fix the errors above and retry.\n[vb-run] run-sweep exited 2 for fhenix-fhe\n(node:420136) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:420148) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:420164) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-report] warn: no checkpoints under /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-172-kimi-k26/fhe-contracts-fhenix-foundry-blueprint-agent/train-fhenix-blind-poker-showdown/matrix/checkpoints\n[vb-report] FATAL: vertical \"fhenix-fhe\" has an authenticity instrument but 0/0 cells carry measured realness.\n  The report would ship without its north-star axis. Re-run enrichment (enrich-results.ts) so enriched-by-cell.json carries realness,\n  or pass --allow-realness-blind to emit a realness-free report deliberately.\n[vb-run] [vb-run] vb-report failed (exit 1) over /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-172-kimi-k26/fhe-contracts-fhenix-foundry-blueprint-agent/train-fhenix-blind-poker-showdown/matrix\n[vb-run] one or more verticals had non-zero exit\n"
+        },
+        "score": null,
+        "passed": null,
+        "scorePassed": null,
+        "completionPassRate": null,
+        "completionPassed": null,
+        "scaffoldPassed": false,
+        "scaffold": {
+          "expectedFamily": "fhenix-foundry",
+          "expectedLayers": [
+            "framework:fhenix-foundry"
+          ],
+          "observedFamily": null,
+          "observedLayers": [],
+          "observedDomainPackSources": [],
+          "passed": false,
+          "reason": "scored run failed before scaffold evidence could be parsed"
+        },
+        "profileId": null,
+        "rankBasis": null,
+        "costUsd": null,
+        "durationMs": null,
+        "reason": "vb-run failed"
+      },
+      {
+        "split": "holdout",
+        "leafId": "fhenix-confidential-lending-vault",
+        "status": "failed",
+        "outDir": ".evolve/domain-pack-runs/issue-157-scored-results/post-172-kimi-k26/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-fhenix-confidential-lending-vault",
+        "command": {
+          "command": "pnpm tsx scripts/experiments/vb-run.ts --leaf 'fhenix-confidential-lending-vault' --shots 1 --reps 1 --parallel 1 --runtime 'claude-local' --roster 'kimi-only' --exclude 'kc-kfc' --driver-persona 'none' --out '/home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-172-kimi-k26/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-fhenix-confidential-lending-vault'",
+          "cwd": "/home/drew/code/blueprint-agent",
+          "status": "failed",
+          "exitCode": 1,
+          "durationMs": 4934,
+          "stdoutTail": "\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\nexcluded 1 base(s): kc-kfc\n════════════════════════════════════════════════════════════════════════\n VERTICAL MATRIX — fhenix-fhe  (partner=fhenix)\n════════════════════════════════════════════════════════════════════════\nprofiles:    1  [kc-k26]\nleaves:      1  (selector: all; pool 1 hand-authored)\nbackend:     cli-bridge\nreps:        1   shots/leaf: 1   verify: full\nskill arms:  none   driver-persona: none\nliveness:    progress-idle + transport-idle govern termination; wall backstop: 90m\nrun budget:  max-run UNBOUNDED · max-cost UNBOUNDED\nTOTAL CELLS: 1   concurrency: 1\nsearch arms: default\nout:         /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-172-kimi-k26/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-fhenix-confidential-lending-vault/matrix\ncheckpoints: /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-172-kimi-k26/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-fhenix-confidential-lending-vault/matrix/checkpoints  (resume-safe — rerun to continue)\n════════════════════════════════════════════════════════════════════════\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n",
+          "stderrTail": "cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-run] registry selection: 1 verticals, 1 leaves\n[vb-run] runtime=claude-local roster=kimi-only exclude=kc-kfc driverPersona=none shots=1 reps=1 parallel=1\n[vb-run] out=/home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-172-kimi-k26/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-fhenix-confidential-lending-vault\n\n[vb-run] === fhenix-fhe (1 leaves) ===\n[vb-run] launching run-vertical-matrix for vertical=fhenix-fhe scenarios=1\n(node:420503) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:420559) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:420593) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[preflight] resolved model config:\n  coder    : kimi-code/kimi-k2.6 (via cli-bridge)\n  reviewer : via=router model=moonshotai/kimi-k2.6\n  semantic : deepseek/deepseek-chat base=https://router.tangle.tools\n  router   : https://router.tangle.tools\n[preflight] ERROR: VB_CLI_BRIDGE_BEARER is required when VB_CODER_VIA_CLI_BRIDGE=true. Failing closed avoids routing coder traffic through an unintended fallback.\n(node:420593) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[preflight] router probe: GET https://router.tangle.tools/v1/models → 200 JSON ok\n[preflight] chat probe: POST https://router.tangle.tools/v1/chat/completions → 200 ok (reviewer path live)\n[preflight] cli-bridge probe FAILED: VB_CLI_BRIDGE_BEARER is missing; cannot probe authenticated /v1/models.\n[preflight] aborting — fix the errors above and retry.\n[vb-run] run-sweep exited 2 for fhenix-fhe\n(node:420826) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:420839) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:420855) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-report] warn: no checkpoints under /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-172-kimi-k26/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-fhenix-confidential-lending-vault/matrix/checkpoints\n[vb-report] FATAL: vertical \"fhenix-fhe\" has an authenticity instrument but 0/0 cells carry measured realness.\n  The report would ship without its north-star axis. Re-run enrichment (enrich-results.ts) so enriched-by-cell.json carries realness,\n  or pass --allow-realness-blind to emit a realness-free report deliberately.\n[vb-run] [vb-run] vb-report failed (exit 1) over /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-172-kimi-k26/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-fhenix-confidential-lending-vault/matrix\n[vb-run] one or more verticals had non-zero exit\n"
+        },
+        "score": null,
+        "passed": null,
+        "scorePassed": null,
+        "completionPassRate": null,
+        "completionPassed": null,
+        "scaffoldPassed": false,
+        "scaffold": {
+          "expectedFamily": "fhenix-foundry",
+          "expectedLayers": [
+            "framework:fhenix-foundry"
+          ],
+          "observedFamily": null,
+          "observedLayers": [],
+          "observedDomainPackSources": [],
+          "passed": false,
+          "reason": "scored run failed before scaffold evidence could be parsed"
+        },
+        "profileId": null,
+        "rankBasis": null,
+        "costUsd": null,
+        "durationMs": null,
+        "reason": "vb-run failed"
+      }
+    ],
+    "failures": [
+      "train:fhenix-blind-poker-showdown: vb-run failed",
+      "holdout:fhenix-confidential-lending-vault: vb-run failed",
+      "no parseable train scores",
+      "no parseable holdout scores",
+      "1 train scored run(s) below min score 0.500",
+      "1 holdout scored run(s) below min score 0.500",
+      "1 train scored run(s) without a completion pass",
+      "1 holdout scored run(s) without a completion pass",
+      "1 train scored run(s) without expected starter scaffold evidence",
+      "1 holdout scored run(s) without expected starter scaffold evidence",
+      "train:fhenix-blind-poker-showdown: scored run failed before scaffold evidence could be parsed",
+      "holdout:fhenix-confidential-lending-vault: scored run failed before scaffold evidence could be parsed"
+    ]
+  },
+  "failures": [
+    "scored promotion failed: train:fhenix-blind-poker-showdown: vb-run failed",
+    "scored promotion failed: holdout:fhenix-confidential-lending-vault: vb-run failed",
+    "scored promotion failed: no parseable train scores",
+    "scored promotion failed: no parseable holdout scores",
+    "scored promotion failed: 1 train scored run(s) below min score 0.500",
+    "scored promotion failed: 1 holdout scored run(s) below min score 0.500",
+    "scored promotion failed: 1 train scored run(s) without a completion pass",
+    "scored promotion failed: 1 holdout scored run(s) without a completion pass",
+    "scored promotion failed: 1 train scored run(s) without expected starter scaffold evidence",
+    "scored promotion failed: 1 holdout scored run(s) without expected starter scaffold evidence",
+    "scored promotion failed: train:fhenix-blind-poker-showdown: scored run failed before scaffold evidence could be parsed",
+    "scored promotion failed: holdout:fhenix-confidential-lending-vault: scored run failed before scaffold evidence could be parsed"
+  ]
+}

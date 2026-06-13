@@ -1,0 +1,3354 @@
+{
+  "generatedAt": "2026-06-13T15:18:05.052Z",
+  "scenarioRoot": "/home/drew/code/blueprint-agent/scripts/experiments/scenarios",
+  "scenariosScanned": 319,
+  "domainGroupsScanned": 4,
+  "candidates": [
+    {
+      "id": "fhe-contracts",
+      "status": "candidate",
+      "domain": {
+        "family": "fhe",
+        "surface": "contracts"
+      },
+      "ambiguityGroup": "fhe-contracts",
+      "verticalIds": [
+        "arkworks-zk",
+        "aztec-noir",
+        "cryptography-primitives",
+        "fhenix-fhe",
+        "tangle-blueprints-privacy",
+        "tangle-blueprints-storage",
+        "tangle-blueprints-zk-proofs",
+        "uniswap-v4",
+        "zk-trading"
+      ],
+      "leafIds": {
+        "train": [
+          "ark-voting-circuit",
+          "aztec-private-voting-dao",
+          "fhenix-blind-poker-showdown",
+          "fhenix-confidential-dex",
+          "fhenix-encrypted-erc20-token",
+          "fhenix-private-dao-vote",
+          "fhenix-sealed-bid-auction",
+          "fhenix-sealed-payroll-stream",
+          "tangle-priv-commitment-scheme",
+          "tangle-priv-confidential-compute",
+          "tangle-priv-key-rotation",
+          "tangle-priv-mpc-analytics",
+          "tangle-priv-private-nft",
+          "tangle-priv-private-voting",
+          "tangle-priv-threshold-bls",
+          "tangle-priv-threshold-keygen",
+          "tangle-priv-zk-proof-service",
+          "tangle-storage-compute-over-data",
+          "uni-v4-auction-hook-jit",
+          "zk-trade-confidential-transfer"
+        ],
+        "holdout": [
+          "crypto-fhe-bfv",
+          "fhenix-confidential-lending-vault",
+          "fhenix-private-prediction-market",
+          "tangle-priv-anonymous-transfer",
+          "tangle-priv-encrypted-mempool",
+          "tangle-priv-oblivious-transfer",
+          "tangle-priv-state-channel",
+          "tangle-priv-timelock-encryption",
+          "tangle-zk-private-voting"
+        ]
+      },
+      "partnerIds": [
+        "academic",
+        "arkworks",
+        "aztec-network",
+        "fhenix",
+        "multi-protocol",
+        "tangle-network",
+        "uniswap-labs"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 29
+        }
+      ],
+      "intendedStarter": {
+        "family": "fhenix-foundry",
+        "layers": [
+          "framework:fhenix-foundry"
+        ],
+        "capabilities": []
+      },
+      "routingPrompts": [
+        "Build a Fhenix Foundry sealed-bid auction contract with CoFHE encrypted bids",
+        "Build a Fhenix Hardhat encrypted counter using cofhejs",
+        "Build a Zama fhEVM confidential ERC20"
+      ],
+      "validationCommands": [
+        "forge build",
+        "forge test",
+        "npx hardhat compile",
+        "npx hardhat test"
+      ],
+      "authenticitySignals": [
+        "FHE.add",
+        "FHE.allow",
+        "FHE.asEuint",
+        "FHE.select",
+        "InEuint",
+        "cofhejs",
+        "confidential erc20",
+        "ebool",
+        "encrypted balance",
+        "encrypted evm",
+        "euint",
+        "fhevm",
+        "private voting",
+        "sealed bid",
+        "tfhe"
+      ],
+      "registryFiles": [
+        "registry/families/fhenix-contracts/manifest.json",
+        "registry/families/fhenix-foundry/manifest.json",
+        "registry/families/fhevm-contracts/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/families/fhenix-contracts/manifest.json",
+        "registry/families/fhenix-foundry/manifest.json",
+        "registry/families/fhevm-contracts/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "forge build",
+        "forge test",
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "npx hardhat compile",
+        "npx hardhat test",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/arkworks-zk.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/aztec-noir.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/fhenix-fhe.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-privacy.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-storage.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-zk-proofs.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/uniswap-v4.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/zk-trading.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/research/cryptography-primitives.ts"
+      ]
+    },
+    {
+      "id": "bridge-contracts",
+      "status": "candidate",
+      "domain": {
+        "family": "bridge",
+        "surface": "contracts"
+      },
+      "ambiguityGroup": "bridge-contracts",
+      "verticalIds": [
+        "aave-lending",
+        "across-bridge",
+        "agno-agents",
+        "alphafold-protein",
+        "aptos-move",
+        "arbitrum-stylus",
+        "arkworks-zk",
+        "axelar-crosschain",
+        "aztec-noir",
+        "bnb-chain",
+        "brevis-zk-coprocessor",
+        "cctp-circle-bridge",
+        "cerner-fhir",
+        "chainlink-oracles",
+        "circle-usdc",
+        "circom-circuits",
+        "coinbase-commerce",
+        "container-runtime",
+        "crypto-defi-agents",
+        "curve-stableswap",
+        "debridge-solana",
+        "dex-arb-evm-agents",
+        "dex-arb-solana-agents",
+        "docker-containers",
+        "ens-domains",
+        "ethena-stablecoin",
+        "ethereum-l1",
+        "hermes-agent-apps",
+        "layerzero-omnichain",
+        "lido-staking",
+        "magic-eden-marketplace",
+        "mem0-memory",
+        "mercury-banking",
+        "okx-xlayer",
+        "oneinch-aggregation",
+        "optimism-l2",
+        "phantom-wallet",
+        "pi-extensions",
+        "polygon-pos",
+        "sanctum-lst",
+        "scroll-zkevm",
+        "solana-core",
+        "squads-multisig",
+        "starknet-cairo",
+        "succinct-sp1",
+        "switchboard-oracles",
+        "synthetix-perps",
+        "tangle-blueprints-bridges",
+        "tangle-blueprints-defi",
+        "tangle-blueprints-hosting",
+        "tangle-blueprints-keeper",
+        "tangle-blueprints-mpc",
+        "tangle-blueprints-multi-agent",
+        "tangle-blueprints-p2p-gossip",
+        "tangle-blueprints-privacy",
+        "tangle-blueprints-relayers",
+        "tangle-blueprints-zk-proofs",
+        "telehealth-platform",
+        "tempo-payments",
+        "tensor-nft",
+        "trading-agents",
+        "uniswap-v4",
+        "vercel-ai-sdk",
+        "wormhole-solana",
+        "zk-identity",
+        "zkp2p-payments",
+        "zksync-era"
+      ],
+      "leafIds": {
+        "train": [
+          "ethena-cross-chain-usde",
+          "lz-chain-endpoint-directory",
+          "lz-create-lz-oapp-scaffold",
+          "lz-cross-chain-swap",
+          "lz-dvn-operator-platform",
+          "lz-dvn-security-config",
+          "lz-message-fee-estimator",
+          "lz-message-tracker",
+          "lz-native-drop-airdrop",
+          "lz-oapp-config-inspector",
+          "lz-oapp-message-sender",
+          "lz-oft-adapter-deploy",
+          "lz-oft-bridge-ui",
+          "lz-oft-custom-fee-module",
+          "lz-oft-rate-limiter",
+          "lz-oft-send-and-call",
+          "lz-omnichain-dex",
+          "lz-omnichain-nft-game",
+          "lz-onft-bridge",
+          "lz-onft-marketplace"
+        ],
+        "holdout": [
+          "lz-composed-message-builder",
+          "lz-dvn-monitoring-dashboard",
+          "lz-message-design-patterns",
+          "lz-messagelib-selector",
+          "lz-oapp-message-receiver",
+          "lz-oft-balance-tracker",
+          "lz-oft-launch-platform",
+          "lz-oft-token-info",
+          "lz-omnichain-yield-aggregator",
+          "lz-protocol-analytics"
+        ]
+      },
+      "partnerIds": [
+        "1inch",
+        "aave",
+        "across-protocol",
+        "agno",
+        "aptos-labs",
+        "arbitrum-foundation",
+        "arkworks",
+        "axelar",
+        "aztec-network",
+        "binance",
+        "brevis",
+        "chainlink",
+        "circle",
+        "coinbase",
+        "curve",
+        "daily-co",
+        "debridge",
+        "deepmind",
+        "docker",
+        "ens",
+        "ethena",
+        "ethereum-foundation",
+        "from-scratch",
+        "hermes",
+        "iden3",
+        "inflection-ai",
+        "layerzero",
+        "lido",
+        "magic-eden",
+        "matter-labs",
+        "mem0",
+        "mercury",
+        "multi-framework",
+        "multi-protocol",
+        "okx",
+        "optimism",
+        "oracle-health",
+        "phantom",
+        "polygon",
+        "sanctum",
+        "scroll",
+        "solana",
+        "squads",
+        "starkware",
+        "succinct-labs",
+        "switchboard",
+        "synthetix",
+        "tangle-network",
+        "tempo",
+        "tensor",
+        "uniswap-labs",
+        "vercel",
+        "wormhole",
+        "zkp2p"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 285
+        }
+      ],
+      "intendedStarter": {
+        "family": "forge-contracts",
+        "layers": [
+          "framework:forge-foundation",
+          "capability:evm-layerzero-oft"
+        ],
+        "capabilities": [
+          "capability:evm-layerzero-oft"
+        ]
+      },
+      "routingPrompts": [
+        "Build a LayerZero OFT bridge token with Foundry"
+      ],
+      "validationCommands": [
+        "forge build",
+        "forge test"
+      ],
+      "authenticitySignals": [
+        "LayerZero",
+        "OFT",
+        "bridge",
+        "burn and release",
+        "cross-chain bridge",
+        "lock and mint",
+        "omnichain",
+        "proof verification",
+        "sendTokens"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/defi-bridge/manifest.json",
+        "registry/layers/capability/evm-layerzero-oft/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/defi-bridge/manifest.json",
+        "registry/layers/capability/evm-layerzero-oft/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "forge build",
+        "forge test",
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/ethena-stablecoin.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/layerzero-omnichain.ts"
+      ]
+    },
+    {
+      "id": "fhe-capabilities",
+      "status": "candidate",
+      "domain": {
+        "family": "fhe",
+        "surface": "contracts"
+      },
+      "ambiguityGroup": "fhe-capabilities",
+      "verticalIds": [
+        "arkworks-zk",
+        "aztec-noir",
+        "cryptography-primitives",
+        "fhenix-fhe",
+        "tangle-blueprints-privacy",
+        "tangle-blueprints-storage",
+        "tangle-blueprints-zk-proofs",
+        "uniswap-v4",
+        "zk-trading"
+      ],
+      "leafIds": {
+        "train": [
+          "ark-private-transfer",
+          "ark-voting-circuit",
+          "aztec-private-token-wallet",
+          "aztec-private-voting-dao",
+          "fhenix-blind-poker-showdown",
+          "fhenix-confidential-dex",
+          "fhenix-encrypted-erc20-token",
+          "fhenix-private-dao-vote",
+          "fhenix-sealed-bid-auction",
+          "fhenix-sealed-payroll-stream",
+          "tangle-priv-commitment-scheme",
+          "tangle-priv-confidential-compute",
+          "tangle-priv-key-rotation",
+          "tangle-priv-mpc-analytics",
+          "tangle-priv-private-nft",
+          "tangle-priv-private-voting",
+          "tangle-priv-threshold-bls",
+          "tangle-priv-threshold-keygen",
+          "tangle-priv-zk-proof-service",
+          "tangle-storage-compute-over-data"
+        ],
+        "holdout": [
+          "aztec-l1-l2-token-bridge",
+          "crypto-fhe-bfv",
+          "fhenix-confidential-lending-vault",
+          "fhenix-private-prediction-market",
+          "tangle-priv-anonymous-transfer",
+          "tangle-priv-encrypted-mempool",
+          "tangle-priv-oblivious-transfer",
+          "tangle-priv-state-channel",
+          "tangle-priv-timelock-encryption",
+          "uni-v4-auction-hook-jit"
+        ]
+      },
+      "partnerIds": [
+        "academic",
+        "arkworks",
+        "aztec-network",
+        "fhenix",
+        "multi-protocol",
+        "tangle-network",
+        "uniswap-labs"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 32
+        }
+      ],
+      "intendedStarter": {
+        "family": "fhenix-foundry",
+        "layers": [
+          "framework:fhenix-foundry"
+        ],
+        "capabilities": [
+          "capability:fhe-foundry-private-token",
+          "capability:fhe-foundry-private-voting",
+          "capability:fhe-foundry-sealed-auction"
+        ]
+      },
+      "routingPrompts": [],
+      "validationCommands": [
+        "forge build",
+        "npx hardhat compile"
+      ],
+      "authenticitySignals": [
+        "FHE.add",
+        "FHE.allow",
+        "FHE.allowThis",
+        "FHE.fromExternal",
+        "FHE.gt",
+        "FHE.gte",
+        "FHE.select",
+        "blind auction",
+        "encrypted auction",
+        "encrypted balance",
+        "encrypted voting",
+        "externalEbool",
+        "externalEuint64",
+        "private token",
+        "private voting",
+        "sealed bid",
+        "secret ballot"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/fhe-foundry-private-token/manifest.json",
+        "registry/layers/capability/fhe-foundry-private-voting/manifest.json",
+        "registry/layers/capability/fhe-foundry-sealed-auction/manifest.json",
+        "registry/layers/capability/fhe-private-token/manifest.json",
+        "registry/layers/capability/fhe-private-voting/manifest.json",
+        "registry/layers/capability/fhe-sealed-auction/manifest.json",
+        "registry/layers/capability/fhevm-private-token/manifest.json",
+        "registry/layers/capability/fhevm-private-voting/manifest.json",
+        "registry/layers/capability/fhevm-sealed-auction/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/fhe-foundry-private-token/manifest.json",
+        "registry/layers/capability/fhe-foundry-private-voting/manifest.json",
+        "registry/layers/capability/fhe-foundry-sealed-auction/manifest.json",
+        "registry/layers/capability/fhe-private-token/manifest.json",
+        "registry/layers/capability/fhe-private-voting/manifest.json",
+        "registry/layers/capability/fhe-sealed-auction/manifest.json",
+        "registry/layers/capability/fhevm-private-token/manifest.json",
+        "registry/layers/capability/fhevm-private-voting/manifest.json",
+        "registry/layers/capability/fhevm-sealed-auction/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "forge build",
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "npx hardhat compile",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/arkworks-zk.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/aztec-noir.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/fhenix-fhe.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-privacy.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-storage.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/uniswap-v4.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/research/cryptography-primitives.ts"
+      ]
+    },
+    {
+      "id": "fhe-contracts-fhenix-contracts",
+      "status": "candidate",
+      "domain": {
+        "family": "fhe",
+        "provider": "fhenix",
+        "protocol": "cofhe",
+        "runtime": "hardhat",
+        "surface": "contracts"
+      },
+      "ambiguityGroup": "fhe-contracts",
+      "verticalIds": [
+        "arkworks-zk",
+        "aztec-noir",
+        "cryptography-primitives",
+        "fhenix-fhe",
+        "tangle-blueprints-privacy",
+        "tangle-blueprints-storage",
+        "tangle-blueprints-zk-proofs",
+        "uniswap-v4"
+      ],
+      "leafIds": {
+        "train": [
+          "ark-voting-circuit",
+          "aztec-private-voting-dao",
+          "fhenix-blind-poker-showdown",
+          "fhenix-confidential-dex",
+          "fhenix-encrypted-erc20-token",
+          "fhenix-private-dao-vote",
+          "fhenix-sealed-bid-auction",
+          "fhenix-sealed-payroll-stream",
+          "tangle-priv-commitment-scheme",
+          "tangle-priv-confidential-compute",
+          "tangle-priv-key-rotation",
+          "tangle-priv-mpc-analytics",
+          "tangle-priv-private-nft",
+          "tangle-priv-private-voting",
+          "tangle-priv-threshold-bls",
+          "tangle-priv-threshold-keygen",
+          "tangle-priv-zk-proof-service",
+          "tangle-storage-compute-over-data",
+          "uni-v4-auction-hook-jit"
+        ],
+        "holdout": [
+          "crypto-fhe-bfv",
+          "fhenix-confidential-lending-vault",
+          "fhenix-private-prediction-market",
+          "tangle-priv-anonymous-transfer",
+          "tangle-priv-encrypted-mempool",
+          "tangle-priv-oblivious-transfer",
+          "tangle-priv-state-channel",
+          "tangle-priv-timelock-encryption",
+          "tangle-zk-private-voting"
+        ]
+      },
+      "partnerIds": [
+        "academic",
+        "arkworks",
+        "aztec-network",
+        "fhenix",
+        "tangle-network",
+        "uniswap-labs"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 28
+        }
+      ],
+      "intendedStarter": {
+        "family": "fhenix-contracts",
+        "layers": [
+          "framework:fhenix-contracts"
+        ],
+        "capabilities": []
+      },
+      "routingPrompts": [
+        "Build a Fhenix Hardhat encrypted counter using cofhejs"
+      ],
+      "validationCommands": [
+        "npx hardhat compile",
+        "npx hardhat test"
+      ],
+      "authenticitySignals": [
+        "FHE.add",
+        "FHE.allow",
+        "FHE.asEuint",
+        "FHE.select",
+        "InEuint",
+        "cofhejs",
+        "ebool",
+        "encrypted balance",
+        "euint",
+        "private voting",
+        "sealed bid"
+      ],
+      "registryFiles": [
+        "registry/families/fhenix-contracts/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/families/fhenix-contracts/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "npx hardhat compile",
+        "npx hardhat test",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/arkworks-zk.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/aztec-noir.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/fhenix-fhe.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-privacy.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-storage.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-zk-proofs.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/uniswap-v4.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/research/cryptography-primitives.ts"
+      ]
+    },
+    {
+      "id": "fhe-contracts-fhenix-foundry",
+      "status": "candidate",
+      "domain": {
+        "family": "fhe",
+        "provider": "fhenix",
+        "protocol": "cofhe",
+        "runtime": "foundry",
+        "surface": "contracts"
+      },
+      "ambiguityGroup": "fhe-contracts",
+      "verticalIds": [
+        "arkworks-zk",
+        "aztec-noir",
+        "cryptography-primitives",
+        "fhenix-fhe",
+        "tangle-blueprints-privacy",
+        "tangle-blueprints-storage",
+        "tangle-blueprints-zk-proofs",
+        "uniswap-v4"
+      ],
+      "leafIds": {
+        "train": [
+          "ark-voting-circuit",
+          "aztec-private-voting-dao",
+          "fhenix-blind-poker-showdown",
+          "fhenix-confidential-dex",
+          "fhenix-encrypted-erc20-token",
+          "fhenix-private-dao-vote",
+          "fhenix-sealed-bid-auction",
+          "fhenix-sealed-payroll-stream",
+          "tangle-priv-commitment-scheme",
+          "tangle-priv-confidential-compute",
+          "tangle-priv-key-rotation",
+          "tangle-priv-mpc-analytics",
+          "tangle-priv-private-nft",
+          "tangle-priv-private-voting",
+          "tangle-priv-threshold-bls",
+          "tangle-priv-threshold-keygen",
+          "tangle-priv-zk-proof-service",
+          "tangle-storage-compute-over-data",
+          "uni-v4-auction-hook-jit"
+        ],
+        "holdout": [
+          "crypto-fhe-bfv",
+          "fhenix-confidential-lending-vault",
+          "fhenix-private-prediction-market",
+          "tangle-priv-anonymous-transfer",
+          "tangle-priv-encrypted-mempool",
+          "tangle-priv-oblivious-transfer",
+          "tangle-priv-state-channel",
+          "tangle-priv-timelock-encryption",
+          "tangle-zk-private-voting"
+        ]
+      },
+      "partnerIds": [
+        "academic",
+        "arkworks",
+        "aztec-network",
+        "fhenix",
+        "tangle-network",
+        "uniswap-labs"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 28
+        }
+      ],
+      "intendedStarter": {
+        "family": "fhenix-foundry",
+        "layers": [
+          "framework:fhenix-foundry"
+        ],
+        "capabilities": []
+      },
+      "routingPrompts": [
+        "Build a Fhenix Foundry sealed-bid auction contract with CoFHE encrypted bids"
+      ],
+      "validationCommands": [
+        "forge build",
+        "forge test"
+      ],
+      "authenticitySignals": [
+        "FHE.add",
+        "FHE.allow",
+        "FHE.asEuint",
+        "FHE.select",
+        "InEuint",
+        "cofhejs",
+        "ebool",
+        "encrypted balance",
+        "euint",
+        "private voting",
+        "sealed bid"
+      ],
+      "registryFiles": [
+        "registry/families/fhenix-foundry/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/families/fhenix-foundry/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "forge build",
+        "forge test",
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/arkworks-zk.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/aztec-noir.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/fhenix-fhe.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-privacy.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-storage.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-zk-proofs.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/uniswap-v4.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/research/cryptography-primitives.ts"
+      ]
+    },
+    {
+      "id": "fhe-contracts-fhevm-contracts",
+      "status": "candidate",
+      "domain": {
+        "family": "fhe",
+        "provider": "zama",
+        "protocol": "fhevm",
+        "runtime": "hardhat",
+        "surface": "contracts"
+      },
+      "ambiguityGroup": "fhe-contracts",
+      "verticalIds": [
+        "cryptography-primitives",
+        "fhenix-fhe",
+        "tangle-blueprints-privacy",
+        "tangle-blueprints-storage",
+        "zk-trading"
+      ],
+      "leafIds": {
+        "train": [
+          "crypto-fhe-bfv",
+          "fhenix-blind-poker-showdown",
+          "fhenix-confidential-lending-vault",
+          "fhenix-encrypted-erc20-token",
+          "fhenix-private-prediction-market",
+          "fhenix-sealed-bid-auction",
+          "tangle-priv-anonymous-transfer",
+          "tangle-priv-commitment-scheme",
+          "tangle-priv-encrypted-mempool",
+          "tangle-priv-key-rotation",
+          "tangle-priv-oblivious-transfer",
+          "tangle-priv-private-nft",
+          "tangle-priv-state-channel",
+          "tangle-priv-threshold-bls",
+          "tangle-priv-timelock-encryption",
+          "tangle-priv-zk-proof-service",
+          "zk-trade-confidential-transfer"
+        ],
+        "holdout": [
+          "fhenix-confidential-dex",
+          "fhenix-private-dao-vote",
+          "fhenix-sealed-payroll-stream",
+          "tangle-priv-confidential-compute",
+          "tangle-priv-mpc-analytics",
+          "tangle-priv-private-voting",
+          "tangle-priv-threshold-keygen",
+          "tangle-storage-compute-over-data"
+        ]
+      },
+      "partnerIds": [
+        "academic",
+        "fhenix",
+        "multi-protocol",
+        "tangle-network"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 25
+        }
+      ],
+      "intendedStarter": {
+        "family": "fhevm-contracts",
+        "layers": [
+          "framework:fhevm-contracts"
+        ],
+        "capabilities": []
+      },
+      "routingPrompts": [
+        "Build a Zama fhEVM confidential ERC20"
+      ],
+      "validationCommands": [
+        "npx hardhat compile",
+        "npx hardhat test"
+      ],
+      "authenticitySignals": [
+        "FHE.add",
+        "FHE.allow",
+        "FHE.asEuint",
+        "FHE.select",
+        "InEuint",
+        "confidential erc20",
+        "ebool",
+        "encrypted evm",
+        "euint",
+        "fhevm",
+        "tfhe"
+      ],
+      "registryFiles": [
+        "registry/families/fhevm-contracts/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/families/fhevm-contracts/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "npx hardhat compile",
+        "npx hardhat test",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/fhenix-fhe.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-privacy.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-storage.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/zk-trading.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/research/cryptography-primitives.ts"
+      ]
+    },
+    {
+      "id": "bridge-contracts-capability-defi-bridge",
+      "status": "candidate",
+      "domain": {
+        "family": "bridge",
+        "protocol": "custom",
+        "runtime": "evm",
+        "surface": "contracts"
+      },
+      "ambiguityGroup": "bridge-contracts",
+      "verticalIds": [
+        "aave-lending",
+        "across-bridge",
+        "agno-agents",
+        "alphafold-protein",
+        "aptos-move",
+        "arbitrum-stylus",
+        "arkworks-zk",
+        "axelar-crosschain",
+        "aztec-noir",
+        "bnb-chain",
+        "brevis-zk-coprocessor",
+        "cctp-circle-bridge",
+        "cerner-fhir",
+        "chainlink-oracles",
+        "circle-usdc",
+        "circom-circuits",
+        "coinbase-commerce",
+        "container-runtime",
+        "crypto-defi-agents",
+        "curve-stableswap",
+        "debridge-solana",
+        "dex-arb-evm-agents",
+        "dex-arb-solana-agents",
+        "docker-containers",
+        "ens-domains",
+        "ethena-stablecoin",
+        "ethereum-l1",
+        "hermes-agent-apps",
+        "layerzero-omnichain",
+        "lido-staking",
+        "magic-eden-marketplace",
+        "mem0-memory",
+        "mercury-banking",
+        "okx-xlayer",
+        "oneinch-aggregation",
+        "optimism-l2",
+        "phantom-wallet",
+        "pi-extensions",
+        "polygon-pos",
+        "sanctum-lst",
+        "scroll-zkevm",
+        "solana-core",
+        "squads-multisig",
+        "starknet-cairo",
+        "succinct-sp1",
+        "switchboard-oracles",
+        "synthetix-perps",
+        "tangle-blueprints-bridges",
+        "tangle-blueprints-defi",
+        "tangle-blueprints-hosting",
+        "tangle-blueprints-keeper",
+        "tangle-blueprints-mpc",
+        "tangle-blueprints-multi-agent",
+        "tangle-blueprints-p2p-gossip",
+        "tangle-blueprints-privacy",
+        "tangle-blueprints-relayers",
+        "tangle-blueprints-zk-proofs",
+        "telehealth-platform",
+        "tempo-payments",
+        "tensor-nft",
+        "trading-agents",
+        "uniswap-v4",
+        "vercel-ai-sdk",
+        "wormhole-solana",
+        "zk-identity",
+        "zkp2p-payments",
+        "zksync-era"
+      ],
+      "leafIds": {
+        "train": [
+          "aptos-cross-chain-bridge",
+          "polygon-analytics-platform",
+          "scroll-bridge-fee-optimizer",
+          "scroll-bridge-status-viewer",
+          "scroll-cross-chain-defi",
+          "scroll-erc20-bridge",
+          "scroll-eth-withdraw",
+          "scroll-full-bridge-manager",
+          "scroll-multi-chain-bridge",
+          "scroll-nft-bridge",
+          "tangle-bridge-emergency-pause",
+          "tangle-bridge-fee-estimator",
+          "tangle-bridge-full-tss-bridge",
+          "tangle-bridge-header-relay-single",
+          "tangle-bridge-interop-hub",
+          "tangle-bridge-light-client-sync",
+          "tangle-bridge-multi-chain-header-relay",
+          "tangle-bridge-receipt-proof",
+          "tangle-defi-bridge-attestation",
+          "tangle-defi-cross-chain-bridge-operator"
+        ],
+        "holdout": [
+          "scroll-analytics-platform",
+          "scroll-chain-info",
+          "scroll-eth-deposit",
+          "scroll-gateway-custom-erc20",
+          "tangle-bridge-cross-chain-governance",
+          "tangle-bridge-fraud-detector",
+          "tangle-bridge-intent-based-bridge",
+          "tangle-bridge-liquidity-pool",
+          "tangle-bridge-unified-liquidity-network",
+          "tempo-tip20-cross-chain-bridge"
+        ]
+      },
+      "partnerIds": [
+        "1inch",
+        "aave",
+        "across-protocol",
+        "agno",
+        "aptos-labs",
+        "arbitrum-foundation",
+        "arkworks",
+        "axelar",
+        "aztec-network",
+        "binance",
+        "brevis",
+        "chainlink",
+        "circle",
+        "coinbase",
+        "curve",
+        "daily-co",
+        "debridge",
+        "deepmind",
+        "docker",
+        "ens",
+        "ethena",
+        "ethereum-foundation",
+        "from-scratch",
+        "hermes",
+        "iden3",
+        "inflection-ai",
+        "layerzero",
+        "lido",
+        "magic-eden",
+        "matter-labs",
+        "mem0",
+        "mercury",
+        "multi-framework",
+        "multi-protocol",
+        "okx",
+        "optimism",
+        "oracle-health",
+        "phantom",
+        "polygon",
+        "sanctum",
+        "scroll",
+        "solana",
+        "squads",
+        "starkware",
+        "succinct-labs",
+        "switchboard",
+        "synthetix",
+        "tangle-network",
+        "tempo",
+        "tensor",
+        "uniswap-labs",
+        "vercel",
+        "wormhole",
+        "zkp2p"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 253
+        }
+      ],
+      "intendedStarter": {
+        "family": "forge-contracts",
+        "layers": [
+          "framework:forge-foundation",
+          "capability:defi-bridge"
+        ],
+        "capabilities": [
+          "capability:defi-bridge"
+        ]
+      },
+      "routingPrompts": [],
+      "validationCommands": [],
+      "authenticitySignals": [
+        "burn and release",
+        "cross-chain bridge",
+        "lock and mint",
+        "proof verification"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/defi-bridge/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/defi-bridge/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/aptos-move.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/polygon-pos.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/scroll-zkevm.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-bridges.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-defi.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tempo-payments.ts"
+      ]
+    },
+    {
+      "id": "bridge-contracts-capability-evm-layerzero-oft",
+      "status": "candidate",
+      "domain": {
+        "family": "bridge",
+        "provider": "layerzero",
+        "protocol": "oft",
+        "runtime": "foundry",
+        "surface": "contracts"
+      },
+      "ambiguityGroup": "bridge-contracts",
+      "verticalIds": [
+        "aave-lending",
+        "across-bridge",
+        "agno-agents",
+        "alphafold-protein",
+        "aptos-move",
+        "arbitrum-stylus",
+        "axelar-crosschain",
+        "aztec-noir",
+        "bnb-chain",
+        "brevis-zk-coprocessor",
+        "cctp-circle-bridge",
+        "cerner-fhir",
+        "chainlink-oracles",
+        "circle-usdc",
+        "circom-circuits",
+        "coinbase-commerce",
+        "container-runtime",
+        "crypto-defi-agents",
+        "curve-stableswap",
+        "debridge-solana",
+        "dex-arb-evm-agents",
+        "docker-containers",
+        "ethena-stablecoin",
+        "ethereum-l1",
+        "hermes-agent-apps",
+        "layerzero-omnichain",
+        "lido-staking",
+        "mem0-memory",
+        "mercury-banking",
+        "okx-xlayer",
+        "oneinch-aggregation",
+        "optimism-l2",
+        "phantom-wallet",
+        "pi-extensions",
+        "polygon-pos",
+        "sanctum-lst",
+        "scroll-zkevm",
+        "squads-multisig",
+        "starknet-cairo",
+        "succinct-sp1",
+        "switchboard-oracles",
+        "synthetix-perps",
+        "tangle-blueprints-bridges",
+        "tangle-blueprints-defi",
+        "tangle-blueprints-hosting",
+        "tangle-blueprints-keeper",
+        "tangle-blueprints-mpc",
+        "tangle-blueprints-multi-agent",
+        "tangle-blueprints-p2p-gossip",
+        "tangle-blueprints-privacy",
+        "tangle-blueprints-relayers",
+        "tangle-blueprints-zk-proofs",
+        "telehealth-platform",
+        "tempo-payments",
+        "trading-agents",
+        "uniswap-v4",
+        "vercel-ai-sdk",
+        "wormhole-solana",
+        "zk-identity",
+        "zkp2p-payments",
+        "zksync-era"
+      ],
+      "leafIds": {
+        "train": [
+          "ethena-cross-chain-usde",
+          "lz-chain-endpoint-directory",
+          "lz-create-lz-oapp-scaffold",
+          "lz-cross-chain-swap",
+          "lz-dvn-operator-platform",
+          "lz-dvn-security-config",
+          "lz-message-fee-estimator",
+          "lz-message-tracker",
+          "lz-native-drop-airdrop",
+          "lz-oapp-config-inspector",
+          "lz-oapp-message-sender",
+          "lz-oft-adapter-deploy",
+          "lz-oft-bridge-ui",
+          "lz-oft-custom-fee-module",
+          "lz-oft-rate-limiter",
+          "lz-oft-send-and-call",
+          "lz-omnichain-dex",
+          "lz-omnichain-nft-game",
+          "lz-onft-bridge",
+          "lz-onft-marketplace"
+        ],
+        "holdout": [
+          "lz-composed-message-builder",
+          "lz-dvn-monitoring-dashboard",
+          "lz-message-design-patterns",
+          "lz-messagelib-selector",
+          "lz-oapp-message-receiver",
+          "lz-oft-balance-tracker",
+          "lz-oft-launch-platform",
+          "lz-oft-token-info",
+          "lz-omnichain-yield-aggregator",
+          "lz-protocol-analytics"
+        ]
+      },
+      "partnerIds": [
+        "1inch",
+        "aave",
+        "across-protocol",
+        "agno",
+        "aptos-labs",
+        "arbitrum-foundation",
+        "axelar",
+        "aztec-network",
+        "binance",
+        "brevis",
+        "chainlink",
+        "circle",
+        "coinbase",
+        "curve",
+        "daily-co",
+        "debridge",
+        "deepmind",
+        "docker",
+        "ethena",
+        "ethereum-foundation",
+        "from-scratch",
+        "hermes",
+        "iden3",
+        "inflection-ai",
+        "layerzero",
+        "lido",
+        "matter-labs",
+        "mem0",
+        "mercury",
+        "multi-framework",
+        "multi-protocol",
+        "okx",
+        "optimism",
+        "oracle-health",
+        "phantom",
+        "polygon",
+        "sanctum",
+        "scroll",
+        "squads",
+        "starkware",
+        "succinct-labs",
+        "switchboard",
+        "synthetix",
+        "tangle-network",
+        "tempo",
+        "uniswap-labs",
+        "vercel",
+        "wormhole",
+        "zkp2p"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 263
+        }
+      ],
+      "intendedStarter": {
+        "family": "forge-contracts",
+        "layers": [
+          "framework:forge-foundation",
+          "capability:evm-layerzero-oft"
+        ],
+        "capabilities": [
+          "capability:evm-layerzero-oft"
+        ]
+      },
+      "routingPrompts": [
+        "Build a LayerZero OFT bridge token with Foundry"
+      ],
+      "validationCommands": [
+        "forge build",
+        "forge test"
+      ],
+      "authenticitySignals": [
+        "LayerZero",
+        "OFT",
+        "bridge",
+        "omnichain",
+        "sendTokens"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/evm-layerzero-oft/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/evm-layerzero-oft/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "forge build",
+        "forge test",
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/ethena-stablecoin.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/layerzero-omnichain.ts"
+      ]
+    },
+    {
+      "id": "bridge-ui",
+      "status": "candidate",
+      "domain": {
+        "family": "bridge",
+        "surface": "ui"
+      },
+      "ambiguityGroup": "bridge-ui",
+      "verticalIds": [
+        "aave-lending",
+        "across-bridge",
+        "agno-agents",
+        "alpaca-broker",
+        "alphafold-protein",
+        "aptos-move",
+        "arbitrum-stylus",
+        "axelar-crosschain",
+        "aztec-noir",
+        "betterment-wealth",
+        "bnb-chain",
+        "brevis-zk-coprocessor",
+        "brex-corporate",
+        "cctp-circle-bridge",
+        "cerner-fhir",
+        "chainlink-oracles",
+        "circle-usdc",
+        "circom-circuits",
+        "coinbase-commerce",
+        "column-banking",
+        "container-runtime",
+        "cross-protocol-solana",
+        "crypto-defi-agents",
+        "curve-stableswap",
+        "debridge-solana",
+        "dex-arb-evm-agents",
+        "dex-arb-solana-agents",
+        "docker-containers",
+        "ens-domains",
+        "ethena-stablecoin",
+        "ethereum-foundry-viem",
+        "ethereum-l1",
+        "fireblocks-custody",
+        "helius-rpc",
+        "hermes-agent-apps",
+        "layerzero-omnichain",
+        "lido-staking",
+        "lithic-cards",
+        "makerdao-sky",
+        "marqeta-cards",
+        "mem0-memory",
+        "mercury-banking",
+        "modern-treasury",
+        "okx-xlayer",
+        "oneinch-aggregation",
+        "optimism-l2",
+        "phantom-wallet",
+        "pi-extensions",
+        "plaid-banking",
+        "polygon-pos",
+        "ramp-expense",
+        "safe-multisig",
+        "sanctum-lst",
+        "scroll-zkevm",
+        "solana-core",
+        "squads-multisig",
+        "starknet-cairo",
+        "succinct-sp1",
+        "switchboard-oracles",
+        "synthetix-perps",
+        "tangle-blueprints-bridges",
+        "tangle-blueprints-defi",
+        "tangle-blueprints-hosting",
+        "tangle-blueprints-keeper",
+        "tangle-blueprints-mpc",
+        "tangle-blueprints-multi-agent",
+        "tangle-blueprints-p2p-gossip",
+        "tangle-blueprints-privacy",
+        "tangle-blueprints-relayers",
+        "tangle-blueprints-zk-proofs",
+        "telehealth-platform",
+        "tempo-payments",
+        "tensor-nft",
+        "tonejs-audio",
+        "trading-agents",
+        "uniswap-v4",
+        "unit-banking",
+        "vercel-ai-sdk",
+        "wormhole-solana",
+        "zk-identity",
+        "zkp2p-payments",
+        "zksync-era"
+      ],
+      "leafIds": {
+        "train": [
+          "across-bridge-history",
+          "across-full-bridge-interface",
+          "cctp-full-bridge-evm-to-evm",
+          "cctp-multi-hop-routing",
+          "cross-chain-bridge",
+          "lz-oft-bridge-ui",
+          "op-erc20-bridge",
+          "op-superchain-bridge",
+          "polygon-pos-erc20-bridge",
+          "tangle-bridge-emergency-pause",
+          "tangle-bridge-fraud-detector",
+          "tangle-bridge-header-relay-single",
+          "tangle-bridge-liquidity-pool",
+          "tangle-bridge-message-queue",
+          "tangle-bridge-nonce-manager",
+          "tangle-bridge-optimistic-relay",
+          "tangle-bridge-state-proof-relay",
+          "tangle-bridge-tss-signing",
+          "tangle-bridge-watcher-alerting",
+          "wormhole-bridge-status"
+        ],
+        "holdout": [
+          "aptos-cross-chain-bridge",
+          "circle-cctp-bridge",
+          "lz-onft-bridge",
+          "polygon-cdk-appchain-deploy",
+          "tangle-bridge-fee-estimator",
+          "tangle-bridge-light-client-sync",
+          "tangle-bridge-multi-chain-header-relay",
+          "tangle-bridge-rate-limiter",
+          "tangle-bridge-validator-set-relay",
+          "wormhole-explorer-viewer"
+        ]
+      },
+      "partnerIds": [
+        "1inch",
+        "aave",
+        "across-protocol",
+        "agno",
+        "alpaca",
+        "aptos-labs",
+        "arbitrum-foundation",
+        "axelar",
+        "aztec-network",
+        "betterment",
+        "binance",
+        "brevis",
+        "brex",
+        "chainlink",
+        "circle",
+        "coinbase",
+        "column",
+        "curve",
+        "daily-co",
+        "debridge",
+        "deepmind",
+        "docker",
+        "ens",
+        "ethena",
+        "ethereum-foundation",
+        "fireblocks",
+        "from-scratch",
+        "helius",
+        "hermes",
+        "iden3",
+        "inflection-ai",
+        "layerzero",
+        "lido",
+        "lithic",
+        "marqeta",
+        "matter-labs",
+        "mem0",
+        "mercury",
+        "modern-treasury",
+        "multi-framework",
+        "multi-protocol",
+        "okx",
+        "optimism",
+        "oracle-health",
+        "phantom",
+        "plaid",
+        "polygon",
+        "ramp",
+        "safe",
+        "sanctum",
+        "scroll",
+        "sky-ecosystem",
+        "solana",
+        "squads",
+        "starkware",
+        "succinct-labs",
+        "switchboard",
+        "synthetix",
+        "tangle-network",
+        "tempo",
+        "tensor",
+        "tonejs",
+        "uniswap-labs",
+        "unit",
+        "vercel",
+        "wormhole",
+        "zkp2p"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 332
+        }
+      ],
+      "intendedStarter": {
+        "family": "react-vite-ts",
+        "layers": [
+          "framework:react-vite-ts",
+          "capability:crypto-bridge-ui"
+        ],
+        "capabilities": [
+          "capability:crypto-bridge-ui"
+        ]
+      },
+      "routingPrompts": [
+        "Build a cross-chain bridge transfer UI with Wormhole"
+      ],
+      "validationCommands": [],
+      "authenticitySignals": [
+        "destination chain",
+        "fee estimation",
+        "source chain",
+        "transaction history"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/across-bridge.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/aptos-move.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/cctp-circle-bridge.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/layerzero-omnichain.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/optimism-l2.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/polygon-pos.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-bridges.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/wormhole-solana.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/fintech/circle-usdc.ts"
+      ]
+    },
+    {
+      "id": "bridge-ui-capability-crypto-bridge-ui",
+      "status": "candidate",
+      "domain": {
+        "family": "bridge",
+        "surface": "ui"
+      },
+      "ambiguityGroup": "bridge-ui",
+      "verticalIds": [
+        "aave-lending",
+        "across-bridge",
+        "agno-agents",
+        "alpaca-broker",
+        "alphafold-protein",
+        "aptos-move",
+        "arbitrum-stylus",
+        "axelar-crosschain",
+        "aztec-noir",
+        "betterment-wealth",
+        "bnb-chain",
+        "brevis-zk-coprocessor",
+        "brex-corporate",
+        "cctp-circle-bridge",
+        "cerner-fhir",
+        "chainlink-oracles",
+        "circle-usdc",
+        "circom-circuits",
+        "coinbase-commerce",
+        "column-banking",
+        "container-runtime",
+        "cross-protocol-solana",
+        "crypto-defi-agents",
+        "curve-stableswap",
+        "debridge-solana",
+        "dex-arb-evm-agents",
+        "dex-arb-solana-agents",
+        "docker-containers",
+        "ens-domains",
+        "ethena-stablecoin",
+        "ethereum-foundry-viem",
+        "ethereum-l1",
+        "fireblocks-custody",
+        "helius-rpc",
+        "hermes-agent-apps",
+        "layerzero-omnichain",
+        "lido-staking",
+        "lithic-cards",
+        "makerdao-sky",
+        "marqeta-cards",
+        "mem0-memory",
+        "mercury-banking",
+        "modern-treasury",
+        "okx-xlayer",
+        "oneinch-aggregation",
+        "optimism-l2",
+        "phantom-wallet",
+        "pi-extensions",
+        "plaid-banking",
+        "polygon-pos",
+        "ramp-expense",
+        "safe-multisig",
+        "sanctum-lst",
+        "scroll-zkevm",
+        "solana-core",
+        "squads-multisig",
+        "starknet-cairo",
+        "succinct-sp1",
+        "switchboard-oracles",
+        "synthetix-perps",
+        "tangle-blueprints-bridges",
+        "tangle-blueprints-defi",
+        "tangle-blueprints-hosting",
+        "tangle-blueprints-keeper",
+        "tangle-blueprints-mpc",
+        "tangle-blueprints-multi-agent",
+        "tangle-blueprints-p2p-gossip",
+        "tangle-blueprints-privacy",
+        "tangle-blueprints-relayers",
+        "tangle-blueprints-zk-proofs",
+        "telehealth-platform",
+        "tempo-payments",
+        "tensor-nft",
+        "tonejs-audio",
+        "trading-agents",
+        "uniswap-v4",
+        "unit-banking",
+        "vercel-ai-sdk",
+        "wormhole-solana",
+        "zk-identity",
+        "zkp2p-payments",
+        "zksync-era"
+      ],
+      "leafIds": {
+        "train": [
+          "across-bridge-history",
+          "across-full-bridge-interface",
+          "cctp-full-bridge-evm-to-evm",
+          "cctp-multi-hop-routing",
+          "cross-chain-bridge",
+          "lz-oft-bridge-ui",
+          "op-erc20-bridge",
+          "op-superchain-bridge",
+          "polygon-pos-erc20-bridge",
+          "tangle-bridge-emergency-pause",
+          "tangle-bridge-fraud-detector",
+          "tangle-bridge-header-relay-single",
+          "tangle-bridge-liquidity-pool",
+          "tangle-bridge-message-queue",
+          "tangle-bridge-nonce-manager",
+          "tangle-bridge-optimistic-relay",
+          "tangle-bridge-state-proof-relay",
+          "tangle-bridge-tss-signing",
+          "tangle-bridge-watcher-alerting",
+          "wormhole-bridge-status"
+        ],
+        "holdout": [
+          "aptos-cross-chain-bridge",
+          "circle-cctp-bridge",
+          "lz-onft-bridge",
+          "polygon-cdk-appchain-deploy",
+          "tangle-bridge-fee-estimator",
+          "tangle-bridge-light-client-sync",
+          "tangle-bridge-multi-chain-header-relay",
+          "tangle-bridge-rate-limiter",
+          "tangle-bridge-validator-set-relay",
+          "wormhole-explorer-viewer"
+        ]
+      },
+      "partnerIds": [
+        "1inch",
+        "aave",
+        "across-protocol",
+        "agno",
+        "alpaca",
+        "aptos-labs",
+        "arbitrum-foundation",
+        "axelar",
+        "aztec-network",
+        "betterment",
+        "binance",
+        "brevis",
+        "brex",
+        "chainlink",
+        "circle",
+        "coinbase",
+        "column",
+        "curve",
+        "daily-co",
+        "debridge",
+        "deepmind",
+        "docker",
+        "ens",
+        "ethena",
+        "ethereum-foundation",
+        "fireblocks",
+        "from-scratch",
+        "helius",
+        "hermes",
+        "iden3",
+        "inflection-ai",
+        "layerzero",
+        "lido",
+        "lithic",
+        "marqeta",
+        "matter-labs",
+        "mem0",
+        "mercury",
+        "modern-treasury",
+        "multi-framework",
+        "multi-protocol",
+        "okx",
+        "optimism",
+        "oracle-health",
+        "phantom",
+        "plaid",
+        "polygon",
+        "ramp",
+        "safe",
+        "sanctum",
+        "scroll",
+        "sky-ecosystem",
+        "solana",
+        "squads",
+        "starkware",
+        "succinct-labs",
+        "switchboard",
+        "synthetix",
+        "tangle-network",
+        "tempo",
+        "tensor",
+        "tonejs",
+        "uniswap-labs",
+        "unit",
+        "vercel",
+        "wormhole",
+        "zkp2p"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 332
+        }
+      ],
+      "intendedStarter": {
+        "family": "react-vite-ts",
+        "layers": [
+          "framework:react-vite-ts",
+          "capability:crypto-bridge-ui"
+        ],
+        "capabilities": [
+          "capability:crypto-bridge-ui"
+        ]
+      },
+      "routingPrompts": [
+        "Build a cross-chain bridge transfer UI with Wormhole"
+      ],
+      "validationCommands": [],
+      "authenticitySignals": [
+        "destination chain",
+        "fee estimation",
+        "source chain",
+        "transaction history"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/across-bridge.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/aptos-move.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/cctp-circle-bridge.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/layerzero-omnichain.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/optimism-l2.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/polygon-pos.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-bridges.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/wormhole-solana.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/fintech/circle-usdc.ts"
+      ]
+    },
+    {
+      "id": "bridge-ui-across-bridge",
+      "status": "candidate",
+      "domain": {
+        "family": "bridge",
+        "surface": "ui"
+      },
+      "ambiguityGroup": "bridge-ui",
+      "verticalIds": [
+        "across-bridge"
+      ],
+      "leafIds": {
+        "train": [
+          "across-bridge-analytics",
+          "across-bridge-comparison-platform",
+          "across-bridge-status",
+          "across-cross-chain-intent-matcher",
+          "across-deposit-v3",
+          "across-exclusive-relayer",
+          "across-full-bridge-interface",
+          "across-hubpool-lp",
+          "across-lp-yield-optimizer",
+          "across-multi-chain-bridge",
+          "across-plus-cross-chain-action",
+          "across-plus-defi-actions",
+          "across-relayer-bot",
+          "across-relayer-dashboard",
+          "across-root-bundle",
+          "across-security-monitor",
+          "across-speed-up-deposit",
+          "across-supported-routes"
+        ],
+        "holdout": [
+          "across-bridge-history",
+          "across-deposit-event-indexer",
+          "across-fee-quote",
+          "across-hubpool-stats",
+          "across-native-eth-bridge",
+          "across-pool-rebalance",
+          "across-relayer-fill",
+          "across-slow-fill",
+          "across-uma-oracle-monitor"
+        ]
+      },
+      "partnerIds": [
+        "across-protocol"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 27
+        }
+      ],
+      "intendedStarter": {
+        "family": "react-vite-ts",
+        "layers": [
+          "framework:react-vite-ts",
+          "capability:crypto-bridge-ui"
+        ],
+        "capabilities": [
+          "capability:crypto-bridge-ui"
+        ]
+      },
+      "routingPrompts": [
+        "Build a cross-chain bridge transfer UI with Wormhole"
+      ],
+      "validationCommands": [],
+      "authenticitySignals": [
+        "destination chain",
+        "fee estimation",
+        "source chain",
+        "transaction history"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/across-bridge.ts"
+      ]
+    },
+    {
+      "id": "fhe-capabilities-capability-fhe-foundry-private-token",
+      "status": "candidate",
+      "domain": {
+        "family": "fhe",
+        "provider": "fhenix",
+        "protocol": "cofhe",
+        "runtime": "foundry",
+        "surface": "contracts"
+      },
+      "ambiguityGroup": "fhe-capabilities",
+      "verticalIds": [
+        "arkworks-zk",
+        "aztec-noir",
+        "cryptography-primitives",
+        "fhenix-fhe",
+        "tangle-blueprints-privacy",
+        "tangle-blueprints-storage"
+      ],
+      "leafIds": {
+        "train": [
+          "ark-private-transfer",
+          "aztec-l1-l2-token-bridge",
+          "crypto-fhe-bfv",
+          "fhenix-blind-poker-showdown",
+          "fhenix-confidential-lending-vault",
+          "fhenix-encrypted-erc20-token",
+          "fhenix-private-prediction-market",
+          "fhenix-sealed-bid-auction",
+          "tangle-priv-anonymous-transfer",
+          "tangle-priv-commitment-scheme",
+          "tangle-priv-encrypted-mempool",
+          "tangle-priv-key-rotation",
+          "tangle-priv-oblivious-transfer",
+          "tangle-priv-private-nft",
+          "tangle-priv-state-channel",
+          "tangle-priv-threshold-bls",
+          "tangle-priv-timelock-encryption",
+          "tangle-priv-zk-proof-service"
+        ],
+        "holdout": [
+          "aztec-private-token-wallet",
+          "fhenix-confidential-dex",
+          "fhenix-private-dao-vote",
+          "fhenix-sealed-payroll-stream",
+          "tangle-priv-confidential-compute",
+          "tangle-priv-mpc-analytics",
+          "tangle-priv-private-voting",
+          "tangle-priv-threshold-keygen",
+          "tangle-storage-compute-over-data"
+        ]
+      },
+      "partnerIds": [
+        "academic",
+        "arkworks",
+        "aztec-network",
+        "fhenix",
+        "tangle-network"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 27
+        }
+      ],
+      "intendedStarter": {
+        "family": "fhenix-foundry",
+        "layers": [
+          "framework:fhenix-foundry"
+        ],
+        "capabilities": [
+          "capability:fhe-foundry-private-token"
+        ]
+      },
+      "routingPrompts": [],
+      "validationCommands": [
+        "forge build"
+      ],
+      "authenticitySignals": [
+        "FHE.add",
+        "FHE.allow",
+        "FHE.gte",
+        "FHE.select",
+        "encrypted balance",
+        "private token"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/fhe-foundry-private-token/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/fhe-foundry-private-token/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "forge build",
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/arkworks-zk.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/aztec-noir.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/fhenix-fhe.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-privacy.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-storage.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/research/cryptography-primitives.ts"
+      ]
+    },
+    {
+      "id": "fhe-capabilities-capability-fhe-foundry-private-voting",
+      "status": "candidate",
+      "domain": {
+        "family": "fhe",
+        "provider": "fhenix",
+        "protocol": "cofhe",
+        "runtime": "foundry",
+        "surface": "contracts"
+      },
+      "ambiguityGroup": "fhe-capabilities",
+      "verticalIds": [
+        "arkworks-zk",
+        "aztec-noir",
+        "cryptography-primitives",
+        "fhenix-fhe",
+        "tangle-blueprints-privacy",
+        "tangle-blueprints-storage",
+        "tangle-blueprints-zk-proofs"
+      ],
+      "leafIds": {
+        "train": [
+          "ark-voting-circuit",
+          "aztec-private-voting-dao",
+          "fhenix-blind-poker-showdown",
+          "fhenix-confidential-dex",
+          "fhenix-encrypted-erc20-token",
+          "fhenix-private-dao-vote",
+          "fhenix-sealed-bid-auction",
+          "fhenix-sealed-payroll-stream",
+          "tangle-priv-commitment-scheme",
+          "tangle-priv-confidential-compute",
+          "tangle-priv-key-rotation",
+          "tangle-priv-mpc-analytics",
+          "tangle-priv-private-nft",
+          "tangle-priv-private-voting",
+          "tangle-priv-threshold-bls",
+          "tangle-priv-threshold-keygen",
+          "tangle-priv-zk-proof-service",
+          "tangle-storage-compute-over-data"
+        ],
+        "holdout": [
+          "crypto-fhe-bfv",
+          "fhenix-confidential-lending-vault",
+          "fhenix-private-prediction-market",
+          "tangle-priv-anonymous-transfer",
+          "tangle-priv-encrypted-mempool",
+          "tangle-priv-oblivious-transfer",
+          "tangle-priv-state-channel",
+          "tangle-priv-timelock-encryption",
+          "tangle-zk-private-voting"
+        ]
+      },
+      "partnerIds": [
+        "academic",
+        "arkworks",
+        "aztec-network",
+        "fhenix",
+        "tangle-network"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 27
+        }
+      ],
+      "intendedStarter": {
+        "family": "fhenix-foundry",
+        "layers": [
+          "framework:fhenix-foundry"
+        ],
+        "capabilities": [
+          "capability:fhe-foundry-private-voting"
+        ]
+      },
+      "routingPrompts": [],
+      "validationCommands": [
+        "forge build"
+      ],
+      "authenticitySignals": [
+        "FHE.add",
+        "FHE.gte",
+        "FHE.select",
+        "encrypted voting",
+        "private voting",
+        "secret ballot"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/fhe-foundry-private-voting/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/fhe-foundry-private-voting/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "forge build",
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/arkworks-zk.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/aztec-noir.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/fhenix-fhe.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-privacy.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-storage.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-zk-proofs.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/research/cryptography-primitives.ts"
+      ]
+    },
+    {
+      "id": "fhe-capabilities-capability-fhe-private-token",
+      "status": "candidate",
+      "domain": {
+        "family": "fhe",
+        "provider": "fhenix",
+        "protocol": "cofhe",
+        "runtime": "hardhat",
+        "surface": "contracts"
+      },
+      "ambiguityGroup": "fhe-capabilities",
+      "verticalIds": [
+        "arkworks-zk",
+        "aztec-noir",
+        "cryptography-primitives",
+        "fhenix-fhe",
+        "tangle-blueprints-privacy",
+        "tangle-blueprints-storage"
+      ],
+      "leafIds": {
+        "train": [
+          "ark-private-transfer",
+          "aztec-l1-l2-token-bridge",
+          "crypto-fhe-bfv",
+          "fhenix-blind-poker-showdown",
+          "fhenix-confidential-lending-vault",
+          "fhenix-encrypted-erc20-token",
+          "fhenix-private-prediction-market",
+          "fhenix-sealed-bid-auction",
+          "tangle-priv-anonymous-transfer",
+          "tangle-priv-commitment-scheme",
+          "tangle-priv-encrypted-mempool",
+          "tangle-priv-key-rotation",
+          "tangle-priv-oblivious-transfer",
+          "tangle-priv-private-nft",
+          "tangle-priv-state-channel",
+          "tangle-priv-threshold-bls",
+          "tangle-priv-timelock-encryption",
+          "tangle-priv-zk-proof-service"
+        ],
+        "holdout": [
+          "aztec-private-token-wallet",
+          "fhenix-confidential-dex",
+          "fhenix-private-dao-vote",
+          "fhenix-sealed-payroll-stream",
+          "tangle-priv-confidential-compute",
+          "tangle-priv-mpc-analytics",
+          "tangle-priv-private-voting",
+          "tangle-priv-threshold-keygen",
+          "tangle-storage-compute-over-data"
+        ]
+      },
+      "partnerIds": [
+        "academic",
+        "arkworks",
+        "aztec-network",
+        "fhenix",
+        "tangle-network"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 27
+        }
+      ],
+      "intendedStarter": {
+        "family": "fhenix-contracts",
+        "layers": [
+          "framework:fhenix-contracts",
+          "capability:fhe-private-token"
+        ],
+        "capabilities": [
+          "capability:fhe-private-token"
+        ]
+      },
+      "routingPrompts": [],
+      "validationCommands": [
+        "npx hardhat compile"
+      ],
+      "authenticitySignals": [
+        "FHE.add",
+        "FHE.allow",
+        "FHE.gte",
+        "encrypted balance",
+        "private token"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/fhe-private-token/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/fhe-private-token/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "npx hardhat compile",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/arkworks-zk.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/aztec-noir.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/fhenix-fhe.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-privacy.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-storage.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/research/cryptography-primitives.ts"
+      ]
+    },
+    {
+      "id": "fhe-capabilities-capability-fhe-private-voting",
+      "status": "candidate",
+      "domain": {
+        "family": "fhe",
+        "provider": "fhenix",
+        "protocol": "cofhe",
+        "runtime": "hardhat",
+        "surface": "contracts"
+      },
+      "ambiguityGroup": "fhe-capabilities",
+      "verticalIds": [
+        "arkworks-zk",
+        "aztec-noir",
+        "cryptography-primitives",
+        "fhenix-fhe",
+        "tangle-blueprints-privacy",
+        "tangle-blueprints-storage",
+        "tangle-blueprints-zk-proofs"
+      ],
+      "leafIds": {
+        "train": [
+          "ark-voting-circuit",
+          "aztec-private-voting-dao",
+          "fhenix-blind-poker-showdown",
+          "fhenix-confidential-dex",
+          "fhenix-encrypted-erc20-token",
+          "fhenix-private-dao-vote",
+          "fhenix-sealed-bid-auction",
+          "fhenix-sealed-payroll-stream",
+          "tangle-priv-commitment-scheme",
+          "tangle-priv-confidential-compute",
+          "tangle-priv-key-rotation",
+          "tangle-priv-mpc-analytics",
+          "tangle-priv-private-nft",
+          "tangle-priv-private-voting",
+          "tangle-priv-threshold-bls",
+          "tangle-priv-threshold-keygen",
+          "tangle-priv-zk-proof-service",
+          "tangle-storage-compute-over-data"
+        ],
+        "holdout": [
+          "crypto-fhe-bfv",
+          "fhenix-confidential-lending-vault",
+          "fhenix-private-prediction-market",
+          "tangle-priv-anonymous-transfer",
+          "tangle-priv-encrypted-mempool",
+          "tangle-priv-oblivious-transfer",
+          "tangle-priv-state-channel",
+          "tangle-priv-timelock-encryption",
+          "tangle-zk-private-voting"
+        ]
+      },
+      "partnerIds": [
+        "academic",
+        "arkworks",
+        "aztec-network",
+        "fhenix",
+        "tangle-network"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 27
+        }
+      ],
+      "intendedStarter": {
+        "family": "fhenix-contracts",
+        "layers": [
+          "framework:fhenix-contracts",
+          "capability:fhe-private-voting"
+        ],
+        "capabilities": [
+          "capability:fhe-private-voting"
+        ]
+      },
+      "routingPrompts": [],
+      "validationCommands": [
+        "npx hardhat compile"
+      ],
+      "authenticitySignals": [
+        "FHE.add",
+        "FHE.select",
+        "encrypted voting",
+        "private voting",
+        "secret ballot"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/fhe-private-voting/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/fhe-private-voting/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "npx hardhat compile",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/arkworks-zk.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/aztec-noir.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/fhenix-fhe.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-privacy.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-storage.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-zk-proofs.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/research/cryptography-primitives.ts"
+      ]
+    },
+    {
+      "id": "fhe-capabilities-capability-fhevm-private-token",
+      "status": "candidate",
+      "domain": {
+        "family": "fhe",
+        "provider": "zama",
+        "protocol": "fhevm",
+        "runtime": "hardhat",
+        "surface": "contracts"
+      },
+      "ambiguityGroup": "fhe-capabilities",
+      "verticalIds": [
+        "arkworks-zk",
+        "aztec-noir",
+        "cryptography-primitives",
+        "fhenix-fhe",
+        "tangle-blueprints-privacy",
+        "tangle-blueprints-storage"
+      ],
+      "leafIds": {
+        "train": [
+          "ark-private-transfer",
+          "aztec-l1-l2-token-bridge",
+          "crypto-fhe-bfv",
+          "fhenix-blind-poker-showdown",
+          "fhenix-confidential-lending-vault",
+          "fhenix-encrypted-erc20-token",
+          "fhenix-private-prediction-market",
+          "fhenix-sealed-bid-auction",
+          "tangle-priv-anonymous-transfer",
+          "tangle-priv-commitment-scheme",
+          "tangle-priv-encrypted-mempool",
+          "tangle-priv-key-rotation",
+          "tangle-priv-oblivious-transfer",
+          "tangle-priv-private-nft",
+          "tangle-priv-state-channel",
+          "tangle-priv-threshold-bls",
+          "tangle-priv-timelock-encryption",
+          "tangle-priv-zk-proof-service"
+        ],
+        "holdout": [
+          "aztec-private-token-wallet",
+          "fhenix-confidential-dex",
+          "fhenix-private-dao-vote",
+          "fhenix-sealed-payroll-stream",
+          "tangle-priv-confidential-compute",
+          "tangle-priv-mpc-analytics",
+          "tangle-priv-private-voting",
+          "tangle-priv-threshold-keygen",
+          "tangle-storage-compute-over-data"
+        ]
+      },
+      "partnerIds": [
+        "academic",
+        "arkworks",
+        "aztec-network",
+        "fhenix",
+        "tangle-network"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 27
+        }
+      ],
+      "intendedStarter": {
+        "family": "fhevm-contracts",
+        "layers": [
+          "framework:fhevm-contracts",
+          "capability:fhevm-private-token"
+        ],
+        "capabilities": [
+          "capability:fhevm-private-token"
+        ]
+      },
+      "routingPrompts": [],
+      "validationCommands": [
+        "npx hardhat compile"
+      ],
+      "authenticitySignals": [
+        "FHE.add",
+        "FHE.allowThis",
+        "FHE.fromExternal",
+        "FHE.gte",
+        "FHE.select",
+        "encrypted balance",
+        "externalEuint64",
+        "private token"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/fhevm-private-token/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/fhevm-private-token/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "npx hardhat compile",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/arkworks-zk.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/aztec-noir.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/fhenix-fhe.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-privacy.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-storage.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/research/cryptography-primitives.ts"
+      ]
+    },
+    {
+      "id": "fhe-capabilities-capability-fhevm-private-voting",
+      "status": "candidate",
+      "domain": {
+        "family": "fhe",
+        "provider": "zama",
+        "protocol": "fhevm",
+        "runtime": "hardhat",
+        "surface": "contracts"
+      },
+      "ambiguityGroup": "fhe-capabilities",
+      "verticalIds": [
+        "arkworks-zk",
+        "aztec-noir",
+        "cryptography-primitives",
+        "fhenix-fhe",
+        "tangle-blueprints-privacy",
+        "tangle-blueprints-storage",
+        "tangle-blueprints-zk-proofs"
+      ],
+      "leafIds": {
+        "train": [
+          "ark-voting-circuit",
+          "aztec-private-voting-dao",
+          "fhenix-blind-poker-showdown",
+          "fhenix-confidential-dex",
+          "fhenix-encrypted-erc20-token",
+          "fhenix-private-dao-vote",
+          "fhenix-sealed-bid-auction",
+          "fhenix-sealed-payroll-stream",
+          "tangle-priv-commitment-scheme",
+          "tangle-priv-confidential-compute",
+          "tangle-priv-key-rotation",
+          "tangle-priv-mpc-analytics",
+          "tangle-priv-private-nft",
+          "tangle-priv-private-voting",
+          "tangle-priv-threshold-bls",
+          "tangle-priv-threshold-keygen",
+          "tangle-priv-zk-proof-service",
+          "tangle-storage-compute-over-data"
+        ],
+        "holdout": [
+          "crypto-fhe-bfv",
+          "fhenix-confidential-lending-vault",
+          "fhenix-private-prediction-market",
+          "tangle-priv-anonymous-transfer",
+          "tangle-priv-encrypted-mempool",
+          "tangle-priv-oblivious-transfer",
+          "tangle-priv-state-channel",
+          "tangle-priv-timelock-encryption",
+          "tangle-zk-private-voting"
+        ]
+      },
+      "partnerIds": [
+        "academic",
+        "arkworks",
+        "aztec-network",
+        "fhenix",
+        "tangle-network"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 27
+        }
+      ],
+      "intendedStarter": {
+        "family": "fhevm-contracts",
+        "layers": [
+          "framework:fhevm-contracts",
+          "capability:fhevm-private-voting"
+        ],
+        "capabilities": [
+          "capability:fhevm-private-voting"
+        ]
+      },
+      "routingPrompts": [],
+      "validationCommands": [
+        "npx hardhat compile"
+      ],
+      "authenticitySignals": [
+        "FHE.add",
+        "FHE.allowThis",
+        "FHE.fromExternal",
+        "FHE.select",
+        "encrypted voting",
+        "externalEbool",
+        "private voting",
+        "secret ballot"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/fhevm-private-voting/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/fhevm-private-voting/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "npx hardhat compile",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/arkworks-zk.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/aztec-noir.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/fhenix-fhe.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-privacy.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-storage.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-zk-proofs.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/research/cryptography-primitives.ts"
+      ]
+    },
+    {
+      "id": "fhe-capabilities-capability-fhe-foundry-sealed-auction",
+      "status": "candidate",
+      "domain": {
+        "family": "fhe",
+        "provider": "fhenix",
+        "protocol": "cofhe",
+        "runtime": "foundry",
+        "surface": "contracts"
+      },
+      "ambiguityGroup": "fhe-capabilities",
+      "verticalIds": [
+        "cryptography-primitives",
+        "fhenix-fhe",
+        "tangle-blueprints-privacy",
+        "tangle-blueprints-storage",
+        "uniswap-v4",
+        "zk-trading"
+      ],
+      "leafIds": {
+        "train": [
+          "crypto-fhe-bfv",
+          "fhenix-blind-poker-showdown",
+          "fhenix-confidential-lending-vault",
+          "fhenix-encrypted-erc20-token",
+          "fhenix-private-prediction-market",
+          "fhenix-sealed-bid-auction",
+          "tangle-priv-anonymous-transfer",
+          "tangle-priv-commitment-scheme",
+          "tangle-priv-encrypted-mempool",
+          "tangle-priv-key-rotation",
+          "tangle-priv-oblivious-transfer",
+          "tangle-priv-private-nft",
+          "tangle-priv-state-channel",
+          "tangle-priv-threshold-bls",
+          "tangle-priv-timelock-encryption",
+          "tangle-priv-zk-proof-service",
+          "uni-v4-auction-hook-jit",
+          "zk-trade-auction-mechanism"
+        ],
+        "holdout": [
+          "fhenix-confidential-dex",
+          "fhenix-private-dao-vote",
+          "fhenix-sealed-payroll-stream",
+          "tangle-priv-confidential-compute",
+          "tangle-priv-mpc-analytics",
+          "tangle-priv-private-voting",
+          "tangle-priv-threshold-keygen",
+          "tangle-storage-compute-over-data"
+        ]
+      },
+      "partnerIds": [
+        "academic",
+        "fhenix",
+        "multi-protocol",
+        "tangle-network",
+        "uniswap-labs"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 26
+        }
+      ],
+      "intendedStarter": {
+        "family": "fhenix-foundry",
+        "layers": [
+          "framework:fhenix-foundry"
+        ],
+        "capabilities": [
+          "capability:fhe-foundry-sealed-auction"
+        ]
+      },
+      "routingPrompts": [],
+      "validationCommands": [
+        "forge build"
+      ],
+      "authenticitySignals": [
+        "FHE.gte",
+        "FHE.select",
+        "blind auction",
+        "encrypted auction",
+        "sealed bid"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/fhe-foundry-sealed-auction/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/fhe-foundry-sealed-auction/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "forge build",
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/fhenix-fhe.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-privacy.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-storage.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/uniswap-v4.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/zk-trading.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/research/cryptography-primitives.ts"
+      ]
+    },
+    {
+      "id": "fhe-capabilities-capability-fhe-sealed-auction",
+      "status": "candidate",
+      "domain": {
+        "family": "fhe",
+        "provider": "fhenix",
+        "protocol": "cofhe",
+        "runtime": "hardhat",
+        "surface": "contracts"
+      },
+      "ambiguityGroup": "fhe-capabilities",
+      "verticalIds": [
+        "cryptography-primitives",
+        "fhenix-fhe",
+        "tangle-blueprints-privacy",
+        "tangle-blueprints-storage",
+        "uniswap-v4",
+        "zk-trading"
+      ],
+      "leafIds": {
+        "train": [
+          "crypto-fhe-bfv",
+          "fhenix-blind-poker-showdown",
+          "fhenix-confidential-lending-vault",
+          "fhenix-encrypted-erc20-token",
+          "fhenix-private-prediction-market",
+          "fhenix-sealed-bid-auction",
+          "tangle-priv-anonymous-transfer",
+          "tangle-priv-commitment-scheme",
+          "tangle-priv-encrypted-mempool",
+          "tangle-priv-key-rotation",
+          "tangle-priv-oblivious-transfer",
+          "tangle-priv-private-nft",
+          "tangle-priv-state-channel",
+          "tangle-priv-threshold-bls",
+          "tangle-priv-timelock-encryption",
+          "tangle-priv-zk-proof-service",
+          "uni-v4-auction-hook-jit",
+          "zk-trade-auction-mechanism"
+        ],
+        "holdout": [
+          "fhenix-confidential-dex",
+          "fhenix-private-dao-vote",
+          "fhenix-sealed-payroll-stream",
+          "tangle-priv-confidential-compute",
+          "tangle-priv-mpc-analytics",
+          "tangle-priv-private-voting",
+          "tangle-priv-threshold-keygen",
+          "tangle-storage-compute-over-data"
+        ]
+      },
+      "partnerIds": [
+        "academic",
+        "fhenix",
+        "multi-protocol",
+        "tangle-network",
+        "uniswap-labs"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 26
+        }
+      ],
+      "intendedStarter": {
+        "family": "fhenix-contracts",
+        "layers": [
+          "framework:fhenix-contracts",
+          "capability:fhe-sealed-auction"
+        ],
+        "capabilities": [
+          "capability:fhe-sealed-auction"
+        ]
+      },
+      "routingPrompts": [],
+      "validationCommands": [
+        "npx hardhat compile"
+      ],
+      "authenticitySignals": [
+        "FHE.gt",
+        "FHE.select",
+        "blind auction",
+        "encrypted auction",
+        "sealed bid"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/fhe-sealed-auction/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/fhe-sealed-auction/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "npx hardhat compile",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/fhenix-fhe.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-privacy.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-storage.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/uniswap-v4.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/zk-trading.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/research/cryptography-primitives.ts"
+      ]
+    },
+    {
+      "id": "fhe-capabilities-capability-fhevm-sealed-auction",
+      "status": "candidate",
+      "domain": {
+        "family": "fhe",
+        "provider": "zama",
+        "protocol": "fhevm",
+        "runtime": "hardhat",
+        "surface": "contracts"
+      },
+      "ambiguityGroup": "fhe-capabilities",
+      "verticalIds": [
+        "cryptography-primitives",
+        "fhenix-fhe",
+        "tangle-blueprints-privacy",
+        "tangle-blueprints-storage",
+        "uniswap-v4",
+        "zk-trading"
+      ],
+      "leafIds": {
+        "train": [
+          "crypto-fhe-bfv",
+          "fhenix-blind-poker-showdown",
+          "fhenix-confidential-lending-vault",
+          "fhenix-encrypted-erc20-token",
+          "fhenix-private-prediction-market",
+          "fhenix-sealed-bid-auction",
+          "tangle-priv-anonymous-transfer",
+          "tangle-priv-commitment-scheme",
+          "tangle-priv-encrypted-mempool",
+          "tangle-priv-key-rotation",
+          "tangle-priv-oblivious-transfer",
+          "tangle-priv-private-nft",
+          "tangle-priv-state-channel",
+          "tangle-priv-threshold-bls",
+          "tangle-priv-timelock-encryption",
+          "tangle-priv-zk-proof-service",
+          "uni-v4-auction-hook-jit",
+          "zk-trade-auction-mechanism"
+        ],
+        "holdout": [
+          "fhenix-confidential-dex",
+          "fhenix-private-dao-vote",
+          "fhenix-sealed-payroll-stream",
+          "tangle-priv-confidential-compute",
+          "tangle-priv-mpc-analytics",
+          "tangle-priv-private-voting",
+          "tangle-priv-threshold-keygen",
+          "tangle-storage-compute-over-data"
+        ]
+      },
+      "partnerIds": [
+        "academic",
+        "fhenix",
+        "multi-protocol",
+        "tangle-network",
+        "uniswap-labs"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 26
+        }
+      ],
+      "intendedStarter": {
+        "family": "fhevm-contracts",
+        "layers": [
+          "framework:fhevm-contracts",
+          "capability:fhevm-sealed-auction"
+        ],
+        "capabilities": [
+          "capability:fhevm-sealed-auction"
+        ]
+      },
+      "routingPrompts": [],
+      "validationCommands": [
+        "npx hardhat compile"
+      ],
+      "authenticitySignals": [
+        "FHE.allowThis",
+        "FHE.fromExternal",
+        "FHE.gte",
+        "FHE.select",
+        "blind auction",
+        "encrypted auction",
+        "externalEuint64",
+        "sealed bid"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/fhevm-sealed-auction/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/fhevm-sealed-auction/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "npx hardhat compile",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/fhenix-fhe.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-privacy.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-storage.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/uniswap-v4.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/zk-trading.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/research/cryptography-primitives.ts"
+      ]
+    },
+    {
+      "id": "bridge-ui-cctp-circle-bridge",
+      "status": "candidate",
+      "domain": {
+        "family": "bridge",
+        "surface": "ui"
+      },
+      "ambiguityGroup": "bridge-ui",
+      "verticalIds": [
+        "cctp-circle-bridge"
+      ],
+      "leafIds": {
+        "train": [
+          "cctp-analytics-dashboard",
+          "cctp-attestation-polling",
+          "cctp-composable-bridge-defi",
+          "cctp-cross-chain-swap",
+          "cctp-deposit-for-burn-with-caller",
+          "cctp-domain-mapping",
+          "cctp-evm-to-solana-full",
+          "cctp-full-bridge-evm-to-evm",
+          "cctp-message-format-parser",
+          "cctp-monitoring-alerting",
+          "cctp-receive-message",
+          "cctp-relayer-service",
+          "cctp-sdk-wrapper",
+          "cctp-solana-burn",
+          "cctp-solana-to-evm-full",
+          "cctp-transfer-status-tracker",
+          "cctp-v2-fast-finality"
+        ],
+        "holdout": [
+          "cctp-batch-transfers",
+          "cctp-deposit-for-burn-basic",
+          "cctp-error-recovery",
+          "cctp-hook-integration",
+          "cctp-multi-hop-routing",
+          "cctp-replace-message",
+          "cctp-solana-receive",
+          "cctp-usdc-approval-flow"
+        ]
+      },
+      "partnerIds": [
+        "circle"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 25
+        }
+      ],
+      "intendedStarter": {
+        "family": "react-vite-ts",
+        "layers": [
+          "framework:react-vite-ts",
+          "capability:crypto-bridge-ui"
+        ],
+        "capabilities": [
+          "capability:crypto-bridge-ui"
+        ]
+      },
+      "routingPrompts": [
+        "Build a cross-chain bridge transfer UI with Wormhole"
+      ],
+      "validationCommands": [],
+      "authenticitySignals": [
+        "destination chain",
+        "fee estimation",
+        "source chain",
+        "transaction history"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/cctp-circle-bridge.ts"
+      ]
+    },
+    {
+      "id": "bridge-ui-tangle-blueprints-bridges",
+      "status": "candidate",
+      "domain": {
+        "family": "bridge",
+        "surface": "ui"
+      },
+      "ambiguityGroup": "bridge-ui",
+      "verticalIds": [
+        "tangle-blueprints-bridges"
+      ],
+      "leafIds": {
+        "train": [
+          "tangle-bridge-cross-chain-governance",
+          "tangle-bridge-emergency-pause",
+          "tangle-bridge-fraud-detector",
+          "tangle-bridge-full-tss-bridge",
+          "tangle-bridge-intent-based-bridge",
+          "tangle-bridge-interop-hub",
+          "tangle-bridge-liquidity-pool",
+          "tangle-bridge-message-queue",
+          "tangle-bridge-multi-sig-guardian-network",
+          "tangle-bridge-nonce-manager",
+          "tangle-bridge-rate-limiter",
+          "tangle-bridge-receipt-proof",
+          "tangle-bridge-state-proof-relay",
+          "tangle-bridge-transfer-status",
+          "tangle-bridge-unified-liquidity-network",
+          "tangle-bridge-validator-set-relay",
+          "tangle-bridge-zk-light-client"
+        ],
+        "holdout": [
+          "tangle-bridge-fee-estimator",
+          "tangle-bridge-header-relay-single",
+          "tangle-bridge-light-client-sync",
+          "tangle-bridge-multi-chain-header-relay",
+          "tangle-bridge-optimistic-relay",
+          "tangle-bridge-rollup-settlement",
+          "tangle-bridge-tss-signing",
+          "tangle-bridge-watcher-alerting"
+        ]
+      },
+      "partnerIds": [
+        "tangle-network"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 25
+        }
+      ],
+      "intendedStarter": {
+        "family": "react-vite-ts",
+        "layers": [
+          "framework:react-vite-ts",
+          "capability:crypto-bridge-ui"
+        ],
+        "capabilities": [
+          "capability:crypto-bridge-ui"
+        ]
+      },
+      "routingPrompts": [
+        "Build a cross-chain bridge transfer UI with Wormhole"
+      ],
+      "validationCommands": [],
+      "authenticitySignals": [
+        "destination chain",
+        "fee estimation",
+        "source chain",
+        "transaction history"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-bridges.ts"
+      ]
+    },
+    {
+      "id": "bridge-ui-wormhole-solana",
+      "status": "candidate",
+      "domain": {
+        "family": "bridge",
+        "surface": "ui"
+      },
+      "ambiguityGroup": "bridge-ui",
+      "verticalIds": [
+        "wormhole-solana"
+      ],
+      "leafIds": {
+        "train": [
+          "wormhole-batch-transfer",
+          "wormhole-bridge-analytics",
+          "wormhole-connect-widget",
+          "wormhole-crosschain-defi",
+          "wormhole-fee-calculator",
+          "wormhole-full-bridge",
+          "wormhole-guardian-status",
+          "wormhole-liquidity-layer",
+          "wormhole-multichain-portfolio",
+          "wormhole-nft-bridge",
+          "wormhole-ntt-transfer",
+          "wormhole-relayer-integration",
+          "wormhole-supported-tokens",
+          "wormhole-token-attest",
+          "wormhole-token-transfer",
+          "wormhole-usdc-cctp"
+        ],
+        "holdout": [
+          "wormhole-bridge-status",
+          "wormhole-explorer-viewer",
+          "wormhole-gateway-cosmos",
+          "wormhole-messaging",
+          "wormhole-ntt-deployer",
+          "wormhole-security-monitor",
+          "wormhole-token-redeem",
+          "wormhole-vaa-parser"
+        ]
+      },
+      "partnerIds": [
+        "wormhole"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 24
+        }
+      ],
+      "intendedStarter": {
+        "family": "react-vite-ts",
+        "layers": [
+          "framework:react-vite-ts",
+          "capability:crypto-bridge-ui"
+        ],
+        "capabilities": [
+          "capability:crypto-bridge-ui"
+        ]
+      },
+      "routingPrompts": [
+        "Build a cross-chain bridge transfer UI with Wormhole"
+      ],
+      "validationCommands": [],
+      "authenticitySignals": [
+        "destination chain",
+        "fee estimation",
+        "source chain",
+        "transaction history"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/wormhole-solana.ts"
+      ]
+    },
+    {
+      "id": "bridge-ui-layerzero-omnichain",
+      "status": "candidate",
+      "domain": {
+        "family": "bridge",
+        "surface": "ui"
+      },
+      "ambiguityGroup": "bridge-ui",
+      "verticalIds": [
+        "layerzero-omnichain"
+      ],
+      "leafIds": {
+        "train": [
+          "lz-cross-chain-swap",
+          "lz-message-fee-estimator",
+          "lz-native-drop-airdrop",
+          "lz-oapp-message-receiver",
+          "lz-oft-adapter-deploy",
+          "lz-oft-bridge-ui",
+          "lz-oft-send-and-call",
+          "lz-omnichain-governance",
+          "lz-omnichain-nft-game",
+          "lz-omnichain-yield-aggregator",
+          "lz-onft-marketplace",
+          "lz-peer-configuration"
+        ],
+        "holdout": [
+          "lz-message-tracker",
+          "lz-oapp-message-sender",
+          "lz-oft-rate-limiter",
+          "lz-omnichain-identity",
+          "lz-onft-bridge",
+          "lz-protocol-analytics"
+        ]
+      },
+      "partnerIds": [
+        "layerzero"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 18
+        }
+      ],
+      "intendedStarter": {
+        "family": "react-vite-ts",
+        "layers": [
+          "framework:react-vite-ts",
+          "capability:crypto-bridge-ui"
+        ],
+        "capabilities": [
+          "capability:crypto-bridge-ui"
+        ]
+      },
+      "routingPrompts": [
+        "Build a cross-chain bridge transfer UI with Wormhole"
+      ],
+      "validationCommands": [],
+      "authenticitySignals": [
+        "destination chain",
+        "fee estimation",
+        "source chain",
+        "transaction history"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/layerzero-omnichain.ts"
+      ]
+    },
+    {
+      "id": "bridge-ui-tangle-blueprints-relayers",
+      "status": "candidate",
+      "domain": {
+        "family": "bridge",
+        "surface": "ui"
+      },
+      "ambiguityGroup": "bridge-ui",
+      "verticalIds": [
+        "tangle-blueprints-relayers"
+      ],
+      "leafIds": {
+        "train": [
+          "tangle-relay-batched-merkle",
+          "tangle-relay-conditional",
+          "tangle-relay-cross-chain-proof",
+          "tangle-relay-gas-abstraction",
+          "tangle-relay-load-balancer",
+          "tangle-relay-message-adapter",
+          "tangle-relay-nonce-tracker",
+          "tangle-relay-oracle-feed",
+          "tangle-relay-priority-fees",
+          "tangle-relay-receipt-aggregator",
+          "tangle-relay-retry-queue",
+          "tangle-relay-single-event"
+        ],
+        "holdout": [
+          "tangle-relay-config-manager",
+          "tangle-relay-gas-estimation",
+          "tangle-relay-multi-chain-indexer",
+          "tangle-relay-permissioned",
+          "tangle-relay-reputation-slashing",
+          "tangle-relay-zk-verified"
+        ]
+      },
+      "partnerIds": [
+        "tangle-network"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 18
+        }
+      ],
+      "intendedStarter": {
+        "family": "react-vite-ts",
+        "layers": [
+          "framework:react-vite-ts",
+          "capability:crypto-bridge-ui"
+        ],
+        "capabilities": [
+          "capability:crypto-bridge-ui"
+        ]
+      },
+      "routingPrompts": [
+        "Build a cross-chain bridge transfer UI with Wormhole"
+      ],
+      "validationCommands": [],
+      "authenticitySignals": [
+        "destination chain",
+        "fee estimation",
+        "source chain",
+        "transaction history"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-relayers.ts"
+      ]
+    }
+  ]
+}

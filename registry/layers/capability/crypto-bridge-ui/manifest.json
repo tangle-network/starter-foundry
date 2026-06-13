@@ -14,11 +14,23 @@
       "source chain",
       "destination chain",
       "fee estimation",
-      "bridge transaction history"
+      "bridge transaction history",
+      "bridge interface",
+      "transfer status"
     ],
     "routingPrompts": [
       {
         "prompt": "Build a cross-chain bridge transfer UI with Wormhole",
+        "expectedFamily": "react-vite-ts",
+        "expectedLayers": ["framework:react-vite-ts", "capability:crypto-bridge-ui"]
+      },
+      {
+        "prompt": "Build a multichain bridge dashboard with source chain, destination chain, fee estimate, and transaction history",
+        "expectedFamily": "react-vite-ts",
+        "expectedLayers": ["framework:react-vite-ts", "capability:crypto-bridge-ui"]
+      },
+      {
+        "prompt": "Build a USDe bridge interface from Ethereum to Arbitrum, Optimism, and Base with LayerZero transfer status",
         "expectedFamily": "react-vite-ts",
         "expectedLayers": ["framework:react-vite-ts", "capability:crypto-bridge-ui"]
       }
@@ -27,13 +39,16 @@
   "appliesTo": ["react-vite-ts", "nextjs-ts", "fullstack-ts"],
   "keywords": [
     "bridge ui",
+    "bridge interface",
     "bridge dashboard",
     "cross-chain bridge",
     "bridge transfer",
+    "bridge transfer status",
     "multichain bridge",
     "layerzero",
     "wormhole",
-    "cross-chain transfer"
+    "cross-chain transfer",
+    "transfer status"
   ],
   "capabilityRequires": ["shadcn"],
   "files": [

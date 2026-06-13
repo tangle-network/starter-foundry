@@ -54,6 +54,29 @@ const SURFACE_COMPATIBILITY: Record<string, Record<string, number>> = {
   worker: { 'edge-api': 3, 'evm-infra': 2, service: 3, worker: 4 },
 }
 
+const SURFACE_SIGNAL_TERMS: Record<string, string[]> = {
+  api: ['api', 'endpoint', 'endpoints', 'route', 'routes'],
+  backend: ['backend', 'service', 'server'],
+  contracts: ['contract', 'contracts', 'solidity', 'foundry', 'forge'],
+  indexer: ['indexer', 'monitor', 'monitoring', 'status api'],
+  service: ['service', 'server', 'daemon'],
+  ui: ['ui', 'interface', 'dashboard', 'frontend', 'front end'],
+  web: ['web', 'website', 'frontend', 'front end'],
+  worker: ['worker', 'queue', 'job', 'cron'],
+}
+
+const SURFACE_CLASS: Record<string, 'contracts' | 'frontend' | 'service'> = {
+  api: 'service',
+  backend: 'service',
+  contracts: 'contracts',
+  indexer: 'service',
+  monitor: 'service',
+  service: 'service',
+  ui: 'frontend',
+  web: 'frontend',
+  worker: 'service',
+}
+
 function runtimeSignalGroup(runtime: string | undefined): string | null {
   if (!runtime) return null
   const normalized = runtime.toLowerCase()
@@ -73,6 +96,21 @@ function hasExplicitRuntimeConflict(text: string, runtime: string | undefined): 
   return mentionedGroups.length > 0 && !mentionedGroups.includes(expectedGroup)
 }
 
+function hasExplicitSurfaceConflict(text: string, surface: string | undefined): boolean {
+  if (!surface) return false
+  const expectedClass = SURFACE_CLASS[surface.toLowerCase()]
+  if (!expectedClass) return false
+
+  const mentionedClasses = new Set<'contracts' | 'frontend' | 'service'>()
+  for (const [candidateSurface, terms] of Object.entries(SURFACE_SIGNAL_TERMS)) {
+    const surfaceClass = SURFACE_CLASS[candidateSurface]
+    if (!surfaceClass) continue
+    if (hasAny(text, terms)) mentionedClasses.add(surfaceClass)
+  }
+
+  return mentionedClasses.size > 0 && !mentionedClasses.has(expectedClass)
+}
+
 function addFieldScore(
   text: string,
   value: string | undefined,
@@ -87,6 +125,20 @@ function addFieldScore(
   return true
 }
 
+function addSurfaceScore(
+  text: string,
+  surface: string | undefined,
+  weight: number,
+  out: { score: number; reasons: string[] },
+): boolean {
+  if (!surface) return false
+  const terms = [surface, ...(SURFACE_SIGNAL_TERMS[surface.toLowerCase()] ?? [])]
+  if (!hasAny(text, terms)) return false
+  out.score += weight
+  out.reasons.push(`surface:${surface}`)
+  return true
+}
+
 function scoreFamilyDomainPack(
   prompt: string,
   family: FamilyManifest,
@@ -97,6 +149,7 @@ function scoreFamilyDomainPack(
 
   const text = prompt.toLowerCase()
   if (hasExplicitRuntimeConflict(text, pack.domain.runtime)) return null
+  if (hasExplicitSurfaceConflict(text, pack.domain.surface)) return null
 
   const result = { score: 0, reasons: [] as string[] }
   let domainEvidence = 0
@@ -124,7 +177,7 @@ function scoreFamilyDomainPack(
   if (domainEvidence <= 0) return null
 
   addFieldScore(text, pack.domain.runtime, 7, `runtime:${pack.domain.runtime}`, result)
-  addFieldScore(text, pack.domain.surface, 2, `surface:${pack.domain.surface}`, result)
+  addSurfaceScore(text, pack.domain.surface, 2, result)
 
   for (const provided of pack.provides) {
     if (matchValue(text, provided)) {
@@ -166,6 +219,7 @@ function scoreLayerDomainPack(
 
   const text = prompt.toLowerCase()
   if (hasExplicitRuntimeConflict(text, pack.domain.runtime)) return []
+  if (hasExplicitSurfaceConflict(text, pack.domain.surface)) return []
 
   const result = { score: 0, reasons: [] as string[] }
   let capabilityEvidence = 0
@@ -199,7 +253,7 @@ function scoreLayerDomainPack(
   if (capabilityEvidence <= 0) return []
 
   addFieldScore(text, pack.domain.runtime, 7, `runtime:${pack.domain.runtime}`, result)
-  addFieldScore(text, pack.domain.surface, 6, `surface:${pack.domain.surface}`, result)
+  addSurfaceScore(text, pack.domain.surface, 6, result)
 
   return layer.appliesTo.flatMap((familyId, index) => {
     const family = registry.families.get(familyId)

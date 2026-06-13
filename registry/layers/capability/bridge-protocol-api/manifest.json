@@ -13,7 +13,11 @@
       "bridge destination confirmed",
       "bridge relayer status",
       "bridge retry queue",
-      "bridge failed states"
+      "bridge failed states",
+      "bridge message status",
+      "message status",
+      "bridge deposit",
+      "bridge withdrawal"
     ],
     "routingPrompts": [
       {
@@ -23,6 +27,11 @@
       },
       {
         "prompt": "Build a cross-chain relayer status API with retry queue and destination confirmed tracking",
+        "expectedFamily": "evm-infra-ts",
+        "expectedLayers": ["framework:evm-infra-ts", "capability:bridge-protocol-api"]
+      },
+      {
+        "prompt": "Build a bridge deposit and withdrawal indexer that exposes message status by sender and chain pair",
         "expectedFamily": "evm-infra-ts",
         "expectedLayers": ["framework:evm-infra-ts", "capability:bridge-protocol-api"]
       }
@@ -54,6 +63,11 @@
     "bridge indexer",
     "bridge monitor",
     "bridge transaction monitor",
+    "bridge message status",
+    "bridge deposit",
+    "bridge withdrawal",
+    "deposit and withdrawal indexer",
+    "withdrawal indexer",
     "bridge script",
     "bridge status api",
     "bridge relayer",

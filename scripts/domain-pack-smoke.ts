@@ -174,6 +174,9 @@ const keepWorkdirs = argv.includes('--keep-workdirs')
 const blueprintMode = arg('--blueprint-agent', 'dry-run')
 const blueprintAgentDir = resolve(arg('--blueprint-agent-dir', DEFAULT_BLUEPRINT_AGENT))
 const blueprintRuntime = arg('--runtime', 'claude-local')
+const blueprintRoster = arg('--blueprint-roster', 'smoke')
+const blueprintExclude = optionalArg('--blueprint-exclude')
+const blueprintDriverPersona = optionalArg('--blueprint-driver-persona')
 const scoredResultsDir = optionalArg('--scored-results-dir')
 
 const candidate = loadCandidate(candidateFile, candidateId)
@@ -456,7 +459,17 @@ function runBlueprintAgentDryRun(leafIds: string[]): CommandResult[] {
   }
   return leafIds.map((leafId) =>
     runCommand(
-      `pnpm tsx scripts/experiments/vb-run.ts --leaf ${shellQuote(leafId)} --shots 1 --dry-run`,
+      [
+        'pnpm tsx scripts/experiments/vb-run.ts',
+        `--leaf ${shellQuote(leafId)}`,
+        '--shots 1',
+        `--roster ${shellQuote(blueprintRoster)}`,
+        ...(blueprintExclude ? [`--exclude ${shellQuote(blueprintExclude)}`] : []),
+        ...(blueprintDriverPersona
+          ? [`--driver-persona ${shellQuote(blueprintDriverPersona)}`]
+          : []),
+        '--dry-run',
+      ].join(' '),
       blueprintAgentDir,
       timeoutMs,
       { STARTER_FOUNDRY_CLI: starterCli },
@@ -577,6 +590,11 @@ function runScoredLeaf(
           `--reps ${reps}`,
           `--parallel ${parallel}`,
           `--runtime ${shellQuote(blueprintRuntime)}`,
+          `--roster ${shellQuote(blueprintRoster)}`,
+          ...(blueprintExclude ? [`--exclude ${shellQuote(blueprintExclude)}`] : []),
+          ...(blueprintDriverPersona
+            ? [`--driver-persona ${shellQuote(blueprintDriverPersona)}`]
+            : []),
           `--out ${shellQuote(outDir)}`,
         ].join(' '),
         blueprintAgentDir,

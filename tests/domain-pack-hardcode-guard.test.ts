@@ -20,17 +20,17 @@ const CORE_TERM_BUDGETS: Record<string, Record<string, HardcodeBudget>> = {
     zama: budget(0, 'FHE provider evidence belongs in registry domainPack metadata.'),
     tfhe: budget(0, 'FHE scheme evidence belongs in registry domainPack metadata.'),
     layerzero: budget(
-      2,
-      'Move EVM lane/protocol keyword detection to registry-backed surface selection.',
+      0,
+      'LayerZero routing is covered by capability domainPack metadata and generic contract-surface detection.',
     ),
     uniswap: budget(
-      4,
-      'Add Uniswap V4 hook domainPack metadata/tests, then remove Solidity-authoring keywords.',
+      1,
+      'Uniswap V4 hook routing is covered by capability domainPack metadata; the remaining generic token is broad DEX lane evidence.',
     ),
-    'v4 hook': budget(
-      2,
-      'Add Uniswap V4 hook domainPack metadata/tests, then remove Solidity-authoring keywords.',
-    ),
+    'v4 hook': budget(0, 'Uniswap V4 hook routing is covered by capability domainPack metadata.'),
+    basehook: budget(0, 'Uniswap V4 hook routing is covered by capability domainPack metadata.'),
+    beforeswap: budget(0, 'Uniswap V4 hook routing is covered by capability domainPack metadata.'),
+    poolmanager: budget(0, 'Uniswap V4 hook routing is covered by capability domainPack metadata.'),
     stylus: budget(
       3,
       'Use registry family taxonomy/domainPack metadata for contract runtime lane detection.',
@@ -56,7 +56,10 @@ const CORE_TERM_BUDGETS: Record<string, Record<string, HardcodeBudget>> = {
     ),
   },
   'src/lib/planner/detectors.ts': {
-    layerzero: budget(1, 'Use registry domainPack surface signals for implicit API detection.'),
+    layerzero: budget(
+      0,
+      'Implicit API detection reads registry domainPack surface signals instead of provider terms.',
+    ),
     stylus: budget(1, 'Infer partner aliases from registry partner metadata.'),
   },
 }

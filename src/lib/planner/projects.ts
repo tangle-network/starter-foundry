@@ -19,6 +19,7 @@ import {
   detectQueueSlot,
   detectSdkSlot,
 } from './detectors.js'
+import { hasEvmDomainPackSupportApiSurface } from './domain-pack-signals.js'
 import { buildSlug, resolvePartnerForFamily } from './helpers.js'
 import { inferImplicitCapabilities } from './implicit-caps.js'
 
@@ -697,7 +698,10 @@ function chooseWorkerFamily(text: string): FamilyChoice {
   return { family: 'worker-job', layers, path: 'apps/worker' }
 }
 
-export function chooseApiFamily(text: string): FamilyChoice {
+export function chooseApiFamily(
+  text: string,
+  options: { prompt?: string; partner?: string | null; registry?: Registry } = {},
+): FamilyChoice {
   if (detectLane(text, 'x402'))
     return { family: 'x402-service', layers: ['framework:x402-service'], path: 'apps/api' }
   if (detectLane(text, 'mcp'))
@@ -940,7 +944,15 @@ export function chooseApiFamily(text: string): FamilyChoice {
       path: 'apps/prover',
     }
   }
-  if (detectLane(text, 'evm-infra'))
+  if (
+    (options.registry &&
+      hasEvmDomainPackSupportApiSurface({
+        prompt: options.prompt ?? text,
+        partner: options.partner ?? null,
+        registry: options.registry,
+      })) ||
+    detectLane(text, 'evm-infra')
+  )
     return { family: 'evm-infra-ts', layers: ['framework:evm-infra-ts'], path: 'apps/api' }
 
   if (hasAny(text, ['cloudflare', 'durable object', 'edge api', 'edge function', 'hono edge'])) {
@@ -1017,7 +1029,7 @@ export function buildApiProject(
   text: string,
   registry?: Registry,
 ): ProjectEntry {
-  const choice = chooseApiFamily(text)
+  const choice = chooseApiFamily(text, { prompt, partner, registry })
   const layers = [...choice.layers]
   const slots: Record<string, string> = {}
   const databaseSlot = detectDatabaseSlot(text)

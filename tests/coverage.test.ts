@@ -453,6 +453,10 @@ const CAP_PROMPTS: Record<string, { prompt: string; family: string }> = {
     prompt: 'Build a LayerZero OFT bridge token with Foundry',
     family: 'forge-contracts',
   },
+  'capability:evm-uniswap-v4-hook': {
+    prompt: 'Build a Uniswap V4 hook contract extending BaseHook with beforeSwap logic',
+    family: 'forge-contracts',
+  },
   'capability:evm-protocol-api': {
     prompt: 'Build an indexer API for EVM protocol events',
     family: 'api-service',

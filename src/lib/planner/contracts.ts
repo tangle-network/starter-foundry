@@ -1,8 +1,8 @@
 // Contract + program layer/variable builders.
 //
 // Given a prompt, chooses:
-//   - EVM: forge-foundation vs hardhat-ts, plus add-on capabilities (deploy,
-//     LayerZero OFT, ERC-4337) and a concrete contract name.
+//   - EVM: forge-foundation vs hardhat-ts, plus generic add-on capabilities
+//     (deploy, ERC-4337) and a concrete contract name.
 //   - Solana: solana-native-rust base plus a capability (perps, amm, nft,
 //     launchpad, staking, prediction) and a concrete instruction name.
 //   - Agent: agent-service-{rust,py,ts} plus the agent library variable.
@@ -31,17 +31,6 @@ export function buildEvmContractLayers(text: string): string[] {
   if (
     !hardhatExplicit &&
     hasAny(text, [
-      'layerzero',
-      'oft',
-      'bridge tokens',
-      'sendtokens script',
-      'omnichain fungible token',
-    ])
-  ) {
-    layers.push('capability:evm-layerzero-oft')
-  } else if (
-    !hardhatExplicit &&
-    hasAny(text, [
       'erc-4337',
       'erc4337',
       'bundler',
@@ -57,8 +46,6 @@ export function buildEvmContractLayers(text: string): string[] {
 }
 
 export function buildEvmContractVariables(text: string): Record<string, string> {
-  if (hasAny(text, ['layerzero', 'oft', 'omnichain fungible token']))
-    return { contractName: 'OmnichainToken' }
   if (hasAny(text, ['erc721', 'erc-721', 'nft collection', 'gasless mint']))
     return { contractName: 'GaslessCollectible' }
   if (hasAny(text, ['erc20', 'erc-20', 'sample erc20'])) return { contractName: 'XLayerToken' }

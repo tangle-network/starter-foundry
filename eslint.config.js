@@ -19,6 +19,10 @@ export default tseslint.config(
       'registry/**',
       'corpus/**',
       'specs/**',
+      // Example workspaces are generated integration fixtures, not part of
+      // the main tsconfig project. They are validated through sync gates,
+      // workspace installs, and tests instead of type-aware root lint.
+      'examples/**',
       'src/types/registry-schemas.generated.ts',
       // Tests are excluded from type-aware lint — they have their own
       // tsconfig.test.json, are validated by the test suite, and use

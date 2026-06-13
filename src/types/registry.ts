@@ -91,6 +91,39 @@ export interface BuildHints {
   placeholders?: { path: string; description: string }[]
 }
 
+export interface DomainPackRoutingPrompt {
+  prompt: string
+  expectedFamily?: string
+  expectedLayers?: string[]
+}
+
+export interface DomainPackMetadata {
+  domain: {
+    /**
+     * Broad reusable domain family, e.g. `fhe`, `bridge`, `dex-hook`.
+     * This is intentionally not a starter-foundry family id.
+     */
+    family: string
+    provider?: string
+    protocol?: string
+    runtime?: string
+    surface?: string
+  }
+  /** Capability/toolchain facts this manifest contributes to a composed scaffold. */
+  provides: string[]
+  /** Capability/toolchain facts this manifest expects from the chosen stack. */
+  requires?: string[]
+  /**
+   * Competing packs that need disambiguation. Example: all FHE contract
+   * families belong to `fhe-contracts` so generic FHE prompts can be marked
+   * ambiguous instead of silently picking Fhenix vs Zama or Foundry vs Hardhat.
+   */
+  ambiguityGroup?: string
+  validationCommands?: string[]
+  authenticitySignals?: string[]
+  routingPrompts?: DomainPackRoutingPrompt[]
+}
+
 interface ManifestBase {
   id: string
   description: string
@@ -100,6 +133,7 @@ interface ManifestBase {
   validationChecks?: ValidationCheck[]
   contextHints?: ContextHints
   defaults?: Record<string, unknown>
+  domainPack?: DomainPackMetadata
 }
 
 export interface FamilyManifest extends ManifestBase {

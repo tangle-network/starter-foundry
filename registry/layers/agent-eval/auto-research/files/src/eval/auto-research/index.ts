@@ -1,12 +1,11 @@
 /**
- * auto-research barrel — re-exports the four primitives a research-harness
+ * auto-research barrel — re-exports the primitives a research-harness
  * family composes:
  *
  *   - `runSteeringOptimization`, `runMultiShotTrajectoryOptimization`,
- *     `runEvolution` (loop.ts)
- *   - `analyzeOptimization` — 0.23 RL bridge: optimization sweep →
- *     `RunRecord[]` + preference triples + reward-hacking verdict +
- *     anytime-valid sequential interim confidence (loop.ts)
+ *     `runEvolution`, `runPromotedImprovementLoop` (loop.ts)
+ *   - `analyzeOptimization` — captured runs → decision report with lift,
+ *     cost/quality frontier, and ranked recommendations (loop.ts)
  *   - `proposeReview` (propose-review.ts)
  *   - `frontier`, `diverseFrontier`, `DEFAULT_OBJECTIVES` (pareto.ts)
  */
@@ -15,6 +14,7 @@ export {
   runSteeringOptimization,
   runMultiShotTrajectoryOptimization,
   runEvolution,
+  runPromotedImprovementLoop,
   analyzeOptimization,
   type SteeringOptimizationInput,
   type SteeringOptimizationOutput,
@@ -22,6 +22,8 @@ export {
   type MultiShotOptimizationResult,
   type PromptEvolutionConfig,
   type PromptEvolutionResult,
+  type PromotedImprovementConfig,
+  type PromotedImprovementResult,
   type SteeringOptimizationRow,
   type SteeringOptimizationResult,
   type SteeringOptimizerConfig,

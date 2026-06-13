@@ -3,6 +3,39 @@
   "description": "Fhenix FHE-enabled Solidity starter for encrypted on-chain computation.",
   "tags": ["fhenix", "fhe", "solidity", "privacy", "contracts"],
   "taxonomy": { "language": "solidity", "runtime": "fhenix", "surface": "contracts" },
+  "domainPack": {
+    "domain": {
+      "family": "fhe",
+      "provider": "fhenix",
+      "protocol": "cofhe",
+      "runtime": "hardhat",
+      "surface": "contracts"
+    },
+    "provides": ["solidity-contracts", "fhe-types", "cofhe", "hardhat-build"],
+    "requires": ["hardhat"],
+    "ambiguityGroup": "fhe-contracts",
+    "validationCommands": ["npx hardhat compile", "npx hardhat test"],
+    "authenticitySignals": [
+      "euint",
+      "ebool",
+      "InEuint",
+      "FHE.asEuint",
+      "FHE.add",
+      "FHE.select",
+      "FHE.allow",
+      "cofhejs",
+      "sealed bid",
+      "private voting",
+      "encrypted balance"
+    ],
+    "routingPrompts": [
+      {
+        "prompt": "Build a Fhenix Hardhat encrypted counter using cofhejs",
+        "expectedFamily": "fhenix-contracts",
+        "expectedLayers": ["framework:fhenix-contracts"]
+      }
+    ]
+  },
   "slots": {},
   "defaults": {
     "projectType": "contracts",

@@ -64,6 +64,64 @@ function assertString(
   }
 }
 
+function assertStringArray(value: unknown, field: string, manifestPath: string): void {
+  if (!Array.isArray(value) || value.some((item) => typeof item !== 'string' || !item)) {
+    throw new Error(`Invalid manifest at ${manifestPath}: ${field} must be an array of strings`)
+  }
+}
+
+function validateDomainPack(raw: RawManifest, manifestPath: string): void {
+  if (raw.domainPack === undefined) return
+  if (
+    typeof raw.domainPack !== 'object' ||
+    raw.domainPack === null ||
+    Array.isArray(raw.domainPack)
+  ) {
+    throw new Error(`Invalid manifest at ${manifestPath}: domainPack must be an object`)
+  }
+
+  const pack = raw.domainPack as Record<string, unknown>
+  if (typeof pack.domain !== 'object' || pack.domain === null || Array.isArray(pack.domain)) {
+    throw new Error(`Invalid manifest at ${manifestPath}: domainPack.domain must be an object`)
+  }
+  assertString(
+    (pack.domain as Record<string, unknown>).family,
+    'domainPack.domain.family',
+    manifestPath,
+  )
+  assertStringArray(pack.provides, 'domainPack.provides', manifestPath)
+  if (pack.requires !== undefined)
+    assertStringArray(pack.requires, 'domainPack.requires', manifestPath)
+  if (pack.validationCommands !== undefined) {
+    assertStringArray(pack.validationCommands, 'domainPack.validationCommands', manifestPath)
+  }
+  if (pack.authenticitySignals !== undefined) {
+    assertStringArray(pack.authenticitySignals, 'domainPack.authenticitySignals', manifestPath)
+  }
+  if (pack.ambiguityGroup !== undefined) {
+    assertString(pack.ambiguityGroup, 'domainPack.ambiguityGroup', manifestPath)
+  }
+  if (pack.routingPrompts !== undefined) {
+    if (!Array.isArray(pack.routingPrompts)) {
+      throw new Error(
+        `Invalid manifest at ${manifestPath}: domainPack.routingPrompts must be an array`,
+      )
+    }
+    for (const [index, prompt] of pack.routingPrompts.entries()) {
+      if (typeof prompt !== 'object' || prompt === null || Array.isArray(prompt)) {
+        throw new Error(
+          `Invalid manifest at ${manifestPath}: domainPack.routingPrompts[${index}] must be an object`,
+        )
+      }
+      assertString(
+        (prompt as Record<string, unknown>).prompt,
+        `domainPack.routingPrompts[${index}].prompt`,
+        manifestPath,
+      )
+    }
+  }
+}
+
 function validateFamilyManifest(raw: RawManifest, manifestPath: string): void {
   assertString(raw.id, 'id', manifestPath)
   assertString(raw.description, 'description', manifestPath)
@@ -79,11 +137,13 @@ function validateFamilyManifest(raw: RawManifest, manifestPath: string): void {
   if (raw.requires !== undefined && !Array.isArray(raw.requires)) {
     throw new Error(`Invalid family manifest at ${manifestPath}: requires must be an array`)
   }
+  validateDomainPack(raw, manifestPath)
 }
 
 function validateLayerManifest(raw: RawManifest, manifestPath: string): void {
   assertString(raw.id, 'id', manifestPath)
   assertString(raw.description, 'description', manifestPath)
+  validateDomainPack(raw, manifestPath)
 }
 
 function validatePartnerManifest(raw: RawManifest, manifestPath: string): void {

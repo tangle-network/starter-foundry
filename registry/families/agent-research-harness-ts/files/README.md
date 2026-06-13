@@ -1,6 +1,6 @@
 # research-harness
 
-Hypothesis-driven research harness on top of `@tangle-network/agent-eval@^0.23.0`.
+Hypothesis-driven research harness on top of `@tangle-network/agent-eval@^0.77.0`.
 
 ## What this bundle is
 
@@ -11,29 +11,23 @@ bundle drives the optimizer that runs variants against it.
 
 It composes the upstream agent-eval primitives:
 
-- `runMultiShotOptimization` — default path for optimizing full
-  variable-length agent trajectories, including single-turn tasks as
-  `n=1`.
-- `MultiShotVariant` — one payload shape for single-shot and multi-shot
-  optimization runs.
+- `runOptimization` — default path for optimizing full variable-length
+  agent trajectories through the campaign driver API.
+- `runImprovementLoop` — promotion shell that re-scores against holdout
+  scenarios and returns the release gate decision.
 - `PairwiseSteeringOptimizer` — N scored steering variants → ranked
   winner.
-- `runPromptEvolution` — lower-level reflective mutation for narrow
-  prompt-only surfaces.
 - `runProposeReview` — propose / verify / review inner loop for the
   hypothesis proposer.
 - `paretoFrontier` + `paretoFrontierWithCrowding` — multi-objective
   filtering across (quality, cost, latency).
 - `bootstrapCi` + `cohensD` — statistical sign-off in the validator
   pass.
-- **`analyzeOptimizationResult`** (agent-eval 0.23 RL bridge, exposed
-  here as `analyzeSweep`) — converts a `runMultiShotOptimization` /
-  `runPromptEvolution` output into the canonical RL artifact set:
-  `RunRecord[]`, DPO/PPO preference triples ready for TRL / prime-rl,
-  verifiable reward signals, reward-hacking diagnosis, and (when a
-  `comparator` is supplied) an anytime-valid sequential interim verdict.
-  Call after the optimizer returns; idempotent and read-only with
-  respect to the sweep result.
+- **`analyzeRuns`** (agent-eval contract bridge, exposed here as
+  `analyzeSweep`) — converts captured `RunRecord[]` into the decision
+  report: score distributions, paired lift, cost/quality frontier, and
+  ranked recommendations. Call after the optimizer emits real records;
+  idempotent and read-only with respect to the sweep result.
 
 ## Workflow
 
@@ -112,10 +106,10 @@ await runSweep({
 })
 ```
 
-## Closing the loop into RL training (agent-eval 0.23+)
+## Closing the loop into run analysis
 
-After a `runMultiShotTrajectoryOptimization` / `runEvolution` sweep,
-call `analyzeSweep` to emit the canonical RL artifact set:
+After a `runMultiShotTrajectoryOptimization` / `runEvolution` sweep emits
+real `RunRecord[]`, call `analyzeSweep` to emit the canonical decision packet:
 
 ```ts
 import { runMultiShotTrajectoryOptimization } from './src/eval/auto-research/loop.js'
@@ -124,30 +118,18 @@ import { analyzeSweep } from './src/research/runner.js'
 const optimized = await runMultiShotTrajectoryOptimization(config)
 
 const rl = await analyzeSweep({
-  result: optimized,
-  ctx: {
-    commitSha: process.env.GIT_SHA!,
-    model: 'claude-sonnet-4-6@2025-04-15',     // snapshot, not bare alias
-    promptHash: hashPrompt(seedPayload),
-    configHash: hashConfig(config),
-    splitTag: 'search',
-  },
-  comparator: 'baseline',
-  preferences: { minMargin: 0.05 },
+  runs,
+  baselineCandidateId: 'baseline',
+  candidateCandidateId: optimized.winnerSurfaceHash,
+  split: 'holdout',
 })
 
-// rl.runs                              → RunRecord[] (validated, costed)
-// rl.preferences.pairs                 → DPO/PPO/KTO training rows
-// rl.rewardSignals                     → verifiable reward per run
-// rl.rewardHacking.verdict             → 'clean' | 'suspect' | ...
-// rl.interimConfidence?.recommendation → anytime-valid promote/reject
+// rl.recommendations → ranked launch / hold / investigate guidance
 ```
 
-Reference wiring lives in
-`agent-builder/src/lib/.server/eval/auto-research-runner.ts` —
-specifically the post-`runEvolution` RL-bridge invocation. The
-artifact set is what closes the auto-research loop into a TRL /
-prime-rl / in-house DPO trainer.
+The report is the evidence-backed handoff from search to launch decisions.
+Do not synthesize `RunRecord[]` from aggregate scores; analysis must start
+from real captured runs.
 
 ## Tests
 

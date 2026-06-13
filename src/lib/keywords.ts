@@ -317,33 +317,6 @@ export const LANE_ROUTES: LaneRoute[] = [
     ],
   },
   {
-    id: 'fhenix',
-    keywords: ['fhenix', 'cofhe', 'cofhejs', 'fhenix network', 'inco'],
-  },
-  {
-    id: 'fhevm',
-    keywords: [
-      'fhevm',
-      'zama',
-      'zama fhe',
-      'tfhe contract',
-      'fhevm contract',
-      'confidential erc20',
-    ],
-  },
-  {
-    id: 'fhe',
-    keywords: [
-      'fhe',
-      'fully homomorphic',
-      'encrypted computation',
-      'euint',
-      'encrypted auction',
-      'encrypted voting',
-      'private token',
-    ],
-  },
-  {
     id: 'x402',
     keywords: ['x402', 'micropayments', 'pay-per-request', 'monetized api'],
   },

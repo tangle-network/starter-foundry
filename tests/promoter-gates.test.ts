@@ -14,6 +14,7 @@
 import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs'
+import { createServer } from 'node:net'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { checkDeclaredDepUsed, checkScaffoldRuns } from '../dist/lib/promoter-gates.js'
@@ -25,6 +26,28 @@ function scratchDir(): string {
 function writeFile(path: string, content: string): void {
   mkdirSync(join(path, '..'), { recursive: true })
   writeFileSync(path, content)
+}
+
+async function freeLoopbackPort(): Promise<number> {
+  return await new Promise((resolve, reject) => {
+    const server = createServer()
+    server.unref()
+    server.once('error', reject)
+    server.listen(0, '127.0.0.1', () => {
+      const address = server.address()
+      server.close((err) => {
+        if (err) {
+          reject(err)
+          return
+        }
+        if (address && typeof address === 'object') {
+          resolve(address.port)
+          return
+        }
+        reject(new Error('expected tcp address for loopback test server'))
+      })
+    })
+  })
 }
 
 describe('declared-dep-used', () => {
@@ -192,8 +215,7 @@ http.createServer((req, res) => {
           scripts: { start: 'node server.mjs' },
         }),
       )
-      // Pick a random high port to avoid collision with other tests.
-      const port = 31000 + Math.floor(Math.random() * 2000)
+      const port = await freeLoopbackPort()
       const res = await checkScaffoldRuns({
         composedDir: dir,
         manifest: { taxonomy: { language: 'typescript' }, defaults: { port: String(port) } },
@@ -242,7 +264,7 @@ process.exit(1)
           scripts: { start: 'node boom.mjs' },
         }),
       )
-      const port = 33000 + Math.floor(Math.random() * 1000)
+      const port = await freeLoopbackPort()
       const res = await checkScaffoldRuns({
         composedDir: dir,
         manifest: { taxonomy: { language: 'typescript' }, defaults: { port: String(port) } },

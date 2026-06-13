@@ -27,10 +27,10 @@ import {
   type SteeringOptimizerConfig,
 } from '@tangle-network/agent-eval'
 import {
-  analyzeOptimizationResult,
-  type AnalyzeOptimizationResultOptions,
-  type AnalyzeOptimizationResultReport,
-} from '@tangle-network/agent-eval/rl'
+  analyzeRuns,
+  type AnalyzeRunsOptions,
+  type InsightReport,
+} from '@tangle-network/agent-eval/contract'
 
 import { screen, type ScreenerOptions } from './screener.js'
 import { validate, type ValidatorOptions } from './validator.js'
@@ -219,43 +219,35 @@ export async function runSteeringLoop(
 }
 
 /**
- * Bridge an optimization sweep output (`PromptEvolutionResult` or
- * `MultiShotOptimizationResult`) to the canonical 0.23 RL artifact set:
- * `RunRecord[]`, DPO/PPO preference triples, verifiable reward signals,
- * reward-hacking diagnosis, and (when a `comparator` candidate id is
- * supplied) an anytime-valid sequential interim verdict.
+ * Bridge captured run records to the canonical decision packet:
+ * score distributions, cost/quality frontier, lift when baseline/candidate
+ * ids are paired, and ranked recommendations.
  *
  * Why this lives here:
  *
- *   - It's the natural callsite right after `runMultiShotOptimization`
- *     or `runPromptEvolution` returns — the result is in scope, the
- *     adapter context is in scope, and the consumer has just finished
- *     a sweep.
+ *   - It's the natural callsite right after an optimization or promotion
+ *     loop emits `RunRecord[]` — the result is in scope, the adapter context
+ *     is in scope, and the consumer has just finished a sweep.
  *
- *   - Reward-hacking diagnosis runs at sweep-level (it needs the cohort
+ *   - Lift and cost/quality analysis run at sweep-level (they need the cohort
  *     of variants, not a single run). Wiring it in the family runner
- *     guarantees consumers see the verdict on every research cycle
- *     rather than having to remember to call it.
+ *     guarantees consumers see the decision packet on every research cycle.
  *
- *   - Preference triples + verifiable rewards are the exchange currency
- *     to a TRL / prime-rl / in-house DPO trainer. Emitting them by
- *     default closes the auto-research → policy update loop.
+ *   - The report is read-only and evidence-backed; it never fabricates run
+ *     records from aggregate scores.
  *
  * Idempotent and read-only with respect to the optimization result.
  *
  * Reference wiring:
  *   - `agent-builder/src/lib/.server/eval/auto-research-runner.ts`
  *     (cycles 763–803 — the RL-bridge invocation after `runEvolution`).
- *   - `@tangle-network/agent-eval/src/rl/auto-research.ts` for the
- *     primitive's contract.
+ *   - `@tangle-network/agent-eval/contract` for the `analyzeRuns` contract.
  */
 export async function analyzeSweep(
   options: AnalyzeOptimizationResultOptions,
 ): Promise<AnalyzeOptimizationResultReport> {
-  return analyzeOptimizationResult(options)
+  return analyzeRuns(options)
 }
 
-export type {
-  AnalyzeOptimizationResultOptions,
-  AnalyzeOptimizationResultReport,
-} from '@tangle-network/agent-eval/rl'
+export type AnalyzeOptimizationResultOptions = AnalyzeRunsOptions
+export type AnalyzeOptimizationResultReport = InsightReport

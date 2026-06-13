@@ -314,12 +314,12 @@ test('every layer file declared in manifest.files exists on disk', () => {
   }
 })
 
-test('auto-research layer exports the multi-shot trajectory optimizer + 0.23 RL bridge', () => {
+test('auto-research layer exports the campaign optimizer + run-analysis bridge', () => {
   const loop = readFileSync(
     join(LAYERS_DIR, 'auto-research/files/src/eval/auto-research/loop.ts'),
     'utf8',
   )
-  assert.match(loop, /\brunMultiShotOptimization\b/, 'loop must import runMultiShotOptimization')
+  assert.match(loop, /\brunOptimization\b/, 'loop must import runOptimization')
   assert.match(
     loop,
     /export async function runMultiShotTrajectoryOptimization/,
@@ -331,23 +331,22 @@ test('auto-research layer exports the multi-shot trajectory optimizer + 0.23 RL 
     'loop docs must preserve promotion/ASI semantics for generated harnesses',
   )
 
-  // 0.23 RL bridge: analyzeOptimizationResult is the canonical post-sweep
-  // primitive. Reference wiring lives in agent-builder's auto-research
-  // runner — see SKILL.md "Closing the loop into RL training".
+  // Current run-analysis bridge: analyzeRuns is the canonical post-sweep
+  // primitive for evidence-backed launch decision reports.
   assert.match(
     loop,
-    /\banalyzeOptimizationResult\b/,
-    'loop must import analyzeOptimizationResult from @tangle-network/agent-eval/rl',
+    /\banalyzeRuns\b/,
+    'loop must import analyzeRuns from @tangle-network/agent-eval/contract',
   )
   assert.match(
     loop,
-    /@tangle-network\/agent-eval\/rl/,
-    'loop must import the RL bridge from the /rl subpath',
+    /@tangle-network\/agent-eval\/contract/,
+    'loop must import the run-analysis bridge from the /contract subpath',
   )
   assert.match(
     loop,
     /export async function analyzeOptimization\b/,
-    'loop must expose analyzeOptimization as the scaffold-level RL-bridge entrypoint',
+    'loop must expose analyzeOptimization as the scaffold-level run-analysis entrypoint',
   )
 
   const barrel = readFileSync(

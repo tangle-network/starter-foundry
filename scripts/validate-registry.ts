@@ -57,7 +57,11 @@ function validate(value, schema, path = '$') {
   if (schema.pattern && typeof value === 'string' && !new RegExp(schema.pattern).test(value)) {
     errors.push(`${path}: "${value}" does not match pattern ${schema.pattern}`)
   }
-  if (schema.minLength !== undefined && typeof value === 'string' && value.length < schema.minLength) {
+  if (
+    schema.minLength !== undefined &&
+    typeof value === 'string' &&
+    value.length < schema.minLength
+  ) {
     errors.push(`${path}: string length ${value.length} < minLength ${schema.minLength}`)
   }
   if (schema.minItems !== undefined && Array.isArray(value) && value.length < schema.minItems) {
@@ -146,7 +150,58 @@ if (overlaps.length > 0) {
 
 // 2. Dangling appliesTo — every layer/partner's appliesTo must reference a
 //    real family id.
-const familyIds = new Set(readdirSync(FAMILIES_DIR).filter((e) => !e.startsWith('_') && !e.startsWith('.')))
+const familyIds = new Set(
+  readdirSync(FAMILIES_DIR).filter((e) => !e.startsWith('_') && !e.startsWith('.')),
+)
+const layerIds = new Set()
+for (const group of readdirSync(LAYERS_DIR)) {
+  for (const layerId of readdirSync(join(LAYERS_DIR, group))) {
+    if (layerId.startsWith('_') || layerId.startsWith('.')) continue
+    if (!existsSync(join(LAYERS_DIR, group, layerId, 'manifest.json'))) continue
+    layerIds.add(`${group}:${layerId}`)
+  }
+}
+
+function validateDomainPackSemantic(owner, mf) {
+  const pack = mf?.domainPack
+  if (!pack) return
+  if (!pack.domain?.family) {
+    failures.push(`${owner} domainPack.domain.family is required`)
+  }
+  if (!Array.isArray(pack.provides) || pack.provides.length === 0) {
+    failures.push(
+      `${owner} domainPack.provides must contain at least one provided capability/toolchain`,
+    )
+  }
+  for (const route of pack.routingPrompts ?? []) {
+    if (route.expectedFamily && !familyIds.has(route.expectedFamily)) {
+      failures.push(
+        `${owner} domainPack.routingPrompts expectedFamily references unknown family "${route.expectedFamily}"`,
+      )
+    }
+    for (const layerId of route.expectedLayers ?? []) {
+      if (!layerIds.has(layerId)) {
+        failures.push(
+          `${owner} domainPack.routingPrompts expectedLayers references unknown layer "${layerId}"`,
+        )
+      }
+    }
+  }
+}
+
+for (const fam of familyIds) {
+  const mfPath = join(FAMILIES_DIR, fam, 'manifest.json')
+  if (!existsSync(mfPath)) continue
+  validateDomainPackSemantic(`family:${fam}`, readManifest(mfPath))
+}
+for (const group of readdirSync(LAYERS_DIR)) {
+  for (const layerId of readdirSync(join(LAYERS_DIR, group))) {
+    const mfPath = join(LAYERS_DIR, group, layerId, 'manifest.json')
+    if (!existsSync(mfPath)) continue
+    validateDomainPackSemantic(`layer.${group}:${layerId}`, readManifest(mfPath))
+  }
+}
+
 for (const group of readdirSync(LAYERS_DIR)) {
   for (const layerId of readdirSync(join(LAYERS_DIR, group))) {
     const mfPath = join(LAYERS_DIR, group, layerId, 'manifest.json')

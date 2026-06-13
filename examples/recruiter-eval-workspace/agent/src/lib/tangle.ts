@@ -1,5 +1,5 @@
 // Tangle floor — every agent-runtime bundle wires LLM calls through
-// router.tangle.tools, executes tools through @tangle-network/sandbox-sdk,
+// router.tangle.tools, executes tools through @tangle-network/sandbox,
 // and has @tangle-network/tcloud available for image/video/speech work.
 //
 // Bundles import from this module rather than reaching for the underlying
@@ -52,10 +52,10 @@ export interface SandboxHandle {
 }
 
 export async function spawnAgentSandbox(_opts: SandboxSpawnOptions): Promise<SandboxHandle> {
-  // Implementation imports @tangle-network/sandbox-sdk at runtime; this
+  // Implementation imports @tangle-network/sandbox at runtime; this
   // module declares the contract so the bundle's compose-time validators
   // can assert the shape without needing the SDK on the classpath.
   throw new Error(
-    'spawnAgentSandbox: import @tangle-network/sandbox-sdk and wire its createSandbox() here',
+    'spawnAgentSandbox: import @tangle-network/sandbox and wire its createSandbox() here',
   )
 }

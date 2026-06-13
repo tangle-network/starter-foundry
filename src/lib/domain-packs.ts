@@ -1,6 +1,7 @@
 import type { DomainPackMetadata, FamilyManifest, LayerManifest, Registry } from '../types.js'
 
 import { countMatches, hasAny } from './keywords.js'
+import { SURFACE_CLASS, SURFACE_SIGNAL_TERMS, type SurfaceClass } from './planner/signals.js'
 
 type DomainPackOwnerKind = 'family' | 'layer'
 
@@ -73,6 +74,21 @@ function hasExplicitRuntimeConflict(text: string, runtime: string | undefined): 
   return mentionedGroups.length > 0 && !mentionedGroups.includes(expectedGroup)
 }
 
+function hasExplicitSurfaceConflict(text: string, surface: string | undefined): boolean {
+  if (!surface) return false
+  const expectedClass = SURFACE_CLASS[surface.toLowerCase()]
+  if (!expectedClass) return false
+
+  const mentionedClasses = new Set<SurfaceClass>()
+  for (const [candidateSurface, terms] of Object.entries(SURFACE_SIGNAL_TERMS)) {
+    const surfaceClass = SURFACE_CLASS[candidateSurface]
+    if (!surfaceClass) continue
+    if (hasAny(text, terms)) mentionedClasses.add(surfaceClass)
+  }
+
+  return mentionedClasses.size > 0 && !mentionedClasses.has(expectedClass)
+}
+
 function addFieldScore(
   text: string,
   value: string | undefined,
@@ -87,6 +103,20 @@ function addFieldScore(
   return true
 }
 
+function addSurfaceScore(
+  text: string,
+  surface: string | undefined,
+  weight: number,
+  out: { score: number; reasons: string[] },
+): boolean {
+  if (!surface) return false
+  const terms = [surface, ...(SURFACE_SIGNAL_TERMS[surface.toLowerCase()] ?? [])]
+  if (!hasAny(text, terms)) return false
+  out.score += weight
+  out.reasons.push(`surface:${surface}`)
+  return true
+}
+
 function scoreFamilyDomainPack(
   prompt: string,
   family: FamilyManifest,
@@ -97,6 +127,7 @@ function scoreFamilyDomainPack(
 
   const text = prompt.toLowerCase()
   if (hasExplicitRuntimeConflict(text, pack.domain.runtime)) return null
+  if (hasExplicitSurfaceConflict(text, pack.domain.surface)) return null
 
   const result = { score: 0, reasons: [] as string[] }
   let domainEvidence = 0
@@ -124,7 +155,7 @@ function scoreFamilyDomainPack(
   if (domainEvidence <= 0) return null
 
   addFieldScore(text, pack.domain.runtime, 7, `runtime:${pack.domain.runtime}`, result)
-  addFieldScore(text, pack.domain.surface, 2, `surface:${pack.domain.surface}`, result)
+  addSurfaceScore(text, pack.domain.surface, 2, result)
 
   for (const provided of pack.provides) {
     if (matchValue(text, provided)) {
@@ -166,6 +197,7 @@ function scoreLayerDomainPack(
 
   const text = prompt.toLowerCase()
   if (hasExplicitRuntimeConflict(text, pack.domain.runtime)) return []
+  if (hasExplicitSurfaceConflict(text, pack.domain.surface)) return []
 
   const result = { score: 0, reasons: [] as string[] }
   let capabilityEvidence = 0
@@ -199,7 +231,7 @@ function scoreLayerDomainPack(
   if (capabilityEvidence <= 0) return []
 
   addFieldScore(text, pack.domain.runtime, 7, `runtime:${pack.domain.runtime}`, result)
-  addFieldScore(text, pack.domain.surface, 6, `surface:${pack.domain.surface}`, result)
+  addSurfaceScore(text, pack.domain.surface, 6, result)
 
   return layer.appliesTo.flatMap((familyId, index) => {
     const family = registry.families.get(familyId)

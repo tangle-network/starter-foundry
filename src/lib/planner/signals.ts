@@ -522,12 +522,89 @@ export const SINGLE_LANE_SIGNALS = [
   'tauri',
 ]
 
-export const FRONTEND_SIGNALS = [
+export const UI_SURFACE_SIGNALS = [
   'frontend',
   'ui',
   'website',
-  'landing',
   'dashboard',
+  'interface',
+  'front end',
+]
+
+export const API_SURFACE_SIGNALS = [
+  'api',
+  'backend',
+  'server',
+  'endpoint',
+  'endpoints',
+  'api route',
+  'api routes',
+  'service',
+  'webhook',
+  'rest api',
+  'graphql api',
+]
+
+export const CONTRACT_SURFACE_CLASS_SIGNALS = [
+  'contract',
+  'contracts',
+  'solidity',
+  'foundry',
+  'forge',
+]
+
+export const CONTRACT_SURFACE_SIGNALS = [
+  ...CONTRACT_SURFACE_CLASS_SIGNALS,
+  'smart contract',
+  'foundry.toml',
+  'forge test',
+  'hardhat',
+  'token contract',
+  'erc20',
+  'erc-20',
+  'erc721',
+  'erc-721',
+]
+
+export const INDEXER_SURFACE_SIGNALS = ['indexer', 'monitor', 'monitoring', 'status api']
+
+export const WORKER_SURFACE_SIGNALS = [
+  'background job',
+  'background worker',
+  'worker for',
+  'queue',
+  'cron',
+  'job',
+]
+
+export type SurfaceClass = 'contracts' | 'frontend' | 'service'
+
+export const SURFACE_CLASS: Record<string, SurfaceClass> = {
+  api: 'service',
+  backend: 'service',
+  contracts: 'contracts',
+  indexer: 'service',
+  monitor: 'service',
+  service: 'service',
+  ui: 'frontend',
+  web: 'frontend',
+  worker: 'service',
+}
+
+export const SURFACE_SIGNAL_TERMS: Record<string, string[]> = {
+  api: API_SURFACE_SIGNALS,
+  backend: ['backend', 'service', 'server'],
+  contracts: CONTRACT_SURFACE_CLASS_SIGNALS,
+  indexer: INDEXER_SURFACE_SIGNALS,
+  service: ['service', 'server', 'daemon'],
+  ui: UI_SURFACE_SIGNALS,
+  web: ['web', 'website', 'frontend', 'front end'],
+  worker: WORKER_SURFACE_SIGNALS,
+}
+
+export const FRONTEND_SIGNALS = [
+  ...UI_SURFACE_SIGNALS,
+  'landing',
   'web app',
   'app',
   'preview',
@@ -535,7 +612,6 @@ export const FRONTEND_SIGNALS = [
   'react',
   'platform',
   'dapp',
-  'interface',
   'portal',
   // "X page" / "Y screen" — UI nouns. Buildout corpus showed prompts like
   // "DEX swap page" / "NFT mint page" routing to forge-contracts only
@@ -550,12 +626,7 @@ export const FRONTEND_SIGNALS = [
 ]
 
 export const API_SIGNALS = [
-  'api',
-  'backend',
-  'server',
-  'endpoint',
-  'service',
-  'webhook',
+  ...API_SURFACE_SIGNALS,
   'health check',
   'cloudflare',
   'durable object',
@@ -589,30 +660,22 @@ export const STRONG_API_TERMS = [
 
 export const WORKER_SIGNALS = [
   'trading bot',
-  'background job',
-  'background worker',
-  'worker for',
+  ...WORKER_SURFACE_SIGNALS,
   'playwright worker',
   'automation worker',
   'go worker',
   'golang worker',
-  'queue',
-  'cron',
   'market stream',
   'bot',
 ]
 
 export const EXPLICIT_WORKER_SIGNALS = [
   'trading bot',
-  'background job',
-  'background worker',
-  'worker for',
+  ...WORKER_SURFACE_SIGNALS,
   'playwright worker',
   'automation worker',
   'go worker',
   'golang worker',
-  'queue',
-  'cron',
   'market stream',
 ]
 

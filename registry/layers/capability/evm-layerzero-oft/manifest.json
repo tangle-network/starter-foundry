@@ -19,6 +19,16 @@
         "prompt": "Build a LayerZero OFT bridge token with Foundry",
         "expectedFamily": "forge-contracts",
         "expectedLayers": ["framework:forge-foundation", "capability:evm-layerzero-oft"]
+      },
+      {
+        "prompt": "Build an omnichain ERC20 contract using LayerZero OFT with forge deploy scripts",
+        "expectedFamily": "forge-contracts",
+        "expectedLayers": ["framework:forge-foundation", "capability:evm-layerzero-oft"]
+      },
+      {
+        "prompt": "Build a cross-chain token bridge contract with sendTokens, trusted remotes, and LayerZero endpoint config",
+        "expectedFamily": "forge-contracts",
+        "expectedLayers": ["framework:forge-foundation", "capability:evm-layerzero-oft"]
       }
     ]
   },

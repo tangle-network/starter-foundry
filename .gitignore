@@ -70,3 +70,7 @@ report/
 # exports also stay local — they're regenerated on demand.
 .evolve/runs.jsonl
 .evolve/runs-*.jsonl
+
+# Domain-pack promotion locks coordinate local agents; run plans can be committed
+# as evidence, but active claims are local state.
+.evolve/domain-pack-runs/locks/

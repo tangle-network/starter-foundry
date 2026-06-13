@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "runId": "issue-158-proof",
+  "candidateId": "fhe-capabilities",
+  "status": "candidate",
+  "domain": {
+    "family": "fhe",
+    "surface": "contracts"
+  },
+  "ambiguityGroup": "fhe-capabilities",
+  "verticalIds": [
+    "arkworks-zk",
+    "aztec-noir",
+    "cryptography-primitives",
+    "fhenix-fhe",
+    "tangle-blueprints-privacy",
+    "tangle-blueprints-storage",
+    "tangle-blueprints-zk-proofs",
+    "uniswap-v4",
+    "zk-trading"
+  ],
+  "sourceLeaves": {
+    "train": [
+      "ark-private-transfer",
+      "ark-voting-circuit",
+      "aztec-private-token-wallet",
+      "aztec-private-voting-dao",
+      "fhenix-blind-poker-showdown",
+      "fhenix-confidential-dex",
+      "fhenix-encrypted-erc20-token",
+      "fhenix-private-dao-vote",
+      "fhenix-sealed-bid-auction",
+      "fhenix-sealed-payroll-stream",
+      "tangle-priv-commitment-scheme",
+      "tangle-priv-confidential-compute",
+      "tangle-priv-key-rotation",
+      "tangle-priv-mpc-analytics",
+      "tangle-priv-private-nft",
+      "tangle-priv-private-voting",
+      "tangle-priv-threshold-bls",
+      "tangle-priv-threshold-keygen",
+      "tangle-priv-zk-proof-service",
+      "tangle-storage-compute-over-data"
+    ],
+    "holdout": [
+      "aztec-l1-l2-token-bridge",
+      "crypto-fhe-bfv",
+      "fhenix-confidential-lending-vault",
+      "fhenix-private-prediction-market",
+      "tangle-priv-anonymous-transfer",
+      "tangle-priv-encrypted-mempool",
+      "tangle-priv-oblivious-transfer",
+      "tangle-priv-state-channel",
+      "tangle-priv-timelock-encryption",
+      "tangle-zk-private-voting"
+    ]
+  },
+  "partnerIds": [
+    "academic",
+    "arkworks",
+    "aztec-network",
+    "fhenix",
+    "multi-protocol",
+    "tangle-network",
+    "uniswap-labs"
+  ],
+  "failureEvidence": [
+    {
+      "source": "blueprint-agent-scenarios",
+      "bucket": "vertical-leaf-demand",
+      "count": 32
+    }
+  ],
+  "registryFiles": [
+    "registry/layers/capability/fhe-private-token/manifest.json",
+    "registry/layers/capability/fhe-private-voting/manifest.json",
+    "registry/layers/capability/fhe-sealed-auction/manifest.json"
+  ],
+  "filesToModify": [
+    "registry/layers/capability/fhe-private-token/manifest.json",
+    "registry/layers/capability/fhe-private-voting/manifest.json",
+    "registry/layers/capability/fhe-sealed-auction/manifest.json",
+    "tests/coverage.test.ts",
+    "tests/domain-packs.test.ts"
+  ],
+  "sourceFiles": [
+    "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/arkworks-zk.ts",
+    "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/aztec-noir.ts",
+    "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/fhenix-fhe.ts",
+    "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-privacy.ts",
+    "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-storage.ts",
+    "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-zk-proofs.ts",
+    "../blueprint-agent/scripts/experiments/scenarios/verticals/research/cryptography-primitives.ts"
+  ],
+  "gatesToRun": [
+    "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+    "pnpm build",
+    "pnpm exec tsc -p tsconfig.test.json",
+    "pnpm exec tsx scripts/validate-registry.ts"
+  ],
+  "selectedGates": [],
+  "expectedStarter": {
+    "family": "fhenix-contracts",
+    "layers": [
+      "framework:fhenix-contracts",
+      "capability:fhe-private-token"
+    ],
+    "capabilities": [
+      "capability:fhe-private-token"
+    ]
+  },
+  "routingPrompts": [],
+  "validationCommands": [],
+  "authenticitySignals": [
+    "FHE.add",
+    "FHE.allow",
+    "FHE.gt",
+    "FHE.gte",
+    "FHE.select",
+    "blind auction",
+    "encrypted auction",
+    "encrypted balance",
+    "encrypted voting",
+    "private token",
+    "private voting",
+    "sealed bid",
+    "secret ballot"
+  ],
+  "github": {
+    "repository": "tangle-network/starter-foundry",
+    "parentIssue": 148,
+    "trackingIssue": 152,
+    "issueUrl": "https://github.com/tangle-network/starter-foundry/issues/152"
+  },
+  "evidence": {
+    "workUnitPath": ".evolve/domain-pack-runs/issue-158-proof/fhe-capabilities/work-unit.json"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-06-13T12:40:43.624Z",
+  "candidates": {
+    "bridge-contracts": {
+      "status": "candidate",
+      "updatedAt": "2026-06-13T12:40:43.623Z",
+      "history": [
+        {
+          "at": "2026-06-13T12:40:43.623Z",
+          "event": "planned",
+          "runId": "issue-158-proof",
+          "evidencePath": ".evolve/domain-pack-runs/issue-158-proof/bridge-contracts/work-unit.json"
+        }
+      ],
+      "lastRunId": "issue-158-proof",
+      "evidencePaths": [
+        ".evolve/domain-pack-runs/issue-158-proof/bridge-contracts/work-unit.json"
+      ]
+    },
+    "bridge-ui": {
+      "status": "candidate",
+      "updatedAt": "2026-06-13T12:40:43.623Z",
+      "history": [
+        {
+          "at": "2026-06-13T12:40:43.623Z",
+          "event": "planned",
+          "runId": "issue-158-proof",
+          "evidencePath": ".evolve/domain-pack-runs/issue-158-proof/bridge-ui/work-unit.json"
+        }
+      ],
+      "lastRunId": "issue-158-proof",
+      "evidencePaths": [
+        ".evolve/domain-pack-runs/issue-158-proof/bridge-ui/work-unit.json"
+      ]
+    },
+    "fhe-capabilities": {
+      "status": "candidate",
+      "updatedAt": "2026-06-13T12:40:43.623Z",
+      "history": [
+        {
+          "at": "2026-06-13T12:40:43.623Z",
+          "event": "planned",
+          "runId": "issue-158-proof",
+          "evidencePath": ".evolve/domain-pack-runs/issue-158-proof/fhe-capabilities/work-unit.json"
+        }
+      ],
+      "lastRunId": "issue-158-proof",
+      "evidencePaths": [
+        ".evolve/domain-pack-runs/issue-158-proof/fhe-capabilities/work-unit.json"
+      ]
+    },
+    "fhe-contracts": {
+      "status": "candidate",
+      "updatedAt": "2026-06-13T12:40:43.623Z",
+      "history": [
+        {
+          "at": "2026-06-13T12:40:43.623Z",
+          "event": "planned",
+          "runId": "issue-158-proof",
+          "evidencePath": ".evolve/domain-pack-runs/issue-158-proof/fhe-contracts/work-unit.json"
+        }
+      ],
+      "lastRunId": "issue-158-proof",
+      "evidencePaths": [
+        ".evolve/domain-pack-runs/issue-158-proof/fhe-contracts/work-unit.json"
+      ]
+    }
+  }
+}

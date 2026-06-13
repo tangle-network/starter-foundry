@@ -333,9 +333,6 @@ export const LANE_ROUTES: LaneRoute[] = [
       'wallet balance',
       'wallet balances',
       'stats json endpoint',
-      'layerzero',
-      'oft',
-      'sendtokens',
       'bundler',
       'permissionless.js',
       'monitor x layer',
@@ -366,7 +363,6 @@ export const LANE_ROUTES: LaneRoute[] = [
       'polygon',
       'x layer',
       'xlayer',
-      'layerzero',
       'chainlink',
       'walletconnect',
       'flashbots',
@@ -422,31 +418,6 @@ export const LANE_ROUTES: LaneRoute[] = [
       'token launcher',
       'defi',
       'smart contract',
-      // Solidity-authoring vocabulary — high-precision tokens that name a
-      // contract deliverable even when a prompt is framed as "a UI for X" and
-      // never says solidity/forge/uniswap. Without these, a Uniswap-V4 hook task
-      // ("a hook development UI ... extending BaseHook ... in beforeSwap ...")
-      // matched no evm keyword and fell through to frontend-static — no Solidity
-      // toolchain, forcing the agent to shim. Multi-word / namespaced only: no
-      // bare 'hook' (React hooks, webhooks) or 'pool' (swimming pools).
-      'uniswap v4',
-      'uni v4',
-      'v4 hook',
-      'hook contract',
-      'basehook',
-      'beforeswap',
-      'afterswap',
-      'beforeinitialize',
-      'afterinitialize',
-      'beforeaddliquidity',
-      'afteraddliquidity',
-      'poolmanager',
-      'hookflags',
-      'sqrtpricex96',
-      'tickspacing',
-      'tick accumulator',
-      'erc-6909',
-      'erc6909',
       'openzeppelin',
       'reentrancy',
       'pragma solidity',

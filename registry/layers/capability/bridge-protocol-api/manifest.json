@@ -54,6 +54,7 @@
     "bridge indexer",
     "bridge monitor",
     "bridge transaction monitor",
+    "bridge script",
     "bridge status api",
     "bridge relayer",
     "cross-chain relayer",

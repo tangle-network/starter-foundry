@@ -287,6 +287,8 @@ function selectDomainContractFamily(
   partner: string | null,
   registry: Registry,
 ): { family: string; layers: string[] } | null {
+  const text = prompt.toLowerCase()
+  const hardhatExplicit = detectHardhatExplicit(text)
   const matches = scoreDomainPackFamilies({ prompt, partner, registry })
   const ambiguity = detectDomainPackAmbiguity(matches)
   for (const match of matches) {
@@ -294,7 +296,10 @@ function selectDomainContractFamily(
     const family = registry.families.get(match.family)
     if (family?.taxonomy?.language !== 'solidity') continue
     if (family.taxonomy.surface !== 'contracts') continue
-    const layers = frameworkLayersForFamily(registry, match.family)
+    if (hardhatExplicit && match.family !== 'hardhat-contracts') continue
+    const layers = [
+      ...new Set([...frameworkLayersForFamily(registry, match.family), ...(match.layers ?? [])]),
+    ]
     return { family: match.family, layers }
   }
   return null

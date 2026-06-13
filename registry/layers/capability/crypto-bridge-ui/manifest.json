@@ -19,7 +19,7 @@
       }
     ]
   },
-  "appliesTo": ["nextjs-ts", "react-vite-ts", "fullstack-ts"],
+  "appliesTo": ["react-vite-ts", "nextjs-ts", "fullstack-ts"],
   "keywords": ["bridge", "cross-chain", "transfer", "multichain", "layerzero", "wormhole", "chain transfer"],
   "capabilityRequires": ["shadcn"],
   "files": [

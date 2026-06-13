@@ -10,14 +10,17 @@ bridges, and a clear consumer path back into blueprint-agent.
 
 ## Current State
 
-- Branch: `chore/sandbox-sdk-rename`.
-- Prior local commits on branch:
-  - `1cda7b3 feat(registry): fhenix-foundry family — Foundry + vendored-CoFHE FHE contract scaffold`
-  - `f2f51d7 feat(planner): route Solidity/V4-hook prompts to the evm lane`
+- Branch: `fix/bridge-ui-routing-surface`.
+- Merged foundation:
+  - `9834df9` / PR #149: metadata-driven domain-pack foundation.
+  - `f6feb44` / PR #156: deterministic train/holdout smoke gate.
 - Pre-existing unrelated dirty files: `.evolve/buildout-analysis-internal.json`,
   `.evolve/governor.jsonl`, `.evolve/scorecard.json`.
-- Issue #148 is open with a full RFC/spec and execution tracker:
-  https://github.com/tangle-network/starter-foundry/issues/148
+- Issue #148 is open with the full RFC/spec and canonical v2 execution tracker:
+  https://github.com/tangle-network/starter-foundry/issues/148#issuecomment-4698405476
+- Open child lanes: #152 FHE runtime compatibility, #153 bridge proof pack
+  expansion, #154 hardcode migration, #155 generated context, #157 scored
+  promotion, #158 parallel candidate promotion loop.
 
 ## Requirements
 
@@ -64,6 +67,9 @@ bridges, and a clear consumer path back into blueprint-agent.
   prompts, counts authenticity signals, runs declared validation commands when
   toolchains are present, records blueprint-agent dry-run probes, and writes
   `.evolve/domain-pack-smoke/*.json`.
+- [x] Active #153 slice: layer-level domain-pack scoring now routes bridge UI
+  prompts to a frontend family plus `capability:crypto-bridge-ui`, while explicit
+  Foundry/Hardhat runtime prompts keep contract routing compatible.
 
 ## Verification
 
@@ -79,6 +85,13 @@ bridges, and a clear consumer path back into blueprint-agent.
 - [x] `pnpm exec tsx --test tests/plan-domain-pack-work.test.ts` -> 2/2
   passing, including current blueprint-agent corpus count `>= 10`.
 - [x] `pnpm exec tsx --test tests/domain-pack-smoke.test.ts` -> 1/1 passing.
+- [x] `pnpm exec tsc --noEmit --pretty false`
+- [x] `pnpm exec tsc -p tsconfig.test.json --pretty false`
+- [x] `pnpm exec tsx scripts/validate-registry.ts`
+- [x] `pnpm exec tsx --test tests/domain-packs.test.ts tests/domain-pack-smoke.test.ts tests/coverage.test.ts` -> 459/459 passing.
+- [x] `node --test --test-concurrency=1 dist-tests/domain-pack-smoke.test.js dist-tests/plan-domain-pack-work.test.js dist-tests/domain-packs.test.js dist-tests/domain-pack-hardcode-guard.test.js dist-tests/coverage.test.js dist-tests/prompt-planner.test.js` -> 494/494 passing.
+- [x] Changed-file Prettier check for the active #153 files.
+- [x] `git diff --check`
 
 Current `.evolve/domain-pack-candidates.json` evidence:
 
@@ -97,10 +110,10 @@ Current `.evolve/domain-pack-smoke/` evidence:
 - `bridge-contracts-capability-evm-layerzero-oft.json`: passed; 2 train + 2
   holdout leaves; compose 4/4; authenticity hits 256; `forge build` +
   `forge test` passed; blueprint-agent dry-runs 4/4.
-- `bridge-ui-capability-crypto-bridge-ui.json`: failed as intended by the new
-  gate; compose/authenticity/blueprint dry-runs pass, but the routing prompt
-  currently selects `forge-contracts` instead of `react-vite-ts`. This is
-  concrete follow-up evidence for #153.
+- `bridge-ui-capability-crypto-bridge-ui.json`: passed after the #153 routing
+  fix; 2 train + 2 holdout leaves; compose 4/4; authenticity hits 8; routing
+  now selects `react-vite-ts` plus `framework:react-vite-ts` and
+  `capability:crypto-bridge-ui`; blueprint-agent dry-runs 4/4.
 
 Known repo-wide gate note: `pnpm verify` currently stops at `format:check`
 because the repository has unrelated pre-existing Prettier drift across many
@@ -112,3 +125,6 @@ files. Changed files in this branch pass targeted Prettier.
   implementation issues/PRs after this foundation lands.
 - Extend the #151 smoke gate from blueprint-agent dry-run probes to full scored
   agent runs where credentials/time budget are available.
+- Close #153 only after the bridge matrix covers at least six prompts across at
+  least three bridge surfaces/families/layers. The active routing PR is the first
+  concrete bridge UI proof slice, not the full lane closure.

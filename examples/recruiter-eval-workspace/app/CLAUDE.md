@@ -31,7 +31,7 @@ This project was scaffolded by starter-foundry. The choices below were made dete
 
 These are already in `package.json` (the sidecar's ensure-dev-server auto-installed them on first call). If you need any of these, **import them** — do not run `pnpm add`, `pnpm install <name>`, `npm install <name>`, or equivalent. Re-installing a present package burns turns and tokens for zero gain.
 
-- `@tangle-network/sandbox-sdk`
+- `@tangle-network/sandbox`
 - `@tangle-network/sandbox-ui`
 - `@types/react`
 - `@types/react-dom`

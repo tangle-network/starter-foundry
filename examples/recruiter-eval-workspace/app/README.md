@@ -8,7 +8,7 @@ This bundle is the "single agent with UI" archetype. It composes:
 
 - `@tangle-network/sandbox-ui` — `SandboxWorkbench` layout, `ChatContainer`,
   `useSdkSession` event reducer.
-- `@tangle-network/sandbox-sdk` — your transport to the sandbox running the
+- `@tangle-network/sandbox` — your transport to the sandbox running the
   agent-runtime bundle.
 - `ui-adapter:blocks-renderer` (auto-composed) — parses `:::artifact`,
   `:::escalation`, `:::screener-result`, `:::audio-cue`, `:::suggestion`,
@@ -20,12 +20,12 @@ This bundle is the "single agent with UI" archetype. It composes:
 This UI is bundle-agnostic. Pair it with any of the existing agent-runtime
 families to ship a complete product:
 
-| Pair | Result |
-| --- | --- |
-| `agent-with-ui-ts` + `agent-runtime-cmo-advisor-ts` | CMO advisor with chat UI |
-| `agent-with-ui-ts` + `agent-runtime-tax-ts` | Tax assistant with filing artifacts |
-| `agent-with-ui-ts` + `agent-runtime-therapist-ts` | Therapy companion with screener-result pane |
-| `agent-with-ui-ts` + `agent-runtime-research` | Research agent with artifact pane |
+| Pair                                                | Result                                      |
+| --------------------------------------------------- | ------------------------------------------- |
+| `agent-with-ui-ts` + `agent-runtime-cmo-advisor-ts` | CMO advisor with chat UI                    |
+| `agent-with-ui-ts` + `agent-runtime-tax-ts`         | Tax assistant with filing artifacts         |
+| `agent-with-ui-ts` + `agent-runtime-therapist-ts`   | Therapy companion with screener-result pane |
+| `agent-with-ui-ts` + `agent-runtime-research`       | Research agent with artifact pane           |
 
 Eight agent-runtime bundles ship today — `business-partner`, `cmo-advisor`,
 `fitness-coach`, `language-tutor`, `legal-counsel`, `music-producer`,
@@ -63,11 +63,11 @@ VITE_SANDBOX_API_TOKEN='sk-tan-...'          # operator key, scoped to this agen
 
 `App.tsx` accepts an `invoker: AgentInvoker` prop. The scaffold itself ships
 no transport — you wire it once based on which agent-runtime bundle you're
-driving. Minimum implementation against `@tangle-network/sandbox-sdk`:
+driving. Minimum implementation against `@tangle-network/sandbox`:
 
 ```tsx
 // src/main.tsx
-import { connectSandbox } from '@tangle-network/sandbox-sdk'
+import { connectSandbox } from '@tangle-network/sandbox'
 
 const sandbox = await connectSandbox({
   baseUrl: import.meta.env.VITE_SANDBOX_API_URL!,

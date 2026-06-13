@@ -79,33 +79,18 @@ jobs:
           SYNC_FAIL_ON_DRIFT: '1'
         run: pnpm exec tsx scripts/sync-example-workspaces.ts
 
-      # Gen-16.1 audit CRIT A2 — bootstrap lockfile from CI's GITHUB_TOKEN
-      # if the committed lockfile is missing. Gated on TANGLE_API_KEY
-      # because the workspace dep tree mixes registries:
-      #   - app/*   needs @tangle-network/{sandbox-sdk,sandbox-ui} (GH Packages only)
-      #   - eval/*  needs @tangle-network/agent-eval (public npm only)
-      # pnpm has no clean per-package registry override; routing
-      # @tangle-network → GH Packages 404s on agent-eval. Long-term fix:
-      # dual-publish sandbox-sdk + sandbox-ui to public npm. Until then,
-      # bootstrap only runs when an operator has set TANGLE_API_KEY
-      # (signaling intent to actually run the eval). Operator may also
-      # generate + commit the lockfile locally with both registry
-      # credentials; the rest of CI then runs --frozen-lockfile.
+      # Gen-16.1 audit CRIT A2 — bootstrap the example lockfile if missing.
+      # The workspace now depends only on public npm packages. Keep this path
+      # plain: adding a scoped GH Packages registry makes public packages such
+      # as @tangle-network/agent-eval resolve from the wrong registry.
       - name: bootstrap pnpm-lock.yaml when missing
         if: hashFiles('examples/recruiter-eval-workspace/pnpm-lock.yaml') == '' && env.TANGLE_API_KEY != ''
         env:
           TANGLE_API_KEY: ${{ secrets.TANGLE_API_KEY }}
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_TOKEN: ${{ github.token }}
         working-directory: examples/recruiter-eval-workspace
         run: |
           set -euo pipefail
-          cat > .npmrc <<EOF
-          @tangle-network:registry=https://npm.pkg.github.com
-          //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
-          EOF
           pnpm install --lockfile-only
-          rm -f .npmrc
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             git config user.name "tangle-bot"
             git config user.email "bot@tangle.tools"
@@ -118,13 +103,12 @@ jobs:
         env:
           TANGLE_API_KEY: ${{ secrets.TANGLE_API_KEY }}
         run: |
-          echo "::warning::TANGLE_API_KEY not set — skipping lockfile bootstrap (the workspace dep tree mixes public npm + GH Packages and can't resolve without both credentials AND meaningful eval intent). The lockfile will be generated on the first CI run after the secret is added, OR the operator may run 'pnpm install --lockfile-only' inside examples/recruiter-eval-workspace/ locally with both registries configured."
+          echo "::warning::TANGLE_API_KEY not set — skipping lockfile bootstrap. Run 'pnpm install --lockfile-only' inside examples/recruiter-eval-workspace/ and commit pnpm-lock.yaml."
 
       - name: run live eval (gated on TANGLE_API_KEY)
         id: live
         env:
           TANGLE_API_KEY: ${{ secrets.TANGLE_API_KEY }}
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         working-directory: examples/recruiter-eval-workspace
         run: |
           if [ -z "${TANGLE_API_KEY}" ]; then
@@ -132,15 +116,8 @@ jobs:
             echo "ran=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          # @tangle-network/sandbox-sdk + sandbox-ui live on GH Packages, not public npm.
-          # Auth via the workflow's GITHUB_TOKEN (read-only on this repo's packages).
-          cat > .npmrc <<EOF
-          @tangle-network:registry=https://npm.pkg.github.com
-          //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
-          EOF
           pnpm install --frozen-lockfile
           pnpm eval || true
-          rm -f .npmrc
           echo "ran=true" >> "$GITHUB_OUTPUT"
       - name: upload scorecard artifact
         if: steps.live.outputs.ran == 'true'

@@ -39,8 +39,8 @@ const CORE_TERM_BUDGETS: Record<string, Record<string, HardcodeBudget>> = {
   'src/lib/prompt-planner.ts': {
     fhenix: budget(0, 'FHE workspace routing must stay domainPack-driven.'),
     stylus: budget(
-      16,
-      'Generalize protocol workspace collection to registry-declared contract families.',
+      0,
+      'Stylus workspace routing is covered by registry-declared contract-family metadata.',
     ),
   },
   'src/lib/planner/partner-first.ts': {

@@ -21,6 +21,7 @@ test('domain-pack registry exposes FHE and bridge proof packs as metadata', asyn
   assert.ok(owners.has('capability:defi-bridge'))
   assert.ok(owners.has('capability:crypto-bridge-ui'))
   assert.ok(owners.has('capability:bridge-protocol-api'))
+  assert.ok(owners.has('stylus-contracts'))
 })
 
 test('domain-pack scorer disambiguates Fhenix Foundry from Fhenix Hardhat', async () => {
@@ -66,6 +67,16 @@ test('domain-pack scorer routes Zama fhEVM to the Zama family', async () => {
 
   assert.equal(result.routingRisk, 'safe')
   assert.equal(result.spec.family, 'fhevm-contracts')
+})
+
+test('Stylus domain-pack metadata does not hijack generic Arbitrum Solidity prompts', async () => {
+  const result = await selectStarter({
+    prompt: 'Build an Arbitrum Solidity ERC20 contract with Foundry',
+    partner: null,
+  })
+
+  assert.equal(result.routingRisk, 'safe')
+  assert.equal(result.spec.family, 'forge-contracts')
 })
 
 test('layer domain-pack metadata routes bridge UI prompts to a frontend starter', async () => {

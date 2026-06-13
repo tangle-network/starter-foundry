@@ -83,6 +83,46 @@ interface SmokeReport {
   }
   validationCommands: CommandResult[]
   blueprintAgent: CommandResult[]
+  scoredPromotion: ScoredPromotionReport | null
+  failures: string[]
+}
+
+interface ScoredLeafResult {
+  split: 'train' | 'holdout'
+  leafId: string
+  status: 'passed' | 'failed'
+  outDir: string
+  command: CommandResult | null
+  score: number | null
+  passed: boolean | null
+  profileId: string | null
+  rankBasis: string | null
+  costUsd: number | null
+  durationMs: number | null
+  reason?: string
+}
+
+interface ScoreDistribution {
+  n: number
+  min: number | null
+  median: number | null
+  p90: number | null
+  max: number | null
+  passCount: number
+  failCount: number
+}
+
+interface ScoredPromotionReport {
+  mode: 'scored'
+  status: 'passed' | 'failed'
+  shots: number
+  reps: number
+  minScore: number
+  baselineScore: number | null
+  maxHoldoutRegression: number
+  train: ScoreDistribution
+  holdout: ScoreDistribution
+  leaves: ScoredLeafResult[]
   failures: string[]
 }
 
@@ -100,11 +140,20 @@ const outPath = resolve(arg('--output', join(DEFAULT_OUT_DIR, `${slug(candidateI
 const trainCount = Math.max(1, Number(arg('--train', '2')) || 2)
 const holdoutCount = Math.max(1, Number(arg('--holdout', '2')) || 2)
 const timeoutMs = Math.max(1_000, Number(arg('--timeout-ms', '120000')) || 120_000)
+const shots = Math.max(1, Number(arg('--shots', '1')) || 1)
+const reps = Math.max(1, Number(arg('--reps', '1')) || 1)
+const parallel = Math.max(1, Number(arg('--parallel', '1')) || 1)
+const minScore = clamp01(Number(arg('--min-score', '0.5')), 0.5)
+const baselineScore = optionalNumberArg('--baseline-score')
+const maxHoldoutRegression = Math.max(0, Number(arg('--max-holdout-regression', '0')) || 0)
 const write = argv.includes('--write')
 const json = argv.includes('--json')
 const skipBuild = argv.includes('--skip-build')
 const keepWorkdirs = argv.includes('--keep-workdirs')
 const blueprintMode = arg('--blueprint-agent', 'dry-run')
+const blueprintAgentDir = resolve(arg('--blueprint-agent-dir', DEFAULT_BLUEPRINT_AGENT))
+const blueprintRuntime = arg('--runtime', 'claude-local')
+const scoredResultsDir = optionalArg('--scored-results-dir')
 
 const candidate = loadCandidate(candidateFile, candidateId)
 const report = runSmoke(candidate)
@@ -132,6 +181,23 @@ process.exitCode = report.status === 'passed' ? 0 : 1
 function arg(flag: string, fallback: string): string {
   const i = argv.indexOf(flag)
   return i >= 0 && argv[i + 1] ? argv[i + 1] : fallback
+}
+
+function optionalArg(flag: string): string | null {
+  const i = argv.indexOf(flag)
+  return i >= 0 && argv[i + 1] ? argv[i + 1]! : null
+}
+
+function optionalNumberArg(flag: string): number | null {
+  const value = optionalArg(flag)
+  if (value === null) return null
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : null
+}
+
+function clamp01(value: number, fallback: number): number {
+  if (!Number.isFinite(value)) return fallback
+  return Math.max(0, Math.min(1, value))
 }
 
 function requiredArg(flag: string): string {
@@ -184,11 +250,19 @@ function runSmoke(candidate: DomainPackWorkCandidate): SmokeReport {
     if (result.status === 'failed') failures.push(`validation command failed: ${result.command}`)
   }
 
-  const blueprintAgent = runBlueprintAgentDryRun([...train, ...holdout])
+  const blueprintAgent =
+    blueprintMode === 'dry-run' ? runBlueprintAgentDryRun([...train, ...holdout]) : []
   for (const result of blueprintAgent) {
     if (result.status === 'failed')
       failures.push(`blueprint-agent dry-run failed: ${result.command}`)
   }
+
+  const scoredPromotion = runScoredPromotion(train, holdout)
+  if (scoredPromotion?.status === 'failed') {
+    for (const failure of scoredPromotion.failures)
+      failures.push(`scored promotion failed: ${failure}`)
+  }
+
   cleanupWorkdirs(sampleResults)
 
   return {
@@ -217,6 +291,7 @@ function runSmoke(candidate: DomainPackWorkCandidate): SmokeReport {
     },
     validationCommands,
     blueprintAgent,
+    scoredPromotion,
     failures,
   }
 }
@@ -345,39 +420,252 @@ function runValidationCommands(
 
 function runBlueprintAgentDryRun(leafIds: string[]): CommandResult[] {
   if (blueprintMode === 'off') return []
-  const vbRun = join(DEFAULT_BLUEPRINT_AGENT, 'scripts/experiments/vb-run.ts')
+  const vbRun = join(blueprintAgentDir, 'scripts/experiments/vb-run.ts')
   if (!existsSync(vbRun)) {
     return [
       {
         command: 'blueprint-agent dry-run',
-        cwd: DEFAULT_BLUEPRINT_AGENT,
+        cwd: blueprintAgentDir,
         status: 'skipped',
         exitCode: null,
         durationMs: 0,
-        reason: `blueprint-agent not found at ${DEFAULT_BLUEPRINT_AGENT}`,
-      },
-    ]
-  }
-  if (blueprintMode !== 'dry-run') {
-    return [
-      {
-        command: `blueprint-agent mode ${blueprintMode}`,
-        cwd: DEFAULT_BLUEPRINT_AGENT,
-        status: 'failed',
-        exitCode: null,
-        durationMs: 0,
-        reason: 'only dry-run mode is implemented in this gate',
+        reason: `blueprint-agent not found at ${blueprintAgentDir}`,
       },
     ]
   }
   return leafIds.map((leafId) =>
     runCommand(
       `pnpm tsx scripts/experiments/vb-run.ts --leaf ${shellQuote(leafId)} --shots 1 --dry-run`,
-      DEFAULT_BLUEPRINT_AGENT,
+      blueprintAgentDir,
       timeoutMs,
       { STARTER_FOUNDRY_CLI: starterCli },
     ),
   )
+}
+
+function runScoredPromotion(train: string[], holdout: string[]): ScoredPromotionReport | null {
+  if (blueprintMode === 'off' || blueprintMode === 'dry-run') return null
+  if (blueprintMode !== 'scored') {
+    return {
+      mode: 'scored',
+      status: 'failed',
+      shots,
+      reps,
+      minScore,
+      baselineScore,
+      maxHoldoutRegression,
+      train: distribution([]),
+      holdout: distribution([]),
+      leaves: [],
+      failures: [`unsupported blueprint-agent mode: ${blueprintMode}`],
+    }
+  }
+
+  const leaves = [
+    ...train.map((leafId) => ({ split: 'train' as const, leafId })),
+    ...holdout.map((leafId) => ({ split: 'holdout' as const, leafId })),
+  ].map(({ split, leafId }) => runScoredLeaf(split, leafId))
+
+  const trainDistribution = distribution(leaves.filter((leaf) => leaf.split === 'train'))
+  const holdoutDistribution = distribution(leaves.filter((leaf) => leaf.split === 'holdout'))
+  const failures: string[] = []
+  for (const leaf of leaves) {
+    if (leaf.status === 'failed')
+      failures.push(`${leaf.split}:${leaf.leafId}: ${leaf.reason ?? 'failed'}`)
+  }
+  if (train.length > 0 && trainDistribution.n === 0) failures.push('no parseable train scores')
+  if (holdout.length > 0 && holdoutDistribution.n === 0)
+    failures.push('no parseable holdout scores')
+  if (trainDistribution.failCount > 0) {
+    failures.push(
+      `${trainDistribution.failCount} train scored run(s) below min score ${minScore.toFixed(3)}`,
+    )
+  }
+  if (holdoutDistribution.failCount > 0) {
+    failures.push(
+      `${holdoutDistribution.failCount} holdout scored run(s) below min score ${minScore.toFixed(3)}`,
+    )
+  }
+  if (
+    baselineScore !== null &&
+    holdoutDistribution.median !== null &&
+    holdoutDistribution.median < baselineScore - maxHoldoutRegression
+  ) {
+    failures.push(
+      `holdout median ${holdoutDistribution.median.toFixed(3)} regressed below baseline ${baselineScore.toFixed(3)} by more than ${maxHoldoutRegression.toFixed(3)}`,
+    )
+  }
+
+  return {
+    mode: 'scored',
+    status: failures.length === 0 ? 'passed' : 'failed',
+    shots,
+    reps,
+    minScore,
+    baselineScore,
+    maxHoldoutRegression,
+    train: trainDistribution,
+    holdout: holdoutDistribution,
+    leaves,
+    failures,
+  }
+}
+
+function runScoredLeaf(split: 'train' | 'holdout', leafId: string): ScoredLeafResult {
+  const outDir = scoredLeafDir(split, leafId)
+  const command = scoredResultsDir
+    ? null
+    : runCommand(
+        [
+          'pnpm tsx scripts/experiments/vb-run.ts',
+          `--leaf ${shellQuote(leafId)}`,
+          `--shots ${shots}`,
+          `--reps ${reps}`,
+          `--parallel ${parallel}`,
+          `--runtime ${shellQuote(blueprintRuntime)}`,
+          `--out ${shellQuote(outDir)}`,
+        ].join(' '),
+        blueprintAgentDir,
+        timeoutMs,
+        { STARTER_FOUNDRY_CLI: starterCli },
+      )
+  if (command && command.status !== 'passed') {
+    return failedScoredLeaf(split, leafId, outDir, command, command.reason ?? 'vb-run failed')
+  }
+  return parseScoredLeaf(split, leafId, outDir, command)
+}
+
+function scoredLeafDir(split: 'train' | 'holdout', leafId: string): string {
+  if (scoredResultsDir) {
+    const root = resolve(scoredResultsDir)
+    const bySplit = join(root, `${split}-${slug(leafId)}`)
+    if (existsSync(bySplit)) return bySplit
+    return join(root, slug(leafId))
+  }
+  return join(dirname(outPath), `${slug(candidateId)}-blueprint-agent`, `${split}-${slug(leafId)}`)
+}
+
+function parseScoredLeaf(
+  split: 'train' | 'holdout',
+  leafId: string,
+  outDir: string,
+  command: CommandResult | null,
+): ScoredLeafResult {
+  const competitionPath = join(outDir, 'matrix', 'competition.json')
+  if (!existsSync(competitionPath)) {
+    return failedScoredLeaf(split, leafId, outDir, command, `missing ${competitionPath}`)
+  }
+  try {
+    const competition = JSON.parse(readFileSync(competitionPath, 'utf8')) as {
+      rankBasis?: string
+      ranked?: Array<{
+        profileId?: string
+        meanComposite?: number | null
+        meanBlended?: number | null
+        hitRate?: number | null
+        passRate?: number | null
+        costPerSolved?: number | null
+      }>
+    }
+    const top = competition.ranked?.[0]
+    if (!top)
+      return failedScoredLeaf(split, leafId, outDir, command, 'competition has no ranked profiles')
+    const score = firstNumber(top.meanComposite, top.meanBlended, top.hitRate, top.passRate)
+    if (score === null)
+      return failedScoredLeaf(split, leafId, outDir, command, 'ranked profile has no score')
+    const manifest = readRunManifest(outDir)
+    return {
+      split,
+      leafId,
+      status: 'passed',
+      outDir: relative(REPO, outDir),
+      command,
+      score,
+      passed: score >= minScore,
+      profileId: top.profileId ?? null,
+      rankBasis: competition.rankBasis ?? null,
+      costUsd: firstNumber(top.costPerSolved),
+      durationMs: manifest.durationMs,
+    }
+  } catch (err) {
+    return failedScoredLeaf(
+      split,
+      leafId,
+      outDir,
+      command,
+      err instanceof Error ? err.message : String(err),
+    )
+  }
+}
+
+function failedScoredLeaf(
+  split: 'train' | 'holdout',
+  leafId: string,
+  outDir: string,
+  command: CommandResult | null,
+  reason: string,
+): ScoredLeafResult {
+  return {
+    split,
+    leafId,
+    status: 'failed',
+    outDir: relative(REPO, outDir),
+    command,
+    score: null,
+    passed: null,
+    profileId: null,
+    rankBasis: null,
+    costUsd: null,
+    durationMs: null,
+    reason,
+  }
+}
+
+function readRunManifest(outDir: string): { durationMs: number | null } {
+  const path = join(outDir, 'matrix', 'run-manifest.json')
+  if (!existsSync(path)) return { durationMs: null }
+  try {
+    const parsed = JSON.parse(readFileSync(path, 'utf8')) as { durationMs?: unknown }
+    return { durationMs: typeof parsed.durationMs === 'number' ? parsed.durationMs : null }
+  } catch {
+    return { durationMs: null }
+  }
+}
+
+function firstNumber(...values: Array<number | null | undefined>): number | null {
+  for (const value of values) {
+    if (typeof value === 'number' && Number.isFinite(value)) return value
+  }
+  return null
+}
+
+function distribution(leaves: ScoredLeafResult[]): ScoreDistribution {
+  const scores = leaves
+    .map((leaf) => leaf.score)
+    .filter((score): score is number => typeof score === 'number' && Number.isFinite(score))
+    .sort((a, b) => a - b)
+  return {
+    n: scores.length,
+    min: scores[0] ?? null,
+    median: median(scores),
+    p90: percentile(scores, 0.9),
+    max: scores[scores.length - 1] ?? null,
+    passCount: leaves.filter((leaf) => leaf.passed === true).length,
+    failCount: leaves.filter((leaf) => leaf.passed === false || leaf.status === 'failed').length,
+  }
+}
+
+function median(sorted: number[]): number | null {
+  if (sorted.length === 0) return null
+  const middle = Math.floor(sorted.length / 2)
+  if (sorted.length % 2 === 1) return sorted[middle]!
+  return (sorted[middle - 1]! + sorted[middle]!) / 2
+}
+
+function percentile(sorted: number[], p: number): number | null {
+  if (sorted.length === 0) return null
+  const index = Math.min(sorted.length - 1, Math.ceil(p * sorted.length) - 1)
+  return sorted[index]!
 }
 
 function runCommand(

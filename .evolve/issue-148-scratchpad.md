@@ -10,7 +10,7 @@ bridges, and a clear consumer path back into blueprint-agent.
 
 ## Current State
 
-- Branch: `feat/domain-pack-scored-gate`.
+- Branch: `fix/domain-pack-scored-completion-gate`.
 - Merged foundation:
   - `9834df9` / PR #149: metadata-driven domain-pack foundation.
   - `f6feb44` / PR #156: deterministic train/holdout smoke gate.
@@ -82,6 +82,9 @@ bridges, and a clear consumer path back into blueprint-agent.
   paths, applies min-score and holdout-regression gates, and lets
   `scripts/domain-pack-run.ts --gates scored` advance candidates to
   `scored-passed`.
+- [x] Active #157 hardening: scored promotion now distinguishes composite score
+  from actual VB completion pass rate. High composite / zero-pass evidence fails
+  closed instead of promoting.
 
 ## Verification
 
@@ -155,6 +158,12 @@ Current scored-gate evidence:
 - Fixture-backed controller integration passes locally for
   `domain-pack-run --gates scored`, including state transition to
   `scored-passed`.
+- Local FHE scored replay exists at
+  `.evolve/domain-pack-runs/issue-157-scored-results/fhe-scored.json`.
+  The hardened gate fails it closed: train score `0.7407`, holdout score
+  `0.8857`, but both train and holdout have `completionPassRate: 0`.
+  Routing and compose passed, so the remaining gap is downstream task
+  completion, not starter selection.
 - Real blueprint-agent scored promotion artifacts for at least one FHE candidate
   and one bridge candidate are still required before #157 can close.
 

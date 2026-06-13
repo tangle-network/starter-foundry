@@ -12,6 +12,11 @@ function writeCandidates(
   path: string,
   train = ['train-a', 'train-b'],
   holdout = ['holdout-a', 'holdout-b'],
+  intendedStarter = {
+    family: 'fhenix-foundry',
+    layers: ['framework:fhenix-foundry'],
+    capabilities: [] as string[],
+  },
 ): void {
   writeFileSync(
     path,
@@ -29,11 +34,7 @@ function writeCandidates(
             },
             ambiguityGroup: 'fhe-contracts',
             leafIds: { train, holdout },
-            intendedStarter: {
-              family: 'fhenix-foundry',
-              layers: ['framework:fhenix-foundry'],
-              capabilities: [],
-            },
+            intendedStarter,
             routingPrompts: [
               'Build a Fhenix Foundry sealed-bid auction contract with CoFHE encrypted bids',
             ],
@@ -56,6 +57,11 @@ function writeScoredResult(
   leafId: string,
   score: number,
   passRate = score >= 0.5 ? 1 : 0,
+  scaffold: Record<string, unknown> = {
+    family: 'fhenix-foundry',
+    layers: ['framework:fhenix-foundry'],
+    domainPackGuidance: [{ source: 'fhenix-foundry' }],
+  },
 ): void {
   const dir = join(root, `${split}-${leafId}`, 'matrix')
   mkdirSync(dir, { recursive: true })
@@ -85,6 +91,9 @@ function writeScoredResult(
     ),
   )
   writeFileSync(join(dir, 'run-manifest.json'), JSON.stringify({ durationMs: 1234 }, null, 2))
+  const artifactDir = join(dir, 'artifacts', `smoke-${leafId}-r0`)
+  mkdirSync(artifactDir, { recursive: true })
+  writeFileSync(join(artifactDir, 'scaffold-compose.json'), JSON.stringify(scaffold, null, 2))
 }
 
 test('domain-pack smoke gate composes train and holdout samples and records metrics', () => {
@@ -189,12 +198,133 @@ test('domain-pack smoke scored mode parses blueprint-agent score distributions',
     assert.equal(report.scoredPromotion.holdout.passCount, 2)
     assert.equal(report.scoredPromotion.holdout.scorePassCount, 2)
     assert.equal(report.scoredPromotion.holdout.completionPassCount, 2)
+    assert.equal(report.scoredPromotion.holdout.scaffoldPassCount, 2)
     assert.equal(report.scoredPromotion.leaves[0].profileId, 'smoke')
     assert.equal(report.scoredPromotion.leaves[0].costUsd, 0.25)
     assert.equal(report.scoredPromotion.leaves[0].durationMs, 1234)
     assert.equal(report.scoredPromotion.leaves[0].scorePassed, true)
     assert.equal(report.scoredPromotion.leaves[0].completionPassRate, 1)
     assert.equal(report.scoredPromotion.leaves[0].completionPassed, true)
+    assert.equal(report.scoredPromotion.leaves[0].scaffoldPassed, true)
+    assert.equal(report.scoredPromotion.leaves[0].scaffold.observedFamily, 'fhenix-foundry')
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})
+
+test('domain-pack smoke scored mode treats intended capabilities as scaffold evidence requirements', () => {
+  const root = mkdtempSync(join(tmpdir(), 'sf-domain-pack-smoke-capability-'))
+  try {
+    const candidatesPath = join(root, 'candidates.json')
+    const outputPath = join(root, 'smoke.json')
+    const resultsDir = join(root, 'results')
+    writeCandidates(candidatesPath, ['train-a'], ['holdout-a'], {
+      family: 'fhenix-foundry',
+      layers: ['framework:fhenix-foundry'],
+      capabilities: ['capability:fhe-foundry-sealed-auction'],
+    })
+    writeScoredResult(resultsDir, 'train', 'train-a', 0.8, 1, {
+      family: 'fhenix-foundry',
+      layers: ['framework:fhenix-foundry'],
+      domainPackGuidance: [{ source: 'capability:fhe-foundry-sealed-auction' }],
+    })
+    writeScoredResult(resultsDir, 'holdout', 'holdout-a', 0.85, 1, {
+      family: 'fhenix-foundry',
+      layers: ['framework:fhenix-foundry'],
+      domainPackGuidance: [{ source: 'capability:fhe-foundry-sealed-auction' }],
+    })
+
+    const result = spawnSync(
+      TSX,
+      [
+        SCRIPT,
+        '--candidate',
+        'fhe-contracts-fhenix-foundry',
+        '--candidates',
+        candidatesPath,
+        '--output',
+        outputPath,
+        '--write',
+        '--json',
+        '--skip-build',
+        '--blueprint-agent',
+        'scored',
+        '--scored-results-dir',
+        resultsDir,
+        '--train',
+        '1',
+        '--holdout',
+        '1',
+      ],
+      {
+        cwd: process.cwd(),
+        encoding: 'utf8',
+      },
+    )
+
+    assert.equal(result.status, 0, result.stderr || result.stdout)
+    const report = JSON.parse(readFileSync(outputPath, 'utf8'))
+    assert.equal(report.scoredPromotion.train.scaffoldPassCount, 1)
+    assert.deepEqual(report.scoredPromotion.leaves[0].scaffold.expectedLayers, [
+      'framework:fhenix-foundry',
+      'capability:fhe-foundry-sealed-auction',
+    ])
+    assert.deepEqual(report.scoredPromotion.leaves[0].scaffold.observedDomainPackSources, [
+      'capability:fhe-foundry-sealed-auction',
+    ])
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})
+
+test('domain-pack smoke scored mode fails closed when the scored cell lacks expected scaffold evidence', () => {
+  const root = mkdtempSync(join(tmpdir(), 'sf-domain-pack-smoke-scaffold-'))
+  try {
+    const candidatesPath = join(root, 'candidates.json')
+    const outputPath = join(root, 'smoke.json')
+    const resultsDir = join(root, 'results')
+    writeCandidates(candidatesPath, ['train-a'], ['holdout-a'])
+    writeScoredResult(resultsDir, 'train', 'train-a', 0.8, 1, {
+      family: 'react-vite-ts',
+      layers: ['framework:react-vite-ts'],
+      domainPackGuidance: [],
+    })
+    writeScoredResult(resultsDir, 'holdout', 'holdout-a', 0.85)
+
+    const result = spawnSync(
+      TSX,
+      [
+        SCRIPT,
+        '--candidate',
+        'fhe-contracts-fhenix-foundry',
+        '--candidates',
+        candidatesPath,
+        '--output',
+        outputPath,
+        '--write',
+        '--json',
+        '--skip-build',
+        '--blueprint-agent',
+        'scored',
+        '--scored-results-dir',
+        resultsDir,
+      ],
+      {
+        cwd: process.cwd(),
+        encoding: 'utf8',
+      },
+    )
+
+    assert.equal(result.status, 1, result.stderr || result.stdout)
+    const report = JSON.parse(readFileSync(outputPath, 'utf8'))
+    assert.equal(report.status, 'failed')
+    assert.equal(report.scoredPromotion.status, 'failed')
+    assert.equal(report.scoredPromotion.train.scorePassCount, 1)
+    assert.equal(report.scoredPromotion.train.completionPassCount, 1)
+    assert.equal(report.scoredPromotion.train.scaffoldFailCount, 1)
+    assert.equal(report.scoredPromotion.leaves[0].passed, false)
+    assert.equal(report.scoredPromotion.leaves[0].scaffoldPassed, false)
+    assert.match(report.scoredPromotion.failures.join('\n'), /scaffold evidence mismatch/)
   } finally {
     rmSync(root, { recursive: true, force: true })
   }

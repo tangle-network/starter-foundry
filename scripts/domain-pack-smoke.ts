@@ -98,11 +98,23 @@ interface ScoredLeafResult {
   scorePassed: boolean | null
   completionPassRate: number | null
   completionPassed: boolean | null
+  scaffoldPassed: boolean | null
+  scaffold: ScoredScaffoldEvidence
   profileId: string | null
   rankBasis: string | null
   costUsd: number | null
   durationMs: number | null
   reason?: string
+}
+
+interface ScoredScaffoldEvidence {
+  expectedFamily: string
+  expectedLayers: string[]
+  observedFamily: string | null
+  observedLayers: string[]
+  observedDomainPackSources: string[]
+  passed: boolean
+  reason: string | null
 }
 
 interface ScoreDistribution {
@@ -117,6 +129,8 @@ interface ScoreDistribution {
   scoreFailCount: number
   completionPassCount: number
   completionFailCount: number
+  scaffoldPassCount: number
+  scaffoldFailCount: number
 }
 
 interface ScoredPromotionReport {
@@ -264,7 +278,7 @@ function runSmoke(candidate: DomainPackWorkCandidate): SmokeReport {
       failures.push(`blueprint-agent dry-run failed: ${result.command}`)
   }
 
-  const scoredPromotion = runScoredPromotion(train, holdout)
+  const scoredPromotion = runScoredPromotion(candidate, train, holdout)
   if (scoredPromotion?.status === 'failed') {
     for (const failure of scoredPromotion.failures)
       failures.push(`scored promotion failed: ${failure}`)
@@ -450,7 +464,11 @@ function runBlueprintAgentDryRun(leafIds: string[]): CommandResult[] {
   )
 }
 
-function runScoredPromotion(train: string[], holdout: string[]): ScoredPromotionReport | null {
+function runScoredPromotion(
+  candidate: DomainPackWorkCandidate,
+  train: string[],
+  holdout: string[],
+): ScoredPromotionReport | null {
   if (blueprintMode === 'off' || blueprintMode === 'dry-run') return null
   if (blueprintMode !== 'scored') {
     return {
@@ -471,7 +489,7 @@ function runScoredPromotion(train: string[], holdout: string[]): ScoredPromotion
   const leaves = [
     ...train.map((leafId) => ({ split: 'train' as const, leafId })),
     ...holdout.map((leafId) => ({ split: 'holdout' as const, leafId })),
-  ].map(({ split, leafId }) => runScoredLeaf(split, leafId))
+  ].map(({ split, leafId }) => runScoredLeaf(candidate, split, leafId))
 
   const trainDistribution = distribution(leaves.filter((leaf) => leaf.split === 'train'))
   const holdoutDistribution = distribution(leaves.filter((leaf) => leaf.split === 'holdout'))
@@ -503,6 +521,21 @@ function runScoredPromotion(train: string[], holdout: string[]): ScoredPromotion
       `${holdoutDistribution.completionFailCount} holdout scored run(s) without a completion pass`,
     )
   }
+  if (trainDistribution.scaffoldFailCount > 0) {
+    failures.push(
+      `${trainDistribution.scaffoldFailCount} train scored run(s) without expected starter scaffold evidence`,
+    )
+  }
+  if (holdoutDistribution.scaffoldFailCount > 0) {
+    failures.push(
+      `${holdoutDistribution.scaffoldFailCount} holdout scored run(s) without expected starter scaffold evidence`,
+    )
+  }
+  for (const leaf of leaves) {
+    if (leaf.scaffold.reason) {
+      failures.push(`${leaf.split}:${leaf.leafId}: ${leaf.scaffold.reason}`)
+    }
+  }
   if (
     baselineScore !== null &&
     holdoutDistribution.median !== null &&
@@ -528,7 +561,11 @@ function runScoredPromotion(train: string[], holdout: string[]): ScoredPromotion
   }
 }
 
-function runScoredLeaf(split: 'train' | 'holdout', leafId: string): ScoredLeafResult {
+function runScoredLeaf(
+  candidate: DomainPackWorkCandidate,
+  split: 'train' | 'holdout',
+  leafId: string,
+): ScoredLeafResult {
   const outDir = scoredLeafDir(split, leafId)
   const command = scoredResultsDir
     ? null
@@ -547,9 +584,16 @@ function runScoredLeaf(split: 'train' | 'holdout', leafId: string): ScoredLeafRe
         { STARTER_FOUNDRY_CLI: starterCli },
       )
   if (command && command.status !== 'passed') {
-    return failedScoredLeaf(split, leafId, outDir, command, command.reason ?? 'vb-run failed')
+    return failedScoredLeaf(
+      candidate,
+      split,
+      leafId,
+      outDir,
+      command,
+      command.reason ?? 'vb-run failed',
+    )
   }
-  return parseScoredLeaf(split, leafId, outDir, command)
+  return parseScoredLeaf(candidate, split, leafId, outDir, command)
 }
 
 function scoredLeafDir(split: 'train' | 'holdout', leafId: string): string {
@@ -563,6 +607,7 @@ function scoredLeafDir(split: 'train' | 'holdout', leafId: string): string {
 }
 
 function parseScoredLeaf(
+  candidate: DomainPackWorkCandidate,
   split: 'train' | 'holdout',
   leafId: string,
   outDir: string,
@@ -570,7 +615,7 @@ function parseScoredLeaf(
 ): ScoredLeafResult {
   const competitionPath = join(outDir, 'matrix', 'competition.json')
   if (!existsSync(competitionPath)) {
-    return failedScoredLeaf(split, leafId, outDir, command, `missing ${competitionPath}`)
+    return failedScoredLeaf(candidate, split, leafId, outDir, command, `missing ${competitionPath}`)
   }
   try {
     const competition = JSON.parse(readFileSync(competitionPath, 'utf8')) as {
@@ -586,13 +631,30 @@ function parseScoredLeaf(
     }
     const top = competition.ranked?.[0]
     if (!top)
-      return failedScoredLeaf(split, leafId, outDir, command, 'competition has no ranked profiles')
+      return failedScoredLeaf(
+        candidate,
+        split,
+        leafId,
+        outDir,
+        command,
+        'competition has no ranked profiles',
+      )
     const score = firstNumber(top.meanComposite, top.meanBlended, top.hitRate, top.passRate)
     if (score === null)
-      return failedScoredLeaf(split, leafId, outDir, command, 'ranked profile has no score')
+      return failedScoredLeaf(
+        candidate,
+        split,
+        leafId,
+        outDir,
+        command,
+        'ranked profile has no score',
+      )
     const completionPassRate = firstNumber(top.passRate)
     const scorePassed = score >= minScore
     const completionPassed = completionPassRate === null ? false : completionPassRate > 0
+    const profileId = top.profileId ?? null
+    const scaffold = readScaffoldEvidence(candidate, outDir, profileId)
+    const scaffoldPassed = scaffold.passed
     const manifest = readRunManifest(outDir)
     return {
       split,
@@ -601,17 +663,20 @@ function parseScoredLeaf(
       outDir: relative(REPO, outDir),
       command,
       score,
-      passed: scorePassed && completionPassed,
+      passed: scorePassed && completionPassed && scaffoldPassed,
       scorePassed,
       completionPassRate,
       completionPassed,
-      profileId: top.profileId ?? null,
+      scaffoldPassed,
+      scaffold,
+      profileId,
       rankBasis: competition.rankBasis ?? null,
       costUsd: firstNumber(top.costPerSolved),
       durationMs: manifest.durationMs,
     }
   } catch (err) {
     return failedScoredLeaf(
+      candidate,
       split,
       leafId,
       outDir,
@@ -622,6 +687,7 @@ function parseScoredLeaf(
 }
 
 function failedScoredLeaf(
+  candidate: DomainPackWorkCandidate,
   split: 'train' | 'holdout',
   leafId: string,
   outDir: string,
@@ -639,12 +705,140 @@ function failedScoredLeaf(
     scorePassed: null,
     completionPassRate: null,
     completionPassed: null,
+    scaffoldPassed: false,
+    scaffold: missingScaffoldEvidence(
+      candidate,
+      'scored run failed before scaffold evidence could be parsed',
+    ),
     profileId: null,
     rankBasis: null,
     costUsd: null,
     durationMs: null,
     reason,
   }
+}
+
+function readScaffoldEvidence(
+  candidate: DomainPackWorkCandidate,
+  outDir: string,
+  profileId: string | null,
+): ScoredScaffoldEvidence {
+  const expectedFamily = candidate.intendedStarter.family
+  const expectedLayers = expectedStarterLayers(candidate)
+  const artifactRoot = join(outDir, 'matrix', 'artifacts')
+  if (!existsSync(artifactRoot)) {
+    return missingScaffoldEvidence(candidate, `missing scaffold artifact directory ${artifactRoot}`)
+  }
+
+  const candidateFiles = readdirSync(artifactRoot)
+    .map((entry) => join(artifactRoot, entry, 'scaffold-compose.json'))
+    .filter((path) => existsSync(path))
+  const preferredFiles = profileId
+    ? candidateFiles.filter((path) => dirname(path).split('/').pop()?.startsWith(profileId))
+    : []
+  const files = [
+    ...preferredFiles,
+    ...candidateFiles.filter((path) => !preferredFiles.includes(path)),
+  ]
+  if (files.length === 0) {
+    return missingScaffoldEvidence(candidate, `missing scaffold-compose.json under ${artifactRoot}`)
+  }
+
+  for (const file of files) {
+    try {
+      const parsed = JSON.parse(readFileSync(file, 'utf8')) as {
+        family?: unknown
+        layers?: unknown
+        domainPackGuidance?: unknown
+      }
+      const observedFamily = typeof parsed.family === 'string' ? parsed.family : null
+      const observedLayers = Array.isArray(parsed.layers)
+        ? parsed.layers.filter((layer): layer is string => typeof layer === 'string')
+        : []
+      const observedDomainPackSources = domainPackSources(parsed.domainPackGuidance)
+      const tokens = scaffoldTokens(observedFamily, observedLayers, observedDomainPackSources)
+      const familyMatched = expectedFamily ? tokens.has(expectedFamily) : true
+      const missingLayers = expectedLayers.filter(
+        (layer) => !expectedLayerMatched(layer, tokens, familyMatched),
+      )
+      const passed = familyMatched && missingLayers.length === 0
+      return {
+        expectedFamily,
+        expectedLayers,
+        observedFamily,
+        observedLayers,
+        observedDomainPackSources,
+        passed,
+        reason: passed
+          ? null
+          : `scaffold evidence mismatch: expected family ${expectedFamily} and layers ${expectedLayers.join(', ') || '(none)'}, observed family ${observedFamily ?? '(none)'}, layers ${observedLayers.join(', ') || '(none)'}, domain packs ${observedDomainPackSources.join(', ') || '(none)'}`,
+      }
+    } catch {
+      continue
+    }
+  }
+
+  return missingScaffoldEvidence(candidate, 'scaffold-compose.json could not be parsed')
+}
+
+function missingScaffoldEvidence(
+  candidate: DomainPackWorkCandidate,
+  reason: string,
+): ScoredScaffoldEvidence {
+  return {
+    expectedFamily: candidate.intendedStarter.family,
+    expectedLayers: expectedStarterLayers(candidate),
+    observedFamily: null,
+    observedLayers: [],
+    observedDomainPackSources: [],
+    passed: false,
+    reason,
+  }
+}
+
+function expectedStarterLayers(candidate: DomainPackWorkCandidate): string[] {
+  return [
+    ...new Set([...candidate.intendedStarter.layers, ...candidate.intendedStarter.capabilities]),
+  ]
+}
+
+function domainPackSources(value: unknown): string[] {
+  if (!Array.isArray(value)) return []
+  return value
+    .map((item) => {
+      if (!item || typeof item !== 'object') return null
+      const source = (item as { source?: unknown }).source
+      return typeof source === 'string' ? source : null
+    })
+    .filter((source): source is string => source !== null)
+}
+
+function scaffoldTokens(
+  family: string | null,
+  layers: string[],
+  domainPackSources: string[],
+): Set<string> {
+  const tokens = new Set<string>()
+  const add = (value: string): void => {
+    if (!value) return
+    tokens.add(value)
+    for (const part of value.split('+')) {
+      if (part) tokens.add(part)
+    }
+    const colon = value.indexOf(':')
+    if (colon >= 0) tokens.add(value.slice(colon + 1))
+  }
+  if (family) add(family)
+  for (const layer of layers) add(layer)
+  for (const source of domainPackSources) add(source)
+  return tokens
+}
+
+function expectedLayerMatched(layer: string, tokens: Set<string>, familyMatched: boolean): boolean {
+  if (tokens.has(layer)) return true
+  const [group, id] = layer.split(':', 2)
+  if (id && tokens.has(id)) return true
+  return group === 'framework' && familyMatched
 }
 
 function readRunManifest(outDir: string): { durationMs: number | null } {
@@ -684,6 +878,10 @@ function distribution(leaves: ScoredLeafResult[]): ScoreDistribution {
     completionPassCount: leaves.filter((leaf) => leaf.completionPassed === true).length,
     completionFailCount: leaves.filter(
       (leaf) => leaf.completionPassed === false || leaf.status === 'failed',
+    ).length,
+    scaffoldPassCount: leaves.filter((leaf) => leaf.scaffoldPassed === true).length,
+    scaffoldFailCount: leaves.filter(
+      (leaf) => leaf.scaffoldPassed === false || leaf.status === 'failed',
     ).length,
   }
 }

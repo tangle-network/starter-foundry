@@ -101,6 +101,11 @@ function writeScoredResult(
   split: 'train' | 'holdout',
   leafId: string,
   score: number,
+  scaffold: Record<string, unknown> = {
+    family: 'fhenix-foundry',
+    layers: ['framework:fhenix-foundry'],
+    domainPackGuidance: [{ source: 'fhenix-foundry' }],
+  },
 ): void {
   const dir = join(root, `${split}-${leafId}`, 'matrix')
   mkdirSync(dir, { recursive: true })
@@ -130,6 +135,9 @@ function writeScoredResult(
     ),
   )
   writeFileSync(join(dir, 'run-manifest.json'), JSON.stringify({ durationMs: 1000 }, null, 2))
+  const artifactDir = join(dir, 'artifacts', `smoke-${leafId}-r0`)
+  mkdirSync(artifactDir, { recursive: true })
+  writeFileSync(join(artifactDir, 'scaffold-compose.json'), JSON.stringify(scaffold, null, 2))
 }
 
 function candidate(input: {

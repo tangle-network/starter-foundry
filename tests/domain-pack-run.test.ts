@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import test from 'node:test'
@@ -94,6 +94,42 @@ function writeCandidates(path: string): void {
       2,
     ),
   )
+}
+
+function writeScoredResult(
+  root: string,
+  split: 'train' | 'holdout',
+  leafId: string,
+  score: number,
+): void {
+  const dir = join(root, `${split}-${leafId}`, 'matrix')
+  mkdirSync(dir, { recursive: true })
+  writeFileSync(
+    join(dir, 'competition.json'),
+    JSON.stringify(
+      {
+        taskListId: leafId,
+        nTasks: 1,
+        nProfiles: 1,
+        rankBasis: 'composite',
+        ranked: [
+          {
+            rank: 1,
+            profileId: 'smoke',
+            label: 'Smoke profile',
+            passRate: score >= 0.5 ? 1 : 0,
+            hitRate: score >= 0.5 ? 1 : 0,
+            meanBlended: score,
+            meanComposite: score,
+            costPerSolved: 0.1,
+          },
+        ],
+      },
+      null,
+      2,
+    ),
+  )
+  writeFileSync(join(dir, 'run-manifest.json'), JSON.stringify({ durationMs: 1000 }, null, 2))
 }
 
 function candidate(input: {
@@ -449,6 +485,46 @@ test('domain-pack run records state transitions and deterministic gate evidence'
         report.gateResults[0].evidencePath,
       ),
     )
+
+    const scoredResults = join(root, 'scored-results')
+    writeScoredResult(scoredResults, 'train', 'fhe-a', 0.8)
+    writeScoredResult(scoredResults, 'holdout', 'fhe-h', 0.75)
+    const scored = spawnSync(
+      TSX,
+      [
+        SCRIPT,
+        '--candidates',
+        candidatesPath,
+        '--runs-dir',
+        runsDir,
+        '--state',
+        statePath,
+        '--run-id',
+        'scored',
+        '--candidate',
+        'fhe-contracts-fhenix-foundry',
+        '--write-plan',
+        '--no-claim',
+        '--gates',
+        'scored',
+        '--scored-results-dir',
+        scoredResults,
+        '--smoke-skip-build',
+        '--train',
+        '1',
+        '--holdout',
+        '1',
+        '--json',
+      ],
+      { cwd: process.cwd(), encoding: 'utf8' },
+    )
+
+    assert.equal(scored.status, 0, scored.stderr || scored.stdout)
+    const scoredReport = JSON.parse(scored.stdout)
+    assert.equal(scoredReport.gateResults[0].status, 'passed')
+    assert.ok(existsSync(join(runsDir, 'scored/fhe-contracts-fhenix-foundry/scored.json')))
+    state = JSON.parse(readFileSync(statePath, 'utf8'))
+    assert.equal(state.candidates['fhe-contracts-fhenix-foundry'].status, 'scored-passed')
   } finally {
     rmSync(root, { recursive: true, force: true })
   }

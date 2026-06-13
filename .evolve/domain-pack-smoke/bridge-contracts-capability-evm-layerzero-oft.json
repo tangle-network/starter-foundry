@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-13T12:01:22.043Z",
+  "candidateId": "bridge-contracts-capability-evm-layerzero-oft",
+  "candidateFile": "/home/drew/code/starter-foundry/.evolve/domain-pack-candidates.json",
+  "status": "passed",
+  "samples": {
+    "train": [
+      "ethena-cross-chain-usde",
+      "lz-chain-endpoint-directory"
+    ],
+    "holdout": [
+      "lz-composed-message-builder",
+      "lz-dvn-monitoring-dashboard"
+    ]
+  },
+  "routing": {
+    "status": "passed",
+    "prompts": [
+      {
+        "prompt": "Build a LayerZero OFT bridge token with Foundry",
+        "expectedFamily": "forge-contracts",
+        "actualFamily": "forge-contracts",
+        "ok": true
+      }
+    ]
+  },
+  "compose": {
+    "passed": 4,
+    "failed": 0,
+    "minFileCount": 8
+  },
+  "authenticity": {
+    "signals": [
+      "LayerZero",
+      "OFT",
+      "bridge",
+      "omnichain",
+      "sendTokens"
+    ],
+    "totalHits": 256,
+    "perSample": [
+      {
+        "leafId": "ethena-cross-chain-usde",
+        "hits": {
+          "LayerZero": 20,
+          "OFT": 20,
+          "bridge": 15,
+          "omnichain": 1,
+          "sendTokens": 8
+        },
+        "total": 64
+      },
+      {
+        "leafId": "lz-chain-endpoint-directory",
+        "hits": {
+          "LayerZero": 20,
+          "OFT": 20,
+          "bridge": 15,
+          "omnichain": 1,
+          "sendTokens": 8
+        },
+        "total": 64
+      },
+      {
+        "leafId": "lz-composed-message-builder",
+        "hits": {
+          "LayerZero": 20,
+          "OFT": 20,
+          "bridge": 15,
+          "omnichain": 1,
+          "sendTokens": 8
+        },
+        "total": 64
+      },
+      {
+        "leafId": "lz-dvn-monitoring-dashboard",
+        "hits": {
+          "LayerZero": 20,
+          "OFT": 20,
+          "bridge": 15,
+          "omnichain": 1,
+          "sendTokens": 8
+        },
+        "total": 64
+      }
+    ]
+  },
+  "validationCommands": [
+    {
+      "command": "forge build",
+      "cwd": "/tmp/domain-pack-smoke-bridge-contracts-capability-evm-layerzero-oft-ethena-cross-chain-usde-mnbuSZ/out",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 37,
+      "stdoutTail": "Compiling 3 files with Solc 0.8.35\nSolc 0.8.35 finished in 13.34ms\nCompiler run successful!\n",
+      "stderrTail": "Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. \n\nwarning[missing-events-access-control]: `balances` is changed without an event but is used for access control\n   ╭▸ src/StarterCounter.sol:17:9\n   │\n17 │         balances[msg.sender] -= amount;\n   │         ━━━━━━━━━━━━━━━━━━━━\n   │\n   ╰ help: https://getfoundry.sh/forge/linting/missing-events-access-control\n\nwarning[unused-return]: Return value of an external call is not used\n   ╭▸ test/StarterCounter.t.sol:15:9\n   │\n15 │         token.sendTokens(30184, recipient, 100 ether);\n   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n   │\n   ╰ help: https://getfoundry.sh/forge/linting/unused-return\n\nwarning[incorrect-strict-equality]: dangerous strict equality check on an externally-influenced value\n   ╭▸ test/StarterCounter.t.sol:16:16\n   │\n16 │         assert(token.balanceOf(recipient) == 100 ether);\n   │                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n   │\n   ╰ help: https://getfoundry.sh/forge/linting/incorrect-strict-equality\n\n"
+    },
+    {
+      "command": "forge test",
+      "cwd": "/tmp/domain-pack-smoke-bridge-contracts-capability-evm-layerzero-oft-ethena-cross-chain-usde-mnbuSZ/out",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 25,
+      "stdoutTail": "No files changed, compilation skipped\n\nRan 1 test for test/StarterCounter.t.sol:StarterCounterTest\n[PASS] test_send_tokens_updates_balances() (gas: 37010)\nSuite result: ok. 1 passed; 0 failed; 0 skipped; finished in 286.42µs (46.88µs CPU time)\n\nRan 1 test suite in 4.40ms (286.42µs CPU time): 1 tests passed, 0 failed, 0 skipped (1 total tests)\n",
+      "stderrTail": "Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. \n\n"
+    }
+  ],
+  "blueprintAgent": [
+    {
+      "command": "pnpm tsx scripts/experiments/vb-run.ts --leaf 'ethena-cross-chain-usde' --shots 1 --dry-run",
+      "cwd": "/home/drew/code/blueprint-agent",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 711,
+      "stdoutTail": "\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n",
+      "stderrTail": "(node:3562350) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:3562429) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:3562461) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-run] registry selection: 1 verticals, 1 leaves\n[vb-run] runtime=claude-local shots=1 reps=1 parallel=2\n[vb-run] out=/home/drew/code/blueprint-agent/vb-run-2026-06-13T12-01-19\n[vb-run] --dry-run — exiting after validation\n(node:3562461) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "command": "pnpm tsx scripts/experiments/vb-run.ts --leaf 'lz-chain-endpoint-directory' --shots 1 --dry-run",
+      "cwd": "/home/drew/code/blueprint-agent",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 698,
+      "stdoutTail": "\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n",
+      "stderrTail": "(node:3562535) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:3562602) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:3562656) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-run] registry selection: 1 verticals, 1 leaves\n[vb-run] runtime=claude-local shots=1 reps=1 parallel=2\n[vb-run] out=/home/drew/code/blueprint-agent/vb-run-2026-06-13T12-01-20\n[vb-run] --dry-run — exiting after validation\n(node:3562656) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "command": "pnpm tsx scripts/experiments/vb-run.ts --leaf 'lz-composed-message-builder' --shots 1 --dry-run",
+      "cwd": "/home/drew/code/blueprint-agent",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 684,
+      "stdoutTail": "\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n",
+      "stderrTail": "(node:3562715) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:3562765) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:3562793) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-run] registry selection: 1 verticals, 1 leaves\n[vb-run] runtime=claude-local shots=1 reps=1 parallel=2\n[vb-run] out=/home/drew/code/blueprint-agent/vb-run-2026-06-13T12-01-21\n[vb-run] --dry-run — exiting after validation\n(node:3562793) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "command": "pnpm tsx scripts/experiments/vb-run.ts --leaf 'lz-dvn-monitoring-dashboard' --shots 1 --dry-run",
+      "cwd": "/home/drew/code/blueprint-agent",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 695,
+      "stdoutTail": "\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n",
+      "stderrTail": "(node:3562935) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:3562973) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:3563011) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-run] registry selection: 1 verticals, 1 leaves\n[vb-run] runtime=claude-local shots=1 reps=1 parallel=2\n[vb-run] out=/home/drew/code/blueprint-agent/vb-run-2026-06-13T12-01-21\n[vb-run] --dry-run — exiting after validation\n(node:3563011) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    }
+  ],
+  "failures": []
+}

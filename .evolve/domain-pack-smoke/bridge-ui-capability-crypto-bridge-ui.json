@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-13T12:01:22.018Z",
+  "candidateId": "bridge-ui-capability-crypto-bridge-ui",
+  "candidateFile": "/home/drew/code/starter-foundry/.evolve/domain-pack-candidates.json",
+  "status": "failed",
+  "samples": {
+    "train": [
+      "across-bridge-history",
+      "across-full-bridge-interface"
+    ],
+    "holdout": [
+      "aptos-cross-chain-bridge",
+      "circle-cctp-bridge"
+    ]
+  },
+  "routing": {
+    "status": "failed",
+    "prompts": [
+      {
+        "prompt": "Build a cross-chain bridge transfer UI with Wormhole",
+        "expectedFamily": "react-vite-ts",
+        "actualFamily": "forge-contracts",
+        "ok": false
+      }
+    ]
+  },
+  "compose": {
+    "passed": 4,
+    "failed": 0,
+    "minFileCount": 13
+  },
+  "authenticity": {
+    "signals": [
+      "destination chain",
+      "fee estimation",
+      "source chain",
+      "transaction history"
+    ],
+    "totalHits": 8,
+    "perSample": [
+      {
+        "leafId": "across-bridge-history",
+        "hits": {
+          "destination chain": 2,
+          "fee estimation": 0,
+          "source chain": 0,
+          "transaction history": 0
+        },
+        "total": 2
+      },
+      {
+        "leafId": "across-full-bridge-interface",
+        "hits": {
+          "destination chain": 2,
+          "fee estimation": 0,
+          "source chain": 0,
+          "transaction history": 0
+        },
+        "total": 2
+      },
+      {
+        "leafId": "aptos-cross-chain-bridge",
+        "hits": {
+          "destination chain": 2,
+          "fee estimation": 0,
+          "source chain": 0,
+          "transaction history": 0
+        },
+        "total": 2
+      },
+      {
+        "leafId": "circle-cctp-bridge",
+        "hits": {
+          "destination chain": 2,
+          "fee estimation": 0,
+          "source chain": 0,
+          "transaction history": 0
+        },
+        "total": 2
+      }
+    ]
+  },
+  "validationCommands": [],
+  "blueprintAgent": [
+    {
+      "command": "pnpm tsx scripts/experiments/vb-run.ts --leaf 'across-bridge-history' --shots 1 --dry-run",
+      "cwd": "/home/drew/code/blueprint-agent",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 720,
+      "stdoutTail": "\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n",
+      "stderrTail": "(node:3561899) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:3562405) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:3562421) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-run] registry selection: 1 verticals, 1 leaves\n[vb-run] runtime=claude-local shots=1 reps=1 parallel=2\n[vb-run] out=/home/drew/code/blueprint-agent/vb-run-2026-06-13T12-01-19\n[vb-run] --dry-run — exiting after validation\n(node:3562421) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "command": "pnpm tsx scripts/experiments/vb-run.ts --leaf 'across-full-bridge-interface' --shots 1 --dry-run",
+      "cwd": "/home/drew/code/blueprint-agent",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 710,
+      "stdoutTail": "\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n",
+      "stderrTail": "(node:3562520) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:3562559) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:3562576) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-run] registry selection: 1 verticals, 1 leaves\n[vb-run] runtime=claude-local shots=1 reps=1 parallel=2\n[vb-run] out=/home/drew/code/blueprint-agent/vb-run-2026-06-13T12-01-20\n[vb-run] --dry-run — exiting after validation\n(node:3562576) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "command": "pnpm tsx scripts/experiments/vb-run.ts --leaf 'aptos-cross-chain-bridge' --shots 1 --dry-run",
+      "cwd": "/home/drew/code/blueprint-agent",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 724,
+      "stdoutTail": "\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n",
+      "stderrTail": "(node:3562693) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:3562731) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:3562747) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-run] registry selection: 1 verticals, 1 leaves\n[vb-run] runtime=claude-local shots=1 reps=1 parallel=2\n[vb-run] out=/home/drew/code/blueprint-agent/vb-run-2026-06-13T12-01-21\n[vb-run] --dry-run — exiting after validation\n(node:3562747) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "command": "pnpm tsx scripts/experiments/vb-run.ts --leaf 'circle-cctp-bridge' --shots 1 --dry-run",
+      "cwd": "/home/drew/code/blueprint-agent",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 697,
+      "stdoutTail": "\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n",
+      "stderrTail": "(node:3562915) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:3562950) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:3562990) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-run] registry selection: 1 verticals, 1 leaves\n[vb-run] runtime=claude-local shots=1 reps=1 parallel=2\n[vb-run] out=/home/drew/code/blueprint-agent/vb-run-2026-06-13T12-01-21\n[vb-run] --dry-run — exiting after validation\n(node:3562990) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    }
+  ],
+  "failures": [
+    "routing prompt check failed"
+  ]
+}

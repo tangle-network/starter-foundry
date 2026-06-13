@@ -11,6 +11,31 @@
     "runtime": "stylus",
     "surface": "contracts"
   },
+  "domainPack": {
+    "domain": {
+      "family": "stylus-contracts",
+      "protocol": "stylus",
+      "runtime": "stylus",
+      "surface": "contracts"
+    },
+    "provides": ["rust-contracts", "arbitrum-stylus", "wasm-contracts", "cargo-build"],
+    "requires": ["rust-toolchain"],
+    "validationCommands": ["cargo test --quiet", "cargo check"],
+    "authenticitySignals": [
+      "Stylus",
+      "Arbitrum Stylus",
+      "stylus.json",
+      "stylus-sdk",
+      "#[storage]"
+    ],
+    "routingPrompts": [
+      {
+        "prompt": "Build an Arbitrum Stylus Rust contract",
+        "expectedFamily": "stylus-contracts",
+        "expectedLayers": ["framework:stylus-contracts"]
+      }
+    ]
+  },
   "defaults": {
     "contractName": "StarterStylusContract"
   },

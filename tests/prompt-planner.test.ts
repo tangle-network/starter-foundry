@@ -275,6 +275,36 @@ test('planPrompt uses domain-pack metadata for Fhenix Foundry contract workspace
   )
 })
 
+test('planPrompt uses domain-pack metadata for non-Solidity contract workspaces', async () => {
+  const result = await planPrompt({
+    prompt:
+      'Build a React dashboard plus an Arbitrum Stylus Rust contract for a high-throughput AMM.',
+    partner: null,
+  })
+
+  assert.equal(result.kind, 'workspace')
+  assert.equal(
+    result.spec.projects.find((project) => project.id === 'web')?.spec.family,
+    'react-vite-ts',
+  )
+  const contract = result.spec.projects.find((project) => project.id === 'stylus')
+  assert.ok(contract)
+  assert.equal(contract.path, 'contracts/stylus')
+  assert.equal(contract.spec.family, 'stylus-contracts')
+  assert.ok(contract.spec.layers!.includes('framework:stylus-contracts'))
+})
+
+test('planPrompt does not create contract projects from weak bridge UI wording', async () => {
+  const result = await planPrompt({
+    prompt: 'Build a React bridge dashboard with transaction analytics.',
+    partner: null,
+  })
+
+  assert.equal(result.kind, 'starter')
+  assert.equal(result.spec.family, 'react-vite-ts')
+  assert.ok(result.spec.layers!.includes('capability:crypto-bridge-ui'))
+})
+
 test('planPrompt preserves domain-pack capability defaults for contract workspaces', async () => {
   const result = await planPrompt({
     prompt:

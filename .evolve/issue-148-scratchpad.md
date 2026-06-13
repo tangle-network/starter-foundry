@@ -70,6 +70,10 @@ bridges, and a clear consumer path back into blueprint-agent.
 - [x] Active #153 slice: layer-level domain-pack scoring now routes bridge UI
   prompts to a frontend family plus `capability:crypto-bridge-ui`, while explicit
   Foundry/Hardhat runtime prompts keep contract routing compatible.
+- [x] Active #158 slice: `scripts/domain-pack-run.ts` now selects/ranks
+  candidates, writes isolated work units under `.evolve/domain-pack-runs/`,
+  records state, supports filters, active claim locks, status transitions, and
+  deterministic smoke execution.
 
 ## Verification
 
@@ -92,6 +96,8 @@ bridges, and a clear consumer path back into blueprint-agent.
 - [x] `node --test --test-concurrency=1 dist-tests/domain-pack-smoke.test.js dist-tests/plan-domain-pack-work.test.js dist-tests/domain-packs.test.js dist-tests/domain-pack-hardcode-guard.test.js dist-tests/coverage.test.js dist-tests/prompt-planner.test.js` -> 494/494 passing.
 - [x] Changed-file Prettier check for the active #153 files.
 - [x] `git diff --check`
+- [x] `pnpm exec tsx --test tests/domain-pack-run.test.ts` -> 3/3 passing.
+- [x] `pnpm exec tsx scripts/domain-pack-run.ts --limit 4 --write-plan --no-claim --run-id issue-158-proof --json` selected 4 candidates across bridge contracts, bridge UI, FHE capabilities, and FHE contracts.
 
 Current `.evolve/domain-pack-candidates.json` evidence:
 
@@ -114,6 +120,19 @@ Current `.evolve/domain-pack-smoke/` evidence:
   fix; 2 train + 2 holdout leaves; compose 4/4; authenticity hits 8; routing
   now selects `react-vite-ts` plus `framework:react-vite-ts` and
   `capability:crypto-bridge-ui`; blueprint-agent dry-runs 4/4.
+
+Current `.evolve/domain-pack-runs/` evidence:
+
+- `issue-158-proof/run.json`: planned 4 independent work units from 25 current
+  candidates.
+- Selected: `bridge-contracts`, `bridge-ui`, `fhe-capabilities`,
+  `fhe-contracts`.
+- Backlog distribution: 17 bridge candidates, 8 FHE candidates; 17 contracts
+  surface, 8 UI surface; ambiguity groups `bridge-contracts` 9, `bridge-ui` 8,
+  `fhe-capabilities` 4, `fhe-contracts` 4.
+- Work units include candidate id, domain metadata, source leaves, registry
+  files, files to modify, gates, expected starter family/layers, and GitHub
+  tracking issue.
 
 Known repo-wide gate note: `pnpm verify` currently stops at `format:check`
 because the repository has unrelated pre-existing Prettier drift across many

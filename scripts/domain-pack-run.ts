@@ -117,6 +117,7 @@ interface WorkUnit {
   evidence: {
     workUnitPath: string
     smokeReportPath?: string
+    scoredReportPath?: string
   }
 }
 
@@ -182,8 +183,17 @@ const markReason = optionalArg('--reason')
 const lockTtlMinutes = Math.max(1, Number(arg('--lock-ttl-minutes', '240')) || 240)
 const trainCount = Math.max(1, Number(arg('--train', '2')) || 2)
 const holdoutCount = Math.max(1, Number(arg('--holdout', '2')) || 2)
+const shots = Math.max(1, Number(arg('--shots', '1')) || 1)
+const reps = Math.max(1, Number(arg('--reps', '1')) || 1)
+const parallel = Math.max(1, Number(arg('--parallel', '1')) || 1)
 const timeoutMs = Math.max(1_000, Number(arg('--timeout-ms', '120000')) || 120_000)
 const blueprintAgent = arg('--blueprint-agent', 'dry-run')
+const blueprintAgentDir = optionalArg('--blueprint-agent-dir')
+const blueprintRuntime = optionalArg('--runtime')
+const scoredResultsDir = optionalArg('--scored-results-dir')
+const minScore = optionalArg('--min-score')
+const baselineScore = optionalArg('--baseline-score')
+const maxHoldoutRegression = optionalArg('--max-holdout-regression')
 const smokeSkipBuild = hasFlag('--smoke-skip-build')
 const release = hasFlag('--release')
 
@@ -242,12 +252,16 @@ for (const item of selected) {
   const smokeReportPath = selectedGates.includes('deterministic')
     ? join(candidateDir, 'smoke.json')
     : undefined
+  const scoredReportPath = selectedGates.includes('scored')
+    ? join(candidateDir, 'scored.json')
+    : undefined
   const workUnit = buildWorkUnit({
     candidate,
     status: item.status,
     claim,
     candidateDir,
     smokeReportPath,
+    scoredReportPath,
   })
   workUnits.push(workUnit)
   if (shouldWrite) {
@@ -278,14 +292,13 @@ for (const workUnit of workUnits) {
     })
   }
   if (selectedGates.includes('scored')) {
-    const result: GateResult = {
-      gate: 'scored',
-      candidateId: workUnit.candidateId,
-      status: 'skipped',
-      durationMs: 0,
-      reason: 'scored blueprint-agent promotion gate is tracked in #157',
-    }
+    const result = runScoredGate(workUnit)
     gateResults.push(result)
+    const nextStatus: CandidateStatus = result.status === 'passed' ? 'scored-passed' : 'blocked'
+    updateCandidateStatus(state, workUnit.candidateId, nextStatus, result.reason, {
+      runId,
+      evidencePath: result.evidencePath,
+    })
   }
 }
 
@@ -501,12 +514,14 @@ function buildWorkUnit({
   claim,
   candidateDir,
   smokeReportPath,
+  scoredReportPath,
 }: {
   candidate: DomainPackWorkCandidate
   status: CandidateStatus
   claim?: CandidateClaim
   candidateDir: string
   smokeReportPath?: string
+  scoredReportPath?: string
 }): WorkUnit {
   const trackingIssue = ISSUE_BY_DOMAIN[candidate.domain.family ?? ''] ?? 148
   return {
@@ -539,6 +554,7 @@ function buildWorkUnit({
     evidence: {
       workUnitPath: relative(REPO, join(candidateDir, 'work-unit.json')),
       smokeReportPath: smokeReportPath ? relative(REPO, smokeReportPath) : undefined,
+      scoredReportPath: scoredReportPath ? relative(REPO, scoredReportPath) : undefined,
     },
   }
 }
@@ -664,6 +680,63 @@ function runDeterministicGate(workUnit: WorkUnit): GateResult {
   }
 }
 
+function runScoredGate(workUnit: WorkUnit): GateResult {
+  const scoredReportPath = workUnit.evidence.scoredReportPath
+  if (!scoredReportPath) {
+    return {
+      gate: 'scored',
+      candidateId: workUnit.candidateId,
+      status: 'failed',
+      durationMs: 0,
+      reason: 'missing scored report path',
+    }
+  }
+  const command = [
+    'pnpm exec tsx scripts/domain-pack-smoke.ts',
+    `--candidate ${shellQuote(workUnit.candidateId)}`,
+    `--candidates ${shellQuote(candidateFile)}`,
+    `--output ${shellQuote(resolve(REPO, scoredReportPath))}`,
+    '--write',
+    '--json',
+    `--train ${trainCount}`,
+    `--holdout ${holdoutCount}`,
+    `--timeout-ms ${timeoutMs}`,
+    `--blueprint-agent scored`,
+    `--shots ${shots}`,
+    `--reps ${reps}`,
+    `--parallel ${parallel}`,
+    smokeSkipBuild ? '--skip-build' : '',
+    blueprintAgentDir ? `--blueprint-agent-dir ${shellQuote(blueprintAgentDir)}` : '',
+    blueprintRuntime ? `--runtime ${shellQuote(blueprintRuntime)}` : '',
+    scoredResultsDir ? `--scored-results-dir ${shellQuote(scoredResultsDir)}` : '',
+    minScore ? `--min-score ${shellQuote(minScore)}` : '',
+    baselineScore ? `--baseline-score ${shellQuote(baselineScore)}` : '',
+    maxHoldoutRegression ? `--max-holdout-regression ${shellQuote(maxHoldoutRegression)}` : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+  const start = Date.now()
+  const scoredTimeoutMs = timeoutMs * Math.max(1, trainCount + holdoutCount)
+  const result = spawnSync(command, {
+    cwd: REPO,
+    shell: true,
+    encoding: 'utf8',
+    timeout: scoredTimeoutMs,
+  })
+  return {
+    gate: 'scored',
+    candidateId: workUnit.candidateId,
+    status: result.status === 0 ? 'passed' : 'failed',
+    command,
+    exitCode: result.status,
+    durationMs: Date.now() - start,
+    evidencePath: scoredReportPath,
+    reason: result.error?.message,
+    stdoutTail: tail(result.stdout),
+    stderrTail: tail(result.stderr),
+  }
+}
+
 function distributionFor(candidates: CandidateWithState[]): BacklogDistribution {
   const distribution: BacklogDistribution = {
     total: candidates.length,
@@ -697,6 +770,13 @@ function filterSummary(): RunReport['filters'] {
     provider: listArg('--provider', ''),
     ambiguityGroup: listArg('--ambiguity-group', ''),
     gates: selectedGates,
+    shots,
+    reps,
+    parallel,
+    minScore,
+    baselineScore,
+    maxHoldoutRegression,
+    runtime: blueprintRuntime,
     writePlan,
     claim: !noClaim,
   }

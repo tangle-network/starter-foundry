@@ -10,14 +10,16 @@ bridges, and a clear consumer path back into blueprint-agent.
 
 ## Current State
 
-- Branch: `fix/bridge-ui-routing-surface`.
+- Branch: `feat/domain-pack-scored-gate`.
 - Merged foundation:
   - `9834df9` / PR #149: metadata-driven domain-pack foundation.
   - `f6feb44` / PR #156: deterministic train/holdout smoke gate.
+  - `ed39560` / PR #159: bridge UI layer routing fix.
+  - `9174407` / PR #160: domain-pack promotion-loop controller foundation.
 - Pre-existing unrelated dirty files: `.evolve/buildout-analysis-internal.json`,
   `.evolve/governor.jsonl`, `.evolve/scorecard.json`.
-- Issue #148 is open with the full RFC/spec and canonical v2 execution tracker:
-  https://github.com/tangle-network/starter-foundry/issues/148#issuecomment-4698405476
+- Issue #148 is open with the full RFC/spec and canonical v3 execution tracker:
+  https://github.com/tangle-network/starter-foundry/issues/148#issuecomment-4698561503
 - Open child lanes: #152 FHE runtime compatibility, #153 bridge proof pack
   expansion, #154 hardcode migration, #155 generated context, #157 scored
   promotion, #158 parallel candidate promotion loop.
@@ -74,6 +76,12 @@ bridges, and a clear consumer path back into blueprint-agent.
   candidates, writes isolated work units under `.evolve/domain-pack-runs/`,
   records state, supports filters, active claim locks, status transitions, and
   deterministic smoke execution.
+- [x] Active #157 slice: `scripts/domain-pack-smoke.ts` now supports
+  `--blueprint-agent scored`, parses blueprint-agent
+  `matrix/competition.json`, records train/holdout score distributions and run
+  paths, applies min-score and holdout-regression gates, and lets
+  `scripts/domain-pack-run.ts --gates scored` advance candidates to
+  `scored-passed`.
 
 ## Verification
 
@@ -96,7 +104,11 @@ bridges, and a clear consumer path back into blueprint-agent.
 - [x] `node --test --test-concurrency=1 dist-tests/domain-pack-smoke.test.js dist-tests/plan-domain-pack-work.test.js dist-tests/domain-packs.test.js dist-tests/domain-pack-hardcode-guard.test.js dist-tests/coverage.test.js dist-tests/prompt-planner.test.js` -> 494/494 passing.
 - [x] Changed-file Prettier check for the active #153 files.
 - [x] `git diff --check`
-- [x] `pnpm exec tsx --test tests/domain-pack-run.test.ts` -> 3/3 passing.
+- [x] `pnpm exec tsx --test tests/domain-pack-run.test.ts` -> 4/4 passing.
+- [x] `pnpm exec tsx --test tests/domain-pack-smoke.test.ts` -> 4/4 passing.
+- [x] `pnpm exec tsx --test tests/domain-pack-smoke.test.ts tests/domain-pack-run.test.ts` -> 8/8 passing.
+- [x] `pnpm exec tsc -p tsconfig.test.json --pretty false`
+- [x] `pnpm exec tsc --noEmit --pretty false`
 - [x] `pnpm exec tsx scripts/domain-pack-run.ts --limit 4 --write-plan --no-claim --run-id issue-158-proof --json` selected 4 candidates across bridge contracts, bridge UI, FHE capabilities, and FHE contracts.
 
 Current `.evolve/domain-pack-candidates.json` evidence:
@@ -134,6 +146,18 @@ Current `.evolve/domain-pack-runs/` evidence:
   files, files to modify, gates, expected starter family/layers, and GitHub
   tracking issue.
 
+Current scored-gate evidence:
+
+- Fixture-backed scored parsing and thresholds pass locally for
+  `domain-pack-smoke`.
+- Fixture-backed invalid threshold input fails closed to the default
+  `--min-score 0.5` gate instead of weakening promotion.
+- Fixture-backed controller integration passes locally for
+  `domain-pack-run --gates scored`, including state transition to
+  `scored-passed`.
+- Real blueprint-agent scored promotion artifacts for at least one FHE candidate
+  and one bridge candidate are still required before #157 can close.
+
 Known repo-wide gate note: `pnpm verify` currently stops at `format:check`
 because the repository has unrelated pre-existing Prettier drift across many
 files. Changed files in this branch pass targeted Prettier.
@@ -142,8 +166,8 @@ files. Changed files in this branch pass targeted Prettier.
 
 - Promote generated `.evolve/domain-pack-candidates.json` rows into parallel
   implementation issues/PRs after this foundation lands.
-- Extend the #151 smoke gate from blueprint-agent dry-run probes to full scored
-  agent runs where credentials/time budget are available.
+- Run real `--blueprint-agent scored` promotion for at least one FHE candidate
+  and one bridge candidate, then attach those artifacts to #157/#148.
 - Close #153 only after the bridge matrix covers at least six prompts across at
   least three bridge surfaces/families/layers. The active routing PR is the first
   concrete bridge UI proof slice, not the full lane closure.

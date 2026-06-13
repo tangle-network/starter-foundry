@@ -10,19 +10,23 @@ bridges, and a clear consumer path back into blueprint-agent.
 
 ## Current State
 
-- Branch: `feat/domain-pack-agent-context`.
+- Branch: `feat/fhe-runtime-capability-variants`.
 - Merged foundation:
   - `9834df9` / PR #149: metadata-driven domain-pack foundation.
   - `f6feb44` / PR #156: deterministic train/holdout smoke gate.
   - `ed39560` / PR #159: bridge UI layer routing fix.
   - `9174407` / PR #160: domain-pack promotion-loop controller foundation.
+  - `a44c1ca` / PR #162: scored promotion gate requires real completion pass
+    rate.
+  - `018f8fa` / PR #163: generated agent context contracts for composed
+    scaffolds.
 - Pre-existing unrelated dirty files: `.evolve/buildout-analysis-internal.json`,
   `.evolve/governor.jsonl`, `.evolve/scorecard.json`.
 - Issue #148 is open with the full RFC/spec and canonical v3 execution tracker:
   https://github.com/tangle-network/starter-foundry/issues/148#issuecomment-4698561503
 - Open child lanes: #152 FHE runtime compatibility, #153 bridge proof pack
-  expansion, #154 hardcode migration, #155 generated context, #157 scored
-  promotion, #158 parallel candidate promotion loop.
+  expansion, #154 hardcode migration, #157 scored promotion, #158 parallel
+  candidate promotion loop.
 
 ## Requirements
 
@@ -90,6 +94,17 @@ bridges, and a clear consumer path back into blueprint-agent.
   `.starter-foundry/context-pack.json`. The section is populated from
   selected `domainPack`, `contextHints`, validation commands, and
   authenticity signals.
+- [x] Active #152 slice: FHE capabilities are runtime/provider explicit.
+  Existing CoFHE sample layers are now scoped to Fhenix Hardhat only; new
+  Fhenix Foundry variants target `src/*.sol` and build with `forge build`;
+  new Zama fhEVM variants target `contracts/*.sol` and compose with fhEVM
+  imports. The generic selector now requires capability-specific evidence
+  before attaching a domain-pack layer, and registry validation rejects
+  incompatible provider/protocol/runtime/surface combinations.
+- [x] Active #152 queue hygiene: domain-pack candidate ordering now preserves
+  whole ambiguity groups and explicit registry-entry candidates before
+  per-seed shards, so adding many FHE capability variants does not hide
+  bridge/FHEVM work from the default top-25 queue.
 
 ## Verification
 
@@ -124,6 +139,15 @@ bridges, and a clear consumer path back into blueprint-agent.
 - [x] `node --test --test-concurrency=1 dist-tests/domain-pack-agent-context.test.js dist-tests/domain-pack-smoke.test.js dist-tests/domain-pack-run.test.js` -> 13/13 passing.
 - [x] `pnpm build`
 - [x] `pnpm exec tsx scripts/validate-registry.ts`
+- [x] `pnpm exec tsc --noEmit --pretty false`
+- [x] `pnpm exec tsc -p tsconfig.test.json --pretty false`
+- [x] `pnpm exec tsx scripts/validate-registry.ts`
+- [x] `node --test --test-concurrency=1 dist-tests/fhe-runtime-capabilities.test.js` -> 6/6 passing.
+- [x] `node --test --test-concurrency=1 dist-tests/select.test.js dist-tests/prompt-planner.test.js dist-tests/coverage.test.js` -> 518/518 passing.
+- [x] `node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/domain-pack-agent-context.test.js dist-tests/domain-pack-hardcode-guard.test.js dist-tests/domain-pack-smoke.test.js dist-tests/domain-pack-run.test.js dist-tests/plan-domain-pack-work.test.js` -> 24/24 passing.
+- [x] `pnpm test` -> 1140 passed, 1 skipped, 1 todo, 0 failed.
+- [x] `pnpm lint --quiet`
+- [x] `git diff --check`
 
 Current `.evolve/domain-pack-candidates.json` evidence:
 
@@ -178,9 +202,10 @@ Current scored-gate evidence:
 - Real blueprint-agent scored promotion artifacts for at least one FHE candidate
   and one bridge candidate are still required before #157 can close.
 
-Known repo-wide gate note: `pnpm verify` currently stops at `format:check`
-because the repository has unrelated pre-existing Prettier drift across many
-files. Changed files in this branch pass targeted Prettier.
+Known repo-wide gate note: `pnpm format:check` currently stops because the
+repository has unrelated pre-existing Prettier drift across 117 files outside
+this PR. Changed files in this branch were Prettier-written and pass
+`git diff --check`.
 
 ## Open Follow-up Candidates
 

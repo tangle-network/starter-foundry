@@ -481,8 +481,27 @@ function buildCandidates({
   return candidates.sort((left, right) => {
     const leftLeaves = left.leafIds.train.length + left.leafIds.holdout.length
     const rightLeaves = right.leafIds.train.length + right.leafIds.holdout.length
-    return rightLeaves - leftLeaves || left.id.localeCompare(right.id)
+    return (
+      candidateTier(right) - candidateTier(left) ||
+      rightLeaves - leftLeaves ||
+      left.id.localeCompare(right.id)
+    )
   })
+}
+
+function candidateTier(candidate: DomainPackWorkCandidate): number {
+  const allFamilyFiles = candidate.registryFiles.every((file) =>
+    file.startsWith('registry/families/'),
+  )
+  const allLayerFiles = candidate.registryFiles.every((file) => file.startsWith('registry/layers/'))
+  const groupWide = candidate.ambiguityGroup === candidate.id
+  if (groupWide && candidate.registryFiles.length > 1 && allFamilyFiles) return 7
+  if (groupWide && candidate.registryFiles.length > 1 && allLayerFiles) return 6
+  if (candidate.registryFiles.length === 1 && allFamilyFiles) return 5
+  if (candidate.registryFiles.length === 1 && allLayerFiles) return 4
+  if (candidate.registryFiles.length > 1 && allFamilyFiles) return 3
+  if (candidate.registryFiles.length > 1 && allLayerFiles) return 2
+  return 1
 }
 
 function addCandidate(

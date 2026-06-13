@@ -189,6 +189,26 @@ function validateDomainPackSemantic(owner, mf) {
   }
 }
 
+function validateLayerDomainPackCompatibility(owner, layerManifest) {
+  const layerPack = layerManifest?.domainPack
+  if (!layerPack || !Array.isArray(layerManifest?.appliesTo)) return
+
+  for (const target of layerManifest.appliesTo) {
+    const familyManifest = readManifest(join(FAMILIES_DIR, target, 'manifest.json'))
+    const familyPack = familyManifest?.domainPack
+    if (!familyPack || familyPack.domain?.family !== layerPack.domain?.family) continue
+
+    for (const field of ['provider', 'protocol', 'runtime', 'surface']) {
+      const layerValue = layerPack.domain?.[field]
+      const familyValue = familyPack.domain?.[field]
+      if (!layerValue || !familyValue || layerValue === familyValue) continue
+      failures.push(
+        `${owner} domainPack.domain.${field}="${layerValue}" conflicts with family:${target} domainPack.domain.${field}="${familyValue}"`,
+      )
+    }
+  }
+}
+
 for (const fam of familyIds) {
   const mfPath = join(FAMILIES_DIR, fam, 'manifest.json')
   if (!existsSync(mfPath)) continue
@@ -207,6 +227,7 @@ for (const group of readdirSync(LAYERS_DIR)) {
     const mfPath = join(LAYERS_DIR, group, layerId, 'manifest.json')
     if (!existsSync(mfPath)) continue
     const mf = readManifest(mfPath)
+    validateLayerDomainPackCompatibility(`layer.${group}:${layerId}`, mf)
     if (!Array.isArray(mf?.appliesTo)) continue
     for (const target of mf.appliesTo) {
       if (!familyIds.has(target)) {

@@ -20,6 +20,7 @@ test('domain-pack registry exposes FHE and bridge proof packs as metadata', asyn
   assert.ok(owners.has('capability:evm-layerzero-oft'))
   assert.ok(owners.has('capability:defi-bridge'))
   assert.ok(owners.has('capability:crypto-bridge-ui'))
+  assert.ok(owners.has('capability:bridge-protocol-api'))
 })
 
 test('domain-pack scorer disambiguates Fhenix Foundry from Fhenix Hardhat', async () => {
@@ -89,6 +90,19 @@ test('layer domain-pack metadata keeps LayerZero OFT prompts on the contract sta
   assert.equal(result.spec.family, 'forge-contracts')
   assert.ok(result.spec.layers?.includes('framework:forge-foundation'))
   assert.ok(result.spec.layers?.includes('capability:evm-layerzero-oft'))
+})
+
+test('layer domain-pack metadata routes bridge indexer prompts to an EVM infra starter', async () => {
+  const result = await selectStarter({
+    prompt:
+      'Build a bridge transaction monitor API that indexes source confirmed, relayed, destination confirmed, and failed states',
+    partner: null,
+  })
+
+  assert.equal(result.routingRisk, 'safe')
+  assert.equal(result.spec.family, 'evm-infra-ts')
+  assert.ok(result.spec.layers?.includes('framework:evm-infra-ts'))
+  assert.ok(result.spec.layers?.includes('capability:bridge-protocol-api'))
 })
 
 test('generic FHE prompts are surfaced as ambiguous instead of arbitrary provider choice', async () => {

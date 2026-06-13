@@ -43,6 +43,17 @@ const RUNTIME_SIGNAL_GROUPS: { id: string; terms: string[] }[] = [
   { id: 'hardhat', terms: ['hardhat'] },
 ]
 
+const SURFACE_COMPATIBILITY: Record<string, Record<string, number>> = {
+  api: { api: 4, 'edge-api': 3, 'evm-infra': 3, fullstack: 1, service: 3 },
+  backend: { api: 3, 'edge-api': 3, 'evm-infra': 3, fullstack: 1, service: 4, worker: 3 },
+  indexer: { api: 2, 'edge-api': 2, 'evm-infra': 4, service: 3, worker: 3 },
+  monitor: { api: 2, 'evm-infra': 4, service: 3, worker: 3 },
+  service: { api: 3, 'edge-api': 3, 'evm-infra': 3, fullstack: 1, service: 4, worker: 3 },
+  ui: { frontend: 4, fullstack: 1 },
+  web: { frontend: 4, fullstack: 1 },
+  worker: { 'edge-api': 3, 'evm-infra': 2, service: 3, worker: 4 },
+}
+
 function runtimeSignalGroup(runtime: string | undefined): string | null {
   if (!runtime) return null
   const normalized = runtime.toLowerCase()
@@ -138,10 +149,10 @@ function surfaceCompatibilityScore(
   if (!packSurface) return 0
   const familySurface = family.taxonomy?.surface
   if (!familySurface) return 0
-  if (familySurface === packSurface) return 4
-  if ((packSurface === 'ui' || packSurface === 'web') && familySurface === 'frontend') return 4
-  if ((packSurface === 'ui' || packSurface === 'web') && familySurface === 'fullstack') return 1
-  return 0
+  const normalizedPackSurface = packSurface.toLowerCase()
+  const normalizedFamilySurface = familySurface.toLowerCase()
+  if (normalizedFamilySurface === normalizedPackSurface) return 4
+  return SURFACE_COMPATIBILITY[normalizedPackSurface]?.[normalizedFamilySurface] ?? 0
 }
 
 function scoreLayerDomainPack(

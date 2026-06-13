@@ -1,0 +1,5 @@
+{
+  "role": "{{bridgeApiRole}}",
+  "statusPath": "{{bridgeStatusPath}}",
+  "stateModel": ["source_confirmed", "relayed", "destination_confirmed", "failed"]
+}

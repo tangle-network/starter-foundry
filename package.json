@@ -126,7 +126,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@tangle-network/agent-eval": "^0.30.0",
+    "@tangle-network/agent-eval": "^0.77.0",
     "@types/node": "^20.0.0",
     "eslint": "^10.2.1",
     "eslint-config-prettier": "^10.1.8",
@@ -151,6 +151,9 @@
   },
   "pnpm": {
     "minimumReleaseAge": 4320,
-    "minimumReleaseAgeExclude": []
+    "minimumReleaseAgeExclude": [
+      "@tangle-network/agent-eval",
+      "@tangle-network/sandbox"
+    ]
   }
 }

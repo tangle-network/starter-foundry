@@ -54,7 +54,7 @@ concurrency:
 
 jobs:
   eval:
-    runs-on: [self-hosted, staging-runner]
+    runs-on: [self-hosted, ci-linux]
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4

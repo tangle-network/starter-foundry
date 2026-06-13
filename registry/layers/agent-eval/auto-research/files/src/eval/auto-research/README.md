@@ -1,12 +1,12 @@
 # auto-research
 
-Composable optimization layer over `@tangle-network/agent-eval@^0.23.0`.
+Composable optimization layer over `@tangle-network/agent-eval@^0.77.0`.
 
-Wraps the upstream primitives (`runMultiShotOptimization`,
-`PairwiseSteeringOptimizer`, `runPromptEvolution`, `runProposeReview`,
-`paretoFrontier`, `paretoFrontierWithCrowding`) plus the 0.23 RL bridge
-(`analyzeOptimizationResult`) into a small surface a research-harness
-family can compose without re-deriving the agent-eval API.
+Wraps the upstream primitives (`runOptimization`, `runImprovementLoop`,
+`PairwiseSteeringOptimizer`, `runProposeReview`, `paretoFrontier`,
+`paretoFrontierWithCrowding`) plus the run-analysis bridge (`analyzeRuns`)
+into a small surface a research-harness family can compose without
+re-deriving the agent-eval API.
 
 ## Capabilities
 
@@ -37,26 +37,19 @@ const result = await runSteeringOptimization({
   trialsPerScenario: 3,
 })
 
-// 2. Variable-length agent trajectory optimization. Use the same
-// MultiShotVariant path for n=1 single-turn tasks and n>1 conversations.
+// 2. Variable-length agent trajectory optimization.
 const optimized = await runMultiShotTrajectoryOptimization({
   runId: `research-${Date.now()}`,
-  target: 'agent-system-prompt',
-  seedVariants: [{ id: 'baseline', label: 'baseline', generation: 0, payload: baselinePayload }],
-  searchScenarioIds: scenarios.map((s) => s.id),
+  baselineSurface: baselinePrompt,
+  scenarios,
+  judges,
+  dispatchWithSurface,
+  driver,
   reps: 2,
-  generations: 3,
+  maxGenerations: 3,
   populationSize: 4,
-  runner: {
-    run: ({ variant, scenarioId, seed }) => harness.runTrajectory({ variant, scenarioId, seed }),
-  },
-  scorer: {
-    score: ({ run }) => scoreTrajectoryWithAsi(run),
-  },
-  mutateAdapter,
-  gate,
 })
-deploy(optimized.promotedVariant.payload)
+deploy(optimized.winnerSurface)
 
 // 3. Reflective hypothesis → final state via propose/verify/review.
 const report = await proposeReview({
@@ -73,33 +66,22 @@ const f = frontier([
   { variantId: 'B', quality: 0.83, costUsd: 0.40, wallSeconds: 6.0 },
 ])
 
-// 5. (0.23 RL bridge) Convert the sweep into canonical RunRecords +
-//     DPO/PPO preference triples + reward-hacking diagnosis +
-//     anytime-valid sequential interim verdict. Call AFTER the
-//     optimizer returns; do NOT plumb inside it.
+// 5. Convert captured RunRecords into a launch decision report. Call AFTER
+//     the optimizer emits real records; do NOT invent records from aggregates.
 import { analyzeOptimization } from './eval/auto-research/index.js'
 
 const rl = await analyzeOptimization({
-  result: optimized,                                  // PromptEvolutionResult | MultiShotOptimizationResult
-  ctx: {
-    commitSha: process.env.GIT_SHA!,
-    model: 'claude-sonnet-4-6@2025-04-15',           // snapshot, not bare alias
-    promptHash: hashPrompt(baselinePayload),
-    configHash: hashConfig(optimizerConfig),
-    splitTag: 'search',
-  },
-  comparator: 'baseline',
-  preferences: { minMargin: 0.05 },
+  runs,
+  baselineCandidateId: 'baseline',
+  candidateCandidateId: optimized.winnerSurfaceHash,
+  split: 'holdout',
 })
-// rl.runs                              → RunRecord[] (canonical, hashed)
-// rl.preferences.pairs                 → DPO/PPO training rows
-// rl.rewardHacking.verdict             → 'clean' | 'suspect' | ...
-// rl.interimConfidence?.recommendation → anytime-valid promote/reject
+// rl.recommendations → ranked launch / hold / investigate guidance
 ```
 
-The 0.23 RL bridge is what closes the auto-research loop into a
-trainer-consumable artifact set. Reference wiring lives in
-`agent-builder/src/lib/.server/eval/auto-research-runner.ts`.
+The run-analysis bridge closes the auto-research loop into an evidence-backed
+decision packet. It preserves the rule that analysis starts from real
+`RunRecord[]`, not synthesized aggregate scores.
 
 ## What this layer does NOT do
 

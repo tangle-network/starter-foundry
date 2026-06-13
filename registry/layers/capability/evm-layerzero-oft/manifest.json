@@ -1,6 +1,27 @@
 {
   "id": "evm-layerzero-oft",
   "description": "Specializes a Foundry contract lane for omnichain token and bridge flows.",
+  "domainPack": {
+    "domain": {
+      "family": "bridge",
+      "provider": "layerzero",
+      "protocol": "oft",
+      "runtime": "foundry",
+      "surface": "contracts"
+    },
+    "provides": ["bridge-contracts", "layerzero-oft", "omnichain-token", "forge-build"],
+    "requires": ["solidity-contracts"],
+    "ambiguityGroup": "bridge-contracts",
+    "validationCommands": ["forge build", "forge test"],
+    "authenticitySignals": ["LayerZero", "OFT", "sendTokens", "omnichain", "bridge"],
+    "routingPrompts": [
+      {
+        "prompt": "Build a LayerZero OFT bridge token with Foundry",
+        "expectedFamily": "forge-contracts",
+        "expectedLayers": ["framework:forge-foundation", "capability:evm-layerzero-oft"]
+      }
+    ]
+  },
   "appliesTo": [
     "forge-contracts"
   ],

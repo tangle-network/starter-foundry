@@ -1,6 +1,13 @@
 {
   "id": "fhe-private-voting",
   "description": "Private on-chain voting using FHE — individual votes stay encrypted, tally computed homomorphically.",
+  "domainPack": {
+    "domain": { "family": "fhe", "surface": "contracts" },
+    "provides": ["fhe-private-voting"],
+    "requires": ["fhe-types"],
+    "ambiguityGroup": "fhe-capabilities",
+    "authenticitySignals": ["encrypted voting", "private voting", "secret ballot", "FHE.add", "FHE.select"]
+  },
   "appliesTo": ["fhenix-contracts", "fhevm-contracts"],
   "files": [
     { "source": "files/PrivateVoting.sol", "target": "contracts/PrivateVoting.sol" }

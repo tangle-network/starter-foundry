@@ -1,7 +1,7 @@
 /**
  * auto-research:loop — composable optimization loop.
  *
- * Wraps the optimization primitives from `@tangle-network/agent-eval@^0.23.0`.
+ * Wraps the optimization primitives from `@tangle-network/agent-eval@^0.77.0`.
  * The eval-harness layers (scenarios, judge-rubric, regression) supply the
  * measurement substrate; this module supplies the optimizer that drives
  * variants against it.
@@ -12,7 +12,7 @@
  *     by observed aggregate score. Use when variants are already enumerated
  *     and the question is "which one wins?".
  *
- *   - `runMultiShotTrajectoryOptimization` — GEPA-style optimization for a
+ *   - `runMultiShotTrajectoryOptimization` — campaign optimization for a
  *     variable-length agent task. Use this for chat agents, browser/coding
  *     agents, and autoresearch loops where one trial is a whole trajectory.
  *
@@ -20,14 +20,12 @@
  *     consumer wants the loop to GENERATE variants for a narrow prompt-only
  *     surface. Prefer `runMultiShotTrajectoryOptimization` for product loops.
  *
- * Plus the 0.23 RL bridge:
+ * Plus the current run-analysis bridge:
  *
- *   - `analyzeOptimizationResult` — converts an optimization sweep output
- *     (`PromptEvolutionResult` or `MultiShotOptimizationResult`) into the
- *     canonical RL artifact set: `RunRecord[]`, preference triples ready
- *     for DPO/PPO/KTO, verifiable reward signals, reward-hacking diagnosis,
- *     and an anytime-valid sequential verdict. Idempotent and read-only
- *     with respect to the sweep result — call after the optimizer returns.
+ *   - `analyzeOptimization` — converts captured `RunRecord[]` into the
+ *     canonical insight report: score distributions, cost/quality frontier,
+ *     lift analysis when baseline/candidate ids are present, and ranked
+ *     recommendations. Idempotent and read-only with respect to the runs.
  *
  * Both optimization entrypoints pass through to agent-eval primitives
  * unchanged so callers can read the upstream docs and trust their
@@ -39,21 +37,24 @@
 
 import {
   PairwiseSteeringOptimizer,
-  runMultiShotOptimization,
-  runPromptEvolution,
-  type MultiShotOptimizationConfig,
-  type MultiShotOptimizationResult,
-  type PromptEvolutionConfig,
-  type PromptEvolutionResult,
   type SteeringOptimizationRow,
   type SteeringOptimizationResult,
   type SteeringOptimizerConfig,
 } from '@tangle-network/agent-eval'
 import {
-  analyzeOptimizationResult,
-  type AnalyzeOptimizationResultOptions,
-  type AnalyzeOptimizationResultReport,
-} from '@tangle-network/agent-eval/rl'
+  runImprovementLoop,
+  runOptimization,
+  type RunImprovementLoopOptions,
+  type RunImprovementLoopResult,
+  type RunOptimizationOptions,
+  type RunOptimizationResult,
+  type Scenario,
+} from '@tangle-network/agent-eval/campaign'
+import {
+  analyzeRuns,
+  type AnalyzeRunsOptions,
+  type InsightReport,
+} from '@tangle-network/agent-eval/contract'
 
 export interface SteeringOptimizationInput {
   rows: SteeringOptimizationRow[]
@@ -83,7 +84,7 @@ export async function runSteeringOptimization(
 export async function runMultiShotTrajectoryOptimization<P>(
   config: MultiShotOptimizationConfig<P>,
 ): Promise<MultiShotOptimizationResult<P>> {
-  return runMultiShotOptimization(config)
+  return runOptimization(config)
 }
 
 /**
@@ -99,57 +100,52 @@ export async function runMultiShotTrajectoryOptimization<P>(
 export async function runEvolution<P>(
   config: PromptEvolutionConfig<P>,
 ): Promise<PromptEvolutionResult<P>> {
-  return runPromptEvolution(config)
+  return runOptimization(config)
 }
 
 /**
- * Bridge an optimization sweep output to the canonical RL artifact set —
- * `RunRecord[]`, preference triples (chosen/rejected for DPO/PPO/KTO),
- * verifiable reward signals, reward-hacking diagnosis, and (when a
- * comparator candidate is supplied) an anytime-valid sequential verdict.
+ * Run the full promotion shell: optimize on train, re-score baseline vs winner
+ * on holdout, and return the gate decision plus promoted diff. Use this when
+ * the caller has the held-out split required for a launch decision.
+ */
+export async function runPromotedImprovementLoop<P>(
+  config: PromotedImprovementConfig<P>,
+): Promise<PromotedImprovementResult<P>> {
+  return runImprovementLoop(config)
+}
+
+/**
+ * Analyze captured run records into the canonical decision packet —
+ * score distributions, lift when paired baseline/candidate ids exist,
+ * cost/quality frontier, failure clusters when an analyst is configured,
+ * and ranked recommendations.
  *
- * Accepts either a `PromptEvolutionResult` or a `MultiShotOptimizationResult`
- * — the function detects which by structural typing.
- *
- * Idempotent and read-only with respect to the optimization result. Call
- * *after* `runMultiShotTrajectoryOptimization` / `runEvolution` returns; do
- * NOT plumb it inside the optimizer.
+ * Idempotent and read-only with respect to the captured runs. Call after the
+ * optimization or promotion loop has emitted `RunRecord[]`; do NOT invent
+ * records from aggregate scores.
  *
  * @example
- *   const evo = await runMultiShotTrajectoryOptimization(config)
  *   const rl = await analyzeOptimization({
- *     result: evo,
- *     ctx: {
- *       commitSha: process.env.GIT_SHA!,
- *       model: 'claude-sonnet-4-6@2025-04-15',
- *       promptHash: hashPrompt(config.seedPrompts),
- *       configHash: hashConfig(config),
- *       splitTag: 'search',
- *     },
- *     comparator: 'baseline',
- *     preferences: { minMargin: 0.05 },
+ *     runs,
+ *     baselineCandidateId: 'baseline',
+ *     candidateCandidateId: optimized.winnerSurfaceHash,
+ *     split: 'holdout',
  *   })
- *   // rl.preferences.pairs → DPO/PPO training rows
- *   // rl.rewardHacking.verdict → 'clean' | 'suspect' | ...
- *   // rl.interimConfidence?.recommendation.decision → 'promote' | 'reject' | 'continue'
+ *   // rl.recommendations → ranked launch / hold / investigate guidance
  */
 export async function analyzeOptimization(
   options: AnalyzeOptimizationResultOptions,
 ): Promise<AnalyzeOptimizationResultReport> {
-  return analyzeOptimizationResult(options)
+  return analyzeRuns(options)
 }
 
-export type {
-  MultiShotOptimizationConfig,
-  MultiShotOptimizationResult,
-  PromptEvolutionConfig,
-  PromptEvolutionResult,
-  SteeringOptimizationRow,
-  SteeringOptimizationResult,
-  SteeringOptimizerConfig,
-} from '@tangle-network/agent-eval'
+export type MultiShotOptimizationConfig<P = unknown> = RunOptimizationOptions<Scenario, P>
+export type MultiShotOptimizationResult<P = unknown> = RunOptimizationResult<P, Scenario>
+export type PromptEvolutionConfig<P = unknown> = RunOptimizationOptions<Scenario, P>
+export type PromptEvolutionResult<P = unknown> = RunOptimizationResult<P, Scenario>
+export type PromotedImprovementConfig<P = unknown> = RunImprovementLoopOptions<Scenario, P>
+export type PromotedImprovementResult<P = unknown> = RunImprovementLoopResult<P, Scenario>
+export type AnalyzeOptimizationResultOptions = AnalyzeRunsOptions
+export type AnalyzeOptimizationResultReport = InsightReport
 
-export type {
-  AnalyzeOptimizationResultOptions,
-  AnalyzeOptimizationResultReport,
-} from '@tangle-network/agent-eval/rl'
+export type { SteeringOptimizationRow, SteeringOptimizationResult, SteeringOptimizerConfig }

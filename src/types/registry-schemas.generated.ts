@@ -3,6 +3,48 @@
 // `pnpm test` enforces this file is in sync via scripts/gen-types-from-schemas.ts --check.
 
 /* eslint-disable */
+/** Bundle-side spec; deploy script translates into a Tangle Sandbox AgentProfile and emits harness-native files (AGENTS.md, agents.json) at the workspace root. */
+export interface Agent {
+  "name": string
+  "description"?: string
+  "version": string
+  "tags"?: Array<string>
+  "harness"?: "opencode" | "claude-code" | "hermes"
+  "hooks"?: {
+  "pre"?: string
+  "post"?: string
+}
+  "workspace"?: {
+  "root"?: string
+}
+  "prompt": {
+  "systemPromptFile"?: string
+  "instructions"?: Array<string>
+}
+  "model"?: {
+  "preferred"?: string
+  "fallback"?: Array<string>
+}
+  "tools"?: Record<string, boolean>
+  "permissions"?: Record<string, "allow" | "ask" | "deny">
+  "mcp"?: Record<string, unknown>
+  "subagents"?: Record<string, {
+  "description"?: string
+  "systemPromptFile": string
+  "model"?: string
+  "tools"?: Record<string, boolean>
+  "permissions"?: Record<string, "allow" | "ask" | "deny">
+  "temperature"?: number
+  "maxSteps"?: number
+}>
+  "resources"?: {
+  "files"?: Array<{
+  "source": string
+  "target"?: string
+}>
+}
+}
+
 export interface Buildhints {
   "pages"?: Array<string>
   "apiRoutes"?: Array<string>
@@ -40,7 +82,7 @@ export interface Family {
   "target": string
 }>
   "validationChecks"?: Array<{
-  "type": "file-exists" | "node-syntax" | "http-start" | "command-success" | "python-compile" | "prompt-frontmatter-valid" | "cron-syntax-valid" | "template-index-valid"
+  "type": "file-exists" | "node-syntax" | "http-start" | "command-success" | "python-compile" | "prompt-frontmatter-valid" | "cron-syntax-valid" | "template-index-valid" | "agents-md-valid" | "methodology-index-valid" | "schedule-valid"
   "path"?: string
   "command"?: Array<string>
   "expect"?: string
@@ -65,6 +107,25 @@ export interface Family {
   "boost"?: Record<string, number>
 }
   "buildHints"?: Buildhints
+  "domainPack"?: {
+  "domain": {
+  "family": string
+  "provider"?: string
+  "protocol"?: string
+  "runtime"?: string
+  "surface"?: string
+}
+  "provides": Array<string>
+  "requires"?: Array<string>
+  "ambiguityGroup"?: string
+  "validationCommands"?: Array<string>
+  "authenticitySignals"?: Array<string>
+  "routingPrompts"?: Array<{
+  "prompt": string
+  "expectedFamily"?: string
+  "expectedLayers"?: Array<string>
+}>
+}
 }
 
 export interface Layer {
@@ -101,6 +162,25 @@ export interface Layer {
   "provides"?: Array<string>
   "requires"?: Array<string>
   "conflictsWith"?: Array<string>
+  "domainPack"?: {
+  "domain": {
+  "family": string
+  "provider"?: string
+  "protocol"?: string
+  "runtime"?: string
+  "surface"?: string
+}
+  "provides": Array<string>
+  "requires"?: Array<string>
+  "ambiguityGroup"?: string
+  "validationCommands"?: Array<string>
+  "authenticitySignals"?: Array<string>
+  "routingPrompts"?: Array<{
+  "prompt": string
+  "expectedFamily"?: string
+  "expectedLayers"?: Array<string>
+}>
+}
 }
 
 export interface Partner {

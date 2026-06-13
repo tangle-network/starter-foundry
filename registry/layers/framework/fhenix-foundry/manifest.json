@@ -1,0 +1,12 @@
+{
+  "id": "fhenix-foundry",
+  "description": "Fhenix FHE contracts framework layer on Foundry: forge-buildable encrypted-type contract + vendored CoFHE so `forge build` compiles offline.",
+  "appliesTo": ["fhenix-foundry"],
+  "files": [
+    { "source": "files/foundry.toml", "target": "foundry.toml" },
+    { "source": "files/lib/cofhe-contracts/contracts/FHE.sol", "target": "lib/cofhe-contracts/contracts/FHE.sol" },
+    { "source": "files/Contract.sol", "target": "src/{{contractName}}.sol" },
+    { "source": "files/Contract.t.sol", "target": "test/{{contractName}}.t.sol" },
+    { "source": "files/Deploy.s.sol", "target": "script/Deploy.s.sol" }
+  ]
+}

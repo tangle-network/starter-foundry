@@ -2,6 +2,23 @@
   "id": "crypto-bridge-ui",
   "description": "Cross-chain bridge interface with chain selection, fee estimation, and transaction history.",
   "group": "capability",
+  "domainPack": {
+    "domain": {
+      "family": "bridge",
+      "surface": "ui"
+    },
+    "provides": ["bridge-ui", "bridge-history", "chain-selector"],
+    "requires": ["wallet-ui"],
+    "ambiguityGroup": "bridge-ui",
+    "authenticitySignals": ["source chain", "destination chain", "fee estimation", "transaction history"],
+    "routingPrompts": [
+      {
+        "prompt": "Build a cross-chain bridge transfer UI with Wormhole",
+        "expectedFamily": "react-vite-ts",
+        "expectedLayers": ["framework:react-vite-ts", "capability:crypto-bridge-ui"]
+      }
+    ]
+  },
   "appliesTo": ["nextjs-ts", "react-vite-ts", "fullstack-ts"],
   "keywords": ["bridge", "cross-chain", "transfer", "multichain", "layerzero", "wormhole", "chain transfer"],
   "capabilityRequires": ["shadcn"],

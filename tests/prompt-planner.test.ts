@@ -251,6 +251,29 @@ test('planPrompt routes layerzero oft prompts to an api plus evm workspace', asy
   )
 })
 
+test('planPrompt uses domain-pack metadata for Fhenix Foundry contract workspaces', async () => {
+  const result = await planPrompt({
+    prompt:
+      'Build a React dashboard plus a Fhenix Foundry Solidity contract for a sealed-bid auction using CoFHE encrypted bids.',
+    partner: null,
+  })
+
+  assert.equal(result.kind, 'workspace')
+  assert.equal(
+    result.spec.projects.find((project) => project.id === 'web')?.spec.family,
+    'react-vite-ts',
+  )
+  assert.equal(
+    result.spec.projects.find((project) => project.id === 'evm')?.spec.family,
+    'fhenix-foundry',
+  )
+  assert.ok(
+    result.spec.projects
+      .find((project) => project.id === 'evm')
+      ?.spec.layers!.includes('framework:fhenix-foundry'),
+  )
+})
+
 test('planPrompt infers coinbase partner when not provided', async () => {
   const result = await planPrompt({
     prompt:
@@ -277,6 +300,11 @@ test('planPrompt assigns evm wallet sdk for xlayer frontend prompts', async () =
   assert.equal(
     result.spec.projects.find((project) => project.id === 'web')?.spec.slots!.sdk,
     'sdk:evm-wallet',
+  )
+  assert.ok(
+    result.spec.projects
+      .find((project) => project.id === 'web')
+      ?.spec.layers!.includes('capability:crypto-bridge-ui'),
   )
 })
 

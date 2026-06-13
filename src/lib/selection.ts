@@ -363,10 +363,22 @@ export async function selectStarter({
     })
   }
 
+  const domainMatchesToApply = domainMatches.filter((match) => !match.layers?.length)
+  const bestLayerMatchByFamily = new Map<string, (typeof domainMatches)[number]>()
   for (const match of domainMatches) {
+    if (!match.layers?.length) continue
+    const current = bestLayerMatchByFamily.get(match.family)
+    if (!current || match.score > current.score) bestLayerMatchByFamily.set(match.family, match)
+  }
+  domainMatchesToApply.push(...bestLayerMatchByFamily.values())
+
+  for (const match of domainMatchesToApply) {
     const candidate = candidates.find((item) => item.family === match.family)
     if (!candidate) continue
     candidate.score += match.score
+    if (match.layers?.length) {
+      candidate.layers = [...new Set([...candidate.layers, ...match.layers])]
+    }
     candidate.reasons.push(
       `domain-pack → ${match.family} (+${match.score}: ${match.reasons.join(', ')})`,
     )

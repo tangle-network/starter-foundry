@@ -481,6 +481,30 @@ const CAP_PROMPTS: Record<string, { prompt: string; family: string }> = {
     prompt: 'Build a Fhenix Hardhat blind auction with sealed bid encryption',
     family: 'fhenix-contracts',
   },
+  'capability:fhe-foundry-private-token': {
+    prompt: 'Build a Fhenix Foundry private token with encrypted balances',
+    family: 'fhenix-foundry',
+  },
+  'capability:fhe-foundry-private-voting': {
+    prompt: 'Build a Fhenix Foundry private voting contract with secret ballot',
+    family: 'fhenix-foundry',
+  },
+  'capability:fhe-foundry-sealed-auction': {
+    prompt: 'Build a Fhenix Foundry sealed-bid auction with encrypted bids',
+    family: 'fhenix-foundry',
+  },
+  'capability:fhevm-private-token': {
+    prompt: 'Build a Zama fhEVM private token with encrypted balances',
+    family: 'fhevm-contracts',
+  },
+  'capability:fhevm-private-voting': {
+    prompt: 'Build a Zama fhEVM private voting contract with secret ballot',
+    family: 'fhevm-contracts',
+  },
+  'capability:fhevm-sealed-auction': {
+    prompt: 'Build a Zama fhEVM sealed-bid auction with encrypted bids',
+    family: 'fhevm-contracts',
+  },
   'capability:exchange-binance': {
     prompt: 'Build a Binance trading bot for BTC futures',
     family: 'worker-job',

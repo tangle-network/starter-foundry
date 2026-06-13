@@ -1,21 +1,21 @@
 {
-  "id": "fhe-private-token",
-  "description": "ERC20-like token with encrypted balances using FHE — transfer amounts and balances stay private.",
+  "id": "fhevm-private-token",
+  "description": "Zama fhEVM private token capability with encrypted balances and FHEVM transfer gates.",
   "domainPack": {
     "domain": {
       "family": "fhe",
-      "provider": "fhenix",
-      "protocol": "cofhe",
+      "provider": "zama",
+      "protocol": "fhevm",
       "runtime": "hardhat",
       "surface": "contracts"
     },
-    "provides": ["fhe-private-token", "cofhe-private-token", "hardhat-build"],
-    "requires": ["fhe-types", "cofhe", "hardhat"],
+    "provides": ["fhe-private-token", "tfhe-private-token", "hardhat-build"],
+    "requires": ["fhe-types", "tfhe", "hardhat"],
     "ambiguityGroup": "fhe-capabilities",
     "validationCommands": ["npx hardhat compile"],
-    "authenticitySignals": ["encrypted balance", "private token", "FHE.add", "FHE.gte", "FHE.allow"]
+    "authenticitySignals": ["encrypted balance", "private token", "externalEuint64", "FHE.fromExternal", "FHE.add", "FHE.gte", "FHE.select", "FHE.allowThis"]
   },
-  "appliesTo": ["fhenix-contracts"],
+  "appliesTo": ["fhevm-contracts"],
   "provides": ["fhe-private-token"],
   "files": [
     { "source": "files/PrivateToken.sol", "target": "contracts/PrivateToken.sol" }

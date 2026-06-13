@@ -1,21 +1,21 @@
 {
-  "id": "fhe-sealed-auction",
-  "description": "Sealed-bid auction using FHE — bids stay encrypted, winner determined homomorphically.",
+  "id": "fhevm-sealed-auction",
+  "description": "Zama fhEVM sealed-bid auction capability with encrypted bids and FHEVM winner selection.",
   "domainPack": {
     "domain": {
       "family": "fhe",
-      "provider": "fhenix",
-      "protocol": "cofhe",
+      "provider": "zama",
+      "protocol": "fhevm",
       "runtime": "hardhat",
       "surface": "contracts"
     },
-    "provides": ["fhe-sealed-auction", "cofhe-sealed-auction", "hardhat-build"],
-    "requires": ["fhe-types", "cofhe", "hardhat"],
+    "provides": ["fhe-sealed-auction", "tfhe-sealed-auction", "hardhat-build"],
+    "requires": ["fhe-types", "tfhe", "hardhat"],
     "ambiguityGroup": "fhe-capabilities",
     "validationCommands": ["npx hardhat compile"],
-    "authenticitySignals": ["sealed bid", "blind auction", "encrypted auction", "FHE.gt", "FHE.select"]
+    "authenticitySignals": ["sealed bid", "blind auction", "encrypted auction", "externalEuint64", "FHE.fromExternal", "FHE.gte", "FHE.select", "FHE.allowThis"]
   },
-  "appliesTo": ["fhenix-contracts"],
+  "appliesTo": ["fhevm-contracts"],
   "provides": ["fhe-sealed-auction"],
   "files": [
     { "source": "files/SealedAuction.sol", "target": "contracts/SealedAuction.sol" }

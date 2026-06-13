@@ -1,21 +1,21 @@
 {
-  "id": "fhe-private-voting",
-  "description": "Private on-chain voting using FHE — individual votes stay encrypted, tally computed homomorphically.",
+  "id": "fhevm-private-voting",
+  "description": "Zama fhEVM private voting capability with encrypted ballots and FHEVM tally selection.",
   "domainPack": {
     "domain": {
       "family": "fhe",
-      "provider": "fhenix",
-      "protocol": "cofhe",
+      "provider": "zama",
+      "protocol": "fhevm",
       "runtime": "hardhat",
       "surface": "contracts"
     },
-    "provides": ["fhe-private-voting", "cofhe-private-voting", "hardhat-build"],
-    "requires": ["fhe-types", "cofhe", "hardhat"],
+    "provides": ["fhe-private-voting", "tfhe-private-voting", "hardhat-build"],
+    "requires": ["fhe-types", "tfhe", "hardhat"],
     "ambiguityGroup": "fhe-capabilities",
     "validationCommands": ["npx hardhat compile"],
-    "authenticitySignals": ["encrypted voting", "private voting", "secret ballot", "FHE.add", "FHE.select"]
+    "authenticitySignals": ["encrypted voting", "private voting", "secret ballot", "externalEbool", "FHE.fromExternal", "FHE.add", "FHE.select", "FHE.allowThis"]
   },
-  "appliesTo": ["fhenix-contracts"],
+  "appliesTo": ["fhevm-contracts"],
   "provides": ["fhe-private-voting"],
   "files": [
     { "source": "files/PrivateVoting.sol", "target": "contracts/PrivateVoting.sol" }

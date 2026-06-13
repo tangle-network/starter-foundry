@@ -1,6 +1,13 @@
 {
   "id": "fhe-sealed-auction",
   "description": "Sealed-bid auction using FHE — bids stay encrypted, winner determined homomorphically.",
+  "domainPack": {
+    "domain": { "family": "fhe", "surface": "contracts" },
+    "provides": ["fhe-sealed-auction"],
+    "requires": ["fhe-types"],
+    "ambiguityGroup": "fhe-capabilities",
+    "authenticitySignals": ["sealed bid", "blind auction", "encrypted auction", "FHE.gt", "FHE.select"]
+  },
   "appliesTo": ["fhenix-contracts", "fhevm-contracts"],
   "files": [
     { "source": "files/SealedAuction.sol", "target": "contracts/SealedAuction.sol" }

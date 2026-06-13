@@ -89,6 +89,7 @@
     "propose:capability-candidates": "tsx scripts/propose-capability-candidates.ts",
     "detect:family-gaps": "tsx scripts/detect-family-gaps.ts",
     "detect:capability-gaps": "tsx scripts/detect-capability-gaps.ts",
+    "plan:domain-packs": "tsx scripts/plan-domain-pack-work.ts",
     "promote:family-proposal": "tsx scripts/promote-family-proposal.ts",
     "promote:capability-proposal": "tsx scripts/promote-capability-proposal.ts",
     "template:sweep": "tsx scripts/template-quality-sweep.ts",

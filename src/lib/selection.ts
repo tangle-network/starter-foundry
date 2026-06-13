@@ -4,6 +4,7 @@ import { join } from 'node:path'
 
 import type { SelectionResult, Confidence, ComposeSpec, Registry, RoutingRisk } from '../types.js'
 
+import { detectDomainPackAmbiguity, scoreDomainPackFamilies } from './domain-packs.js'
 import { fuzzyKeywordScore } from './keywords.js'
 import { loadRegistry } from './registry.js'
 import { semanticMatch, isSemanticRouterReady } from './semantic-router.js'
@@ -348,6 +349,7 @@ export async function selectStarter({
   const index = getIndex(registry)
 
   const scores = scoreAllFamilies(prompt, index)
+  const domainMatches = scoreDomainPackFamilies({ prompt, partner, registry })
 
   // Build candidates in registry iteration order (stable tie-break downstream)
   const candidates: Candidate[] = []
@@ -359,6 +361,15 @@ export async function selectStarter({
       score,
       reasons: score > 0 ? [`${familyId} matched`] : [],
     })
+  }
+
+  for (const match of domainMatches) {
+    const candidate = candidates.find((item) => item.family === match.family)
+    if (!candidate) continue
+    candidate.score += match.score
+    candidate.reasons.push(
+      `domain-pack → ${match.family} (+${match.score}: ${match.reasons.join(', ')})`,
+    )
   }
 
   candidates.sort((left, right) => right.score - left.score)
@@ -399,6 +410,9 @@ export async function selectStarter({
   }
 
   const winner = candidates[0]
+  const domainAmbiguity = detectDomainPackAmbiguity(domainMatches)
+  const activeDomainAmbiguity =
+    domainAmbiguity && domainAmbiguity.families.includes(winner.family) ? domainAmbiguity : null
 
   // Resilient fallback (Gen 11.5 — replaces the silent frontend-static default).
   // When no family scores, classify the prompt shape:
@@ -416,8 +430,8 @@ export async function selectStarter({
   let fallbackReason = ''
   let confidence: Confidence
   if (winner.score > 0) {
-    confidence = winner.score > 6 ? 'high' : 'medium'
-    routingRisk = 'safe'
+    confidence = activeDomainAmbiguity ? 'unknown' : winner.score > 6 ? 'high' : 'medium'
+    routingRisk = activeDomainAmbiguity ? 'ambiguous' : 'safe'
   } else {
     const lower = prompt.toLowerCase()
     const describesProduct =
@@ -488,7 +502,12 @@ export async function selectStarter({
     confidence,
     spec,
     fallbackUsed: winner.score === 0,
-    reasons: winner.score > 0 ? winner.reasons : [fallbackReason],
+    reasons:
+      winner.score > 0
+        ? activeDomainAmbiguity
+          ? [activeDomainAmbiguity.reason, ...winner.reasons]
+          : winner.reasons
+        : [fallbackReason],
     routingRisk,
   }
 }

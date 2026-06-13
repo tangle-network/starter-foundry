@@ -92,6 +92,43 @@
         "boost": { "type": "object", "additionalProperties": { "type": "number" } }
       }
     },
-    "buildHints": { "$ref": "buildhints.schema.json" }
+    "buildHints": { "$ref": "buildhints.schema.json" },
+    "domainPack": {
+      "type": "object",
+      "required": ["domain", "provides"],
+      "additionalProperties": false,
+      "properties": {
+        "domain": {
+          "type": "object",
+          "required": ["family"],
+          "additionalProperties": false,
+          "properties": {
+            "family": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+            "provider": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+            "protocol": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+            "runtime": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+            "surface": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" }
+          }
+        },
+        "provides": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "requires": { "type": "array", "items": { "type": "string" } },
+        "ambiguityGroup": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+        "validationCommands": { "type": "array", "items": { "type": "string" } },
+        "authenticitySignals": { "type": "array", "items": { "type": "string" } },
+        "routingPrompts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["prompt"],
+            "additionalProperties": false,
+            "properties": {
+              "prompt": { "type": "string", "minLength": 8 },
+              "expectedFamily": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+              "expectedLayers": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    }
   }
 }

@@ -1,6 +1,18 @@
 {
   "id": "defi-bridge",
   "description": "Adds cross-chain bridge and messaging patterns with lock/mint, burn/release, and proof verification.",
+  "domainPack": {
+    "domain": {
+      "family": "bridge",
+      "protocol": "custom",
+      "runtime": "evm",
+      "surface": "contracts"
+    },
+    "provides": ["bridge-patterns", "cross-chain-messaging", "lock-mint"],
+    "requires": ["solidity-contracts"],
+    "ambiguityGroup": "bridge-contracts",
+    "authenticitySignals": ["cross-chain bridge", "lock and mint", "burn and release", "proof verification"]
+  },
   "appliesTo": [
     "forge-contracts",
     "hardhat-contracts",

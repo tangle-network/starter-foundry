@@ -3,6 +3,39 @@
   "description": "Zama fhEVM encrypted Solidity contracts with up to euint256 support.",
   "tags": ["zama", "fhevm", "fhe", "solidity", "privacy", "contracts"],
   "taxonomy": { "language": "solidity", "runtime": "fhevm", "surface": "contracts" },
+  "domainPack": {
+    "domain": {
+      "family": "fhe",
+      "provider": "zama",
+      "protocol": "fhevm",
+      "runtime": "hardhat",
+      "surface": "contracts"
+    },
+    "provides": ["solidity-contracts", "fhe-types", "tfhe", "hardhat-build"],
+    "requires": ["hardhat"],
+    "ambiguityGroup": "fhe-contracts",
+    "validationCommands": ["npx hardhat compile", "npx hardhat test"],
+    "authenticitySignals": [
+      "euint",
+      "ebool",
+      "InEuint",
+      "FHE.asEuint",
+      "FHE.add",
+      "FHE.select",
+      "FHE.allow",
+      "tfhe",
+      "fhevm",
+      "confidential erc20",
+      "encrypted evm"
+    ],
+    "routingPrompts": [
+      {
+        "prompt": "Build a Zama fhEVM confidential ERC20",
+        "expectedFamily": "fhevm-contracts",
+        "expectedLayers": ["framework:fhevm-contracts"]
+      }
+    ]
+  },
   "slots": {},
   "defaults": {
     "projectType": "contracts",

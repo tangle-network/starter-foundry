@@ -1,6 +1,7 @@
 import type { Registry } from '../types.js'
 import type { ComposeSpec, WorkspaceSpec, PromptPlan, ProjectEntry } from '../types.js'
 
+import { detectDomainPackAmbiguity, scoreDomainPackFamilies } from './domain-packs.js'
 import {
   detectCapabilities,
   detectIndustry,
@@ -273,11 +274,38 @@ function buildProtocolProject(
   }
 }
 
+function frameworkLayersForFamily(registry: Registry, familyId: string): string[] {
+  const layers: string[] = []
+  for (const [key, layer] of registry.layers) {
+    if (layer.group === 'framework' && layer.appliesTo?.includes(familyId)) layers.push(key)
+  }
+  return layers
+}
+
+function selectDomainContractFamily(
+  prompt: string,
+  partner: string | null,
+  registry: Registry,
+): { family: string; layers: string[] } | null {
+  const matches = scoreDomainPackFamilies({ prompt, partner, registry })
+  const ambiguity = detectDomainPackAmbiguity(matches)
+  for (const match of matches) {
+    if (ambiguity?.families.includes(match.family)) continue
+    const family = registry.families.get(match.family)
+    if (family?.taxonomy?.language !== 'solidity') continue
+    if (family.taxonomy.surface !== 'contracts') continue
+    const layers = frameworkLayersForFamily(registry, match.family)
+    return { family: match.family, layers }
+  }
+  return null
+}
+
 function collectProtocolProjects(
   lanes: LaneDetection,
   prompt: string,
   partner: string | null,
   text: string,
+  registry: Registry,
 ): ProjectEntry[] {
   const projects: ProjectEntry[] = []
 
@@ -343,13 +371,17 @@ function collectProtocolProjects(
   }
 
   if (lanes.evm) {
-    const family = detectHardhatExplicit(text) ? 'hardhat-contracts' : 'forge-contracts'
+    const domainContract = selectDomainContractFamily(prompt, partner, registry)
+    const family =
+      domainContract?.family ??
+      (detectHardhatExplicit(text) ? 'hardhat-contracts' : 'forge-contracts')
+    const layers = domainContract?.layers ?? buildEvmContractLayers(text)
     projects.push(
       buildProtocolProject(
         'evm',
         'contracts/evm',
         family,
-        buildEvmContractLayers(text),
+        layers,
         prompt,
         partner,
         buildEvmContractVariables(text),
@@ -469,11 +501,7 @@ function collectServiceProjects(
     } else {
       // Generic fallback — keep the pre-existing proof-system slot logic so
       // the generic scaffold composes with a proofSystem hint.
-      zkVars.proofSystem = text.includes('circom')
-        ? 'circom'
-        : text.includes('fhenix')
-          ? 'fhenix'
-          : 'sp1'
+      zkVars.proofSystem = text.includes('circom') ? 'circom' : 'sp1'
     }
     projects.push(
       buildProtocolProject('zk', 'apps/prover', zkFamily, [zkFramework], prompt, null, zkVars),
@@ -507,7 +535,7 @@ function buildWorkspacePromptPlan({
   if (lanes.worker || lanes.implicitWorker) projects.push(buildWorkerProject(prompt, partner, text))
 
   projects.push(...collectServiceProjects(lanes, prompt, partner, text, registry))
-  projects.push(...collectProtocolProjects(lanes, prompt, partner, text))
+  projects.push(...collectProtocolProjects(lanes, prompt, partner, text, registry))
 
   const runtimeCount = [lanes.evm, lanes.solana, lanes.move].filter(Boolean).length
   const primaryProjectId = projects.find((p) => p.id === 'web')?.id ?? projects[0]?.id ?? 'web'

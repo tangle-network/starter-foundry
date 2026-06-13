@@ -3,6 +3,39 @@
   "description": "Fhenix FHE Solidity starter on Foundry — encrypted on-chain computation that builds with `forge build` (CoFHE vendored).",
   "tags": ["fhenix", "fhe", "solidity", "privacy", "contracts", "foundry"],
   "taxonomy": { "language": "solidity", "runtime": "fhenix", "surface": "contracts" },
+  "domainPack": {
+    "domain": {
+      "family": "fhe",
+      "provider": "fhenix",
+      "protocol": "cofhe",
+      "runtime": "foundry",
+      "surface": "contracts"
+    },
+    "provides": ["solidity-contracts", "fhe-types", "cofhe", "forge-build"],
+    "requires": ["foundry"],
+    "ambiguityGroup": "fhe-contracts",
+    "validationCommands": ["forge build", "forge test"],
+    "authenticitySignals": [
+      "euint",
+      "ebool",
+      "InEuint",
+      "FHE.asEuint",
+      "FHE.add",
+      "FHE.select",
+      "FHE.allow",
+      "cofhejs",
+      "sealed bid",
+      "private voting",
+      "encrypted balance"
+    ],
+    "routingPrompts": [
+      {
+        "prompt": "Build a Fhenix Foundry sealed-bid auction contract with CoFHE encrypted bids",
+        "expectedFamily": "fhenix-foundry",
+        "expectedLayers": ["framework:fhenix-foundry"]
+      }
+    ]
+  },
   "slots": {},
   "includes": ["framework:fhenix-foundry"],
   "defaults": {

@@ -25,7 +25,7 @@ export interface RouteEvent {
   capabilities: string[]
   fallbackUsed: boolean
   durationMs: number
-  routingRisk?: 'safe' | 'fallback-product' | 'fallback-static' | 'unrouteable'
+  routingRisk?: 'safe' | 'ambiguous' | 'fallback-product' | 'fallback-static' | 'unrouteable'
 }
 
 export interface ComposeEvent {

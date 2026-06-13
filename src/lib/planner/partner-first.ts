@@ -54,7 +54,6 @@ const PARTNER_ANCHOR_TOKENS: Record<string, string[]> = {
   'arbitrum-stylus': ['arbitrum', 'stylus'],
   'okx-xlayer': ['xlayer', 'evm'],
   'bnb-chain': ['bnb'],
-  'fhenix-fhe': ['fhenix'],
   'hyperliquid-perps': ['hyperliquid'],
   'kalshi-event-contracts': ['kalshi'],
   'polymarket-prediction': ['polymarket'],

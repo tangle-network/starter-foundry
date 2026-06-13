@@ -44,7 +44,8 @@ const FAMILY_PROMPTS: Record<string, string> = {
   'electron-desktop-ts': 'Build an Electron desktop app',
   'evm-infra-ts': 'Build a viem block monitor with gas tracking',
   'expo-react-native-ts': 'Build an Expo React Native mobile app',
-  'fhenix-contracts': 'Build a Fhenix CoFHE encrypted contract',
+  'fhenix-contracts': 'Build a Fhenix Hardhat CoFHE encrypted contract',
+  'fhenix-foundry': 'Build a Fhenix Foundry CoFHE encrypted contract',
   'fhevm-contracts': 'Build a Zama fhEVM confidential contract',
   'forge-contracts': 'Build a Foundry ERC20 contract in Solidity',
   'frontend-static': 'Build a static landing page website',
@@ -469,15 +470,15 @@ const CAP_PROMPTS: Record<string, { prompt: string; family: string }> = {
     family: 'react-vite-ts',
   },
   'capability:fhe-private-token': {
-    prompt: 'Build a Fhenix private token with encrypted balances',
+    prompt: 'Build a Fhenix Hardhat private token with encrypted balances',
     family: 'fhenix-contracts',
   },
   'capability:fhe-private-voting': {
-    prompt: 'Build a Fhenix encrypted voting contract with secret ballot',
+    prompt: 'Build a Fhenix Hardhat encrypted voting contract with secret ballot',
     family: 'fhenix-contracts',
   },
   'capability:fhe-sealed-auction': {
-    prompt: 'Build a Fhenix blind auction with sealed bid encryption',
+    prompt: 'Build a Fhenix Hardhat blind auction with sealed bid encryption',
     family: 'fhenix-contracts',
   },
   'capability:exchange-binance': {

@@ -294,6 +294,24 @@ test('planPrompt uses domain-pack metadata for non-Solidity contract workspaces'
   assert.ok(contract.spec.layers!.includes('framework:stylus-contracts'))
 })
 
+test('planPrompt uses domain-pack metadata for Uniswap V4 hook workspaces', async () => {
+  const result = await planPrompt({
+    prompt:
+      'Build a hook development UI plus a BaseHook contract with beforeSwap logic for PoolManager swaps.',
+    partner: null,
+  })
+
+  assert.equal(result.kind, 'workspace')
+  assert.equal(
+    result.spec.projects.find((project) => project.id === 'web')?.spec.family,
+    'react-vite-ts',
+  )
+  const evm = result.spec.projects.find((project) => project.id === 'evm')
+  assert.ok(evm)
+  assert.equal(evm.spec.family, 'forge-contracts')
+  assert.ok(evm.spec.layers!.includes('capability:evm-uniswap-v4-hook'))
+})
+
 test('planPrompt does not create contract projects from weak bridge UI wording', async () => {
   const result = await planPrompt({
     prompt: 'Build a React bridge dashboard with transaction analytics.',

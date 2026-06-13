@@ -1,0 +1,58 @@
+{
+  "id": "evm-uniswap-v4-hook",
+  "description": "Adds Uniswap V4 hook contract routing and agent guidance for BaseHook lifecycle callbacks.",
+  "domainPack": {
+    "domain": {
+      "family": "dex-hook",
+      "protocol": "uniswap-v4",
+      "runtime": "evm",
+      "surface": "contracts"
+    },
+    "provides": ["uniswap-v4-hook", "hook-callbacks", "poolmanager-integration"],
+    "requires": ["solidity-contracts"],
+    "ambiguityGroup": "dex-hook-contracts",
+    "validationCommands": ["forge build", "forge test"],
+    "authenticitySignals": [
+      "BaseHook",
+      "beforeSwap",
+      "afterSwap",
+      "beforeAddLiquidity",
+      "afterAddLiquidity",
+      "PoolManager",
+      "HookFlags",
+      "sqrtPriceX96",
+      "tickSpacing"
+    ],
+    "routingPrompts": [
+      {
+        "prompt": "Build a Uniswap V4 hook contract extending BaseHook with beforeSwap logic",
+        "expectedFamily": "forge-contracts",
+        "expectedLayers": ["framework:forge-foundation", "capability:evm-uniswap-v4-hook"]
+      }
+    ]
+  },
+  "appliesTo": ["forge-contracts", "hardhat-contracts"],
+  "contextHints": {
+    "extensionPoints": ["src/{{contractName}}.sol", "test/"]
+  },
+  "keywords": [
+    "uniswap v4",
+    "uni v4",
+    "v4 hook",
+    "hook contract",
+    "basehook",
+    "beforeswap",
+    "afterswap",
+    "beforeinitialize",
+    "afterinitialize",
+    "beforeaddliquidity",
+    "afteraddliquidity",
+    "poolmanager",
+    "hookflags",
+    "sqrtpricex96",
+    "tickspacing",
+    "tick accumulator",
+    "erc-6909",
+    "erc6909"
+  ]
+}

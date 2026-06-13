@@ -30,6 +30,7 @@ import {
   inferPartner,
   needsSupportApiLane,
 } from './planner/detectors.js'
+import { hasEvmDomainPackSupportApiSurface } from './planner/domain-pack-signals.js'
 import { buildSlug, resolvePartnerForFamily } from './planner/helpers.js'
 import { inferImplicitCapabilities } from './planner/implicit-caps.js'
 import { shouldPromotePartnerFirst } from './planner/partner-first.js'
@@ -84,7 +85,53 @@ interface DomainContractChoice {
 }
 
 interface DomainContractOptions {
-  familyOnly?: boolean
+  includeLayerMatches?: boolean
+}
+
+const CONTRACT_SURFACE_SIGNALS = [
+  'contract',
+  'contracts',
+  'smart contract',
+  'solidity',
+  'foundry',
+  'foundry.toml',
+  'forge',
+  'forge test',
+  'hardhat',
+  'token contract',
+  'erc20',
+  'erc-20',
+  'erc721',
+  'erc-721',
+]
+
+const NON_CONTRACT_SURFACE_SIGNALS = [
+  ...FRONTEND_SIGNALS,
+  ...API_SIGNALS,
+  ...WORKER_SIGNALS,
+  ...FRAMEWORK_API_TERMS,
+]
+
+function hasContractSurfaceIntent(text: string): boolean {
+  return hasAny(text, CONTRACT_SURFACE_SIGNALS)
+}
+
+function hasCompetingNonContractSurfaceIntent(text: string): boolean {
+  return hasAny(text, NON_CONTRACT_SURFACE_SIGNALS)
+}
+
+function hasDomainAuthenticityEvidence(match: { reasons: string[] }): boolean {
+  return match.reasons.some((reason) => reason.startsWith('authenticity-signals:'))
+}
+
+function layerContractMatchIsSpecificEnough(
+  text: string,
+  match: { layers?: string[]; reasons: string[] },
+): boolean {
+  if (!match.layers?.length) return true
+  if (hasContractSurfaceIntent(text)) return true
+  if (hasCompetingNonContractSurfaceIntent(text)) return false
+  return hasDomainAuthenticityEvidence(match)
 }
 
 function detectLanes(
@@ -109,12 +156,13 @@ function detectLanes(
   const tangle = detectLane(text, 'tangle')
   const avs = detectLane(text, 'avs')
   const domainContract =
-    selectDomainContractFamily(prompt, partner, registry, { familyOnly: true }) !== null
+    selectDomainContractFamily(prompt, partner, registry, { includeLayerMatches: true }) !== null
   const zk = detectLane(text, 'zk')
   const mcp = detectLane(text, 'mcp')
   const dspy = detectLane(text, 'dspy')
   const x402 = detectLane(text, 'x402')
   const evmInfra = detectLane(text, 'evm-infra')
+  const domainPackSupportApi = hasEvmDomainPackSupportApiSurface({ prompt, partner, registry })
 
   const hasProtocol = evm || solana || tangle || avs || domainContract || evmInfra
   const commerceSupportApi =
@@ -141,6 +189,7 @@ function detectLanes(
     ((hasProtocol &&
       (needsSupportApiLane(text) ||
         detectEvmSupportApiPattern(text) ||
+        domainPackSupportApi ||
         (solana && detectSolanaProductApiPattern(text)))) ||
       commerceSupportApi)
   const implicitWorker =
@@ -305,14 +354,16 @@ function selectDomainContractFamily(
   options: DomainContractOptions = {},
 ): DomainContractChoice | null {
   const text = prompt.toLowerCase()
+  const includeLayerMatches = options.includeLayerMatches ?? true
   const hardhatExplicit = detectHardhatExplicit(text)
   const matches = scoreDomainPackFamilies({ prompt, partner, registry })
   const ambiguity = detectDomainPackAmbiguity(matches)
   for (const match of matches) {
-    if (options.familyOnly && match.layers?.length) continue
+    if (!includeLayerMatches && match.layers?.length) continue
     if (ambiguity?.families.includes(match.family)) continue
     const family = registry.families.get(match.family)
     if (family?.taxonomy?.surface !== 'contracts') continue
+    if (!layerContractMatchIsSpecificEnough(text, match)) continue
     const runtime = family.domainPack?.domain.runtime ?? family.taxonomy.runtime
     if (hardhatExplicit && runtime !== 'hardhat') continue
     const layers = [

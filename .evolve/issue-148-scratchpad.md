@@ -10,7 +10,7 @@ bridges, and a clear consumer path back into blueprint-agent.
 
 ## Current State
 
-- Branch: `fix/domain-pack-scored-completion-gate`.
+- Branch: `feat/domain-pack-agent-context`.
 - Merged foundation:
   - `9834df9` / PR #149: metadata-driven domain-pack foundation.
   - `f6feb44` / PR #156: deterministic train/holdout smoke gate.
@@ -85,6 +85,11 @@ bridges, and a clear consumer path back into blueprint-agent.
 - [x] Active #157 hardening: scored promotion now distinguishes composite score
   from actual VB completion pass rate. High composite / zero-pass evidence fails
   closed instead of promoting.
+- [x] Active #155 slice: composed scaffolds now emit a manifest-derived
+  domain-pack contract in `AGENTS.md`, `CLAUDE.md`, `llms.txt`, and
+  `.starter-foundry/context-pack.json`. The section is populated from
+  selected `domainPack`, `contextHints`, validation commands, and
+  authenticity signals.
 
 ## Verification
 
@@ -113,6 +118,12 @@ bridges, and a clear consumer path back into blueprint-agent.
 - [x] `pnpm exec tsc -p tsconfig.test.json --pretty false`
 - [x] `pnpm exec tsc --noEmit --pretty false`
 - [x] `pnpm exec tsx scripts/domain-pack-run.ts --limit 4 --write-plan --no-claim --run-id issue-158-proof --json` selected 4 candidates across bridge contracts, bridge UI, FHE capabilities, and FHE contracts.
+- [x] `pnpm exec tsx --test tests/domain-pack-agent-context.test.ts` -> 4/4
+  passing, covering FHE, LayerZero bridge contracts, bridge UI, and
+  machine-readable `context` output.
+- [x] `node --test --test-concurrency=1 dist-tests/domain-pack-agent-context.test.js dist-tests/domain-pack-smoke.test.js dist-tests/domain-pack-run.test.js` -> 13/13 passing.
+- [x] `pnpm build`
+- [x] `pnpm exec tsx scripts/validate-registry.ts`
 
 Current `.evolve/domain-pack-candidates.json` evidence:
 

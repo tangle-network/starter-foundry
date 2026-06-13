@@ -10,6 +10,7 @@ import type {
   ResolvedComponents,
   ValidationCheck,
   ContextHints,
+  DomainPackGuidance,
   MediaManifest,
   MediaSlot,
 } from '../types.js'
@@ -129,6 +130,32 @@ function collectContextHints(
   merged.extensionPoints = [...new Set(merged.extensionPoints)]
 
   return merged
+}
+
+function componentLabel(component: AnyManifest): string {
+  return component.kind === 'layer' ? `${component.group}:${component.id}` : component.id
+}
+
+function collectDomainPackGuidance(
+  components: { family: FamilyManifest; layers: LayerManifest[]; partner: PartnerManifest | null },
+  variables: Record<string, unknown>,
+): DomainPackGuidance[] {
+  return buildComponentOrder(components)
+    .filter((component) => component.domainPack)
+    .map((component) => {
+      const pack = resolveTemplateObject(component.domainPack, variables) as NonNullable<
+        AnyManifest['domainPack']
+      >
+      return {
+        source: componentLabel(component),
+        domain: pack.domain,
+        provides: [...new Set(pack.provides ?? [])],
+        requires: [...new Set(pack.requires ?? [])],
+        ambiguityGroup: pack.ambiguityGroup ?? null,
+        validationCommands: [...new Set(pack.validationCommands ?? [])],
+        authenticitySignals: [...new Set(pack.authenticitySignals ?? [])],
+      }
+    })
 }
 
 export async function composeStarter({
@@ -290,6 +317,9 @@ async function composeStarterInner(spec: ComposeSpec, outDir: string): Promise<C
   // packages that every react-vite-ts scaffold ships.
   const preinstalledPackages = await readPreinstalledPackages(outDir)
 
+  const contextHints = collectContextHints(components, variables)
+  const domainPackGuidance = collectDomainPackGuidance(components, variables)
+
   const composeReport = {
     spec,
     components: {
@@ -301,7 +331,8 @@ async function composeStarterInner(spec: ComposeSpec, outDir: string): Promise<C
     variables,
     fileOwnership,
     validationChecks: collectValidationChecks(components, variables),
-    contextHints: collectContextHints(components, variables),
+    contextHints,
+    domainPackGuidance,
   }
 
   await ensureDir(path.join(outDir, '.starter-foundry'))
@@ -315,6 +346,7 @@ async function composeStarterInner(spec: ComposeSpec, outDir: string): Promise<C
     spec,
     components,
     composeReport.contextHints,
+    composeReport.domainPackGuidance,
     mediaSlots,
     preinstalledPackages,
   )
@@ -324,7 +356,12 @@ async function composeStarterInner(spec: ComposeSpec, outDir: string): Promise<C
   await fs.writeFile(path.join(outDir, 'CLAUDE.md'), `${agentsMd}\n`, 'utf8')
 
   // Generate llms.txt — machine-readable project description for AI agents
-  const llmsTxt = buildLlmsTxt(spec, components, composeReport.contextHints)
+  const llmsTxt = buildLlmsTxt(
+    spec,
+    components,
+    composeReport.contextHints,
+    composeReport.domainPackGuidance,
+  )
   await fs.writeFile(path.join(outDir, 'llms.txt'), `${llmsTxt}\n`, 'utf8')
 
   // Generate SBOM (CycloneDX) from the composed scaffold's dep manifest.
@@ -367,6 +404,7 @@ function buildLlmsTxt(
   spec: ComposeSpec,
   components: ResolvedComponents,
   contextHints: ReturnType<typeof collectContextHints>,
+  domainPackGuidance: DomainPackGuidance[],
 ): string {
   const lines = [
     `# ${spec.projectName}`,
@@ -381,6 +419,8 @@ function buildLlmsTxt(
     `## Entry Points`,
     ...contextHints.entrypoints.map((e) => `- ${e}`),
     '',
+    ...buildDomainPackLlmsLines(domainPackGuidance),
+    '',
     `## Commands`,
     ...contextHints.commands.map((c) => `- ${c}`),
     '',
@@ -394,6 +434,7 @@ function buildAgentsMd(
   spec: ComposeSpec,
   components: ResolvedComponents,
   contextHints: ReturnType<typeof collectContextHints>,
+  domainPackGuidance: DomainPackGuidance[],
   mediaSlots: MediaSlot[] = [],
   preinstalledPackages: string[] = [],
 ): string {
@@ -462,6 +503,10 @@ function buildAgentsMd(
   // a competing recipe the agent followed instead of the runtime route.
   if (contextHints.entrypoints.length > 0) {
     lines.push('## Key files', '', contextHints.entrypoints.map((e) => `- \`${e}\``).join('\n'), '')
+  }
+
+  if (domainPackGuidance.length > 0) {
+    lines.push(...buildDomainPackAgentsLines(domainPackGuidance, contextHints))
   }
 
   // Pre-installed packages — closes the efficiency gap where agents run
@@ -613,6 +658,71 @@ function buildAgentsMd(
   )
 
   return lines.join('\n')
+}
+
+function formatDomainFields(domain: DomainPackGuidance['domain']): string {
+  return Object.entries(domain)
+    .filter(([, value]) => typeof value === 'string' && value.length > 0)
+    .map(([key, value]) => `${key}=${value}`)
+    .join(', ')
+}
+
+function inlineCodeList(values: string[]): string {
+  return values.map((value) => `\`${value}\``).join(', ')
+}
+
+function buildDomainPackAgentsLines(
+  guidance: DomainPackGuidance[],
+  contextHints: ReturnType<typeof collectContextHints>,
+): string[] {
+  const lines: string[] = [
+    '## Domain pack contract',
+    '',
+    "These requirements come from the selected registry manifests. Preserve them while implementing the user's brief; do not replace them with generic placeholders.",
+    '',
+  ]
+
+  if (contextHints.entrypoints.length > 0) {
+    lines.push(`- **Authoritative files:** ${inlineCodeList(contextHints.entrypoints)}`)
+  }
+  if (contextHints.extensionPoints.length > 0) {
+    lines.push(`- **Extension points:** ${inlineCodeList(contextHints.extensionPoints)}`)
+  }
+  if (contextHints.entrypoints.length > 0 || contextHints.extensionPoints.length > 0) {
+    lines.push('')
+  }
+
+  for (const item of guidance) {
+    lines.push(`### ${item.source}`, '')
+    lines.push(`- **Domain:** ${formatDomainFields(item.domain) || 'unspecified'}`)
+    if (item.provides.length > 0) lines.push(`- **Provides:** ${inlineCodeList(item.provides)}`)
+    if (item.requires.length > 0) lines.push(`- **Requires:** ${inlineCodeList(item.requires)}`)
+    if (item.ambiguityGroup) lines.push(`- **Ambiguity group:** \`${item.ambiguityGroup}\``)
+    if (item.validationCommands.length > 0) {
+      lines.push(`- **Validation:** ${inlineCodeList(item.validationCommands)}`)
+    }
+    if (item.authenticitySignals.length > 0) {
+      lines.push(`- **Required domain signals/APIs:** ${inlineCodeList(item.authenticitySignals)}`)
+    }
+    lines.push('')
+  }
+
+  return lines
+}
+
+function buildDomainPackLlmsLines(guidance: DomainPackGuidance[]): string[] {
+  if (guidance.length === 0) return []
+
+  const lines: string[] = ['## Domain Pack Contract']
+  for (const item of guidance) {
+    lines.push(`- ${item.source}: ${formatDomainFields(item.domain)}`)
+    if (item.provides.length > 0) lines.push(`  - Provides: ${item.provides.join(', ')}`)
+    if (item.validationCommands.length > 0)
+      lines.push(`  - Validate: ${item.validationCommands.join(', ')}`)
+    if (item.authenticitySignals.length > 0)
+      lines.push(`  - Required signals/APIs: ${item.authenticitySignals.join(', ')}`)
+  }
+  return lines
 }
 
 /**

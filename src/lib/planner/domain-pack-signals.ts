@@ -2,16 +2,13 @@ import type { Registry } from '../../types.js'
 import { scoreDomainPackFamilies } from '../domain-packs.js'
 import { hasAny } from '../keywords.js'
 
+import { API_SURFACE_SIGNALS, INDEXER_SURFACE_SIGNALS } from './signals.js'
+
 const EVM_DOMAIN_RUNTIMES = new Set(['evm', 'foundry', 'hardhat'])
 
 const DOMAIN_PACK_API_SURFACE_SIGNALS = [
-  'api',
-  'backend',
-  'server',
-  'endpoint',
-  'webhook',
-  'indexer',
-  'monitor',
+  ...API_SURFACE_SIGNALS,
+  ...INDEXER_SURFACE_SIGNALS,
   'relayer',
   'bridge script',
   'env setup',

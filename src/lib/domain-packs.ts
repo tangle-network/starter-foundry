@@ -1,6 +1,7 @@
 import type { DomainPackMetadata, FamilyManifest, LayerManifest, Registry } from '../types.js'
 
 import { countMatches, hasAny } from './keywords.js'
+import { SURFACE_CLASS, SURFACE_SIGNAL_TERMS, type SurfaceClass } from './planner/signals.js'
 
 type DomainPackOwnerKind = 'family' | 'layer'
 
@@ -54,29 +55,6 @@ const SURFACE_COMPATIBILITY: Record<string, Record<string, number>> = {
   worker: { 'edge-api': 3, 'evm-infra': 2, service: 3, worker: 4 },
 }
 
-const SURFACE_SIGNAL_TERMS: Record<string, string[]> = {
-  api: ['api', 'endpoint', 'endpoints', 'route', 'routes'],
-  backend: ['backend', 'service', 'server'],
-  contracts: ['contract', 'contracts', 'solidity', 'foundry', 'forge'],
-  indexer: ['indexer', 'monitor', 'monitoring', 'status api'],
-  service: ['service', 'server', 'daemon'],
-  ui: ['ui', 'interface', 'dashboard', 'frontend', 'front end'],
-  web: ['web', 'website', 'frontend', 'front end'],
-  worker: ['worker', 'queue', 'job', 'cron'],
-}
-
-const SURFACE_CLASS: Record<string, 'contracts' | 'frontend' | 'service'> = {
-  api: 'service',
-  backend: 'service',
-  contracts: 'contracts',
-  indexer: 'service',
-  monitor: 'service',
-  service: 'service',
-  ui: 'frontend',
-  web: 'frontend',
-  worker: 'service',
-}
-
 function runtimeSignalGroup(runtime: string | undefined): string | null {
   if (!runtime) return null
   const normalized = runtime.toLowerCase()
@@ -101,7 +79,7 @@ function hasExplicitSurfaceConflict(text: string, surface: string | undefined): 
   const expectedClass = SURFACE_CLASS[surface.toLowerCase()]
   if (!expectedClass) return false
 
-  const mentionedClasses = new Set<'contracts' | 'frontend' | 'service'>()
+  const mentionedClasses = new Set<SurfaceClass>()
   for (const [candidateSurface, terms] of Object.entries(SURFACE_SIGNAL_TERMS)) {
     const surfaceClass = SURFACE_CLASS[candidateSurface]
     if (!surfaceClass) continue

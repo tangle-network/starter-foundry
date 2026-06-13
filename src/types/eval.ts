@@ -3,7 +3,7 @@
 // scaffold.
 
 import type { BuildPlan, ComposeComponents } from './compose.js'
-import type { PreviewHint, ValidationCheck } from './registry.js'
+import type { DomainPackGuidance, PreviewHint, ValidationCheck } from './registry.js'
 
 export interface ValidationCheckResult {
   ok: boolean
@@ -75,6 +75,7 @@ export interface ContextPack {
   entrypoints: string[]
   preview: PreviewHint | null
   extensionPoints: string[]
+  domainPackGuidance: DomainPackGuidance[]
   validationChecks: ValidationCheck[]
   agentBrief: {
     summary: string

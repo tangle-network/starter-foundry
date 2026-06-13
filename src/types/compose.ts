@@ -2,7 +2,7 @@
 // input (ComposeSpec, WorkspaceSpec) and produces as output (ComposeResult,
 // ComposeReport, BuildPlan).
 
-import type { ContextHints, ValidationCheck } from './registry.js'
+import type { ContextHints, DomainPackGuidance, ValidationCheck } from './registry.js'
 
 export interface ComposeSpec {
   projectName: string
@@ -49,6 +49,7 @@ export interface ComposeReport {
   fileOwnership: Record<string, string>
   validationChecks: ValidationCheck[]
   contextHints: Required<ContextHints>
+  domainPackGuidance: DomainPackGuidance[]
 }
 
 export interface BuildPlan {

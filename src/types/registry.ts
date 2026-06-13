@@ -124,6 +124,16 @@ export interface DomainPackMetadata {
   routingPrompts?: DomainPackRoutingPrompt[]
 }
 
+export interface DomainPackGuidance {
+  source: string
+  domain: DomainPackMetadata['domain']
+  provides: string[]
+  requires: string[]
+  ambiguityGroup: string | null
+  validationCommands: string[]
+  authenticitySignals: string[]
+}
+
 interface ManifestBase {
   id: string
   description: string

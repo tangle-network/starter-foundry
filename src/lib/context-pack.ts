@@ -58,6 +58,7 @@ export async function createContextPack({
       entrypoints: composeReport.contextHints.entrypoints,
       preview: composeReport.contextHints.preview ?? null,
       extensionPoints: composeReport.contextHints.extensionPoints,
+      domainPackGuidance: composeReport.domainPackGuidance,
       validationChecks: composeReport.validationChecks,
       agentBrief: {
         summary: buildPlan.goal,

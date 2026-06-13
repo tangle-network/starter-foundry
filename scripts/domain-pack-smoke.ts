@@ -95,6 +95,9 @@ interface ScoredLeafResult {
   command: CommandResult | null
   score: number | null
   passed: boolean | null
+  scorePassed: boolean | null
+  completionPassRate: number | null
+  completionPassed: boolean | null
   profileId: string | null
   rankBasis: string | null
   costUsd: number | null
@@ -110,6 +113,10 @@ interface ScoreDistribution {
   max: number | null
   passCount: number
   failCount: number
+  scorePassCount: number
+  scoreFailCount: number
+  completionPassCount: number
+  completionFailCount: number
 }
 
 interface ScoredPromotionReport {
@@ -476,14 +483,24 @@ function runScoredPromotion(train: string[], holdout: string[]): ScoredPromotion
   if (train.length > 0 && trainDistribution.n === 0) failures.push('no parseable train scores')
   if (holdout.length > 0 && holdoutDistribution.n === 0)
     failures.push('no parseable holdout scores')
-  if (trainDistribution.failCount > 0) {
+  if (trainDistribution.scoreFailCount > 0) {
     failures.push(
-      `${trainDistribution.failCount} train scored run(s) below min score ${minScore.toFixed(3)}`,
+      `${trainDistribution.scoreFailCount} train scored run(s) below min score ${minScore.toFixed(3)}`,
     )
   }
-  if (holdoutDistribution.failCount > 0) {
+  if (holdoutDistribution.scoreFailCount > 0) {
     failures.push(
-      `${holdoutDistribution.failCount} holdout scored run(s) below min score ${minScore.toFixed(3)}`,
+      `${holdoutDistribution.scoreFailCount} holdout scored run(s) below min score ${minScore.toFixed(3)}`,
+    )
+  }
+  if (trainDistribution.completionFailCount > 0) {
+    failures.push(
+      `${trainDistribution.completionFailCount} train scored run(s) without a completion pass`,
+    )
+  }
+  if (holdoutDistribution.completionFailCount > 0) {
+    failures.push(
+      `${holdoutDistribution.completionFailCount} holdout scored run(s) without a completion pass`,
     )
   }
   if (
@@ -573,6 +590,9 @@ function parseScoredLeaf(
     const score = firstNumber(top.meanComposite, top.meanBlended, top.hitRate, top.passRate)
     if (score === null)
       return failedScoredLeaf(split, leafId, outDir, command, 'ranked profile has no score')
+    const completionPassRate = firstNumber(top.passRate)
+    const scorePassed = score >= minScore
+    const completionPassed = completionPassRate === null ? false : completionPassRate > 0
     const manifest = readRunManifest(outDir)
     return {
       split,
@@ -581,7 +601,10 @@ function parseScoredLeaf(
       outDir: relative(REPO, outDir),
       command,
       score,
-      passed: score >= minScore,
+      passed: scorePassed && completionPassed,
+      scorePassed,
+      completionPassRate,
+      completionPassed,
       profileId: top.profileId ?? null,
       rankBasis: competition.rankBasis ?? null,
       costUsd: firstNumber(top.costPerSolved),
@@ -613,6 +636,9 @@ function failedScoredLeaf(
     command,
     score: null,
     passed: null,
+    scorePassed: null,
+    completionPassRate: null,
+    completionPassed: null,
     profileId: null,
     rankBasis: null,
     costUsd: null,
@@ -652,6 +678,13 @@ function distribution(leaves: ScoredLeafResult[]): ScoreDistribution {
     max: scores[scores.length - 1] ?? null,
     passCount: leaves.filter((leaf) => leaf.passed === true).length,
     failCount: leaves.filter((leaf) => leaf.passed === false || leaf.status === 'failed').length,
+    scorePassCount: leaves.filter((leaf) => leaf.scorePassed === true).length,
+    scoreFailCount: leaves.filter((leaf) => leaf.scorePassed === false || leaf.status === 'failed')
+      .length,
+    completionPassCount: leaves.filter((leaf) => leaf.completionPassed === true).length,
+    completionFailCount: leaves.filter(
+      (leaf) => leaf.completionPassed === false || leaf.status === 'failed',
+    ).length,
   }
 }
 

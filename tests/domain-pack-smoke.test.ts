@@ -55,6 +55,7 @@ function writeScoredResult(
   split: 'train' | 'holdout',
   leafId: string,
   score: number,
+  passRate = score >= 0.5 ? 1 : 0,
 ): void {
   const dir = join(root, `${split}-${leafId}`, 'matrix')
   mkdirSync(dir, { recursive: true })
@@ -71,7 +72,7 @@ function writeScoredResult(
             rank: 1,
             profileId: 'smoke',
             label: 'Smoke profile',
-            passRate: score >= 0.5 ? 1 : 0,
+            passRate,
             hitRate: score >= 0.5 ? 1 : 0,
             meanBlended: score,
             meanComposite: score,
@@ -186,9 +187,65 @@ test('domain-pack smoke scored mode parses blueprint-agent score distributions',
     assert.equal(report.scoredPromotion.holdout.n, 2)
     assert.ok(Math.abs(report.scoredPromotion.holdout.median - 0.65) < 1e-9)
     assert.equal(report.scoredPromotion.holdout.passCount, 2)
+    assert.equal(report.scoredPromotion.holdout.scorePassCount, 2)
+    assert.equal(report.scoredPromotion.holdout.completionPassCount, 2)
     assert.equal(report.scoredPromotion.leaves[0].profileId, 'smoke')
     assert.equal(report.scoredPromotion.leaves[0].costUsd, 0.25)
     assert.equal(report.scoredPromotion.leaves[0].durationMs, 1234)
+    assert.equal(report.scoredPromotion.leaves[0].scorePassed, true)
+    assert.equal(report.scoredPromotion.leaves[0].completionPassRate, 1)
+    assert.equal(report.scoredPromotion.leaves[0].completionPassed, true)
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})
+
+test('domain-pack smoke scored mode fails closed on zero completion pass rate', () => {
+  const root = mkdtempSync(join(tmpdir(), 'sf-domain-pack-smoke-pass-rate-'))
+  try {
+    const candidatesPath = join(root, 'candidates.json')
+    const outputPath = join(root, 'smoke.json')
+    const resultsDir = join(root, 'results')
+    writeCandidates(candidatesPath, ['train-a'], ['holdout-a'])
+    writeScoredResult(resultsDir, 'train', 'train-a', 0.8, 0)
+    writeScoredResult(resultsDir, 'holdout', 'holdout-a', 0.85, 0)
+
+    const result = spawnSync(
+      TSX,
+      [
+        SCRIPT,
+        '--candidate',
+        'fhe-contracts-fhenix-foundry',
+        '--candidates',
+        candidatesPath,
+        '--output',
+        outputPath,
+        '--write',
+        '--json',
+        '--skip-build',
+        '--blueprint-agent',
+        'scored',
+        '--scored-results-dir',
+        resultsDir,
+      ],
+      {
+        cwd: process.cwd(),
+        encoding: 'utf8',
+      },
+    )
+
+    assert.equal(result.status, 1, result.stderr || result.stdout)
+    const report = JSON.parse(readFileSync(outputPath, 'utf8'))
+    assert.equal(report.status, 'failed')
+    assert.equal(report.scoredPromotion.status, 'failed')
+    assert.equal(report.scoredPromotion.train.scorePassCount, 1)
+    assert.equal(report.scoredPromotion.train.completionFailCount, 1)
+    assert.equal(report.scoredPromotion.holdout.scorePassCount, 1)
+    assert.equal(report.scoredPromotion.holdout.completionFailCount, 1)
+    assert.equal(report.scoredPromotion.leaves[0].scorePassed, true)
+    assert.equal(report.scoredPromotion.leaves[0].completionPassRate, 0)
+    assert.equal(report.scoredPromotion.leaves[0].completionPassed, false)
+    assert.match(report.scoredPromotion.failures.join('\n'), /without a completion pass/)
   } finally {
     rmSync(root, { recursive: true, force: true })
   }

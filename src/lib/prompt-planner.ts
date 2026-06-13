@@ -42,6 +42,7 @@ import {
 } from './planner/projects.js'
 import {
   API_SIGNALS,
+  CONTRACT_SURFACE_SIGNALS,
   EXPLICIT_WORKER_SIGNALS,
   FRAMEWORK_API_TERMS,
   FRONTEND_SIGNALS,
@@ -87,23 +88,6 @@ interface DomainContractChoice {
 interface DomainContractOptions {
   includeLayerMatches?: boolean
 }
-
-const CONTRACT_SURFACE_SIGNALS = [
-  'contract',
-  'contracts',
-  'smart contract',
-  'solidity',
-  'foundry',
-  'foundry.toml',
-  'forge',
-  'forge test',
-  'hardhat',
-  'token contract',
-  'erc20',
-  'erc-20',
-  'erc721',
-  'erc-721',
-]
 
 const NON_CONTRACT_SURFACE_SIGNALS = [
   ...FRONTEND_SIGNALS,

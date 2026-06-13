@@ -138,6 +138,35 @@ test('layer domain-pack metadata routes bridge indexer prompts to an EVM infra s
   assert.ok(result.spec.layers?.includes('capability:bridge-protocol-api'))
 })
 
+test('bridge domain-pack route examples span multiple surfaces without router hardcodes', async () => {
+  const registry = await loadRegistry()
+  const entries = listDomainPackEntries(registry).filter(
+    (entry) => entry.ownerKind === 'layer' && entry.pack.domain.family === 'bridge',
+  )
+  const routeExamples = entries.flatMap((entry) =>
+    (entry.pack.routingPrompts ?? []).map((example) => ({
+      ...example,
+      ownerId: entry.ownerId,
+      surface: entry.pack.domain.surface,
+    })),
+  )
+
+  assert.ok(routeExamples.length >= 6)
+  assert.ok(new Set(routeExamples.map((example) => example.surface)).size >= 3)
+
+  for (const example of routeExamples) {
+    const result = await selectStarter({ prompt: example.prompt, partner: null })
+    const expectedLayers = example.expectedLayers
+
+    assert.equal(result.routingRisk, 'safe', example.prompt)
+    assert.equal(result.spec.family, example.expectedFamily, example.prompt)
+    assert.ok(expectedLayers?.length, `${example.ownerId}: expectedLayers`)
+    for (const layer of expectedLayers) {
+      assert.ok(result.spec.layers?.includes(layer), `${example.ownerId}: ${layer}`)
+    }
+  }
+})
+
 test('generic FHE prompts are surfaced as ambiguous instead of arbitrary provider choice', async () => {
   const registry = await loadRegistry()
   const matches = scoreDomainPackFamilies({

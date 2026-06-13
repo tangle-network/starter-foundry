@@ -54,6 +54,8 @@ interface WeightedTerm {
   value: string
   weight: number
   evidence: boolean
+  capabilityIntent: boolean
+  domainSpecific: boolean
 }
 
 interface DomainGroup {
@@ -360,7 +362,7 @@ function buildDomainGroups(registry: Registry): DomainGroup[] {
       ambiguityGroup: entry.pack.ambiguityGroup,
       entries: [],
     }
-    group.entries.push({ entry, terms: packTerms(entry.pack) })
+    group.entries.push({ entry, terms: entryTerms(entry, registry) })
     groups.set(groupId, group)
   }
   return [...groups.values()]
@@ -397,25 +399,51 @@ function commonField<K extends keyof DomainPackMetadata['domain']>(
   return domains.every((domain) => domain[key] === first) ? first : undefined
 }
 
+function entryTerms(entry: DomainPackEntry, registry: Registry): WeightedTerm[] {
+  const terms = packTerms(entry.pack)
+  if (entry.layerId) {
+    const layer = registry.layers.get(entry.layerId)
+    for (const keyword of layer?.keywords ?? []) {
+      addTerm(terms, keyword, 4, true, true, false)
+    }
+  }
+  return terms
+}
+
 function packTerms(pack: DomainPackMetadata): WeightedTerm[] {
   const terms: WeightedTerm[] = []
-  const add = (value: string | undefined, weight: number, evidence: boolean) => {
-    if (!value) return
-    const normalized = value.toLowerCase()
-    if (GENERIC_TERMS.has(normalized)) return
-    terms.push({ value, weight, evidence })
-    const spaced = value.replace(/[-_]+/g, ' ')
-    if (spaced !== value) terms.push({ value: spaced, weight, evidence })
-  }
-  add(pack.domain.family, 3, true)
-  add(pack.domain.provider, 5, true)
-  add(pack.domain.protocol, 5, true)
-  add(pack.domain.runtime, 1, false)
-  add(pack.domain.surface, 1, false)
-  for (const value of pack.provides) add(value, 3, !TOOLCHAIN_PROVIDES.has(value))
-  for (const value of pack.requires ?? []) add(value, 1, false)
-  for (const value of pack.authenticitySignals ?? []) add(value, 2, true)
+  addTerm(terms, pack.domain.family, 3, true, false, false)
+  addTerm(terms, pack.domain.provider, 5, true, false, true)
+  addTerm(terms, pack.domain.protocol, 5, true, false, true)
+  addTerm(terms, pack.domain.runtime, 1, false, false, false)
+  addTerm(terms, pack.domain.surface, 1, false, false, false)
+  for (const value of pack.provides)
+    addTerm(terms, value, 3, !TOOLCHAIN_PROVIDES.has(value), !TOOLCHAIN_PROVIDES.has(value), false)
+  for (const value of pack.requires ?? []) addTerm(terms, value, 1, false, false, false)
+  for (const value of pack.authenticitySignals ?? [])
+    addTerm(terms, value, 2, true, semanticIntentSignal(value), false)
   return terms
+}
+
+function addTerm(
+  terms: WeightedTerm[],
+  value: string | undefined,
+  weight: number,
+  evidence: boolean,
+  capabilityIntent: boolean,
+  domainSpecific: boolean,
+): void {
+  if (!value) return
+  const normalized = value.toLowerCase()
+  if (GENERIC_TERMS.has(normalized)) return
+  terms.push({ value, weight, evidence, capabilityIntent, domainSpecific })
+  const spaced = value.replace(/[-_]+/g, ' ')
+  if (spaced !== value)
+    terms.push({ value: spaced, weight, evidence, capabilityIntent, domainSpecific })
+}
+
+function semanticIntentSignal(value: string): boolean {
+  return !/^[A-Za-z_$][\w$]*(\.[A-Za-z_$][\w$]*)*$/.test(value)
 }
 
 function buildCandidates({
@@ -495,12 +523,15 @@ function candidateTier(candidate: DomainPackWorkCandidate): number {
   )
   const allLayerFiles = candidate.registryFiles.every((file) => file.startsWith('registry/layers/'))
   const groupWide = candidate.ambiguityGroup === candidate.id
-  if (groupWide && candidate.registryFiles.length > 1 && allFamilyFiles) return 7
-  if (groupWide && candidate.registryFiles.length > 1 && allLayerFiles) return 6
-  if (candidate.registryFiles.length === 1 && allFamilyFiles) return 5
-  if (candidate.registryFiles.length === 1 && allLayerFiles) return 4
-  if (candidate.registryFiles.length > 1 && allFamilyFiles) return 3
-  if (candidate.registryFiles.length > 1 && allLayerFiles) return 2
+  const explicitRegistryEntry =
+    candidate.registryFiles.length === 1 && candidate.sourceFiles.length > 1
+  if (groupWide && candidate.registryFiles.length > 1 && allFamilyFiles) return 8
+  if (groupWide && candidate.registryFiles.length > 1 && allLayerFiles) return 7
+  if (explicitRegistryEntry && allFamilyFiles) return 6
+  if (explicitRegistryEntry && allLayerFiles) return 5
+  if (candidate.registryFiles.length === 1 && allFamilyFiles) return 4
+  if (candidate.registryFiles.length === 1 && allLayerFiles) return 3
+  if (candidate.registryFiles.length > 1 && allFamilyFiles) return 2
   return 1
 }
 
@@ -624,11 +655,19 @@ function slug(value: string): string {
 
 function evidenceForGroup(group: DomainGroup, seeds: ScenarioSeed[]): Evidence[] {
   const evidence: Evidence[] = []
+  const singleEntry = group.entries.length === 1 ? group.entries[0] : null
+  const requiresCapabilityIntent = singleEntry !== null && singleEntry.entry.ownerKind === 'layer'
+  const requiresDomainSpecific =
+    singleEntry !== null &&
+    Boolean(singleEntry.entry.pack.domain.provider || singleEntry.entry.pack.domain.protocol)
   for (const seed of seeds) {
     const seedScore = scoreText(seed.text, group)
     for (const leaf of seed.leaves) {
       const leafScore = scoreText(leafEvidenceText(seed, leaf), group)
       if (leafScore.evidence <= 0) continue
+      if (requiresCapabilityIntent && leafScore.capabilityIntent <= 0) continue
+      if (requiresDomainSpecific && seedScore.domainSpecific + leafScore.domainSpecific <= 0)
+        continue
       evidence.push({ seed, leaf, score: leafScore.score + Math.min(seedScore.score, 6) })
     }
   }
@@ -652,10 +691,20 @@ function leafEvidenceText(seed: ScenarioSeed, leaf: ScenarioLeaf): string {
     .join(' ')
 }
 
-function scoreText(text: string, group: DomainGroup): { score: number; evidence: number } {
+function scoreText(
+  text: string,
+  group: DomainGroup,
+): {
+  score: number
+  evidence: number
+  capabilityIntent: number
+  domainSpecific: number
+} {
   const lower = text.toLowerCase()
   let score = 0
   let evidence = 0
+  let capabilityIntent = 0
+  let domainSpecific = 0
   const seen = new Set<string>()
   for (const { terms } of group.entries) {
     for (const term of terms) {
@@ -665,9 +714,11 @@ function scoreText(text: string, group: DomainGroup): { score: number; evidence:
       seen.add(normalized)
       score += term.weight
       if (term.evidence) evidence += term.weight
+      if (term.capabilityIntent) capabilityIntent += term.weight
+      if (term.domainSpecific) domainSpecific += term.weight
     }
   }
-  return { score, evidence }
+  return { score, evidence, capabilityIntent, domainSpecific }
 }
 
 function matchesTerm(lowerText: string, normalizedTerm: string): boolean {

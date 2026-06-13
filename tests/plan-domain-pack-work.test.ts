@@ -25,6 +25,12 @@ function writeFixture(root: string): void {
         description: 'FHE apps using Fhenix, CoFHE, euint values, private voting, and sealed bids.',
         leaves: [
           {
+            id: 'generic-fhe-scheme',
+            loadBearingArtifact: 'research',
+            description: 'Explain generic fully homomorphic encryption with RLWE ciphertext addition and multiplication.',
+            tags: ['fhe', 'homomorphic', 'rlwe'],
+          },
+          {
             id: 'sealed-bid-auction',
             loadBearingArtifact: 'contract',
             description: 'Build a Fhenix Foundry sealed-bid auction with euint bid storage and FHE.select winner logic.',
@@ -121,6 +127,9 @@ test('plan-domain-pack-work emits parallelizable FHE and bridge candidates from 
     const bridgeRelayerUi = candidates.get('bridge-ui-bridge-relayer-suite')
     const layerZeroEntry = candidates.get('bridge-contracts-capability-evm-layerzero-oft')
     const fhenixFoundryEntry = candidates.get('fhe-contracts-fhenix-foundry')
+    const sealedAuctionEntry = candidates.get(
+      'fhe-capabilities-capability-fhe-foundry-sealed-auction',
+    )
 
     assert.ok(fhe, 'expected FHE ambiguity-group candidate')
     assert.ok(bridgeContracts, 'expected bridge contract candidate')
@@ -128,6 +137,7 @@ test('plan-domain-pack-work emits parallelizable FHE and bridge candidates from 
     assert.ok(bridgeRelayerUi, 'expected per-seed bridge relayer candidate')
     assert.ok(layerZeroEntry, 'expected LayerZero entry candidate from metadata')
     assert.ok(fhenixFoundryEntry, 'expected Fhenix Foundry entry candidate from metadata')
+    assert.ok(sealedAuctionEntry, 'expected Fhenix sealed-auction capability candidate')
 
     assert.deepEqual(fhe.verticalIds, ['fhe-suite'])
     assert.deepEqual(fhe.domain, { family: 'fhe', surface: 'contracts' })
@@ -155,6 +165,13 @@ test('plan-domain-pack-work emits parallelizable FHE and bridge candidates from 
       runtime: 'foundry',
       surface: 'contracts',
     })
+    assert.ok(sealedAuctionEntry.leafIds.train.includes('sealed-bid-auction'))
+    assert.ok(
+      ![...sealedAuctionEntry.leafIds.train, ...sealedAuctionEntry.leafIds.holdout].includes(
+        'generic-fhe-scheme',
+      ),
+      'capability-specific FHE candidate should not absorb generic same-domain leaves',
+    )
 
     assert.deepEqual(bridgeUi.intendedStarter.family, 'react-vite-ts')
     assert.ok(
@@ -195,5 +212,16 @@ test(
     assert.ok(ids.includes('fhe-contracts-fhevm-contracts'))
     assert.ok(ids.includes('bridge-contracts-capability-evm-layerzero-oft'))
     assert.ok(ids.includes('bridge-ui-capability-crypto-bridge-ui'))
+    const fhenixFoundry = report.candidates.find(
+      (candidate: any) => candidate.id === 'fhe-contracts-fhenix-foundry',
+    )
+    assert.ok(fhenixFoundry)
+    assert.ok(fhenixFoundry.leafIds.train.includes('fhenix-sealed-bid-auction'))
+    assert.ok(
+      ![...fhenixFoundry.leafIds.train, ...fhenixFoundry.leafIds.holdout].includes(
+        'crypto-fhe-bfv',
+      ),
+      'provider-specific FHE candidates should not absorb generic FHE research leaves',
+    )
   },
 )

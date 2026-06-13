@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import test from 'node:test'
+import { composeStarter } from '../dist/lib/compose.js'
 import { createTempDir, removeDir, writeJson } from '../dist/lib/fs.js'
 import { runPromptCorpus } from '../dist/lib/prompt-e2e.js'
 import { planPrompt } from '../dist/lib/prompt-planner.js'
@@ -272,6 +273,29 @@ test('planPrompt uses domain-pack metadata for Fhenix Foundry contract workspace
       .find((project) => project.id === 'evm')
       ?.spec.layers!.includes('framework:fhenix-foundry'),
   )
+})
+
+test('planPrompt preserves domain-pack capability defaults for contract workspaces', async () => {
+  const result = await planPrompt({
+    prompt:
+      'Build a React dashboard plus a LayerZero OFT bridge token with Foundry and a sendTokens script.',
+    partner: null,
+  })
+
+  assert.equal(result.kind, 'workspace')
+  const evm = result.spec.projects.find((project) => project.id === 'evm')
+  assert.ok(evm)
+  assert.equal(evm.spec.family, 'forge-contracts')
+  assert.ok(evm.spec.layers!.includes('capability:evm-layerzero-oft'))
+  assert.equal(evm.spec.variables?.contractName, undefined)
+
+  const outDir = await createTempDir('starter-foundry-layerzero-defaults')
+  try {
+    await composeStarter({ spec: evm.spec, outDir })
+    await fs.access(path.join(outDir, 'src/OmnichainToken.sol'))
+  } finally {
+    await removeDir(outDir)
+  }
 })
 
 test('planPrompt infers coinbase partner when not provided', async () => {

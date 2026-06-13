@@ -25,6 +25,9 @@
   "appliesTo": [
     "forge-contracts"
   ],
+  "defaults": {
+    "contractName": "OmnichainToken"
+  },
   "files": [
     {
       "source": "files/OmnichainToken.sol",

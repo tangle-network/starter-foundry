@@ -381,16 +381,12 @@ function collectProtocolProjects(
       domainContract?.family ??
       (detectHardhatExplicit(text) ? 'hardhat-contracts' : 'forge-contracts')
     const layers = domainContract?.layers ?? buildEvmContractLayers(text)
+    const variables = buildEvmContractVariables(text)
+    if (domainContract && variables.contractName === 'Counter') {
+      delete variables.contractName
+    }
     projects.push(
-      buildProtocolProject(
-        'evm',
-        'contracts/evm',
-        family,
-        layers,
-        prompt,
-        partner,
-        buildEvmContractVariables(text),
-      ),
+      buildProtocolProject('evm', 'contracts/evm', family, layers, prompt, partner, variables),
     )
   }
 

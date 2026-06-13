@@ -26,6 +26,12 @@
     { "source": "files/bridge-card.tsx", "target": "src/components/crypto/bridge-card.tsx" },
     { "source": "files/bridge-history.tsx", "target": "src/components/crypto/bridge-history.tsx" }
   ],
+  "contextHints": {
+    "extensionPoints": [
+      "src/components/crypto/bridge-card.tsx",
+      "src/components/crypto/bridge-history.tsx"
+    ]
+  },
   "buildHints": {
     "pages": ["/bridge", "/bridge/history"],
     "apiRoutes": ["/api/bridge/quote", "/api/bridge/status"],

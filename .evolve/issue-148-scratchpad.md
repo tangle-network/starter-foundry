@@ -59,6 +59,11 @@ bridges, and a clear consumer path back into blueprint-agent.
 - [x] Candidate queue scale-out for #150: parser now handles multiple seed
   objects per file, requires leaf-level evidence, and emits group, entry, and
   seed-shard rows without provider-specific branches.
+- [x] Domain-pack smoke gate foundation for #151: `scripts/domain-pack-smoke.ts`
+  samples train/holdout leaves, composes the intended starter, checks routing
+  prompts, counts authenticity signals, runs declared validation commands when
+  toolchains are present, records blueprint-agent dry-run probes, and writes
+  `.evolve/domain-pack-smoke/*.json`.
 
 ## Verification
 
@@ -73,6 +78,7 @@ bridges, and a clear consumer path back into blueprint-agent.
 - [x] `pnpm lint --quiet`
 - [x] `pnpm exec tsx --test tests/plan-domain-pack-work.test.ts` -> 2/2
   passing, including current blueprint-agent corpus count `>= 10`.
+- [x] `pnpm exec tsx --test tests/domain-pack-smoke.test.ts` -> 1/1 passing.
 
 Current `.evolve/domain-pack-candidates.json` evidence:
 
@@ -83,6 +89,19 @@ Current `.evolve/domain-pack-candidates.json` evidence:
   `fhevm-contracts`, FHE capability rows, LayerZero OFT bridge contracts, bridge
   UI, and per-seed bridge shards.
 
+Current `.evolve/domain-pack-smoke/` evidence:
+
+- `fhe-contracts-fhenix-foundry.json`: passed; 2 train + 2 holdout leaves;
+  compose 4/4; authenticity hits 680; `forge build` + `forge test` passed;
+  blueprint-agent dry-runs 4/4.
+- `bridge-contracts-capability-evm-layerzero-oft.json`: passed; 2 train + 2
+  holdout leaves; compose 4/4; authenticity hits 256; `forge build` +
+  `forge test` passed; blueprint-agent dry-runs 4/4.
+- `bridge-ui-capability-crypto-bridge-ui.json`: failed as intended by the new
+  gate; compose/authenticity/blueprint dry-runs pass, but the routing prompt
+  currently selects `forge-contracts` instead of `react-vite-ts`. This is
+  concrete follow-up evidence for #153.
+
 Known repo-wide gate note: `pnpm verify` currently stops at `format:check`
 because the repository has unrelated pre-existing Prettier drift across many
 files. Changed files in this branch pass targeted Prettier.
@@ -91,5 +110,5 @@ files. Changed files in this branch pass targeted Prettier.
 
 - Promote generated `.evolve/domain-pack-candidates.json` rows into parallel
   implementation issues/PRs after this foundation lands.
-- Add the cheap VB smoke gate from issue #148 once the current starter-foundry
-  PR is available to blueprint-agent runs.
+- Extend the #151 smoke gate from blueprint-agent dry-run probes to full scored
+  agent runs where credentials/time budget are available.

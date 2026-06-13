@@ -1,0 +1,27 @@
+{
+  "id": "fhe-foundry-private-voting",
+  "description": "Fhenix Foundry private voting capability with CoFHE encrypted ballots and homomorphic tallies.",
+  "domainPack": {
+    "domain": {
+      "family": "fhe",
+      "provider": "fhenix",
+      "protocol": "cofhe",
+      "runtime": "foundry",
+      "surface": "contracts"
+    },
+    "provides": ["fhe-private-voting", "cofhe-private-voting", "forge-build"],
+    "requires": ["fhe-types", "cofhe", "foundry"],
+    "ambiguityGroup": "fhe-capabilities",
+    "validationCommands": ["forge build"],
+    "authenticitySignals": ["encrypted voting", "private voting", "secret ballot", "FHE.add", "FHE.gte", "FHE.select"]
+  },
+  "appliesTo": ["fhenix-foundry"],
+  "provides": ["fhe-private-voting"],
+  "files": [
+    { "source": "files/PrivateVoting.sol", "target": "src/PrivateVoting.sol" }
+  ],
+  "contextHints": {
+    "extensionPoints": ["src/PrivateVoting.sol"]
+  },
+  "keywords": ["encrypted voting", "private voting", "fhe voting", "confidential voting", "secret ballot"]
+}

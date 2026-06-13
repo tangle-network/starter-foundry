@@ -1,0 +1,27 @@
+{
+  "id": "fhe-foundry-private-token",
+  "description": "Fhenix Foundry private token capability with encrypted balances and CoFHE transfer gates.",
+  "domainPack": {
+    "domain": {
+      "family": "fhe",
+      "provider": "fhenix",
+      "protocol": "cofhe",
+      "runtime": "foundry",
+      "surface": "contracts"
+    },
+    "provides": ["fhe-private-token", "cofhe-private-token", "forge-build"],
+    "requires": ["fhe-types", "cofhe", "foundry"],
+    "ambiguityGroup": "fhe-capabilities",
+    "validationCommands": ["forge build"],
+    "authenticitySignals": ["encrypted balance", "private token", "FHE.add", "FHE.gte", "FHE.select", "FHE.allow"]
+  },
+  "appliesTo": ["fhenix-foundry"],
+  "provides": ["fhe-private-token"],
+  "files": [
+    { "source": "files/PrivateToken.sol", "target": "src/PrivateToken.sol" }
+  ],
+  "contextHints": {
+    "extensionPoints": ["src/PrivateToken.sol"]
+  },
+  "keywords": ["private token", "encrypted balance", "confidential token", "private stablecoin", "fhe token", "encrypted transfer"]
+}

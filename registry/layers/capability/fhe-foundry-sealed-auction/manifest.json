@@ -1,0 +1,27 @@
+{
+  "id": "fhe-foundry-sealed-auction",
+  "description": "Fhenix Foundry sealed-bid auction capability with CoFHE encrypted bids and winner selection.",
+  "domainPack": {
+    "domain": {
+      "family": "fhe",
+      "provider": "fhenix",
+      "protocol": "cofhe",
+      "runtime": "foundry",
+      "surface": "contracts"
+    },
+    "provides": ["fhe-sealed-auction", "cofhe-sealed-auction", "forge-build"],
+    "requires": ["fhe-types", "cofhe", "foundry"],
+    "ambiguityGroup": "fhe-capabilities",
+    "validationCommands": ["forge build"],
+    "authenticitySignals": ["sealed bid", "blind auction", "encrypted auction", "FHE.gte", "FHE.select"]
+  },
+  "appliesTo": ["fhenix-foundry"],
+  "provides": ["fhe-sealed-auction"],
+  "files": [
+    { "source": "files/SealedAuction.sol", "target": "src/SealedAuction.sol" }
+  ],
+  "contextHints": {
+    "extensionPoints": ["src/SealedAuction.sol"]
+  },
+  "keywords": ["sealed bid", "sealed-bid", "blind auction", "encrypted auction", "sealed auction", "fhe auction"]
+}

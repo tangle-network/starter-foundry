@@ -157,38 +157,35 @@ function scoreLayerDomainPack(
   if (hasExplicitRuntimeConflict(text, pack.domain.runtime)) return []
 
   const result = { score: 0, reasons: [] as string[] }
-  let domainEvidence = 0
+  let capabilityEvidence = 0
 
-  if (addFieldScore(text, pack.domain.family, 3, `domain:${pack.domain.family}`, result))
-    domainEvidence += 1
-  if (addFieldScore(text, pack.domain.provider, 5, `provider:${pack.domain.provider}`, result))
-    domainEvidence += 1
-  if (addFieldScore(text, pack.domain.protocol, 5, `protocol:${pack.domain.protocol}`, result))
-    domainEvidence += 1
+  addFieldScore(text, pack.domain.family, 3, `domain:${pack.domain.family}`, result)
+  addFieldScore(text, pack.domain.provider, 5, `provider:${pack.domain.provider}`, result)
+  addFieldScore(text, pack.domain.protocol, 5, `protocol:${pack.domain.protocol}`, result)
 
   const keywordHits = countMatches(text, layer.keywords ?? [])
   if (keywordHits > 0) {
     result.score += keywordHits * 2
     result.reasons.push(`layer-keywords:${layer.id}:${keywordHits}`)
-    domainEvidence += keywordHits
+    capabilityEvidence += keywordHits
   }
 
   const authenticityHits = countMatches(text, pack.authenticitySignals ?? [])
   if (authenticityHits > 0) {
     result.score += authenticityHits
     result.reasons.push(`authenticity-signals:${authenticityHits}`)
-    domainEvidence += authenticityHits
+    capabilityEvidence += authenticityHits
   }
 
   for (const provided of pack.provides) {
     if (matchValue(text, provided)) {
       result.score += 2
       result.reasons.push(`provides:${provided}`)
-      domainEvidence += 1
+      capabilityEvidence += 1
     }
   }
 
-  if (domainEvidence <= 0) return []
+  if (capabilityEvidence <= 0) return []
 
   addFieldScore(text, pack.domain.runtime, 7, `runtime:${pack.domain.runtime}`, result)
   addFieldScore(text, pack.domain.surface, 6, `surface:${pack.domain.surface}`, result)

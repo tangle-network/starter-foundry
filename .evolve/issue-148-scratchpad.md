@@ -105,6 +105,11 @@ bridges, and a clear consumer path back into blueprint-agent.
   whole ambiguity groups and explicit registry-entry candidates before
   per-seed shards, so adding many FHE capability variants does not hide
   bridge/FHEVM work from the default top-25 queue.
+- [x] Active #157 queue hygiene: explicit provider-scoped candidates now require
+  provider/protocol evidence, and single capability candidates require
+  capability-intent evidence from manifest keywords/provides/authenticity. This
+  prevents Fhenix candidates from absorbing generic BFV/Aztec/Circom leaves and
+  keeps the default scored-evidence queue pointed at real train/holdout rows.
 
 ## Verification
 
@@ -148,6 +153,15 @@ bridges, and a clear consumer path back into blueprint-agent.
 - [x] `pnpm test` -> 1140 passed, 1 skipped, 1 todo, 0 failed.
 - [x] `pnpm lint --quiet`
 - [x] `git diff --check`
+- [x] `pnpm exec tsx --test tests/plan-domain-pack-work.test.ts` -> 2/2
+  passing after the #157 candidate-intent fix.
+- [x] `pnpm exec tsc --noEmit --pretty false`
+- [x] `pnpm exec tsc -p tsconfig.test.json --pretty false`
+- [x] `pnpm exec tsx scripts/validate-registry.ts`
+- [x] `pnpm build`
+- [x] `node --test --test-concurrency=1 dist-tests/plan-domain-pack-work.test.js`
+  -> 2/2 passing.
+- [x] `pnpm lint --quiet`
 
 Current `.evolve/domain-pack-candidates.json` evidence:
 
@@ -201,6 +215,15 @@ Current scored-gate evidence:
   completion, not starter selection.
 - Real blueprint-agent scored promotion artifacts for at least one FHE candidate
   and one bridge candidate are still required before #157 can close.
+- Post-#157 queue hygiene sample: default top-25 now contains
+  `bridge-contracts-capability-evm-layerzero-oft` at rank 6 with LayerZero/OFT
+  train leaves and holdouts, and `fhe-contracts-fhenix-foundry` at rank 8 with
+  only Fhenix leaves. The Fhenix Foundry train split is
+  `fhenix-blind-poker-showdown`, `fhenix-confidential-dex`,
+  `fhenix-encrypted-erc20-token`, `fhenix-private-dao-vote`,
+  `fhenix-sealed-bid-auction`, `fhenix-sealed-payroll-stream`; holdout is
+  `fhenix-confidential-lending-vault`,
+  `fhenix-private-prediction-market`.
 
 Known repo-wide gate note: `pnpm format:check` currently stops because the
 repository has unrelated pre-existing Prettier drift across 117 files outside

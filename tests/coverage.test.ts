@@ -457,6 +457,10 @@ const CAP_PROMPTS: Record<string, { prompt: string; family: string }> = {
     prompt: 'Build an indexer API for EVM protocol events',
     family: 'api-service',
   },
+  'capability:bridge-protocol-api': {
+    prompt: 'Build an EVM bridge transaction monitor API with bridge source confirmed states',
+    family: 'evm-infra-ts',
+  },
   'capability:evm-wallet-dashboard': {
     prompt: 'Build a wallet balance multicall dashboard',
     family: 'evm-infra-ts',

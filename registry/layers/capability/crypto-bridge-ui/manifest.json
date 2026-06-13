@@ -10,7 +10,12 @@
     "provides": ["bridge-ui", "bridge-history", "chain-selector"],
     "requires": ["wallet-ui"],
     "ambiguityGroup": "bridge-ui",
-    "authenticitySignals": ["source chain", "destination chain", "fee estimation", "transaction history"],
+    "authenticitySignals": [
+      "source chain",
+      "destination chain",
+      "fee estimation",
+      "bridge transaction history"
+    ],
     "routingPrompts": [
       {
         "prompt": "Build a cross-chain bridge transfer UI with Wormhole",
@@ -20,7 +25,16 @@
     ]
   },
   "appliesTo": ["react-vite-ts", "nextjs-ts", "fullstack-ts"],
-  "keywords": ["bridge", "cross-chain", "transfer", "multichain", "layerzero", "wormhole", "chain transfer"],
+  "keywords": [
+    "bridge ui",
+    "bridge dashboard",
+    "cross-chain bridge",
+    "bridge transfer",
+    "multichain bridge",
+    "layerzero",
+    "wormhole",
+    "cross-chain transfer"
+  ],
   "capabilityRequires": ["shadcn"],
   "files": [
     { "source": "files/bridge-card.tsx", "target": "src/components/crypto/bridge-card.tsx" },

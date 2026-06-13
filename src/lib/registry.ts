@@ -118,6 +118,21 @@ function validateDomainPack(raw: RawManifest, manifestPath: string): void {
         `domainPack.routingPrompts[${index}].prompt`,
         manifestPath,
       )
+      const route = prompt as Record<string, unknown>
+      if (route.expectedFamily !== undefined) {
+        assertString(
+          route.expectedFamily,
+          `domainPack.routingPrompts[${index}].expectedFamily`,
+          manifestPath,
+        )
+      }
+      if (route.expectedLayers !== undefined) {
+        assertStringArray(
+          route.expectedLayers,
+          `domainPack.routingPrompts[${index}].expectedLayers`,
+          manifestPath,
+        )
+      }
     }
   }
 }

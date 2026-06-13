@@ -124,7 +124,8 @@ test('plan-domain-pack-work emits parallelizable FHE and bridge candidates from 
     const fhe = candidates.get('fhe-contracts')
     const bridgeContracts = candidates.get('bridge-contracts')
     const bridgeUi = candidates.get('bridge-ui')
-    const bridgeRelayerUi = candidates.get('bridge-ui-bridge-relayer-suite')
+    const bridgeIndexer = candidates.get('bridge-indexer')
+    const bridgeIndexerEntry = candidates.get('bridge-indexer-capability-bridge-protocol-api')
     const layerZeroEntry = candidates.get('bridge-contracts-capability-evm-layerzero-oft')
     const fhenixFoundryEntry = candidates.get('fhe-contracts-fhenix-foundry')
     const sealedAuctionEntry = candidates.get(
@@ -134,7 +135,8 @@ test('plan-domain-pack-work emits parallelizable FHE and bridge candidates from 
     assert.ok(fhe, 'expected FHE ambiguity-group candidate')
     assert.ok(bridgeContracts, 'expected bridge contract candidate')
     assert.ok(bridgeUi, 'expected bridge UI candidate')
-    assert.ok(bridgeRelayerUi, 'expected per-seed bridge relayer candidate')
+    assert.ok(bridgeIndexer, 'expected bridge indexer/API candidate')
+    assert.ok(bridgeIndexerEntry, 'expected bridge indexer/API entry candidate')
     assert.ok(layerZeroEntry, 'expected LayerZero entry candidate from metadata')
     assert.ok(fhenixFoundryEntry, 'expected Fhenix Foundry entry candidate from metadata')
     assert.ok(sealedAuctionEntry, 'expected Fhenix sealed-auction capability candidate')
@@ -182,9 +184,13 @@ test('plan-domain-pack-work emits parallelizable FHE and bridge candidates from 
         'node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js',
       ),
     )
-    assert.deepEqual(bridgeRelayerUi.verticalIds, ['bridge-relayer-suite'])
-    assert.ok(bridgeRelayerUi.leafIds.train.includes('bridge-message-indexer'))
-    assert.ok(!bridgeRelayerUi.leafIds.train.includes('bridge-transfer-ui'))
+    assert.deepEqual(bridgeIndexer.domain, { family: 'bridge', surface: 'indexer' })
+    assert.deepEqual(bridgeIndexer.intendedStarter.family, 'evm-infra-ts')
+    assert.ok(bridgeIndexer.leafIds.train.includes('bridge-message-indexer'))
+    assert.ok(!bridgeIndexer.leafIds.train.includes('bridge-transfer-ui'))
+    assert.deepEqual(bridgeIndexerEntry.registryFiles, [
+      'registry/layers/capability/bridge-protocol-api/manifest.json',
+    ])
   } finally {
     rmSync(root, { recursive: true, force: true })
   }
@@ -212,6 +218,7 @@ test(
     assert.ok(ids.includes('fhe-contracts-fhevm-contracts'))
     assert.ok(ids.includes('bridge-contracts-capability-evm-layerzero-oft'))
     assert.ok(ids.includes('bridge-ui-capability-crypto-bridge-ui'))
+    assert.ok(ids.includes('bridge-indexer-capability-bridge-protocol-api'))
     const fhenixFoundry = report.candidates.find(
       (candidate: any) => candidate.id === 'fhe-contracts-fhenix-foundry',
     )

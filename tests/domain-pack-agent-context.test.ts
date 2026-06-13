@@ -165,7 +165,7 @@ test('bridge UI domain packs distinguish UI surface and component extension poin
     assert.match(agents, /family=bridge, surface=ui/)
     assert.match(agents, /`bridge-ui`/)
     assert.match(agents, /`source chain`/)
-    assert.match(agents, /`transaction history`/)
+    assert.match(agents, /`bridge transaction history`/)
     assert.match(agents, /`src\/components\/crypto\/bridge-card\.tsx`/)
     assert.match(agents, /`src\/components\/crypto\/bridge-history\.tsx`/)
     assert.ok(

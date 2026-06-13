@@ -1,0 +1,77 @@
+{
+  "id": "bridge-protocol-api",
+  "description": "Bridge backend surface for cross-chain message indexing, relayer status, and deposit or withdrawal tracking APIs.",
+  "domainPack": {
+    "domain": {
+      "family": "bridge",
+      "surface": "indexer"
+    },
+    "provides": ["bridge-indexer", "bridge-status-api", "cross-chain-relayer"],
+    "ambiguityGroup": "bridge-indexer",
+    "authenticitySignals": [
+      "bridge source confirmed",
+      "bridge destination confirmed",
+      "bridge relayer status",
+      "bridge retry queue",
+      "bridge failed states"
+    ],
+    "routingPrompts": [
+      {
+        "prompt": "Build a bridge transaction monitor API that indexes source confirmed, relayed, destination confirmed, and failed states",
+        "expectedFamily": "evm-infra-ts",
+        "expectedLayers": ["framework:evm-infra-ts", "capability:bridge-protocol-api"]
+      },
+      {
+        "prompt": "Build a cross-chain relayer status API with retry queue and destination confirmed tracking",
+        "expectedFamily": "evm-infra-ts",
+        "expectedLayers": ["framework:evm-infra-ts", "capability:bridge-protocol-api"]
+      }
+    ]
+  },
+  "appliesTo": ["evm-infra-ts", "api-service"],
+  "provides": ["bridge-protocol-api"],
+  "defaults": {
+    "bridgeApiRole": "indexer",
+    "bridgeStatusPath": "/bridge/status"
+  },
+  "files": [
+    {
+      "source": "files/bridge-protocol-config.json",
+      "target": "bridge-protocol-config.json"
+    },
+    {
+      "source": "files/bridge-status-routes.ts",
+      "target": "bridge-status-routes.ts"
+    }
+  ],
+  "contextHints": {
+    "extensionPoints": [
+      "bridge-protocol-config.json",
+      "bridge-status-routes.ts"
+    ]
+  },
+  "keywords": [
+    "bridge indexer",
+    "bridge monitor",
+    "bridge transaction monitor",
+    "bridge status api",
+    "bridge relayer",
+    "cross-chain relayer",
+    "message indexer",
+    "bridge relayer status",
+    "bridge source confirmed",
+    "bridge destination confirmed",
+    "bridge failed states",
+    "bridge retry queue"
+  ],
+  "buildHints": {
+    "apiRoutes": ["/bridge/status", "/bridge/messages/:id"],
+    "dataModels": ["BridgeMessage", "BridgeTransfer", "RelayAttempt"],
+    "integrations": ["Source-chain RPC", "Destination-chain RPC", "Bridge protocol event logs"],
+    "architectureNotes": [
+      "Track bridge messages as state machines: source confirmed, relayed, destination confirmed, failed.",
+      "Persist relay attempts separately from transfer records so retries do not overwrite the original message.",
+      "Expose status by message id and by sender address; keep execution writes behind explicit relayer code."
+    ]
+  }
+}

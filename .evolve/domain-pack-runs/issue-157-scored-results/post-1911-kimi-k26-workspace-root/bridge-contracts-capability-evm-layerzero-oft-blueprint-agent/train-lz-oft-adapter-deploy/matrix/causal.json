@@ -1,0 +1,125 @@
+{
+  "matrixId": "mtx_mqe4aheq_a74442bc",
+  "nMeasurable": 1,
+  "nTotal": 1,
+  "perVertical": [
+    {
+      "verticalId": "layerzero-omnichain",
+      "n": 1,
+      "passRate": 0,
+      "passRateCi95": [
+        0,
+        0.7934567085261071
+      ]
+    }
+  ],
+  "perHarness": [
+    {
+      "runtime": "sandbox-sdk",
+      "n": 1,
+      "passRate": 0,
+      "passRateCi95": [
+        0,
+        0.7934567085261071
+      ],
+      "infraErrorRate": 0
+    }
+  ],
+  "scaffoldMatch": [
+    {
+      "kind": "none",
+      "n": 1,
+      "passRate": 0,
+      "passRateCi95": [
+        0,
+        0.7934567085261071
+      ]
+    }
+  ],
+  "toolUse": [
+    {
+      "tool": "Shell",
+      "calls": 87,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "ReadFile",
+      "calls": 41,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "WriteFile",
+      "calls": 29,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "StrReplaceFile",
+      "calls": 17,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "TaskOutput",
+      "calls": 7,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "SetTodoList",
+      "calls": 4,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "TaskStop",
+      "calls": 2,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    }
+  ],
+  "intentVsBlended": [],
+  "reviewerLift": [],
+  "perShotCost": [
+    {
+      "shot": 1,
+      "meanInputTokens": 0,
+      "meanOutputTokens": 0,
+      "meanCostUsd": 0,
+      "n": 1
+    }
+  ],
+  "failureLayersByProfile": [
+    {
+      "profileId": "kimi-code · k2.6",
+      "layer": "lint",
+      "count": 1
+    },
+    {
+      "profileId": "kimi-code · k2.6",
+      "layer": "domain",
+      "count": 1
+    },
+    {
+      "profileId": "kimi-code · k2.6",
+      "layer": "completion-verifier",
+      "count": 1
+    }
+  ]
+}

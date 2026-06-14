@@ -1,0 +1,254 @@
+{
+  "icp": "AUTO-RESEARCH",
+  "vertical": "layerzero-omnichain",
+  "realnessByProfile": [
+    {
+      "profileId": "kc-k26",
+      "n": 0,
+      "meanScore": null,
+      "hitRate": null,
+      "hitRateCi95": null,
+      "gatedCount": 0
+    }
+  ],
+  "gatedCells": [],
+  "autoresearch": {
+    "normalizedRuns": [
+      {
+        "suiteId": "verticalbench:layerzero-omnichain",
+        "suiteName": "LayerZero V2 — omnichain messaging and token standards",
+        "source": "verticalbench",
+        "vertical": "layerzero-omnichain",
+        "taskKind": "product-build",
+        "task": {
+          "id": "lz-oft-launch-platform",
+          "name": "LayerZero OFT multi-chain token launch platform",
+          "prompt": "A no-code platform for launching OFT tokens across multiple chains simultaneously. Wizard: configure token name/symbol/supply, select target chains, choose mint distribution (which chains get initial supply). Deploy OFT contracts on each chain, call setPeer() to wire all pairs, set enforcedOptions with minimum gas for lzReceive. Configure DVN security stack per pathway. Post-launch: rate-limit dashboard and transfer analytics.",
+          "difficulty": "extreme",
+          "vertical": "layerzero-omnichain",
+          "taskKind": "product-build",
+          "source": "verticalbench",
+          "tags": [
+            "cross-chain",
+            "layerzero",
+            "oft",
+            "launch",
+            "no-code"
+          ],
+          "native": {
+            "expectedFamily": "",
+            "expectedIndustry": "crypto",
+            "metadata": {}
+          }
+        },
+        "trace": {
+          "runId": "driver-lz-oft-launch-platform-1781461697435",
+          "taskId": "lz-oft-launch-platform",
+          "startedAt": "2026-06-14T18:28:17.434Z",
+          "endedAt": "2026-06-14T18:56:27.693Z",
+          "wallMs": 1690257,
+          "stopReason": "max-shots",
+          "actions": [
+            {
+              "index": 0,
+              "kind": "state-check",
+              "name": "preview",
+              "status": "fail",
+              "durationMs": null,
+              "detail": "preview failed"
+            },
+            {
+              "index": 1,
+              "kind": "eval",
+              "name": "verification-shot-1",
+              "status": "fail",
+              "durationMs": 1688687,
+              "detail": "failing layers: lint, domain, completion-verifier"
+            },
+            {
+              "index": 2,
+              "kind": "tool-call",
+              "name": "ReadFile",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=50"
+            },
+            {
+              "index": 3,
+              "kind": "tool-call",
+              "name": "Glob",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=2"
+            },
+            {
+              "index": 4,
+              "kind": "tool-call",
+              "name": "Shell",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=91"
+            },
+            {
+              "index": 5,
+              "kind": "tool-call",
+              "name": "SetTodoList",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=4"
+            },
+            {
+              "index": 6,
+              "kind": "tool-call",
+              "name": "StrReplaceFile",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=16"
+            },
+            {
+              "index": 7,
+              "kind": "tool-call",
+              "name": "TaskOutput",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=9"
+            },
+            {
+              "index": 8,
+              "kind": "tool-call",
+              "name": "SearchWeb",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=1"
+            },
+            {
+              "index": 9,
+              "kind": "tool-call",
+              "name": "WriteFile",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=25"
+            },
+            {
+              "index": 10,
+              "kind": "tool-call",
+              "name": "TaskStop",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=2"
+            }
+          ],
+          "artifacts": [
+            "verificationByShot"
+          ],
+          "requiredArtifacts": [],
+          "costUsd": null,
+          "tokenUsage": null,
+          "finalState": {
+            "outcome": "max-shots",
+            "previewSucceeded": false,
+            "completenessScore": null,
+            "auditScore": null,
+            "convergedAt": null,
+            "shotsUsed": 1
+          },
+          "native": {
+            "driverName": "driver-baseline",
+            "scaffoldChosen": null,
+            "scaffoldMatchKind": "none",
+            "runtime": "sandbox-sdk",
+            "factoryRunId": "kc-k26-lz-oft-launch-platform-r0"
+          }
+        },
+        "eval": {
+          "taskId": "lz-oft-launch-platform",
+          "status": "fail",
+          "score": 0.634,
+          "outcome": "unknown",
+          "layers": [
+            {
+              "layer": "lint",
+              "status": "fail"
+            },
+            {
+              "layer": "domain",
+              "status": "fail"
+            },
+            {
+              "layer": "completion-verifier",
+              "status": "fail"
+            }
+          ],
+          "gaps": [
+            "lint",
+            "domain",
+            "completion-verifier",
+            "preview failed",
+            "max-shots"
+          ],
+          "native": {
+            "verificationByShot": [
+              {
+                "shot": 1,
+                "blendedScore": 0.634,
+                "allPass": false,
+                "failCount": 3,
+                "passCount": 4,
+                "failingLayers": [
+                  "lint",
+                  "domain",
+                  "completion-verifier"
+                ],
+                "shotWallMs": 1688687,
+                "shotCostUsd": 0,
+                "inputTokens": 0,
+                "outputTokens": 0,
+                "fileCountAfter": 1109,
+                "reviewerConfidence": null,
+                "reviewerShouldContinue": null,
+                "toolCallsByName": {
+                  "ReadFile": 50,
+                  "Glob": 2,
+                  "Shell": 91,
+                  "SetTodoList": 4,
+                  "StrReplaceFile": 16,
+                  "TaskOutput": 9,
+                  "SearchWeb": 1,
+                  "WriteFile": 25,
+                  "TaskStop": 2
+                },
+                "toolCallSuccesses": 0,
+                "toolCallFailures": 0,
+                "failingLayerFindings": [
+                  {
+                    "layer": "domain",
+                    "severity": "critical",
+                    "message": "@layerzerolabs/lz-evm-oapp-v2 declared in package.json: no file matching package.json contains required pattern"
+                  },
+                  {
+                    "layer": "domain",
+                    "severity": "critical",
+                    "message": "viem or ethers used for EVM contract interaction: no file matching package.json contains required pattern"
+                  },
+                  {
+                    "layer": "domain",
+                    "severity": "critical",
+                    "message": "security:cross-chain message payloads validated and length-checked — no files matching src/**/*.{ts,tsx,js,jsx,py}"
+                  }
+                ]
+              }
+            ],
+            "intentMatch": null
+          }
+        }
+      }
+    ],
+    "findings": []
+  },
+  "diagnostics": {
+    "cellCount": 1,
+    "profileCount": 1,
+    "enrichedCells": 0,
+    "warnings": []
+  }
+}

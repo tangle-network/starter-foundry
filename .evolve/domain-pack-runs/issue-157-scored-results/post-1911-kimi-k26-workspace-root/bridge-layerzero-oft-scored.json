@@ -1,0 +1,266 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-14T18:56:29.386Z",
+  "candidateId": "bridge-contracts-capability-evm-layerzero-oft",
+  "candidateFile": "/home/drew/code/starter-foundry/.evolve/domain-pack-candidates.json",
+  "status": "failed",
+  "starterCli": {
+    "path": "/home/drew/code/starter-foundry/dist/cli.js",
+    "source": "env",
+    "status": "passed",
+    "exists": true,
+    "attemptedBuild": false,
+    "buildReason": null,
+    "build": null,
+    "reason": null
+  },
+  "samples": {
+    "train": [
+      "lz-oft-adapter-deploy"
+    ],
+    "holdout": [
+      "lz-oft-launch-platform"
+    ]
+  },
+  "routing": {
+    "status": "passed",
+    "prompts": [
+      {
+        "prompt": "Build a LayerZero OFT bridge token with Foundry",
+        "expectedFamily": "forge-contracts",
+        "expectedLayers": [
+          "framework:forge-foundation",
+          "capability:evm-layerzero-oft"
+        ],
+        "actualFamily": "forge-contracts",
+        "actualLayers": [
+          "framework:forge-foundation",
+          "capability:evm-layerzero-oft"
+        ],
+        "ok": true
+      },
+      {
+        "prompt": "Build a cross-chain token bridge contract with sendTokens, trusted remotes, and LayerZero endpoint config",
+        "expectedFamily": "forge-contracts",
+        "expectedLayers": [
+          "framework:forge-foundation",
+          "capability:evm-layerzero-oft"
+        ],
+        "actualFamily": "forge-contracts",
+        "actualLayers": [
+          "framework:forge-foundation",
+          "capability:evm-layerzero-oft"
+        ],
+        "ok": true
+      },
+      {
+        "prompt": "Build an omnichain ERC20 contract using LayerZero OFT with forge deploy scripts",
+        "expectedFamily": "forge-contracts",
+        "expectedLayers": [
+          "framework:forge-foundation",
+          "capability:evm-layerzero-oft"
+        ],
+        "actualFamily": "forge-contracts",
+        "actualLayers": [
+          "framework:forge-foundation",
+          "capability:evm-layerzero-oft"
+        ],
+        "ok": true
+      }
+    ]
+  },
+  "compose": {
+    "passed": 2,
+    "failed": 0,
+    "minFileCount": 8
+  },
+  "authenticity": {
+    "signals": [
+      "LayerZero",
+      "OFT",
+      "bridge",
+      "omnichain",
+      "sendTokens"
+    ],
+    "totalHits": 338,
+    "perSample": [
+      {
+        "leafId": "lz-oft-adapter-deploy",
+        "hits": {
+          "LayerZero": 36,
+          "OFT": 46,
+          "bridge": 32,
+          "omnichain": 41,
+          "sendTokens": 14
+        },
+        "total": 169
+      },
+      {
+        "leafId": "lz-oft-launch-platform",
+        "hits": {
+          "LayerZero": 36,
+          "OFT": 46,
+          "bridge": 32,
+          "omnichain": 41,
+          "sendTokens": 14
+        },
+        "total": 169
+      }
+    ]
+  },
+  "validationCommands": [
+    {
+      "command": "forge build",
+      "cwd": "/tmp/domain-pack-smoke-bridge-contracts-capability-evm-layerzero-oft-lz-oft-adapter-deploy-BeGTON/out",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 34,
+      "stdoutTail": "Compiling 3 files with Solc 0.8.35\nSolc 0.8.35 finished in 12.30ms\nCompiler run successful!\n",
+      "stderrTail": ""
+    },
+    {
+      "command": "forge test",
+      "cwd": "/tmp/domain-pack-smoke-bridge-contracts-capability-evm-layerzero-oft-lz-oft-adapter-deploy-BeGTON/out",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 23,
+      "stdoutTail": "No files changed, compilation skipped\n\nRan 1 test for test/OmnichainToken.t.sol:OmnichainTokenTest\n[PASS] test_send_tokens_updates_balances() (gas: 37010)\nSuite result: ok. 1 passed; 0 failed; 0 skipped; finished in 223.61µs (43.16µs CPU time)\n\nRan 1 test suite in 4.37ms (223.61µs CPU time): 1 tests passed, 0 failed, 0 skipped (1 total tests)\n",
+      "stderrTail": ""
+    }
+  ],
+  "blueprintAgent": [],
+  "scoredPromotion": {
+    "mode": "scored",
+    "status": "failed",
+    "shots": 1,
+    "reps": 1,
+    "minScore": 0.5,
+    "baselineScore": null,
+    "maxHoldoutRegression": 0,
+    "train": {
+      "n": 1,
+      "min": 0.9090909090909091,
+      "median": 0.9090909090909091,
+      "p90": 0.9090909090909091,
+      "max": 0.9090909090909091,
+      "passCount": 0,
+      "failCount": 1,
+      "scorePassCount": 1,
+      "scoreFailCount": 0,
+      "completionPassCount": 0,
+      "completionFailCount": 1,
+      "scaffoldPassCount": 1,
+      "scaffoldFailCount": 0
+    },
+    "holdout": {
+      "n": 1,
+      "min": 0.9090909090909091,
+      "median": 0.9090909090909091,
+      "p90": 0.9090909090909091,
+      "max": 0.9090909090909091,
+      "passCount": 0,
+      "failCount": 1,
+      "scorePassCount": 1,
+      "scoreFailCount": 0,
+      "completionPassCount": 0,
+      "completionFailCount": 1,
+      "scaffoldPassCount": 1,
+      "scaffoldFailCount": 0
+    },
+    "leaves": [
+      {
+        "split": "train",
+        "leafId": "lz-oft-adapter-deploy",
+        "status": "passed",
+        "outDir": ".evolve/domain-pack-runs/issue-157-scored-results/post-1911-kimi-k26-workspace-root/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/train-lz-oft-adapter-deploy",
+        "command": {
+          "command": "pnpm tsx scripts/experiments/vb-run.ts --leaf 'lz-oft-adapter-deploy' --shots 1 --reps 1 --parallel 1 --runtime 'claude-local' --roster 'kimi-only' --exclude 'kc-kfc' --driver-persona 'none' --out '/home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1911-kimi-k26-workspace-root/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/train-lz-oft-adapter-deploy'",
+          "cwd": "/home/drew/code/blueprint-agent-post1911",
+          "status": "passed",
+          "exitCode": 0,
+          "durationMs": 1325380,
+          "stdoutTail": "r lz-oft-adapter-deploy]     verify.install: skipped — resolved workdir → /apps/web\n[sandbox-driver lz-oft-adapter-deploy]     verify.install: skipped — runner=sandbox toolchains=node-npm@apps/web+solidity-foundry@contracts/evm\n[sandbox-driver lz-oft-adapter-deploy]     verify.install: pass — solidity-foundry@contracts/evm: forge deps already present in lib/; forge build verifies them\n[sandbox-driver lz-oft-adapter-deploy]     verify.typecheck: pass — solidity-foundry@contracts/evm: forge does not separate typecheck from build — covered by runBuild\n[sandbox-driver lz-oft-adapter-deploy]     verify.build: pass\n[sandbox-driver lz-oft-adapter-deploy]     verify.lint: fail — node-npm@apps/web: no lint/check script | solidity-foundry@contracts/evm: forge fmt --check exit 1\n[sandbox-driver lz-oft-adapter-deploy]     verify.serve: skipped — no preview URL supplied; use preview runtime for live checks\n[sandbox-driver lz-oft-adapter-deploy]     verify.domain: fail — 3 critical domain violation(s)\n[sandbox-driver lz-oft-adapter-deploy]     verify.design: skipped — design layer not in VB pipeline (module pending)\n[sandbox-driver lz-oft-adapter-deploy]     verify.flow: skipped — flow layer not in VB pipeline (use bad-audit post-loop)\n[sandbox-driver lz-oft-adapter-deploy]     verify.fuzz: skipped — fuzz layer not in VB pipeline (module pending)\n[sandbox-driver lz-oft-adapter-deploy]     verify.requires-real-artifact: skipped — no authenticity spec for this vertical — required-artifact check unmeasurable\n[sandbox-driver lz-oft-adapter-deploy]     verify.tests: skipped — leaf has no test spec (0-to-1 archetype)\n[sandbox-driver lz-oft-adapter-deploy]     verify.swebench-official: skipped — leaf has no SWE-Bench instanceId metadata\n[sandbox-driver lz-oft-adapter-deploy]     verify.deploy: skipped — leaf has no deploySpec\n[sandbox-driver lz-oft-adapter-deploy]     verify.dependencies: pass — 22 deps across npm — 0 critical, blend=0.81\n[sandbox-driver lz-oft-adapter-deploy]     verify.semantic: skipped — not in --only / in --skip\n[sandbox-driver lz-oft-adapter-deploy]     verify.completion-verifier: fail — 3/8 concepts present (rate=0.38)\n[sandbox-driver lz-oft-adapter-deploy] verification primary workdir → /tmp/vb-cli-bridge-workspaces/vb-kc-k26-lz-oft-adapter-deploy-r-67a27ca892fa-mqe3i8z8-77fe6939/apps/web (workspace root preserved at /tmp/vb-cli-bridge-workspaces/vb-kc-k26-lz-oft-adapter-deploy-r-67a27ca892fa-mqe3i8z8-77fe6939)\n[sandbox-driver lz-oft-adapter-deploy]   shot 1 verify blended=0.63 allPass=false fail=3\n[sandbox-driver lz-oft-adapter-deploy] post-loop audits: skipped after 1 verification shot(s) in matrix mode (set VB_POST_VERIFY_AUDITS=true to force)\n[sandbox-driver lz-oft-adapter-deploy] pulled 2708 file(s) (6862407 bytes) from sandbox → workdir/\n[sandbox-driver lz-oft-adapter-deploy] visual-style: pass — 60 non-neutral color token(s), 2236 style token(s)\n[sandbox-driver lz-oft-adapter-deploy] persisted 4 artifact(s) + workdir → results/sessions/kc-k26-lz-oft-adapter-deploy-r0/\n[sandbox-driver lz-oft-adapter-deploy] sandbox cli-bridge-08b48e22-a66 deleted (total 1317450ms)\n[100.0% 1/1 22.0m | resumed=0 ran=1] kc-k26 · lz-oft-adapter-deploy → 0.63 ✗\n\n════════════════════════════════════════════════════════════════════════\n LEADERBOARD — layerzero-omnichain  (ranked by composite vector)\n════════════════════════════════════════════════════════════════════════\n# 1 kimi-code · k2.6                 composite=0.909 [0.91,0.91] pass=0% cost/solved=n/a\n════════════════════════════════════════════════════════════════════════\nmeasurable: 1/1 fair attempts (model-failed: 0 · infra-quarantined: 0)   artifacts → /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1911-kimi-k26-workspace-root/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/train-lz-oft-adapter-deploy/matrix/{competition,causal,run-manifest}.json\nrender the report from competition.json (profileVectors → renderVectorScorecard).\n",
+          "stderrTail": "(canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-run] registry selection: 1 verticals, 1 leaves\n[vb-run] runtime=claude-local roster=kimi-only exclude=kc-kfc driverPersona=none shots=1 reps=1 parallel=1\n[vb-run] out=/home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1911-kimi-k26-workspace-root/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/train-lz-oft-adapter-deploy\n\n[vb-run] === layerzero-omnichain (1 leaves) ===\n[vb-run] launching run-vertical-matrix for vertical=layerzero-omnichain scenarios=1\n[swe-bench-verified] tasks.full.json not found — falling back to tasks.sample.json (SMOKE FIXTURES, NOT graded Verified instances). Fetch the full set (scenarios/verticals/swe/fetch-tasks.ts) or set SWE_BENCH_TASKS_FILE before grading.\n[swe-bench-verified] dropped 1 non-Verified smoke fixture(s) from the smoke sample (not in the published set): django__django-11039\n[swe-bench-verified] contamination: 2 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[preflight] resolved model config:\n  coder    : kimi-code/kimi-k2.6 (via cli-bridge)\n  reviewer : via=router model=deepseek/deepseek-chat\n  semantic : deepseek/deepseek-chat base=https://router.tangle.tools\n  router   : https://router.tangle.tools\n[preflight] WARN: TANGLE_API_KEY is not exported; using tangle-config for evaluator preflight probes. Export TANGLE_API_KEY for child processes that do not call env-preflight directly.\n[preflight] router probe: GET https://router.tangle.tools/v1/models → 200 JSON ok\n[preflight] chat probe: POST https://router.tangle.tools/v1/chat/completions → 200 ok (reviewer path live)\n[preflight] cli-bridge probe: cli-bridge kimi-code ready; kimi-code/kimi-k2.6 advertised\n[swe-bench-verified] tasks.full.json not found — falling back to tasks.sample.json (SMOKE FIXTURES, NOT graded Verified instances). Fetch the full set (scenarios/verticals/swe/fetch-tasks.ts) or set SWE_BENCH_TASKS_FILE before grading.\n[swe-bench-verified] dropped 1 non-Verified smoke fixture(s) from the smoke sample (not in the published set): django__django-11039\n[swe-bench-verified] contamination: 2 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-report] realness PARTIAL: 0/1 cells enriched\n[vb-report] wrote /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1911-kimi-k26-workspace-root/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/train-lz-oft-adapter-deploy-owner.{json,html} (OWNER)\n[vb-report] wrote /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1911-kimi-k26-workspace-root/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/train-lz-oft-adapter-deploy-auto-research.{json,html,sidecar.json} (AUTO-RESEARCH)\n[vb-report] wrote /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1911-kimi-k26-workspace-root/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/train-lz-oft-adapter-deploy-partner.{json,html} (PARTNER)\n[vb-report] done — 3 ICP docs from 1 cells, 1 profiles, realness OFF (unmeasured).\n[vb-run] report → /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1911-kimi-k26-workspace-root/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/train-lz-oft-adapter-deploy/ (vb-report over matrix)\n[vb-run] done — /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1911-kimi-k26-workspace-root/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/train-lz-oft-adapter-deploy/\n"
+        },
+        "score": 0.9090909090909091,
+        "passed": false,
+        "scorePassed": true,
+        "completionPassRate": 0,
+        "completionPassed": false,
+        "scaffoldPassed": true,
+        "scaffold": {
+          "expectedFamily": "forge-contracts",
+          "expectedLayers": [
+            "framework:forge-foundation",
+            "capability:evm-layerzero-oft"
+          ],
+          "observedFamily": "react-vite-ts+forge-contracts",
+          "observedLayers": [
+            "web:react-vite-ts",
+            "evm:forge-contracts"
+          ],
+          "observedDomainPackSources": [
+            "capability:evm-layerzero-oft"
+          ],
+          "passed": true,
+          "reason": null
+        },
+        "profileId": "kc-k26",
+        "rankBasis": "composite",
+        "costUsd": null,
+        "durationMs": 1320312
+      },
+      {
+        "split": "holdout",
+        "leafId": "lz-oft-launch-platform",
+        "status": "passed",
+        "outDir": ".evolve/domain-pack-runs/issue-157-scored-results/post-1911-kimi-k26-workspace-root/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/holdout-lz-oft-launch-platform",
+        "command": {
+          "command": "pnpm tsx scripts/experiments/vb-run.ts --leaf 'lz-oft-launch-platform' --shots 1 --reps 1 --parallel 1 --runtime 'claude-local' --roster 'kimi-only' --exclude 'kc-kfc' --driver-persona 'none' --out '/home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1911-kimi-k26-workspace-root/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/holdout-lz-oft-launch-platform'",
+          "cwd": "/home/drew/code/blueprint-agent-post1911",
+          "status": "passed",
+          "exitCode": 0,
+          "durationMs": 1702870,
+          "stdoutTail": "pps/api+solidity-foundry@contracts/evm\n[sandbox-driver lz-oft-launch-platform]     verify.install: pass — solidity-foundry@contracts/evm: forge deps already present in lib/; forge build verifies them\n[sandbox-driver lz-oft-launch-platform]     verify.typecheck: pass — node-npm@apps/api: no tsconfig.json | solidity-foundry@contracts/evm: forge does not separate typecheck from build — covered by runBuild\n[sandbox-driver lz-oft-launch-platform]     verify.build: pass — node-npm@apps/api: no build script\n[sandbox-driver lz-oft-launch-platform]     verify.lint: fail — node-pnpm@apps/web: no lint/check script | node-npm@apps/web: no lint/check script | node-npm@apps/api: no lint/check script | solidity-foundry@contracts/evm: forge fmt --check exit 1\n[sandbox-driver lz-oft-launch-platform]     verify.serve: skipped — no preview URL supplied; use preview runtime for live checks\n[sandbox-driver lz-oft-launch-platform]     verify.domain: fail — 3 critical domain violation(s)\n[sandbox-driver lz-oft-launch-platform]     verify.design: skipped — design layer not in VB pipeline (module pending)\n[sandbox-driver lz-oft-launch-platform]     verify.flow: skipped — flow layer not in VB pipeline (use bad-audit post-loop)\n[sandbox-driver lz-oft-launch-platform]     verify.fuzz: skipped — fuzz layer not in VB pipeline (module pending)\n[sandbox-driver lz-oft-launch-platform]     verify.requires-real-artifact: skipped — no authenticity spec for this vertical — required-artifact check unmeasurable\n[sandbox-driver lz-oft-launch-platform]     verify.tests: skipped — leaf has no test spec (0-to-1 archetype)\n[sandbox-driver lz-oft-launch-platform]     verify.swebench-official: skipped — leaf has no SWE-Bench instanceId metadata\n[sandbox-driver lz-oft-launch-platform]     verify.deploy: skipped — leaf has no deploySpec\n[sandbox-driver lz-oft-launch-platform]     verify.dependencies: pass — 23 deps across npm — 0 critical, blend=0.82\n[sandbox-driver lz-oft-launch-platform]     verify.semantic: skipped — not in --only / in --skip\n[sandbox-driver lz-oft-launch-platform]     verify.completion-verifier: fail — 5/12 concepts present (rate=0.42)\n[sandbox-driver lz-oft-launch-platform] verification primary workdir → /tmp/vb-cli-bridge-workspaces/vb-kc-k26-lz-oft-launch-platform--d870df4b0c32-mqe4ar77-c4073300/apps/web (workspace root preserved at /tmp/vb-cli-bridge-workspaces/vb-kc-k26-lz-oft-launch-platform--d870df4b0c32-mqe4ar77-c4073300)\n[sandbox-driver lz-oft-launch-platform]   shot 1 verify blended=0.63 allPass=false fail=3\n[sandbox-driver lz-oft-launch-platform] post-loop audits: skipped after 1 verification shot(s) in matrix mode (set VB_POST_VERIFY_AUDITS=true to force)\n[sandbox-driver lz-oft-launch-platform] pulled 5267 file(s) (12935945 bytes) from sandbox → workdir/\n[sandbox-driver lz-oft-launch-platform] visual-style: pass — 91 non-neutral color token(s), 884 style token(s)\n[sandbox-driver lz-oft-launch-platform] persisted 4 artifact(s) + workdir → results/sessions/kc-k26-lz-oft-launch-platform-r0/\n[sandbox-driver lz-oft-launch-platform] sandbox cli-bridge-764bce8a-d31 deleted (total 1690256ms)\n[100.0% 1/1 28.3m | resumed=0 ran=1] kc-k26 · lz-oft-launch-platform → 0.63 ✗\n\n════════════════════════════════════════════════════════════════════════\n LEADERBOARD — layerzero-omnichain  (ranked by composite vector)\n════════════════════════════════════════════════════════════════════════\n# 1 kimi-code · k2.6                 composite=0.909 [0.91,0.91] pass=0% cost/solved=n/a\n════════════════════════════════════════════════════════════════════════\nmeasurable: 1/1 fair attempts (model-failed: 0 · infra-quarantined: 0)   artifacts → /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1911-kimi-k26-workspace-root/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/holdout-lz-oft-launch-platform/matrix/{competition,causal,run-manifest}.json\nrender the report from competition.json (profileVectors → renderVectorScorecard).\n",
+          "stderrTail": "d fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-run] registry selection: 1 verticals, 1 leaves\n[vb-run] runtime=claude-local roster=kimi-only exclude=kc-kfc driverPersona=none shots=1 reps=1 parallel=1\n[vb-run] out=/home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1911-kimi-k26-workspace-root/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/holdout-lz-oft-launch-platform\n\n[vb-run] === layerzero-omnichain (1 leaves) ===\n[vb-run] launching run-vertical-matrix for vertical=layerzero-omnichain scenarios=1\n[swe-bench-verified] tasks.full.json not found — falling back to tasks.sample.json (SMOKE FIXTURES, NOT graded Verified instances). Fetch the full set (scenarios/verticals/swe/fetch-tasks.ts) or set SWE_BENCH_TASKS_FILE before grading.\n[swe-bench-verified] dropped 1 non-Verified smoke fixture(s) from the smoke sample (not in the published set): django__django-11039\n[swe-bench-verified] contamination: 2 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[preflight] resolved model config:\n  coder    : kimi-code/kimi-k2.6 (via cli-bridge)\n  reviewer : via=router model=deepseek/deepseek-chat\n  semantic : deepseek/deepseek-chat base=https://router.tangle.tools\n  router   : https://router.tangle.tools\n[preflight] WARN: TANGLE_API_KEY is not exported; using tangle-config for evaluator preflight probes. Export TANGLE_API_KEY for child processes that do not call env-preflight directly.\n[preflight] router probe: GET https://router.tangle.tools/v1/models → 200 JSON ok\n[preflight] chat probe: POST https://router.tangle.tools/v1/chat/completions → 200 ok (reviewer path live)\n[preflight] cli-bridge probe: cli-bridge kimi-code ready; kimi-code/kimi-k2.6 advertised\n[swe-bench-verified] tasks.full.json not found — falling back to tasks.sample.json (SMOKE FIXTURES, NOT graded Verified instances). Fetch the full set (scenarios/verticals/swe/fetch-tasks.ts) or set SWE_BENCH_TASKS_FILE before grading.\n[swe-bench-verified] dropped 1 non-Verified smoke fixture(s) from the smoke sample (not in the published set): django__django-11039\n[swe-bench-verified] contamination: 2 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-report] realness PARTIAL: 0/1 cells enriched\n[vb-report] wrote /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1911-kimi-k26-workspace-root/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/holdout-lz-oft-launch-platform-owner.{json,html} (OWNER)\n[vb-report] wrote /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1911-kimi-k26-workspace-root/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/holdout-lz-oft-launch-platform-auto-research.{json,html,sidecar.json} (AUTO-RESEARCH)\n[vb-report] wrote /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1911-kimi-k26-workspace-root/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/holdout-lz-oft-launch-platform-partner.{json,html} (PARTNER)\n[vb-report] done — 3 ICP docs from 1 cells, 1 profiles, realness OFF (unmeasured).\n[vb-run] report → /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1911-kimi-k26-workspace-root/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/holdout-lz-oft-launch-platform/ (vb-report over matrix)\n[vb-run] done — /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1911-kimi-k26-workspace-root/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/holdout-lz-oft-launch-platform/\n"
+        },
+        "score": 0.9090909090909091,
+        "passed": false,
+        "scorePassed": true,
+        "completionPassRate": 0,
+        "completionPassed": false,
+        "scaffoldPassed": true,
+        "scaffold": {
+          "expectedFamily": "forge-contracts",
+          "expectedLayers": [
+            "framework:forge-foundation",
+            "capability:evm-layerzero-oft"
+          ],
+          "observedFamily": "react-vite-ts+api-service+forge-contracts",
+          "observedLayers": [
+            "web:react-vite-ts",
+            "api:api-service",
+            "evm:forge-contracts"
+          ],
+          "observedDomainPackSources": [
+            "capability:evm-layerzero-oft"
+          ],
+          "passed": true,
+          "reason": null
+        },
+        "profileId": "kc-k26",
+        "rankBasis": "composite",
+        "costUsd": null,
+        "durationMs": 1699148
+      }
+    ],
+    "failures": [
+      "1 train scored run(s) without a completion pass",
+      "1 holdout scored run(s) without a completion pass"
+    ]
+  },
+  "failures": [
+    "scored promotion failed: 1 train scored run(s) without a completion pass",
+    "scored promotion failed: 1 holdout scored run(s) without a completion pass"
+  ]
+}

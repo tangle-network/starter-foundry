@@ -1,0 +1,136 @@
+{
+  "taskListId": "mtx_mqe5cwdk_5d0ad88c",
+  "nTasks": 1,
+  "nProfiles": 1,
+  "ranked": [
+    {
+      "rank": 1,
+      "profileId": "kc-k26",
+      "label": "kimi-code · k2.6",
+      "passRate": 0,
+      "passRateCi95": [
+        0,
+        0.7934567085261071
+      ],
+      "hitRate": 1,
+      "hitRateCi95": [
+        0.20654329147389294,
+        1
+      ],
+      "realBuilds": 1,
+      "realnessMean": 0.81,
+      "meanBlended": 0.557,
+      "meanBlendedCi95": [
+        0,
+        0
+      ],
+      "medianShotsToComplete": null,
+      "errorRate": 0,
+      "costPerSolved": null,
+      "meanComposite": 0.8878571428571428,
+      "meanCompositeCi95": [
+        0.8878571428571428,
+        0.8878571428571428
+      ],
+      "separableFrom": [],
+      "behavior": {
+        "nRuns": 1,
+        "convergenceRate": 0,
+        "medianConvergenceShot": null,
+        "meanPlateauRate": 0,
+        "meanWastedTokenRatio": 0,
+        "totalWastedTokens": 0,
+        "totalWastedShotCostUsd": 0,
+        "meanCostPerScorePoint": null,
+        "meanTokenEfficiency": null,
+        "meanRepeatErrorRate": null,
+        "totalLayerRegressions": 0,
+        "totalLayerFixes": 0,
+        "meanToolFailureRate": null,
+        "topToolCalls": [
+          {
+            "name": "Shell",
+            "count": 101
+          },
+          {
+            "name": "ReadFile",
+            "count": 40
+          },
+          {
+            "name": "StrReplaceFile",
+            "count": 28
+          },
+          {
+            "name": "WriteFile",
+            "count": 11
+          },
+          {
+            "name": "TaskOutput",
+            "count": 10
+          },
+          {
+            "name": "TaskStop",
+            "count": 10
+          },
+          {
+            "name": "SetTodoList",
+            "count": 3
+          },
+          {
+            "name": "Glob",
+            "count": 2
+          },
+          {
+            "name": "SearchWeb",
+            "count": 1
+          }
+        ],
+        "outcomes": {
+          "converged": 0,
+          "plateaued": 1,
+          "regressed": 0,
+          "errored": 0,
+          "never-ran": 0
+        }
+      }
+    }
+  ],
+  "pairwise": [],
+  "pareto": [],
+  "perTaskWinner": [
+    {
+      "taskId": "fhenix-confidential-lending-vault",
+      "winnerProfileId": "kc-k26",
+      "winnerPassRate": 0
+    }
+  ],
+  "profileVectors": [
+    {
+      "profileId": "kc-k26",
+      "label": "kimi-code · k2.6",
+      "n": 1,
+      "deterministic": 1,
+      "functional": null,
+      "semantic": 1,
+      "security": null,
+      "grounding": 0,
+      "realness": 0.81,
+      "realBuildRate": 1,
+      "reliability": null,
+      "composite": 0.8878571428571428,
+      "compositeCi95": [
+        0.8878571428571428,
+        0.8878571428571428
+      ],
+      "compositeSamples": [
+        0.8878571428571428
+      ]
+    }
+  ],
+  "rankedByComposite": true,
+  "rankBasis": "hit-rate",
+  "judgeCalibration": {
+    "kappa": null,
+    "trustworthy": false
+  }
+}

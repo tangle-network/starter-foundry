@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "runId": "post-1911-kimi-k26-workspace-root",
+  "generatedAt": "2026-06-14T18:58:45Z",
+  "purpose": "Post-blueprint-agent-1911 scored evidence for Starter Foundry issue 148 / issue 157. This run used the merged workspace-root verifier but ran before blueprint-agent #1912, so it exposes the remaining lane-local domain-glob bug.",
+  "modelConfig": {
+    "coder": "kimi-code/kimi-k2.6 via cli-bridge",
+    "reviewer": "deepseek/deepseek-chat",
+    "semantic": "deepseek/deepseek-chat",
+    "semanticSkipped": true,
+    "roster": "kimi-only",
+    "excludedProfiles": ["kc-kfc"],
+    "shots": 1,
+    "reps": 1,
+    "parallel": 1,
+    "blueprintAgentCommit": "58cc249bc302e891ead776b3a5f3526c33767a8e"
+  },
+  "verdict": {
+    "status": "blocked-blueprint-agent-domain-globs",
+    "plainEnglish": "Starter Foundry still routed both generic candidates correctly: scaffold evidence passed 4/4. Completion passed 1/4 leaves, matching the prior post-1910 shape, but BA domain validation still false-failed relative globs such as src/**/* when the real files lived in sibling lanes like contracts/evm/src and apps/web/src. Blueprint Agent #1912 fixes that generic verifier bug.",
+    "scaffoldPasses": 4,
+    "scaffoldFailures": 0,
+    "completionPasses": 1,
+    "completionFailures": 3,
+    "domainGlobFalseNegativeExamples": [
+      "FHE train: five domain checks reported no files matching src/**/* even though contracts/evm/src/FHEVault.sol existed and completion passed 4/4.",
+      "Bridge holdout: security gate reported no files matching src/**/* while the generated workspace had apps/web/src."
+    ],
+    "blueprintAgentFollowup": {
+      "pr": 1912,
+      "status": "merged",
+      "mergeCommit": "84283abdf262fa2770f64d397035c99c91f9250e",
+      "fix": "Domain validation now searches the workspace analysis root plus every detected toolchain lane; custom domain commands still run in the primary app workdir."
+    }
+  },
+  "candidates": [
+    {
+      "candidateId": "fhe-contracts-fhenix-foundry",
+      "status": "failed",
+      "scoredArtifact": ".evolve/domain-pack-runs/issue-157-scored-results/post-1911-kimi-k26-workspace-root/fhe-foundry-scored.json",
+      "promotion": {
+        "train": {
+          "leafId": "fhenix-blind-poker-showdown",
+          "n": 1,
+          "score": 0.2,
+          "scorePassCount": 0,
+          "completionPassCount": 1,
+          "scaffoldPassCount": 1,
+          "domainStatus": "fail",
+          "completionVerifier": "4/4 concepts present"
+        },
+        "holdout": {
+          "leafId": "fhenix-confidential-lending-vault",
+          "n": 1,
+          "score": 0.8878571428571428,
+          "scorePassCount": 1,
+          "completionPassCount": 0,
+          "scaffoldPassCount": 1,
+          "domainStatus": "fail",
+          "completionVerifier": "3/5 concepts present"
+        },
+        "failures": [
+          "1 train scored run(s) below min score 0.500",
+          "1 holdout scored run(s) without a completion pass"
+        ]
+      },
+      "nextRead": "Train was a likely false negative from verifier lane globs plus a fake-shim real-artifact flag; holdout still missed borrower sealed read and outcome decrypt oracle."
+    },
+    {
+      "candidateId": "bridge-contracts-capability-evm-layerzero-oft",
+      "status": "failed",
+      "scoredArtifact": ".evolve/domain-pack-runs/issue-157-scored-results/post-1911-kimi-k26-workspace-root/bridge-layerzero-oft-scored.json",
+      "promotion": {
+        "train": {
+          "leafId": "lz-oft-adapter-deploy",
+          "n": 1,
+          "score": 0.9090909090909091,
+          "scorePassCount": 1,
+          "completionPassCount": 0,
+          "scaffoldPassCount": 1,
+          "domainStatus": "fail",
+          "completionVerifier": "3/8 concepts present"
+        },
+        "holdout": {
+          "leafId": "lz-oft-launch-platform",
+          "n": 1,
+          "score": 0.9090909090909091,
+          "scorePassCount": 1,
+          "completionPassCount": 0,
+          "scaffoldPassCount": 1,
+          "domainStatus": "fail",
+          "completionVerifier": "5/12 concepts present"
+        },
+        "failures": [
+          "1 train scored run(s) without a completion pass",
+          "1 holdout scored run(s) without a completion pass"
+        ]
+      },
+      "nextRead": "Bridge failures include real missing LayerZero implementation requirements; #1912 only removes the lane-local src/**/* false negative so those real gaps are easier to see."
+    }
+  ],
+  "nextAction": "Rerun the same two scored candidates against blueprint-agent develop after merge commit 84283abd to verify domain-glob false negatives disappear before spending on a powered lift run."
+}

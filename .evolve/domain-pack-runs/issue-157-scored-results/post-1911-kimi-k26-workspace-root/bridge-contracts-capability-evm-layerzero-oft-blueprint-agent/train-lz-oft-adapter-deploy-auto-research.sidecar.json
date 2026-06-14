@@ -1,0 +1,236 @@
+{
+  "icp": "AUTO-RESEARCH",
+  "vertical": "layerzero-omnichain",
+  "realnessByProfile": [
+    {
+      "profileId": "kc-k26",
+      "n": 0,
+      "meanScore": null,
+      "hitRate": null,
+      "hitRateCi95": null,
+      "gatedCount": 0
+    }
+  ],
+  "gatedCells": [],
+  "autoresearch": {
+    "normalizedRuns": [
+      {
+        "suiteId": "verticalbench:layerzero-omnichain",
+        "suiteName": "LayerZero V2 — omnichain messaging and token standards",
+        "source": "verticalbench",
+        "vertical": "layerzero-omnichain",
+        "taskKind": "product-build",
+        "task": {
+          "id": "lz-oft-adapter-deploy",
+          "name": "LayerZero OFTAdapter deployment wizard",
+          "prompt": "A deployment wizard for wrapping an existing ERC-20 as an OFTAdapter. Step 1: input the existing ERC-20 address on the source chain. Step 2: deploy OFTAdapter(existingToken, lzEndpoint) on the source chain — this contract locks/unlocks the ERC-20. Step 3: deploy OFT contracts on destination chains (burn-and-mint). Step 4: wire peers via setPeer(). Warn: only ONE OFTAdapter per deployment to avoid liquidity fragmentation.",
+          "difficulty": "hard",
+          "vertical": "layerzero-omnichain",
+          "taskKind": "product-build",
+          "source": "verticalbench",
+          "tags": [
+            "cross-chain",
+            "layerzero",
+            "oft-adapter",
+            "deploy",
+            "wizard"
+          ],
+          "native": {
+            "expectedFamily": "",
+            "expectedIndustry": "crypto",
+            "metadata": {}
+          }
+        },
+        "trace": {
+          "runId": "driver-lz-oft-adapter-deploy-1781460367438",
+          "taskId": "lz-oft-adapter-deploy",
+          "startedAt": "2026-06-14T18:06:07.438Z",
+          "endedAt": "2026-06-14T18:28:04.889Z",
+          "wallMs": 1317450,
+          "stopReason": "max-shots",
+          "actions": [
+            {
+              "index": 0,
+              "kind": "state-check",
+              "name": "preview",
+              "status": "fail",
+              "durationMs": null,
+              "detail": "preview failed"
+            },
+            {
+              "index": 1,
+              "kind": "eval",
+              "name": "verification-shot-1",
+              "status": "fail",
+              "durationMs": 1316327,
+              "detail": "failing layers: lint, domain, completion-verifier"
+            },
+            {
+              "index": 2,
+              "kind": "tool-call",
+              "name": "Shell",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=87"
+            },
+            {
+              "index": 3,
+              "kind": "tool-call",
+              "name": "ReadFile",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=41"
+            },
+            {
+              "index": 4,
+              "kind": "tool-call",
+              "name": "SetTodoList",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=4"
+            },
+            {
+              "index": 5,
+              "kind": "tool-call",
+              "name": "StrReplaceFile",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=17"
+            },
+            {
+              "index": 6,
+              "kind": "tool-call",
+              "name": "WriteFile",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=29"
+            },
+            {
+              "index": 7,
+              "kind": "tool-call",
+              "name": "TaskOutput",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=7"
+            },
+            {
+              "index": 8,
+              "kind": "tool-call",
+              "name": "TaskStop",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=2"
+            }
+          ],
+          "artifacts": [
+            "verificationByShot"
+          ],
+          "requiredArtifacts": [],
+          "costUsd": null,
+          "tokenUsage": null,
+          "finalState": {
+            "outcome": "max-shots",
+            "previewSucceeded": false,
+            "completenessScore": null,
+            "auditScore": null,
+            "convergedAt": null,
+            "shotsUsed": 1
+          },
+          "native": {
+            "driverName": "driver-baseline",
+            "scaffoldChosen": null,
+            "scaffoldMatchKind": "none",
+            "runtime": "sandbox-sdk",
+            "factoryRunId": "kc-k26-lz-oft-adapter-deploy-r0"
+          }
+        },
+        "eval": {
+          "taskId": "lz-oft-adapter-deploy",
+          "status": "fail",
+          "score": 0.633,
+          "outcome": "unknown",
+          "layers": [
+            {
+              "layer": "lint",
+              "status": "fail"
+            },
+            {
+              "layer": "domain",
+              "status": "fail"
+            },
+            {
+              "layer": "completion-verifier",
+              "status": "fail"
+            }
+          ],
+          "gaps": [
+            "lint",
+            "domain",
+            "completion-verifier",
+            "preview failed",
+            "max-shots"
+          ],
+          "native": {
+            "verificationByShot": [
+              {
+                "shot": 1,
+                "blendedScore": 0.633,
+                "allPass": false,
+                "failCount": 3,
+                "passCount": 4,
+                "failingLayers": [
+                  "lint",
+                  "domain",
+                  "completion-verifier"
+                ],
+                "shotWallMs": 1316327,
+                "shotCostUsd": 0,
+                "inputTokens": 0,
+                "outputTokens": 0,
+                "fileCountAfter": 543,
+                "reviewerConfidence": null,
+                "reviewerShouldContinue": null,
+                "toolCallsByName": {
+                  "Shell": 87,
+                  "ReadFile": 41,
+                  "SetTodoList": 4,
+                  "StrReplaceFile": 17,
+                  "WriteFile": 29,
+                  "TaskOutput": 7,
+                  "TaskStop": 2
+                },
+                "toolCallSuccesses": 0,
+                "toolCallFailures": 0,
+                "failingLayerFindings": [
+                  {
+                    "layer": "domain",
+                    "severity": "critical",
+                    "message": "OApp, OFT, or ONFT contract pattern referenced: no file matching **/*.{sol,ts,tsx} contains required pattern"
+                  },
+                  {
+                    "layer": "domain",
+                    "severity": "critical",
+                    "message": "endpoint ID (eid or dstEid) used for chain targeting: no file matching **/*.{sol,ts,tsx} contains required pattern"
+                  },
+                  {
+                    "layer": "domain",
+                    "severity": "critical",
+                    "message": "security:cross-chain message payloads validated and length-checked — no files matching src/**/*.{ts,tsx,js,jsx,py}"
+                  }
+                ]
+              }
+            ],
+            "intentMatch": null
+          }
+        }
+      }
+    ],
+    "findings": []
+  },
+  "diagnostics": {
+    "cellCount": 1,
+    "profileCount": 1,
+    "enrichedCells": 0,
+    "warnings": []
+  }
+}

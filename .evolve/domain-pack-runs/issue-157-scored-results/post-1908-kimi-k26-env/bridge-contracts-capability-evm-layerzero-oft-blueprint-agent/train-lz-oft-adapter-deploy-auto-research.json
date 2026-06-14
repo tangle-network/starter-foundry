@@ -1,0 +1,13 @@
+{
+  "collectionId": "layerzero-omnichain",
+  "name": "VerticalBench: layerzero-omnichain",
+  "grain": "vertical",
+  "visibility": "internal",
+  "partnerId": null,
+  "tags": [
+    "layerzero-omnichain"
+  ],
+  "createdAt": "2026-06-14T14:34:45.666Z",
+  "updatedAt": "2026-06-14T14:34:45.666Z",
+  "submissions": []
+}

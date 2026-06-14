@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-14T15:03:28.350Z",
+  "candidateId": "fhe-contracts-fhenix-foundry",
+  "candidateFile": "/home/drew/code/starter-foundry/.evolve/domain-pack-candidates.json",
+  "status": "failed",
+  "starterCli": {
+    "path": "/home/drew/code/starter-foundry/dist/cli.js",
+    "source": "default",
+    "status": "passed",
+    "exists": true,
+    "attemptedBuild": false,
+    "buildReason": null,
+    "build": null,
+    "reason": null
+  },
+  "samples": {
+    "train": [
+      "fhenix-blind-poker-showdown"
+    ],
+    "holdout": [
+      "fhenix-confidential-lending-vault"
+    ]
+  },
+  "routing": {
+    "status": "passed",
+    "prompts": [
+      {
+        "prompt": "Build a Fhenix Foundry sealed-bid auction contract with CoFHE encrypted bids",
+        "expectedFamily": "fhenix-foundry",
+        "expectedLayers": [
+          "framework:fhenix-foundry"
+        ],
+        "actualFamily": "fhenix-foundry",
+        "actualLayers": [
+          "framework:fhenix-foundry",
+          "capability:fhe-foundry-sealed-auction"
+        ],
+        "ok": true
+      }
+    ]
+  },
+  "compose": {
+    "passed": 2,
+    "failed": 0,
+    "minFileCount": 9
+  },
+  "authenticity": {
+    "signals": [
+      "FHE.add",
+      "FHE.allow",
+      "FHE.asEuint",
+      "FHE.select",
+      "InEuint",
+      "cofhejs",
+      "ebool",
+      "encrypted balance",
+      "euint",
+      "private voting",
+      "sealed bid"
+    ],
+    "totalHits": 444,
+    "perSample": [
+      {
+        "leafId": "fhenix-blind-poker-showdown",
+        "hits": {
+          "FHE.add": 6,
+          "FHE.allow": 9,
+          "FHE.asEuint": 7,
+          "FHE.select": 5,
+          "InEuint": 22,
+          "cofhejs": 6,
+          "ebool": 32,
+          "encrypted balance": 4,
+          "euint": 123,
+          "private voting": 4,
+          "sealed bid": 4
+        },
+        "total": 222
+      },
+      {
+        "leafId": "fhenix-confidential-lending-vault",
+        "hits": {
+          "FHE.add": 6,
+          "FHE.allow": 9,
+          "FHE.asEuint": 7,
+          "FHE.select": 5,
+          "InEuint": 22,
+          "cofhejs": 6,
+          "ebool": 32,
+          "encrypted balance": 4,
+          "euint": 123,
+          "private voting": 4,
+          "sealed bid": 4
+        },
+        "total": 222
+      }
+    ]
+  },
+  "validationCommands": [
+    {
+      "command": "forge build",
+      "cwd": "/tmp/domain-pack-smoke-fhe-contracts-fhenix-foundry-fhenix-blind-poker-showdown-5RdXyJ/out",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 87,
+      "stdoutTail": "Compiling 4 files with Solc 0.8.25\nSolc 0.8.25 finished in 57.45ms\nCompiler run successful with warnings:\nWarning (2018): Function state mutability can be restricted to view\n  --> src/FHEVault.sol:43:5:\n   |\n43 |     function isAtLeast(InEuint32 calldata threshold) external returns (ebool result) {\n   |     ^ (Relevant source part starts here and spans across multiple lines).\n\n",
+      "stderrTail": ""
+    },
+    {
+      "command": "forge test",
+      "cwd": "/tmp/domain-pack-smoke-fhe-contracts-fhenix-foundry-fhenix-blind-poker-showdown-5RdXyJ/out",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 28,
+      "stdoutTail": "No files changed, compilation skipped\n\nRan 3 tests for test/FHEVault.t.sol:FHEVaultTest\n[PASS] test_isAtLeast_returns_encrypted_bool() (gas: 31287)\n[PASS] test_owner_is_deployer() (gas: 7581)\n[PASS] test_submit_accumulates_encrypted_state() (gas: 32067)\nSuite result: ok. 3 passed; 0 failed; 0 skipped; finished in 352.98µs (205.54µs CPU time)\n\nRan 1 test suite in 4.98ms (352.98µs CPU time): 3 tests passed, 0 failed, 0 skipped (3 total tests)\n",
+      "stderrTail": ""
+    }
+  ],
+  "blueprintAgent": [],
+  "scoredPromotion": {
+    "mode": "scored",
+    "status": "failed",
+    "shots": 1,
+    "reps": 1,
+    "minScore": 0.5,
+    "baselineScore": null,
+    "maxHoldoutRegression": 0,
+    "train": {
+      "n": 1,
+      "min": 0.9178571428571428,
+      "median": 0.9178571428571428,
+      "p90": 0.9178571428571428,
+      "max": 0.9178571428571428,
+      "passCount": 0,
+      "failCount": 1,
+      "scorePassCount": 1,
+      "scoreFailCount": 0,
+      "completionPassCount": 0,
+      "completionFailCount": 1,
+      "scaffoldPassCount": 1,
+      "scaffoldFailCount": 0
+    },
+    "holdout": {
+      "n": 1,
+      "min": 0.2,
+      "median": 0.2,
+      "p90": 0.2,
+      "max": 0.2,
+      "passCount": 0,
+      "failCount": 1,
+      "scorePassCount": 0,
+      "scoreFailCount": 1,
+      "completionPassCount": 0,
+      "completionFailCount": 1,
+      "scaffoldPassCount": 1,
+      "scaffoldFailCount": 0
+    },
+    "leaves": [
+      {
+        "split": "train",
+        "leafId": "fhenix-blind-poker-showdown",
+        "status": "passed",
+        "outDir": ".evolve/domain-pack-runs/issue-157-scored-results/post-1908-kimi-k26-env/fhe-contracts-fhenix-foundry-blueprint-agent/train-fhenix-blind-poker-showdown",
+        "command": {
+          "command": "pnpm tsx scripts/experiments/vb-run.ts --leaf 'fhenix-blind-poker-showdown' --shots 1 --reps 1 --parallel 1 --runtime 'claude-local' --roster 'kimi-only' --exclude 'kc-kfc' --driver-persona 'none' --out '/home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1908-kimi-k26-env/fhe-contracts-fhenix-foundry-blueprint-agent/train-fhenix-blind-poker-showdown'",
+          "cwd": "/home/drew/code/blueprint-agent-issue148-evidence",
+          "status": "passed",
+          "exitCode": 0,
+          "durationMs": 1490689,
+          "stdoutTail": "heck from build — covered by runBuild\n[sandbox-driver fhenix-blind-poker-showdown]     verify.build: pass — node-npm@apps/api: no build script\n[sandbox-driver fhenix-blind-poker-showdown]     verify.lint: fail — node-npm@apps/web: no lint/check script | node-npm@apps/api: no lint/check script | solidity-foundry@contracts/evm: forge fmt --check exit 1\n[sandbox-driver fhenix-blind-poker-showdown]     verify.serve: skipped — no preview URL supplied; use preview runtime for live checks\n[sandbox-driver fhenix-blind-poker-showdown]     verify.domain: fail — 1 critical domain violation(s)\n[sandbox-driver fhenix-blind-poker-showdown]     verify.design: skipped — design layer not in VB pipeline (module pending)\n[sandbox-driver fhenix-blind-poker-showdown]     verify.flow: skipped — flow layer not in VB pipeline (use bad-audit post-loop)\n[sandbox-driver fhenix-blind-poker-showdown]     verify.fuzz: skipped — fuzz layer not in VB pipeline (module pending)\n[sandbox-driver fhenix-blind-poker-showdown]     verify.requires-real-artifact: pass — real artifact contracts/evm/src/FHEVault.sol uses real impl/infra AND compiles (forge build succeeded)\n[sandbox-driver fhenix-blind-poker-showdown]     verify.tests: skipped — leaf has no test spec (0-to-1 archetype)\n[sandbox-driver fhenix-blind-poker-showdown]     verify.swebench-official: skipped — leaf has no SWE-Bench instanceId metadata\n[sandbox-driver fhenix-blind-poker-showdown]     verify.deploy: skipped — leaf has no deploySpec\n[sandbox-driver fhenix-blind-poker-showdown]     verify.dependencies: pass — 30 deps across npm — 0 critical, blend=0.86\n[sandbox-driver fhenix-blind-poker-showdown]     verify.semantic: skipped — not in --only / in --skip\n[sandbox-driver fhenix-blind-poker-showdown]     verify.completion-verifier: fail — 3/4 concepts present (rate=0.75)\n[sandbox-driver fhenix-blind-poker-showdown] verification primary workdir → /tmp/vb-cli-bridge-workspaces/vb-kc-k26-fhenix-blind-poker-show-6dba2d3d27bd-mqdvadcy-1be44706/apps/web (workspace root preserved at /tmp/vb-cli-bridge-workspaces/vb-kc-k26-fhenix-blind-poker-show-6dba2d3d27bd-mqdvadcy-1be44706)\n[sandbox-driver fhenix-blind-poker-showdown]   shot 1 verify blended=0.56 allPass=false fail=4\n[sandbox-driver fhenix-blind-poker-showdown] post-loop audits: skipped after 1 verification shot(s) in matrix mode (set VB_POST_VERIFY_AUDITS=true to force)\n[sandbox-driver fhenix-blind-poker-showdown] pulled 103 file(s) (132178 bytes) from sandbox → workdir/\n[sandbox-driver fhenix-blind-poker-showdown] visual-style: pass — 35 non-neutral color token(s), 951 style token(s)\n[sandbox-driver fhenix-blind-poker-showdown] persisted 4 artifact(s) + workdir → results/sessions/kc-k26-fhenix-blind-poker-showdown-r0/\n[sandbox-driver fhenix-blind-poker-showdown] sandbox cli-bridge-ae500f90-250 deleted (total 1480204ms)\n[100.0% 1/1 24.8m | resumed=0 ran=1] kc-k26 · fhenix-blind-poker-showdown → 0.56 ✗\n\n════════════════════════════════════════════════════════════════════════\n LEADERBOARD — fhenix-fhe  (ranked by composite vector)\n════════════════════════════════════════════════════════════════════════\n# 1 kimi-code · k2.6                 composite=0.918 [0.92,0.92] pass=0% cost/solved=n/a\n════════════════════════════════════════════════════════════════════════\nmeasurable: 1/1 fair attempts (model-failed: 0 · infra-quarantined: 0)   artifacts → /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1908-kimi-k26-env/fhe-contracts-fhenix-foundry-blueprint-agent/train-fhenix-blind-poker-showdown/matrix/{competition,causal,run-manifest}.json\nrender the report from competition.json (profileVectors → renderVectorScorecard).\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent-issue148-evidence/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent-issue148-evidence/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n",
+          "stderrTail": "sks.sample.json (SMOKE FIXTURES, NOT graded Verified instances). Fetch the full set (scenarios/verticals/swe/fetch-tasks.ts) or set SWE_BENCH_TASKS_FILE before grading.\n[swe-bench-verified] dropped 1 non-Verified smoke fixture(s) from the smoke sample (not in the published set): django__django-11039\n[swe-bench-verified] contamination: 2 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[preflight] resolved model config:\n  coder    : kimi-code/kimi-k2.6 (via cli-bridge)\n  reviewer : via=router model=deepseek/deepseek-chat\n  semantic : deepseek/deepseek-chat base=https://router.tangle.tools\n  router   : https://router.tangle.tools\n(node:859657) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[preflight] router probe: GET https://router.tangle.tools/v1/models → 200 JSON ok\n[preflight] chat probe: POST https://router.tangle.tools/v1/chat/completions → 200 ok (reviewer path live)\n[preflight] cli-bridge probe: cli-bridge kimi-code ready; kimi-code/kimi-k2.6 advertised\n(node:1188933) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1188944) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1188961) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] tasks.full.json not found — falling back to tasks.sample.json (SMOKE FIXTURES, NOT graded Verified instances). Fetch the full set (scenarios/verticals/swe/fetch-tasks.ts) or set SWE_BENCH_TASKS_FILE before grading.\n[swe-bench-verified] dropped 1 non-Verified smoke fixture(s) from the smoke sample (not in the published set): django__django-11039\n[swe-bench-verified] contamination: 2 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-report] realness PARTIAL: 0/1 cells enriched\n[vb-report] wrote /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1908-kimi-k26-env/fhe-contracts-fhenix-foundry-blueprint-agent/train-fhenix-blind-poker-showdown-owner.{json,html} (OWNER)\n[vb-report] wrote /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1908-kimi-k26-env/fhe-contracts-fhenix-foundry-blueprint-agent/train-fhenix-blind-poker-showdown-auto-research.{json,html,sidecar.json} (AUTO-RESEARCH)\n[vb-report] wrote /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1908-kimi-k26-env/fhe-contracts-fhenix-foundry-blueprint-agent/train-fhenix-blind-poker-showdown-partner.{json,html} (PARTNER)\n[vb-report] done — 3 ICP docs from 1 cells, 1 profiles, realness ON.\n(node:1188961) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[vb-run] report → /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1908-kimi-k26-env/fhe-contracts-fhenix-foundry-blueprint-agent/train-fhenix-blind-poker-showdown/ (vb-report over matrix)\n[vb-run] done — /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1908-kimi-k26-env/fhe-contracts-fhenix-foundry-blueprint-agent/train-fhenix-blind-poker-showdown/\n(node:859304) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+        },
+        "score": 0.9178571428571428,
+        "passed": false,
+        "scorePassed": true,
+        "completionPassRate": 0,
+        "completionPassed": false,
+        "scaffoldPassed": true,
+        "scaffold": {
+          "expectedFamily": "fhenix-foundry",
+          "expectedLayers": [
+            "framework:fhenix-foundry"
+          ],
+          "observedFamily": "react-vite-ts+api-service+fhenix-foundry",
+          "observedLayers": [
+            "web:react-vite-ts",
+            "api:api-service",
+            "evm:fhenix-foundry"
+          ],
+          "observedDomainPackSources": [
+            "fhenix-foundry",
+            "capability:fhe-foundry-private-token"
+          ],
+          "passed": true,
+          "reason": null
+        },
+        "profileId": "kc-k26",
+        "rankBasis": "hit-rate",
+        "costUsd": null,
+        "durationMs": 1485484
+      },
+      {
+        "split": "holdout",
+        "leafId": "fhenix-confidential-lending-vault",
+        "status": "passed",
+        "outDir": ".evolve/domain-pack-runs/issue-157-scored-results/post-1908-kimi-k26-env/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-fhenix-confidential-lending-vault",
+        "command": {
+          "command": "pnpm tsx scripts/experiments/vb-run.ts --leaf 'fhenix-confidential-lending-vault' --shots 1 --reps 1 --parallel 1 --runtime 'claude-local' --roster 'kimi-only' --exclude 'kc-kfc' --driver-persona 'none' --out '/home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1908-kimi-k26-env/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-fhenix-confidential-lending-vault'",
+          "cwd": "/home/drew/code/blueprint-agent-issue148-evidence",
+          "status": "passed",
+          "exitCode": 0,
+          "durationMs": 1362451,
+          "stdoutTail": "t\n[sandbox-driver fhenix-confidential-lending-vault]     verify.lint: fail — node-npm@apps/web: no lint/check script | node-npm@apps/api: no lint/check script | node-npm@apps/worker: no lint/check script | solidity-foundry@contracts/evm: forge fmt --check exit 1\n[sandbox-driver fhenix-confidential-lending-vault]     verify.serve: skipped — no preview URL supplied; use preview runtime for live checks\n[sandbox-driver fhenix-confidential-lending-vault]     verify.domain: fail — 2 critical domain violation(s)\n[sandbox-driver fhenix-confidential-lending-vault]     verify.design: skipped — design layer not in VB pipeline (module pending)\n[sandbox-driver fhenix-confidential-lending-vault]     verify.flow: skipped — flow layer not in VB pipeline (use bad-audit post-loop)\n[sandbox-driver fhenix-confidential-lending-vault]     verify.fuzz: skipped — fuzz layer not in VB pipeline (module pending)\n[sandbox-driver fhenix-confidential-lending-vault]     verify.requires-real-artifact: fail — required artifact present but never wired into the system\n[sandbox-driver fhenix-confidential-lending-vault]     verify.tests: skipped — leaf has no test spec (0-to-1 archetype)\n[sandbox-driver fhenix-confidential-lending-vault]     verify.swebench-official: skipped — leaf has no SWE-Bench instanceId metadata\n[sandbox-driver fhenix-confidential-lending-vault]     verify.deploy: skipped — leaf has no deploySpec\n[sandbox-driver fhenix-confidential-lending-vault]     verify.dependencies: pass — 21 deps across npm — 0 critical, blend=0.87\n[sandbox-driver fhenix-confidential-lending-vault]     verify.semantic: skipped — not in --only / in --skip\n[sandbox-driver fhenix-confidential-lending-vault]     verify.completion-verifier: fail — 4/5 concepts present (rate=0.80)\n[sandbox-driver fhenix-confidential-lending-vault] verification primary workdir → /tmp/vb-cli-bridge-workspaces/vb-kc-k26-fhenix-confidential-len-0028bf863ef8-mqdw6em3-4cf8ba51/apps/web (workspace root preserved at /tmp/vb-cli-bridge-workspaces/vb-kc-k26-fhenix-confidential-len-0028bf863ef8-mqdw6em3-4cf8ba51)\n[sandbox-driver fhenix-confidential-lending-vault]   shot 1 verify blended=0.51 allPass=false fail=4\n[sandbox-driver fhenix-confidential-lending-vault] post-loop audits: skipped after 1 verification shot(s) in matrix mode (set VB_POST_VERIFY_AUDITS=true to force)\n[sandbox-driver fhenix-confidential-lending-vault] pulled 150 file(s) (121128 bytes) from sandbox → workdir/\n[sandbox-driver fhenix-confidential-lending-vault] visual-style: pass — 39 non-neutral color token(s), 1686 style token(s)\n[sandbox-driver fhenix-confidential-lending-vault] persisted 4 artifact(s) + workdir → results/sessions/kc-k26-fhenix-confidential-lending-vault-r0/\n[sandbox-driver fhenix-confidential-lending-vault] sandbox cli-bridge-9641aa45-780 deleted (total 1349301ms)\n[100.0% 1/1 22.6m | resumed=0 ran=1] kc-k26 · fhenix-confidential-lending-vault → 0.51 ✗\n\n════════════════════════════════════════════════════════════════════════\n LEADERBOARD — fhenix-fhe  (ranked by composite vector)\n════════════════════════════════════════════════════════════════════════\n# 1 kimi-code · k2.6                 composite=0.200 [0.20,0.20] pass=0% cost/solved=n/a\n════════════════════════════════════════════════════════════════════════\nmeasurable: 1/1 fair attempts (model-failed: 0 · infra-quarantined: 0)   artifacts → /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1908-kimi-k26-env/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-fhenix-confidential-lending-vault/matrix/{competition,causal,run-manifest}.json\nrender the report from competition.json (profileVectors → renderVectorScorecard).\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent-issue148-evidence/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent-issue148-evidence/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n",
+          "stderrTail": "d Verified instances). Fetch the full set (scenarios/verticals/swe/fetch-tasks.ts) or set SWE_BENCH_TASKS_FILE before grading.\n[swe-bench-verified] dropped 1 non-Verified smoke fixture(s) from the smoke sample (not in the published set): django__django-11039\n[swe-bench-verified] contamination: 2 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[preflight] resolved model config:\n  coder    : kimi-code/kimi-k2.6 (via cli-bridge)\n  reviewer : via=router model=deepseek/deepseek-chat\n  semantic : deepseek/deepseek-chat base=https://router.tangle.tools\n  router   : https://router.tangle.tools\n(node:1189454) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[preflight] router probe: GET https://router.tangle.tools/v1/models → 200 JSON ok\n[preflight] chat probe: POST https://router.tangle.tools/v1/chat/completions → 200 ok (reviewer path live)\n[preflight] cli-bridge probe: cli-bridge kimi-code ready; kimi-code/kimi-k2.6 advertised\n(node:1476203) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1476217) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1476233) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] tasks.full.json not found — falling back to tasks.sample.json (SMOKE FIXTURES, NOT graded Verified instances). Fetch the full set (scenarios/verticals/swe/fetch-tasks.ts) or set SWE_BENCH_TASKS_FILE before grading.\n[swe-bench-verified] dropped 1 non-Verified smoke fixture(s) from the smoke sample (not in the published set): django__django-11039\n[swe-bench-verified] contamination: 2 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-report] realness PARTIAL: 0/1 cells enriched\n[vb-report] wrote /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1908-kimi-k26-env/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-fhenix-confidential-lending-vault-owner.{json,html} (OWNER)\n[vb-report] wrote /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1908-kimi-k26-env/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-fhenix-confidential-lending-vault-auto-research.{json,html,sidecar.json} (AUTO-RESEARCH)\n[vb-report] wrote /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1908-kimi-k26-env/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-fhenix-confidential-lending-vault-partner.{json,html} (PARTNER)\n[vb-report] done — 3 ICP docs from 1 cells, 1 profiles, realness ON.\n(node:1476233) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[vb-run] report → /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1908-kimi-k26-env/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-fhenix-confidential-lending-vault/ (vb-report over matrix)\n[vb-run] done — /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1908-kimi-k26-env/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-fhenix-confidential-lending-vault/\n(node:1189343) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+        },
+        "score": 0.2,
+        "passed": false,
+        "scorePassed": false,
+        "completionPassRate": 0,
+        "completionPassed": false,
+        "scaffoldPassed": true,
+        "scaffold": {
+          "expectedFamily": "fhenix-foundry",
+          "expectedLayers": [
+            "framework:fhenix-foundry"
+          ],
+          "observedFamily": "react-vite-ts+api-service+worker-job+fhenix-foundry",
+          "observedLayers": [
+            "web:react-vite-ts",
+            "api:api-service",
+            "worker:worker-job",
+            "evm:fhenix-foundry"
+          ],
+          "observedDomainPackSources": [
+            "fhenix-foundry",
+            "capability:fhe-foundry-private-token"
+          ],
+          "passed": true,
+          "reason": null
+        },
+        "profileId": "kc-k26",
+        "rankBasis": "hit-rate",
+        "costUsd": null,
+        "durationMs": 1358692
+      }
+    ],
+    "failures": [
+      "1 holdout scored run(s) below min score 0.500",
+      "1 train scored run(s) without a completion pass",
+      "1 holdout scored run(s) without a completion pass"
+    ]
+  },
+  "failures": [
+    "scored promotion failed: 1 holdout scored run(s) below min score 0.500",
+    "scored promotion failed: 1 train scored run(s) without a completion pass",
+    "scored promotion failed: 1 holdout scored run(s) without a completion pass"
+  ]
+}

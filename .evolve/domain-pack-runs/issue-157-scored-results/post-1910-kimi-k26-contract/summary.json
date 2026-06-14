@@ -1,0 +1,174 @@
+{
+  "schemaVersion": 1,
+  "runId": "post-1910-kimi-k26-contract",
+  "generatedAt": "2026-06-14T17:32:18.227Z",
+  "purpose": "Post-blueprint-agent-1910 scored evidence for starter-foundry issue 148 / issue 157.",
+  "modelConfig": {
+    "coder": "kimi-code/kimi-k2.6 via cli-bridge",
+    "reviewer": "deepseek/deepseek-chat",
+    "semantic": "deepseek/deepseek-chat",
+    "roster": "kimi-only",
+    "excludedProfiles": ["kc-kfc"],
+    "shots": 1,
+    "reps": 1,
+    "parallel": 1,
+    "blueprintAgentCommit": "87e7438ddebd923659e5f21e160cff9c8110e1e3"
+  },
+  "verdict": {
+    "status": "blocked-blueprint-agent-completion",
+    "plainEnglish": "The generic Starter Foundry to Blueprint Agent handoff is working: all 4 scored leaves kept the expected scaffold/domain-pack evidence. Completion improved from 0/4 to 1/4 after Blueprint Agent started surfacing the scaffold completion contract. The remaining failures are downstream completion/verifier failures, not Starter Foundry routing failures.",
+    "scaffoldPasses": 4,
+    "scaffoldFailures": 0,
+    "completionPasses": 1,
+    "completionFailures": 3,
+    "deltaVsPost1908": {
+      "scaffoldPasses": 0,
+      "completionPasses": 1
+    }
+  },
+  "parserFix": {
+    "reason": "Blueprint Agent writes the true completion decision into matrix/artifacts/*/verification-shot-*.json, while competition.ranked[0].passRate can remain 0 even when the completion verifier passes.",
+    "behavior": "Scored promotion now reads the completion-verifier layer for the winning profile and falls back to ranked passRate only when verifier artifacts are absent.",
+    "regressionTest": "domain-pack smoke scored mode trusts verification artifacts for completion passes"
+  },
+  "candidates": [
+    {
+      "candidateId": "fhe-contracts-fhenix-foundry",
+      "status": "failed",
+      "dryRun": {
+        "status": "passed",
+        "artifact": ".evolve/domain-pack-smoke/issue-148-post1910-fhe-kimi-dryrun.json"
+      },
+      "scoredArtifact": ".evolve/domain-pack-runs/issue-157-scored-results/post-1910-kimi-k26-contract/fhe-foundry-scored.json",
+      "promotion": {
+        "train": {
+          "n": 1,
+          "score": 0.8878571428571428,
+          "scorePassCount": 1,
+          "completionPassCount": 1,
+          "scaffoldPassCount": 1
+        },
+        "holdout": {
+          "n": 1,
+          "score": 0.8857142857142856,
+          "scorePassCount": 1,
+          "completionPassCount": 0,
+          "scaffoldPassCount": 1
+        },
+        "failures": ["1 holdout scored run(s) without a completion pass"]
+      },
+      "leafResults": [
+        {
+          "split": "train",
+          "leafId": "fhenix-blind-poker-showdown",
+          "completionVerifier": {
+            "status": "pass",
+            "score": 1,
+            "reason": "4/4 concepts present",
+            "satisfied": [
+              "encrypted hand commit",
+              "ciphertext winner",
+              "per-player view grant",
+              "showdown reveal oracle"
+            ],
+            "missing": []
+          }
+        },
+        {
+          "split": "holdout",
+          "leafId": "fhenix-confidential-lending-vault",
+          "completionVerifier": {
+            "status": "fail",
+            "score": 0.6,
+            "reason": "3/5 concepts present (rate=0.60)",
+            "satisfied": [
+              "encrypted position",
+              "encrypted health factor",
+              "confidential liquidation"
+            ],
+            "missing": ["borrower sealed read", "outcome decrypt oracle"]
+          }
+        }
+      ],
+      "nextFix": "Surface leaf-specific missing FHE completion requirements to the worker before or during verification, especially sealed borrower reads and decrypt-oracle outcome paths."
+    },
+    {
+      "candidateId": "bridge-contracts-capability-evm-layerzero-oft",
+      "status": "failed",
+      "dryRun": {
+        "status": "passed",
+        "artifact": ".evolve/domain-pack-smoke/issue-148-post1910-bridge-kimi-dryrun.json"
+      },
+      "scoredArtifact": ".evolve/domain-pack-runs/issue-157-scored-results/post-1910-kimi-k26-contract/bridge-layerzero-oft-scored.json",
+      "promotion": {
+        "train": {
+          "n": 1,
+          "score": 0.9090909090909091,
+          "scorePassCount": 1,
+          "completionPassCount": 0,
+          "scaffoldPassCount": 1
+        },
+        "holdout": {
+          "n": 1,
+          "score": 0.9090909090909091,
+          "scorePassCount": 1,
+          "completionPassCount": 0,
+          "scaffoldPassCount": 1
+        },
+        "failures": [
+          "1 train scored run(s) without a completion pass",
+          "1 holdout scored run(s) without a completion pass"
+        ]
+      },
+      "leafResults": [
+        {
+          "split": "train",
+          "leafId": "lz-oft-adapter-deploy",
+          "completionVerifier": {
+            "status": "fail",
+            "score": 0.5,
+            "reason": "4/8 concepts present (rate=0.50)",
+            "satisfied": [
+              "adapter deployment",
+              "lock mechanism",
+              "single adapter warning",
+              "endpoint chain configuration"
+            ],
+            "missing": [
+              "peer wiring",
+              "lzSend outbound messaging",
+              "OFT send transfer",
+              "adapterParams options encoding"
+            ]
+          }
+        },
+        {
+          "split": "holdout",
+          "leafId": "lz-oft-launch-platform",
+          "completionVerifier": {
+            "status": "fail",
+            "score": 0.3333333333333333,
+            "reason": "4/12 concepts present (rate=0.33)",
+            "satisfied": [
+              "multi-chain deploy",
+              "transfer analytics",
+              "OFT token bridging",
+              "endpoint chain config"
+            ],
+            "missing": [
+              "peer wiring",
+              "enforced options",
+              "dvn config",
+              "lzSend cross-chain messaging",
+              "adapterParams options build",
+              "setPeer wiring pairs",
+              "MessagingFee quoting",
+              "DVN security configuration"
+            ]
+          }
+        }
+      ],
+      "nextFix": "Check Blueprint Agent completion/domain verifier scope for multi-project workspaces. The scored output says the primary workdir is apps/web while the bridge contract/API evidence lives under contracts/evm and apps/api, so the verifier may be missing the files it needs to score."
+    }
+  ]
+}

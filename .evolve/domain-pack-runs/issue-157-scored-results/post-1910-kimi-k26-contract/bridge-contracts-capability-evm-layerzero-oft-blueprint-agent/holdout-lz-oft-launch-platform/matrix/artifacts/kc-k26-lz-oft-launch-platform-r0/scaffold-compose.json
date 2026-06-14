@@ -1,0 +1,124 @@
+{
+  "available": true,
+  "family": "react-vite-ts+api-service+forge-contracts",
+  "layers": [
+    "web:react-vite-ts",
+    "api:api-service",
+    "evm:forge-contracts"
+  ],
+  "projects": [
+    {
+      "id": "web",
+      "family": "react-vite-ts",
+      "path": "apps/web",
+      "layers": [
+        "framework:react-vite-ts",
+        "capability:chart-widget",
+        "capability:ai-voice-chat",
+        "capability:layout-dashboard",
+        "capability:passkey-onboarding",
+        "capability:tailwind",
+        "capability:shadcn",
+        "auth:none",
+        "payments:none",
+        "sdk:none"
+      ],
+      "domainPackGuidance": []
+    },
+    {
+      "id": "api",
+      "family": "api-service",
+      "path": "apps/api",
+      "layers": [
+        "framework:node-http",
+        "capability:logging",
+        "capability:evm-protocol-api",
+        "database:sqlite",
+        "sdk:none",
+        "auth:none",
+        "payments:none",
+        "queue:none"
+      ],
+      "domainPackGuidance": []
+    },
+    {
+      "id": "evm",
+      "family": "forge-contracts",
+      "path": "contracts/evm",
+      "layers": [
+        "framework:forge-foundation",
+        "capability:evm-layerzero-oft"
+      ],
+      "domainPackGuidance": [
+        {
+          "source": "capability:evm-layerzero-oft",
+          "domain": {
+            "family": "bridge",
+            "provider": "layerzero",
+            "protocol": "oft",
+            "runtime": "foundry",
+            "surface": "contracts"
+          },
+          "provides": [
+            "bridge-contracts",
+            "layerzero-oft",
+            "omnichain-token",
+            "forge-build"
+          ],
+          "requires": [
+            "solidity-contracts"
+          ],
+          "ambiguityGroup": "bridge-contracts",
+          "validationCommands": [
+            "forge build",
+            "forge test"
+          ],
+          "authenticitySignals": [
+            "LayerZero",
+            "OFT",
+            "sendTokens",
+            "omnichain",
+            "bridge"
+          ]
+        }
+      ]
+    }
+  ],
+  "domainPackGuidance": [
+    {
+      "source": "capability:evm-layerzero-oft",
+      "domain": {
+        "family": "bridge",
+        "provider": "layerzero",
+        "protocol": "oft",
+        "runtime": "foundry",
+        "surface": "contracts"
+      },
+      "provides": [
+        "bridge-contracts",
+        "layerzero-oft",
+        "omnichain-token",
+        "forge-build"
+      ],
+      "requires": [
+        "solidity-contracts"
+      ],
+      "ambiguityGroup": "bridge-contracts",
+      "validationCommands": [
+        "forge build",
+        "forge test"
+      ],
+      "authenticitySignals": [
+        "LayerZero",
+        "OFT",
+        "sendTokens",
+        "omnichain",
+        "bridge"
+      ]
+    }
+  ],
+  "fileCount": 91,
+  "partner": "layerzero",
+  "mode": "auto",
+  "error": null
+}

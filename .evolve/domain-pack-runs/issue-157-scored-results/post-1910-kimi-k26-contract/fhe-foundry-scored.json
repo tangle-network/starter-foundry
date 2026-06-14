@@ -1,0 +1,220 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-14T16:50:34.497Z",
+  "candidateId": "fhe-contracts-fhenix-foundry",
+  "candidateFile": "/home/drew/code/starter-foundry/.evolve/domain-pack-candidates.json",
+  "status": "failed",
+  "starterCli": {
+    "path": "/home/drew/code/starter-foundry/dist/cli.js",
+    "source": "env",
+    "status": "passed",
+    "exists": true,
+    "attemptedBuild": false,
+    "buildReason": null,
+    "build": null,
+    "reason": null
+  },
+  "samples": {
+    "train": [
+      "fhenix-blind-poker-showdown"
+    ],
+    "holdout": [
+      "fhenix-confidential-lending-vault"
+    ]
+  },
+  "routing": {
+    "status": "passed",
+    "prompts": [
+      {
+        "prompt": "Build a Fhenix Foundry sealed-bid auction contract with CoFHE encrypted bids",
+        "expectedFamily": "fhenix-foundry",
+        "expectedLayers": [
+          "framework:fhenix-foundry"
+        ],
+        "actualFamily": "fhenix-foundry",
+        "actualLayers": [
+          "framework:fhenix-foundry",
+          "capability:fhe-foundry-sealed-auction"
+        ],
+        "ok": true
+      }
+    ]
+  },
+  "compose": {
+    "passed": 2,
+    "failed": 0,
+    "minFileCount": 9
+  },
+  "authenticity": {
+    "signals": [
+      "FHE.add",
+      "FHE.allow",
+      "FHE.asEuint",
+      "FHE.select",
+      "InEuint",
+      "cofhejs",
+      "ebool",
+      "encrypted balance",
+      "euint",
+      "private voting",
+      "sealed bid"
+    ],
+    "totalHits": 444,
+    "perSample": [
+      {
+        "leafId": "fhenix-blind-poker-showdown",
+        "hits": {
+          "FHE.add": 6,
+          "FHE.allow": 9,
+          "FHE.asEuint": 7,
+          "FHE.select": 5,
+          "InEuint": 22,
+          "cofhejs": 6,
+          "ebool": 32,
+          "encrypted balance": 4,
+          "euint": 123,
+          "private voting": 4,
+          "sealed bid": 4
+        },
+        "total": 222
+      },
+      {
+        "leafId": "fhenix-confidential-lending-vault",
+        "hits": {
+          "FHE.add": 6,
+          "FHE.allow": 9,
+          "FHE.asEuint": 7,
+          "FHE.select": 5,
+          "InEuint": 22,
+          "cofhejs": 6,
+          "ebool": 32,
+          "encrypted balance": 4,
+          "euint": 123,
+          "private voting": 4,
+          "sealed bid": 4
+        },
+        "total": 222
+      }
+    ]
+  },
+  "validationCommands": [],
+  "blueprintAgent": [],
+  "scoredPromotion": {
+    "mode": "scored",
+    "status": "failed",
+    "shots": 1,
+    "reps": 1,
+    "minScore": 0.5,
+    "baselineScore": null,
+    "maxHoldoutRegression": 0,
+    "train": {
+      "n": 1,
+      "min": 0.8878571428571428,
+      "median": 0.8878571428571428,
+      "p90": 0.8878571428571428,
+      "max": 0.8878571428571428,
+      "passCount": 1,
+      "failCount": 0,
+      "scorePassCount": 1,
+      "scoreFailCount": 0,
+      "completionPassCount": 1,
+      "completionFailCount": 0,
+      "scaffoldPassCount": 1,
+      "scaffoldFailCount": 0
+    },
+    "holdout": {
+      "n": 1,
+      "min": 0.8857142857142856,
+      "median": 0.8857142857142856,
+      "p90": 0.8857142857142856,
+      "max": 0.8857142857142856,
+      "passCount": 0,
+      "failCount": 1,
+      "scorePassCount": 1,
+      "scoreFailCount": 0,
+      "completionPassCount": 0,
+      "completionFailCount": 1,
+      "scaffoldPassCount": 1,
+      "scaffoldFailCount": 0
+    },
+    "leaves": [
+      {
+        "split": "train",
+        "leafId": "fhenix-blind-poker-showdown",
+        "status": "passed",
+        "outDir": ".evolve/domain-pack-runs/issue-157-scored-results/post-1910-kimi-k26-contract/fhe-contracts-fhenix-foundry-blueprint-agent/train-fhenix-blind-poker-showdown",
+        "command": null,
+        "score": 0.8878571428571428,
+        "passed": true,
+        "scorePassed": true,
+        "completionPassRate": 1,
+        "completionPassed": true,
+        "scaffoldPassed": true,
+        "scaffold": {
+          "expectedFamily": "fhenix-foundry",
+          "expectedLayers": [
+            "framework:fhenix-foundry"
+          ],
+          "observedFamily": "react-vite-ts+api-service+fhenix-foundry",
+          "observedLayers": [
+            "web:react-vite-ts",
+            "api:api-service",
+            "evm:fhenix-foundry"
+          ],
+          "observedDomainPackSources": [
+            "fhenix-foundry",
+            "capability:fhe-foundry-private-token"
+          ],
+          "passed": true,
+          "reason": null
+        },
+        "profileId": "kc-k26",
+        "rankBasis": "hit-rate",
+        "costUsd": null,
+        "durationMs": 1013961
+      },
+      {
+        "split": "holdout",
+        "leafId": "fhenix-confidential-lending-vault",
+        "status": "passed",
+        "outDir": ".evolve/domain-pack-runs/issue-157-scored-results/post-1910-kimi-k26-contract/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-fhenix-confidential-lending-vault",
+        "command": null,
+        "score": 0.8857142857142856,
+        "passed": false,
+        "scorePassed": true,
+        "completionPassRate": 0,
+        "completionPassed": false,
+        "scaffoldPassed": true,
+        "scaffold": {
+          "expectedFamily": "fhenix-foundry",
+          "expectedLayers": [
+            "framework:fhenix-foundry"
+          ],
+          "observedFamily": "react-vite-ts+api-service+worker-job+fhenix-foundry",
+          "observedLayers": [
+            "web:react-vite-ts",
+            "api:api-service",
+            "worker:worker-job",
+            "evm:fhenix-foundry"
+          ],
+          "observedDomainPackSources": [
+            "fhenix-foundry",
+            "capability:fhe-foundry-private-token"
+          ],
+          "passed": true,
+          "reason": null
+        },
+        "profileId": "kc-k26",
+        "rankBasis": "hit-rate",
+        "costUsd": null,
+        "durationMs": 1454487
+      }
+    ],
+    "failures": [
+      "1 holdout scored run(s) without a completion pass"
+    ]
+  },
+  "failures": [
+    "scored promotion failed: 1 holdout scored run(s) without a completion pass"
+  ]
+}

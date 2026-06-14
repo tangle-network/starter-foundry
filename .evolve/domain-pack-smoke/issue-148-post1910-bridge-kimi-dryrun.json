@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-14T16:03:15.347Z",
+  "candidateId": "bridge-contracts-capability-evm-layerzero-oft",
+  "candidateFile": "/home/drew/code/starter-foundry/.evolve/domain-pack-candidates.json",
+  "status": "passed",
+  "starterCli": {
+    "path": "/home/drew/code/starter-foundry/dist/cli.js",
+    "source": "env",
+    "status": "passed",
+    "exists": true,
+    "attemptedBuild": false,
+    "buildReason": null,
+    "build": null,
+    "reason": null
+  },
+  "samples": {
+    "train": [
+      "lz-oft-adapter-deploy"
+    ],
+    "holdout": [
+      "lz-oft-launch-platform"
+    ]
+  },
+  "routing": {
+    "status": "passed",
+    "prompts": [
+      {
+        "prompt": "Build a LayerZero OFT bridge token with Foundry",
+        "expectedFamily": "forge-contracts",
+        "expectedLayers": [
+          "framework:forge-foundation",
+          "capability:evm-layerzero-oft"
+        ],
+        "actualFamily": "forge-contracts",
+        "actualLayers": [
+          "framework:forge-foundation",
+          "capability:evm-layerzero-oft"
+        ],
+        "ok": true
+      },
+      {
+        "prompt": "Build a cross-chain token bridge contract with sendTokens, trusted remotes, and LayerZero endpoint config",
+        "expectedFamily": "forge-contracts",
+        "expectedLayers": [
+          "framework:forge-foundation",
+          "capability:evm-layerzero-oft"
+        ],
+        "actualFamily": "forge-contracts",
+        "actualLayers": [
+          "framework:forge-foundation",
+          "capability:evm-layerzero-oft"
+        ],
+        "ok": true
+      },
+      {
+        "prompt": "Build an omnichain ERC20 contract using LayerZero OFT with forge deploy scripts",
+        "expectedFamily": "forge-contracts",
+        "expectedLayers": [
+          "framework:forge-foundation",
+          "capability:evm-layerzero-oft"
+        ],
+        "actualFamily": "forge-contracts",
+        "actualLayers": [
+          "framework:forge-foundation",
+          "capability:evm-layerzero-oft"
+        ],
+        "ok": true
+      }
+    ]
+  },
+  "compose": {
+    "passed": 2,
+    "failed": 0,
+    "minFileCount": 8
+  },
+  "authenticity": {
+    "signals": [
+      "LayerZero",
+      "OFT",
+      "bridge",
+      "omnichain",
+      "sendTokens"
+    ],
+    "totalHits": 338,
+    "perSample": [
+      {
+        "leafId": "lz-oft-adapter-deploy",
+        "hits": {
+          "LayerZero": 36,
+          "OFT": 46,
+          "bridge": 32,
+          "omnichain": 41,
+          "sendTokens": 14
+        },
+        "total": 169
+      },
+      {
+        "leafId": "lz-oft-launch-platform",
+        "hits": {
+          "LayerZero": 36,
+          "OFT": 46,
+          "bridge": 32,
+          "omnichain": 41,
+          "sendTokens": 14
+        },
+        "total": 169
+      }
+    ]
+  },
+  "validationCommands": [
+    {
+      "command": "forge build",
+      "cwd": "/tmp/domain-pack-smoke-bridge-contracts-capability-evm-layerzero-oft-lz-oft-adapter-deploy-cI8URe/out",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 63,
+      "stdoutTail": "Compiling 3 files with Solc 0.8.35\nSolc 0.8.35 finished in 35.02ms\nCompiler run successful!\n",
+      "stderrTail": ""
+    },
+    {
+      "command": "forge test",
+      "cwd": "/tmp/domain-pack-smoke-bridge-contracts-capability-evm-layerzero-oft-lz-oft-adapter-deploy-cI8URe/out",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 25,
+      "stdoutTail": "No files changed, compilation skipped\n\nRan 1 test for test/OmnichainToken.t.sol:OmnichainTokenTest\n[PASS] test_send_tokens_updates_balances() (gas: 37010)\nSuite result: ok. 1 passed; 0 failed; 0 skipped; finished in 343.97µs (80.43µs CPU time)\n\nRan 1 test suite in 4.49ms (343.97µs CPU time): 1 tests passed, 0 failed, 0 skipped (1 total tests)\n",
+      "stderrTail": ""
+    }
+  ],
+  "blueprintAgent": [
+    {
+      "command": "pnpm tsx scripts/experiments/vb-run.ts --leaf 'lz-oft-adapter-deploy' --shots 1 --roster 'kimi-only' --exclude 'kc-kfc' --dry-run",
+      "cwd": "/home/drew/code/blueprint-agent-issue148-post1910",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 1415,
+      "stdoutTail": "\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent-issue148-post1910/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent-issue148-post1910/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n",
+      "stderrTail": "(node:2127498) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:2127615) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:2127638) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] tasks.full.json not found — falling back to tasks.sample.json (SMOKE FIXTURES, NOT graded Verified instances). Fetch the full set (scenarios/verticals/swe/fetch-tasks.ts) or set SWE_BENCH_TASKS_FILE before grading.\n[swe-bench-verified] dropped 1 non-Verified smoke fixture(s) from the smoke sample (not in the published set): django__django-11039\n[swe-bench-verified] contamination: 2 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-run] registry selection: 1 verticals, 1 leaves\n[vb-run] runtime=claude-local roster=kimi-only exclude=kc-kfc driverPersona=- shots=1 reps=1 parallel=2\n[vb-run] out=/home/drew/code/blueprint-agent-issue148-post1910/vb-run-2026-06-14T16-03-14\n[vb-run] --dry-run — exiting after validation\n(node:2127638) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "command": "pnpm tsx scripts/experiments/vb-run.ts --leaf 'lz-oft-launch-platform' --shots 1 --roster 'kimi-only' --exclude 'kc-kfc' --dry-run",
+      "cwd": "/home/drew/code/blueprint-agent-issue148-post1910",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 707,
+      "stdoutTail": "\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent-issue148-post1910/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent-issue148-post1910/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n",
+      "stderrTail": "(node:2127976) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:2128030) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:2128064) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] tasks.full.json not found — falling back to tasks.sample.json (SMOKE FIXTURES, NOT graded Verified instances). Fetch the full set (scenarios/verticals/swe/fetch-tasks.ts) or set SWE_BENCH_TASKS_FILE before grading.\n[swe-bench-verified] dropped 1 non-Verified smoke fixture(s) from the smoke sample (not in the published set): django__django-11039\n[swe-bench-verified] contamination: 2 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-run] registry selection: 1 verticals, 1 leaves\n[vb-run] runtime=claude-local roster=kimi-only exclude=kc-kfc driverPersona=- shots=1 reps=1 parallel=2\n[vb-run] out=/home/drew/code/blueprint-agent-issue148-post1910/vb-run-2026-06-14T16-03-15\n[vb-run] --dry-run — exiting after validation\n(node:2128064) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    }
+  ],
+  "scoredPromotion": null,
+  "failures": []
+}

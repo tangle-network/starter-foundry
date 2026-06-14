@@ -1,0 +1,105 @@
+{
+  "available": true,
+  "family": "react-vite-ts+forge-contracts",
+  "layers": [
+    "web:react-vite-ts",
+    "evm:forge-contracts"
+  ],
+  "projects": [
+    {
+      "id": "web",
+      "family": "react-vite-ts",
+      "path": "apps/web",
+      "layers": [
+        "framework:react-vite-ts",
+        "capability:crypto-swap-ui",
+        "capability:layout-dashboard",
+        "capability:tailwind",
+        "capability:shadcn",
+        "auth:none",
+        "payments:none",
+        "sdk:none"
+      ],
+      "domainPackGuidance": []
+    },
+    {
+      "id": "evm",
+      "family": "forge-contracts",
+      "path": "contracts/evm",
+      "layers": [
+        "framework:forge-foundation",
+        "capability:evm-layerzero-oft"
+      ],
+      "domainPackGuidance": [
+        {
+          "source": "capability:evm-layerzero-oft",
+          "domain": {
+            "family": "bridge",
+            "provider": "layerzero",
+            "protocol": "oft",
+            "runtime": "foundry",
+            "surface": "contracts"
+          },
+          "provides": [
+            "bridge-contracts",
+            "layerzero-oft",
+            "omnichain-token",
+            "forge-build"
+          ],
+          "requires": [
+            "solidity-contracts"
+          ],
+          "ambiguityGroup": "bridge-contracts",
+          "validationCommands": [
+            "forge build",
+            "forge test"
+          ],
+          "authenticitySignals": [
+            "LayerZero",
+            "OFT",
+            "sendTokens",
+            "omnichain",
+            "bridge"
+          ]
+        }
+      ]
+    }
+  ],
+  "domainPackGuidance": [
+    {
+      "source": "capability:evm-layerzero-oft",
+      "domain": {
+        "family": "bridge",
+        "provider": "layerzero",
+        "protocol": "oft",
+        "runtime": "foundry",
+        "surface": "contracts"
+      },
+      "provides": [
+        "bridge-contracts",
+        "layerzero-oft",
+        "omnichain-token",
+        "forge-build"
+      ],
+      "requires": [
+        "solidity-contracts"
+      ],
+      "ambiguityGroup": "bridge-contracts",
+      "validationCommands": [
+        "forge build",
+        "forge test"
+      ],
+      "authenticitySignals": [
+        "LayerZero",
+        "OFT",
+        "sendTokens",
+        "omnichain",
+        "bridge"
+      ]
+    }
+  ],
+  "fileCount": 71,
+  "partner": "layerzero",
+  "mode": "auto",
+  "error": null
+}

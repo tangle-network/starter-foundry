@@ -1,0 +1,231 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-14T17:31:28.708Z",
+  "candidateId": "bridge-contracts-capability-evm-layerzero-oft",
+  "candidateFile": "/home/drew/code/starter-foundry/.evolve/domain-pack-candidates.json",
+  "status": "failed",
+  "starterCli": {
+    "path": "/home/drew/code/starter-foundry/dist/cli.js",
+    "source": "env",
+    "status": "passed",
+    "exists": true,
+    "attemptedBuild": false,
+    "buildReason": null,
+    "build": null,
+    "reason": null
+  },
+  "samples": {
+    "train": [
+      "lz-oft-adapter-deploy"
+    ],
+    "holdout": [
+      "lz-oft-launch-platform"
+    ]
+  },
+  "routing": {
+    "status": "passed",
+    "prompts": [
+      {
+        "prompt": "Build a LayerZero OFT bridge token with Foundry",
+        "expectedFamily": "forge-contracts",
+        "expectedLayers": [
+          "framework:forge-foundation",
+          "capability:evm-layerzero-oft"
+        ],
+        "actualFamily": "forge-contracts",
+        "actualLayers": [
+          "framework:forge-foundation",
+          "capability:evm-layerzero-oft"
+        ],
+        "ok": true
+      },
+      {
+        "prompt": "Build a cross-chain token bridge contract with sendTokens, trusted remotes, and LayerZero endpoint config",
+        "expectedFamily": "forge-contracts",
+        "expectedLayers": [
+          "framework:forge-foundation",
+          "capability:evm-layerzero-oft"
+        ],
+        "actualFamily": "forge-contracts",
+        "actualLayers": [
+          "framework:forge-foundation",
+          "capability:evm-layerzero-oft"
+        ],
+        "ok": true
+      },
+      {
+        "prompt": "Build an omnichain ERC20 contract using LayerZero OFT with forge deploy scripts",
+        "expectedFamily": "forge-contracts",
+        "expectedLayers": [
+          "framework:forge-foundation",
+          "capability:evm-layerzero-oft"
+        ],
+        "actualFamily": "forge-contracts",
+        "actualLayers": [
+          "framework:forge-foundation",
+          "capability:evm-layerzero-oft"
+        ],
+        "ok": true
+      }
+    ]
+  },
+  "compose": {
+    "passed": 2,
+    "failed": 0,
+    "minFileCount": 8
+  },
+  "authenticity": {
+    "signals": [
+      "LayerZero",
+      "OFT",
+      "bridge",
+      "omnichain",
+      "sendTokens"
+    ],
+    "totalHits": 338,
+    "perSample": [
+      {
+        "leafId": "lz-oft-adapter-deploy",
+        "hits": {
+          "LayerZero": 36,
+          "OFT": 46,
+          "bridge": 32,
+          "omnichain": 41,
+          "sendTokens": 14
+        },
+        "total": 169
+      },
+      {
+        "leafId": "lz-oft-launch-platform",
+        "hits": {
+          "LayerZero": 36,
+          "OFT": 46,
+          "bridge": 32,
+          "omnichain": 41,
+          "sendTokens": 14
+        },
+        "total": 169
+      }
+    ]
+  },
+  "validationCommands": [],
+  "blueprintAgent": [],
+  "scoredPromotion": {
+    "mode": "scored",
+    "status": "failed",
+    "shots": 1,
+    "reps": 1,
+    "minScore": 0.5,
+    "baselineScore": null,
+    "maxHoldoutRegression": 0,
+    "train": {
+      "n": 1,
+      "min": 0.9090909090909091,
+      "median": 0.9090909090909091,
+      "p90": 0.9090909090909091,
+      "max": 0.9090909090909091,
+      "passCount": 0,
+      "failCount": 1,
+      "scorePassCount": 1,
+      "scoreFailCount": 0,
+      "completionPassCount": 0,
+      "completionFailCount": 1,
+      "scaffoldPassCount": 1,
+      "scaffoldFailCount": 0
+    },
+    "holdout": {
+      "n": 1,
+      "min": 0.9090909090909091,
+      "median": 0.9090909090909091,
+      "p90": 0.9090909090909091,
+      "max": 0.9090909090909091,
+      "passCount": 0,
+      "failCount": 1,
+      "scorePassCount": 1,
+      "scoreFailCount": 0,
+      "completionPassCount": 0,
+      "completionFailCount": 1,
+      "scaffoldPassCount": 1,
+      "scaffoldFailCount": 0
+    },
+    "leaves": [
+      {
+        "split": "train",
+        "leafId": "lz-oft-adapter-deploy",
+        "status": "passed",
+        "outDir": ".evolve/domain-pack-runs/issue-157-scored-results/post-1910-kimi-k26-contract/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/train-lz-oft-adapter-deploy",
+        "command": null,
+        "score": 0.9090909090909091,
+        "passed": false,
+        "scorePassed": true,
+        "completionPassRate": 0,
+        "completionPassed": false,
+        "scaffoldPassed": true,
+        "scaffold": {
+          "expectedFamily": "forge-contracts",
+          "expectedLayers": [
+            "framework:forge-foundation",
+            "capability:evm-layerzero-oft"
+          ],
+          "observedFamily": "react-vite-ts+forge-contracts",
+          "observedLayers": [
+            "web:react-vite-ts",
+            "evm:forge-contracts"
+          ],
+          "observedDomainPackSources": [
+            "capability:evm-layerzero-oft"
+          ],
+          "passed": true,
+          "reason": null
+        },
+        "profileId": "kc-k26",
+        "rankBasis": "composite",
+        "costUsd": null,
+        "durationMs": 678464
+      },
+      {
+        "split": "holdout",
+        "leafId": "lz-oft-launch-platform",
+        "status": "passed",
+        "outDir": ".evolve/domain-pack-runs/issue-157-scored-results/post-1910-kimi-k26-contract/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/holdout-lz-oft-launch-platform",
+        "command": null,
+        "score": 0.9090909090909091,
+        "passed": false,
+        "scorePassed": true,
+        "completionPassRate": 0,
+        "completionPassed": false,
+        "scaffoldPassed": true,
+        "scaffold": {
+          "expectedFamily": "forge-contracts",
+          "expectedLayers": [
+            "framework:forge-foundation",
+            "capability:evm-layerzero-oft"
+          ],
+          "observedFamily": "react-vite-ts+api-service+forge-contracts",
+          "observedLayers": [
+            "web:react-vite-ts",
+            "api:api-service",
+            "evm:forge-contracts"
+          ],
+          "observedDomainPackSources": [
+            "capability:evm-layerzero-oft"
+          ],
+          "passed": true,
+          "reason": null
+        },
+        "profileId": "kc-k26",
+        "rankBasis": "composite",
+        "costUsd": null,
+        "durationMs": 1734663
+      }
+    ],
+    "failures": [
+      "1 train scored run(s) without a completion pass",
+      "1 holdout scored run(s) without a completion pass"
+    ]
+  },
+  "failures": [
+    "scored promotion failed: 1 train scored run(s) without a completion pass",
+    "scored promotion failed: 1 holdout scored run(s) without a completion pass"
+  ]
+}

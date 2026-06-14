@@ -1,0 +1,25 @@
+{
+  "vertical": "layerzero-omnichain",
+  "roster": "kimi-only",
+  "searchArms": [
+    "default"
+  ],
+  "skillArms": [
+    "none"
+  ],
+  "driverPersona": "none",
+  "personaArms": [
+    "none"
+  ],
+  "personaCrossed": false,
+  "profiles": 1,
+  "leaves": 1,
+  "reps": 1,
+  "totalCells": 1,
+  "measurable": 1,
+  "rankedByComposite": true,
+  "durationMs": 678464,
+  "resumed": 0,
+  "executed": 1,
+  "generatedAt": "2026-06-14T17:02:10.448Z"
+}

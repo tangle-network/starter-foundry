@@ -1,0 +1,580 @@
+{
+  "verificationVersion": "verify-v1-2026-04-19",
+  "workdir": "/tmp/vb-cli-bridge-workspaces/vb-kc-k26-lz-oft-adapter-deploy-r-67a27ca892fa-mqe0tnz4-c325b47a/apps/web",
+  "leafId": "lz-oft-adapter-deploy",
+  "verticalId": "layerzero-omnichain",
+  "generatedAt": "2026-06-14T17:02:09.670Z",
+  "durationMs": 16117,
+  "layers": [
+    {
+      "layer": "install",
+      "status": "pass",
+      "durationMs": 701,
+      "reason": "solidity-foundry@contracts/evm: forge deps already present in lib/; forge build verifies them",
+      "findings": [],
+      "layerErrorCount": null,
+      "detail": {
+        "perAdapter": [
+          {
+            "adapter": "node-pnpm@apps/web",
+            "status": "pass",
+            "durationMs": 338
+          },
+          {
+            "adapter": "node-npm@apps/web",
+            "status": "pass",
+            "durationMs": 363
+          },
+          {
+            "adapter": "solidity-foundry@contracts/evm",
+            "status": "skipped",
+            "reason": "forge deps already present in lib/; forge build verifies them",
+            "durationMs": 0
+          }
+        ]
+      }
+    },
+    {
+      "layer": "typecheck",
+      "status": "fail",
+      "durationMs": 8893,
+      "reason": "node-pnpm@apps/web: npx --no-install tsc --noEmit --pretty false exit 2 | node-npm@apps/web: npx --no-install tsc --noEmit --pretty false exit 2 | solidity-foundry@contracts/evm: forge does not separate typecheck from build — covered by runBuild",
+      "findings": [
+        {
+          "severity": "major",
+          "layer": "typecheck",
+          "message": "[node-pnpm@apps/web] typecheck failed (exit 2)",
+          "evidence": "node_modules/.pnpm/lucide-react@0.468.0_react@19.2.7/node_modules/lucide-react/dist/lucide-react.d.ts(2,10): error TS2305: Module '\"react\"' has no exported member 'ReactSVG'.\nsrc/components/layout/sidebar-layout.tsx(52,50): error TS2322: Type '{ children: Element; key: string; delayDuration: number; }' is not assignable to type 'IntrinsicAttributes & { children: ReactNode; }'.\n  Property 'delayDuration' does not exist on type 'IntrinsicAttributes & { children: ReactNode; }'.\nsrc/components/layout/sidebar-layout.tsx(54,37): error TS2322: Type '{ children: Element; asChild: true; }' is not assignable to type 'IntrinsicAttributes & ButtonHTMLAttributes<HTMLButtonElement> & RefAttributes<HTMLButtonElement>'.\n  Property 'asChild' does not exist on type 'IntrinsicAttributes & ButtonHTMLAttributes<HTMLButtonElement> & RefAttributes<HTMLButtonElement>'.\nsrc/components/layout/sidebar-layout.tsx(73,51): error TS2322: Type '{ children: string; side: string; }' is not assignable to type 'IntrinsicAttributes & HTMLAttributes<HTMLDivElement> & RefAttributes<HTMLDivElement>'.\n  Property 'side' does not exist on type 'IntrinsicAttributes & HTMLAttributes<HTMLDivElement> & RefAttributes<HTMLDivElement>'.\n\nnpm warn Unknown env config \"verify-deps-before-run\". This will stop working in the next major version of npm.\n(node:2744355) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+        },
+        {
+          "severity": "major",
+          "layer": "typecheck",
+          "message": "[node-npm@apps/web] typecheck failed (exit 2)",
+          "evidence": "node_modules/.pnpm/lucide-react@0.468.0_react@19.2.7/node_modules/lucide-react/dist/lucide-react.d.ts(2,10): error TS2305: Module '\"react\"' has no exported member 'ReactSVG'.\nsrc/components/layout/sidebar-layout.tsx(52,50): error TS2322: Type '{ children: Element; key: string; delayDuration: number; }' is not assignable to type 'IntrinsicAttributes & { children: ReactNode; }'.\n  Property 'delayDuration' does not exist on type 'IntrinsicAttributes & { children: ReactNode; }'.\nsrc/components/layout/sidebar-layout.tsx(54,37): error TS2322: Type '{ children: Element; asChild: true; }' is not assignable to type 'IntrinsicAttributes & ButtonHTMLAttributes<HTMLButtonElement> & RefAttributes<HTMLButtonElement>'.\n  Property 'asChild' does not exist on type 'IntrinsicAttributes & ButtonHTMLAttributes<HTMLButtonElement> & RefAttributes<HTMLButtonElement>'.\nsrc/components/layout/sidebar-layout.tsx(73,51): error TS2322: Type '{ children: string; side: string; }' is not assignable to type 'IntrinsicAttributes & HTMLAttributes<HTMLDivElement> & RefAttributes<HTMLDivElement>'.\n  Property 'side' does not exist on type 'IntrinsicAttributes & HTMLAttributes<HTMLDivElement> & RefAttributes<HTMLDivElement>'.\n\nnpm warn Unknown env config \"verify-deps-before-run\". This will stop working in the next major version of npm.\n(node:2745633) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+        }
+      ],
+      "layerErrorCount": 4,
+      "detail": {
+        "perAdapter": [
+          {
+            "adapter": "node-pnpm@apps/web",
+            "status": "fail",
+            "reason": "npx --no-install tsc --noEmit --pretty false exit 2",
+            "durationMs": 6003
+          },
+          {
+            "adapter": "node-npm@apps/web",
+            "status": "fail",
+            "reason": "npx --no-install tsc --noEmit --pretty false exit 2",
+            "durationMs": 2890
+          },
+          {
+            "adapter": "solidity-foundry@contracts/evm",
+            "status": "skipped",
+            "reason": "forge does not separate typecheck from build — covered by runBuild",
+            "durationMs": 0
+          }
+        ]
+      }
+    },
+    {
+      "layer": "build",
+      "status": "pass",
+      "durationMs": 4467,
+      "findings": [],
+      "layerErrorCount": null,
+      "detail": {
+        "perAdapter": [
+          {
+            "adapter": "node-pnpm@apps/web",
+            "status": "pass",
+            "durationMs": 2895
+          },
+          {
+            "adapter": "node-npm@apps/web",
+            "status": "pass",
+            "durationMs": 1496
+          },
+          {
+            "adapter": "solidity-foundry@contracts/evm",
+            "status": "pass",
+            "durationMs": 76
+          }
+        ]
+      }
+    },
+    {
+      "layer": "lint",
+      "status": "fail",
+      "durationMs": 19,
+      "reason": "node-pnpm@apps/web: no lint/check script | node-npm@apps/web: no lint/check script | solidity-foundry@contracts/evm: forge fmt --check exit 1",
+      "findings": [
+        {
+          "severity": "minor",
+          "layer": "lint",
+          "message": "[solidity-foundry@contracts/evm] lint failed (exit 1)",
+          "evidence": "2   2    | pragma solidity ^0.8.24;\n3   3    | \n4        |-import { XLayerToken } from \"../src/XLayerToken.sol\";\n    4    |+import {XLayerToken} from \"../src/XLayerToken.sol\";\n5   5    | \n6   6    | contract SendTokensScript {\n7        |-    function run(XLayerToken token, uint32 destinationChain, address recipient, uint256 amount) external returns (bytes32) {\n    7    |+    function run(XLayerToken token, uint32 destinationChain, address recipient, uint256 amount)\n    8    |+        external\n    9    |+        returns (bytes32)\n    10   |+    {\n8   11   |         return token.sendTokens(destinationChain, recipient, amount);\n9   12   |     }\n10  13   | }\n\nDiff in script/Deploy.s.sol:\n1   1    | // SPDX-License-Identifier: MIT\n2   2    | pragma solidity ^0.8.24;\n3   3    | \n4        |-import { Script } from \"forge-std/Script.sol\";\n5        |-import { XLayerToken } from \"../src/XLayerToken.sol\";\n6        |-import { WrappedOFTAdapter } from \"../src/WrappedOFTAdapter.sol\";\n7        |-import { WrappedOFT } from \"../src/WrappedOFT.sol\";\n    4    |+import {Script} from \"forge-std/Script.sol\";\n    5    |+import {XLayerToken} from \"../src/XLayerToken.sol\";\n    6    |+import {WrappedOFTAdapter} from \"../src/WrappedOFTAdapter.sol\";\n    7    |+import {WrappedOFT} from \"../src/WrappedOFT.sol\";\n8   8    | \n9   9    | struct OFTDeployment {\n10  10   |     address token;\n--------------------------------------------------------------------------------55  55   | \n56  56   |         vm.stopBroadcast();\n57  57   | \n58       |-        deployment = OFTDeployment({ token: existingToken, adapter: address(adapter), ofts: ofts });\n    58   |+        deployment = OFTDeployment({token: existingToken, adapter: address(adapter), ofts: ofts});\n59  59   |     }\n60  60   | \n61  61   |     function _parseEids(string memory _csv) internal pure returns (uint256[] memory eids) {\n\n"
+        }
+      ],
+      "layerErrorCount": null,
+      "detail": {
+        "perAdapter": [
+          {
+            "adapter": "node-pnpm@apps/web",
+            "status": "skipped",
+            "reason": "no lint/check script",
+            "durationMs": 0
+          },
+          {
+            "adapter": "node-npm@apps/web",
+            "status": "skipped",
+            "reason": "no lint/check script",
+            "durationMs": 0
+          },
+          {
+            "adapter": "solidity-foundry@contracts/evm",
+            "status": "fail",
+            "reason": "forge fmt --check exit 1",
+            "durationMs": 19
+          }
+        ]
+      }
+    },
+    {
+      "layer": "serve",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "no preview URL supplied; use preview runtime for live checks",
+      "findings": []
+    },
+    {
+      "layer": "domain",
+      "status": "fail",
+      "durationMs": 3191,
+      "score": 0,
+      "findings": [
+        {
+          "severity": "critical",
+          "layer": "domain",
+          "message": "@layerzerolabs/lz-evm-oapp-v2 declared in package.json: no file matching package.json contains required pattern"
+        },
+        {
+          "severity": "critical",
+          "layer": "domain",
+          "message": "viem or ethers used for EVM contract interaction: no file matching package.json contains required pattern"
+        },
+        {
+          "severity": "critical",
+          "layer": "domain",
+          "message": "custom-build failed (exit 2): npm warn Unknown env config \"verify-deps-before-run\". This will stop working in the next major version of npm.\n(node:2747215) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+        }
+      ],
+      "reason": "3 critical domain violation(s)"
+    },
+    {
+      "layer": "design",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "design layer not in VB pipeline (module pending)",
+      "findings": []
+    },
+    {
+      "layer": "flow",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "flow layer not in VB pipeline (use bad-audit post-loop)",
+      "findings": []
+    },
+    {
+      "layer": "fuzz",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "fuzz layer not in VB pipeline (module pending)",
+      "findings": []
+    },
+    {
+      "layer": "requires-real-artifact",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "no authenticity spec for this vertical — required-artifact check unmeasurable",
+      "findings": []
+    },
+    {
+      "layer": "tests",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "leaf has no test spec (0-to-1 archetype)",
+      "findings": []
+    },
+    {
+      "layer": "swebench-official",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "leaf has no SWE-Bench instanceId metadata",
+      "findings": []
+    },
+    {
+      "layer": "deploy",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "leaf has no deploySpec",
+      "findings": []
+    },
+    {
+      "layer": "dependencies",
+      "status": "pass",
+      "durationMs": 23,
+      "score": 0.812,
+      "reason": "21 deps across npm — 0 critical, blend=0.81",
+      "findings": [
+        {
+          "severity": "major",
+          "layer": "dependencies",
+          "message": "@tanstack/react-table: pinned as \"latest\" — wildcard breaks reproducibility"
+        },
+        {
+          "severity": "major",
+          "layer": "dependencies",
+          "message": "recharts: pinned as \"latest\" — wildcard breaks reproducibility"
+        },
+        {
+          "severity": "major",
+          "layer": "dependencies",
+          "message": "@tailwindcss/vite: pinned as \"latest\" — wildcard breaks reproducibility"
+        },
+        {
+          "severity": "major",
+          "layer": "dependencies",
+          "message": "tailwindcss: pinned as \"latest\" — wildcard breaks reproducibility"
+        },
+        {
+          "severity": "major",
+          "layer": "dependencies",
+          "message": "@layerzerolabs/lz-evm-oapp-v2: vertical policy preferred @layerzerolabs/lz-evm-oapp-v2 (Official LayerZero V2 OApp/OFT/ONFT contract library) but agent didn't use it"
+        },
+        {
+          "severity": "major",
+          "layer": "dependencies",
+          "message": "@layerzerolabs/onft-evm: vertical policy preferred @layerzerolabs/onft-evm (Official LayerZero V2 ONFT721/ONFT721Adapter contracts) but agent didn't use it"
+        },
+        {
+          "severity": "major",
+          "layer": "dependencies",
+          "message": "@layerzerolabs/lz-v2-utilities: vertical policy preferred @layerzerolabs/lz-v2-utilities (LayerZero V2 helper utilities for options encoding and address conversion) but agent didn't use it"
+        }
+      ],
+      "detail": {
+        "ecosystems": [
+          "npm"
+        ],
+        "totalDeps": 21,
+        "criticalCount": 0,
+        "scorecard": [
+          {
+            "name": "@radix-ui/react-slot",
+            "version": "^1.1.0",
+            "score": 10,
+            "ageDays": 1962,
+            "downloadsLastMonth": 674310374,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "class-variance-authority",
+            "version": "^0.7.1",
+            "score": 10,
+            "ageDays": 1600,
+            "downloadsLastMonth": 211582990,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "clsx",
+            "version": "^2.1.1",
+            "score": 10,
+            "ageDays": 2728,
+            "downloadsLastMonth": 415183770,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "lucide-react",
+            "version": "^0.468.0",
+            "score": 10,
+            "ageDays": 2063,
+            "downloadsLastMonth": 333274077,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "react",
+            "version": "^19.2.0",
+            "score": 10,
+            "ageDays": 5344,
+            "downloadsLastMonth": 560339903,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "react-dom",
+            "version": "^19.2.0",
+            "score": 10,
+            "ageDays": 4421,
+            "downloadsLastMonth": 526786404,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "tailwind-merge",
+            "version": "^2.6.0",
+            "score": 10,
+            "ageDays": 1792,
+            "downloadsLastMonth": 277776518,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "@tanstack/react-table",
+            "version": "latest",
+            "score": 8,
+            "ageDays": 1607,
+            "downloadsLastMonth": 57226787,
+            "isPartnerPreferred": false,
+            "findings": 1
+          },
+          {
+            "name": "recharts",
+            "version": "latest",
+            "score": 8,
+            "ageDays": 3964,
+            "downloadsLastMonth": 205981550,
+            "isPartnerPreferred": false,
+            "findings": 1
+          },
+          {
+            "name": "@tailwindcss/vite",
+            "version": "^4.0.0",
+            "score": 10,
+            "ageDays": 863,
+            "downloadsLastMonth": 140154257,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "tailwindcss",
+            "version": "^4.0.0",
+            "score": 10,
+            "ageDays": 3173,
+            "downloadsLastMonth": 463308988,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "@radix-ui/react-dialog",
+            "version": "^1.1.0",
+            "score": 10,
+            "ageDays": 2007,
+            "downloadsLastMonth": 242278986,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "@radix-ui/react-dropdown-menu",
+            "version": "^2.1.0",
+            "score": 10,
+            "ageDays": 2007,
+            "downloadsLastMonth": 198358244,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "@tailwindcss/vite",
+            "version": "latest",
+            "score": 8,
+            "ageDays": 863,
+            "downloadsLastMonth": 140154257,
+            "isPartnerPreferred": false,
+            "findings": 1
+          },
+          {
+            "name": "@types/node",
+            "version": "^20.17.0",
+            "score": 10,
+            "ageDays": 3679,
+            "downloadsLastMonth": 1430253673,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "@types/react",
+            "version": "^19.2.0",
+            "score": 10,
+            "ageDays": 3679,
+            "downloadsLastMonth": 505216450,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "@types/react-dom",
+            "version": "^19.2.0",
+            "score": 10,
+            "ageDays": 3679,
+            "downloadsLastMonth": 400859068,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "@vitejs/plugin-react",
+            "version": "^4.7.0",
+            "score": 10,
+            "ageDays": 1728,
+            "downloadsLastMonth": 245644950,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "tailwindcss",
+            "version": "latest",
+            "score": 8,
+            "ageDays": 3173,
+            "downloadsLastMonth": 463308988,
+            "isPartnerPreferred": false,
+            "findings": 1
+          },
+          {
+            "name": "typescript",
+            "version": "^5.9.0",
+            "score": 10,
+            "ageDays": 5004,
+            "downloadsLastMonth": 859336119,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "vite",
+            "version": "^6.4.2",
+            "score": 10,
+            "ageDays": 2245,
+            "downloadsLastMonth": 540376766,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "__missing-preferred__",
+            "version": "",
+            "score": 4,
+            "ageDays": null,
+            "downloadsLastMonth": null,
+            "isPartnerPreferred": false,
+            "findings": 3
+          }
+        ]
+      }
+    },
+    {
+      "layer": "semantic",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "not in --only / in --skip",
+      "findings": []
+    },
+    {
+      "layer": "completion-verifier",
+      "status": "fail",
+      "durationMs": 32,
+      "score": 0.5,
+      "reason": "4/8 concepts present (rate=0.50)",
+      "findings": [
+        {
+          "severity": "minor",
+          "layer": "completion-verifier",
+          "message": "requirement 'peer wiring' not satisfied: no produced artifact matched this requirement"
+        },
+        {
+          "severity": "minor",
+          "layer": "completion-verifier",
+          "message": "requirement 'lzSend outbound messaging' not satisfied: no produced artifact matched this requirement"
+        },
+        {
+          "severity": "minor",
+          "layer": "completion-verifier",
+          "message": "requirement 'OFT send transfer' not satisfied: no produced artifact matched this requirement"
+        },
+        {
+          "severity": "minor",
+          "layer": "completion-verifier",
+          "message": "requirement 'adapterParams options encoding' not satisfied: no produced artifact matched this requirement"
+        }
+      ],
+      "detail": {
+        "taskId": "lz-oft-adapter-deploy",
+        "fullyComplete": false,
+        "completionRate": 0.5,
+        "requirements": [
+          {
+            "reqId": "adapter deployment",
+            "title": "adapter deployment OFTAdapter deploy existing ERC-20 wrap",
+            "structurallyPresent": true,
+            "correct": true,
+            "satisfied": true
+          },
+          {
+            "reqId": "lock mechanism",
+            "title": "lock mechanism lock unlock lock-and-mint locked tokens",
+            "structurallyPresent": true,
+            "correct": true,
+            "satisfied": true
+          },
+          {
+            "reqId": "peer wiring",
+            "title": "peer wiring setPeer wire connect peer",
+            "structurallyPresent": false,
+            "correct": null,
+            "satisfied": false
+          },
+          {
+            "reqId": "single adapter warning",
+            "title": "single adapter warning only one single adapter liquidity fragmentation",
+            "structurallyPresent": true,
+            "correct": true,
+            "satisfied": true
+          },
+          {
+            "reqId": "lzSend outbound messaging",
+            "title": "lzSend outbound messaging _lzSend dstEid payload options",
+            "structurallyPresent": false,
+            "correct": null,
+            "satisfied": false
+          },
+          {
+            "reqId": "OFT send transfer",
+            "title": "OFT send transfer OFT send SendParam quoteSend",
+            "structurallyPresent": false,
+            "correct": null,
+            "satisfied": false
+          },
+          {
+            "reqId": "adapterParams options encoding",
+            "title": "adapterParams options encoding adapterParams OptionsBuilder addExecutorLzReceiveOption",
+            "structurallyPresent": false,
+            "correct": null,
+            "satisfied": false
+          },
+          {
+            "reqId": "endpoint chain configuration",
+            "title": "endpoint chain configuration EndpointV2 endpoint eid chain targeting",
+            "structurallyPresent": true,
+            "correct": true,
+            "satisfied": true
+          }
+        ]
+      }
+    }
+  ],
+  "passCount": 3,
+  "failCount": 4,
+  "skippedCount": 9,
+  "blendedScore": 0.439,
+  "judgeCostUsd": null,
+  "allPass": false
+}

@@ -402,6 +402,39 @@ Current surface-generalization slice:
   `compose-prompt` route the same prompt correctly, so the next integration fix
   belongs in the blueprint-agent artifact extraction path.
 
+Post-#1910 scored contract-handoff evidence:
+
+- Blueprint Agent #1910 is merged and active in the scored worktree. It surfaces
+  Starter Foundry's generic scaffold completion contract to the worker after
+  scaffold upload and before coding starts.
+- Run id:
+  `.evolve/domain-pack-runs/issue-157-scored-results/post-1910-kimi-k26-contract/`.
+  Coder was `kimi-code/kimi-k2.6` via cli-bridge; reviewer/semantic models were
+  `deepseek/deepseek-chat`; roster was `kimi-only`; `kc-kfc` was excluded.
+- Starter Foundry found and fixed a scored-parser bug during this run: BA writes
+  the true completion decision into
+  `matrix/artifacts/*/verification-shot-*.json`, but
+  `competition.ranked[0].passRate` can remain `0`. The scorer now reads the
+  `completion-verifier` layer for the winning profile and falls back to ranked
+  pass rate only when verifier artifacts are absent.
+- Result vs post-#1908 baseline:
+  - Scaffold evidence stayed green: `4/4` before, `4/4` after.
+  - Completion improved: `0/4` before, `1/4` after.
+  - FHE now has one real completion pass: train
+    `fhenix-blind-poker-showdown` passed completion `4/4`; holdout
+    `fhenix-confidential-lending-vault` failed `3/5`, missing borrower sealed
+    read and outcome decrypt oracle.
+  - Bridge still has `0/2` completion passes. Train
+    `lz-oft-adapter-deploy` hit `4/8`; holdout `lz-oft-launch-platform` hit
+    `4/12`.
+- Current read: Starter Foundry routing/scaffold handoff is no longer the
+  bottleneck. The bridge holdout transcript shows Kimi built real
+  `contracts/evm`, `apps/api`, and `apps/web` pieces, but BA's verifier reports
+  primary workdir as `apps/web` and fails to see LayerZero package/contract
+  patterns that live outside that app. The next likely fix is Blueprint Agent
+  verifier workspace scope for multi-project outputs, plus clearer leaf-specific
+  missing-requirement feedback to the worker.
+
 ## Open Follow-up Candidates
 
 - Promote generated `.evolve/domain-pack-candidates.json` rows into parallel

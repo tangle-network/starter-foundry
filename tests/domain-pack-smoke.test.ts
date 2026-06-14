@@ -330,6 +330,60 @@ test('domain-pack smoke scored mode fails closed when the scored cell lacks expe
   }
 })
 
+test('domain-pack smoke scored mode blocks live scored runs when deterministic preflight fails', () => {
+  const root = mkdtempSync(join(tmpdir(), 'sf-domain-pack-smoke-live-preflight-'))
+  try {
+    const candidatesPath = join(root, 'candidates.json')
+    const outputPath = join(root, 'smoke.json')
+    writeCandidates(candidatesPath, ['train-a'], ['holdout-a'])
+
+    const result = spawnSync(
+      TSX,
+      [
+        SCRIPT,
+        '--candidate',
+        'fhe-contracts-fhenix-foundry',
+        '--candidates',
+        candidatesPath,
+        '--output',
+        outputPath,
+        '--write',
+        '--json',
+        '--starter-cli',
+        join(root, 'missing-cli.js'),
+        '--skip-build',
+        '--blueprint-agent',
+        'scored',
+        '--blueprint-agent-dir',
+        root,
+        '--train',
+        '1',
+        '--holdout',
+        '1',
+        '--timeout-ms',
+        '1000',
+      ],
+      {
+        cwd: process.cwd(),
+        encoding: 'utf8',
+      },
+    )
+
+    assert.equal(result.status, 1, result.stderr || result.stdout)
+    const report = JSON.parse(readFileSync(outputPath, 'utf8'))
+    assert.equal(report.status, 'failed')
+    assert.equal(report.scoredPromotion.status, 'failed')
+    assert.deepEqual(report.scoredPromotion.leaves, [])
+    assert.match(
+      report.scoredPromotion.failures.join('\n'),
+      /live scored promotion blocked by deterministic preflight/,
+    )
+    assert.match(report.scoredPromotion.failures.join('\n'), /starter CLI not found/)
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})
+
 test('domain-pack smoke scored mode fails closed on zero completion pass rate', () => {
   const root = mkdtempSync(join(tmpdir(), 'sf-domain-pack-smoke-pass-rate-'))
   try {

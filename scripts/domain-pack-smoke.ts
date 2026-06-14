@@ -248,6 +248,9 @@ function runSmoke(candidate: DomainPackWorkCandidate): SmokeReport {
     failures.push(`insufficient train leaves: ${train.length}/${trainCount}`)
   if (holdout.length < holdoutCount)
     failures.push(`insufficient holdout leaves: ${holdout.length}/${holdoutCount}`)
+  if (!existsSync(starterCli)) {
+    failures.push(`starter CLI not found: ${starterCli}`)
+  }
 
   const routing = checkRouting(candidate)
   if (routing.status === 'failed') failures.push('routing prompt check failed')
@@ -281,7 +284,9 @@ function runSmoke(candidate: DomainPackWorkCandidate): SmokeReport {
       failures.push(`blueprint-agent dry-run failed: ${result.command}`)
   }
 
-  const scoredPromotion = runScoredPromotion(candidate, train, holdout)
+  const scoredPromotion = runScoredPromotion(candidate, train, holdout, {
+    livePreflightFailures: scoredLivePreflightFailures(failures),
+  })
   if (scoredPromotion?.status === 'failed') {
     for (const failure of scoredPromotion.failures)
       failures.push(`scored promotion failed: ${failure}`)
@@ -318,6 +323,22 @@ function runSmoke(candidate: DomainPackWorkCandidate): SmokeReport {
     scoredPromotion,
     failures,
   }
+}
+
+function scoredLivePreflightFailures(failures: string[]): string[] {
+  if (scoredResultsDir) return []
+  if (blueprintMode !== 'scored') return []
+  return failures.filter(
+    (failure) =>
+      failure.startsWith('starter CLI not found:') ||
+      failure.startsWith('insufficient train leaves:') ||
+      failure.startsWith('insufficient holdout leaves:') ||
+      failure === 'routing prompt check failed' ||
+      failure.startsWith('compose failed for ') ||
+      failure === 'authenticity signals were not found in composed scaffolds' ||
+      failure.startsWith('validation command failed:') ||
+      failure.startsWith('blueprint-agent dry-run failed:'),
+  )
 }
 
 function checkRouting(candidate: DomainPackWorkCandidate): SmokeReport['routing'] {
@@ -481,8 +502,28 @@ function runScoredPromotion(
   candidate: DomainPackWorkCandidate,
   train: string[],
   holdout: string[],
+  opts: { livePreflightFailures?: string[] } = {},
 ): ScoredPromotionReport | null {
   if (blueprintMode === 'off' || blueprintMode === 'dry-run') return null
+  const livePreflightFailures = opts.livePreflightFailures ?? []
+  if (!scoredResultsDir && livePreflightFailures.length > 0) {
+    return {
+      mode: 'scored',
+      status: 'failed',
+      shots,
+      reps,
+      minScore,
+      baselineScore,
+      maxHoldoutRegression,
+      train: distribution([]),
+      holdout: distribution([]),
+      leaves: [],
+      failures: [
+        'live scored promotion blocked by deterministic preflight',
+        ...livePreflightFailures,
+      ],
+    }
+  }
   if (blueprintMode !== 'scored') {
     return {
       mode: 'scored',

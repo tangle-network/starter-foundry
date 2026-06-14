@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url'
 
 import { listDomainPackEntries, type DomainPackEntry } from '../src/lib/domain-packs.js'
 import { loadRegistry } from '../src/lib/registry.js'
-import type { DomainPackMetadata, Registry } from '../src/types.js'
+import type { DomainPackAuthenticityGroup, DomainPackMetadata, Registry } from '../src/types.js'
 
 interface ScenarioLeaf {
   id: string
@@ -39,6 +39,7 @@ interface DomainPackWorkCandidate {
   routingPrompts: string[]
   validationCommands: string[]
   authenticitySignals: string[]
+  authenticityGroups?: DomainPackAuthenticityGroup[]
   registryFiles: string[]
   filesToModify: string[]
   gatesToRun: string[]
@@ -632,6 +633,12 @@ function candidateFromEvidence({
   const authenticitySignals = unique(
     entries.flatMap(({ entry }) => entry.pack.authenticitySignals ?? []),
   )
+  const authenticityGroups =
+    entries.length === 1
+      ? uniqueAuthenticityGroups(
+          entries.flatMap(({ entry }) => entry.pack.authenticityGroups ?? []),
+        )
+      : []
 
   return {
     id,
@@ -652,6 +659,7 @@ function candidateFromEvidence({
     routingPrompts,
     validationCommands,
     authenticitySignals,
+    ...(authenticityGroups.length > 0 ? { authenticityGroups } : {}),
     registryFiles,
     filesToModify: unique([
       ...registryFiles,
@@ -968,6 +976,22 @@ function splitLeaves(ids: string[]): { train: string[]; holdout: string[] } {
 
 function unique<T>(values: T[]): T[] {
   return [...new Set(values)].sort()
+}
+
+function uniqueAuthenticityGroups(
+  groups: DomainPackAuthenticityGroup[],
+): DomainPackAuthenticityGroup[] {
+  const byId = new Map<string, DomainPackAuthenticityGroup>()
+  for (const group of groups) {
+    const existing = byId.get(group.id)
+    byId.set(group.id, {
+      ...group,
+      description: group.description ?? existing?.description,
+      minRequired: Math.max(existing?.minRequired ?? 0, group.minRequired ?? 1),
+      signals: unique([...(existing?.signals ?? []), ...group.signals]),
+    })
+  }
+  return [...byId.values()].sort((left, right) => left.id.localeCompare(right.id))
 }
 
 function isString(value: unknown): value is string {

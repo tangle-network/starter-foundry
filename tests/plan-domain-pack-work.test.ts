@@ -150,6 +150,11 @@ test('plan-domain-pack-work emits parallelizable FHE and bridge candidates from 
     assert.ok(fhe.registryFiles.includes('registry/families/fhevm-contracts/manifest.json'))
     assert.ok(fhe.validationCommands.includes('forge build'))
     assert.ok(fhe.authenticitySignals.includes('FHE.select'))
+    assert.equal(
+      fhe.authenticityGroups,
+      undefined,
+      'broad ambiguity candidates should not require one provider-specific evidence group',
+    )
 
     assert.deepEqual(bridgeContracts.verticalIds, ['bridge-suite'])
     assert.deepEqual(bridgeContracts.domain, { family: 'bridge', surface: 'contracts' })
@@ -167,6 +172,10 @@ test('plan-domain-pack-work emits parallelizable FHE and bridge candidates from 
       runtime: 'foundry',
       surface: 'contracts',
     })
+    assert.ok(
+      layerZeroEntry.authenticityGroups.some((group: any) => group.id === 'layerzero-sdk'),
+      'LayerZero candidate should carry grouped SDK evidence',
+    )
     assert.ok(layerZeroEntry.leafIds.train.includes('layerzero-oft-token'))
     assert.ok(
       ![...layerZeroEntry.leafIds.train, ...layerZeroEntry.leafIds.holdout].includes(
@@ -233,6 +242,10 @@ test(
     assert.deepEqual(fhenixFoundry.verticalIds, ['fhenix-fhe'])
     assert.deepEqual(fhenixFoundry.partnerIds, ['fhenix'])
     assert.ok(fhenixFoundry.leafIds.train.includes('fhenix-sealed-bid-auction'))
+    assert.ok(
+      fhenixFoundry.authenticityGroups.some((group: any) => group.id === 'cofhe-sdk'),
+      'Fhenix work unit should preserve grouped SDK evidence',
+    )
     assert.ok(
       ![...fhenixFoundry.leafIds.train, ...fhenixFoundry.leafIds.holdout].includes(
         'crypto-fhe-bfv',

@@ -120,6 +120,12 @@ export interface Family {
   "ambiguityGroup"?: string
   "validationCommands"?: Array<string>
   "authenticitySignals"?: Array<string>
+  "authenticityGroups"?: Array<{
+  "id": string
+  "description"?: string
+  "minRequired"?: number
+  "signals": Array<string>
+}>
   "routingPrompts"?: Array<{
   "prompt": string
   "expectedFamily"?: string
@@ -175,6 +181,12 @@ export interface Layer {
   "ambiguityGroup"?: string
   "validationCommands"?: Array<string>
   "authenticitySignals"?: Array<string>
+  "authenticityGroups"?: Array<{
+  "id": string
+  "description"?: string
+  "minRequired"?: number
+  "signals": Array<string>
+}>
   "routingPrompts"?: Array<{
   "prompt": string
   "expectedFamily"?: string

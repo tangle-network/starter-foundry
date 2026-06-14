@@ -70,6 +70,63 @@ function assertStringArray(value: unknown, field: string, manifestPath: string):
   }
 }
 
+function assertPositiveInteger(value: unknown, field: string, manifestPath: string): void {
+  if (!Number.isInteger(value) || Number(value) < 1) {
+    throw new Error(`Invalid manifest at ${manifestPath}: ${field} must be a positive integer`)
+  }
+}
+
+function validateAuthenticityGroups(value: unknown, manifestPath: string): void {
+  if (!Array.isArray(value)) {
+    throw new Error(
+      `Invalid manifest at ${manifestPath}: domainPack.authenticityGroups must be an array`,
+    )
+  }
+
+  const ids = new Set<string>()
+  for (const [index, group] of value.entries()) {
+    if (typeof group !== 'object' || group === null || Array.isArray(group)) {
+      throw new Error(
+        `Invalid manifest at ${manifestPath}: domainPack.authenticityGroups[${index}] must be an object`,
+      )
+    }
+
+    const item = group as Record<string, unknown>
+    const idField = `domainPack.authenticityGroups[${index}].id`
+    assertString(item.id, idField, manifestPath)
+    const id = item.id
+    if (ids.has(id)) {
+      throw new Error(
+        `Invalid manifest at ${manifestPath}: domainPack.authenticityGroups id "${id}" is duplicated`,
+      )
+    }
+    ids.add(id)
+
+    if (item.description !== undefined) {
+      assertString(
+        item.description,
+        `domainPack.authenticityGroups[${index}].description`,
+        manifestPath,
+      )
+    }
+
+    assertStringArray(item.signals, `domainPack.authenticityGroups[${index}].signals`, manifestPath)
+    const signalCount = (item.signals as string[]).length
+    if (item.minRequired !== undefined) {
+      assertPositiveInteger(
+        item.minRequired,
+        `domainPack.authenticityGroups[${index}].minRequired`,
+        manifestPath,
+      )
+      if ((item.minRequired as number) > signalCount) {
+        throw new Error(
+          `Invalid manifest at ${manifestPath}: domainPack.authenticityGroups[${index}].minRequired cannot exceed signals.length`,
+        )
+      }
+    }
+  }
+}
+
 function validateDomainPack(raw: RawManifest, manifestPath: string): void {
   if (raw.domainPack === undefined) return
   if (
@@ -97,6 +154,9 @@ function validateDomainPack(raw: RawManifest, manifestPath: string): void {
   }
   if (pack.authenticitySignals !== undefined) {
     assertStringArray(pack.authenticitySignals, 'domainPack.authenticitySignals', manifestPath)
+  }
+  if (pack.authenticityGroups !== undefined) {
+    validateAuthenticityGroups(pack.authenticityGroups, manifestPath)
   }
   if (pack.ambiguityGroup !== undefined) {
     assertString(pack.ambiguityGroup, 'domainPack.ambiguityGroup', manifestPath)

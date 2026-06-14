@@ -17,6 +17,13 @@ type CandidateStatus =
 type GateName = 'deterministic' | 'scored'
 type GateStatus = 'passed' | 'failed' | 'skipped'
 
+interface DomainPackAuthenticityGroup {
+  id: string
+  description?: string
+  minRequired?: number
+  signals: string[]
+}
+
 interface DomainPackWorkCandidate {
   id: string
   status: CandidateStatus
@@ -30,6 +37,7 @@ interface DomainPackWorkCandidate {
   routingPrompts: string[]
   validationCommands: string[]
   authenticitySignals: string[]
+  authenticityGroups?: DomainPackAuthenticityGroup[]
   registryFiles: string[]
   filesToModify: string[]
   gatesToRun: string[]
@@ -107,6 +115,7 @@ interface WorkUnit {
   routingPrompts: string[]
   validationCommands: string[]
   authenticitySignals: string[]
+  authenticityGroups: DomainPackAuthenticityGroup[]
   github: {
     repository: string
     parentIssue: number
@@ -428,6 +437,7 @@ function candidateRank(candidate: DomainPackWorkCandidate): number {
     candidate.routingPrompts.length * 5 +
     candidate.validationCommands.length * 3 +
     candidate.authenticitySignals.length +
+    (candidate.authenticityGroups?.length ?? 0) * 2 +
     candidate.registryFiles.length
   )
 }
@@ -544,6 +554,7 @@ function buildWorkUnit({
     routingPrompts: candidate.routingPrompts,
     validationCommands: candidate.validationCommands,
     authenticitySignals: candidate.authenticitySignals,
+    authenticityGroups: candidate.authenticityGroups ?? [],
     github: {
       repository: DEFAULT_REPO_FULL_NAME,
       parentIssue: 148,

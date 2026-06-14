@@ -24,6 +24,12 @@ interface DomainPackWorkCandidate {
   routingPrompts: string[]
   validationCommands: string[]
   authenticitySignals: string[]
+  authenticityGroups?: Array<{
+    id: string
+    description?: string
+    minRequired?: number
+    signals: string[]
+  }>
   registryFiles: string[]
   sourceFiles: string[]
 }
@@ -79,6 +85,7 @@ interface SmokeReport {
   }
   authenticity: {
     signals: string[]
+    groups: NonNullable<DomainPackWorkCandidate['authenticityGroups']>
     totalHits: number
     perSample: Array<{ leafId: string; hits: Record<string, number>; total: number }>
   }
@@ -332,6 +339,7 @@ function runSmoke(candidate: DomainPackWorkCandidate): SmokeReport {
     },
     authenticity: {
       signals: candidate.authenticitySignals,
+      groups: candidate.authenticityGroups ?? [],
       totalHits: authenticityTotal,
       perSample: sampleResults.map((sample) => ({
         leafId: sample.leafId,

@@ -23,6 +23,28 @@ test('domain-pack registry exposes FHE and bridge proof packs as metadata', asyn
   assert.ok(owners.has('capability:bridge-protocol-api'))
   assert.ok(owners.has('capability:evm-uniswap-v4-hook'))
   assert.ok(owners.has('stylus-contracts'))
+
+  const fhenixFoundry = entries.find((entry) => entry.ownerId === 'fhenix-foundry')
+  assert.ok(
+    fhenixFoundry?.pack.authenticityGroups?.some(
+      (group) => group.id === 'cofhe-sdk' && group.signals.includes('cofhejs'),
+    ),
+  )
+
+  const fhevm = entries.find((entry) => entry.ownerId === 'fhevm-contracts')
+  assert.ok(
+    fhevm?.pack.authenticityGroups?.some(
+      (group) => group.id === 'fhevm-contract-apis' && group.signals.includes('FHE.fromExternal'),
+    ),
+  )
+
+  const layerZero = entries.find((entry) => entry.ownerId === 'capability:evm-layerzero-oft')
+  assert.ok(
+    layerZero?.pack.authenticityGroups?.some(
+      (group) =>
+        group.id === 'layerzero-sdk' && group.signals.includes('@layerzerolabs/lz-evm-oapp-v2'),
+    ),
+  )
 })
 
 test('domain-pack scorer disambiguates Fhenix Foundry from Fhenix Hardhat', async () => {

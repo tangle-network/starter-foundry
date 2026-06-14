@@ -91,11 +91,11 @@
     "archetypes": [
       "mixer",
       "privacy-preserving mixer",
-      "private voting",
       "anonymous voting",
       "anonymous credential",
       "nullifier",
       "commitment preimage",
+      "merkle proof",
       "merkle root display",
       "zk proof",
       "zk-snark",

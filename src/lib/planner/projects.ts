@@ -1090,7 +1090,8 @@ export function buildWorkerProject(
 
   if (
     choice.family === 'worker-job' &&
-    hasAny(text, ['solana', 'anchor', 'pyth', 'switchboard', 'keeper', 'liquidation'])
+    hasAny(text, ['keeper', 'liquidation']) &&
+    hasAny(text, ['solana', 'anchor', 'pyth', 'switchboard'])
   ) {
     layers.push('capability:solana-keeper')
   }

@@ -273,6 +273,43 @@ test('planPrompt uses domain-pack metadata for Fhenix Foundry contract workspace
       .find((project) => project.id === 'evm')
       ?.spec.layers!.includes('framework:fhenix-foundry'),
   )
+  const webLayers = result.spec.projects.find((project) => project.id === 'web')?.spec.layers ?? []
+  assert.ok(!webLayers.includes('capability:evm-nft-mint-page'))
+  assert.ok(!webLayers.includes('capability:zk-browser'))
+})
+
+test('planPrompt keeps FHE private-voting workspaces out of browser-ZK lanes', async () => {
+  const result = await planPrompt({
+    prompt:
+      'Build a React dashboard plus a Fhenix Foundry private voting contract using CoFHE euint ballots and FHE.decrypt tally reveals.',
+    partner: null,
+  })
+
+  assert.equal(result.kind, 'workspace')
+  const webLayers = result.spec.projects.find((project) => project.id === 'web')?.spec.layers ?? []
+  assert.ok(!webLayers.includes('capability:zk-browser'))
+  assert.ok(!result.spec.projects.some((project) => project.id === 'zk'))
+  assert.equal(
+    result.spec.projects.find((project) => project.id === 'evm')?.spec.family,
+    'fhenix-foundry',
+  )
+})
+
+test('planPrompt does not attach Solana keeper files to non-Solana FHE keepers', async () => {
+  const result = await planPrompt({
+    prompt:
+      'Build a React dashboard plus a Fhenix Foundry confidential lending vault where a keeper liquidates encrypted underwater positions using FHE.req and FHE.decrypt events.',
+    partner: null,
+  })
+
+  assert.equal(result.kind, 'workspace')
+  const workerLayers =
+    result.spec.projects.find((project) => project.id === 'worker')?.spec.layers ?? []
+  assert.ok(!workerLayers.includes('capability:solana-keeper'))
+  assert.equal(
+    result.spec.projects.find((project) => project.id === 'evm')?.spec.family,
+    'fhenix-foundry',
+  )
 })
 
 test('planPrompt uses domain-pack metadata for non-Solidity contract workspaces', async () => {

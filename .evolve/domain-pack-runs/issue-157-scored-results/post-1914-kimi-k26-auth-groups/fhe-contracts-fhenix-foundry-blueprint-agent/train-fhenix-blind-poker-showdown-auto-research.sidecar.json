@@ -1,0 +1,277 @@
+{
+  "icp": "AUTO-RESEARCH",
+  "vertical": "fhenix-fhe",
+  "realnessByProfile": [
+    {
+      "profileId": "kc-k26",
+      "n": 1,
+      "meanScore": 0.8,
+      "hitRate": 0,
+      "hitRateCi95": [
+        0,
+        0.7934567085261071
+      ],
+      "gatedCount": 0
+    }
+  ],
+  "gatedCells": [],
+  "autoresearch": {
+    "normalizedRuns": [
+      {
+        "suiteId": "verticalbench:fhenix-fhe",
+        "suiteName": "Fhenix FHE dApps",
+        "source": "verticalbench",
+        "vertical": "fhenix-fhe",
+        "taskKind": "product-build",
+        "task": {
+          "id": "fhenix-blind-poker-showdown",
+          "name": "Hidden-hand poker showdown contract",
+          "prompt": "A heads-up poker showdown on Fhenix where each player commits an encrypted hand rank as euint16 via cofhejs inEuint16 inputs. The contract tracks an encrypted pot (euint64) and decides the winner on ciphertext: ebool aWins = FHE.gt(handA, handB), then FHE.select routes the pot without leaking the loser hand. FHE.allow grants each player view rights to only their own hand; the winning rank is revealed via an FHE.decrypt oracle callback. A frontend rendering plaintext cards with no euint commitment, FHE.gt compare, or oracle reveal is a non-result; the artifact is a contract forge compiles.",
+          "difficulty": "hard",
+          "vertical": "fhenix-fhe",
+          "taskKind": "product-build",
+          "source": "verticalbench",
+          "tags": [
+            "fhenix",
+            "fhe",
+            "poker",
+            "hidden-information",
+            "game"
+          ],
+          "native": {
+            "expectedFamily": "",
+            "expectedIndustry": "",
+            "metadata": {}
+          }
+        },
+        "trace": {
+          "runId": "driver-fhenix-blind-poker-showdown-1781475926994",
+          "taskId": "fhenix-blind-poker-showdown",
+          "startedAt": "2026-06-14T22:25:26.994Z",
+          "endedAt": "2026-06-14T22:38:52.737Z",
+          "wallMs": 805743,
+          "stopReason": "max-shots",
+          "actions": [
+            {
+              "index": 0,
+              "kind": "state-check",
+              "name": "preview",
+              "status": "fail",
+              "durationMs": null,
+              "detail": "preview failed"
+            },
+            {
+              "index": 1,
+              "kind": "eval",
+              "name": "verification-shot-1",
+              "status": "fail",
+              "durationMs": 804812,
+              "detail": "failing layers: typecheck, lint, domain, semantic"
+            },
+            {
+              "index": 2,
+              "kind": "tool-call",
+              "name": "Shell",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=34"
+            },
+            {
+              "index": 3,
+              "kind": "tool-call",
+              "name": "ReadFile",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=33"
+            },
+            {
+              "index": 4,
+              "kind": "tool-call",
+              "name": "SearchWeb",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=5"
+            },
+            {
+              "index": 5,
+              "kind": "tool-call",
+              "name": "FetchURL",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=13"
+            },
+            {
+              "index": 6,
+              "kind": "tool-call",
+              "name": "SetTodoList",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=2"
+            },
+            {
+              "index": 7,
+              "kind": "tool-call",
+              "name": "WriteFile",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=12"
+            },
+            {
+              "index": 8,
+              "kind": "tool-call",
+              "name": "StrReplaceFile",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=4"
+            },
+            {
+              "index": 9,
+              "kind": "tool-call",
+              "name": "TaskOutput",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=2"
+            },
+            {
+              "index": 10,
+              "kind": "tool-call",
+              "name": "TaskStop",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=1"
+            }
+          ],
+          "artifacts": [
+            "verificationByShot"
+          ],
+          "requiredArtifacts": [],
+          "costUsd": null,
+          "tokenUsage": null,
+          "finalState": {
+            "outcome": "max-shots",
+            "previewSucceeded": false,
+            "completenessScore": null,
+            "auditScore": null,
+            "convergedAt": null,
+            "shotsUsed": 1
+          },
+          "native": {
+            "driverName": "driver-baseline",
+            "scaffoldChosen": null,
+            "scaffoldMatchKind": "none",
+            "runtime": "sandbox-sdk",
+            "factoryRunId": "kc-k26-fhenix-blind-poker-showdown-r0"
+          }
+        },
+        "eval": {
+          "taskId": "fhenix-blind-poker-showdown",
+          "status": "fail",
+          "score": 0.527,
+          "outcome": "unknown",
+          "layers": [
+            {
+              "layer": "typecheck",
+              "status": "fail"
+            },
+            {
+              "layer": "lint",
+              "status": "fail"
+            },
+            {
+              "layer": "domain",
+              "status": "fail"
+            },
+            {
+              "layer": "semantic",
+              "status": "fail"
+            }
+          ],
+          "gaps": [
+            "typecheck",
+            "lint",
+            "domain",
+            "semantic",
+            "preview failed",
+            "max-shots"
+          ],
+          "native": {
+            "verificationByShot": [
+              {
+                "shot": 1,
+                "blendedScore": 0.527,
+                "allPass": false,
+                "failCount": 4,
+                "passCount": 5,
+                "failingLayers": [
+                  "typecheck",
+                  "lint",
+                  "domain",
+                  "semantic"
+                ],
+                "shotWallMs": 804812,
+                "shotCostUsd": 0,
+                "inputTokens": 0,
+                "outputTokens": 0,
+                "fileCountAfter": 105,
+                "reviewerConfidence": null,
+                "reviewerShouldContinue": null,
+                "toolCallsByName": {
+                  "Shell": 34,
+                  "ReadFile": 33,
+                  "SearchWeb": 5,
+                  "FetchURL": 13,
+                  "SetTodoList": 2,
+                  "WriteFile": 12,
+                  "StrReplaceFile": 4,
+                  "TaskOutput": 2,
+                  "TaskStop": 1
+                },
+                "toolCallSuccesses": 0,
+                "toolCallFailures": 0,
+                "failingLayerFindings": [
+                  {
+                    "layer": "typecheck",
+                    "severity": "major",
+                    "message": "[node-npm@apps/web] typecheck failed (exit 2)"
+                  },
+                  {
+                    "layer": "domain",
+                    "severity": "critical",
+                    "message": "custom-build failed (exit 2): npm warn Unknown env config \"verify-deps-before-run\". This will stop working in the next major version of npm.\n(node:2770397) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+                  }
+                ]
+              }
+            ],
+            "intentMatch": null
+          }
+        }
+      }
+    ],
+    "findings": [
+      {
+        "kind": "semantic-mismatch",
+        "severity": "low",
+        "taskIds": [
+          "fhenix-blind-poker-showdown"
+        ],
+        "evidence": "semantic",
+        "proposedFixClass": "evaluator"
+      },
+      {
+        "kind": "missing-domain-integration",
+        "severity": "low",
+        "taskIds": [
+          "fhenix-blind-poker-showdown"
+        ],
+        "evidence": "domain: custom-build failed (exit 2): npm warn Unknown env config \"verify-deps-before-run\". This will stop working in the next major version of npm.\n(node:2770397) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n",
+        "proposedFixClass": "product"
+      }
+    ]
+  },
+  "diagnostics": {
+    "cellCount": 1,
+    "profileCount": 1,
+    "enrichedCells": 0,
+    "warnings": []
+  }
+}

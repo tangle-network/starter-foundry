@@ -149,6 +149,27 @@ export function keywordScore(prompt: string, keywords: string[]): number {
   return countMatches(prompt, keywords)
 }
 
+function capabilityTieredMatch(
+  text: string,
+  tiered: {
+    tier1?: string[]
+    tier2?: string[]
+    tier3?: string[]
+    archetypes?: string[]
+  },
+): boolean {
+  if (hasAny(text, tiered.archetypes ?? [])) return true
+
+  const tier1Hits = countMatches(text, tiered.tier1 ?? [])
+  const tier2Hits = countMatches(text, tiered.tier2 ?? [])
+
+  if (tier1Hits >= 2) return true
+  if (tier1Hits >= 1 && tier2Hits >= 1) return true
+  if ((tiered.tier1 ?? []).length === 0 && tier2Hits >= 2) return true
+
+  return false
+}
+
 // Lane route descriptors — single source of truth for both workspace lane detection
 // and selection scoring. Adding a new family/lane = one entry here.
 export interface LaneRoute {
@@ -206,7 +227,6 @@ export const LANE_ROUTES: LaneRoute[] = [
       'snarkjs',
       'zk prover',
       'verifiable ml',
-      'private voting',
       'dark pool',
       'mixer',
     ],
@@ -455,9 +475,15 @@ export function detectCapabilities(text: string, family: string, registry: Regis
   const results: string[] = []
   for (const [key, layer] of registry.layers) {
     if (layer.group !== 'capability') continue
-    if (!layer.keywords?.length) continue
     if (!layer.appliesTo?.includes(family)) continue
-    if (hasAny(text, layer.keywords)) {
+
+    const tiered = layer.tieredKeywords
+    if (tiered && capabilityTieredMatch(text, tiered)) {
+      results.push(key)
+      continue
+    }
+
+    if (!tiered && layer.keywords?.length && hasAny(text, layer.keywords)) {
       results.push(key)
     }
   }

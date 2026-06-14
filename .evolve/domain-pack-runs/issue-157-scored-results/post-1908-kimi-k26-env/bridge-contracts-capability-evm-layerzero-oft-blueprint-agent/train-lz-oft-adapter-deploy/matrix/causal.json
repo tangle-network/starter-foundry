@@ -1,0 +1,157 @@
+{
+  "matrixId": "mtx_mqdvydwu_f2a556aa",
+  "nMeasurable": 1,
+  "nTotal": 1,
+  "perVertical": [
+    {
+      "verticalId": "layerzero-omnichain",
+      "n": 1,
+      "passRate": 0,
+      "passRateCi95": [
+        0,
+        0.7934567085261071
+      ]
+    }
+  ],
+  "perHarness": [
+    {
+      "runtime": "sandbox-sdk",
+      "n": 1,
+      "passRate": 0,
+      "passRateCi95": [
+        0,
+        0.7934567085261071
+      ],
+      "infraErrorRate": 0
+    }
+  ],
+  "scaffoldMatch": [
+    {
+      "kind": "none",
+      "n": 1,
+      "passRate": 0,
+      "passRateCi95": [
+        0,
+        0.7934567085261071
+      ]
+    }
+  ],
+  "toolUse": [
+    {
+      "tool": "Shell",
+      "calls": 39,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "ReadFile",
+      "calls": 34,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "WriteFile",
+      "calls": 11,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "StrReplaceFile",
+      "calls": 9,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "ReadMediaFile",
+      "calls": 5,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "TaskOutput",
+      "calls": 4,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "SetTodoList",
+      "calls": 3,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "FetchURL",
+      "calls": 2,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "Grep",
+      "calls": 2,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "TaskStop",
+      "calls": 2,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "SearchWeb",
+      "calls": 1,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    }
+  ],
+  "intentVsBlended": [],
+  "reviewerLift": [],
+  "perShotCost": [
+    {
+      "shot": 1,
+      "meanInputTokens": 0,
+      "meanOutputTokens": 0,
+      "meanCostUsd": 0,
+      "n": 1
+    }
+  ],
+  "failureLayersByProfile": [
+    {
+      "profileId": "kimi-code · k2.6",
+      "layer": "lint",
+      "count": 1
+    },
+    {
+      "profileId": "kimi-code · k2.6",
+      "layer": "domain",
+      "count": 1
+    },
+    {
+      "profileId": "kimi-code · k2.6",
+      "layer": "completion-verifier",
+      "count": 1
+    }
+  ]
+}

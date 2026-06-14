@@ -36,6 +36,14 @@ bridges, and a clear consumer path back into blueprint-agent.
   - The post-#175 blocker is now operational reproducibility: run deterministic
     preflight with a built starter CLI, then spend live VB canaries only after
     that preflight passes.
+  - Post-blueprint-agent #1908 live Kimi evidence is now recorded under
+    `.evolve/domain-pack-runs/issue-157-scored-results/post-1908-kimi-k26-env/`.
+    It proves Starter Foundry routing, compose, scaffold handoff, and tool
+    telemetry on both FHE and bridge candidates (`4/4` scaffold passes, `0/4`
+    scaffold failures), but it does not promote because Blueprint Agent workers
+    still fail completion (`0/4` completion passes). This is now a targeted
+    downstream completion/use-the-scaffold fix, not a missing domain-pack
+    routing proof.
 - Issue tracking:
   - #148 is open and its body still lists some stale lanes.
   - #153 is closed.
@@ -157,6 +165,12 @@ bridges, and a clear consumer path back into blueprint-agent.
   hard `5ms` latency cap. CI now keeps accuracy/recall as hard gates, warns
   above the `5ms` advisory latency budget, and fails only on catastrophic
   deterministic-path p95 over `25ms`.
+- [x] Post-#1908 scored evidence: live Kimi (`kimi-code/kimi-k2.6`) with
+  DeepSeek reviewer/semantic paths ran FHE and LayerZero candidates through one
+  train leaf and one holdout leaf each. Dry-runs passed. Scored promotion
+  failed closed: FHE train score `0.918`, FHE holdout score `0.200`, bridge
+  train/holdout score `0.909`/`0.909`; scaffold pass rate `4/4`, completion
+  pass rate `0/4`.
 
 ## Verification
 

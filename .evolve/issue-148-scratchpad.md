@@ -1,6 +1,6 @@
 # Issue 148 Scratchpad — Domain Packs
 
-Updated: 2026-06-13
+Updated: 2026-06-14
 
 ## Objective
 
@@ -10,38 +10,38 @@ bridges, and a clear consumer path back into blueprint-agent.
 
 ## Current State
 
-- Latest active branch: `feat/domain-pack-surface-routing` (PR #171 merged into
-  `main` as `2e98dc3` on 2026-06-13).
-- Latest shipped slice:
-  - PR #171: generic surface-aware domain-pack routing. Domain packs now respect
-    explicit prompt surface intent, bridge manifests cover contract/UI/indexer
-    surfaces, and the duplicate surface vocabulary review nit was addressed by
-    moving shared surface classes/signals into `src/lib/planner/signals.ts`.
-  - Cross-domain regression caught before merge: plain Remix framework routing
-    was briefly interpreted as `web + api` because `route/routes` were too broad
-    as API surface terms. Narrowed to `api route/api routes`; full local and CI
-    router suites passed.
+- Latest base: `main` at `4b57750` (`Merge pull request #175 from
+  tangle-network/fix/domain-pack-scored-preflight`).
+- Current active branch: `fix/domain-pack-cli-readiness`.
+- Latest shipped slices:
+  - PR #171: generic surface-aware domain-pack routing.
+  - PR #173: blueprint-agent roster/exclude/runtime controls are passed through
+    domain-pack gates.
+  - PR #175: live scored promotion refuses to launch VB when deterministic
+    preflight fails.
+- Current active slice:
+  - `scripts/domain-pack-smoke.ts` now treats the starter CLI handoff as a
+    first-class preflight. The repo-local default CLI auto-builds when missing
+    or stale against `src/`, `registry/`, `package.json`, or `tsconfig.json`;
+    explicit `--starter-cli` and `STARTER_FOUNDRY_CLI` paths still fail closed.
+    This is domain-neutral and applies equally to FHE, bridge, and future packs.
+  - The persisted candidate queue was regenerated from the current planner.
+    The prior checked-in queue was stale and let `fhe-contracts-fhenix-foundry`
+    absorb generic FHE leaves such as `crypto-fhe-bfv`; the regenerated queue
+    scopes that candidate to `fhenix-fhe` only.
 - Latest scored evidence:
-  - Bridge scored run
-    `.evolve/domain-pack-runs/issue-157-scored-results/bridge-scored-post-170.json`
-    failed promotion: train `ethena-cross-chain-usde` scored `0.727` but had
-    `0/1` completion pass rate; holdout `lz-oft-balance-tracker` produced no
-    parseable score because cli-bridge/opencode health timed out during that
-    leaf.
-  - FHE Foundry scored run
-    `.evolve/domain-pack-runs/issue-157-scored-results/fhe-foundry-scored-post-170.json`
-    failed promotion: routing passed, compose passed `2/2`, authenticity signals
-    hit `444`, train scored `0.919`, holdout scored `0.921`, but both splits had
-    `0/1` completion pass rate.
-  - Current inference: prompt-to-project routing is no longer the first
-    bottleneck for these two lanes. The next bottleneck is the generated
-    scaffold/task/eval contract failing completion-verifier despite high semantic
-    and artifact scores.
+  - Replay-backed FHE and bridge artifacts prove parser/gate behavior but still
+    do not close #157 because promotion requires real scored train/holdout
+    evidence for at least one FHE candidate and one bridge candidate.
+  - The post-#175 blocker is now operational reproducibility: run deterministic
+    preflight with a built starter CLI, then spend live VB canaries only after
+    that preflight passes.
 - Issue tracking:
-  - #148 updated with PR #171 merge and verification evidence.
+  - #148 is open and its body still lists some stale lanes.
   - #153 is closed.
-  - #157 updated with bridge and FHE scored-run numbers/failures.
-  - #165 updated with the generic router/factory scale-out note.
+  - #157 is open; remaining acceptance criteria are real scored FHE evidence,
+    real scored bridge evidence, and issue comments with measured distributions
+    plus artifact paths.
 - Merged foundation:
   - `9834df9` / PR #149: metadata-driven domain-pack foundation.
   - `f6feb44` / PR #156: deterministic train/holdout smoke gate.
@@ -144,6 +144,14 @@ bridges, and a clear consumer path back into blueprint-agent.
   capability-intent evidence from manifest keywords/provides/authenticity. This
   prevents Fhenix candidates from absorbing generic BFV/Aztec/Circom leaves and
   keeps the default scored-evidence queue pointed at real train/holdout rows.
+- [x] Active #157 handoff hardening: `domain-pack-smoke` now records
+  `starterCli` preflight evidence and auto-builds the repo-local default
+  `dist/cli.js` before routing/compose/VB handoff when it is missing or stale.
+  Explicit CLI paths remain strict contracts and are not silently repaired.
+- [x] Active #157 queue evidence refresh: `.evolve/domain-pack-candidates.json`
+  regenerated from current planner output. Fhenix Foundry is now
+  `fhenix-fhe` only (`6` train / `2` holdout), while LayerZero OFT remains a
+  bridge contracts candidate (`6` train / `3` holdout).
 
 ## Verification
 
@@ -196,6 +204,38 @@ bridges, and a clear consumer path back into blueprint-agent.
 - [x] `node --test --test-concurrency=1 dist-tests/plan-domain-pack-work.test.js`
   -> 2/2 passing.
 - [x] `pnpm lint --quiet`
+- [x] `pnpm exec tsx --test tests/domain-pack-smoke.test.ts` -> 8/8 passing
+  with CLI preflight report coverage and explicit missing CLI fail-closed
+  coverage.
+- [x] `pnpm exec tsx scripts/plan-domain-pack-work.ts --write --json --top 25`
+  regenerated `.evolve/domain-pack-candidates.json`; current corpus:
+  `319` scenarios, `7` domain groups, `25` candidates.
+- [x] `pnpm exec tsx scripts/domain-pack-smoke.ts --candidate
+  fhe-contracts-fhenix-foundry --output
+  .evolve/domain-pack-smoke/issue-148-cli-readiness-fhe.json --write --json
+  --train 1 --holdout 1 --blueprint-agent dry-run --blueprint-roster smoke`
+  -> passed; samples `fhenix-blind-poker-showdown` and
+  `fhenix-confidential-lending-vault`; compose `2/2`; authenticity hits `444`;
+  validation `2/2`; blueprint dry-run `2/2`.
+- [x] `pnpm exec tsx scripts/domain-pack-smoke.ts --candidate
+  bridge-contracts-capability-evm-layerzero-oft --output
+  .evolve/domain-pack-smoke/issue-148-cli-readiness-bridge.json --write
+  --json --train 1 --holdout 1 --blueprint-agent dry-run --blueprint-roster
+  smoke` -> passed; samples `ethena-cross-chain-usde` and
+  `lz-oft-balance-tracker`; compose `2/2`; authenticity hits `328`;
+  validation `2/2`; blueprint dry-run `2/2`.
+- [x] `pnpm exec tsx --test tests/plan-domain-pack-work.test.ts` -> 2/2
+  passing, including persisted queue freshness guard.
+- [x] `pnpm exec tsx --test tests/domain-pack-smoke.test.ts
+  tests/domain-pack-run.test.ts` -> 12/12 passing.
+- [x] `pnpm exec tsc --noEmit --pretty false`
+- [x] `pnpm exec tsc -p tsconfig.test.json --pretty false`
+- [x] `pnpm exec tsx scripts/validate-registry.ts` -> passed; existing tier1
+  keyword overlap warnings only.
+- [x] `pnpm build`
+- [x] `git diff --check`
+- [x] `pnpm lint --quiet`
+- [x] `pnpm test` -> 1154 passed, 1 skipped, 1 todo, 0 failed.
 
 Current `.evolve/domain-pack-candidates.json` evidence:
 

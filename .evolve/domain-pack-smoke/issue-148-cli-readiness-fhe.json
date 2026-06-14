@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-14T10:40:42.066Z",
+  "candidateId": "fhe-contracts-fhenix-foundry",
+  "candidateFile": "/home/drew/code/starter-foundry/.evolve/domain-pack-candidates.json",
+  "status": "passed",
+  "starterCli": {
+    "path": "/home/drew/code/starter-foundry/dist/cli.js",
+    "source": "default",
+    "status": "passed",
+    "exists": true,
+    "attemptedBuild": false,
+    "buildReason": null,
+    "build": null,
+    "reason": null
+  },
+  "samples": {
+    "train": [
+      "fhenix-blind-poker-showdown"
+    ],
+    "holdout": [
+      "fhenix-confidential-lending-vault"
+    ]
+  },
+  "routing": {
+    "status": "passed",
+    "prompts": [
+      {
+        "prompt": "Build a Fhenix Foundry sealed-bid auction contract with CoFHE encrypted bids",
+        "expectedFamily": "fhenix-foundry",
+        "expectedLayers": [
+          "framework:fhenix-foundry"
+        ],
+        "actualFamily": "fhenix-foundry",
+        "actualLayers": [
+          "framework:fhenix-foundry",
+          "capability:fhe-foundry-sealed-auction"
+        ],
+        "ok": true
+      }
+    ]
+  },
+  "compose": {
+    "passed": 2,
+    "failed": 0,
+    "minFileCount": 9
+  },
+  "authenticity": {
+    "signals": [
+      "FHE.add",
+      "FHE.allow",
+      "FHE.asEuint",
+      "FHE.select",
+      "InEuint",
+      "cofhejs",
+      "ebool",
+      "encrypted balance",
+      "euint",
+      "private voting",
+      "sealed bid"
+    ],
+    "totalHits": 444,
+    "perSample": [
+      {
+        "leafId": "fhenix-blind-poker-showdown",
+        "hits": {
+          "FHE.add": 6,
+          "FHE.allow": 9,
+          "FHE.asEuint": 7,
+          "FHE.select": 5,
+          "InEuint": 22,
+          "cofhejs": 6,
+          "ebool": 32,
+          "encrypted balance": 4,
+          "euint": 123,
+          "private voting": 4,
+          "sealed bid": 4
+        },
+        "total": 222
+      },
+      {
+        "leafId": "fhenix-confidential-lending-vault",
+        "hits": {
+          "FHE.add": 6,
+          "FHE.allow": 9,
+          "FHE.asEuint": 7,
+          "FHE.select": 5,
+          "InEuint": 22,
+          "cofhejs": 6,
+          "ebool": 32,
+          "encrypted balance": 4,
+          "euint": 123,
+          "private voting": 4,
+          "sealed bid": 4
+        },
+        "total": 222
+      }
+    ]
+  },
+  "validationCommands": [
+    {
+      "command": "forge build",
+      "cwd": "/tmp/domain-pack-smoke-fhe-contracts-fhenix-foundry-fhenix-blind-poker-showdown-FZtsT7/out",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 76,
+      "stdoutTail": "Compiling 4 files with Solc 0.8.25\nSolc 0.8.25 finished in 50.66ms\nCompiler run successful with warnings:\nWarning (2018): Function state mutability can be restricted to view\n  --> src/FHEVault.sol:43:5:\n   |\n43 |     function isAtLeast(InEuint32 calldata threshold) external returns (ebool result) {\n   |     ^ (Relevant source part starts here and spans across multiple lines).\n\n",
+      "stderrTail": ""
+    },
+    {
+      "command": "forge test",
+      "cwd": "/tmp/domain-pack-smoke-fhe-contracts-fhenix-foundry-fhenix-blind-poker-showdown-FZtsT7/out",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 26,
+      "stdoutTail": "No files changed, compilation skipped\n\nRan 3 tests for test/FHEVault.t.sol:FHEVaultTest\n[PASS] test_isAtLeast_returns_encrypted_bool() (gas: 31287)\n[PASS] test_owner_is_deployer() (gas: 7581)\n[PASS] test_submit_accumulates_encrypted_state() (gas: 32067)\nSuite result: ok. 3 passed; 0 failed; 0 skipped; finished in 312.28µs (254.44µs CPU time)\n\nRan 1 test suite in 4.30ms (312.28µs CPU time): 3 tests passed, 0 failed, 0 skipped (3 total tests)\n",
+      "stderrTail": ""
+    }
+  ],
+  "blueprintAgent": [
+    {
+      "command": "pnpm tsx scripts/experiments/vb-run.ts --leaf 'fhenix-blind-poker-showdown' --shots 1 --roster 'smoke' --dry-run",
+      "cwd": "/home/drew/code/blueprint-agent",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 713,
+      "stdoutTail": "\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n",
+      "stderrTail": "(node:2524705) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:2524747) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:2524767) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-run] registry selection: 1 verticals, 1 leaves\n[vb-run] runtime=claude-local roster=smoke exclude=- driverPersona=- shots=1 reps=1 parallel=2\n[vb-run] out=/home/drew/code/blueprint-agent/vb-run-2026-06-14T10-40-41\n[vb-run] --dry-run — exiting after validation\n(node:2524767) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "command": "pnpm tsx scripts/experiments/vb-run.ts --leaf 'fhenix-confidential-lending-vault' --shots 1 --roster 'smoke' --dry-run",
+      "cwd": "/home/drew/code/blueprint-agent",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 744,
+      "stdoutTail": "\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n",
+      "stderrTail": "(node:2525204) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:2525222) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:2525238) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-run] registry selection: 1 verticals, 1 leaves\n[vb-run] runtime=claude-local roster=smoke exclude=- driverPersona=- shots=1 reps=1 parallel=2\n[vb-run] out=/home/drew/code/blueprint-agent/vb-run-2026-06-14T10-40-42\n[vb-run] --dry-run — exiting after validation\n(node:2525238) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    }
+  ],
+  "scoredPromotion": null,
+  "failures": []
+}

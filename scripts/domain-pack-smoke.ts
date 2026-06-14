@@ -59,6 +59,7 @@ interface SmokeReport {
   candidateId: string
   candidateFile: string
   status: 'passed' | 'failed'
+  starterCli: StarterCliPreflight
   samples: { train: string[]; holdout: string[] }
   routing: {
     status: 'passed' | 'failed' | 'skipped'
@@ -85,6 +86,17 @@ interface SmokeReport {
   blueprintAgent: CommandResult[]
   scoredPromotion: ScoredPromotionReport | null
   failures: string[]
+}
+
+interface StarterCliPreflight {
+  path: string
+  source: 'arg' | 'env' | 'default'
+  status: 'passed' | 'failed'
+  exists: boolean
+  attemptedBuild: boolean
+  buildReason: 'missing' | 'stale' | null
+  build: CommandResult | null
+  reason: string | null
 }
 
 interface ScoredLeafResult {
@@ -156,7 +168,14 @@ const DEFAULT_BLUEPRINT_AGENT = resolve(REPO, '../blueprint-agent')
 const argv = process.argv.slice(2)
 const candidateId = requiredArg('--candidate')
 const candidateFile = resolve(arg('--candidates', DEFAULT_CANDIDATES))
-const starterCli = resolve(arg('--starter-cli', process.env.STARTER_FOUNDRY_CLI ?? DEFAULT_CLI))
+const starterCliArg = optionalArg('--starter-cli')
+const starterCliEnv = process.env.STARTER_FOUNDRY_CLI
+const starterCliSource: StarterCliPreflight['source'] = starterCliArg
+  ? 'arg'
+  : starterCliEnv
+    ? 'env'
+    : 'default'
+const starterCli = resolve(starterCliArg ?? starterCliEnv ?? DEFAULT_CLI)
 const outPath = resolve(arg('--output', join(DEFAULT_OUT_DIR, `${slug(candidateId)}.json`)))
 const trainCount = Math.max(1, Number(arg('--train', '2')) || 2)
 const holdoutCount = Math.max(1, Number(arg('--holdout', '2')) || 2)
@@ -170,6 +189,7 @@ const maxHoldoutRegression = Math.max(0, Number(arg('--max-holdout-regression', 
 const write = argv.includes('--write')
 const json = argv.includes('--json')
 const skipBuild = argv.includes('--skip-build')
+const noBuildStarterCli = argv.includes('--no-build-starter-cli')
 const keepWorkdirs = argv.includes('--keep-workdirs')
 const blueprintMode = arg('--blueprint-agent', 'dry-run')
 const blueprintAgentDir = resolve(arg('--blueprint-agent-dir', DEFAULT_BLUEPRINT_AGENT))
@@ -242,15 +262,15 @@ function loadCandidate(path: string, id: string): DomainPackWorkCandidate {
 
 function runSmoke(candidate: DomainPackWorkCandidate): SmokeReport {
   const failures: string[] = []
+  const starterCliPreflight = ensureStarterCli()
   const train = candidate.leafIds.train.slice(0, trainCount)
   const holdout = candidate.leafIds.holdout.slice(0, holdoutCount)
   if (train.length < trainCount)
     failures.push(`insufficient train leaves: ${train.length}/${trainCount}`)
   if (holdout.length < holdoutCount)
     failures.push(`insufficient holdout leaves: ${holdout.length}/${holdoutCount}`)
-  if (!existsSync(starterCli)) {
-    failures.push(`starter CLI not found: ${starterCli}`)
-  }
+  if (starterCliPreflight.status === 'failed')
+    failures.push(starterCliPreflight.reason ?? `starter CLI not found: ${starterCli}`)
 
   const routing = checkRouting(candidate)
   if (routing.status === 'failed') failures.push('routing prompt check failed')
@@ -300,6 +320,7 @@ function runSmoke(candidate: DomainPackWorkCandidate): SmokeReport {
     candidateId: candidate.id,
     candidateFile,
     status: failures.length === 0 ? 'passed' : 'failed',
+    starterCli: starterCliPreflight,
     samples: { train, holdout },
     routing,
     compose: {
@@ -331,6 +352,7 @@ function scoredLivePreflightFailures(failures: string[]): string[] {
   return failures.filter(
     (failure) =>
       failure.startsWith('starter CLI not found:') ||
+      failure.startsWith('starter CLI build failed:') ||
       failure.startsWith('insufficient train leaves:') ||
       failure.startsWith('insufficient holdout leaves:') ||
       failure === 'routing prompt check failed' ||
@@ -339,6 +361,82 @@ function scoredLivePreflightFailures(failures: string[]): string[] {
       failure.startsWith('validation command failed:') ||
       failure.startsWith('blueprint-agent dry-run failed:'),
   )
+}
+
+function ensureStarterCli(): StarterCliPreflight {
+  const buildReason = starterCliBuildReason()
+  if (buildReason === null) {
+    return {
+      path: starterCli,
+      source: starterCliSource,
+      status: 'passed',
+      exists: true,
+      attemptedBuild: false,
+      buildReason: null,
+      build: null,
+      reason: null,
+    }
+  }
+
+  const canBuildLocalDefault = starterCliSource === 'default' && !noBuildStarterCli
+  if (!canBuildLocalDefault) {
+    return {
+      path: starterCli,
+      source: starterCliSource,
+      status: 'failed',
+      exists: false,
+      attemptedBuild: false,
+      buildReason,
+      build: null,
+      reason: `starter CLI not found: ${starterCli}`,
+    }
+  }
+
+  const build = runCommand('pnpm build', REPO, timeoutMs)
+  const exists = existsSync(starterCli)
+  const status = build.status === 'passed' && exists ? 'passed' : 'failed'
+  return {
+    path: starterCli,
+    source: starterCliSource,
+    status,
+    exists,
+    attemptedBuild: true,
+    buildReason,
+    build,
+    reason:
+      status === 'passed'
+        ? null
+        : build.status === 'passed'
+          ? `starter CLI not found after build: ${starterCli}`
+          : `starter CLI build failed: exit ${build.exitCode ?? 'unknown'}${build.reason ? ` (${build.reason})` : ''}`,
+  }
+}
+
+function starterCliBuildReason(): StarterCliPreflight['buildReason'] {
+  if (!existsSync(starterCli)) return 'missing'
+  if (starterCliSource !== 'default' || noBuildStarterCli) return null
+  const cliMtime = statSync(starterCli).mtimeMs
+  return latestInputMtime() > cliMtime ? 'stale' : null
+}
+
+function latestInputMtime(): number {
+  return Math.max(
+    statSync(join(REPO, 'package.json')).mtimeMs,
+    statSync(join(REPO, 'tsconfig.json')).mtimeMs,
+    latestTreeMtime(join(REPO, 'src')),
+    latestTreeMtime(join(REPO, 'registry')),
+  )
+}
+
+function latestTreeMtime(root: string): number {
+  let latest = statSync(root).mtimeMs
+  for (const entry of readdirSync(root)) {
+    if (entry === 'node_modules' || entry === '.git' || entry === 'dist') continue
+    const path = join(root, entry)
+    const stat = statSync(path)
+    latest = Math.max(latest, stat.isDirectory() ? latestTreeMtime(path) : stat.mtimeMs)
+  }
+  return latest
 }
 
 function checkRouting(candidate: DomainPackWorkCandidate): SmokeReport['routing'] {

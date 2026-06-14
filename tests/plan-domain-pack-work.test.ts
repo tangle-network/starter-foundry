@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
-import { existsSync, mkdtempSync, rmSync, writeFileSync, mkdirSync } from 'node:fs'
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync, mkdirSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import test from 'node:test'
@@ -223,6 +223,8 @@ test(
       (candidate: any) => candidate.id === 'fhe-contracts-fhenix-foundry',
     )
     assert.ok(fhenixFoundry)
+    assert.deepEqual(fhenixFoundry.verticalIds, ['fhenix-fhe'])
+    assert.deepEqual(fhenixFoundry.partnerIds, ['fhenix'])
     assert.ok(fhenixFoundry.leafIds.train.includes('fhenix-sealed-bid-auction'))
     assert.ok(
       ![...fhenixFoundry.leafIds.train, ...fhenixFoundry.leafIds.holdout].includes(
@@ -230,5 +232,18 @@ test(
       ),
       'provider-specific FHE candidates should not absorb generic FHE research leaves',
     )
+
+    const persisted = JSON.parse(
+      readFileSync(join(process.cwd(), '.evolve/domain-pack-candidates.json'), 'utf8'),
+    )
+    assert.deepEqual(
+      persisted.candidates.map((candidate: any) => candidate.id),
+      ids,
+      'persisted candidate queue must be regenerated with the current planner',
+    )
+    const persistedFhenixFoundry = persisted.candidates.find(
+      (candidate: any) => candidate.id === 'fhe-contracts-fhenix-foundry',
+    )
+    assert.deepEqual(persistedFhenixFoundry?.leafIds, fhenixFoundry.leafIds)
   },
 )

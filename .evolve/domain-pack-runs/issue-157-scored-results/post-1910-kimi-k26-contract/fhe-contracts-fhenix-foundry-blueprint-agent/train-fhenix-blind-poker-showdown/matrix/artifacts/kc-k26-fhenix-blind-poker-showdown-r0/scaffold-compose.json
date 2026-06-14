@@ -1,0 +1,200 @@
+{
+  "available": true,
+  "family": "react-vite-ts+api-service+fhenix-foundry",
+  "layers": [
+    "web:react-vite-ts",
+    "api:api-service",
+    "evm:fhenix-foundry"
+  ],
+  "projects": [
+    {
+      "id": "web",
+      "family": "react-vite-ts",
+      "path": "apps/web",
+      "layers": [
+        "framework:react-vite-ts",
+        "capability:evm-nft-mint-page",
+        "capability:routing",
+        "capability:zk-browser",
+        "capability:layout-dashboard",
+        "capability:tailwind",
+        "capability:shadcn",
+        "auth:none",
+        "payments:none",
+        "sdk:none"
+      ],
+      "domainPackGuidance": []
+    },
+    {
+      "id": "api",
+      "family": "api-service",
+      "path": "apps/api",
+      "layers": [
+        "framework:node-http",
+        "capability:logging",
+        "capability:evm-protocol-api",
+        "database:sqlite",
+        "sdk:none",
+        "auth:none",
+        "payments:none",
+        "queue:none"
+      ],
+      "domainPackGuidance": []
+    },
+    {
+      "id": "evm",
+      "family": "fhenix-foundry",
+      "path": "contracts/evm",
+      "layers": [
+        "framework:fhenix-foundry",
+        "capability:fhe-foundry-private-token"
+      ],
+      "domainPackGuidance": [
+        {
+          "source": "fhenix-foundry",
+          "domain": {
+            "family": "fhe",
+            "provider": "fhenix",
+            "protocol": "cofhe",
+            "runtime": "foundry",
+            "surface": "contracts"
+          },
+          "provides": [
+            "solidity-contracts",
+            "fhe-types",
+            "cofhe",
+            "forge-build"
+          ],
+          "requires": [
+            "foundry"
+          ],
+          "ambiguityGroup": "fhe-contracts",
+          "validationCommands": [
+            "forge build",
+            "forge test"
+          ],
+          "authenticitySignals": [
+            "euint",
+            "ebool",
+            "InEuint",
+            "FHE.asEuint",
+            "FHE.add",
+            "FHE.select",
+            "FHE.allow",
+            "cofhejs",
+            "sealed bid",
+            "private voting",
+            "encrypted balance"
+          ]
+        },
+        {
+          "source": "capability:fhe-foundry-private-token",
+          "domain": {
+            "family": "fhe",
+            "provider": "fhenix",
+            "protocol": "cofhe",
+            "runtime": "foundry",
+            "surface": "contracts"
+          },
+          "provides": [
+            "fhe-private-token",
+            "cofhe-private-token",
+            "forge-build"
+          ],
+          "requires": [
+            "fhe-types",
+            "cofhe",
+            "foundry"
+          ],
+          "ambiguityGroup": "fhe-capabilities",
+          "validationCommands": [
+            "forge build"
+          ],
+          "authenticitySignals": [
+            "encrypted balance",
+            "private token",
+            "FHE.add",
+            "FHE.gte",
+            "FHE.select",
+            "FHE.allow"
+          ]
+        }
+      ]
+    }
+  ],
+  "domainPackGuidance": [
+    {
+      "source": "fhenix-foundry",
+      "domain": {
+        "family": "fhe",
+        "provider": "fhenix",
+        "protocol": "cofhe",
+        "runtime": "foundry",
+        "surface": "contracts"
+      },
+      "provides": [
+        "solidity-contracts",
+        "fhe-types",
+        "cofhe",
+        "forge-build"
+      ],
+      "requires": [
+        "foundry"
+      ],
+      "ambiguityGroup": "fhe-contracts",
+      "validationCommands": [
+        "forge build",
+        "forge test"
+      ],
+      "authenticitySignals": [
+        "euint",
+        "ebool",
+        "InEuint",
+        "FHE.asEuint",
+        "FHE.add",
+        "FHE.select",
+        "FHE.allow",
+        "cofhejs",
+        "sealed bid",
+        "private voting",
+        "encrypted balance"
+      ]
+    },
+    {
+      "source": "capability:fhe-foundry-private-token",
+      "domain": {
+        "family": "fhe",
+        "provider": "fhenix",
+        "protocol": "cofhe",
+        "runtime": "foundry",
+        "surface": "contracts"
+      },
+      "provides": [
+        "fhe-private-token",
+        "cofhe-private-token",
+        "forge-build"
+      ],
+      "requires": [
+        "fhe-types",
+        "cofhe",
+        "foundry"
+      ],
+      "ambiguityGroup": "fhe-capabilities",
+      "validationCommands": [
+        "forge build"
+      ],
+      "authenticitySignals": [
+        "encrypted balance",
+        "private token",
+        "FHE.add",
+        "FHE.gte",
+        "FHE.select",
+        "FHE.allow"
+      ]
+    }
+  ],
+  "fileCount": 93,
+  "partner": "fhenix",
+  "mode": "auto",
+  "error": null
+}

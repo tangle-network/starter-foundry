@@ -1,0 +1,569 @@
+{
+  "verificationVersion": "verify-v1-2026-04-19",
+  "workdir": "/tmp/vb-cli-bridge-workspaces/vb-kc-k26-fhenix-confidential-len-0028bf863ef8-mqdzu6p2-ae13aa99/apps/web",
+  "leafId": "fhenix-confidential-lending-vault",
+  "verticalId": "fhenix-fhe",
+  "generatedAt": "2026-06-14T16:47:34.532Z",
+  "durationMs": 12182,
+  "layers": [
+    {
+      "layer": "install",
+      "status": "pass",
+      "durationMs": 936,
+      "reason": "solidity-foundry@contracts/evm: forge deps already present in lib/; forge build verifies them",
+      "findings": [],
+      "layerErrorCount": null,
+      "detail": {
+        "perAdapter": [
+          {
+            "adapter": "node-npm@apps/web",
+            "status": "pass",
+            "durationMs": 499
+          },
+          {
+            "adapter": "node-npm@apps/api",
+            "status": "pass",
+            "durationMs": 284
+          },
+          {
+            "adapter": "node-npm@apps/worker",
+            "status": "pass",
+            "durationMs": 153
+          },
+          {
+            "adapter": "solidity-foundry@contracts/evm",
+            "status": "skipped",
+            "reason": "forge deps already present in lib/; forge build verifies them",
+            "durationMs": 0
+          }
+        ]
+      }
+    },
+    {
+      "layer": "typecheck",
+      "status": "pass",
+      "durationMs": 1608,
+      "reason": "node-npm@apps/api: no tsconfig.json | node-npm@apps/worker: no tsconfig.json | solidity-foundry@contracts/evm: forge does not separate typecheck from build — covered by runBuild",
+      "findings": [],
+      "layerErrorCount": null,
+      "detail": {
+        "perAdapter": [
+          {
+            "adapter": "node-npm@apps/web",
+            "status": "pass",
+            "durationMs": 1608
+          },
+          {
+            "adapter": "node-npm@apps/api",
+            "status": "skipped",
+            "reason": "no tsconfig.json",
+            "durationMs": 0
+          },
+          {
+            "adapter": "node-npm@apps/worker",
+            "status": "skipped",
+            "reason": "no tsconfig.json",
+            "durationMs": 0
+          },
+          {
+            "adapter": "solidity-foundry@contracts/evm",
+            "status": "skipped",
+            "reason": "forge does not separate typecheck from build — covered by runBuild",
+            "durationMs": 0
+          }
+        ]
+      }
+    },
+    {
+      "layer": "build",
+      "status": "pass",
+      "durationMs": 2552,
+      "reason": "node-npm@apps/api: no build script | node-npm@apps/worker: no build script",
+      "findings": [],
+      "layerErrorCount": null,
+      "detail": {
+        "perAdapter": [
+          {
+            "adapter": "node-npm@apps/web",
+            "status": "pass",
+            "durationMs": 2492
+          },
+          {
+            "adapter": "node-npm@apps/api",
+            "status": "skipped",
+            "reason": "no build script",
+            "durationMs": 0
+          },
+          {
+            "adapter": "node-npm@apps/worker",
+            "status": "skipped",
+            "reason": "no build script",
+            "durationMs": 0
+          },
+          {
+            "adapter": "solidity-foundry@contracts/evm",
+            "status": "pass",
+            "durationMs": 60
+          }
+        ]
+      }
+    },
+    {
+      "layer": "lint",
+      "status": "fail",
+      "durationMs": 22,
+      "reason": "node-npm@apps/web: no lint/check script | node-npm@apps/api: no lint/check script | node-npm@apps/worker: no lint/check script | solidity-foundry@contracts/evm: forge fmt --check exit 1",
+      "findings": [
+        {
+          "severity": "minor",
+          "layer": "lint",
+          "message": "[solidity-foundry@contracts/evm] lint failed (exit 1)",
+          "evidence": "Diff in src/FHEVault.sol:\n24  24   |     event CollateralDeposited(address indexed account);\n25  25   |     event Borrow(address indexed account);\n26  26   |     event Repay(address indexed account);\n27       |-    event Liquidated(\n28       |-        address indexed account,\n29       |-        uint64 collateralSeized,\n30       |-        uint64 debtRepaid,\n31       |-        bool underwater\n32       |-    );\n    27   |+    event Liquidated(address indexed account, uint64 collateralSeized, uint64 debtRepaid, bool underwater);\n33  28   | \n34  29   |     modifier onlyOwner() {\n35  30   |         require(msg.sender == owner, \"FHEVault: not owner\");\n--------------------------------------------------------------------------------77  72   |     /// @notice Repay encrypted debt, capped at the current balance.\n78  73   |     function repay(InEuint64 calldata amount) external {\n79  74   |         euint64 requested = FHE.asEuint64(amount);\n80       |-        euint64 allowed = FHE.select(\n81       |-            FHE.gte(_debt[msg.sender], requested),\n82       |-            requested,\n83       |-            _debt[msg.sender]\n84       |-        );\n    75   |+        euint64 allowed = FHE.select(FHE.gte(_debt[msg.sender], requested), requested, _debt[msg.sender]);\n85  76   |         _debt[msg.sender] = FHE.sub(_debt[msg.sender], allowed);\n86  77   |         _allowPosition(msg.sender);\n87  78   |         emit Repay(msg.sender);\n\n"
+        }
+      ],
+      "layerErrorCount": null,
+      "detail": {
+        "perAdapter": [
+          {
+            "adapter": "node-npm@apps/web",
+            "status": "skipped",
+            "reason": "no lint/check script",
+            "durationMs": 0
+          },
+          {
+            "adapter": "node-npm@apps/api",
+            "status": "skipped",
+            "reason": "no lint/check script",
+            "durationMs": 0
+          },
+          {
+            "adapter": "node-npm@apps/worker",
+            "status": "skipped",
+            "reason": "no lint/check script",
+            "durationMs": 0
+          },
+          {
+            "adapter": "solidity-foundry@contracts/evm",
+            "status": "fail",
+            "reason": "forge fmt --check exit 1",
+            "durationMs": 22
+          }
+        ]
+      }
+    },
+    {
+      "layer": "serve",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "no preview URL supplied; use preview runtime for live checks",
+      "findings": []
+    },
+    {
+      "layer": "domain",
+      "status": "fail",
+      "durationMs": 1761,
+      "score": 0,
+      "findings": [
+        {
+          "severity": "critical",
+          "layer": "domain",
+          "message": "fhenixjs or fhenix SDK in dependencies: no file matching package.json contains required pattern"
+        }
+      ],
+      "reason": "1 critical domain violation(s)"
+    },
+    {
+      "layer": "design",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "design layer not in VB pipeline (module pending)",
+      "findings": []
+    },
+    {
+      "layer": "flow",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "flow layer not in VB pipeline (use bad-audit post-loop)",
+      "findings": []
+    },
+    {
+      "layer": "fuzz",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "fuzz layer not in VB pipeline (module pending)",
+      "findings": []
+    },
+    {
+      "layer": "requires-real-artifact",
+      "status": "pass",
+      "durationMs": 2031,
+      "score": 1,
+      "reason": "real artifact contracts/evm/src/FHEVault.sol uses real impl/infra AND compiles (forge build succeeded)",
+      "findings": [],
+      "detail": {
+        "realness": 80,
+        "requiredArtifactPresent": true,
+        "usesRealImpl": true,
+        "realInfra": true,
+        "artifactWired": true,
+        "fakeShim": false,
+        "mockDensity": 5,
+        "domain": "fhenix-fhe",
+        "gated": false,
+        "flags": [
+          "NOT_WIRED: artifact exists but is never used by the client"
+        ],
+        "artifactPath": "contracts/evm/src/FHEVault.sol",
+        "compile": {
+          "ok": true,
+          "reason": "forge build succeeded"
+        }
+      }
+    },
+    {
+      "layer": "tests",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "leaf has no test spec (0-to-1 archetype)",
+      "findings": []
+    },
+    {
+      "layer": "swebench-official",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "leaf has no SWE-Bench instanceId metadata",
+      "findings": []
+    },
+    {
+      "layer": "deploy",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "leaf has no deploySpec",
+      "findings": []
+    },
+    {
+      "layer": "dependencies",
+      "status": "pass",
+      "durationMs": 275,
+      "score": 0.873,
+      "reason": "22 deps across npm — 0 critical, blend=0.87",
+      "findings": [
+        {
+          "severity": "major",
+          "layer": "dependencies",
+          "message": "@tanstack/react-table: pinned as \"latest\" — wildcard breaks reproducibility"
+        },
+        {
+          "severity": "major",
+          "layer": "dependencies",
+          "message": "@tailwindcss/vite: pinned as \"latest\" — wildcard breaks reproducibility"
+        },
+        {
+          "severity": "major",
+          "layer": "dependencies",
+          "message": "tailwindcss: pinned as \"latest\" — wildcard breaks reproducibility"
+        },
+        {
+          "severity": "major",
+          "layer": "dependencies",
+          "message": "viem: vertical policy preferred viem (Type-safe EVM client for contract interaction) but agent didn't use it"
+        },
+        {
+          "severity": "major",
+          "layer": "dependencies",
+          "message": "wagmi: vertical policy preferred wagmi (React hooks for wallet connection and contract reads) but agent didn't use it"
+        }
+      ],
+      "detail": {
+        "ecosystems": [
+          "npm"
+        ],
+        "totalDeps": 22,
+        "criticalCount": 0,
+        "scorecard": [
+          {
+            "name": "@radix-ui/react-dialog",
+            "version": "^1.1.0",
+            "score": 10,
+            "ageDays": 2007,
+            "downloadsLastMonth": 242278986,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "@radix-ui/react-dropdown-menu",
+            "version": "^2.1.0",
+            "score": 10,
+            "ageDays": 2007,
+            "downloadsLastMonth": 198358244,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "@radix-ui/react-slot",
+            "version": "^1.1.0",
+            "score": 10,
+            "ageDays": 1962,
+            "downloadsLastMonth": 674310374,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "@tailwindcss/vite",
+            "version": "^4.0.0",
+            "score": 10,
+            "ageDays": 863,
+            "downloadsLastMonth": 140154257,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "@tanstack/react-table",
+            "version": "latest",
+            "score": 8,
+            "ageDays": 1607,
+            "downloadsLastMonth": 57226787,
+            "isPartnerPreferred": false,
+            "findings": 1
+          },
+          {
+            "name": "class-variance-authority",
+            "version": "^0.7.1",
+            "score": 10,
+            "ageDays": 1600,
+            "downloadsLastMonth": 211582990,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "clsx",
+            "version": "^2.1.1",
+            "score": 10,
+            "ageDays": 2728,
+            "downloadsLastMonth": 415183770,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "lucide-react",
+            "version": "^0.468.0",
+            "score": 10,
+            "ageDays": 2063,
+            "downloadsLastMonth": 333274077,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "react",
+            "version": "^19.2.0",
+            "score": 10,
+            "ageDays": 5344,
+            "downloadsLastMonth": 560339903,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "react-dom",
+            "version": "^19.2.0",
+            "score": 10,
+            "ageDays": 4421,
+            "downloadsLastMonth": 526786404,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "recharts",
+            "version": "^2.15.0",
+            "score": 10,
+            "ageDays": 3964,
+            "downloadsLastMonth": 205981550,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "tailwind-merge",
+            "version": "^2.6.0",
+            "score": 10,
+            "ageDays": 1792,
+            "downloadsLastMonth": 277776518,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "tailwindcss",
+            "version": "^4.0.0",
+            "score": 10,
+            "ageDays": 3173,
+            "downloadsLastMonth": 463308988,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "@cofhe/sdk",
+            "version": "^0.6.0",
+            "score": 10,
+            "ageDays": 236,
+            "downloadsLastMonth": 7644,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "@tailwindcss/vite",
+            "version": "latest",
+            "score": 8,
+            "ageDays": 863,
+            "downloadsLastMonth": 140154257,
+            "isPartnerPreferred": false,
+            "findings": 1
+          },
+          {
+            "name": "@types/node",
+            "version": "^20.17.0",
+            "score": 10,
+            "ageDays": 3679,
+            "downloadsLastMonth": 1430253673,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "@types/react",
+            "version": "^19.2.0",
+            "score": 10,
+            "ageDays": 3679,
+            "downloadsLastMonth": 505216450,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "@types/react-dom",
+            "version": "^19.2.0",
+            "score": 10,
+            "ageDays": 3679,
+            "downloadsLastMonth": 400859068,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "@vitejs/plugin-react",
+            "version": "^4.7.0",
+            "score": 10,
+            "ageDays": 1728,
+            "downloadsLastMonth": 245644950,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "tailwindcss",
+            "version": "latest",
+            "score": 8,
+            "ageDays": 3173,
+            "downloadsLastMonth": 463308988,
+            "isPartnerPreferred": false,
+            "findings": 1
+          },
+          {
+            "name": "typescript",
+            "version": "^5.9.0",
+            "score": 10,
+            "ageDays": 5004,
+            "downloadsLastMonth": 859336119,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "vite",
+            "version": "^6.4.2",
+            "score": 10,
+            "ageDays": 2245,
+            "downloadsLastMonth": 540376766,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "__missing-preferred__",
+            "version": "",
+            "score": 6,
+            "ageDays": null,
+            "downloadsLastMonth": null,
+            "isPartnerPreferred": false,
+            "findings": 2
+          }
+        ]
+      }
+    },
+    {
+      "layer": "semantic",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "not in --only / in --skip",
+      "findings": []
+    },
+    {
+      "layer": "completion-verifier",
+      "status": "fail",
+      "durationMs": 20,
+      "score": 0.6,
+      "reason": "3/5 concepts present (rate=0.60)",
+      "findings": [
+        {
+          "severity": "minor",
+          "layer": "completion-verifier",
+          "message": "requirement 'borrower sealed read' not satisfied: no produced artifact matched this requirement"
+        },
+        {
+          "severity": "minor",
+          "layer": "completion-verifier",
+          "message": "requirement 'outcome decrypt oracle' not satisfied: no produced artifact matched this requirement"
+        }
+      ],
+      "detail": {
+        "taskId": "fhenix-confidential-lending-vault",
+        "fullyComplete": false,
+        "completionRate": 0.6,
+        "requirements": [
+          {
+            "reqId": "encrypted position",
+            "title": "encrypted position euint64 collateral encrypted debt position at rest",
+            "structurallyPresent": true,
+            "correct": true,
+            "satisfied": true
+          },
+          {
+            "reqId": "encrypted health factor",
+            "title": "encrypted health factor fhe.div health fhe.mul ltv min hf gate",
+            "structurallyPresent": true,
+            "correct": true,
+            "satisfied": true
+          },
+          {
+            "reqId": "confidential liquidation",
+            "title": "confidential liquidation fhe.req underwater keeper liquidate seize collateral",
+            "structurallyPresent": true,
+            "correct": true,
+            "satisfied": true
+          },
+          {
+            "reqId": "borrower sealed read",
+            "title": "borrower sealed read sealoutput position eip-712 permit own health factor",
+            "structurallyPresent": false,
+            "correct": null,
+            "satisfied": false
+          },
+          {
+            "reqId": "outcome decrypt oracle",
+            "title": "outcome decrypt oracle fhe.decrypt result decryption oracle liquidation event",
+            "structurallyPresent": false,
+            "correct": null,
+            "satisfied": false
+          }
+        ]
+      }
+    }
+  ],
+  "passCount": 5,
+  "failCount": 3,
+  "skippedCount": 8,
+  "blendedScore": 0.711,
+  "judgeCostUsd": null,
+  "allPass": false
+}

@@ -12,7 +12,7 @@ import {
   writeFileSync,
 } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { dirname, join, relative, resolve } from 'node:path'
+import { basename, dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 interface DomainPackWorkCandidate {
@@ -806,10 +806,11 @@ function parseScoredLeaf(
         command,
         'ranked profile has no score',
       )
-    const completionPassRate = firstNumber(top.passRate)
+    const profileId = top.profileId ?? null
+    const completionPassRate =
+      readCompletionPassRate(outDir, profileId) ?? firstNumber(top.passRate)
     const scorePassed = score >= minScore
     const completionPassed = completionPassRate === null ? false : completionPassRate > 0
-    const profileId = top.profileId ?? null
     const scaffold = readScaffoldEvidence(candidate, outDir, profileId)
     const scaffoldPassed = scaffold.passed
     const manifest = readRunManifest(outDir)
@@ -840,6 +841,66 @@ function parseScoredLeaf(
       command,
       err instanceof Error ? err.message : String(err),
     )
+  }
+}
+
+function readCompletionPassRate(outDir: string, profileId: string | null): number | null {
+  const artifactRoot = join(outDir, 'matrix', 'artifacts')
+  if (!existsSync(artifactRoot)) return null
+
+  const artifactDirs = readdirSync(artifactRoot)
+    .map((entry) => join(artifactRoot, entry))
+    .filter((path) => statSync(path).isDirectory())
+  const preferredDirs = profileId
+    ? artifactDirs.filter((path) => basename(path).startsWith(profileId))
+    : []
+  const dirs = preferredDirs.length > 0 ? preferredDirs : artifactDirs
+
+  let total = 0
+  let passed = 0
+  for (const dir of dirs) {
+    const verificationFiles = readdirSync(dir)
+      .filter((entry) => /^verification-shot-\d+\.json$/.test(entry))
+      .map((entry) => join(dir, entry))
+      .sort()
+    for (const file of verificationFiles) {
+      const pass = readCompletionPass(file)
+      if (pass === null) continue
+      total += 1
+      if (pass) passed += 1
+    }
+  }
+
+  return total === 0 ? null : passed / total
+}
+
+function readCompletionPass(path: string): boolean | null {
+  try {
+    const parsed = JSON.parse(readFileSync(path, 'utf8')) as { layers?: unknown }
+    if (!Array.isArray(parsed.layers)) return null
+    const layer = parsed.layers.find(
+      (
+        item,
+      ): item is {
+        layer?: unknown
+        status?: unknown
+        score?: unknown
+        detail?: { fullyComplete?: unknown; completionRate?: unknown }
+      } =>
+        !!item &&
+        typeof item === 'object' &&
+        (item as { layer?: unknown }).layer === 'completion-verifier',
+    )
+    if (!layer) return null
+    const detail = layer.detail
+    return (
+      layer.status === 'pass' ||
+      layer.score === 1 ||
+      detail?.fullyComplete === true ||
+      detail?.completionRate === 1
+    )
+  } catch {
+    return null
   }
 }
 

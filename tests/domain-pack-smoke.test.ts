@@ -62,6 +62,7 @@ function writeScoredResult(
     layers: ['framework:fhenix-foundry'],
     domainPackGuidance: [{ source: 'fhenix-foundry' }],
   },
+  completion: { write?: boolean; passRate?: number } = {},
 ): void {
   const dir = join(root, `${split}-${leafId}`, 'matrix')
   mkdirSync(dir, { recursive: true })
@@ -94,6 +95,66 @@ function writeScoredResult(
   const artifactDir = join(dir, 'artifacts', `smoke-${leafId}-r0`)
   mkdirSync(artifactDir, { recursive: true })
   writeFileSync(join(artifactDir, 'scaffold-compose.json'), JSON.stringify(scaffold, null, 2))
+  const verifierPassRate = completion.passRate ?? passRate
+  if (completion.write !== false) {
+    writeFileSync(
+      join(artifactDir, 'verification-shot-1.json'),
+      JSON.stringify(
+        {
+          layers: [
+            {
+              layer: 'completion-verifier',
+              status: verifierPassRate > 0 ? 'pass' : 'fail',
+              score: verifierPassRate > 0 ? 1 : 0,
+              detail: {
+                fullyComplete: verifierPassRate > 0,
+                completionRate: verifierPassRate > 0 ? 1 : 0,
+              },
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+    )
+  }
+}
+
+function writeCompletionArtifact(
+  root: string,
+  split: 'train' | 'holdout',
+  leafId: string,
+  profileId: string,
+  pass: boolean,
+): void {
+  const artifactDir = join(
+    root,
+    `${split}-${leafId}`,
+    'matrix',
+    'artifacts',
+    `${profileId}-${leafId}-r0`,
+  )
+  mkdirSync(artifactDir, { recursive: true })
+  writeFileSync(
+    join(artifactDir, 'verification-shot-1.json'),
+    JSON.stringify(
+      {
+        layers: [
+          {
+            layer: 'completion-verifier',
+            status: pass ? 'pass' : 'fail',
+            score: pass ? 1 : 0,
+            detail: {
+              fullyComplete: pass,
+              completionRate: pass ? 1 : 0,
+            },
+          },
+        ],
+      },
+      null,
+      2,
+    ),
+  )
 }
 
 test('domain-pack smoke gate composes train and holdout samples and records metrics', () => {
@@ -209,6 +270,57 @@ test('domain-pack smoke scored mode parses blueprint-agent score distributions',
     assert.equal(report.scoredPromotion.leaves[0].completionPassed, true)
     assert.equal(report.scoredPromotion.leaves[0].scaffoldPassed, true)
     assert.equal(report.scoredPromotion.leaves[0].scaffold.observedFamily, 'fhenix-foundry')
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})
+
+test('domain-pack smoke scored mode trusts verification artifacts for completion passes', () => {
+  const root = mkdtempSync(join(tmpdir(), 'sf-domain-pack-smoke-verification-completion-'))
+  try {
+    const candidatesPath = join(root, 'candidates.json')
+    const outputPath = join(root, 'smoke.json')
+    const resultsDir = join(root, 'results')
+    writeCandidates(candidatesPath, ['train-a'], ['holdout-a'])
+    writeScoredResult(resultsDir, 'train', 'train-a', 0.8, 0, undefined, { passRate: 1 })
+    writeScoredResult(resultsDir, 'holdout', 'holdout-a', 0.85, 0, undefined, { passRate: 1 })
+    writeCompletionArtifact(resultsDir, 'train', 'train-a', 'other-profile', false)
+
+    const result = spawnSync(
+      TSX,
+      [
+        SCRIPT,
+        '--candidate',
+        'fhe-contracts-fhenix-foundry',
+        '--candidates',
+        candidatesPath,
+        '--output',
+        outputPath,
+        '--write',
+        '--json',
+        '--skip-build',
+        '--blueprint-agent',
+        'scored',
+        '--scored-results-dir',
+        resultsDir,
+        '--train',
+        '1',
+        '--holdout',
+        '1',
+      ],
+      {
+        cwd: process.cwd(),
+        encoding: 'utf8',
+      },
+    )
+
+    assert.equal(result.status, 0, result.stderr || result.stdout)
+    const report = JSON.parse(readFileSync(outputPath, 'utf8'))
+    assert.equal(report.scoredPromotion.status, 'passed')
+    assert.equal(report.scoredPromotion.train.completionPassCount, 1)
+    assert.equal(report.scoredPromotion.holdout.completionPassCount, 1)
+    assert.equal(report.scoredPromotion.leaves[0].completionPassRate, 1)
+    assert.equal(report.scoredPromotion.leaves[0].completionPassed, true)
   } finally {
     rmSync(root, { recursive: true, force: true })
   }

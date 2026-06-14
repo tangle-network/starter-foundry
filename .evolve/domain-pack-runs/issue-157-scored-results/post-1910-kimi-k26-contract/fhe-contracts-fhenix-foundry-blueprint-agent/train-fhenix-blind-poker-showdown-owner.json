@@ -1,0 +1,13 @@
+{
+  "collectionId": "fhenix-fhe",
+  "name": "VerticalBench: fhenix-fhe",
+  "grain": "vertical",
+  "visibility": "internal",
+  "partnerId": null,
+  "tags": [
+    "fhenix-fhe"
+  ],
+  "createdAt": "2026-06-14T16:23:18.220Z",
+  "updatedAt": "2026-06-14T16:23:18.220Z",
+  "submissions": []
+}

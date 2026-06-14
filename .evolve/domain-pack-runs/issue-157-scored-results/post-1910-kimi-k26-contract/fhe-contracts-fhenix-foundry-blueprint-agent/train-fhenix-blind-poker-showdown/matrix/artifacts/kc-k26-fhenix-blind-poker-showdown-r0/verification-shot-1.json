@@ -1,0 +1,600 @@
+{
+  "verificationVersion": "verify-v1-2026-04-19",
+  "workdir": "/tmp/vb-cli-bridge-workspaces/vb-kc-k26-fhenix-blind-poker-show-6dba2d3d27bd-mqdz8g6u-a8ce26cf/apps/web",
+  "leafId": "fhenix-blind-poker-showdown",
+  "verticalId": "fhenix-fhe",
+  "generatedAt": "2026-06-14T16:23:16.280Z",
+  "durationMs": 13748,
+  "layers": [
+    {
+      "layer": "install",
+      "status": "pass",
+      "durationMs": 631,
+      "reason": "solidity-foundry@contracts/evm: forge deps already present in lib/; forge build verifies them",
+      "findings": [],
+      "layerErrorCount": null,
+      "detail": {
+        "perAdapter": [
+          {
+            "adapter": "node-npm@apps/web",
+            "status": "pass",
+            "durationMs": 499
+          },
+          {
+            "adapter": "node-npm@apps/api",
+            "status": "pass",
+            "durationMs": 132
+          },
+          {
+            "adapter": "solidity-foundry@contracts/evm",
+            "status": "skipped",
+            "reason": "forge deps already present in lib/; forge build verifies them",
+            "durationMs": 0
+          }
+        ]
+      }
+    },
+    {
+      "layer": "typecheck",
+      "status": "fail",
+      "durationMs": 3057,
+      "reason": "node-npm@apps/web: npx --no-install tsc --noEmit --pretty false exit 2 | node-npm@apps/api: no tsconfig.json | solidity-foundry@contracts/evm: forge does not separate typecheck from build — covered by runBuild",
+      "findings": [
+        {
+          "severity": "major",
+          "layer": "typecheck",
+          "message": "[node-npm@apps/web] typecheck failed (exit 2)",
+          "evidence": "node_modules/lucide-react/dist/lucide-react.d.ts(2,10): error TS2305: Module '\"react\"' has no exported member 'ReactSVG'.\nsrc/components/MintPage.tsx(2,27): error TS2307: Cannot find module '@binance-chain/bsc-use-wallet' or its corresponding type declarations.\nsrc/components/MintPage.tsx(4,28): error TS2307: Cannot find module './MintButton' or its corresponding type declarations.\nsrc/components/MintPage.tsx(5,36): error TS2307: Cannot find module './MintedCountDisplay' or its corresponding type declarations.\nsrc/components/MintPage.tsx(6,29): error TS2307: Cannot find module './OpenSeaLink' or its corresponding type declarations.\nsrc/components/layout/sidebar-layout.tsx(90,36): error TS2322: Type '{ children: Element; asChild: true; }' is not assignable to type 'IntrinsicAttributes & ButtonHTMLAttributes<HTMLButtonElement> & RefAttributes<HTMLButtonElement>'.\n  Property 'asChild' does not exist on type 'IntrinsicAttributes & ButtonHTMLAttributes<HTMLButtonElement> & RefAttributes<HTMLButtonElement>'.\nsrc/components/layout/sidebar-layout.tsx(97,36): error TS2322: Type '{ children: Element[]; align: string; className: string; }' is not assignable to type 'IntrinsicAttributes & HTMLAttributes<HTMLDivElement> & RefAttributes<HTMLDivElement>'.\n  Property 'align' does not exist on type 'IntrinsicAttributes & HTMLAttributes<HTMLDivElement> & RefAttributes<HTMLDivElement>'.\nsrc/lib/zkproof.ts(10,16): error TS2664: Invalid module name in augmentation, module 'snarkjs' cannot be found.\nsrc/lib/zkproof.ts(53,36): error TS2307: Cannot find module 'snarkjs' or its corresponding type declarations.\nsrc/lib/zkproof.ts(69,36): error TS2307: Cannot find module 'snarkjs' or its corresponding type declarations.\nsrc/lib/zkproof.ts(79,42): error TS7016: Could not find a declaration file for module 'circomlibjs'. '/tmp/vb-cli-bridge-workspaces/vb-kc-k26-fhenix-blind-poker-show-6dba2d3d27bd-mqdz8g6u-a8ce26cf/apps/web/node_modules/circomlibjs/main.js' implicitly has an 'any' type.\n  Try `npm i --save-dev @types/circomlibjs` if it exists or add a new declaration (.d.ts) file containing `declare module 'circomlibjs';`\n\nnpm warn Unknown env config \"verify-deps-before-run\". This will stop working in the next major version of npm.\n(node:2342719) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+        }
+      ],
+      "layerErrorCount": 11,
+      "detail": {
+        "perAdapter": [
+          {
+            "adapter": "node-npm@apps/web",
+            "status": "fail",
+            "reason": "npx --no-install tsc --noEmit --pretty false exit 2",
+            "durationMs": 3057
+          },
+          {
+            "adapter": "node-npm@apps/api",
+            "status": "skipped",
+            "reason": "no tsconfig.json",
+            "durationMs": 0
+          },
+          {
+            "adapter": "solidity-foundry@contracts/evm",
+            "status": "skipped",
+            "reason": "forge does not separate typecheck from build — covered by runBuild",
+            "durationMs": 0
+          }
+        ]
+      }
+    },
+    {
+      "layer": "build",
+      "status": "pass",
+      "durationMs": 1216,
+      "reason": "node-npm@apps/api: no build script",
+      "findings": [],
+      "layerErrorCount": null,
+      "detail": {
+        "perAdapter": [
+          {
+            "adapter": "node-npm@apps/web",
+            "status": "pass",
+            "durationMs": 1156
+          },
+          {
+            "adapter": "node-npm@apps/api",
+            "status": "skipped",
+            "reason": "no build script",
+            "durationMs": 0
+          },
+          {
+            "adapter": "solidity-foundry@contracts/evm",
+            "status": "pass",
+            "durationMs": 60
+          }
+        ]
+      }
+    },
+    {
+      "layer": "lint",
+      "status": "fail",
+      "durationMs": 19,
+      "reason": "node-npm@apps/web: no lint/check script | node-npm@apps/api: no lint/check script | solidity-foundry@contracts/evm: forge fmt --check exit 1",
+      "findings": [
+        {
+          "severity": "minor",
+          "layer": "lint",
+          "message": "[solidity-foundry@contracts/evm] lint failed (exit 1)",
+          "evidence": "Diff in src/FHEVault.sol:\n154 154  | \n155 155  |     /// @notice Callback invoked by the Fhenix threshold-decryption oracle once\n156 156  |     ///         the winning rank has been decrypted off-chain.\n157      |-    function publishDecryptResult(bytes32 ctHash, uint256 plaintext, bytes calldata /*signature*/) external onlyDealer atState(State.Showdown) {\n    157  |+    function publishDecryptResult(\n    158  |+        bytes32 ctHash,\n    159  |+        uint256 plaintext,\n    160  |+        bytes calldata /*signature*/\n    161  |+    )\n    162  |+        external\n    163  |+        onlyDealer\n    164  |+        atState(State.Showdown)\n    165  |+    {\n158 166  |         if (ctHash != pendingDecryptCtHash) revert UnknownDecryption();\n159 167  | \n160 168  |         revealedWinningRank = uint16(plaintext);\n\n"
+        }
+      ],
+      "layerErrorCount": null,
+      "detail": {
+        "perAdapter": [
+          {
+            "adapter": "node-npm@apps/web",
+            "status": "skipped",
+            "reason": "no lint/check script",
+            "durationMs": 0
+          },
+          {
+            "adapter": "node-npm@apps/api",
+            "status": "skipped",
+            "reason": "no lint/check script",
+            "durationMs": 0
+          },
+          {
+            "adapter": "solidity-foundry@contracts/evm",
+            "status": "fail",
+            "reason": "forge fmt --check exit 1",
+            "durationMs": 19
+          }
+        ]
+      }
+    },
+    {
+      "layer": "serve",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "no preview URL supplied; use preview runtime for live checks",
+      "findings": []
+    },
+    {
+      "layer": "domain",
+      "status": "fail",
+      "durationMs": 3207,
+      "score": 0,
+      "findings": [
+        {
+          "severity": "critical",
+          "layer": "domain",
+          "message": "custom-build failed (exit 2): npm warn Unknown env config \"verify-deps-before-run\". This will stop working in the next major version of npm.\n(node:2343936) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+        }
+      ],
+      "reason": "1 critical domain violation(s)"
+    },
+    {
+      "layer": "design",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "design layer not in VB pipeline (module pending)",
+      "findings": []
+    },
+    {
+      "layer": "flow",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "flow layer not in VB pipeline (use bad-audit post-loop)",
+      "findings": []
+    },
+    {
+      "layer": "fuzz",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "fuzz layer not in VB pipeline (module pending)",
+      "findings": []
+    },
+    {
+      "layer": "requires-real-artifact",
+      "status": "pass",
+      "durationMs": 2090,
+      "score": 1,
+      "reason": "real artifact contracts/evm/src/FHEVault.sol uses real impl/infra AND compiles (forge build succeeded)",
+      "findings": [],
+      "detail": {
+        "realness": 81,
+        "requiredArtifactPresent": true,
+        "usesRealImpl": true,
+        "realInfra": true,
+        "artifactWired": true,
+        "fakeShim": false,
+        "mockDensity": 4,
+        "domain": "fhenix-fhe",
+        "gated": false,
+        "flags": [
+          "NOT_WIRED: artifact exists but is never used by the client"
+        ],
+        "artifactPath": "contracts/evm/src/FHEVault.sol",
+        "compile": {
+          "ok": true,
+          "reason": "forge build succeeded"
+        }
+      }
+    },
+    {
+      "layer": "tests",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "leaf has no test spec (0-to-1 archetype)",
+      "findings": []
+    },
+    {
+      "layer": "swebench-official",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "leaf has no SWE-Bench instanceId metadata",
+      "findings": []
+    },
+    {
+      "layer": "deploy",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "leaf has no deploySpec",
+      "findings": []
+    },
+    {
+      "layer": "dependencies",
+      "status": "pass",
+      "durationMs": 384,
+      "score": 0.855,
+      "reason": "28 deps across npm — 0 critical, blend=0.85",
+      "findings": [
+        {
+          "severity": "major",
+          "layer": "dependencies",
+          "message": "@tanstack/react-table: pinned as \"latest\" — wildcard breaks reproducibility"
+        },
+        {
+          "severity": "major",
+          "layer": "dependencies",
+          "message": "recharts: pinned as \"latest\" — wildcard breaks reproducibility"
+        },
+        {
+          "severity": "major",
+          "layer": "dependencies",
+          "message": "ethers: vertical policy prefers viem over this generic alternative"
+        },
+        {
+          "severity": "major",
+          "layer": "dependencies",
+          "message": "@tailwindcss/vite: pinned as \"latest\" — wildcard breaks reproducibility"
+        },
+        {
+          "severity": "major",
+          "layer": "dependencies",
+          "message": "tailwindcss: pinned as \"latest\" — wildcard breaks reproducibility"
+        },
+        {
+          "severity": "major",
+          "layer": "dependencies",
+          "message": "viem: vertical policy preferred viem (Type-safe EVM client for contract interaction) but agent didn't use it"
+        },
+        {
+          "severity": "major",
+          "layer": "dependencies",
+          "message": "wagmi: vertical policy preferred wagmi (React hooks for wallet connection and contract reads) but agent didn't use it"
+        }
+      ],
+      "detail": {
+        "ecosystems": [
+          "npm"
+        ],
+        "totalDeps": 28,
+        "criticalCount": 0,
+        "scorecard": [
+          {
+            "name": "@radix-ui/react-slot",
+            "version": "^1.1.0",
+            "score": 10,
+            "ageDays": 1962,
+            "downloadsLastMonth": 674310374,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "class-variance-authority",
+            "version": "^0.7.1",
+            "score": 10,
+            "ageDays": 1600,
+            "downloadsLastMonth": 211582990,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "clsx",
+            "version": "^2.1.1",
+            "score": 10,
+            "ageDays": 2728,
+            "downloadsLastMonth": 415183770,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "lucide-react",
+            "version": "^0.468.0",
+            "score": 10,
+            "ageDays": 2063,
+            "downloadsLastMonth": 333274077,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "react",
+            "version": "^19.2.0",
+            "score": 10,
+            "ageDays": 5344,
+            "downloadsLastMonth": 560339903,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "react-dom",
+            "version": "^19.2.0",
+            "score": 10,
+            "ageDays": 4421,
+            "downloadsLastMonth": 526786404,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "tailwind-merge",
+            "version": "^2.6.0",
+            "score": 10,
+            "ageDays": 1792,
+            "downloadsLastMonth": 277776518,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "@tanstack/react-table",
+            "version": "latest",
+            "score": 8,
+            "ageDays": 1607,
+            "downloadsLastMonth": 57226787,
+            "isPartnerPreferred": false,
+            "findings": 1
+          },
+          {
+            "name": "recharts",
+            "version": "latest",
+            "score": 8,
+            "ageDays": 3964,
+            "downloadsLastMonth": 205981550,
+            "isPartnerPreferred": false,
+            "findings": 1
+          },
+          {
+            "name": "react-router-dom",
+            "version": "^7.1.0",
+            "score": 10,
+            "ageDays": 3468,
+            "downloadsLastMonth": 183486100,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "snarkjs",
+            "version": "^0.7.5",
+            "score": 10,
+            "ageDays": 2792,
+            "downloadsLastMonth": 203613,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "circomlibjs",
+            "version": "^0.1.7",
+            "score": 9,
+            "ageDays": 1712,
+            "downloadsLastMonth": 77559,
+            "isPartnerPreferred": false,
+            "findings": 1
+          },
+          {
+            "name": "circomlib",
+            "version": "^2.0.5",
+            "score": 9,
+            "ageDays": 2733,
+            "downloadsLastMonth": 64590,
+            "isPartnerPreferred": false,
+            "findings": 1
+          },
+          {
+            "name": "@zk-kit/incremental-merkle-tree",
+            "version": "^1.1.0",
+            "score": 10,
+            "ageDays": 1607,
+            "downloadsLastMonth": 9859,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "ethers",
+            "version": "^6.13.0",
+            "score": 8,
+            "ageDays": 3356,
+            "downloadsLastMonth": 14248196,
+            "isPartnerPreferred": false,
+            "findings": 1
+          },
+          {
+            "name": "cofhejs",
+            "version": "^0.0.1-alpha.6",
+            "score": 9.5,
+            "ageDays": 473,
+            "downloadsLastMonth": 944,
+            "isPartnerPreferred": false,
+            "findings": 1
+          },
+          {
+            "name": "@tailwindcss/vite",
+            "version": "^4.0.0",
+            "score": 10,
+            "ageDays": 862,
+            "downloadsLastMonth": 140154257,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "tailwindcss",
+            "version": "^4.0.0",
+            "score": 10,
+            "ageDays": 3173,
+            "downloadsLastMonth": 463308988,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "@radix-ui/react-dialog",
+            "version": "^1.1.0",
+            "score": 10,
+            "ageDays": 2007,
+            "downloadsLastMonth": 242278986,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "@radix-ui/react-dropdown-menu",
+            "version": "^2.1.0",
+            "score": 10,
+            "ageDays": 2007,
+            "downloadsLastMonth": 198358244,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "@tailwindcss/vite",
+            "version": "latest",
+            "score": 8,
+            "ageDays": 862,
+            "downloadsLastMonth": 140154257,
+            "isPartnerPreferred": false,
+            "findings": 1
+          },
+          {
+            "name": "@types/node",
+            "version": "^20.17.0",
+            "score": 10,
+            "ageDays": 3679,
+            "downloadsLastMonth": 1430253673,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "@types/react",
+            "version": "^19.2.0",
+            "score": 10,
+            "ageDays": 3679,
+            "downloadsLastMonth": 505216450,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "@types/react-dom",
+            "version": "^19.2.0",
+            "score": 10,
+            "ageDays": 3679,
+            "downloadsLastMonth": 400859068,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "@vitejs/plugin-react",
+            "version": "^4.7.0",
+            "score": 10,
+            "ageDays": 1728,
+            "downloadsLastMonth": 245644950,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "tailwindcss",
+            "version": "latest",
+            "score": 8,
+            "ageDays": 3173,
+            "downloadsLastMonth": 463308988,
+            "isPartnerPreferred": false,
+            "findings": 1
+          },
+          {
+            "name": "typescript",
+            "version": "^5.9.0",
+            "score": 10,
+            "ageDays": 5004,
+            "downloadsLastMonth": 859336119,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "vite",
+            "version": "^6.4.2",
+            "score": 10,
+            "ageDays": 2245,
+            "downloadsLastMonth": 540376766,
+            "isPartnerPreferred": false,
+            "findings": 0
+          },
+          {
+            "name": "__missing-preferred__",
+            "version": "",
+            "score": 6,
+            "ageDays": null,
+            "downloadsLastMonth": null,
+            "isPartnerPreferred": false,
+            "findings": 2
+          }
+        ]
+      }
+    },
+    {
+      "layer": "semantic",
+      "status": "skipped",
+      "durationMs": 0,
+      "reason": "not in --only / in --skip",
+      "findings": []
+    },
+    {
+      "layer": "completion-verifier",
+      "status": "pass",
+      "durationMs": 23,
+      "score": 1,
+      "reason": "4/4 concepts present",
+      "findings": [],
+      "detail": {
+        "taskId": "fhenix-blind-poker-showdown",
+        "fullyComplete": true,
+        "completionRate": 1,
+        "requirements": [
+          {
+            "reqId": "encrypted hand commit",
+            "title": "encrypted hand commit euint16 hand ineuint16 commit secret cards",
+            "structurallyPresent": true,
+            "correct": true,
+            "satisfied": true
+          },
+          {
+            "reqId": "ciphertext winner",
+            "title": "ciphertext winner fhe.gt compare fhe.select pot encrypted winner",
+            "structurallyPresent": true,
+            "correct": true,
+            "satisfied": true
+          },
+          {
+            "reqId": "per-player view grant",
+            "title": "per-player view grant fhe.allow own hand only view rights",
+            "structurallyPresent": true,
+            "correct": true,
+            "satisfied": true
+          },
+          {
+            "reqId": "showdown reveal oracle",
+            "title": "showdown reveal oracle fhe.decrypt callback oracle reveal settle rank",
+            "structurallyPresent": true,
+            "correct": true,
+            "satisfied": true
+          }
+        ]
+      }
+    }
+  ],
+  "passCount": 5,
+  "failCount": 3,
+  "skippedCount": 8,
+  "blendedScore": 0.608,
+  "judgeCostUsd": null,
+  "allPass": false
+}

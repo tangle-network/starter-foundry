@@ -1,0 +1,132 @@
+{
+  "taskListId": "mtx_mqe77nem_5ddeff14",
+  "nTasks": 1,
+  "nProfiles": 1,
+  "ranked": [
+    {
+      "rank": 1,
+      "profileId": "kc-k26",
+      "label": "kimi-code · k2.6",
+      "passRate": 0,
+      "passRateCi95": [
+        0,
+        0.7934567085261071
+      ],
+      "hitRate": 0,
+      "hitRateCi95": [
+        0,
+        0.7934567085261071
+      ],
+      "realBuilds": 0,
+      "realnessMean": 0.1,
+      "meanBlended": 0.352,
+      "meanBlendedCi95": [
+        0,
+        0
+      ],
+      "medianShotsToComplete": null,
+      "errorRate": 0,
+      "costPerSolved": null,
+      "meanComposite": 0.2,
+      "meanCompositeCi95": [
+        0.2,
+        0.2
+      ],
+      "separableFrom": [],
+      "behavior": {
+        "nRuns": 1,
+        "convergenceRate": 0,
+        "medianConvergenceShot": null,
+        "meanPlateauRate": 0,
+        "meanWastedTokenRatio": 0,
+        "totalWastedTokens": 0,
+        "totalWastedShotCostUsd": 0,
+        "meanCostPerScorePoint": null,
+        "meanTokenEfficiency": null,
+        "meanRepeatErrorRate": null,
+        "totalLayerRegressions": 0,
+        "totalLayerFixes": 0,
+        "meanToolFailureRate": null,
+        "topToolCalls": [
+          {
+            "name": "Shell",
+            "count": 133
+          },
+          {
+            "name": "ReadFile",
+            "count": 27
+          },
+          {
+            "name": "WriteFile",
+            "count": 19
+          },
+          {
+            "name": "StrReplaceFile",
+            "count": 11
+          },
+          {
+            "name": "SetTodoList",
+            "count": 3
+          },
+          {
+            "name": "TaskOutput",
+            "count": 3
+          },
+          {
+            "name": "TaskStop",
+            "count": 2
+          },
+          {
+            "name": "SearchWeb",
+            "count": 1
+          }
+        ],
+        "outcomes": {
+          "converged": 0,
+          "plateaued": 1,
+          "regressed": 0,
+          "errored": 0,
+          "never-ran": 0
+        }
+      }
+    }
+  ],
+  "pairwise": [],
+  "pareto": [],
+  "perTaskWinner": [
+    {
+      "taskId": "fhenix-blind-poker-showdown",
+      "winnerProfileId": "kc-k26",
+      "winnerPassRate": 0
+    }
+  ],
+  "profileVectors": [
+    {
+      "profileId": "kc-k26",
+      "label": "kimi-code · k2.6",
+      "n": 1,
+      "deterministic": 1,
+      "functional": null,
+      "semantic": 1,
+      "security": null,
+      "grounding": 0,
+      "realness": 0.1,
+      "realBuildRate": 0,
+      "reliability": null,
+      "composite": 0.2,
+      "compositeCi95": [
+        0.2,
+        0.2
+      ],
+      "compositeSamples": [
+        0.2
+      ]
+    }
+  ],
+  "rankedByComposite": true,
+  "rankBasis": "hit-rate",
+  "judgeCalibration": {
+    "kappa": null,
+    "trustworthy": false
+  }
+}

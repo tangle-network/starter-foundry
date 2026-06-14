@@ -1,0 +1,286 @@
+{
+  "icp": "AUTO-RESEARCH",
+  "vertical": "fhenix-fhe",
+  "realnessByProfile": [
+    {
+      "profileId": "kc-k26",
+      "n": 1,
+      "meanScore": 0.54,
+      "hitRate": 0,
+      "hitRateCi95": [
+        0,
+        0.7934567085261071
+      ],
+      "gatedCount": 1
+    }
+  ],
+  "gatedCells": [
+    {
+      "cellId": "kc-k26-fhenix-blind-poker-showdown-r0",
+      "profileId": "kc-k26",
+      "leafId": "fhenix-blind-poker-showdown",
+      "realness": {
+        "score": 0.54,
+        "gated": true,
+        "gateReason": null,
+        "requiredArtifactPresent": true,
+        "usesRealImpl": true,
+        "realInfra": true,
+        "artifactWired": true,
+        "fakeShim": true
+      }
+    }
+  ],
+  "autoresearch": {
+    "normalizedRuns": [
+      {
+        "suiteId": "verticalbench:fhenix-fhe",
+        "suiteName": "Fhenix FHE dApps",
+        "source": "verticalbench",
+        "vertical": "fhenix-fhe",
+        "taskKind": "product-build",
+        "task": {
+          "id": "fhenix-blind-poker-showdown",
+          "name": "Hidden-hand poker showdown contract",
+          "prompt": "A heads-up poker showdown on Fhenix where each player commits an encrypted hand rank as euint16 via cofhejs inEuint16 inputs. The contract tracks an encrypted pot (euint64) and decides the winner on ciphertext: ebool aWins = FHE.gt(handA, handB), then FHE.select routes the pot without leaking the loser hand. FHE.allow grants each player view rights to only their own hand; the winning rank is revealed via an FHE.decrypt oracle callback. A frontend rendering plaintext cards with no euint commitment, FHE.gt compare, or oracle reveal is a non-result; the artifact is a contract forge compiles.",
+          "difficulty": "hard",
+          "vertical": "fhenix-fhe",
+          "taskKind": "product-build",
+          "source": "verticalbench",
+          "tags": [
+            "fhenix",
+            "fhe",
+            "poker",
+            "hidden-information",
+            "game"
+          ],
+          "native": {
+            "expectedFamily": "",
+            "expectedIndustry": "",
+            "metadata": {}
+          }
+        },
+        "trace": {
+          "runId": "driver-fhenix-blind-poker-showdown-1781463908799",
+          "taskId": "fhenix-blind-poker-showdown",
+          "startedAt": "2026-06-14T19:05:08.799Z",
+          "endedAt": "2026-06-14T19:49:51.542Z",
+          "wallMs": 2682743,
+          "stopReason": "max-shots",
+          "actions": [
+            {
+              "index": 0,
+              "kind": "state-check",
+              "name": "preview",
+              "status": "fail",
+              "durationMs": null,
+              "detail": "preview failed"
+            },
+            {
+              "index": 1,
+              "kind": "eval",
+              "name": "verification-shot-1",
+              "status": "fail",
+              "durationMs": 2682201,
+              "detail": "failing layers: typecheck, lint, domain, requires-real-artifact, completion-verifier"
+            },
+            {
+              "index": 2,
+              "kind": "tool-call",
+              "name": "Shell",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=133"
+            },
+            {
+              "index": 3,
+              "kind": "tool-call",
+              "name": "ReadFile",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=27"
+            },
+            {
+              "index": 4,
+              "kind": "tool-call",
+              "name": "SetTodoList",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=3"
+            },
+            {
+              "index": 5,
+              "kind": "tool-call",
+              "name": "StrReplaceFile",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=11"
+            },
+            {
+              "index": 6,
+              "kind": "tool-call",
+              "name": "WriteFile",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=19"
+            },
+            {
+              "index": 7,
+              "kind": "tool-call",
+              "name": "SearchWeb",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=1"
+            },
+            {
+              "index": 8,
+              "kind": "tool-call",
+              "name": "TaskOutput",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=3"
+            },
+            {
+              "index": 9,
+              "kind": "tool-call",
+              "name": "TaskStop",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=2"
+            }
+          ],
+          "artifacts": [
+            "verificationByShot"
+          ],
+          "requiredArtifacts": [],
+          "costUsd": null,
+          "tokenUsage": null,
+          "finalState": {
+            "outcome": "max-shots",
+            "previewSucceeded": false,
+            "completenessScore": null,
+            "auditScore": null,
+            "convergedAt": null,
+            "shotsUsed": 1
+          },
+          "native": {
+            "driverName": "driver-baseline",
+            "scaffoldChosen": null,
+            "scaffoldMatchKind": "none",
+            "runtime": "sandbox-sdk",
+            "factoryRunId": "kc-k26-fhenix-blind-poker-showdown-r0"
+          }
+        },
+        "eval": {
+          "taskId": "fhenix-blind-poker-showdown",
+          "status": "fail",
+          "score": 0.352,
+          "outcome": "unknown",
+          "layers": [
+            {
+              "layer": "typecheck",
+              "status": "fail"
+            },
+            {
+              "layer": "lint",
+              "status": "fail"
+            },
+            {
+              "layer": "domain",
+              "status": "fail"
+            },
+            {
+              "layer": "requires-real-artifact",
+              "status": "fail"
+            },
+            {
+              "layer": "completion-verifier",
+              "status": "fail"
+            }
+          ],
+          "gaps": [
+            "typecheck",
+            "lint",
+            "domain",
+            "requires-real-artifact",
+            "completion-verifier",
+            "preview failed",
+            "max-shots"
+          ],
+          "native": {
+            "verificationByShot": [
+              {
+                "shot": 1,
+                "blendedScore": 0.352,
+                "allPass": false,
+                "failCount": 5,
+                "passCount": 3,
+                "failingLayers": [
+                  "typecheck",
+                  "lint",
+                  "domain",
+                  "requires-real-artifact",
+                  "completion-verifier"
+                ],
+                "shotWallMs": 2682201,
+                "shotCostUsd": 0,
+                "inputTokens": 0,
+                "outputTokens": 0,
+                "fileCountAfter": 104,
+                "reviewerConfidence": null,
+                "reviewerShouldContinue": null,
+                "toolCallsByName": {
+                  "Shell": 133,
+                  "ReadFile": 27,
+                  "SetTodoList": 3,
+                  "StrReplaceFile": 11,
+                  "WriteFile": 19,
+                  "SearchWeb": 1,
+                  "TaskOutput": 3,
+                  "TaskStop": 2
+                },
+                "toolCallSuccesses": 0,
+                "toolCallFailures": 0,
+                "failingLayerFindings": [
+                  {
+                    "layer": "typecheck",
+                    "severity": "major",
+                    "message": "[node-npm@apps/web] typecheck failed (exit 2)"
+                  },
+                  {
+                    "layer": "domain",
+                    "severity": "critical",
+                    "message": "custom-build failed (exit 2): npm warn Unknown env config \"verify-deps-before-run\". This will stop working in the next major version of npm.\n"
+                  },
+                  {
+                    "layer": "requires-real-artifact",
+                    "severity": "critical",
+                    "message": "a fake shim stands in for the real infra (mock/sim engine on the load-bearing path)"
+                  }
+                ]
+              }
+            ],
+            "intentMatch": null
+          }
+        }
+      }
+    ],
+    "findings": [
+      {
+        "kind": "missing-domain-integration",
+        "severity": "low",
+        "taskIds": [
+          "fhenix-blind-poker-showdown"
+        ],
+        "evidence": "domain: custom-build failed (exit 2): npm warn Unknown env config \"verify-deps-before-run\". This will stop working in the next major version of npm.\n",
+        "proposedFixClass": "product"
+      }
+    ]
+  },
+  "diagnostics": {
+    "cellCount": 1,
+    "profileCount": 1,
+    "enrichedCells": 0,
+    "warnings": []
+  }
+}

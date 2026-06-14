@@ -1,0 +1,255 @@
+{
+  "icp": "AUTO-RESEARCH",
+  "vertical": "fhenix-fhe",
+  "realnessByProfile": [
+    {
+      "profileId": "kc-k26",
+      "n": 1,
+      "meanScore": 0.8,
+      "hitRate": 0,
+      "hitRateCi95": [
+        0,
+        0.7934567085261071
+      ],
+      "gatedCount": 0
+    }
+  ],
+  "gatedCells": [],
+  "autoresearch": {
+    "normalizedRuns": [
+      {
+        "suiteId": "verticalbench:fhenix-fhe",
+        "suiteName": "Fhenix FHE dApps",
+        "source": "verticalbench",
+        "vertical": "fhenix-fhe",
+        "taskKind": "product-build",
+        "task": {
+          "id": "fhenix-confidential-lending-vault",
+          "name": "Confidential collateralized lending vault",
+          "prompt": "An over-collateralized lending market on Fhenix where each account holds encrypted collateral and debt as euint64. borrow(inEuint64 amt) computes the health factor FHE.div(FHE.mul(collateral, ltvBps), newDebt) and gates it with FHE.gte(hf, MIN_HF) and FHE.select so unsafe borrows net zero. A keeper liquidate uses FHE.req on an underwater ebool to authorize seizure, surfaced via FHE.decrypt. Borrowers read their position via FHE.sealoutput under a permit. A plaintext-position dashboard with no euint health-factor math, FHE.req gate, or sealed reads is a shim; the artifact compiles under forge.",
+          "difficulty": "extreme",
+          "vertical": "fhenix-fhe",
+          "taskKind": "product-build",
+          "source": "verticalbench",
+          "tags": [
+            "fhenix",
+            "fhe",
+            "lending",
+            "collateral",
+            "confidential-defi"
+          ],
+          "native": {
+            "expectedFamily": "",
+            "expectedIndustry": "",
+            "metadata": {}
+          }
+        },
+        "trace": {
+          "runId": "driver-fhenix-confidential-lending-vault-1781466603529",
+          "taskId": "fhenix-confidential-lending-vault",
+          "startedAt": "2026-06-14T19:50:03.529Z",
+          "endedAt": "2026-06-14T20:03:59.315Z",
+          "wallMs": 835786,
+          "stopReason": "max-shots",
+          "actions": [
+            {
+              "index": 0,
+              "kind": "state-check",
+              "name": "preview",
+              "status": "fail",
+              "durationMs": null,
+              "detail": "preview failed"
+            },
+            {
+              "index": 1,
+              "kind": "eval",
+              "name": "verification-shot-1",
+              "status": "fail",
+              "durationMs": 835337,
+              "detail": "failing layers: typecheck, lint, domain, completion-verifier"
+            },
+            {
+              "index": 2,
+              "kind": "tool-call",
+              "name": "Shell",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=39"
+            },
+            {
+              "index": 3,
+              "kind": "tool-call",
+              "name": "ReadFile",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=32"
+            },
+            {
+              "index": 4,
+              "kind": "tool-call",
+              "name": "SetTodoList",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=4"
+            },
+            {
+              "index": 5,
+              "kind": "tool-call",
+              "name": "WriteFile",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=13"
+            },
+            {
+              "index": 6,
+              "kind": "tool-call",
+              "name": "StrReplaceFile",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=7"
+            },
+            {
+              "index": 7,
+              "kind": "tool-call",
+              "name": "TaskOutput",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=1"
+            },
+            {
+              "index": 8,
+              "kind": "tool-call",
+              "name": "Grep",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=2"
+            }
+          ],
+          "artifacts": [
+            "verificationByShot"
+          ],
+          "requiredArtifacts": [],
+          "costUsd": null,
+          "tokenUsage": null,
+          "finalState": {
+            "outcome": "max-shots",
+            "previewSucceeded": false,
+            "completenessScore": null,
+            "auditScore": null,
+            "convergedAt": null,
+            "shotsUsed": 1
+          },
+          "native": {
+            "driverName": "driver-baseline",
+            "scaffoldChosen": null,
+            "scaffoldMatchKind": "none",
+            "runtime": "sandbox-sdk",
+            "factoryRunId": "kc-k26-fhenix-confidential-lending-vault-r0"
+          }
+        },
+        "eval": {
+          "taskId": "fhenix-confidential-lending-vault",
+          "status": "fail",
+          "score": 0.557,
+          "outcome": "unknown",
+          "layers": [
+            {
+              "layer": "typecheck",
+              "status": "fail"
+            },
+            {
+              "layer": "lint",
+              "status": "fail"
+            },
+            {
+              "layer": "domain",
+              "status": "fail"
+            },
+            {
+              "layer": "completion-verifier",
+              "status": "fail"
+            }
+          ],
+          "gaps": [
+            "typecheck",
+            "lint",
+            "domain",
+            "completion-verifier",
+            "preview failed",
+            "max-shots"
+          ],
+          "native": {
+            "verificationByShot": [
+              {
+                "shot": 1,
+                "blendedScore": 0.557,
+                "allPass": false,
+                "failCount": 4,
+                "passCount": 4,
+                "failingLayers": [
+                  "typecheck",
+                  "lint",
+                  "domain",
+                  "completion-verifier"
+                ],
+                "shotWallMs": 835337,
+                "shotCostUsd": 0,
+                "inputTokens": 0,
+                "outputTokens": 0,
+                "fileCountAfter": 111,
+                "reviewerConfidence": null,
+                "reviewerShouldContinue": null,
+                "toolCallsByName": {
+                  "Shell": 39,
+                  "ReadFile": 32,
+                  "SetTodoList": 4,
+                  "WriteFile": 13,
+                  "StrReplaceFile": 7,
+                  "TaskOutput": 1,
+                  "Grep": 2
+                },
+                "toolCallSuccesses": 0,
+                "toolCallFailures": 0,
+                "failingLayerFindings": [
+                  {
+                    "layer": "typecheck",
+                    "severity": "major",
+                    "message": "[node-npm@apps/web] typecheck failed (exit 2)"
+                  },
+                  {
+                    "layer": "domain",
+                    "severity": "critical",
+                    "message": "fhenixjs or fhenix SDK in dependencies: no file matching package.json contains required pattern"
+                  },
+                  {
+                    "layer": "domain",
+                    "severity": "critical",
+                    "message": "custom-build failed (exit 2): npm warn Unknown env config \"verify-deps-before-run\". This will stop working in the next major version of npm.\n"
+                  }
+                ]
+              }
+            ],
+            "intentMatch": null
+          }
+        }
+      }
+    ],
+    "findings": [
+      {
+        "kind": "missing-domain-integration",
+        "severity": "low",
+        "taskIds": [
+          "fhenix-confidential-lending-vault"
+        ],
+        "evidence": "domain: fhenixjs or fhenix SDK in dependencies: no file matching package.json contains required pattern | domain: custom-build failed (exit 2): npm warn Unknown env config \"verify-deps-before-run\". This will stop working in the next major version of npm.\n",
+        "proposedFixClass": "product"
+      }
+    ]
+  },
+  "diagnostics": {
+    "cellCount": 1,
+    "profileCount": 1,
+    "enrichedCells": 0,
+    "warnings": []
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "runId": "post-1912-kimi-k26-domain-lanes",
+  "generatedAt": "2026-06-14T20:52:47Z",
+  "purpose": "Post-blueprint-agent-1912 scored evidence for Starter Foundry issue 148 / issue 157. This run verifies that Blueprint Agent domain validation now searches generated workspace lanes such as apps/web/src and contracts/evm/src instead of only the primary app workdir.",
+  "modelConfig": {
+    "coder": "kimi-code/kimi-k2.6 via cli-bridge",
+    "reviewer": "deepseek/deepseek-chat",
+    "semantic": "deepseek/deepseek-chat",
+    "semanticSkipped": true,
+    "roster": "kimi-only",
+    "excludedProfiles": [
+      "kc-kfc"
+    ],
+    "shots": 1,
+    "reps": 1,
+    "parallel": 1,
+    "blueprintAgentCommit": "84283abdf262fa2770f64d397035c99c91f9250e"
+  },
+  "verdict": {
+    "status": "verifier-fixed-generation-not-promoted",
+    "plainEnglish": "Blueprint Agent #1912 fixed the lane-local src glob false negative: the 3 verification artifacts produced in this run contain 0 no-files-matching src/**/* failures. Starter Foundry still routed the generic candidates correctly, with scaffold passing 4/4 leaves. Generation quality did not promote: completion passed 0/4 leaves, train scores were below the 0.500 gate for both candidates, and remaining failures are now visible as product/output gaps or domain-policy gaps instead of hidden verifier-path bugs.",
+    "scaffoldPasses": 4,
+    "scaffoldFailures": 0,
+    "completionPasses": 0,
+    "completionFailures": 4,
+    "verificationArtifactsChecked": 3,
+    "domainGlobFalseNegativeCount": 0,
+    "scorePasses": 2,
+    "scoreFailures": 2,
+    "remainingGeneralizationRisk": [
+      "FHE domain policy still assumes a narrow dependency signal such as fhenixjs/Fhenix SDK; that may be too specific for the broader family of FHE projects Starter Foundry must route.",
+      "Bridge train aborted before verification because Kimi exited after killing a background Vite task, so that train sample proves scaffold routing but not post-1912 domain validation.",
+      "Bridge holdout and FHE leaves still miss concrete completion requirements, so this run is not evidence of lift in generation quality."
+    ],
+    "blueprintAgentBaseline": {
+      "previousRun": "post-1911-kimi-k26-workspace-root",
+      "previousSummary": ".evolve/domain-pack-runs/issue-157-scored-results/post-1911-kimi-k26-workspace-root/summary.json",
+      "previousBug": "domain checks falsely reported no files matching src/**/* even when files existed under generated workspace lanes"
+    }
+  },
+  "candidates": [
+    {
+      "candidateId": "fhe-contracts-fhenix-foundry",
+      "status": "failed",
+      "scoredArtifact": ".evolve/domain-pack-runs/issue-157-scored-results/post-1912-kimi-k26-domain-lanes/fhe-foundry-scored.json",
+      "promotion": {
+        "train": {
+          "leafId": "fhenix-blind-poker-showdown",
+          "n": 1,
+          "score": 0.2,
+          "scorePassCount": 0,
+          "completionPassCount": 0,
+          "scaffoldPassCount": 1,
+          "domainStatus": "fail",
+          "domainFindings": [
+            "custom-build failed (exit 2)"
+          ],
+          "completionVerifier": "3/4 concepts present",
+          "requiresRealArtifact": "fail: fake shim on the load-bearing path"
+        },
+        "holdout": {
+          "leafId": "fhenix-confidential-lending-vault",
+          "n": 1,
+          "score": 0.8857142857142856,
+          "scorePassCount": 1,
+          "completionPassCount": 0,
+          "scaffoldPassCount": 1,
+          "domainStatus": "fail",
+          "domainFindings": [
+            "fhenixjs or fhenix SDK dependency pattern not found in package.json",
+            "custom-build failed (exit 2)"
+          ],
+          "completionVerifier": "3/5 concepts present",
+          "requiresRealArtifact": "pass: contracts/evm/src/FHEVault.sol uses real implementation/infra and compiles"
+        },
+        "failures": [
+          "1 train scored run(s) below min score 0.500",
+          "1 train scored run(s) without a completion pass",
+          "1 holdout scored run(s) without a completion pass"
+        ]
+      },
+      "nextRead": "FHE scaffold routing is stable, but Starter Foundry should generalize the FHE domain policy across multiple FHE project families and the generator must stop using load-bearing mock encryption shims."
+    },
+    {
+      "candidateId": "bridge-contracts-capability-evm-layerzero-oft",
+      "status": "failed",
+      "scoredArtifact": ".evolve/domain-pack-runs/issue-157-scored-results/post-1912-kimi-k26-domain-lanes/bridge-layerzero-oft-scored.json",
+      "promotion": {
+        "train": {
+          "leafId": "lz-oft-adapter-deploy",
+          "n": 1,
+          "score": 0,
+          "scorePassCount": 0,
+          "completionPassCount": 0,
+          "scaffoldPassCount": 1,
+          "domainStatus": "unmeasured",
+          "domainFindings": [
+            "Kimi exited 1 before verification after killing a background Vite task"
+          ],
+          "completionVerifier": "not measured",
+          "requiresRealArtifact": "not measured"
+        },
+        "holdout": {
+          "leafId": "lz-oft-launch-platform",
+          "n": 1,
+          "score": 0.9090909090909091,
+          "scorePassCount": 1,
+          "completionPassCount": 0,
+          "scaffoldPassCount": 1,
+          "domainStatus": "fail",
+          "domainFindings": [
+            "viem or ethers dependency pattern not found in package.json",
+            "custom-build failed (exit 2)"
+          ],
+          "completionVerifier": "6/12 concepts present",
+          "requiresRealArtifact": "skipped: no authenticity spec for this vertical"
+        },
+        "failures": [
+          "1 train scored run(s) below min score 0.500",
+          "1 train scored run(s) without a completion pass",
+          "1 holdout scored run(s) without a completion pass"
+        ]
+      },
+      "nextRead": "Bridge scaffold routing is stable, but the LayerZero/OFT capability still needs stronger completion scaffolds and a real-artifact spec. The post-1912 verifier now exposes those gaps without the old src/**/* false negative."
+    }
+  ],
+  "nextAction": "Use this evidence to move issue 148 from single-vertical tuning into generalized domain-family support: FHE families, bridge families, capability assertions, authenticity specs, and completion scaffolds that are shared across many future domains."
+}

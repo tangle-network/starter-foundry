@@ -1,0 +1,74 @@
+{
+  "taskListId": "mtx_mqe66let_48c6a33c",
+  "nTasks": 1,
+  "nProfiles": 1,
+  "ranked": [
+    {
+      "rank": 1,
+      "profileId": "kc-k26",
+      "label": "kimi-code · k2.6",
+      "passRate": 0,
+      "passRateCi95": [
+        0,
+        0
+      ],
+      "hitRate": 0,
+      "hitRateCi95": [
+        0,
+        0.7934567085261071
+      ],
+      "realBuilds": 0,
+      "realnessMean": null,
+      "meanBlended": 0,
+      "meanBlendedCi95": [
+        0,
+        0
+      ],
+      "medianShotsToComplete": null,
+      "errorRate": 1,
+      "costPerSolved": null,
+      "meanComposite": null,
+      "meanCompositeCi95": null,
+      "separableFrom": [],
+      "behavior": {
+        "nRuns": 0,
+        "convergenceRate": 0,
+        "medianConvergenceShot": null,
+        "meanPlateauRate": 0,
+        "meanWastedTokenRatio": 0,
+        "totalWastedTokens": 0,
+        "totalWastedShotCostUsd": 0,
+        "meanCostPerScorePoint": null,
+        "meanTokenEfficiency": null,
+        "meanRepeatErrorRate": null,
+        "totalLayerRegressions": 0,
+        "totalLayerFixes": 0,
+        "meanToolFailureRate": null,
+        "topToolCalls": [],
+        "outcomes": {
+          "converged": 0,
+          "plateaued": 0,
+          "regressed": 0,
+          "errored": 1,
+          "never-ran": 0
+        }
+      }
+    }
+  ],
+  "pairwise": [],
+  "pareto": [],
+  "perTaskWinner": [
+    {
+      "taskId": "lz-oft-adapter-deploy",
+      "winnerProfileId": "kc-k26",
+      "winnerPassRate": 0
+    }
+  ],
+  "profileVectors": [],
+  "rankedByComposite": false,
+  "rankBasis": "pass-rate",
+  "judgeCalibration": {
+    "kappa": null,
+    "trustworthy": false
+  }
+}

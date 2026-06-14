@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-13T20:38:28.888Z",
+  "candidateId": "fhe-contracts-fhenix-foundry",
+  "candidateFile": "/home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/candidates-post-170.json",
+  "status": "failed",
+  "samples": {
+    "train": [
+      "fhenix-blind-poker-showdown"
+    ],
+    "holdout": [
+      "fhenix-confidential-lending-vault"
+    ]
+  },
+  "routing": {
+    "status": "passed",
+    "prompts": [
+      {
+        "prompt": "Build a Fhenix Foundry sealed-bid auction contract with CoFHE encrypted bids",
+        "expectedFamily": "fhenix-foundry",
+        "expectedLayers": [
+          "framework:fhenix-foundry"
+        ],
+        "actualFamily": "fhenix-foundry",
+        "actualLayers": [
+          "framework:fhenix-foundry",
+          "capability:fhe-foundry-sealed-auction"
+        ],
+        "ok": true
+      }
+    ]
+  },
+  "compose": {
+    "passed": 2,
+    "failed": 0,
+    "minFileCount": 9
+  },
+  "authenticity": {
+    "signals": [
+      "FHE.add",
+      "FHE.allow",
+      "FHE.asEuint",
+      "FHE.select",
+      "InEuint",
+      "cofhejs",
+      "ebool",
+      "encrypted balance",
+      "euint",
+      "private voting",
+      "sealed bid"
+    ],
+    "totalHits": 444,
+    "perSample": [
+      {
+        "leafId": "fhenix-blind-poker-showdown",
+        "hits": {
+          "FHE.add": 6,
+          "FHE.allow": 9,
+          "FHE.asEuint": 7,
+          "FHE.select": 5,
+          "InEuint": 22,
+          "cofhejs": 6,
+          "ebool": 32,
+          "encrypted balance": 4,
+          "euint": 123,
+          "private voting": 4,
+          "sealed bid": 4
+        },
+        "total": 222
+      },
+      {
+        "leafId": "fhenix-confidential-lending-vault",
+        "hits": {
+          "FHE.add": 6,
+          "FHE.allow": 9,
+          "FHE.asEuint": 7,
+          "FHE.select": 5,
+          "InEuint": 22,
+          "cofhejs": 6,
+          "ebool": 32,
+          "encrypted balance": 4,
+          "euint": 123,
+          "private voting": 4,
+          "sealed bid": 4
+        },
+        "total": 222
+      }
+    ]
+  },
+  "validationCommands": [],
+  "blueprintAgent": [],
+  "scoredPromotion": {
+    "mode": "scored",
+    "status": "failed",
+    "shots": 1,
+    "reps": 1,
+    "minScore": 0.5,
+    "baselineScore": null,
+    "maxHoldoutRegression": 0,
+    "train": {
+      "n": 1,
+      "min": 0.9192857142857143,
+      "median": 0.9192857142857143,
+      "p90": 0.9192857142857143,
+      "max": 0.9192857142857143,
+      "passCount": 0,
+      "failCount": 1,
+      "scorePassCount": 1,
+      "scoreFailCount": 0,
+      "completionPassCount": 0,
+      "completionFailCount": 1
+    },
+    "holdout": {
+      "n": 1,
+      "min": 0.9214285714285715,
+      "median": 0.9214285714285715,
+      "p90": 0.9214285714285715,
+      "max": 0.9214285714285715,
+      "passCount": 0,
+      "failCount": 1,
+      "scorePassCount": 1,
+      "scoreFailCount": 0,
+      "completionPassCount": 0,
+      "completionFailCount": 1
+    },
+    "leaves": [
+      {
+        "split": "train",
+        "leafId": "fhenix-blind-poker-showdown",
+        "status": "passed",
+        "outDir": ".evolve/domain-pack-runs/issue-157-scored-results/fhe-contracts-fhenix-foundry-blueprint-agent/train-fhenix-blind-poker-showdown",
+        "command": {
+          "command": "pnpm tsx scripts/experiments/vb-run.ts --leaf 'fhenix-blind-poker-showdown' --shots 1 --reps 1 --parallel 1 --runtime 'claude-local' --out '/home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/fhe-contracts-fhenix-foundry-blueprint-agent/train-fhenix-blind-poker-showdown'",
+          "cwd": "/home/drew/code/blueprint-agent",
+          "status": "passed",
+          "exitCode": 0,
+          "durationMs": 4700148,
+          "stdoutTail": "-loop)\n[sandbox-driver fhenix-blind-poker-showdown]     verify.fuzz: skipped — fuzz layer not in VB pipeline (module pending)\n[sandbox-driver fhenix-blind-poker-showdown]     verify.requires-real-artifact: pass — real artifact contracts/evm/src/BlindPoker.sol uses real impl/infra AND compiles (forge build succeeded)\n[sandbox-driver fhenix-blind-poker-showdown]     verify.tests: skipped — leaf has no test spec (0-to-1 archetype)\n[sandbox-driver fhenix-blind-poker-showdown]     verify.swebench-official: skipped — leaf has no SWE-Bench instanceId metadata\n[sandbox-driver fhenix-blind-poker-showdown]     verify.deploy: skipped — leaf has no deploySpec\n[sandbox-driver fhenix-blind-poker-showdown]     verify.dependencies: pass — 27 deps across npm — 0 critical, blend=0.86\n[sandbox-driver fhenix-blind-poker-showdown]     verify.semantic: fail — 3/4 concepts pass semantic check\n[sandbox-driver fhenix-blind-poker-showdown]     verify.completion-verifier: fail — 3/4 concepts present (rate=0.75)\n[sandbox-driver fhenix-blind-poker-showdown] verification primary workdir → /tmp/vb-cli-bridge-workspaces/vb-oc-glm51-fhenix-blind-poker-sh-8f96d28da295-mqcqnkk1-4a3364fe/apps/web (workspace root preserved at /tmp/vb-cli-bridge-workspaces/vb-oc-glm51-fhenix-blind-poker-sh-8f96d28da295-mqcqnkk1-4a3364fe)\n[sandbox-driver fhenix-blind-poker-showdown]   shot 1 verify blended=0.48 allPass=false fail=5\n[sandbox-driver fhenix-blind-poker-showdown] bad audit: goal=\"Verify this application implements all of the following and report which are visibly rendered: encrypted hand commit (ke…\" url=http://localhost:3000\n[sandbox-driver fhenix-blind-poker-showdown] bad stderr: (node:3339815) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n[sandbox-driver fhenix-blind-poker-showdown] bad audit exit=1 goalSuccess=false domBytes=2330\n[sandbox-driver fhenix-blind-poker-showdown] bad-audit: 4/4 rendered (port=3000, 778ms)\n[sandbox-driver fhenix-blind-poker-showdown] intent-match: unavailable (LLM call 502: {\"type\":\"https://developers.cloudflare.com/support/troubleshooting)\n[sandbox-driver fhenix-blind-poker-showdown] pulled 203 file(s) (393707 bytes) from sandbox → workdir/\n[sandbox-driver fhenix-blind-poker-showdown] visual-style: pass — 77 non-neutral color token(s), 1089 style token(s)\n[sandbox-driver fhenix-blind-poker-showdown] persisted 4 artifact(s) + workdir → results/sessions/oc-glm51-fhenix-blind-poker-showdown-r0/\n[sandbox-driver fhenix-blind-poker-showdown] sandbox cli-bridge-5a0a6761-879 deleted (total 1012029ms)\n[100.0% 4/4 78.3m | resumed=1 ran=3] oc-glm51 · fhenix-blind-poker-showdown → 0.48 ✗\n\n════════════════════════════════════════════════════════════════════════\n LEADERBOARD — fhenix-fhe  (ranked by composite vector)\n════════════════════════════════════════════════════════════════════════\n# 1 claude-code · sonnet             composite=0.919 [0.92,0.92] pass=0% cost/solved=n/a\n# 2 claude-code · sonnet @generic    composite=0.776 [0.78,0.78] pass=0% cost/solved=n/a\n# 3 opencode · glm-5.1 @generic      composite=0.756 [0.76,0.76] pass=0% cost/solved=n/a\n# 4 opencode · glm-5.1               composite=0.702 [0.70,0.70] pass=0% cost/solved=n/a\n════════════════════════════════════════════════════════════════════════\nmeasurable: 4/4 fair attempts (model-failed: 0 · infra-quarantined: 0)   artifacts → /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/fhe-contracts-fhenix-foundry-blueprint-agent/train-fhenix-blind-poker-showdown/matrix/{competition,causal,run-manifest}.json\nrender the report from competition.json (profileVectors → renderVectorScorecard).\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n",
+          "stderrTail": "eaves) ===\n[vb-run] launching run-vertical-matrix for vertical=fhenix-fhe scenarios=1\n(node:2767661) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:2767703) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:2767767) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[preflight] resolved model config:\n  coder    : opencode/glm-5.1 (via cli-bridge)\n  reviewer : via=router model=deepseek/deepseek-chat\n  semantic : deepseek/deepseek-chat base=https://router.tangle.tools\n  router   : https://router.tangle.tools\n[preflight] WARN: TANGLE_API_KEY is not exported; using tangle-config for evaluator preflight probes. Export TANGLE_API_KEY for child processes that do not call env-preflight directly.\n(node:2767767) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[preflight] router probe: GET https://router.tangle.tools/v1/models → 200 JSON ok\n[preflight] chat probe: POST https://router.tangle.tools/v1/chat/completions → 200 ok (reviewer path live)\n[preflight] cli-bridge probe: cli-bridge opencode ready; opencode/zai-coding-plan/glm-5.1 advertised\n(node:3354646) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:3354675) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:3354720) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-report] realness PARTIAL: 0/4 cells enriched\n[vb-report] wrote /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/fhe-contracts-fhenix-foundry-blueprint-agent/train-fhenix-blind-poker-showdown-owner.{json,html} (OWNER)\n[vb-report] wrote /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/fhe-contracts-fhenix-foundry-blueprint-agent/train-fhenix-blind-poker-showdown-auto-research.{json,html,sidecar.json} (AUTO-RESEARCH)\n[vb-report] wrote /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/fhe-contracts-fhenix-foundry-blueprint-agent/train-fhenix-blind-poker-showdown-partner.{json,html} (PARTNER)\n[vb-report] done — 3 ICP docs from 4 cells, 4 profiles, realness ON.\n(node:3354720) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[vb-run] report → /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/fhe-contracts-fhenix-foundry-blueprint-agent/train-fhenix-blind-poker-showdown/ (vb-report over matrix)\n[vb-run] done — /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/fhe-contracts-fhenix-foundry-blueprint-agent/train-fhenix-blind-poker-showdown/\n(node:2767534) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+        },
+        "score": 0.9192857142857143,
+        "passed": false,
+        "scorePassed": true,
+        "completionPassRate": 0,
+        "completionPassed": false,
+        "profileId": "cc-sonnet",
+        "rankBasis": "hit-rate",
+        "costUsd": null,
+        "durationMs": 4696572
+      },
+      {
+        "split": "holdout",
+        "leafId": "fhenix-confidential-lending-vault",
+        "status": "passed",
+        "outDir": ".evolve/domain-pack-runs/issue-157-scored-results/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-fhenix-confidential-lending-vault",
+        "command": {
+          "command": "pnpm tsx scripts/experiments/vb-run.ts --leaf 'fhenix-confidential-lending-vault' --shots 1 --reps 1 --parallel 1 --runtime 'claude-local' --out '/home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-fhenix-confidential-lending-vault'",
+          "cwd": "/home/drew/code/blueprint-agent",
+          "status": "passed",
+          "exitCode": 0,
+          "durationMs": 3780847,
+          "stdoutTail": "\n[sandbox-driver fhenix-confidential-lending-vault]     verify.requires-real-artifact: pass — real artifact contracts/evm/src/FHEVault.sol uses real impl/infra AND compiles (forge build succeeded)\n[sandbox-driver fhenix-confidential-lending-vault]     verify.tests: skipped — leaf has no test spec (0-to-1 archetype)\n[sandbox-driver fhenix-confidential-lending-vault]     verify.swebench-official: skipped — leaf has no SWE-Bench instanceId metadata\n[sandbox-driver fhenix-confidential-lending-vault]     verify.deploy: skipped — leaf has no deploySpec\n[sandbox-driver fhenix-confidential-lending-vault]     verify.dependencies: pass — 21 deps across npm — 0 critical, blend=0.87\n[sandbox-driver fhenix-confidential-lending-vault]     verify.semantic: pass — 5/5 concepts pass semantic check\n[sandbox-driver fhenix-confidential-lending-vault]     verify.completion-verifier: fail — 4/5 concepts present (rate=0.80)\n[sandbox-driver fhenix-confidential-lending-vault] verification primary workdir → /tmp/vb-cli-bridge-workspaces/vb-oc-glm51-fhenix-confidential-l-6c52c426edfe-mqcsx9f6-d5dfae05/apps/web (workspace root preserved at /tmp/vb-cli-bridge-workspaces/vb-oc-glm51-fhenix-confidential-l-6c52c426edfe-mqcsx9f6-d5dfae05)\n[sandbox-driver fhenix-confidential-lending-vault]   shot 1 verify blended=0.61 allPass=false fail=3\n[sandbox-driver fhenix-confidential-lending-vault] bad audit: goal=\"Verify this application implements all of the following and report which are visibly rendered: encrypted position (keywo…\" url=http://localhost:3000\n[sandbox-driver fhenix-confidential-lending-vault] bad stderr: (node:3795785) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n[sandbox-driver fhenix-confidential-lending-vault] bad audit exit=1 goalSuccess=false domBytes=2450\n[sandbox-driver fhenix-confidential-lending-vault] bad-audit: 5/5 rendered (port=3000, 720ms)\n[sandbox-driver fhenix-confidential-lending-vault] intent-match: unavailable (LLM call 502: {\"type\":\"https://developers.cloudflare.com/support/troubleshooting)\n[sandbox-driver fhenix-confidential-lending-vault] pulled 211 file(s) (390570 bytes) from sandbox → workdir/\n[sandbox-driver fhenix-confidential-lending-vault] visual-style: pass — 98 non-neutral color token(s), 1204 style token(s)\n[sandbox-driver fhenix-confidential-lending-vault] persisted 4 artifact(s) + workdir → results/sessions/oc-glm51-fhenix-confidential-lending-vault-r0/\n[sandbox-driver fhenix-confidential-lending-vault] sandbox cli-bridge-e06dae04-93c deleted (total 981382ms)\n[100.0% 4/4 63.0m | resumed=1 ran=3] oc-glm51 · fhenix-confidential-lending-vault → 0.61 ✗\n\n════════════════════════════════════════════════════════════════════════\n LEADERBOARD — fhenix-fhe  (ranked by composite vector)\n════════════════════════════════════════════════════════════════════════\n# 1 claude-code · sonnet             composite=0.921 [0.92,0.92] pass=0% cost/solved=n/a\n# 2 claude-code · sonnet @generic    composite=0.921 [0.92,0.92] pass=0% cost/solved=n/a\n# 3 opencode · glm-5.1 @generic      composite=0.890 [0.89,0.89] pass=0% cost/solved=n/a\n# 4 opencode · glm-5.1               composite=0.886 [0.89,0.89] pass=0% cost/solved=n/a\n════════════════════════════════════════════════════════════════════════\nmeasurable: 4/4 fair attempts (model-failed: 0 · infra-quarantined: 0)   artifacts → /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-fhenix-confidential-lending-vault/matrix/{competition,causal,run-manifest}.json\nrender the report from competition.json (profileVectors → renderVectorScorecard).\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n",
+          "stderrTail": "al-matrix for vertical=fhenix-fhe scenarios=1\n(node:3354884) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:3354895) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:3354911) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[preflight] resolved model config:\n  coder    : opencode/glm-5.1 (via cli-bridge)\n  reviewer : via=router model=deepseek/deepseek-chat\n  semantic : deepseek/deepseek-chat base=https://router.tangle.tools\n  router   : https://router.tangle.tools\n[preflight] WARN: TANGLE_API_KEY is not exported; using tangle-config for evaluator preflight probes. Export TANGLE_API_KEY for child processes that do not call env-preflight directly.\n(node:3354911) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[preflight] router probe: GET https://router.tangle.tools/v1/models → 200 JSON ok\n[preflight] chat probe: POST https://router.tangle.tools/v1/chat/completions → 200 ok (reviewer path live)\n[preflight] cli-bridge probe: cli-bridge opencode ready; opencode/zai-coding-plan/glm-5.1 advertised\n(node:3813712) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:3813745) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:3813761) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-report] realness PARTIAL: 0/4 cells enriched\n[vb-report] wrote /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-fhenix-confidential-lending-vault-owner.{json,html} (OWNER)\n[vb-report] wrote /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-fhenix-confidential-lending-vault-auto-research.{json,html,sidecar.json} (AUTO-RESEARCH)\n[vb-report] wrote /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-fhenix-confidential-lending-vault-partner.{json,html} (PARTNER)\n[vb-report] done — 3 ICP docs from 4 cells, 4 profiles, realness ON.\n(node:3813761) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[vb-run] report → /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-fhenix-confidential-lending-vault/ (vb-report over matrix)\n[vb-run] done — /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-fhenix-confidential-lending-vault/\n(node:3354872) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+        },
+        "score": 0.9214285714285715,
+        "passed": false,
+        "scorePassed": true,
+        "completionPassRate": 0,
+        "completionPassed": false,
+        "profileId": "cc-sonnet",
+        "rankBasis": "hit-rate",
+        "costUsd": null,
+        "durationMs": 3777275
+      }
+    ],
+    "failures": [
+      "1 train scored run(s) without a completion pass",
+      "1 holdout scored run(s) without a completion pass"
+    ]
+  },
+  "failures": [
+    "scored promotion failed: 1 train scored run(s) without a completion pass",
+    "scored promotion failed: 1 holdout scored run(s) without a completion pass"
+  ]
+}

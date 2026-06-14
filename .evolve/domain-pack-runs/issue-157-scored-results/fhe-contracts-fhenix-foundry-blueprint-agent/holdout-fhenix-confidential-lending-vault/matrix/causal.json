@@ -1,0 +1,193 @@
+{
+  "matrixId": "mtx_mqctiaib_9739a8a6",
+  "nMeasurable": 4,
+  "nTotal": 4,
+  "perVertical": [
+    {
+      "verticalId": "fhenix-fhe",
+      "n": 4,
+      "passRate": 0,
+      "passRateCi95": [
+        0,
+        0.48990002040399916
+      ]
+    }
+  ],
+  "perHarness": [
+    {
+      "runtime": "sandbox-sdk",
+      "n": 4,
+      "passRate": 0,
+      "passRateCi95": [
+        0,
+        0.48990002040399916
+      ],
+      "infraErrorRate": 0
+    }
+  ],
+  "scaffoldMatch": [
+    {
+      "kind": "none",
+      "n": 4,
+      "passRate": 0,
+      "passRateCi95": [
+        0,
+        0.48990002040399916
+      ]
+    }
+  ],
+  "toolUse": [
+    {
+      "tool": "Bash",
+      "calls": 180,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "Read",
+      "calls": 94,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "WebFetch",
+      "calls": 52,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "Write",
+      "calls": 47,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "Edit",
+      "calls": 25,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "TodoWrite",
+      "calls": 6,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "ToolSearch",
+      "calls": 3,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "Agent",
+      "calls": 1,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    }
+  ],
+  "intentVsBlended": [],
+  "reviewerLift": [],
+  "perShotCost": [
+    {
+      "shot": 1,
+      "meanInputTokens": 509.25,
+      "meanOutputTokens": 27657,
+      "meanCostUsd": 0,
+      "n": 4
+    }
+  ],
+  "failureLayersByProfile": [
+    {
+      "profileId": "claude-code · sonnet",
+      "layer": "typecheck",
+      "count": 1
+    },
+    {
+      "profileId": "claude-code · sonnet",
+      "layer": "lint",
+      "count": 1
+    },
+    {
+      "profileId": "claude-code · sonnet",
+      "layer": "domain",
+      "count": 1
+    },
+    {
+      "profileId": "claude-code · sonnet",
+      "layer": "completion-verifier",
+      "count": 1
+    },
+    {
+      "profileId": "claude-code · sonnet @generic",
+      "layer": "typecheck",
+      "count": 1
+    },
+    {
+      "profileId": "claude-code · sonnet @generic",
+      "layer": "lint",
+      "count": 1
+    },
+    {
+      "profileId": "claude-code · sonnet @generic",
+      "layer": "domain",
+      "count": 1
+    },
+    {
+      "profileId": "claude-code · sonnet @generic",
+      "layer": "completion-verifier",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1",
+      "layer": "typecheck",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1",
+      "layer": "domain",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1",
+      "layer": "completion-verifier",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1 @generic",
+      "layer": "typecheck",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1 @generic",
+      "layer": "lint",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1 @generic",
+      "layer": "domain",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1 @generic",
+      "layer": "completion-verifier",
+      "count": 1
+    }
+  ]
+}

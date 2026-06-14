@@ -1,0 +1,152 @@
+{
+  "matrixId": "mtx_mqcfvpta_07a4627b",
+  "nMeasurable": 2,
+  "nTotal": 2,
+  "perVertical": [
+    {
+      "verticalId": "fhenix-fhe",
+      "n": 2,
+      "passRate": 0,
+      "passRateCi95": [
+        0,
+        0.6576280471103807
+      ]
+    }
+  ],
+  "perHarness": [
+    {
+      "runtime": "sandbox-sdk",
+      "n": 2,
+      "passRate": 0,
+      "passRateCi95": [
+        0,
+        0.6576280471103807
+      ],
+      "infraErrorRate": 0
+    }
+  ],
+  "scaffoldMatch": [
+    {
+      "kind": "none",
+      "n": 2,
+      "passRate": 0,
+      "passRateCi95": [
+        0,
+        0.6576280471103807
+      ]
+    }
+  ],
+  "toolUse": [
+    {
+      "tool": "Bash",
+      "calls": 98,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "Read",
+      "calls": 57,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "Write",
+      "calls": 41,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "Edit",
+      "calls": 16,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "TodoWrite",
+      "calls": 7,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    },
+    {
+      "tool": "Glob",
+      "calls": 1,
+      "successes": 0,
+      "failures": 0,
+      "passRateWhenUsed": 0,
+      "passRateWhenNotUsed": 0
+    }
+  ],
+  "intentVsBlended": [],
+  "reviewerLift": [],
+  "perShotCost": [
+    {
+      "shot": 1,
+      "meanInputTokens": 390.5,
+      "meanOutputTokens": 294.5,
+      "meanCostUsd": 0,
+      "n": 2
+    }
+  ],
+  "failureLayersByProfile": [
+    {
+      "profileId": "opencode · glm-5.1",
+      "layer": "typecheck",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1",
+      "layer": "lint",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1",
+      "layer": "domain",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1",
+      "layer": "semantic",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1",
+      "layer": "completion-verifier",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1 @generic",
+      "layer": "typecheck",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1 @generic",
+      "layer": "lint",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1 @generic",
+      "layer": "domain",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1 @generic",
+      "layer": "semantic",
+      "count": 1
+    },
+    {
+      "profileId": "opencode · glm-5.1 @generic",
+      "layer": "completion-verifier",
+      "count": 1
+    }
+  ]
+}

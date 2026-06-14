@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-06-13T12:40:43.624Z",
+  "updatedAt": "2026-06-13T23:47:49.990Z",
   "candidates": {
     "bridge-contracts": {
       "status": "candidate",
@@ -64,6 +64,69 @@
       "lastRunId": "issue-158-proof",
       "evidencePaths": [
         ".evolve/domain-pack-runs/issue-158-proof/fhe-contracts/work-unit.json"
+      ]
+    },
+    "fhe-contracts-fhenix-foundry": {
+      "status": "blocked",
+      "updatedAt": "2026-06-13T23:47:49.990Z",
+      "history": [
+        {
+          "at": "2026-06-13T13:17:21.946Z",
+          "event": "planned",
+          "runId": "issue-157-fhe-plan",
+          "evidencePath": ".evolve/domain-pack-runs/issue-157-fhe-plan/fhe-contracts-fhenix-foundry/work-unit.json"
+        },
+        {
+          "at": "2026-06-13T13:17:49.402Z",
+          "event": "planned",
+          "runId": "issue-157-fhe-scored",
+          "evidencePath": ".evolve/domain-pack-runs/issue-157-fhe-scored/fhe-contracts-fhenix-foundry/work-unit.json"
+        },
+        {
+          "at": "2026-06-13T13:18:01.358Z",
+          "event": "status-updated",
+          "status": "blocked",
+          "runId": "issue-157-fhe-scored",
+          "evidencePath": ".evolve/domain-pack-runs/issue-157-fhe-scored/fhe-contracts-fhenix-foundry/scored.json"
+        },
+        {
+          "at": "2026-06-13T23:47:49.990Z",
+          "event": "status-updated",
+          "status": "blocked",
+          "runId": "post-1896-kimi-k26-fhenix",
+          "evidencePath": ".evolve/domain-pack-runs/issue-157-scored-results/post-1896-kimi-k26-fhenix/fhe-foundry-scored.json"
+        }
+      ],
+      "lastRunId": "post-1896-kimi-k26-fhenix",
+      "evidencePaths": [
+        ".evolve/domain-pack-runs/issue-157-fhe-plan/fhe-contracts-fhenix-foundry/work-unit.json",
+        ".evolve/domain-pack-runs/issue-157-fhe-scored/fhe-contracts-fhenix-foundry/work-unit.json",
+        ".evolve/domain-pack-runs/issue-157-fhe-scored/fhe-contracts-fhenix-foundry/scored.json",
+        ".evolve/domain-pack-runs/issue-157-scored-results/post-1896-kimi-k26-fhenix/fhe-foundry-scored.json"
+      ]
+    },
+    "bridge-contracts-capability-evm-layerzero-oft": {
+      "status": "blocked",
+      "updatedAt": "2026-06-13T19:08:36.934Z",
+      "history": [
+        {
+          "at": "2026-06-13T13:17:21.974Z",
+          "event": "planned",
+          "runId": "issue-157-bridge-plan",
+          "evidencePath": ".evolve/domain-pack-runs/issue-157-bridge-plan/bridge-contracts-capability-evm-layerzero-oft/work-unit.json"
+        },
+        {
+          "at": "2026-06-13T19:08:36.934Z",
+          "event": "status-updated",
+          "status": "blocked",
+          "runId": "issue-157-scored-results",
+          "evidencePath": ".evolve/domain-pack-runs/issue-157-scored-results/bridge-scored-post-170.json"
+        }
+      ],
+      "lastRunId": "issue-157-scored-results",
+      "evidencePaths": [
+        ".evolve/domain-pack-runs/issue-157-bridge-plan/bridge-contracts-capability-evm-layerzero-oft/work-unit.json",
+        ".evolve/domain-pack-runs/issue-157-scored-results/bridge-scored-post-170.json"
       ]
     }
   }

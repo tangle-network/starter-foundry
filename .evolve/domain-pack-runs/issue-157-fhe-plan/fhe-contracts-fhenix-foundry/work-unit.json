@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "runId": "issue-157-fhe-plan",
+  "candidateId": "fhe-contracts-fhenix-foundry",
+  "status": "candidate",
+  "domain": {
+    "family": "fhe",
+    "provider": "fhenix",
+    "protocol": "cofhe",
+    "runtime": "foundry",
+    "surface": "contracts"
+  },
+  "ambiguityGroup": "fhe-contracts",
+  "verticalIds": [
+    "arkworks-zk",
+    "aztec-noir",
+    "cryptography-primitives",
+    "fhenix-fhe",
+    "tangle-blueprints-privacy",
+    "tangle-blueprints-storage",
+    "tangle-blueprints-zk-proofs",
+    "uniswap-v4"
+  ],
+  "sourceLeaves": {
+    "train": [
+      "ark-voting-circuit",
+      "aztec-private-voting-dao",
+      "fhenix-blind-poker-showdown",
+      "fhenix-confidential-dex",
+      "fhenix-encrypted-erc20-token",
+      "fhenix-private-dao-vote",
+      "fhenix-sealed-bid-auction",
+      "fhenix-sealed-payroll-stream",
+      "tangle-priv-commitment-scheme",
+      "tangle-priv-confidential-compute",
+      "tangle-priv-key-rotation",
+      "tangle-priv-mpc-analytics",
+      "tangle-priv-private-nft",
+      "tangle-priv-private-voting",
+      "tangle-priv-threshold-bls",
+      "tangle-priv-threshold-keygen",
+      "tangle-priv-zk-proof-service",
+      "tangle-storage-compute-over-data",
+      "uni-v4-auction-hook-jit"
+    ],
+    "holdout": [
+      "crypto-fhe-bfv",
+      "fhenix-confidential-lending-vault",
+      "fhenix-private-prediction-market",
+      "tangle-priv-anonymous-transfer",
+      "tangle-priv-encrypted-mempool",
+      "tangle-priv-oblivious-transfer",
+      "tangle-priv-state-channel",
+      "tangle-priv-timelock-encryption",
+      "tangle-zk-private-voting"
+    ]
+  },
+  "partnerIds": [
+    "academic",
+    "arkworks",
+    "aztec-network",
+    "fhenix",
+    "tangle-network",
+    "uniswap-labs"
+  ],
+  "failureEvidence": [
+    {
+      "source": "blueprint-agent-scenarios",
+      "bucket": "vertical-leaf-demand",
+      "count": 28
+    }
+  ],
+  "registryFiles": [
+    "registry/families/fhenix-foundry/manifest.json"
+  ],
+  "filesToModify": [
+    "registry/families/fhenix-foundry/manifest.json",
+    "tests/coverage.test.ts",
+    "tests/domain-packs.test.ts"
+  ],
+  "sourceFiles": [
+    "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/arkworks-zk.ts",
+    "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/aztec-noir.ts",
+    "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/fhenix-fhe.ts",
+    "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-privacy.ts",
+    "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-storage.ts",
+    "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-zk-proofs.ts",
+    "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/uniswap-v4.ts",
+    "../blueprint-agent/scripts/experiments/scenarios/verticals/research/cryptography-primitives.ts"
+  ],
+  "gatesToRun": [
+    "forge build",
+    "forge test",
+    "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+    "pnpm build",
+    "pnpm exec tsc -p tsconfig.test.json",
+    "pnpm exec tsx scripts/validate-registry.ts"
+  ],
+  "selectedGates": [],
+  "expectedStarter": {
+    "family": "fhenix-foundry",
+    "layers": [
+      "framework:fhenix-foundry"
+    ],
+    "capabilities": []
+  },
+  "routingPrompts": [
+    "Build a Fhenix Foundry sealed-bid auction contract with CoFHE encrypted bids"
+  ],
+  "validationCommands": [
+    "forge build",
+    "forge test"
+  ],
+  "authenticitySignals": [
+    "FHE.add",
+    "FHE.allow",
+    "FHE.asEuint",
+    "FHE.select",
+    "InEuint",
+    "cofhejs",
+    "ebool",
+    "encrypted balance",
+    "euint",
+    "private voting",
+    "sealed bid"
+  ],
+  "github": {
+    "repository": "tangle-network/starter-foundry",
+    "parentIssue": 148,
+    "trackingIssue": 152,
+    "issueUrl": "https://github.com/tangle-network/starter-foundry/issues/152"
+  },
+  "evidence": {
+    "workUnitPath": ".evolve/domain-pack-runs/issue-157-fhe-plan/fhe-contracts-fhenix-foundry/work-unit.json"
+  }
+}

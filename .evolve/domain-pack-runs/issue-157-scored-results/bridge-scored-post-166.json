@@ -1,0 +1,201 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-13T15:47:46.241Z",
+  "candidateId": "bridge-contracts-capability-evm-layerzero-oft",
+  "candidateFile": "/home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/candidates-post-166.json",
+  "status": "failed",
+  "samples": {
+    "train": [
+      "ethena-cross-chain-usde"
+    ],
+    "holdout": [
+      "lz-oft-balance-tracker"
+    ]
+  },
+  "routing": {
+    "status": "passed",
+    "prompts": [
+      {
+        "prompt": "Build a LayerZero OFT bridge token with Foundry",
+        "expectedFamily": "forge-contracts",
+        "expectedLayers": [
+          "framework:forge-foundation",
+          "capability:evm-layerzero-oft"
+        ],
+        "actualFamily": "forge-contracts",
+        "actualLayers": [
+          "framework:forge-foundation",
+          "capability:evm-layerzero-oft"
+        ],
+        "ok": true
+      }
+    ]
+  },
+  "compose": {
+    "passed": 2,
+    "failed": 0,
+    "minFileCount": 8
+  },
+  "authenticity": {
+    "signals": [
+      "LayerZero",
+      "OFT",
+      "bridge",
+      "omnichain",
+      "sendTokens"
+    ],
+    "totalHits": 264,
+    "perSample": [
+      {
+        "leafId": "ethena-cross-chain-usde",
+        "hits": {
+          "LayerZero": 36,
+          "OFT": 36,
+          "bridge": 32,
+          "omnichain": 9,
+          "sendTokens": 14
+        },
+        "total": 127
+      },
+      {
+        "leafId": "lz-oft-balance-tracker",
+        "hits": {
+          "LayerZero": 36,
+          "OFT": 46,
+          "bridge": 32,
+          "omnichain": 9,
+          "sendTokens": 14
+        },
+        "total": 137
+      }
+    ]
+  },
+  "validationCommands": [
+    {
+      "command": "forge build",
+      "cwd": "/tmp/domain-pack-smoke-bridge-contracts-capability-evm-layerzero-oft-ethena-cross-chain-usde-LXS26Q/out",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 30,
+      "stdoutTail": "Compiling 3 files with Solc 0.8.35\nSolc 0.8.35 finished in 9.24ms\nCompiler run successful!\n",
+      "stderrTail": ""
+    },
+    {
+      "command": "forge test",
+      "cwd": "/tmp/domain-pack-smoke-bridge-contracts-capability-evm-layerzero-oft-ethena-cross-chain-usde-LXS26Q/out",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 29,
+      "stdoutTail": "No files changed, compilation skipped\n\nRan 1 test for test/StarterCounter.t.sol:StarterCounterTest\n[PASS] test_send_tokens_updates_balances() (gas: 37010)\nSuite result: ok. 1 passed; 0 failed; 0 skipped; finished in 288.55µs (52.90µs CPU time)\n\nRan 1 test suite in 4.23ms (288.55µs CPU time): 1 tests passed, 0 failed, 0 skipped (1 total tests)\n",
+      "stderrTail": ""
+    }
+  ],
+  "blueprintAgent": [],
+  "scoredPromotion": {
+    "mode": "scored",
+    "status": "failed",
+    "shots": 1,
+    "reps": 1,
+    "minScore": 0.5,
+    "baselineScore": null,
+    "maxHoldoutRegression": 0,
+    "train": {
+      "n": 0,
+      "min": null,
+      "median": null,
+      "p90": null,
+      "max": null,
+      "passCount": 0,
+      "failCount": 1,
+      "scorePassCount": 0,
+      "scoreFailCount": 1,
+      "completionPassCount": 0,
+      "completionFailCount": 1
+    },
+    "holdout": {
+      "n": 0,
+      "min": null,
+      "median": null,
+      "p90": null,
+      "max": null,
+      "passCount": 0,
+      "failCount": 1,
+      "scorePassCount": 0,
+      "scoreFailCount": 1,
+      "completionPassCount": 0,
+      "completionFailCount": 1
+    },
+    "leaves": [
+      {
+        "split": "train",
+        "leafId": "ethena-cross-chain-usde",
+        "status": "failed",
+        "outDir": ".evolve/domain-pack-runs/issue-157-scored-results/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/train-ethena-cross-chain-usde",
+        "command": {
+          "command": "pnpm tsx scripts/experiments/vb-run.ts --leaf 'ethena-cross-chain-usde' --shots 1 --reps 1 --parallel 1 --runtime 'claude-local' --out '/home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/train-ethena-cross-chain-usde'",
+          "cwd": "/home/drew/code/blueprint-agent",
+          "status": "failed",
+          "exitCode": 1,
+          "durationMs": 5316,
+          "stdoutTail": "\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\npersona arms: 2  [generic, none]  → 4 (profile × persona; 'none' control always present)\n════════════════════════════════════════════════════════════════════════\n VERTICAL MATRIX — ethena-stablecoin  (partner=ethena)\n════════════════════════════════════════════════════════════════════════\nprofiles:    4  [cc-sonnet@generic, cc-sonnet, oc-glm51@generic, oc-glm51]\nleaves:      1  (selector: all; pool 1 hand-authored)\nbackend:     cli-bridge\nreps:        1   shots/leaf: 1   verify: full\nskill arms:  none   driver-persona: generic × none (crossed)\nliveness:    progress-idle + transport-idle govern termination; wall backstop: 90m\nrun budget:  max-run UNBOUNDED · max-cost UNBOUNDED\nTOTAL CELLS: 4   concurrency: 1\nsearch arms: default\nout:         /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/train-ethena-cross-chain-usde/matrix\ncheckpoints: /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/train-ethena-cross-chain-usde/matrix/checkpoints  (resume-safe — rerun to continue)\n════════════════════════════════════════════════════════════════════════\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n",
+          "stderrTail": " to show where the warning was created)\n(node:1297476) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1297509) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[preflight] resolved model config:\n  coder    : opencode/glm-5.1 (via cli-bridge)\n  reviewer : via=router model=deepseek/deepseek-chat\n  semantic : deepseek/deepseek-chat base=https://router.tangle.tools\n  router   : https://router.tangle.tools\n[preflight] WARN: TANGLE_API_KEY is not exported; using tangle-config for evaluator preflight probes. Export TANGLE_API_KEY for child processes that do not call env-preflight directly.\n[preflight] ERROR: VB_CLI_BRIDGE_BEARER is required when VB_CODER_VIA_CLI_BRIDGE=true. Failing closed avoids routing coder traffic through an unintended fallback.\n(node:1297509) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[preflight] router probe: GET https://router.tangle.tools/v1/models → 200 JSON ok\n[preflight] chat probe: POST https://router.tangle.tools/v1/chat/completions → 200 ok (reviewer path live)\n[preflight] cli-bridge probe FAILED: GET http://127.0.0.1:3344/health failed: fetch failed\n[preflight] aborting — fix the errors above and retry.\n[vb-run] run-sweep exited 2 for ethena-stablecoin\n(node:1297993) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1298026) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1298042) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-report] warn: no checkpoints under /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/train-ethena-cross-chain-usde/matrix/checkpoints\n[vb-report] wrote /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/train-ethena-cross-chain-usde-owner.{json,html} (OWNER)\n[vb-report] wrote /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/train-ethena-cross-chain-usde-auto-research.{json,html,sidecar.json} (AUTO-RESEARCH)\n[vb-report] wrote /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/train-ethena-cross-chain-usde-partner.{json,html} (PARTNER)\n[vb-report] done — 3 ICP docs from 0 cells, 0 profiles, realness OFF (unmeasured).\n(node:1298042) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[vb-run] report → /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/train-ethena-cross-chain-usde/ (vb-report over matrix)\n[vb-run] one or more verticals had non-zero exit\n"
+        },
+        "score": null,
+        "passed": null,
+        "scorePassed": null,
+        "completionPassRate": null,
+        "completionPassed": null,
+        "profileId": null,
+        "rankBasis": null,
+        "costUsd": null,
+        "durationMs": null,
+        "reason": "vb-run failed"
+      },
+      {
+        "split": "holdout",
+        "leafId": "lz-oft-balance-tracker",
+        "status": "failed",
+        "outDir": ".evolve/domain-pack-runs/issue-157-scored-results/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/holdout-lz-oft-balance-tracker",
+        "command": {
+          "command": "pnpm tsx scripts/experiments/vb-run.ts --leaf 'lz-oft-balance-tracker' --shots 1 --reps 1 --parallel 1 --runtime 'claude-local' --out '/home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/holdout-lz-oft-balance-tracker'",
+          "cwd": "/home/drew/code/blueprint-agent",
+          "status": "failed",
+          "exitCode": 1,
+          "durationMs": 5286,
+          "stdoutTail": "\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\npersona arms: 2  [generic, none]  → 4 (profile × persona; 'none' control always present)\n════════════════════════════════════════════════════════════════════════\n VERTICAL MATRIX — layerzero-omnichain  (partner=layerzero)\n════════════════════════════════════════════════════════════════════════\nprofiles:    4  [cc-sonnet@generic, cc-sonnet, oc-glm51@generic, oc-glm51]\nleaves:      1  (selector: all; pool 1 hand-authored)\nbackend:     cli-bridge\nreps:        1   shots/leaf: 1   verify: full\nskill arms:  none   driver-persona: generic × none (crossed)\nliveness:    progress-idle + transport-idle govern termination; wall backstop: 90m\nrun budget:  max-run UNBOUNDED · max-cost UNBOUNDED\nTOTAL CELLS: 4   concurrency: 1\nsearch arms: default\nout:         /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/holdout-lz-oft-balance-tracker/matrix\ncheckpoints: /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/holdout-lz-oft-balance-tracker/matrix/checkpoints  (resume-safe — rerun to continue)\n════════════════════════════════════════════════════════════════════════\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n",
+          "stderrTail": "w where the warning was created)\n(node:1298435) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1298451) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[preflight] resolved model config:\n  coder    : opencode/glm-5.1 (via cli-bridge)\n  reviewer : via=router model=deepseek/deepseek-chat\n  semantic : deepseek/deepseek-chat base=https://router.tangle.tools\n  router   : https://router.tangle.tools\n[preflight] WARN: TANGLE_API_KEY is not exported; using tangle-config for evaluator preflight probes. Export TANGLE_API_KEY for child processes that do not call env-preflight directly.\n[preflight] ERROR: VB_CLI_BRIDGE_BEARER is required when VB_CODER_VIA_CLI_BRIDGE=true. Failing closed avoids routing coder traffic through an unintended fallback.\n(node:1298451) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[preflight] router probe: GET https://router.tangle.tools/v1/models → 200 JSON ok\n[preflight] chat probe: POST https://router.tangle.tools/v1/chat/completions → 200 ok (reviewer path live)\n[preflight] cli-bridge probe FAILED: GET http://127.0.0.1:3344/health failed: fetch failed\n[preflight] aborting — fix the errors above and retry.\n[vb-run] run-sweep exited 2 for layerzero-omnichain\n(node:1298906) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1298992) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1299019) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[vb-report] warn: no checkpoints under /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/holdout-lz-oft-balance-tracker/matrix/checkpoints\n[vb-report] wrote /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/holdout-lz-oft-balance-tracker-owner.{json,html} (OWNER)\n[vb-report] wrote /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/holdout-lz-oft-balance-tracker-auto-research.{json,html,sidecar.json} (AUTO-RESEARCH)\n[vb-report] wrote /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/holdout-lz-oft-balance-tracker-partner.{json,html} (PARTNER)\n[vb-report] done — 3 ICP docs from 0 cells, 0 profiles, realness OFF (unmeasured).\n(node:1299019) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[vb-run] report → /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/holdout-lz-oft-balance-tracker/ (vb-report over matrix)\n[vb-run] one or more verticals had non-zero exit\n"
+        },
+        "score": null,
+        "passed": null,
+        "scorePassed": null,
+        "completionPassRate": null,
+        "completionPassed": null,
+        "profileId": null,
+        "rankBasis": null,
+        "costUsd": null,
+        "durationMs": null,
+        "reason": "vb-run failed"
+      }
+    ],
+    "failures": [
+      "train:ethena-cross-chain-usde: vb-run failed",
+      "holdout:lz-oft-balance-tracker: vb-run failed",
+      "no parseable train scores",
+      "no parseable holdout scores",
+      "1 train scored run(s) below min score 0.500",
+      "1 holdout scored run(s) below min score 0.500",
+      "1 train scored run(s) without a completion pass",
+      "1 holdout scored run(s) without a completion pass"
+    ]
+  },
+  "failures": [
+    "scored promotion failed: train:ethena-cross-chain-usde: vb-run failed",
+    "scored promotion failed: holdout:lz-oft-balance-tracker: vb-run failed",
+    "scored promotion failed: no parseable train scores",
+    "scored promotion failed: no parseable holdout scores",
+    "scored promotion failed: 1 train scored run(s) below min score 0.500",
+    "scored promotion failed: 1 holdout scored run(s) below min score 0.500",
+    "scored promotion failed: 1 train scored run(s) without a completion pass",
+    "scored promotion failed: 1 holdout scored run(s) without a completion pass"
+  ]
+}

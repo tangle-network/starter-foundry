@@ -1,0 +1,25 @@
+{
+  "vertical": "ethena-stablecoin",
+  "roster": "smoke",
+  "searchArms": [
+    "default"
+  ],
+  "skillArms": [
+    "none"
+  ],
+  "personaArms": [
+    "generic",
+    "none"
+  ],
+  "personaCrossed": true,
+  "profiles": 4,
+  "leaves": 1,
+  "reps": 1,
+  "totalCells": 4,
+  "measurable": 4,
+  "rankedByComposite": true,
+  "durationMs": 3076955,
+  "resumed": 1,
+  "executed": 3,
+  "generatedAt": "2026-06-13T19:08:26.915Z"
+}

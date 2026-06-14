@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-13T13:18:01.338Z",
+  "candidateId": "fhe-contracts-fhenix-foundry",
+  "candidateFile": "/home/drew/code/starter-foundry/.evolve/domain-pack-candidates.json",
+  "status": "failed",
+  "samples": {
+    "train": [
+      "ark-voting-circuit"
+    ],
+    "holdout": [
+      "crypto-fhe-bfv"
+    ]
+  },
+  "routing": {
+    "status": "passed",
+    "prompts": [
+      {
+        "prompt": "Build a Fhenix Foundry sealed-bid auction contract with CoFHE encrypted bids",
+        "expectedFamily": "fhenix-foundry",
+        "expectedLayers": [
+          "framework:fhenix-foundry"
+        ],
+        "actualFamily": "fhenix-foundry",
+        "actualLayers": [
+          "framework:fhenix-foundry"
+        ],
+        "ok": true
+      }
+    ]
+  },
+  "compose": {
+    "passed": 2,
+    "failed": 0,
+    "minFileCount": 9
+  },
+  "authenticity": {
+    "signals": [
+      "FHE.add",
+      "FHE.allow",
+      "FHE.asEuint",
+      "FHE.select",
+      "InEuint",
+      "cofhejs",
+      "ebool",
+      "encrypted balance",
+      "euint",
+      "private voting",
+      "sealed bid"
+    ],
+    "totalHits": 340,
+    "perSample": [
+      {
+        "leafId": "ark-voting-circuit",
+        "hits": {
+          "FHE.add": 2,
+          "FHE.allow": 5,
+          "FHE.asEuint": 3,
+          "FHE.select": 1,
+          "InEuint": 18,
+          "cofhejs": 2,
+          "ebool": 28,
+          "encrypted balance": 0,
+          "euint": 111,
+          "private voting": 0,
+          "sealed bid": 0
+        },
+        "total": 170
+      },
+      {
+        "leafId": "crypto-fhe-bfv",
+        "hits": {
+          "FHE.add": 2,
+          "FHE.allow": 5,
+          "FHE.asEuint": 3,
+          "FHE.select": 1,
+          "InEuint": 18,
+          "cofhejs": 2,
+          "ebool": 28,
+          "encrypted balance": 0,
+          "euint": 111,
+          "private voting": 0,
+          "sealed bid": 0
+        },
+        "total": 170
+      }
+    ]
+  },
+  "validationCommands": [
+    {
+      "command": "forge build",
+      "cwd": "/tmp/domain-pack-smoke-fhe-contracts-fhenix-foundry-ark-voting-circuit-wnYMR2/out",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 73,
+      "stdoutTail": "Compiling 4 files with Solc 0.8.25\nSolc 0.8.25 finished in 48.20ms\nCompiler run successful with warnings:\nWarning (2018): Function state mutability can be restricted to view\n  --> src/FHEVault.sol:43:5:\n   |\n43 |     function isAtLeast(InEuint32 calldata threshold) external returns (ebool result) {\n   |     ^ (Relevant source part starts here and spans across multiple lines).\n\n",
+      "stderrTail": "Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. \n\nnote[could-be-immutable]: state variable could be declared immutable\n   ╭▸ src/FHEVault.sol:15:20\n   │\n15 │     address public owner;\n   │                    ━━━━━\n   │\n   ╰ help: https://getfoundry.sh/forge/linting/could-be-immutable\n\n"
+    },
+    {
+      "command": "forge test",
+      "cwd": "/tmp/domain-pack-smoke-fhe-contracts-fhenix-foundry-ark-voting-circuit-wnYMR2/out",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 28,
+      "stdoutTail": "No files changed, compilation skipped\n\nRan 3 tests for test/FHEVault.t.sol:FHEVaultTest\n[PASS] test_isAtLeast_returns_encrypted_bool() (gas: 31287)\n[PASS] test_owner_is_deployer() (gas: 7581)\n[PASS] test_submit_accumulates_encrypted_state() (gas: 32067)\nSuite result: ok. 3 passed; 0 failed; 0 skipped; finished in 291.63µs (162.17µs CPU time)\n\nRan 1 test suite in 5.58ms (291.63µs CPU time): 3 tests passed, 0 failed, 0 skipped (3 total tests)\n",
+      "stderrTail": "Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. \n\n"
+    }
+  ],
+  "blueprintAgent": [],
+  "scoredPromotion": {
+    "mode": "scored",
+    "status": "failed",
+    "shots": 1,
+    "reps": 1,
+    "minScore": 0.5,
+    "baselineScore": null,
+    "maxHoldoutRegression": 0,
+    "train": {
+      "n": 0,
+      "min": null,
+      "median": null,
+      "p90": null,
+      "max": null,
+      "passCount": 0,
+      "failCount": 1
+    },
+    "holdout": {
+      "n": 0,
+      "min": null,
+      "median": null,
+      "p90": null,
+      "max": null,
+      "passCount": 0,
+      "failCount": 1
+    },
+    "leaves": [
+      {
+        "split": "train",
+        "leafId": "ark-voting-circuit",
+        "status": "failed",
+        "outDir": ".evolve/domain-pack-runs/issue-157-fhe-scored/fhe-contracts-fhenix-foundry/fhe-contracts-fhenix-foundry-blueprint-agent/train-ark-voting-circuit",
+        "command": {
+          "command": "pnpm tsx scripts/experiments/vb-run.ts --leaf 'ark-voting-circuit' --shots 1 --reps 1 --parallel 1 --runtime 'claude-local' --out '/home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-fhe-scored/fhe-contracts-fhenix-foundry/fhe-contracts-fhenix-foundry-blueprint-agent/train-ark-voting-circuit'",
+          "cwd": "/home/drew/code/blueprint-agent",
+          "status": "failed",
+          "exitCode": 1,
+          "durationMs": 5961,
+          "stdoutTail": "\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\npersona arms: 2  [generic, none]  → 4 (profile × persona; 'none' control always present)\n════════════════════════════════════════════════════════════════════════\n VERTICAL MATRIX — arkworks-zk  (partner=arkworks)\n════════════════════════════════════════════════════════════════════════\nprofiles:    4  [cc-sonnet@generic, cc-sonnet, oc-glm51@generic, oc-glm51]\nleaves:      1  (selector: all; pool 1 hand-authored)\nbackend:     cli-bridge\nreps:        1   shots/leaf: 1   verify: full\nskill arms:  none   driver-persona: generic × none (crossed)\nliveness:    progress-idle + transport-idle govern termination; wall backstop: 90m\nrun budget:  max-run UNBOUNDED · max-cost UNBOUNDED\nTOTAL CELLS: 4   concurrency: 1\nsearch arms: default\nout:         /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-fhe-scored/fhe-contracts-fhenix-foundry/fhe-contracts-fhenix-foundry-blueprint-agent/train-ark-voting-circuit/matrix\ncheckpoints: /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-fhe-scored/fhe-contracts-fhenix-foundry/fhe-contracts-fhenix-foundry-blueprint-agent/train-ark-voting-circuit/matrix/checkpoints  (resume-safe — rerun to continue)\n════════════════════════════════════════════════════════════════════════\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n",
+          "stderrTail": "is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[preflight] resolved model config:\n  coder    : opencode/glm-5.1 (via cli-bridge)\n  reviewer : via=router model=deepseek/deepseek-chat\n  semantic : deepseek/deepseek-chat base=https://router.tangle.tools\n  router   : https://router.tangle.tools\n(node:4044916) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[preflight] router probe: GET https://router.tangle.tools/v1/models → 200 JSON ok\n[preflight] chat probe: POST https://router.tangle.tools/v1/chat/completions → 200 ok (reviewer path live)\n[preflight] cli-bridge probe FAILED: cli-bridge /v1/models does not advertise opencode/glm-5.1. Advertised models: claude-code/sonnet, claude-code/opus, claude-code/haiku, opencode/kimi-for-coding/k2p6, opencode/zai-coding-plan/glm-5.1, opencode/zai-coding-plan/glm-5-turbo, opencode/deepseek/deepseek-v4-pro, opencode/deepseek/deepseek-v4-flash, kimi-code/kimi-for-coding, kimi-code/kimi-k2.6, pi/deepseek/deepseek-v4-pro, pi/deepseek/deepseek-v4-flash, pi/moonshot/kimi-k2.5, pi/moonshot/kimi-k2.6, pi/moonshot/kimi-k2-thinking, pi/kimi-for-coding-oauth/kimi-k2.6, pi/openai-codex/gpt-5.3-codex, pi/openai-codex/gpt-5.4, pi/openai-codex/gpt-5.5, pi/zai-coding-paas/glm-5.1, pi/zai-coding-paas/glm-5-turbo, pi/zai-coding-paas/glm-5, pi/zai-glm/glm-4.7, pi/tangle-router/gemini-3-pro-preview, pi/tangle-router/gemini-2.5-flash-lite\n[preflight] aborting — fix the errors above and retry.\n[vb-run] run-sweep exited 2 for arkworks-zk\n(node:4045459) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:4045472) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:4045488) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n/home/drew/code/blueprint-agent/scripts/experiments/vb-report.ts:67\n    throw new Error('usage: vb-report.ts --run <dir> --vertical <id> --out <path> [--icps OWNER,AUTO-RESEARCH,PARTNER]')\n          ^\n\nError: usage: vb-report.ts --run <dir> --vertical <id> --out <path> [--icps OWNER,AUTO-RESEARCH,PARTNER]\n    at parseArgs \u001b[90m(/home/drew/code/blueprint-agent/\u001b[39mscripts/experiments/vb-report.ts:67:11\u001b[90m)\u001b[39m\n    at main \u001b[90m(/home/drew/code/blueprint-agent/\u001b[39mscripts/experiments/vb-report.ts:286:16\u001b[90m)\u001b[39m\n    at <anonymous> \u001b[90m(/home/drew/code/blueprint-agent/\u001b[39mscripts/experiments/vb-report.ts:393:1\u001b[90m)\u001b[39m\n\u001b[90m    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)\u001b[39m\n\u001b[90m    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\u001b[39m\n\u001b[90m    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)\u001b[39m\n\u001b[90m    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\u001b[39m\n\nNode.js v24.13.0\n[vb-run] [vb-run] vb-report failed (exit 1) over /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-fhe-scored/fhe-contracts-fhenix-foundry/fhe-contracts-fhenix-foundry-blueprint-agent/train-ark-voting-circuit/matrix\n[vb-run] one or more verticals had non-zero exit\n"
+        },
+        "score": null,
+        "passed": null,
+        "profileId": null,
+        "rankBasis": null,
+        "costUsd": null,
+        "durationMs": null,
+        "reason": "vb-run failed"
+      },
+      {
+        "split": "holdout",
+        "leafId": "crypto-fhe-bfv",
+        "status": "failed",
+        "outDir": ".evolve/domain-pack-runs/issue-157-fhe-scored/fhe-contracts-fhenix-foundry/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-crypto-fhe-bfv",
+        "command": {
+          "command": "pnpm tsx scripts/experiments/vb-run.ts --leaf 'crypto-fhe-bfv' --shots 1 --reps 1 --parallel 1 --runtime 'claude-local' --out '/home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-fhe-scored/fhe-contracts-fhenix-foundry/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-crypto-fhe-bfv'",
+          "cwd": "/home/drew/code/blueprint-agent",
+          "status": "failed",
+          "exitCode": 1,
+          "durationMs": 5152,
+          "stdoutTail": "\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\npersona arms: 2  [generic, none]  → 4 (profile × persona; 'none' control always present)\n════════════════════════════════════════════════════════════════════════\n VERTICAL MATRIX — cryptography-primitives  (partner=academic)\n════════════════════════════════════════════════════════════════════════\nprofiles:    4  [cc-sonnet@generic, cc-sonnet, oc-glm51@generic, oc-glm51]\nleaves:      1  (selector: all; pool 1 hand-authored)\nbackend:     cli-bridge\nreps:        1   shots/leaf: 1   verify: full\nskill arms:  none   driver-persona: generic × none (crossed)\nliveness:    progress-idle + transport-idle govern termination; wall backstop: 90m\nrun budget:  max-run UNBOUNDED · max-cost UNBOUNDED\nTOTAL CELLS: 4   concurrency: 1\nsearch arms: default\nout:         /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-fhe-scored/fhe-contracts-fhenix-foundry/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-crypto-fhe-bfv/matrix\ncheckpoints: /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-fhe-scored/fhe-contracts-fhenix-foundry/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-crypto-fhe-bfv/matrix/checkpoints  (resume-safe — rerun to continue)\n════════════════════════════════════════════════════════════════════════\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n\u001b[43m\u001b[30m WARN \u001b[39m\u001b[49m Issue while reading \"/home/drew/code/blueprint-agent/.npmrc\". Failed to replace env in config: ${GITHUB_TOKEN}\n",
+          "stderrTail": " due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n[preflight] resolved model config:\n  coder    : opencode/glm-5.1 (via cli-bridge)\n  reviewer : via=router model=deepseek/deepseek-chat\n  semantic : deepseek/deepseek-chat base=https://router.tangle.tools\n  router   : https://router.tangle.tools\n(node:4045839) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[preflight] router probe: GET https://router.tangle.tools/v1/models → 200 JSON ok\n[preflight] chat probe: POST https://router.tangle.tools/v1/chat/completions → 200 ok (reviewer path live)\n[preflight] cli-bridge probe FAILED: cli-bridge /v1/models does not advertise opencode/glm-5.1. Advertised models: claude-code/sonnet, claude-code/opus, claude-code/haiku, opencode/kimi-for-coding/k2p6, opencode/zai-coding-plan/glm-5.1, opencode/zai-coding-plan/glm-5-turbo, opencode/deepseek/deepseek-v4-pro, opencode/deepseek/deepseek-v4-flash, kimi-code/kimi-for-coding, kimi-code/kimi-k2.6, pi/deepseek/deepseek-v4-pro, pi/deepseek/deepseek-v4-flash, pi/moonshot/kimi-k2.5, pi/moonshot/kimi-k2.6, pi/moonshot/kimi-k2-thinking, pi/kimi-for-coding-oauth/kimi-k2.6, pi/openai-codex/gpt-5.3-codex, pi/openai-codex/gpt-5.4, pi/openai-codex/gpt-5.5, pi/zai-coding-paas/glm-5.1, pi/zai-coding-paas/glm-5-turbo, pi/zai-coding-paas/glm-5, pi/zai-glm/glm-4.7, pi/tangle-router/gemini-3-pro-preview, pi/tangle-router/gemini-2.5-flash-lite\n[preflight] aborting — fix the errors above and retry.\n[vb-run] run-sweep exited 2 for cryptography-primitives\n(node:4046324) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:4046336) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:4046374) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n[swe-bench-verified] contamination: 500 leaves, 0 carry PR dates — dates UNAVAILABLE in this tasks file; NO trusted post-cutoff holdout. Per-leaf canaries still active (canary echo = hard fail). To enable a holdout split, supply a SWE_BENCH_TASKS_FILE with created_at fields.\n/home/drew/code/blueprint-agent/scripts/experiments/vb-report.ts:67\n    throw new Error('usage: vb-report.ts --run <dir> --vertical <id> --out <path> [--icps OWNER,AUTO-RESEARCH,PARTNER]')\n          ^\n\nError: usage: vb-report.ts --run <dir> --vertical <id> --out <path> [--icps OWNER,AUTO-RESEARCH,PARTNER]\n    at parseArgs \u001b[90m(/home/drew/code/blueprint-agent/\u001b[39mscripts/experiments/vb-report.ts:67:11\u001b[90m)\u001b[39m\n    at main \u001b[90m(/home/drew/code/blueprint-agent/\u001b[39mscripts/experiments/vb-report.ts:286:16\u001b[90m)\u001b[39m\n    at <anonymous> \u001b[90m(/home/drew/code/blueprint-agent/\u001b[39mscripts/experiments/vb-report.ts:393:1\u001b[90m)\u001b[39m\n\u001b[90m    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)\u001b[39m\n\u001b[90m    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\u001b[39m\n\u001b[90m    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)\u001b[39m\n\u001b[90m    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\u001b[39m\n\nNode.js v24.13.0\n[vb-run] [vb-run] vb-report failed (exit 1) over /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-fhe-scored/fhe-contracts-fhenix-foundry/fhe-contracts-fhenix-foundry-blueprint-agent/holdout-crypto-fhe-bfv/matrix\n[vb-run] one or more verticals had non-zero exit\n"
+        },
+        "score": null,
+        "passed": null,
+        "profileId": null,
+        "rankBasis": null,
+        "costUsd": null,
+        "durationMs": null,
+        "reason": "vb-run failed"
+      }
+    ],
+    "failures": [
+      "train:ark-voting-circuit: vb-run failed",
+      "holdout:crypto-fhe-bfv: vb-run failed",
+      "no parseable train scores",
+      "no parseable holdout scores",
+      "1 train scored run(s) below min score 0.500",
+      "1 holdout scored run(s) below min score 0.500"
+    ]
+  },
+  "failures": [
+    "scored promotion failed: train:ark-voting-circuit: vb-run failed",
+    "scored promotion failed: holdout:crypto-fhe-bfv: vb-run failed",
+    "scored promotion failed: no parseable train scores",
+    "scored promotion failed: no parseable holdout scores",
+    "scored promotion failed: 1 train scored run(s) below min score 0.500",
+    "scored promotion failed: 1 holdout scored run(s) below min score 0.500"
+  ]
+}

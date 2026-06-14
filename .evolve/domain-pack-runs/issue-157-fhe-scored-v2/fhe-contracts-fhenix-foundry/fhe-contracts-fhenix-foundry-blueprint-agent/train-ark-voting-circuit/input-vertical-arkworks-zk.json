@@ -1,0 +1,178 @@
+{
+  "id": "arkworks-zk",
+  "category": "crypto",
+  "subcategory": "zk-privacy",
+  "partner": "arkworks",
+  "name": "Arkworks — R1CS circuits, Groth16, Marlin, field/curve arithmetic",
+  "description": "Zero-knowledge proof applications using arkworks-rs: ark-ff field arithmetic (Fp256, PrimeField), ark-ec curve operations (BLS12-381, BN254, pairing), ark-relations R1CS circuit construction (ConstraintSynthesizer, enforce_constraint), ark-groth16 proving and verification, ark-marlin universal SNARKs, and ark-poly polynomial operations (DensePolynomial, EvaluationDomain, FFT).",
+  "seedPromptTemplate": "Build {{description}}\n\nDifficulty: {{difficulty}}. Tags: {{tags}}.\n\nProduction-shape 0-to-1 arkworks ZK surface. Ship working Rust code with real arkworks crate imports, proper trait bounds, correct field/curve operations. Skip placeholders.",
+  "validator": {
+    "domainAssertions": [
+      {
+        "label": "ark-ff crate in Cargo.toml",
+        "fileGlob": "Cargo.toml",
+        "mustContain": "ark-ff",
+        "minFiles": 1
+      },
+      {
+        "label": "ark-ec or ark-groth16 or ark-marlin in Cargo.toml",
+        "fileGlob": "Cargo.toml",
+        "mustContain": "ark-"
+      },
+      {
+        "label": "ConstraintSynthesizer trait implementation",
+        "fileGlob": "src/**/*.rs",
+        "mustContain": "ConstraintSynthesizer"
+      },
+      {
+        "label": "field or curve type usage (BLS12-381 or BN254)",
+        "fileGlob": "src/**/*.rs",
+        "mustContain": "Bls12_381"
+      },
+      {
+        "label": "proof generation or verification call",
+        "fileGlob": "src/**/*.rs",
+        "mustContain": "prove"
+      }
+    ],
+    "securityGates": [
+      {
+        "label": "no hardcoded private keys or secrets",
+        "check": "no-hardcoded-secrets"
+      },
+      {
+        "label": "no eval() or dynamic code execution",
+        "check": "no-eval"
+      },
+      {
+        "label": "proof inputs validated",
+        "check": "input-validation"
+      },
+      {
+        "label": "no unsafe blocks without justification",
+        "check": "custom",
+        "fileGlob": "src/**/*.rs",
+        "pattern": "unsafe\\s*\\{[^}]{200,}\\}"
+      }
+    ],
+    "semanticRubric": "You are evaluating an arkworks zero-knowledge proof application. Score STRICTLY on these criteria:\n\n1. CRATE IMPORTS: Code uses the canonical arkworks crates (ark-ff, ark-ec, ark-relations, ark-groth16 or ark-marlin, ark-poly). Score 0 if the code uses bellman, halo2, or other ZK libraries instead of arkworks.\n2. CIRCUIT CONSTRUCTION: Circuits implement the ConstraintSynthesizer<F> trait with a generate_constraints(cs: ConstraintSystemRef<F>) method. Uses cs.new_witness_variable(), cs.new_input_variable(), and cs.enforce_constraint() for R1CS constraint generation. Score 0 if circuits use ad-hoc constraint generation without ConstraintSynthesizer.\n3. FIELD ARITHMETIC: Uses ark-ff PrimeField trait correctly. Field elements created via F::from(), not raw integer casting. Inverse computed via .inverse(). Score 0 if field operations use standard Rust arithmetic operators without the Field trait.\n4. CURVE OPERATIONS: Elliptic curve operations use ark-ec traits (AffineRepr, CurveGroup, Pairing). Scalar multiplication via .mul(). Multi-scalar multiplication via VariableBaseMSM::msm(). Score 0 if curve points are constructed from raw coordinates without validation.\n5. PROOF SYSTEM: Uses Groth16::<E>::prove(pk, circuit, rng) and Groth16::<E>::verify(vk, public_inputs, proof) with correct type parameters. Or uses Marlin::prove/verify for universal setup. Score 0 if proof generation/verification is stubbed or uses placeholder keys.\n6. TRUSTED SETUP: Groth16 circuits use generate_random_parameters::<E, _, _>(circuit, rng) for key generation, not hardcoded proving/verifying keys. Score 0 if proving keys are committed to source.\n7. CURVE SELECTION: Uses pairing-friendly curves (BLS12-381 via ark_bls12_381, BN254 via ark_bn254) with correct type aliases (Fr for scalar field, G1Projective/G2Projective for curve points). Score 0 if the code uses non-pairing curves for SNARK circuits.\n8. POLYNOMIAL OPERATIONS: If using ark-poly, creates DensePolynomial correctly, uses GeneralEvaluationDomain for FFT/IFFT, handles polynomial evaluation and interpolation. Score 0 if polynomial operations are implemented from scratch instead of using ark-poly.\n9. ERROR HANDLING: Handles SynthesisError, SerializationError, and proof verification failures explicitly. Does not unwrap() on cryptographic operations. Uses Result types throughout.\n10. SERIALIZATION: Proof artifacts (ProvingKey, VerifyingKey, Proof) serialized via CanonicalSerialize/CanonicalDeserialize traits, not serde JSON. Score 0 if proofs are serialized as JSON strings.\n\nScore 0 if the code does not compile with `cargo build`.\nScore 0 if the circuit has zero constraints (trivially satisfiable).\nScore 0 if private witness values are leaked in public outputs.",
+    "customBuild": {
+      "command": "cargo build 2>&1",
+      "timeoutMs": 180000
+    }
+  },
+  "preferredDependencies": [
+    {
+      "name": "ark-ff",
+      "reason": "Core finite field arithmetic library in arkworks ecosystem",
+      "alternative": "manual field implementation"
+    },
+    {
+      "name": "ark-ec",
+      "reason": "Elliptic curve operations and pairing-friendly curves",
+      "alternative": "manual curve implementation"
+    },
+    {
+      "name": "ark-groth16",
+      "reason": "Groth16 zkSNARK proof system implementation",
+      "alternative": "bellman"
+    }
+  ],
+  "leaves": [
+    {
+      "id": "ark-voting-circuit",
+      "name": "Private voting circuit with eligibility proof",
+      "difficulty": "hard",
+      "description": "A private voting circuit: voter proves (1) membership in voter set (Merkle proof of public key in registered set), (2) knowledge of private key corresponding to leaf (pubkey = privkey * G), (3) vote is valid (binary: 0 or 1), (4) nullifier is correctly computed (hash(privkey, election_id)) to prevent double voting. Public inputs: Merkle root, nullifier, encrypted vote. Use Groth16 over BN254 for on-chain verification. Include homomorphic vote tallying.",
+      "expectedFamily": "",
+      "expectedIndustry": "crypto",
+      "tags": [
+        "arkworks",
+        "voting",
+        "private",
+        "eligibility",
+        "nullifier"
+      ],
+      "expectedConcepts": [
+        {
+          "name": "voter membership",
+          "keywords": [
+            "Merkle",
+            "voter set",
+            "registered",
+            "membership"
+          ]
+        },
+        {
+          "name": "key knowledge",
+          "keywords": [
+            "private key",
+            "public key",
+            "scalar mul",
+            "knowledge"
+          ],
+          "complexity": "integrate"
+        },
+        {
+          "name": "vote validity",
+          "keywords": [
+            "binary",
+            "0 or 1",
+            "valid vote",
+            "boolean"
+          ]
+        },
+        {
+          "name": "double vote prevention",
+          "keywords": [
+            "nullifier",
+            "election_id",
+            "double voting"
+          ]
+        },
+        {
+          "name": "homomorphic tally",
+          "keywords": [
+            "homomorphic",
+            "tally",
+            "encrypted",
+            "aggregate"
+          ],
+          "complexity": "compute"
+        },
+        {
+          "name": "Arkworks SDK integration",
+          "keywords": [
+            "arkworks zk proof",
+            "arkworks zk state"
+          ],
+          "complexity": "integrate"
+        },
+        {
+          "name": "Arkworks proof computation",
+          "keywords": [
+            "arkworks zk transaction",
+            "arkworks zk account"
+          ],
+          "complexity": "compute"
+        },
+        {
+          "name": "Arkworks contract flow",
+          "keywords": [
+            "arkworks",
+            "ConstraintSystem"
+          ],
+          "complexity": "integrate"
+        },
+        {
+          "name": "Arkworks result rendering",
+          "keywords": [
+            "R1CS",
+            "Groth16"
+          ],
+          "complexity": "render"
+        }
+      ]
+    }
+  ]
+}

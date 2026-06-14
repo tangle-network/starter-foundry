@@ -1,0 +1,232 @@
+{
+  "taskListId": "mtx_mqcfvpta_07a4627b",
+  "nTasks": 1,
+  "nProfiles": 2,
+  "ranked": [
+    {
+      "rank": 1,
+      "profileId": "oc-glm51@generic",
+      "label": "opencode · glm-5.1 @generic",
+      "passRate": 0,
+      "passRateCi95": [
+        0,
+        0.7934567085261071
+      ],
+      "hitRate": 1,
+      "hitRateCi95": [
+        0.20654329147389294,
+        1
+      ],
+      "realBuilds": 1,
+      "realnessMean": 0.79,
+      "meanBlended": 0.483,
+      "meanBlendedCi95": [
+        0,
+        0
+      ],
+      "medianShotsToComplete": null,
+      "errorRate": 0,
+      "costPerSolved": null,
+      "meanComposite": 0.7407142857142857,
+      "meanCompositeCi95": [
+        0.7407142857142857,
+        0.7407142857142857
+      ],
+      "separableFrom": [],
+      "behavior": {
+        "nRuns": 1,
+        "convergenceRate": 0,
+        "medianConvergenceShot": null,
+        "meanPlateauRate": 0,
+        "meanWastedTokenRatio": 0,
+        "totalWastedTokens": 0,
+        "totalWastedShotCostUsd": 0,
+        "meanCostPerScorePoint": null,
+        "meanTokenEfficiency": 0,
+        "meanRepeatErrorRate": null,
+        "totalLayerRegressions": 0,
+        "totalLayerFixes": 0,
+        "meanToolFailureRate": null,
+        "topToolCalls": [
+          {
+            "name": "Bash",
+            "count": 56
+          },
+          {
+            "name": "Read",
+            "count": 32
+          },
+          {
+            "name": "Write",
+            "count": 19
+          },
+          {
+            "name": "Edit",
+            "count": 11
+          },
+          {
+            "name": "TodoWrite",
+            "count": 4
+          },
+          {
+            "name": "Glob",
+            "count": 1
+          }
+        ],
+        "outcomes": {
+          "converged": 0,
+          "plateaued": 1,
+          "regressed": 0,
+          "errored": 0,
+          "never-ran": 0
+        }
+      }
+    },
+    {
+      "rank": 2,
+      "profileId": "oc-glm51",
+      "label": "opencode · glm-5.1",
+      "passRate": 0,
+      "passRateCi95": [
+        0,
+        0.7934567085261071
+      ],
+      "hitRate": 1,
+      "hitRateCi95": [
+        0.20654329147389294,
+        1
+      ],
+      "realBuilds": 1,
+      "realnessMean": 0.79,
+      "meanBlended": 0.483,
+      "meanBlendedCi95": [
+        0,
+        0
+      ],
+      "medianShotsToComplete": null,
+      "errorRate": 0,
+      "costPerSolved": null,
+      "meanComposite": 0.7407142857142857,
+      "meanCompositeCi95": [
+        0.7407142857142857,
+        0.7407142857142857
+      ],
+      "separableFrom": [],
+      "behavior": {
+        "nRuns": 1,
+        "convergenceRate": 0,
+        "medianConvergenceShot": null,
+        "meanPlateauRate": 0,
+        "meanWastedTokenRatio": 0,
+        "totalWastedTokens": 0,
+        "totalWastedShotCostUsd": 0,
+        "meanCostPerScorePoint": null,
+        "meanTokenEfficiency": 0,
+        "meanRepeatErrorRate": null,
+        "totalLayerRegressions": 0,
+        "totalLayerFixes": 0,
+        "meanToolFailureRate": null,
+        "topToolCalls": [
+          {
+            "name": "Bash",
+            "count": 42
+          },
+          {
+            "name": "Read",
+            "count": 25
+          },
+          {
+            "name": "Write",
+            "count": 22
+          },
+          {
+            "name": "Edit",
+            "count": 5
+          },
+          {
+            "name": "TodoWrite",
+            "count": 3
+          }
+        ],
+        "outcomes": {
+          "converged": 0,
+          "plateaued": 1,
+          "regressed": 0,
+          "errored": 0,
+          "never-ran": 0
+        }
+      }
+    }
+  ],
+  "pairwise": [
+    {
+      "a": "oc-glm51@generic",
+      "b": "oc-glm51",
+      "passRateDelta": 0,
+      "separable": false,
+      "blendedDelta": 0,
+      "compositeDelta": 0,
+      "compositeEffect": null,
+      "qValue": null,
+      "basis": "composite"
+    }
+  ],
+  "pareto": [],
+  "perTaskWinner": [
+    {
+      "taskId": "fhenix-sealed-bid-auction",
+      "winnerProfileId": "oc-glm51@generic",
+      "winnerPassRate": 0
+    }
+  ],
+  "profileVectors": [
+    {
+      "profileId": "oc-glm51@generic",
+      "label": "opencode · glm-5.1 @generic",
+      "n": 1,
+      "deterministic": 1,
+      "functional": null,
+      "semantic": 0,
+      "security": null,
+      "grounding": 0,
+      "realness": 0.79,
+      "realBuildRate": 1,
+      "reliability": null,
+      "composite": 0.7407142857142857,
+      "compositeCi95": [
+        0.7407142857142857,
+        0.7407142857142857
+      ],
+      "compositeSamples": [
+        0.7407142857142857
+      ]
+    },
+    {
+      "profileId": "oc-glm51",
+      "label": "opencode · glm-5.1",
+      "n": 1,
+      "deterministic": 1,
+      "functional": null,
+      "semantic": 0,
+      "security": null,
+      "grounding": 0,
+      "realness": 0.79,
+      "realBuildRate": 1,
+      "reliability": null,
+      "composite": 0.7407142857142857,
+      "compositeCi95": [
+        0.7407142857142857,
+        0.7407142857142857
+      ],
+      "compositeSamples": [
+        0.7407142857142857
+      ]
+    }
+  ],
+  "rankedByComposite": true,
+  "rankBasis": "hit-rate",
+  "judgeCalibration": {
+    "kappa": null,
+    "trustworthy": false
+  }
+}

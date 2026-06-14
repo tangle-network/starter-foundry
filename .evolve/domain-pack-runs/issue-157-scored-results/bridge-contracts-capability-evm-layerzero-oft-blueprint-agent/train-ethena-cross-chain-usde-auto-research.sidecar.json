@@ -1,0 +1,290 @@
+{
+  "icp": "AUTO-RESEARCH",
+  "vertical": "ethena-stablecoin",
+  "realnessByProfile": [
+    {
+      "profileId": "cc-sonnet",
+      "n": 0,
+      "meanScore": null,
+      "hitRate": null,
+      "hitRateCi95": null,
+      "gatedCount": 0
+    },
+    {
+      "profileId": "cc-sonnet@generic",
+      "n": 0,
+      "meanScore": null,
+      "hitRate": null,
+      "hitRateCi95": null,
+      "gatedCount": 0
+    },
+    {
+      "profileId": "oc-glm51",
+      "n": 0,
+      "meanScore": null,
+      "hitRate": null,
+      "hitRateCi95": null,
+      "gatedCount": 0
+    },
+    {
+      "profileId": "oc-glm51@generic",
+      "n": 0,
+      "meanScore": null,
+      "hitRate": null,
+      "hitRateCi95": null,
+      "gatedCount": 0
+    }
+  ],
+  "gatedCells": [],
+  "autoresearch": {
+    "normalizedRuns": [
+      {
+        "suiteId": "verticalbench:ethena-stablecoin",
+        "suiteName": "Ethena — USDe, sUSDe, and delta-neutral yield",
+        "source": "verticalbench",
+        "vertical": "ethena-stablecoin",
+        "taskKind": "product-build",
+        "task": {
+          "id": "ethena-cross-chain-usde",
+          "name": "Cross-chain USDe bridge interface",
+          "prompt": "A bridge interface for USDe across chains: bridge USDe from Ethereum to L2s (Arbitrum, Optimism, Base, Blast, Mantle) using LayerZero OFT (Omnichain Fungible Token) standard. Show the bridge transaction flow, estimated time, and display USDe balances across all supported chains. Include sUSDe cross-chain availability and the chain-specific yield opportunities (DeFi integrations on each chain).",
+          "difficulty": "hard",
+          "vertical": "ethena-stablecoin",
+          "taskKind": "product-build",
+          "source": "verticalbench",
+          "tags": [
+            "ethena",
+            "usde",
+            "bridge",
+            "cross-chain",
+            "layerzero"
+          ],
+          "native": {
+            "expectedFamily": "",
+            "expectedIndustry": "",
+            "metadata": {}
+          }
+        },
+        "trace": {
+          "runId": "driver-ethena-cross-chain-usde-1781374631920",
+          "taskId": "ethena-cross-chain-usde",
+          "startedAt": "2026-06-13T18:17:11.919Z",
+          "endedAt": "2026-06-13T18:28:42.778Z",
+          "wallMs": 690858,
+          "stopReason": "max-shots",
+          "actions": [
+            {
+              "index": 0,
+              "kind": "state-check",
+              "name": "preview",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "preview succeeded"
+            },
+            {
+              "index": 1,
+              "kind": "eval",
+              "name": "verification-shot-1",
+              "status": "fail",
+              "durationMs": 554561,
+              "detail": "failing layers: lint, domain, semantic, completion-verifier"
+            },
+            {
+              "index": 2,
+              "kind": "tool-call",
+              "name": "Bash",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=45"
+            },
+            {
+              "index": 3,
+              "kind": "tool-call",
+              "name": "Edit",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=10"
+            },
+            {
+              "index": 4,
+              "kind": "tool-call",
+              "name": "Read",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=19"
+            },
+            {
+              "index": 5,
+              "kind": "tool-call",
+              "name": "Write",
+              "status": "pass",
+              "durationMs": null,
+              "detail": "count=26"
+            }
+          ],
+          "artifacts": [
+            "verificationByShot"
+          ],
+          "requiredArtifacts": [],
+          "costUsd": null,
+          "tokenUsage": {
+            "input": 57,
+            "output": 37544,
+            "cacheRead": 0
+          },
+          "finalState": {
+            "outcome": "max-shots",
+            "previewSucceeded": true,
+            "completenessScore": 1,
+            "auditScore": 10,
+            "convergedAt": null,
+            "shotsUsed": 1
+          },
+          "native": {
+            "driverName": "driver-baseline",
+            "scaffoldChosen": null,
+            "scaffoldMatchKind": "none",
+            "runtime": "sandbox-sdk",
+            "factoryRunId": "cc-sonnet-ethena-cross-chain-usde-r0"
+          }
+        },
+        "eval": {
+          "taskId": "ethena-cross-chain-usde",
+          "status": "fail",
+          "score": 0.536,
+          "outcome": "unknown",
+          "layers": [
+            {
+              "layer": "lint",
+              "status": "fail"
+            },
+            {
+              "layer": "domain",
+              "status": "fail"
+            },
+            {
+              "layer": "semantic",
+              "status": "fail"
+            },
+            {
+              "layer": "completion-verifier",
+              "status": "fail"
+            }
+          ],
+          "gaps": [
+            "lint",
+            "domain",
+            "semantic",
+            "completion-verifier",
+            "max-shots"
+          ],
+          "native": {
+            "verificationByShot": [
+              {
+                "shot": 1,
+                "blendedScore": 0.536,
+                "allPass": false,
+                "failCount": 4,
+                "passCount": 4,
+                "failingLayers": [
+                  "lint",
+                  "domain",
+                  "semantic",
+                  "completion-verifier"
+                ],
+                "shotWallMs": 554561,
+                "shotCostUsd": 0,
+                "inputTokens": 57,
+                "outputTokens": 37544,
+                "fileCountAfter": 99,
+                "reviewerConfidence": null,
+                "reviewerShouldContinue": null,
+                "toolCallsByName": {
+                  "Bash": 45,
+                  "Edit": 10,
+                  "Read": 19,
+                  "Write": 26
+                },
+                "toolCallSuccesses": 0,
+                "toolCallFailures": 0,
+                "failingLayerFindings": [
+                  {
+                    "layer": "domain",
+                    "severity": "critical",
+                    "message": "viem or ethers in dependencies for Ethena interaction: no file matching package.json contains required pattern"
+                  },
+                  {
+                    "layer": "domain",
+                    "severity": "critical",
+                    "message": "cooldown or unstake function reference: no file matching src/**/*.{ts,tsx} contains required pattern"
+                  },
+                  {
+                    "layer": "semantic",
+                    "severity": "critical",
+                    "message": "concept \"layerzero bridge\" (score 0.0): No LayerZero imports, OFT contract, or bridge logic found in any source file. The web app's bridge-card.tsx is a stub with no real bridge functionality."
+                  },
+                  {
+                    "layer": "semantic",
+                    "severity": "critical",
+                    "message": "concept \"l2 chains\" (score 0.0): No references to Arbitrum, Optimism, Base, Blast, or Mantle in any source file. The partner-config.json mentions Arbitrum but no chain-specific logic."
+                  },
+                  {
+                    "layer": "semantic",
+                    "severity": "critical",
+                    "message": "concept \"bridge flow\" (score 0.0): No bridge transaction flow, estimated time, or step-by-step UI. The bridge-card.tsx is a placeholder with no real flow."
+                  },
+                  {
+                    "layer": "semantic",
+                    "severity": "critical",
+                    "message": "concept \"cross-chain balance\" (score 0.0): No code to fetch or display USDe balances across chains. The web app does not show any balance data."
+                  },
+                  {
+                    "layer": "semantic",
+                    "severity": "critical",
+                    "message": "concept \"Ethena SDK integration\" (score 0.0): No imports or usage of Ethena SDK, StakedUSDeV2, or any Ethena contract. The contracts/evm only contains a Counter contract."
+                  }
+                ]
+              }
+            ],
+            "intentMatch": null
+          }
+        }
+      }
+    ],
+    "findings": [
+      {
+        "kind": "semantic-mismatch",
+        "severity": "low",
+        "taskIds": [
+          "ethena-cross-chain-usde"
+        ],
+        "evidence": "semantic | semantic: concept \"layerzero bridge\" (score 0.0): No LayerZero imports, OFT contract, or bridge logic found in any source file. The web app's bridge-card.tsx is a stub with no real bridge functionality. | semantic: concept \"l2 chains\" (score 0.0): No references to Arbitrum, Optimism, Base, Blast, or Mantle in any source file. The partner-config.json mentions Arbitrum but no chain-specific logic. | semantic: concept \"bridge flow\" (score 0.0): No bridge transaction flow, estimated time, or step-by-step UI. The bridge-card.tsx is a placeholder with no real flow. | semantic: concept \"cross-chain balance\" (score 0.0): No code to fetch or display USDe balances across chains. The web app does not show any balance data.",
+        "proposedFixClass": "evaluator"
+      },
+      {
+        "kind": "missing-domain-integration",
+        "severity": "low",
+        "taskIds": [
+          "ethena-cross-chain-usde"
+        ],
+        "evidence": "semantic: concept \"l2 chains\" (score 0.0): No references to Arbitrum, Optimism, Base, Blast, or Mantle in any source file. The partner-config.json mentions Arbitrum but no chain-specific logic. | semantic: concept \"Ethena SDK integration\" (score 0.0): No imports or usage of Ethena SDK, StakedUSDeV2, or any Ethena contract. The contracts/evm only contains a Counter contract.",
+        "proposedFixClass": "product"
+      },
+      {
+        "kind": "generic-starter-output",
+        "severity": "low",
+        "taskIds": [
+          "ethena-cross-chain-usde"
+        ],
+        "evidence": "semantic: concept \"bridge flow\" (score 0.0): No bridge transaction flow, estimated time, or step-by-step UI. The bridge-card.tsx is a placeholder with no real flow.",
+        "proposedFixClass": "prompt"
+      }
+    ]
+  },
+  "diagnostics": {
+    "cellCount": 4,
+    "profileCount": 4,
+    "enrichedCells": 0,
+    "warnings": []
+  }
+}

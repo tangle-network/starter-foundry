@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-14T11:49:15.845Z",
+  "generatedAt": "2026-06-14T21:23:44.745Z",
   "scenarioRoot": "/home/drew/code/blueprint-agent/scripts/experiments/scenarios",
   "scenariosScanned": 319,
   "domainGroupsScanned": 7,
@@ -557,6 +557,39 @@
         "private voting",
         "sealed bid"
       ],
+      "authenticityGroups": [
+        {
+          "id": "cofhe-contract-apis",
+          "description": "Generated contracts should use encrypted inputs and access-control APIs.",
+          "minRequired": 2,
+          "signals": [
+            "FHE.allow",
+            "FHE.asEuint",
+            "FHE.select",
+            "InEuint"
+          ]
+        },
+        {
+          "id": "cofhe-sdk",
+          "description": "At least one CoFHE package or import signal should survive generation.",
+          "minRequired": 1,
+          "signals": [
+            "@fhenixprotocol/cofhe-contracts",
+            "cofhe-contracts",
+            "cofhejs"
+          ]
+        },
+        {
+          "id": "fhe-product-behavior",
+          "description": "The scaffold should implement a real encrypted workflow, not plain Solidity placeholders.",
+          "minRequired": 1,
+          "signals": [
+            "encrypted balance",
+            "private voting",
+            "sealed bid"
+          ]
+        }
+      ],
       "registryFiles": [
         "registry/families/fhenix-contracts/manifest.json"
       ],
@@ -641,6 +674,39 @@
         "euint",
         "private voting",
         "sealed bid"
+      ],
+      "authenticityGroups": [
+        {
+          "id": "cofhe-contract-apis",
+          "description": "Generated contracts should use encrypted inputs and access-control APIs.",
+          "minRequired": 2,
+          "signals": [
+            "FHE.allow",
+            "FHE.asEuint",
+            "FHE.select",
+            "InEuint"
+          ]
+        },
+        {
+          "id": "cofhe-sdk",
+          "description": "At least one CoFHE package or import signal should survive generation.",
+          "minRequired": 1,
+          "signals": [
+            "@fhenixprotocol/cofhe-contracts",
+            "cofhe-contracts",
+            "cofhejs"
+          ]
+        },
+        {
+          "id": "fhe-product-behavior",
+          "description": "The scaffold should implement a real encrypted workflow, not plain Solidity placeholders.",
+          "minRequired": 1,
+          "signals": [
+            "encrypted balance",
+            "private voting",
+            "sealed bid"
+          ]
+        }
       ],
       "registryFiles": [
         "registry/families/fhenix-foundry/manifest.json"
@@ -946,6 +1012,40 @@
         "euint",
         "fhevm",
         "tfhe"
+      ],
+      "authenticityGroups": [
+        {
+          "id": "fhe-product-behavior",
+          "description": "The scaffold should implement a real encrypted workflow, not plain Solidity placeholders.",
+          "minRequired": 1,
+          "signals": [
+            "confidential erc20",
+            "encrypted balance",
+            "encrypted evm"
+          ]
+        },
+        {
+          "id": "fhevm-contract-apis",
+          "description": "Generated contracts should use encrypted external inputs and access-control APIs.",
+          "minRequired": 2,
+          "signals": [
+            "FHE.allow",
+            "FHE.asEuint",
+            "FHE.fromExternal",
+            "TFHE",
+            "euint"
+          ]
+        },
+        {
+          "id": "fhevm-sdk",
+          "description": "At least one fhEVM package or import signal should survive generation.",
+          "minRequired": 1,
+          "signals": [
+            "@fhevm/solidity",
+            "fhevm",
+            "tfhe"
+          ]
+        }
       ],
       "registryFiles": [
         "registry/families/fhevm-contracts/manifest.json"
@@ -2439,6 +2539,45 @@
         "bridge",
         "omnichain",
         "sendTokens"
+      ],
+      "authenticityGroups": [
+        {
+          "id": "bridge-deploy-config",
+          "description": "The project should carry deploy/config evidence for cross-chain peers and execution settings.",
+          "minRequired": 1,
+          "signals": [
+            "DVN",
+            "SendTokens.s.sol",
+            "bridge-config.json",
+            "enforced options",
+            "executor",
+            "trusted remotes"
+          ]
+        },
+        {
+          "id": "layerzero-sdk",
+          "description": "At least one LayerZero package, endpoint, or OApp import signal should survive generation.",
+          "minRequired": 1,
+          "signals": [
+            "@layerzerolabs/lz-evm-oapp-v2",
+            "@layerzerolabs/lz-evm-protocol-v2",
+            "@layerzerolabs/oapp-evm",
+            "EndpointV2"
+          ]
+        },
+        {
+          "id": "oft-contract",
+          "description": "Generated contracts should use OFT/OApp wiring, not generic ERC20 bridge placeholders.",
+          "minRequired": 2,
+          "signals": [
+            "OApp",
+            "OFT",
+            "quoteSend",
+            "send",
+            "sendTokens",
+            "setPeer"
+          ]
+        }
       ],
       "registryFiles": [
         "registry/layers/capability/evm-layerzero-oft/manifest.json"

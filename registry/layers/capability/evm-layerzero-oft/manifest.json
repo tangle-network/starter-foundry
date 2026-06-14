@@ -14,6 +14,31 @@
     "ambiguityGroup": "bridge-contracts",
     "validationCommands": ["forge build", "forge test"],
     "authenticitySignals": ["LayerZero", "OFT", "sendTokens", "omnichain", "bridge"],
+    "authenticityGroups": [
+      {
+        "id": "layerzero-sdk",
+        "description": "At least one LayerZero package, endpoint, or OApp import signal should survive generation.",
+        "minRequired": 1,
+        "signals": [
+          "@layerzerolabs/lz-evm-oapp-v2",
+          "@layerzerolabs/lz-evm-protocol-v2",
+          "@layerzerolabs/oapp-evm",
+          "EndpointV2"
+        ]
+      },
+      {
+        "id": "oft-contract",
+        "description": "Generated contracts should use OFT/OApp wiring, not generic ERC20 bridge placeholders.",
+        "minRequired": 2,
+        "signals": ["OFT", "OApp", "setPeer", "quoteSend", "send", "sendTokens"]
+      },
+      {
+        "id": "bridge-deploy-config",
+        "description": "The project should carry deploy/config evidence for cross-chain peers and execution settings.",
+        "minRequired": 1,
+        "signals": ["SendTokens.s.sol", "bridge-config.json", "trusted remotes", "enforced options", "DVN", "executor"]
+      }
+    ],
     "routingPrompts": [
       {
         "prompt": "Build a LayerZero OFT bridge token with Foundry",

@@ -92,6 +92,24 @@
         "ambiguityGroup": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
         "validationCommands": { "type": "array", "items": { "type": "string" } },
         "authenticitySignals": { "type": "array", "items": { "type": "string" } },
+        "authenticityGroups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "signals"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+              "description": { "type": "string", "minLength": 1 },
+              "minRequired": { "type": "number", "minimum": 1 },
+              "signals": {
+                "type": "array",
+                "items": { "type": "string", "minLength": 1 },
+                "minItems": 1
+              }
+            }
+          }
+        },
         "routingPrompts": {
           "type": "array",
           "items": {

@@ -10,46 +10,41 @@ bridges, and a clear consumer path back into blueprint-agent.
 
 ## Current State
 
-- Latest base: `main` at `4b57750` (`Merge pull request #175 from
-  tangle-network/fix/domain-pack-scored-preflight`).
-- Current active branch: `fix/domain-pack-cli-readiness`.
+- Latest base: `main` at `6484405` (`chore(domain-packs): record post-1912
+  scored evidence (#181)`).
+- Current active branch: `feat/domain-pack-authenticity-groups`.
 - Latest shipped slices:
   - PR #171: generic surface-aware domain-pack routing.
   - PR #173: blueprint-agent roster/exclude/runtime controls are passed through
     domain-pack gates.
   - PR #175: live scored promotion refuses to launch VB when deterministic
     preflight fails.
+  - PR #179: domain-pack completion verification reads blueprint-agent verifier
+    artifacts instead of trusting only the matrix row.
+  - PR #181: recorded post-blueprint-agent #1912 evidence; the `src/**/*`
+    lane-local false negative is gone.
 - Current active slice:
-  - `scripts/domain-pack-smoke.ts` now treats the starter CLI handoff as a
-    first-class preflight. The repo-local default CLI auto-builds when missing
-    or stale against `src/`, `registry/`, `package.json`, or `tsconfig.json`;
-    explicit `--starter-cli` and `STARTER_FOUNDRY_CLI` paths still fail closed.
-    This is domain-neutral and applies equally to FHE, bridge, and future packs.
-  - The persisted candidate queue was regenerated from the current planner.
-    The prior checked-in queue was stale and let `fhe-contracts-fhenix-foundry`
-    absorb generic FHE leaves such as `crypto-fhe-bfv`; the regenerated queue
-    scopes that candidate to `fhenix-fhe` only.
+  - `domainPack.authenticityGroups` adds a reusable evidence contract:
+    registries can say "need one SDK/package signal and two contract API
+    signals" without hardcoding Fhenix, Zama, LayerZero, or any future provider
+    in planner/verifier code.
+  - Compose now emits grouped evidence into `AGENTS.md`, `CLAUDE.md`,
+    `llms.txt`, `.starter-foundry/compose-report.json`, and
+    `.starter-foundry/context-pack.json`.
+  - The planner and candidate queue now preserve grouped evidence, so parallel
+    workers get the stronger contract in their work units.
 - Latest scored evidence:
-  - Replay-backed FHE and bridge artifacts prove parser/gate behavior but still
-    do not close #157 because promotion requires real scored train/holdout
-    evidence for at least one FHE candidate and one bridge candidate.
-  - The post-#175 blocker is now operational reproducibility: run deterministic
-    preflight with a built starter CLI, then spend live VB canaries only after
-    that preflight passes.
-  - Post-blueprint-agent #1908 live Kimi evidence is now recorded under
-    `.evolve/domain-pack-runs/issue-157-scored-results/post-1908-kimi-k26-env/`.
-    It proves Starter Foundry routing, compose, scaffold handoff, and tool
-    telemetry on both FHE and bridge candidates (`4/4` scaffold passes, `0/4`
-    scaffold failures), but it does not promote because Blueprint Agent workers
-    still fail completion (`0/4` completion passes). This is now a targeted
-    downstream completion/use-the-scaffold fix, not a missing domain-pack
-    routing proof.
+  - Post-blueprint-agent #1912 live Kimi evidence is recorded under
+    `.evolve/domain-pack-runs/issue-157-scored-results/post-1912-kimi-k26-domain-lanes/`.
+    It proves Starter Foundry still routes generic FHE/bridge candidates and
+    blueprint-agent no longer false-fails lane-local `src/**/*` domain globs.
+  - The same run does **not** prove generation lift: scaffold routing was green
+    (`4/4`), but completion stayed red (`0/4`). The next useful fix is making
+    domain evidence more structured/generative, not tuning one Fhenix leaf.
 - Issue tracking:
   - #148 is open and its body still lists some stale lanes.
-  - #153 is closed.
-  - #157 is open; remaining acceptance criteria are real scored FHE evidence,
-    real scored bridge evidence, and issue comments with measured distributions
-    plus artifact paths.
+  - #152, #153, #157, and #158 are closed.
+  - #165 is open for scaling the metadata-driven pack factory.
 - Merged foundation:
   - `9834df9` / PR #149: metadata-driven domain-pack foundation.
   - `f6feb44` / PR #156: deterministic train/holdout smoke gate.
@@ -63,9 +58,9 @@ bridges, and a clear consumer path back into blueprint-agent.
   `.evolve/governor.jsonl`, `.evolve/scorecard.json`.
 - Issue #148 is open with the full RFC/spec and canonical v3 execution tracker:
   https://github.com/tangle-network/starter-foundry/issues/148#issuecomment-4698561503
-- Open child lanes: #152 FHE runtime compatibility, #157 scored promotion, #158
-  parallel candidate promotion loop, #165 scale metadata-driven pack factory.
-  Closed child lane: #153 bridge proof pack expansion.
+- Open child lane: #165 scale metadata-driven pack factory.
+  Closed child lanes: #152 FHE runtime compatibility, #153 bridge proof pack
+  expansion, #157 scored promotion, #158 parallel candidate promotion loop.
 - Historical child lanes: #152 FHE runtime compatibility, #153 bridge proof pack
   expansion, #154 hardcode migration, #157 scored promotion, #158 parallel
   candidate promotion loop.
@@ -86,6 +81,8 @@ bridges, and a clear consumer path back into blueprint-agent.
   parallel rows (`25` emitted from `319` parsed blueprint-agent seeds).
 - [x] Verify blueprint-agent can consume the routed packs through the sibling
   starter-foundry CLI path.
+- [x] Add grouped authenticity evidence so domain packs can express alternative
+  SDK/package/API proofs without provider-specific planner code.
 
 ## Decisions
 
@@ -171,6 +168,11 @@ bridges, and a clear consumer path back into blueprint-agent.
   failed closed: FHE train score `0.918`, FHE holdout score `0.200`, bridge
   train/holdout score `0.909`/`0.909`; scaffold pass rate `4/4`, completion
   pass rate `0/4`.
+- [x] Active #148 grouped-evidence slice: `domainPack.authenticityGroups` is
+  typed, schema-validated, semantically checked, emitted into agent/context
+  outputs, and preserved in `.evolve/domain-pack-candidates.json`. Seeded first
+  for Fhenix CoFHE, Zama fhEVM, and LayerZero OFT as proof entries, not as
+  hardcoded planner branches.
 
 ## Verification
 
@@ -435,12 +437,43 @@ Post-#1910 scored contract-handoff evidence:
   verifier workspace scope for multi-project outputs, plus clearer leaf-specific
   missing-requirement feedback to the worker.
 
+Post-#1912 grouped-evidence slice:
+
+- Blueprint Agent #1912 fixed the workspace/lane domain-glob verifier bug. The
+  recorded post-#1912 evidence shows `0` lane-local `src/**/*` false negatives
+  across `3` verification artifacts, but no generation promotion: completion
+  stayed `0/4`.
+- Starter Foundry now has a generic grouped evidence contract:
+  `domainPack.authenticityGroups`.
+  - FHE examples: `cofhe-sdk`, `cofhe-contract-apis`,
+    `fhevm-contract-apis`.
+  - Bridge example: `layerzero-sdk`, `oft-contract`,
+    `bridge-deploy-config`.
+- The generated queue was refreshed with grouped evidence:
+  `.evolve/domain-pack-candidates.json` has `25` candidates from `319`
+  blueprint-agent scenario seeds. `fhe-contracts-fhenix-foundry` and
+  `bridge-contracts-capability-evm-layerzero-oft` both carry grouped
+  authenticity evidence in their work units.
+- Verification for this slice:
+  - `pnpm validate:registry` -> passed (`169` families; only pre-existing
+    keyword-overlap warnings).
+  - `pnpm exec tsc --noEmit --pretty false` -> passed.
+  - `pnpm build && pnpm exec tsc -p tsconfig.test.json --pretty false` ->
+    passed.
+  - `node --test --test-concurrency=1 dist-tests/domain-pack-agent-context.test.js dist-tests/domain-packs.test.js dist-tests/plan-domain-pack-work.test.js`
+    -> `18/18` passing.
+  - `node --test --test-concurrency=1 dist-tests/domain-pack-run.test.js dist-tests/domain-pack-smoke.test.js`
+    -> `13/13` passing.
+  - `pnpm lint --quiet` -> passed.
+  - Changed-file Prettier check -> passed.
+  - `git diff --check` -> passed.
+  - `pnpm test` -> `1156` passed, `0` failed, `1` skipped, `1` todo.
+
 ## Open Follow-up Candidates
 
-- Promote generated `.evolve/domain-pack-candidates.json` rows into parallel
-  implementation issues/PRs after this foundation lands.
-- Run real `--blueprint-agent scored` promotion for at least one FHE candidate
-  and one bridge candidate, then attach those artifacts to #157/#148.
-- Close #153 only after the bridge matrix covers at least six prompts across at
-  least three bridge surfaces/families/layers. The active routing PR is the first
-  concrete bridge UI proof slice, not the full lane closure.
+- Use #165 to promote generated `.evolve/domain-pack-candidates.json` rows into
+  parallel metadata/scaffold-pack implementation issues/PRs.
+- Make Blueprint Agent consume `authenticityGroups` directly in verifier
+  feedback instead of relying on flat provider strings.
+- Run the next powered FHE/bridge scored promotion only after the grouped
+  evidence is available in the scaffold handoff and verifier feedback.

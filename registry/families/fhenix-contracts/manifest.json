@@ -28,6 +28,26 @@
       "private voting",
       "encrypted balance"
     ],
+    "authenticityGroups": [
+      {
+        "id": "cofhe-sdk",
+        "description": "At least one CoFHE package or import signal should survive generation.",
+        "minRequired": 1,
+        "signals": ["cofhejs", "@fhenixprotocol/cofhe-contracts", "cofhe-contracts"]
+      },
+      {
+        "id": "cofhe-contract-apis",
+        "description": "Generated contracts should use encrypted inputs and access-control APIs.",
+        "minRequired": 2,
+        "signals": ["InEuint", "FHE.asEuint", "FHE.allow", "FHE.select"]
+      },
+      {
+        "id": "fhe-product-behavior",
+        "description": "The scaffold should implement a real encrypted workflow, not plain Solidity placeholders.",
+        "minRequired": 1,
+        "signals": ["sealed bid", "private voting", "encrypted balance"]
+      }
+    ],
     "routingPrompts": [
       {
         "prompt": "Build a Fhenix Hardhat encrypted counter using cofhejs",

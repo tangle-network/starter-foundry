@@ -97,6 +97,13 @@ export interface DomainPackRoutingPrompt {
   expectedLayers?: string[]
 }
 
+export interface DomainPackAuthenticityGroup {
+  id: string
+  description?: string
+  minRequired?: number
+  signals: string[]
+}
+
 export interface DomainPackMetadata {
   domain: {
     /**
@@ -121,6 +128,7 @@ export interface DomainPackMetadata {
   ambiguityGroup?: string
   validationCommands?: string[]
   authenticitySignals?: string[]
+  authenticityGroups?: DomainPackAuthenticityGroup[]
   routingPrompts?: DomainPackRoutingPrompt[]
 }
 
@@ -132,6 +140,7 @@ export interface DomainPackGuidance {
   ambiguityGroup: string | null
   validationCommands: string[]
   authenticitySignals: string[]
+  authenticityGroups: DomainPackAuthenticityGroup[]
 }
 
 interface ManifestBase {

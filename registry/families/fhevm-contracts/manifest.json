@@ -28,6 +28,26 @@
       "confidential erc20",
       "encrypted evm"
     ],
+    "authenticityGroups": [
+      {
+        "id": "fhevm-sdk",
+        "description": "At least one fhEVM package or import signal should survive generation.",
+        "minRequired": 1,
+        "signals": ["@fhevm/solidity", "fhevm", "tfhe"]
+      },
+      {
+        "id": "fhevm-contract-apis",
+        "description": "Generated contracts should use encrypted external inputs and access-control APIs.",
+        "minRequired": 2,
+        "signals": ["FHE.fromExternal", "FHE.asEuint", "FHE.allow", "TFHE", "euint"]
+      },
+      {
+        "id": "fhe-product-behavior",
+        "description": "The scaffold should implement a real encrypted workflow, not plain Solidity placeholders.",
+        "minRequired": 1,
+        "signals": ["confidential erc20", "encrypted evm", "encrypted balance"]
+      }
+    ],
     "routingPrompts": [
       {
         "prompt": "Build a Zama fhEVM confidential ERC20",

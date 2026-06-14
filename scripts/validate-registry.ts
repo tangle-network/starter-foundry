@@ -173,6 +173,21 @@ function validateDomainPackSemantic(owner, mf) {
       `${owner} domainPack.provides must contain at least one provided capability/toolchain`,
     )
   }
+  const authenticityGroupIds = new Set()
+  for (const [index, group] of (pack.authenticityGroups ?? []).entries()) {
+    if (authenticityGroupIds.has(group.id)) {
+      failures.push(`${owner} domainPack.authenticityGroups id "${group.id}" is duplicated`)
+    }
+    authenticityGroupIds.add(group.id)
+    if (!Array.isArray(group.signals) || group.signals.length === 0) {
+      failures.push(`${owner} domainPack.authenticityGroups[${index}].signals must not be empty`)
+    }
+    if ((group.minRequired ?? 1) > (group.signals?.length ?? 0)) {
+      failures.push(
+        `${owner} domainPack.authenticityGroups[${index}].minRequired cannot exceed signals.length`,
+      )
+    }
+  }
   for (const route of pack.routingPrompts ?? []) {
     if (route.expectedFamily && !familyIds.has(route.expectedFamily)) {
       failures.push(

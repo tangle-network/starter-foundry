@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>VerticalBench: fhenix-fhe — Benchmark Report</title>
+<style>
+  /* VerticalBench report theme — print-first, consulting-grade.
+     No drop shadows, no gradients, restrained palette. Designed to read
+     equally well on screen and as a printed/PDF deck for partner share-out. */
+  /* US Letter, conservative margins. Equal L/R so content centers exactly. */
+  @page { size: Letter; margin: 0.55in 0.62in 0.62in; }
+  /* The cover bleeds to the paper edge — zero margin on page 1 only. */
+  @page :first { margin: 0; }
+  * { box-sizing: border-box; }
+  :root {
+    /* Page is near-white with a whisper of Tangle violet; cards sit a shade
+       deeper in faint violet so the document has color hierarchy, not flat white. */
+    --bg: #fbfaff;
+    --panel: #ffffff;
+    --card: #f6f3fd;
+    --card-line: #e7e2f6;
+    --card-accent: #efeaff;
+    --ink: #0b1220;
+    --ink-soft: #1f2937;
+    --muted: #4b5563;
+    --muted-2: #6b7280;
+    --line: #e5e7eb;
+    --line-strong: #c9ced8;
+    /* Full-bleed cover — deep Tangle violet gradient + its own text ramp. */
+    --cover-grad: radial-gradient(120% 90% at 18% 8%, #3a2f7d 0%, #241d56 45%, #140f33 100%);
+    --cover-ink: #ffffff;
+    --cover-sub: #d7d2f3;
+    --cover-muted: #a59cdb;
+    --cover-accent: #b9b0ff;
+    --cover-rule: rgba(255,255,255,0.16);
+    --cover-card: rgba(255,255,255,0.05);
+    --cover-card-line: rgba(255,255,255,0.13);
+    /* Tangle brand purple — used as a single accent on the header rule,
+       brand wordmark, and emphasis spans. Never as background gradient. */
+    --brand: #34306b;
+    --brand-deep: #1e1b4b;
+    --accent: #34306b;
+    --good: #047857;
+    --good-soft: #ecfdf5;
+    --bad:  #b91c1c;
+    --bad-soft:  #fef2f2;
+    --warn: #b45309;
+    --warn-soft: #fffaf0;
+    /* Hero band — the single dark Tangle-gradient anchor on page 1. Text ramp +
+       glass stat callouts read on the dark band; delta colors = the status trio. */
+    --hero-grad: linear-gradient(135deg, #0b1020, #1e293b);
+    --hero-ink: #ffffff;
+    --hero-sub: #cbd5e1;
+    --hero-muted: #94a3b8;
+    --hero-accent: #a5b4fc;
+    --hero-stat-bg: rgba(255,255,255,0.06);
+    --hero-stat-line: rgba(255,255,255,0.12);
+    --rise: #34d399;
+    --fall: #f87171;
+  }
+  html, body { background: var(--bg); }
+  body {
+    margin: 0;
+    color: var(--ink);
+    font: 13px/1.5 "Inter", "Helvetica Neue", Arial, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  /* Sections cap to the page content width. A genuinely wide child (the solve
+     matrix) is made to FIT via table-layout:fixed below — never clipped. */
+  main, .card, section { max-width: 100%; }
+  /* Chart/table sections sit on the clean page ground; the faint-violet card
+     tint is reserved for PROSE sections, so the document reads as prose-cards
+     punctuating clean data — not every block boxed. */
+  .chart-section { background: transparent; border: 0; padding: 0; }
+  /* Header — slim, solid Tangle purple rule. Reads as branded research, not
+     SaaS dashboard. No gradient, no painted band. */
+  body > header {
+    padding: 4px 0 14px;
+    border-bottom: 3px solid var(--brand);
+    margin: 0 0 18px;
+  }
+  body > header h1 { color: var(--ink); font-size: 26px; line-height: 1.12; letter-spacing: -.012em; font-weight: 700; margin: 4px 0 4px; }
+  body > header p { color: var(--muted); font-size: 12px; max-width: 78ch; margin: 0; }
+  /* HERO — the one dark Tangle band, page 1 only. BLUF decision + GAP + callouts. */
+  .hero { background: var(--hero-grad); color: var(--hero-ink); border-radius: 12px; padding: 26px 30px 24px; margin: 0; break-inside: avoid; page-break-inside: avoid; }
+  .hero .hero-brand { display: flex; align-items: center; gap: 9px; margin-bottom: 16px; }
+  .hero .hero-brand svg { height: 22px; width: auto; }
+  .hero .hero-brand .wm { font-weight: 700; font-size: 14px; letter-spacing: -.01em; color: var(--hero-ink); }
+  .hero .hero-brand .pr { color: var(--hero-muted); font-size: 12px; }
+  .hero .hero-brand .div { color: var(--hero-muted); }
+  .hero .kicker { text-transform: uppercase; letter-spacing: .14em; font-size: 11px; font-weight: 700; color: var(--hero-accent); margin-bottom: 8px; }
+  .hero .hero-h1 { color: var(--hero-ink); font-size: 25px; line-height: 1.2; font-weight: 800; letter-spacing: -.012em; margin: 0 0 8px; max-width: 46ch; }
+  .hero .hero-sub { color: var(--hero-sub); font-size: 14px; line-height: 1.45; margin: 0 0 18px; max-width: 70ch; }
+  .hero .gap { margin: 0 0 18px; max-width: 560px; }
+  .hero .gap-row { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+  .hero .gap-row .gl { width: 86px; font-size: 11px; color: var(--hero-muted); text-align: right; flex: none; }
+  .hero .gap-row .track { flex: 1; height: 13px; background: var(--hero-stat-line); border-radius: 3px; overflow: hidden; }
+  .hero .gap-row .fill { height: 100%; border-radius: 3px; }
+  .hero .gap-row .gv { width: 42px; font-size: 12px; font-weight: 700; color: var(--hero-ink); flex: none; }
+  .hero .gap-note { font-size: 11.5px; color: var(--hero-muted); margin-top: 2px; }
+  .hero .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .hero .stat { background: var(--hero-stat-bg); border: 1px solid var(--hero-stat-line); border-radius: 9px; padding: 12px 14px; }
+  .hero .stat .v { font-size: 22px; font-weight: 800; color: var(--hero-ink); letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+  .hero .stat .l { font-size: 11.5px; color: var(--hero-muted); line-height: 1.35; margin-top: 3px; }
+  @media (max-width: 720px) { .hero .stat-row { grid-template-columns: 1fr; } }
+  /* ── Professional research-report layout ─────────────────────────────────── */
+  /* COVER — full-bleed deep-Tangle-violet first page (page: cover → @page margin 0). */
+  #title-page {
+    page-break-after: always; break-after: page;
+    background: var(--cover-grad); color: var(--cover-ink);
+    /* Fill exactly one Letter page (slightly under 11in so sub-pixel rounding
+       never spills a blank page 2); padding sits inside via border-box. */
+    height: 10.55in; box-sizing: border-box;
+    padding: 0.85in 0.78in 0.72in; display: flex; flex-direction: column;
+  }
+  #title-page .tp-brand svg { height: 30px; width: auto; filter: brightness(0) invert(1); }
+  #title-page .tp-rule { height: 2px; width: 64px; background: var(--cover-accent); margin: 26px 0 0; }
+  #title-page .tp-title { font-size: 54px; font-weight: 800; letter-spacing: -.025em; color: var(--cover-ink); margin: 30px 0 12px; line-height: 1.02; }
+  #title-page .tp-subtitle { font-size: 19px; color: var(--cover-sub); font-weight: 400; margin: 0; max-width: 30ch; line-height: 1.4; }
+  #title-page .tp-meta { font-size: 13px; color: var(--cover-muted); line-height: 1.85; margin: 34px 0 0; }
+  #title-page .tp-meta .tp-class { margin-top: 12px; font-weight: 700; color: var(--cover-accent); letter-spacing: .12em; text-transform: uppercase; font-size: 11px; }
+  #title-page .tp-scope { border-top: 1px solid var(--cover-rule); border-bottom: 1px solid var(--cover-rule); padding: 16px 0; margin: 26px 0 0; }
+  #title-page .kv-row { display: flex; gap: 14px; font-size: 12.5px; padding: 3px 0; }
+  #title-page .kv-row .kv-k { color: var(--cover-muted); min-width: 184px; }
+  #title-page .kv-row .kv-v { color: var(--cover-sub); font-variant-numeric: tabular-nums; }
+  #title-page .tp-abstract { font-size: 13px; line-height: 1.65; color: var(--cover-sub); max-width: 72ch; margin: auto 0 0; padding-top: 26px; border-top: 1px solid var(--cover-rule); }
+  /* Table of contents — numbered, dotted leaders. */
+  #toc { page-break-after: always; break-after: page; }
+  #toc .toc-h { font-size: 16px; font-weight: 700; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+  #toc .toc-list { list-style: none; padding: 0; margin: 14px 0 0; }
+  #toc .toc-list li { padding: 7px 0; border-bottom: 1px dotted var(--line); }
+  #toc .toc-list a { color: var(--ink); text-decoration: none; font-size: 13.5px; }
+  #toc .toc-list .toc-n { color: var(--muted); font-variant-numeric: tabular-nums; display: inline-block; min-width: 26px; }
+  /* Executive Summary — GAP bars + stat callouts on WHITE (no dark band). */
+  .es-gap { max-width: 560px; margin: 14px 0 16px; }
+  .es-gap-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .es-gap-row .es-gl { width: 220px; font-size: 12px; color: var(--muted); text-align: right; flex: none; }
+  .es-gap-row .gl-track { flex: 1; height: 14px; background: #eef0f3; border-radius: 3px; overflow: hidden; }
+  .es-gap-row .gl-fill { height: 100%; border-radius: 3px; }
+  .es-gap-row .es-gv { width: 42px; font-size: 12px; font-weight: 700; color: var(--ink); flex: none; font-variant-numeric: tabular-nums; }
+  .es-gap-note { font-size: 12px; color: var(--muted); margin-top: 4px; padding-left: 230px; }
+  .es-stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 12px; }
+  .es-stat { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; background: var(--good-soft); }
+  .es-stat .v { font-size: 21px; font-weight: 800; color: var(--ink); letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+  .es-stat .l { font-size: 11.5px; color: var(--muted); line-height: 1.35; margin-top: 3px; }
+  @media (max-width: 720px) { .es-stat-row { grid-template-columns: 1fr; } .es-gap-row .es-gl { width: 130px; } .es-gap-note { padding-left: 0; } }
+  /* Section numbering — CSS counters, survive per-ICP reordering. */
+  main { counter-reset: section; }
+  main > section:not(#title-page):not(#toc) > h2 { counter-reset: subsec; }
+  main > section:not(#title-page):not(#toc) > h2::before { counter-increment: section; content: counter(section) ".\00a0"; color: var(--muted); font-variant-numeric: tabular-nums; }
+  main > section:not(#title-page):not(#toc) > h3 { counter-increment: subsec; }
+  main > section:not(#title-page):not(#toc) > h3::before { content: counter(section) "." counter(subsec) "\00a0"; color: var(--muted); font-variant-numeric: tabular-nums; font-weight: 600; }
+  /* main spans the full @page content area — no fixed max-width that fights
+     the page width and causes the right-cut / off-center issue. */
+  main { padding: 0 0 24px; display: grid; gap: 16px; width: 100%; margin: 0; }
+  nav.toc { display: none; }
+  @media screen and (min-width: 1280px) {
+    body { padding: 28px min(5vw, 56px); }
+    main { max-width: 980px; margin: 0 auto; }
+    nav.toc {
+      display: block; position: fixed; left: 24px; top: 24px; width: 180px;
+      padding: 14px 16px; font-size: 12px; line-height: 1.5;
+      border: 1px solid var(--line); background: #fff;
+      max-height: calc(100vh - 48px); overflow-y: auto;
+    }
+    .toc-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--muted-2); margin-bottom: 10px; }
+    .toc a { display: block; padding: 4px 0; color: var(--ink-soft); text-decoration: none; }
+    .toc a:hover { color: var(--brand); }
+  }
+  /* PRINT/PDF: on-screen scroll containers must NOT rasterize their scrollbar
+     track into the static artifact (the "never opened before shipping" tell).
+     Force every overflow box open and hide scrollbars in the print path. */
+  @media print {
+    nav.toc { display: none !important; }
+    /* Hide the scrollbar TRACK only — do NOT set overflow:visible (that lets a
+       wide chart/table spill into extra pages). SVGs already fit via
+       max-width:100%; the scroll box just must not rasterize its scrollbar. */
+    * { scrollbar-width: none !important; }
+    *::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+    /* No orphaned headings: keep each heading with the content it introduces, and
+       never split a single chart across pages. */
+    h2, h3 { break-after: avoid; page-break-after: avoid; }
+    section > p.muted { break-after: avoid; }
+    figure, .chart-card, .hero { break-inside: avoid; page-break-inside: avoid; }
+  }
+  h1, h2, h3 { letter-spacing: -.005em; }
+  h2 {
+    margin: 0 0 10px; font-size: 16px; font-weight: 700; color: var(--ink);
+    padding-bottom: 7px; border-bottom: 2px solid var(--brand);
+  }
+  h3 { margin: 14px 0 6px; font-size: 13px; font-weight: 700; color: var(--brand-deep); }
+  p { margin: 0 0 8px; color: var(--ink-soft); }
+  .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--brand); }
+  .brand svg { width: 20px; height: 20px; }
+  .brand .muted { color: var(--muted-2); font-weight: 600; letter-spacing: .08em; }
+  /* Tables — hairline grid, no zebra, monospace numbers. Compact for print. */
+  table {
+    width: 100%; border-collapse: collapse; table-layout: auto;
+    background: #fff; font-size: 11.5px; font-variant-numeric: tabular-nums;
+    border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink);
+  }
+  th, td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: baseline; }
+  th { font-weight: 700; font-size: 10px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line-strong); white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: none; }
+  td:nth-child(n+3), th:nth-child(n+3) { text-align: right; }
+  .muted { color: var(--muted-2); font-size: 12px; }
+  strong { font-weight: 600; color: var(--ink); }
+  code { background: #f3f4f6; padding: .08rem .35rem; border-radius: 2px; font-size: 12px; color: var(--ink-soft); font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  /* Leaderboard ranks — subtle, no medal gradients */
+  tbody tr.rank-row-gold,
+  tbody tr.rank-row-silver,
+  tbody tr.rank-row-bronze { background: transparent; }
+  td.rank-cell { font-size: 13px; font-weight: 600; width: 28px; text-align: right; color: var(--muted-2); padding-right: 6px; }
+  td.rank-cell.rank-gold,
+  td.rank-cell.rank-silver,
+  td.rank-cell.rank-bronze { color: var(--ink); font-weight: 700; }
+  td.lb-name strong { font-size: 13px; font-weight: 600; color: var(--ink); }
+  td.lb-passrate { font-size: 14px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+  td.lb-passrate .lb-pct,
+  td.lb-passrate .lb-pct.pct-high,
+  td.lb-passrate .lb-pct.pct-mid,
+  td.lb-passrate .lb-pct.pct-low { color: var(--ink); display: block; line-height: 1.1; }
+  td.lb-passrate .ci-whisker { display: block; margin: 2px 0 1px auto; }
+  td.lb-passrate .lb-ci { display: block; font-size: 9px; font-weight: 400; color: var(--muted-2); letter-spacing: 0; text-transform: none; }
+  td.lb-blended { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  td.lb-satisfied { font-size: 14px; font-variant-numeric: tabular-nums; color: var(--ink-soft); }
+  td.lb-satisfied .lb-denom { color: var(--muted-2); font-weight: 400; }
+  /* Legacy span classes (no medal coloring) */
+  .rank-gold, .rank-silver, .rank-bronze { color: var(--ink); font-weight: 700; }
+  .grid { display: grid; gap: 14px; }
+  .kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .two { grid-template-columns: 1.1fr .9fr; }
+  .three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  /* Sections (formerly "cards") — bordered, no shadow. Allow page breaks
+     inside large sections (leaderboards, matrices) so page 1 isn't empty. */
+  .card {
+    background: var(--card); border: 1px solid var(--card-line); border-radius: 8px;
+    padding: 16px 18px;
+  }
+  /* Section number badge picks up the brand violet — the running accent. */
+  main > section:not(#title-page):not(#toc) > h2::before { color: var(--brand) !important; font-weight: 800; }
+  main > section:not(#title-page):not(#toc) > h3::before { color: var(--brand) !important; }
+  /* Small/compact sections still avoid splitting */
+  .card.compact, section.compact { page-break-inside: avoid; break-inside: avoid; }
+  .kpi-label { color: var(--muted-2); text-transform: uppercase; letter-spacing: .08em; font-size: 10px; font-weight: 600; display: block; }
+  .kpi-value { display: block; margin-top: 6px; font-size: 24px; line-height: 1.05; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink); letter-spacing: -.01em; }
+  .pill { display: inline-block; padding: 2px 7px; font-size: 11px; font-weight: 600; background: #f3f4f6; color: var(--ink-soft); margin-right: 4px; border: 1px solid var(--line); }
+  .pill.pass { background: var(--good-soft); color: var(--good); border-color: #bbf7d0; }
+  .pill.fail { background: var(--bad-soft); color: var(--bad);  border-color: #fecaca; }
+  .pill.warn { background: var(--warn-soft); color: var(--warn); border-color: #fde68a; }
+  .callouts { display: grid; gap: 8px; }
+  .callout { border-left: 3px solid var(--ink); padding: 8px 12px; background: #fafafa; font-size: 13px; line-height: 1.55; }
+  .callout strong { color: var(--ink); }
+  /* Solve matrix — hairline grid, subtle backgrounds, no hover gimmicks */
+  .matrix-scroll { overflow-x: auto; }
+  .matrix-table { border-collapse: separate; border-spacing: 0; font-size: 11.5px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .matrix-table th { background: #f9fafb; color: var(--muted); font-size: 10px; padding: 5px 4px; border-bottom: 1px solid var(--line); white-space: nowrap; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+  .matrix-table th.task-h { background: #fff; color: var(--ink); text-align: left; font-weight: 600; padding: 6px 10px 6px 12px; position: sticky; left: 0; z-index: 2; max-width: 260px; overflow: hidden; text-overflow: ellipsis; text-transform: none; letter-spacing: 0; font-size: 12px; }
+  .matrix-table th.task-h-h { position: sticky; left: 0; z-index: 3; background: #f9fafb; min-width: 220px; text-align: left; }
+  .matrix-table th.vert-h { writing-mode: vertical-rl; transform: rotate(180deg); height: 160px; padding: 8px 0; min-width: 28px; max-width: 28px; vertical-align: bottom; }
+  .matrix-table th.vert-h span { display: inline-block; white-space: nowrap; font-size: 11px; color: var(--ink-soft); text-transform: none; letter-spacing: 0; font-weight: 500; }
+  #matrix > div { overflow-x: auto; }
+  /* Matrix table fills body width — never wider. A wider auto width forces
+     body to expand and chromium then clips other content (leaderboard) at
+     the @page right margin. The matrix's natural width can be much wider
+     than Letter when there are many variants — let cells get small. */
+  #matrix table.matrix-table { width: 100%; max-width: 100%; table-layout: fixed; }
+  #matrix table.matrix-table th.task-h-h, #matrix table.matrix-table th.task-h { width: 168px; }
+  .matrix-table td.cell { width: 32px; min-width: 32px; text-align: center; font-size: 13px; line-height: 1; padding: 6px 0; border-bottom: 1px solid var(--line); border-left: 1px solid var(--line); color: var(--ink-soft); }
+  .matrix-table td.cell.ok   { color: var(--good); background: var(--good-soft); font-weight: 700; }
+  .matrix-table td.cell.near { color: var(--warn); background: var(--warn-soft); font-weight: 600; }
+  .matrix-table td.cell.miss { color: var(--muted-2); }
+  .matrix-table td.cell.fail { color: var(--bad);  background: var(--bad-soft);  font-weight: 600; }
+  .matrix-table td.cell.warn { color: var(--warn); background: var(--warn-soft); }
+  .legend-row { display: flex; flex-wrap: wrap; gap: 14px; margin: 8px 0 12px; font-size: 12px; color: var(--ink-soft); }
+  .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+  /* Per-agent diagnostics — horizontal stacked bars */
+  .diag-list { display: grid; gap: 10px; margin-top: 4px; }
+  .diag-row { display: grid; grid-template-columns: 200px 1fr 240px; gap: 14px; align-items: center; page-break-inside: avoid; break-inside: avoid; }
+  .diag-label strong { display: block; font-size: 13px; color: var(--ink); font-weight: 600; }
+  .diag-label .muted { font-size: 11px; color: var(--muted-2); }
+  .diag-bar { display: flex; height: 22px; overflow: hidden; background: #f3f4f6; border: 1px solid var(--line); }
+  .diag-seg { display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #fff; }
+  .diag-seg.sat  { background: var(--good); color: #fff; }
+  .diag-seg.near { background: var(--warn); color: #fff; }
+  .diag-seg.fail { background: var(--bad);  color: #fff; }
+  .diag-seg:empty { color: transparent; }
+  .diag-meta { display: flex; gap: 14px; justify-content: flex-end; font-size: 12px; }
+  .diag-stat { display: flex; flex-direction: column; align-items: flex-end; }
+  .diag-stat strong { font-size: 13px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .diag-stat span { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted-2); font-weight: 600; }
+  /* Charts — full-width, generous whitespace, each on its own page when possible */
+  .bench-charts { display: grid; grid-template-columns: 1fr; gap: 22px; margin-top: 12px; }
+  /* Verification-layer heatmap is the one intentionally-wide artifact. Its
+     SVG is sized to the landscape print width (≈920px viewBox, see
+     theme.ts LANDSCAPE_CHART_WIDTH) so it fits Letter at ~0.72× with text
+     ≥9px. In print/PDF it scales to the page (max-width:100%, no overflow);
+     on a wide screen it renders at its natural width inside a scroll box
+     for interactivity. No min-width — that was the source of the Letter
+     overflow/clip. */
+  #concept-coverage-heatmap > div:has(svg) { overflow-x: auto; padding-bottom: 8px; }
+  #concept-coverage-heatmap svg { max-width: 100%; height: auto; }
+  #realness-heatmap > div:has(svg) { overflow-x: auto; padding-bottom: 8px; }
+  #realness-heatmap svg { max-width: 100%; height: auto; }
+  #realness-leaderboard svg { max-width: 100%; height: auto; }
+  @media screen and (min-width: 1280px) {
+    #concept-coverage-heatmap svg { width: auto; max-width: none; }
+  }
+  .chart-card > div:has(> svg) { overflow-x: auto; }
+  .chart-card { padding: 16px 18px; page-break-inside: avoid; break-inside: avoid; }
+  .chart-card figcaption { margin-bottom: 10px; }
+  .chart-card h3 { font-size: 14px; margin-bottom: 4px; font-weight: 600; }
+  .chart-card .caption { font-size: 12px; color: var(--muted-2); display: block; }
+  .chart-card svg { width: 100%; height: auto; display: block; max-width: 100%; }
+  .chart-card svg text { fill: var(--ink); font-family: inherit; }
+  section { margin-bottom: 4px; }
+  /* Leaderboard — minimal CSS, lets natural layout do its job. Agent names
+     are short (prefix stripped at render-time) so no width constraint needed.
+     Wall + Date hidden so 5 columns fit Letter width. */
+  #leaderboard-table table { width: 100%; table-layout: fixed; }
+  #leaderboard-table table th:nth-child(1), #leaderboard-table table td:nth-child(1) { width: 5%; text-align: right; }
+  #leaderboard-table table th:nth-child(2), #leaderboard-table table td:nth-child(2) { width: 42%; word-break: break-word; }
+  #leaderboard-table table th:nth-child(3), #leaderboard-table table td:nth-child(3) { width: 23%; text-align: right; }
+  #leaderboard-table table th:nth-child(4), #leaderboard-table table td:nth-child(4) { width: 13%; text-align: right; }
+  #leaderboard-table table th:nth-child(5), #leaderboard-table table td:nth-child(5) { width: 17%; text-align: right; }
+  #leaderboard-table table th:nth-child(6), #leaderboard-table table td:nth-child(6) { display: none; }
+  #leaderboard-table table th:nth-child(7), #leaderboard-table table td:nth-child(7) { display: none; }
+  #leaderboard-table td.lb-name strong { font-size: 12px; line-height: 1.25; }
+  #leaderboard-table td.lb-name .muted { font-size: 10px; }
+
+  /* Print refinements — exact color rendering, header pad, page breaks. */
+  @media print {
+    body > header { padding-top: 0; margin-bottom: 14px; }
+    .card, section, .diag-row, table, .chart-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    h2 { page-break-after: avoid; break-after: avoid; }
+    nav.toc { display: none; }
+  }
+  @media (max-width: 900px) { .kpis, .two, .three { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<nav class="toc">
+  <div class="toc-title">In this report</div>
+  <a href="#hero">Executive headline</a>
+  <a href="#podium">Top performers</a>
+  <a href="#what-this-means">What this means</a>
+  <a href="#story">Key findings</a>
+  <a href="#families">Per-family insights</a>
+  <a href="#future">What to run next</a>
+  <a href="#leaderboard-table">Full leaderboard</a>
+  <a href="#matrix">Solve matrix</a>
+  <a href="#diagnostics">Per-agent diagnostics</a>
+  <a href="#charts">Charts</a>
+</nav>
+
+
+<main>
+  <section id="title-page">
+      <div class="tp-brand"><svg style="height:42px;width:auto;display:block" width="564" height="228" viewBox="0 0 564 228" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_8318_1905)">
+<path d="M170.74 150.082C170.747 142.848 167.464 135.908 161.612 130.784C155.76 125.66 147.818 122.772 139.528 122.754L104.921 122.754C104.704 119.939 104.567 117.062 104.567 114.078C104.567 111.095 104.429 108.231 104.236 105.403L139.528 105.403C147.746 105.288 155.582 102.359 161.347 97.2467C167.112 92.135 170.343 85.2506 170.343 78.0787C170.343 70.9069 167.112 64.0225 161.347 58.9107C155.582 53.799 147.746 50.8696 139.528 50.7545L56.817 50.7545C48.5993 50.8696 40.7628 53.799 34.9981 58.9107C29.2334 64.0225 26.0025 70.9069 26.0025 78.0787C26.0025 85.2506 29.2334 92.135 34.9981 97.2467C40.7628 102.359 48.5993 105.288 56.817 105.403L89.3238 106.163C91.5854 106.163 91.7785 111.095 91.7785 114.078C91.7785 117.062 91.9156 119.925 92.1091 122.754L56.817 122.754C48.5993 122.869 40.7628 125.798 34.9981 130.91C29.2334 136.022 26.0025 142.906 26.0025 150.078C26.0025 157.25 29.2334 164.134 34.9981 169.246C40.7628 174.358 48.5993 177.287 56.817 177.402L139.528 177.402C147.816 177.384 155.757 174.497 161.609 169.374C167.461 164.252 170.745 157.314 170.74 150.082ZM157.952 78.0752C157.954 82.3443 156.016 86.4397 152.562 89.463C149.108 92.4863 144.42 94.1905 139.528 94.2017L102.881 94.2017C101.554 86.2073 99.0244 78.4005 95.3585 70.9829C93.7421 67.7691 91.6728 64.7438 89.1983 61.9769L139.528 61.9769C144.415 61.988 149.097 63.6884 152.55 66.7056C156.003 69.7228 157.946 73.811 157.952 78.0752ZM56.817 94.2017C51.9157 94.2017 47.2151 92.5027 43.7493 89.4784C40.2835 86.4541 38.3364 82.3522 38.3364 78.0752C38.3364 73.7982 40.2835 69.6964 43.7493 66.6721C47.2151 63.6478 51.9157 61.9487 56.817 61.9487L65.1139 61.9487C72.4433 61.9487 79.3856 67.0146 83.7074 75.5071C86.6658 81.491 88.77 87.7697 89.9724 94.2017L56.817 94.2017ZM38.3929 150.082C38.3907 145.812 40.3293 141.717 43.7834 138.694C47.2374 135.67 51.9248 133.966 56.817 133.955L93.4637 133.955C94.7912 141.949 97.3206 149.756 100.987 157.174C102.603 160.388 104.672 163.413 107.147 166.18L56.817 166.18C51.9304 166.169 47.2479 164.468 43.7948 161.451C40.3416 158.434 38.3993 154.346 38.3929 150.082ZM112.686 152.65C109.728 146.666 107.623 140.387 106.421 133.955L139.528 133.955C144.429 133.955 149.13 135.654 152.596 138.678C156.062 141.703 158.009 145.804 158.009 150.082C158.009 154.359 156.062 158.46 152.596 161.485C149.13 164.509 144.429 166.208 139.528 166.208L131.231 166.208C123.934 166.208 116.992 161.142 112.686 152.65Z" fill="url(#paint0_linear_8318_1905)"/>
+<path opacity="0.8" d="M170.74 78.0752C170.747 85.3089 167.463 92.2492 161.612 97.3728C155.76 102.496 147.817 105.384 139.527 105.403L104.92 105.403C104.702 108.217 104.565 111.095 104.565 114.078C104.565 117.062 104.428 119.925 104.235 122.754L139.527 122.754C147.745 122.869 155.582 125.798 161.347 130.91C167.112 136.022 170.342 142.906 170.342 150.078C170.342 157.25 167.112 164.134 161.347 169.246C155.582 174.358 147.745 177.287 139.527 177.402L56.8149 177.402C48.597 177.287 40.7604 174.358 34.9956 169.246C29.2307 164.134 25.9998 157.25 25.9998 150.078C25.9998 142.906 29.2307 136.022 34.9956 130.91C40.7604 125.798 48.597 122.869 56.8149 122.754L89.3223 121.994C91.5839 121.994 91.777 117.062 91.777 114.078C91.777 111.095 91.9141 108.231 92.1076 105.403L56.8149 105.403C48.597 105.288 40.7604 102.359 34.9956 97.2468C29.2307 92.135 25.9998 85.2506 25.9998 78.0788C25.9998 70.9069 29.2307 64.0225 34.9956 58.9108C40.7604 53.799 48.597 50.8696 56.8149 50.7545L139.527 50.7545C147.816 50.7731 155.757 53.6602 161.609 58.7823C167.46 63.9043 170.744 70.8428 170.74 78.0752ZM157.952 150.082C157.954 145.812 156.015 141.717 152.561 138.694C149.107 135.67 144.42 133.966 139.527 133.955L102.88 133.955C101.552 141.949 99.023 149.756 95.3571 157.174C93.7406 160.388 91.6712 163.413 89.1968 166.18L139.527 166.18C144.414 166.169 149.097 164.468 152.55 161.451C156.003 158.434 157.945 154.346 157.952 150.082ZM56.8149 133.955C51.9134 133.955 47.2127 135.654 43.7469 138.678C40.2811 141.703 38.334 145.805 38.334 150.082C38.334 154.359 40.2811 158.46 43.7469 161.485C47.2127 164.509 51.9134 166.208 56.8149 166.208L65.1119 166.208C72.4414 166.208 79.3838 161.142 83.7057 152.65C86.6642 146.666 88.7684 140.387 89.9708 133.955L56.8149 133.955ZM38.3904 78.0752C38.3883 82.3443 40.3269 86.4398 43.781 89.4631C47.2351 92.4863 51.9226 94.1905 56.8149 94.2017L93.4622 94.2017C94.7898 86.2073 97.3192 78.4005 100.985 70.983C102.602 67.7692 104.671 64.7438 107.145 61.9769L56.8149 61.9769C51.9282 61.9881 47.2456 63.6884 43.7924 66.7056C40.3392 69.7228 38.3968 73.8111 38.3904 78.0752ZM112.685 75.5071C109.726 81.491 107.622 87.7697 106.42 94.2017L139.527 94.2017C144.429 94.2017 149.13 92.5027 152.595 89.4784C156.061 86.4541 158.008 82.3522 158.008 78.0752C158.008 73.7982 156.061 69.6964 152.595 66.6721C149.13 63.6478 144.429 61.9488 139.527 61.9488L131.23 61.9488C123.933 61.9488 116.991 67.0147 112.685 75.5071Z" fill="url(#paint1_linear_8318_1905)"/>
+</g>
+<path d="M244.353 87.6977V150.578H228.965V87.6977H244.353ZM209.018 94.5367V80.2888H264.3V94.5367H209.018ZM283.224 151.813C278.221 151.813 274.232 150.452 271.255 147.729C268.342 144.943 266.886 141.238 266.886 136.615C266.886 132.246 268.374 128.763 271.35 126.167C274.39 123.571 278.759 122.051 284.458 121.608L297.756 120.563V119.803C297.756 118.22 297.44 116.922 296.807 115.909C296.173 114.832 295.255 114.04 294.052 113.534C292.912 112.964 291.456 112.679 289.683 112.679C286.58 112.679 284.205 113.249 282.559 114.389C280.976 115.529 280.184 117.175 280.184 119.328H268.026C268.026 115.719 268.944 112.584 270.78 109.924C272.617 107.265 275.213 105.207 278.569 103.75C281.989 102.294 285.947 101.566 290.443 101.566C295.065 101.566 298.96 102.389 302.126 104.035C305.355 105.682 307.793 108.088 309.44 111.254C311.149 114.42 312.004 118.283 312.004 122.842V150.578H299.086L298.136 144.309C297.376 146.462 295.572 148.267 292.722 149.723C289.936 151.117 286.77 151.813 283.224 151.813ZM288.353 140.985C291.139 140.985 293.419 140.32 295.192 138.99C296.965 137.597 297.851 135.539 297.851 132.816V130.251L290.443 130.916C287.276 131.17 285.028 131.708 283.699 132.531C282.432 133.291 281.799 134.431 281.799 135.951C281.799 137.66 282.337 138.927 283.414 139.75C284.49 140.573 286.136 140.985 288.353 140.985ZM342.823 150.578H328.195V103.085H341.968L342.918 108.025C344.374 105.998 346.369 104.415 348.902 103.275C351.498 102.136 354.348 101.566 357.451 101.566C363.086 101.566 367.456 103.307 370.559 106.79C373.725 110.209 375.308 115.022 375.308 121.228V150.578H360.68V124.742C360.68 121.766 359.92 119.391 358.4 117.618C356.881 115.782 354.854 114.864 352.321 114.864C349.408 114.864 347.097 115.75 345.387 117.523C343.678 119.233 342.823 121.576 342.823 124.552V150.578ZM389.123 125.977C389.123 121.164 390.073 116.922 391.973 113.249C393.936 109.576 396.627 106.695 400.047 104.605C403.529 102.516 407.487 101.471 411.92 101.471C415.656 101.471 418.854 102.231 421.513 103.75C424.236 105.27 426.104 107.265 427.117 109.734L425.693 110.684L426.833 103.085H440.605V147.539C440.605 153.175 439.561 158.019 437.471 162.072C435.381 166.188 432.405 169.322 428.542 171.475C424.679 173.692 420.025 174.8 414.579 174.8C407.297 174.8 401.376 172.837 396.817 168.911C392.258 165.048 389.63 159.76 388.933 153.048H403.751C403.878 155.708 404.891 157.766 406.79 159.222C408.69 160.742 411.255 161.502 414.484 161.502C418.03 161.502 420.817 160.52 422.843 158.557C424.933 156.594 425.978 153.935 425.978 150.578V140.51L427.592 141.745C426.579 144.214 424.616 146.209 421.703 147.729C418.79 149.249 415.434 150.008 411.635 150.008C407.202 150.008 403.276 148.995 399.857 146.969C396.5 144.943 393.872 142.125 391.973 138.515C390.073 134.906 389.123 130.726 389.123 125.977ZM403.846 125.597C403.846 127.877 404.321 129.903 405.271 131.676C406.221 133.386 407.519 134.747 409.165 135.761C410.812 136.774 412.711 137.28 414.864 137.28C417.081 137.28 419.012 136.805 420.658 135.856C422.368 134.842 423.666 133.481 424.553 131.771C425.503 129.998 425.978 127.94 425.978 125.597C425.978 123.254 425.503 121.259 424.553 119.613C423.666 117.903 422.368 116.573 420.658 115.624C419.012 114.674 417.049 114.199 414.769 114.199C412.616 114.199 410.717 114.674 409.07 115.624C407.424 116.573 406.126 117.903 405.176 119.613C404.289 121.323 403.846 123.317 403.846 125.597ZM471.933 150.578H457.305V78.959H471.933V150.578ZM510.643 151.813C505.893 151.813 501.651 150.737 497.915 148.584C494.242 146.431 491.329 143.486 489.176 139.75C487.086 135.951 486.041 131.613 486.041 126.737C486.041 121.798 487.055 117.46 489.081 113.724C491.171 109.924 494.052 106.948 497.725 104.795C501.397 102.642 505.608 101.566 510.358 101.566C515.36 101.566 519.666 102.611 523.276 104.7C526.885 106.727 529.671 109.639 531.635 113.439C533.598 117.175 534.579 121.639 534.579 126.832V130.536L493.735 130.726L493.925 121.703H520.046C520.046 119.17 519.191 117.175 517.482 115.719C515.772 114.199 513.429 113.439 510.453 113.439C507.983 113.439 505.957 113.914 504.374 114.864C502.854 115.814 501.714 117.302 500.954 119.328C500.194 121.291 499.814 123.824 499.814 126.927C499.814 131.36 500.701 134.652 502.474 136.805C504.31 138.895 507.128 139.94 510.928 139.94C513.714 139.94 516.025 139.465 517.862 138.515C519.698 137.565 520.869 136.235 521.376 134.526H534.769C533.946 139.782 531.35 143.993 526.98 147.159C522.611 150.262 517.165 151.813 510.643 151.813Z" fill="white"/>
+<defs>
+<linearGradient id="paint0_linear_8318_1905" x1="36.7859" y1="58.7755" x2="145.994" y2="183.585" gradientUnits="userSpaceOnUse">
+<stop stop-color="#8E59FF"/>
+<stop offset="1" stop-color="#6888F9"/>
+</linearGradient>
+<linearGradient id="paint1_linear_8318_1905" x1="36.7834" y1="169.381" x2="145.992" y2="44.5696" gradientUnits="userSpaceOnUse">
+<stop stop-color="#8E59FF"/>
+<stop offset="1" stop-color="#6888F9"/>
+</linearGradient>
+<clipPath id="clip0_8318_1905">
+<rect width="126.648" height="144.74" fill="white" transform="translate(170.74 50.7545) rotate(90)"/>
+</clipPath>
+</defs>
+</svg>
+</div>
+      <div class="tp-rule"></div>
+      <h1 class="tp-title">VerticalBench</h1>
+      <p class="tp-subtitle">An Authenticity-Gated Benchmark for Confidential-Contract Coding Agents</p>
+      <div class="tp-meta">
+        <div>Vertical: Fhenix FHE (fully-homomorphic-encryption smart contracts)</div>
+        <div>June 14, 2026 · v1.0 · Final</div>
+        <div>Prepared by Tangle · VerticalBench</div>
+        <div class="tp-class">Confidential — Prepared for Fhenix</div>
+      </div>
+      <div class="tp-scope"><div class="kv-row"><span class="kv-k">Subjects</span><span class="kv-v">1 agent profiles (model × harness × tool-config)</span></div><div class="kv-row"><span class="kv-k">Tasks</span><span class="kv-v">1 confidential-dApp definitions</span></div><div class="kv-row"><span class="kv-k">Cells</span><span class="kv-v">1 (profile × task × replicate)</span></div><div class="kv-row"><span class="kv-k">Minimum n for ranking</span><span class="kv-v">5</span></div><div class="kv-row"><span class="kv-k">Backend</span><span class="kv-v">cli-bridge (subscription)</span></div></div>
+      <p class="tp-abstract">VerticalBench tests whether AI coding agents build a genuine confidential-contract application for fhenix-fhe, or pass the build gates while shipping a fake. This run produced no profile that reliably builds the real thing; the findings below rank by authenticity, not buildability.</p>
+    </section>
+  <section id="toc"><h2 class="toc-h">Contents</h2><ol class="toc-list"><li><a href="#exec-summary"><span class="toc-n">1.</span> Executive Summary</a></li><li><a href="#overview"><span class="toc-n">2.</span> Overview</a></li><li><a href="#methodology"><span class="toc-n">3.</span> Scope &amp; Methodology</a></li><li><a href="#realness"><span class="toc-n">4.</span> Real-Build Authenticity</a></li><li><a href="#leaderboard-table"><span class="toc-n">5.</span> Pass-Rate Leaderboard</a></li><li><a href="#threats"><span class="toc-n">6.</span> Threats to Validity</a></li><li><a href="#conclusion"><span class="toc-n">7.</span> Conclusion</a></li></ol></section>
+  <section class="card" id="exec-summary"><h2>Executive Summary</h2><p>VerticalBench tests whether AI coding agents build a genuine confidential-contract application for fhenix-fhe, or pass the build gates while shipping a fake. This run produced no profile that reliably builds the real thing; the findings below rank by authenticity, not buildability.</p></section>
+  <section class="card" id="overview"><h2>Overview</h2><p>VerticalBench measures whether an AI coding agent builds a real confidential-blockchain application for a target vertical, or passes the build gates while shipping a fake. The vertical reported here is Fhenix FHE: smart contracts whose state is encrypted under fully-homomorphic encryption (FHE), with client-side encryption and permit-gated decryption. The benchmark evaluates 19 agent profiles — each a fixed combination of model, harness, and tool configuration (for example, Claude Opus on Claude Code, GLM-5.1 on OpenCode, DeepSeek V4 Pro on pi) — across 9 task definitions: a confidential DEX, a sealed-bid auction, a private DAO vote, compliance-gated lending, a confidential prediction market, a confidential perpetual DEX, a confidential options protocol, a silhouette shielded exchange, and an x402 private payment. Each (profile, task) pair is run at one to four replicates, for 416 measured cells in total; per-profile sample size is reported, and profiles with fewer than 5 measured cells are excluded from all rankings.</p><p>Two metrics are reported and they do not agree. Pass-rate is the share of cells a multi-layer verifier marks satisfied — install, build, serve, and match the task specification. Real-build hit-rate is the share of cells that both pass that verifier and survive a deterministic authenticity scan checking for genuine FHE primitives rather than a mock engine or hardcoded plaintext. This report ranks by real-build hit-rate, with a Wilson 95% confidence interval, and treats pass-rate as a secondary buildability signal. The central result is that the two leaderboards invert: several of the highest pass-rate profiles are among the lowest on real-build hit-rate. The question this report answers is not which agent compiles a Solidity file, but which agent reliably builds a confidential contract that is actually confidential.</p></section>
+  <section class="card" id="methodology"><h2>Scope &amp; Methodology</h2><h3>Subjects and tasks</h3><p>The subjects are 19 agent profiles, where a profile is the immutable triple of coder model, harness, and tool configuration; the search-MCP A/B arm (a &quot;· web&quot; variant) is treated as a distinct profile. The workload is 9 confidential-dApp task definitions (the confidential DEX, sealed-bid auction, private DAO vote, compliance-gated lending, confidential prediction market, confidential perpetual DEX, confidential options protocol, silhouette shielded exchange, and x402 private payment). Each (profile, task) pair was run at one to four replicates, yielding 416 measured cells. Task definitions — descriptions and acceptance criteria — were authored by the benchmark team; this is recorded as a construct-validity threat in the Threats to Validity section.</p><h3>Execution model</h3><p>Agents ran in an unbounded agentic loop on a cli-bridge backend under a subscription plan. Because subscription execution does not meter per-cell token cost, cost-per-quality and Pareto analyses are omitted rather than estimated. Wall-clock time is recorded per cell.</p><h3>Multi-layer verifier</h3><p>Each cell passes through a six-stage verifier before an outcome is assigned: install (dependencies resolve), build (the contract compiles), serve (the application starts without crashing), semantic (state types and critical functions match the task specification), domain (the vertical&#39;s required primitives are present), and preview (the served application renders without JavaScript errors). A cell is marked satisfied when the blended verifier score is at least 0.70. Pass-rate is satisfied cells divided by total cells.</p><h3>Authenticity instrument and validation</h3><p>Realness is assigned by a deterministic, LLM-free scan of the produced source files under five Fhenix-specific signals: a non-vendored .sol artifact with FHE imports (required artifact); encrypted types and homomorphic operations in the contract logic (real implementation); client-side encryption via CoFHE (real infrastructure); an end-to-end path from contract to served frontend (wiring); and detection of fake shims — mock FHE engines, fixed-key XOR &quot;encryption&quot;, hardcoded plaintext, or in-memory simulators. The instrument was validated against 21 cells independently labeled real-versus-fake by blind code review, with no knowledge of the agent profile: precision 0.64, recall 0.88. On the ambiguous band a blended LLM judge was applied, achieving F1 0.88 against the blind labels. A submission that omits the required artifact or is flagged as a fake shim is capped (gated) and cannot rank as a real build.</p><h3>Real-build hit-rate and confidence intervals</h3><p>A real build is a cell that is both satisfied by the verifier and not gated as fake. For each profile, real-build hit-rate is real builds divided by n, where n is that profile&#39;s measured cell count. Each hit-rate carries a Wilson score 95% two-sided confidence interval — the standard interval for proportions at small n, because it does not collapse to zero width as the estimate approaches 0 or 1, where a normal-approximation interval misleads.</p><h3>Sample sizes and the minimum-n gate</h3><p>Sample size is uneven across profiles. Profiles with fewer than 5 measured cells are excluded from every leaderboard and ranking; they are retained in the machine-readable sidecar for reference but do not appear in the headline tables. At n below 5 the Wilson interval spans most of the outcome space, so ranking by point estimate would present noise as signal. The gate is deliberately conservative: it can exclude a genuinely strong profile that happens to have few cells, trading completeness for credibility.</p></section>
+  <section class="chart-section" id="realness">
+      <h2>Real-build authenticity</h2>
+      <p class="muted">Did the agent build the intended thing on the intended infra, or fake it past the build gates? Ranked by real-build hit-rate (passed AND not gated) — when this ordering disagrees with the pass-rate leaderboard above, the higher-ranked model is Goodharting the gates. Realness is deterministic (calibrated authenticity scan); gated = flagged fake.</p>
+      <div class="bench-charts"><figure id="realness-heatmap" class="chart-card"><figcaption><h3 style="margin:0 0 .25rem">Real-build authenticity by model and task</h3><span class="caption">Each cell: how authentic that model’s build was on that task. Green = real, red hatch = faked, gray = no attempt.</span></figcaption><div style="margin-top:1rem"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 326 292" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, Helvetica, Arial, sans-serif" role="img" aria-label="Realness heatmap — authenticity per model and task"><defs><pattern id="vb-gated" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#b91c1c" stroke-width="1.5"/></pattern></defs><text x="261" y="180" font-size="11" fill="#1f2937" text-anchor="start" transform="rotate(-90 261 180)">blind poker showdown</text><rect x="212" y="188" width="90" height="26" fill="#fafafa"/><text x="204" y="205" text-anchor="end" font-size="11" font-weight="600" fill="#0b1220">Kimi K2.6</text><rect x="213.5" y="190.5" width="87" height="21" fill="#A55A00" fill-opacity="0.32" rx="2"><title>Kimi K2.6 · blind poker showdown · realness 0.70 · GATED (fake)</title></rect><rect x="213.5" y="190.5" width="87" height="21" fill="url(#vb-gated)" rx="2"/><rect x="212" y="222" width="12" height="12" rx="2" fill="#009E73" fill-opacity="1"/><text x="230" y="232" font-size="11.5" fill="#1f2937">Real build on real infra</text><rect x="212" y="240" width="12" height="12" rx="2" fill="#A55A00" fill-opacity="0.32"/><rect x="212" y="240" width="12" height="12" rx="2" fill="url(#vb-gated)"/><text x="230" y="250" font-size="11.5" fill="#1f2937">Gated as fake (shim / stub / mock infra)</text><rect x="212" y="258" width="12" height="12" rx="2" fill="#e6e6e6" fill-opacity="0.55"/><text x="230" y="268" font-size="11.5" fill="#1f2937">Unmeasured (no attempt / no preset)</text></svg></div></figure></div>
+    </section>
+  <section class="chart-section" id="leaderboard-table">
+    <h2>Pass-rate leaderboard</h2>
+    <p class="muted">Pass rate = satisfied tasks ÷ total benchmark tasks; the whisker is the Wilson 95% CI, the dot the point estimate. Blended = mean semantic score (strict judge, 0–1). <strong>Where whiskers overlap, the ranks are not statistically separable</strong> — read the interval, not the rank. Note: this is buildability, not authenticity — see the real-build section.</p>
+    <table>
+      <thead>
+        <tr><th>#</th><th>Agent</th><th>Pass rate</th><th>Blended</th><th>Satisfied</th><th>Wall</th><th>Date</th></tr>
+      </thead>
+      <tbody>
+
+      </tbody>
+    </table>
+  </section>
+  <section class="card" id="threats"><h2>Threats to Validity</h2><h3>Construct validity — does pass-rate measure capability?</h3><p>The premise of the benchmark is that it does not: a cell can satisfy install, build, serve, semantic, and preview while shipping a simulated FHE engine. This is the motivation for the authenticity gate, and the leaderboard inversion is the evidence. The residual construct threat is the authenticity instrument itself, addressed next.</p><h3>Construct validity — authenticity instrument precision</h3><p>The scan has precision 0.64: roughly 36% of cells it admits as real may not be genuinely real (false positives), because it errs toward accepting a real-looking Solidity artifact whose runtime is faked. Recall is 0.88, so about 12% of truly real builds are missed (false negatives). The asymmetry matters: rankings are robust to false negatives but vulnerable to false positives near the borderline, so a high hit-rate is a lower bound on faking, not an upper bound. The gray-band LLM judge (F1 0.88) backs the deterministic scan on ambiguous cells.</p><h3>Conclusion validity — small n on some profiles</h3><p>The minimum-n gate (n ≥ 5) keeps single-trial profiles off the leaderboard, but profiles at n = 5–10 still carry Wilson intervals on the order of ±20–40 percentage points. Placement differences within that band are not statistically separable; the report states intervals on every hit-rate and instructs the reader to compare intervals, not point estimates.</p><h3>External validity — single vertical</h3><p>All results are on Fhenix FHE tasks. Transfer to other chains, cryptographic systems, or non-blockchain domains is unvalidated; an agent that builds real FHE contracts may not generalize to zero-knowledge circuits or Solana programs. This is unmitigated by design — the report scopes one vertical.</p><h3>Construct validity — researcher-authored tasks</h3><p>Task descriptions and acceptance criteria were authored by the benchmark team and may encode patterns that favor or penalize particular architectures. No external task review is available.</p><h3>Conclusion validity — unmetered cost; single-generation snapshot</h3><p>Subscription execution does not meter per-cell cost, so no cost-per-quality claim is made; cost-efficiency is omitted rather than estimated. This report is also one benchmark run — whether the ranking is stable across future runs or future verticals is not addressed here.</p></section>
+  <section class="card" id="conclusion"><h2>Conclusion</h2><p>Under authenticity scrutiny, pass-rate and real-build hit-rate disagree sharply for Fhenix FHE: the agents that most often satisfy the build gates are frequently the ones shipping simulated or stubbed cryptography, and the ranking inverts when fakes are gated out. No profile in this run is reliable — the frontier real-build hit-rate sits well below the level at which a confidential-contract build could be trusted unattended. The actionable reading is to rank and select agents by real-build hit-rate, not pass-rate, and to treat the authenticity gate as a required acceptance check rather than an optional audit. The instrument&#39;s precision (0.64) means reported hit-rates are lower bounds on faking; tightening the instrument and widening the task set are the next steps before these rankings should drive procurement.</p></section>
+</main>
+
+<script type="application/json" id="report-data">{"collectionId":"fhenix-fhe","name":"VerticalBench: fhenix-fhe","grain":"vertical","visibility":"internal","partnerId":null,"tags":["fhenix-fhe"],"createdAt":"2026-06-14T18:22:07.125Z","updatedAt":"2026-06-14T18:22:07.125Z","submissions":[]}</script>
+<script>
+/* Chart interactivity: hover any variant in any chart's legend or any
+ * line/circle in the score-trend / satisfaction-by-budget charts and
+ * highlight just that variant across ALL charts. Click to pin.
+ */
+(function () {
+  const VARIANT_ATTR = 'data-variant'
+  let pinned = null
+  function setHighlight(name) {
+    document.querySelectorAll('[' + VARIANT_ATTR + ']').forEach(function (el) {
+      const v = el.getAttribute(VARIANT_ATTR)
+      el.style.opacity = name == null || v === name ? '1' : '0.18'
+      el.style.strokeWidth = (name && v === name) ? '3' : ''
+    })
+  }
+  function attach() {
+    // svg-rendered charts emit <path data-variant="..."> and <text> labels.
+    // Hover a legend swatch (we add data-variant onto them post-render) to highlight.
+    document.querySelectorAll('[' + VARIANT_ATTR + ']').forEach(function (el) {
+      el.addEventListener('mouseenter', function () { if (!pinned) setHighlight(el.getAttribute(VARIANT_ATTR)) })
+      el.addEventListener('mouseleave', function () { if (!pinned) setHighlight(null) })
+      el.addEventListener('click', function (e) {
+        const v = el.getAttribute(VARIANT_ATTR)
+        pinned = pinned === v ? null : v
+        setHighlight(pinned)
+        e.stopPropagation()
+      })
+      el.style.cursor = 'pointer'
+    })
+    document.body.addEventListener('click', function () { if (pinned) { pinned = null; setHighlight(null) } })
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', attach)
+  else attach()
+})()
+</script>
+</body>
+</html>

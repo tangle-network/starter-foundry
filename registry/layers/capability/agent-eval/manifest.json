@@ -67,6 +67,7 @@
     "measurable agent"
   ],
   "tieredKeywords": {
+    "archetypes": ["scoring pipeline", "llm as judge"],
     "tier1": ["agent eval", "eval harness", "quality gate"],
     "tier2": ["llm judge", "scoring pipeline", "benchmark agent", "eval integrated"]
   }

@@ -42,6 +42,9 @@ export const REACT_FAMILIES = new Set([
 // not a data-heavy dashboard. Matches phrases where the user interacts by
 // talking to the AI (assistant / tutor / companion) or the product IS a chatbot.
 export const CHAT_ARCHETYPE_SIGNALS = [
+  'chat app',
+  'chat interface',
+  'streaming chat',
   'chatbot',
   'chat bot',
   'support bot',
@@ -192,6 +195,8 @@ export const AI_PRODUCT_PHRASES = [
   'ai chat',
   'ai email',
   'ai search',
+  'ai responses',
+  'streaming ai responses',
   'ai-powered',
   'ai-driven',
   'generative ai',
@@ -409,17 +414,17 @@ export const DATE_HEAVY_ARCHETYPE_SIGNALS = [
 ]
 
 // Browser-native ZK: products where proofs are generated client-side
-// (snarkjs + circom) rather than on a Rust prover service. Mixers, private
-// voting, anonymous credentials, commitment-nullifier flows. Triggers
+// (snarkjs + circom) rather than on a Rust prover service. Mixers,
+// anonymous credentials, commitment-nullifier flows. Triggers
 // capability:zk-browser attachment on web-producing families.
 export const ZK_BROWSER_ARCHETYPE_SIGNALS = [
   'mixer',
   'privacy-preserving mixer',
-  'private voting',
   'anonymous voting',
   'anonymous credential',
   'nullifier',
   'commitment preimage',
+  'merkle proof',
   'merkle root display',
   'zk proof',
   'zk-snark',
@@ -436,6 +441,13 @@ export const ZK_BROWSER_ARCHETYPE_SIGNALS = [
 // Auth/portal archetypes — client portals, tenant portals, customer-specific
 // views with login flows.
 export const AUTH_ARCHETYPE_SIGNALS = [
+  'sign in',
+  'sign up',
+  'sign-in',
+  'sign-up',
+  'login page',
+  'register page',
+  'authentication pages',
   'client portal',
   'customer portal',
   'tenant portal',

@@ -469,6 +469,55 @@ Post-#1912 grouped-evidence slice:
   - `git diff --check` -> passed.
   - `pnpm test` -> `1156` passed, `0` failed, `1` skipped, `1` todo.
 
+Post-#1914 scaffold-hygiene slice:
+
+- Problem found from the live FHE canary: the generated FHE workspace carried
+  correct `fhenix-foundry` contract guidance, but the React web lane also
+  inherited unrelated capability files:
+  `capability:evm-nft-mint-page` (`src/components/MintPage.tsx`) and
+  `capability:zk-browser` (`src/lib/zkproof.ts`). Those stale web files caused
+  TypeScript failures even though the FHE contract itself used real CoFHE and
+  compiled.
+- Generic fix:
+  - `detectCapabilities` now treats `tieredKeywords` as the auto-attach
+    contract. Archetype phrases still attach on one precise hit; generic
+    tier-1 keywords require stronger evidence (`2` tier-1 hits or
+    `1` tier-1 + `1` tier-2). This keeps explicit NFT/ZK prompts working while
+    preventing broad `React`, `TypeScript`, or `EVM` words from attaching
+    unrelated capabilities.
+  - Browser-ZK routing no longer treats `private voting` alone as proof of a
+    Circom/snarkjs browser prover. It now requires proof-native cues such as
+    `nullifier`, `merkle proof`, `zk proof`, `circom`, or `snarkjs`.
+  - `capability:solana-keeper` now requires both keeper/liquidation intent and
+    Solana/Pyth/Switchboard context. A generic or FHE keeper no longer gets
+    Solana files.
+- Real seed check after the fix:
+  - FHE poker seed plans `web + api + evm`; web layers are only
+    `framework:react-vite-ts`, `capability:layout-dashboard`,
+    `capability:tailwind`, `capability:shadcn`.
+  - FHE lending seed no longer gets `capability:zk-browser`,
+    `capability:evm-nft-mint-page`, or `capability:solana-keeper`.
+  - `compose-prompt` on the poker seed wrote `contracts/evm/src/FHEVault.sol`
+    and did not write `apps/web/src/components/MintPage.tsx`,
+    `apps/web/src/lib/zkproof.ts`, `apps/worker/keeper-hooks.ts`, or
+    `apps/worker/market-feed.json`.
+- Verification:
+  - `pnpm exec tsc --noEmit --pretty false` -> passed.
+  - `pnpm exec tsc -p tsconfig.test.json --pretty false` -> passed.
+  - `pnpm exec tsx scripts/validate-registry.ts` -> passed (`169` families;
+    only pre-existing keyword-overlap warnings).
+  - `pnpm build` -> passed.
+  - `node --test --test-concurrency=1 dist-tests/keywords.test.js dist-tests/prompt-planner.test.js dist-tests/zk-browser-capability.test.js dist-tests/signal-manifest-parity.test.js`
+    -> `68/68` passing.
+  - `node --test --test-concurrency=1 dist-tests/keywords.test.js dist-tests/prompt-planner.test.js dist-tests/agent-eval-capability.test.js dist-tests/coverage.test.js dist-tests/signal-manifest-parity.test.js`
+    -> `527/527` passing.
+  - `pnpm lint --quiet` -> passed.
+  - `git diff --check` -> passed.
+  - `pnpm test` -> `1159` passed, `0` failed, `1` skipped, `1` todo.
+  - `pnpm exec tsx scripts/domain-pack-smoke.ts --candidate fhe-contracts-fhenix-foundry --output .evolve/domain-pack-smoke/issue-148-scaffold-hygiene-fhe.json --write --json --train 1 --holdout 1 --blueprint-agent dry-run --blueprint-roster smoke`
+    -> passed; routing `1/1`, compose `2/2`, validation `2/2`, Blueprint
+    Agent dry-run `2/2`.
+
 ## Open Follow-up Candidates
 
 - Use #165 to promote generated `.evolve/domain-pack-candidates.json` rows into

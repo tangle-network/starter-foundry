@@ -1,0 +1,18 @@
+{
+  "icp": "AUTO-RESEARCH",
+  "vertical": "layerzero-omnichain",
+  "realnessByProfile": [],
+  "gatedCells": [],
+  "autoresearch": {
+    "normalizedRuns": [],
+    "findings": []
+  },
+  "diagnostics": {
+    "cellCount": 0,
+    "profileCount": 0,
+    "enrichedCells": 0,
+    "warnings": [
+      "no checkpoints under /home/drew/code/starter-foundry/.evolve/domain-pack-runs/issue-157-scored-results/post-1912-kimi-k26-domain-lanes/bridge-contracts-capability-evm-layerzero-oft-blueprint-agent/train-lz-oft-adapter-deploy/matrix/checkpoints"
+    ]
+  }
+}

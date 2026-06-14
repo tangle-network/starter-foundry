@@ -1,0 +1,183 @@
+{
+  "id": "layerzero-omnichain",
+  "category": "crypto",
+  "subcategory": "cross-chain",
+  "partner": "layerzero",
+  "name": "LayerZero V2 — omnichain messaging and token standards",
+  "description": "LayerZero V2 omnichain surfaces: OApp cross-chain messaging, OFT and ONFT token bridges, DVN security stack configuration, composed messaging patterns, and omnichain DeFi built on @layerzerolabs/lz-evm-oapp-v2 and EndpointV2.",
+  "seedPromptTemplate": "Build {{description}}\n\nDifficulty: {{difficulty}}. Tags: {{tags}}.\n\nProduction-shape 0-to-1 LayerZero surface. Ship working UI, real omnichain primitives, domain-accurate copy. Skip placeholders.",
+  "validator": {
+    "securityGates": [
+      {
+        "label": "no hardcoded private keys, deployer mnemonics, or RPC URLs in source",
+        "check": "no-hardcoded-secrets"
+      },
+      {
+        "label": "no eval(), Function(), or dynamic code execution",
+        "check": "no-eval"
+      },
+      {
+        "label": "cross-chain message payloads validated and length-checked",
+        "check": "input-validation"
+      },
+      {
+        "label": "DVN security config verified (not using default insecure DVN set)",
+        "check": "custom",
+        "customQuery": "setSendConfig or setReceiveConfig with explicit DVN addresses, not relying on defaults"
+      },
+      {
+        "label": "chain endpoint IDs and RPC URLs sourced from environment variables",
+        "check": "custom",
+        "customQuery": "process.env or import.meta.env used for RPC URLs and endpoint configuration"
+      }
+    ],
+    "customBuild": {
+      "command": "npx tsc --noEmit",
+      "timeoutMs": 60000
+    },
+    "semanticRubric": "You are a senior cross-chain engineer evaluating a LayerZero V2 omnichain application. Score STRICTLY 0-10:\n\n1. OAPP CONTRACT PATTERN — Uses @layerzerolabs/lz-evm-oapp-v2 OApp base: inherits OApp, implements _lzSend for outbound messages and _lzReceive for inbound. Uses EndpointV2 address and eid (endpoint ID) per chain. Generic cross-chain messaging without OApp pattern scores 0.\n2. OFT/ONFT TOKEN STANDARDS — For token bridging: extends OFT (fungible) or ONFT721 (NFT) from @layerzerolabs/lz-evm-oapp-v2. Implements send() with SendParam (dstEid, to, amountLD, minAmountLD) and quoteSend for fee estimation. Missing fee quoting loses 2 points.\n3. DVN SECURITY CONFIGURATION — Configures Decentralized Verifier Networks via setSendConfig/setReceiveConfig with explicit DVN addresses (e.g., Google Cloud DVN, Polyhedra). Understands requiredDVNs vs optionalDVNs and threshold. Default DVN without explicit config loses 2 points.\n4. OPTIONS ENCODING — Uses @layerzerolabs/lz-v2-utilities OptionsBuilder for encoding executor options: addExecutorLzReceiveOption(gas, value), addExecutorNativeDropOption, addExecutorComposeOption. Hardcoded options bytes loses 2 points.\n5. COMPOSED MESSAGING — For multi-step flows: implements lzCompose for composed message handling, uses sendCompose for chaining operations across contracts on the destination chain. Missing compose support when needed loses 1 point.\n6. ADDRESS CONVERSION — Uses addressToBytes32 and bytes32ToAddress from @layerzerolabs/lz-v2-utilities for cross-chain address encoding (EVM 20-byte to 32-byte padding). Incorrect address encoding causes lost funds — missing conversion scores 0.\n7. FEE ESTIMATION — Calls quoteSend or quote before _lzSend to estimate cross-chain messaging fees (nativeFee + lzTokenFee). Displays fee to user before transaction. Sending without fee quote loses 2 points.\n8. ERROR HANDLING — Handles LayerZero-specific errors: InsufficientFee, InvalidEndpointCall, Unauthorized (peer not set), LzTokenUnavailable, message ordering failures. Generic try/catch loses 2 points.\n9. PEER CONFIGURATION — Sets peers via setPeer(dstEid, peerAddress) for each connected chain. Validates peer addresses match deployed contracts. Missing peer setup causes silently dropped messages — no peer config scores 0.\n10. PRODUCTION READINESS — Environment-based RPC URLs per chain, chain-specific endpoint IDs (30101=Ethereum, 30106=Avalanche, 30110=Arbitrum, 30111=Optimism), viem or ethers for contract interaction, message tracking via LayerZero Scan, proper loading states.\n\nScore 0 if placeholder endpoint IDs or contract addresses are used.\nScore 0 if private keys are hardcoded in source.\nScore 0 if cross-chain messaging is simulated without LayerZero contract calls.",
+    "domainAssertions": [
+      {
+        "label": "@layerzerolabs/lz-evm-oapp-v2 declared in package.json",
+        "fileGlob": "package.json",
+        "mustContain": "@layerzerolabs/lz-evm-oapp-v2",
+        "minFiles": 1
+      },
+      {
+        "label": "OApp, OFT, or ONFT contract pattern referenced",
+        "fileGlob": "**/*.{sol,ts,tsx}",
+        "mustContain": "OApp",
+        "minFiles": 1
+      },
+      {
+        "label": "endpoint ID (eid or dstEid) used for chain targeting",
+        "fileGlob": "**/*.{sol,ts,tsx}",
+        "mustContain": "Eid",
+        "minFiles": 1
+      },
+      {
+        "label": "lzSend or lzReceive messaging pattern present",
+        "fileGlob": "**/*.{sol,ts,tsx}",
+        "mustContain": "lz",
+        "minFiles": 1
+      },
+      {
+        "label": "viem or ethers used for EVM contract interaction",
+        "fileGlob": "package.json",
+        "mustContain": "viem",
+        "minFiles": 1
+      }
+    ]
+  },
+  "preferredDependencies": [
+    {
+      "name": "@layerzerolabs/lz-evm-oapp-v2",
+      "reason": "Official LayerZero V2 OApp/OFT/ONFT contract library",
+      "alternative": "@layerzerolabs/solidity-examples"
+    },
+    {
+      "name": "@layerzerolabs/onft-evm",
+      "reason": "Official LayerZero V2 ONFT721/ONFT721Adapter contracts"
+    },
+    {
+      "name": "@layerzerolabs/lz-v2-utilities",
+      "reason": "LayerZero V2 helper utilities for options encoding and address conversion"
+    }
+  ],
+  "leaves": [
+    {
+      "id": "lz-oft-adapter-deploy",
+      "name": "LayerZero OFTAdapter deployment wizard",
+      "difficulty": "hard",
+      "description": "A deployment wizard for wrapping an existing ERC-20 as an OFTAdapter. Step 1: input the existing ERC-20 address on the source chain. Step 2: deploy OFTAdapter(existingToken, lzEndpoint) on the source chain — this contract locks/unlocks the ERC-20. Step 3: deploy OFT contracts on destination chains (burn-and-mint). Step 4: wire peers via setPeer(). Warn: only ONE OFTAdapter per deployment to avoid liquidity fragmentation.",
+      "expectedFamily": "",
+      "expectedIndustry": "crypto",
+      "tags": [
+        "cross-chain",
+        "layerzero",
+        "oft-adapter",
+        "deploy",
+        "wizard"
+      ],
+      "expectedConcepts": [
+        {
+          "name": "adapter deployment",
+          "keywords": [
+            "OFTAdapter",
+            "deploy",
+            "existing ERC-20",
+            "wrap"
+          ],
+          "complexity": "integrate"
+        },
+        {
+          "name": "lock mechanism",
+          "keywords": [
+            "lock",
+            "unlock",
+            "lock-and-mint",
+            "locked tokens"
+          ],
+          "complexity": "integrate"
+        },
+        {
+          "name": "peer wiring",
+          "keywords": [
+            "setPeer",
+            "wire",
+            "connect",
+            "peer"
+          ],
+          "complexity": "integrate"
+        },
+        {
+          "name": "single adapter warning",
+          "keywords": [
+            "only one",
+            "single adapter",
+            "liquidity fragmentation"
+          ]
+        },
+        {
+          "name": "lzSend outbound messaging",
+          "keywords": [
+            "_lzSend",
+            "dstEid",
+            "payload",
+            "options"
+          ],
+          "complexity": "integrate"
+        },
+        {
+          "name": "OFT send transfer",
+          "keywords": [
+            "OFT",
+            "send",
+            "SendParam",
+            "quoteSend"
+          ],
+          "complexity": "integrate"
+        },
+        {
+          "name": "adapterParams options encoding",
+          "keywords": [
+            "adapterParams",
+            "OptionsBuilder",
+            "addExecutorLzReceiveOption"
+          ],
+          "complexity": "compute"
+        },
+        {
+          "name": "endpoint chain configuration",
+          "keywords": [
+            "EndpointV2",
+            "endpoint",
+            "eid",
+            "chain targeting"
+          ],
+          "complexity": "integrate"
+        }
+      ]
+    }
+  ]
+}

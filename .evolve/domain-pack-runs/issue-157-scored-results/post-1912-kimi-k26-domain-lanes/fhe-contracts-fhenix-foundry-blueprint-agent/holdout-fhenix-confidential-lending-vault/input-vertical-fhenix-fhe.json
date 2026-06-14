@@ -1,0 +1,139 @@
+{
+  "id": "fhenix-fhe",
+  "category": "crypto",
+  "partner": "fhenix",
+  "scaffoldFamily": "fhenix-foundry",
+  "name": "Fhenix FHE dApps",
+  "description": "Fully-homomorphic-encrypted dApps on Fhenix: sealed-bid auctions, private voting, encrypted balance tokens, hidden-information games, and confidential DeFi primitives.",
+  "seedPromptTemplate": "Build {{description}}\n\nDifficulty: {{difficulty}}. Tags: {{tags}}.\n\nProduction-shape 0-to-1 Fhenix FHE surface. Use euint/ebool types, FHE.asEuint, encrypted inputs via CoFHE client, decryption oracles. Skip placeholders.",
+  "validator": {
+    "domainAssertions": [
+      {
+        "label": "fhenixjs or fhenix SDK in dependencies",
+        "fileGlob": "package.json",
+        "mustContain": "fhenix",
+        "minFiles": 1
+      },
+      {
+        "label": "FHE encrypted type usage (euint, ebool)",
+        "fileGlob": "src/**/*.{sol,ts,tsx}",
+        "mustContain": "euint"
+      },
+      {
+        "label": "FHE.asEuint or encryption function call",
+        "fileGlob": "src/**/*.{sol,ts,tsx}",
+        "mustContain": "FHE"
+      },
+      {
+        "label": "encrypted input handling",
+        "fileGlob": "src/**/*.{ts,tsx}",
+        "mustContain": "encrypt"
+      },
+      {
+        "label": "decryption or seal operation",
+        "fileGlob": "src/**/*.{sol,ts,tsx}",
+        "mustContain": "decrypt"
+      }
+    ],
+    "securityGates": [
+      {
+        "label": "no hardcoded private keys or FHE secrets",
+        "check": "no-hardcoded-secrets"
+      },
+      {
+        "label": "no eval() or Function()",
+        "check": "no-eval"
+      },
+      {
+        "label": "no innerHTML in encrypted data display",
+        "check": "no-innerhtml"
+      },
+      {
+        "label": "encrypted inputs validated before submission",
+        "check": "input-validation"
+      }
+    ],
+    "customBuild": {
+      "command": "npx tsc --noEmit",
+      "timeoutMs": 60000
+    },
+    "semanticRubric": "You are evaluating a Fhenix FHE (Fully Homomorphic Encryption) application. Score STRICTLY on these criteria:\n\n1. FHE TYPE USAGE: Solidity contracts use Fhenix encrypted types (euint8, euint16, euint32, euint64, euint128, euint256, ebool, eaddress) for private state. Score 0 if the contract uses standard uint/bool for data that should be encrypted.\n2. FHE OPERATIONS: Encrypted computations use FHE library methods: FHE.asEuint*() for type conversion, FHE.add(), FHE.sub(), FHE.mul() for arithmetic, FHE.lte(), FHE.gte() for comparison, FHE.select() for conditional. Score 0 if the contract uses Solidity native operators on encrypted types.\n3. ENCRYPTED INPUT HANDLING: Client-side uses fhenixjs SDK to encrypt values before sending to contract: fhenix.encrypt_uint32(value) or similar. Encrypted inputs passed as inEuint* types in Solidity function parameters.\n4. DECRYPTION/SEALING: Decryption uses FHE.decrypt() for contract-side plaintext access (authorized only) or FHE.sealoutput() for client-side sealed decryption. Score 0 if encrypted values are decrypted unnecessarily or without access control.\n5. ACCESS CONTROL: Only authorized addresses can decrypt or seal values. Contract enforces permit-based access (Permissioned contract pattern) for viewing encrypted state. Score 0 if any address can decrypt any encrypted value.\n6. COFHE CLIENT: Frontend interacts with CoFHE (Confidential Homomorphic Encryption) client for key management and encryption. Uses the correct Fhenix network configuration.\n7. GAS CONSIDERATIONS: FHE operations consume significantly more gas than plaintext. Application accounts for higher gas costs. Minimizes unnecessary FHE operations. Score 0 if gas estimation ignores FHE overhead.\n8. PRIVACY PRESERVATION: Encrypted values never leaked as plaintext in events, return values, or storage slots without explicit decryption authorization. Score 0 if encrypted state is exposed via public view functions.\n9. NETWORK TARGETING: Application targets the Fhenix network (not Ethereum mainnet). Uses correct chain configuration and RPC endpoints for Fhenix.\n10. ERROR HANDLING: Handles FHE-specific failures: encryption key not available, decryption permission denied, FHE computation overflow, CoFHE client connection errors.\n\nScore 0 if the app uses standard Solidity without any FHE types or operations.\nScore 0 if private keys or FHE decryption keys are hardcoded in source files.\nScore 0 if the app uses zk-SNARKs instead of FHE for privacy."
+  },
+  "preferredDependencies": [
+    {
+      "name": "viem",
+      "reason": "Type-safe EVM client for contract interaction",
+      "alternative": "ethers"
+    },
+    {
+      "name": "wagmi",
+      "reason": "React hooks for wallet connection and contract reads",
+      "alternative": "web3-react"
+    }
+  ],
+  "leaves": [
+    {
+      "id": "fhenix-confidential-lending-vault",
+      "loadBearingArtifact": "contract",
+      "name": "Confidential collateralized lending vault",
+      "difficulty": "extreme",
+      "description": "An over-collateralized lending market on Fhenix where each account holds encrypted collateral and debt as euint64. borrow(inEuint64 amt) computes the health factor FHE.div(FHE.mul(collateral, ltvBps), newDebt) and gates it with FHE.gte(hf, MIN_HF) and FHE.select so unsafe borrows net zero. A keeper liquidate uses FHE.req on an underwater ebool to authorize seizure, surfaced via FHE.decrypt. Borrowers read their position via FHE.sealoutput under a permit. A plaintext-position dashboard with no euint health-factor math, FHE.req gate, or sealed reads is a shim; the artifact compiles under forge.",
+      "expectedFamily": "",
+      "expectedIndustry": "",
+      "tags": [
+        "fhenix",
+        "fhe",
+        "lending",
+        "collateral",
+        "confidential-defi"
+      ],
+      "expectedConcepts": [
+        {
+          "name": "encrypted position",
+          "keywords": [
+            "euint64 collateral",
+            "encrypted debt",
+            "position at rest"
+          ],
+          "complexity": "compute"
+        },
+        {
+          "name": "encrypted health factor",
+          "keywords": [
+            "fhe.div health",
+            "fhe.mul ltv",
+            "min hf gate"
+          ],
+          "complexity": "compute"
+        },
+        {
+          "name": "confidential liquidation",
+          "keywords": [
+            "fhe.req underwater",
+            "keeper liquidate",
+            "seize collateral"
+          ],
+          "complexity": "compute"
+        },
+        {
+          "name": "borrower sealed read",
+          "keywords": [
+            "sealoutput position",
+            "eip-712 permit",
+            "own health factor"
+          ],
+          "complexity": "integrate"
+        },
+        {
+          "name": "outcome decrypt oracle",
+          "keywords": [
+            "fhe.decrypt result",
+            "decryption oracle",
+            "liquidation event"
+          ],
+          "complexity": "integrate"
+        }
+      ]
+    }
+  ]
+}

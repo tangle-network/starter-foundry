@@ -151,7 +151,7 @@ test('plan-domain-pack-work emits parallelizable FHE and bridge candidates from 
     assert.ok(fhe.validationCommands.includes('forge build'))
     assert.ok(fhe.authenticitySignals.includes('FHE.select'))
 
-    assert.deepEqual(bridgeContracts.verticalIds, ['bridge-relayer-suite', 'bridge-suite'])
+    assert.deepEqual(bridgeContracts.verticalIds, ['bridge-suite'])
     assert.deepEqual(bridgeContracts.domain, { family: 'bridge', surface: 'contracts' })
     assert.ok(bridgeContracts.leafIds.train.includes('generic-lock-mint-bridge'))
     assert.ok(
@@ -167,6 +167,13 @@ test('plan-domain-pack-work emits parallelizable FHE and bridge candidates from 
       runtime: 'foundry',
       surface: 'contracts',
     })
+    assert.ok(layerZeroEntry.leafIds.train.includes('layerzero-oft-token'))
+    assert.ok(
+      ![...layerZeroEntry.leafIds.train, ...layerZeroEntry.leafIds.holdout].includes(
+        'bridge-transfer-ui',
+      ),
+      'capability-specific contract candidates should not absorb UI/interface leaves',
+    )
     assert.ok(sealedAuctionEntry.leafIds.train.includes('sealed-bid-auction'))
     assert.ok(
       ![...sealedAuctionEntry.leafIds.train, ...sealedAuctionEntry.leafIds.holdout].includes(
@@ -245,5 +252,21 @@ test(
       (candidate: any) => candidate.id === 'fhe-contracts-fhenix-foundry',
     )
     assert.deepEqual(persistedFhenixFoundry?.leafIds, fhenixFoundry.leafIds)
+    const layerZeroEntry = report.candidates.find(
+      (candidate: any) => candidate.id === 'bridge-contracts-capability-evm-layerzero-oft',
+    )
+    assert.ok(layerZeroEntry)
+    assert.ok(
+      ![...layerZeroEntry.leafIds.train, ...layerZeroEntry.leafIds.holdout].includes(
+        'ethena-cross-chain-usde',
+      ),
+      'LayerZero contract capability should not absorb Ethena bridge-interface leaf',
+    )
+    assert.ok(
+      ![...layerZeroEntry.leafIds.train, ...layerZeroEntry.leafIds.holdout].includes(
+        'lz-oft-bridge-ui',
+      ),
+      'LayerZero contract capability should not absorb OFT bridge UI leaf',
+    )
   },
 )

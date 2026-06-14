@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-14T10:35:50.339Z",
+  "generatedAt": "2026-06-14T11:49:15.845Z",
   "scenarioRoot": "/home/drew/code/blueprint-agent/scripts/experiments/scenarios",
   "scenariosScanned": 319,
   "domainGroupsScanned": 7,
@@ -155,13 +155,10 @@
         "aave-lending",
         "across-bridge",
         "agno-agents",
-        "alphafold-protein",
-        "aptos-move",
         "arbitrum-stylus",
         "arkworks-zk",
         "axelar-crosschain",
         "aztec-noir",
-        "bnb-chain",
         "brevis-zk-coprocessor",
         "cctp-circle-bridge",
         "cerner-fhir",
@@ -171,35 +168,21 @@
         "coinbase-commerce",
         "container-runtime",
         "crypto-defi-agents",
-        "curve-stableswap",
         "debridge-solana",
         "dex-arb-evm-agents",
-        "dex-arb-solana-agents",
-        "docker-containers",
-        "ens-domains",
-        "ethena-stablecoin",
-        "ethereum-l1",
-        "hermes-agent-apps",
         "layerzero-omnichain",
         "lido-staking",
         "magic-eden-marketplace",
         "mem0-memory",
-        "mercury-banking",
         "okx-xlayer",
-        "oneinch-aggregation",
         "optimism-l2",
-        "phantom-wallet",
         "pi-extensions",
         "polygon-pos",
-        "pyth-oracle",
         "sanctum-lst",
         "scroll-zkevm",
-        "solana-core",
-        "squads-multisig",
         "starknet-cairo",
         "succinct-sp1",
         "switchboard-oracles",
-        "synthetix-perps",
         "tangle-blueprints-bridges",
         "tangle-blueprints-defi",
         "tangle-blueprints-hosting",
@@ -210,12 +193,8 @@
         "tangle-blueprints-privacy",
         "tangle-blueprints-relayers",
         "tangle-blueprints-zk-proofs",
-        "telehealth-platform",
         "tempo-payments",
-        "tensor-nft",
-        "trading-agents",
         "uniswap-v4",
-        "vercel-ai-sdk",
         "wormhole-solana",
         "zk-identity",
         "zkp2p-payments",
@@ -223,65 +202,54 @@
       ],
       "leafIds": {
         "train": [
-          "ethena-cross-chain-usde",
+          "axelar-its-register-existing",
+          "axelar-supported-chains",
           "lz-chain-endpoint-directory",
-          "lz-create-lz-oapp-scaffold",
+          "lz-composed-message-builder",
           "lz-cross-chain-swap",
           "lz-dvn-operator-platform",
-          "lz-dvn-security-config",
-          "lz-oapp-message-receiver",
-          "lz-oapp-message-sender",
-          "lz-oft-balance-tracker",
-          "lz-oft-bridge-ui",
-          "lz-oft-launch-platform",
-          "lz-oft-rate-limiter",
-          "lz-oft-token-info",
-          "lz-omnichain-dex",
-          "lz-omnichain-lending",
-          "lz-omnichain-multisig",
-          "lz-omnichain-yield-aggregator",
-          "lz-onft-bridge",
-          "lz-pathway-cost-optimizer",
-          "lz-protocol-analytics"
-        ],
-        "holdout": [
-          "lz-composed-message-builder",
-          "lz-dvn-monitoring-dashboard",
-          "lz-message-design-patterns",
+          "lz-native-drop-airdrop",
+          "lz-oapp-config-inspector",
           "lz-oft-adapter-deploy",
           "lz-oft-custom-fee-module",
           "lz-oft-send-and-call",
+          "lz-omnichain-dex",
           "lz-omnichain-identity",
+          "lz-omnichain-lending",
           "lz-omnichain-nft-game",
+          "lz-omnichain-oracle",
           "lz-onft-marketplace",
-          "lz-security-audit-tool"
+          "lz-pathway-cost-optimizer",
+          "wormhole-connect-widget",
+          "wormhole-liquidity-layer"
+        ],
+        "holdout": [
+          "debridge-evm-to-solana-full",
+          "lz-create-lz-oapp-scaffold",
+          "lz-message-design-patterns",
+          "lz-oapp-message-sender",
+          "lz-oft-launch-platform",
+          "lz-omnichain-governance",
+          "lz-omnichain-multisig",
+          "lz-omnichain-yield-aggregator",
+          "lz-security-audit-tool",
+          "wormhole-multichain-portfolio"
         ]
       },
       "partnerIds": [
-        "1inch",
         "aave",
         "across-protocol",
         "agno",
-        "aptos-labs",
         "arbitrum-foundation",
         "arkworks",
         "axelar",
         "aztec-network",
-        "binance",
         "brevis",
         "chainlink",
         "circle",
         "coinbase",
-        "curve",
-        "daily-co",
         "debridge",
-        "deepmind",
-        "docker",
-        "ens",
-        "ethena",
-        "ethereum-foundation",
         "from-scratch",
-        "hermes",
         "iden3",
         "inflection-ai",
         "layerzero",
@@ -289,28 +257,20 @@
         "magic-eden",
         "matter-labs",
         "mem0",
-        "mercury",
         "multi-framework",
         "multi-protocol",
         "okx",
         "optimism",
         "oracle-health",
-        "phantom",
         "polygon",
-        "pyth-network",
         "sanctum",
         "scroll",
-        "solana",
-        "squads",
         "starkware",
         "succinct-labs",
         "switchboard",
-        "synthetix",
         "tangle-network",
         "tempo",
-        "tensor",
         "uniswap-labs",
-        "vercel",
         "wormhole",
         "zkp2p"
       ],
@@ -318,7 +278,7 @@
         {
           "source": "blueprint-agent-scenarios",
           "bucket": "vertical-leaf-demand",
-          "count": 324
+          "count": 210
         }
       ],
       "intendedStarter": {
@@ -370,8 +330,10 @@
         "pnpm exec tsx scripts/validate-registry.ts"
       ],
       "sourceFiles": [
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/ethena-stablecoin.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/layerzero-omnichain.ts"
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/axelar-crosschain.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/debridge-solana.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/layerzero-omnichain.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/wormhole-solana.ts"
       ]
     },
     {
@@ -389,7 +351,6 @@
         "cryptography-primitives",
         "dex-arb-evm-agents",
         "fhenix-fhe",
-        "solana-core",
         "tangle-blueprints-privacy",
         "tangle-blueprints-storage",
         "tangle-blueprints-zk-proofs",
@@ -407,15 +368,15 @@
           "fhenix-encrypted-erc20-token",
           "fhenix-private-prediction-market",
           "fhenix-sealed-bid-auction",
-          "solana-token-2022-confidential",
           "tangle-priv-anonymous-transfer",
-          "tangle-priv-confidential-compute",
+          "tangle-priv-commitment-scheme",
           "tangle-priv-encrypted-mempool",
-          "tangle-priv-mpc-analytics",
+          "tangle-priv-key-rotation",
           "tangle-priv-oblivious-transfer",
-          "tangle-priv-private-voting",
+          "tangle-priv-private-nft",
           "tangle-priv-state-channel",
-          "tangle-priv-threshold-keygen",
+          "tangle-priv-threshold-bls",
+          "tangle-priv-timelock-encryption",
           "tangle-priv-witness-encryption",
           "tee-sealed-auction",
           "uni-v4-auction-hook-jit"
@@ -425,10 +386,10 @@
           "fhenix-confidential-dex",
           "fhenix-private-dao-vote",
           "fhenix-sealed-payroll-stream",
-          "tangle-priv-commitment-scheme",
-          "tangle-priv-key-rotation",
-          "tangle-priv-private-nft",
-          "tangle-priv-threshold-bls",
+          "tangle-priv-confidential-compute",
+          "tangle-priv-mpc-analytics",
+          "tangle-priv-private-voting",
+          "tangle-priv-threshold-keygen",
           "tangle-storage-compute-over-data",
           "zk-trade-auction-mechanism"
         ]
@@ -441,7 +402,6 @@
         "iden3",
         "intel-amd",
         "multi-protocol",
-        "solana",
         "tangle-network",
         "uniswap-labs"
       ],
@@ -449,7 +409,7 @@
         {
           "source": "blueprint-agent-scenarios",
           "bucket": "vertical-leaf-demand",
-          "count": 38
+          "count": 36
         }
       ],
       "intendedStarter": {
@@ -524,1203 +484,12 @@
         "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/aztec-noir.ts",
         "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/circom-circuits.ts",
         "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/fhenix-fhe.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/solana-core.ts",
         "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-privacy.ts",
         "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-storage.ts",
         "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tee-confidential.ts",
         "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/uniswap-v4.ts",
         "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/zk-trading.ts",
         "../blueprint-agent/scripts/experiments/scenarios/verticals/research/cryptography-primitives.ts"
-      ]
-    },
-    {
-      "id": "bridge-ui",
-      "status": "candidate",
-      "domain": {
-        "family": "bridge",
-        "surface": "ui"
-      },
-      "ambiguityGroup": "bridge-ui",
-      "verticalIds": [
-        "aave-lending",
-        "across-bridge",
-        "alpaca-broker",
-        "aptos-move",
-        "axelar-crosschain",
-        "brevis-zk-coprocessor",
-        "cctp-circle-bridge",
-        "chainlink-oracles",
-        "circle-usdc",
-        "circom-circuits",
-        "coinbase-commerce",
-        "column-banking",
-        "crypto-defi-agents",
-        "debridge-solana",
-        "dex-arb-evm-agents",
-        "dex-arb-solana-agents",
-        "dwolla-ach",
-        "ens-domains",
-        "ethena-stablecoin",
-        "ethereum-foundry-viem",
-        "ethereum-l1",
-        "fireblocks-custody",
-        "helius-rpc",
-        "layerzero-omnichain",
-        "moov-payments",
-        "okx-xlayer",
-        "oneinch-aggregation",
-        "optimism-l2",
-        "phantom-wallet",
-        "plaid-banking",
-        "polygon-pos",
-        "pyth-oracle",
-        "scroll-zkevm",
-        "solana-core",
-        "squads-multisig",
-        "starknet-cairo",
-        "switchboard-oracles",
-        "tangle-blueprints-bridges",
-        "tangle-blueprints-defi",
-        "tangle-blueprints-keeper",
-        "tangle-blueprints-mpc",
-        "tangle-blueprints-relayers",
-        "tangle-blueprints-zk-proofs",
-        "tempo-payments",
-        "tonejs-audio",
-        "trading-agents",
-        "uniswap-v4",
-        "wise-transfers",
-        "wormhole-solana",
-        "zk-identity",
-        "zksync-era"
-      ],
-      "leafIds": {
-        "train": [
-          "across-bridge-comparison-platform",
-          "across-bridge-history",
-          "circle-cctp-bridge",
-          "cross-chain-bridge",
-          "lz-oapp-message-sender",
-          "lz-oft-bridge-ui",
-          "lz-omnichain-nft-game",
-          "lz-onft-bridge",
-          "op-erc20-bridge",
-          "scroll-nft-bridge",
-          "tangle-bridge-liquidity-pool",
-          "tangle-bridge-rate-limiter",
-          "tangle-defi-bridge-attestation",
-          "tangle-relay-message-adapter",
-          "trading-cross-chain-arb",
-          "wormhole-batch-transfer",
-          "wormhole-explorer-viewer",
-          "wormhole-full-bridge",
-          "wormhole-multichain-portfolio",
-          "wormhole-token-transfer"
-        ],
-        "holdout": [
-          "aptos-cross-chain-bridge",
-          "defi-ts-vercel-bridge-aggregator",
-          "lz-oft-send-and-call",
-          "lz-onft-marketplace",
-          "tangle-bridge-fee-estimator",
-          "tangle-bridge-transfer-status",
-          "tempo-tip20-cross-chain-bridge",
-          "wormhole-bridge-status",
-          "wormhole-liquidity-layer",
-          "wormhole-usdc-cctp"
-        ]
-      },
-      "partnerIds": [
-        "1inch",
-        "aave",
-        "across-protocol",
-        "alpaca",
-        "aptos-labs",
-        "axelar",
-        "brevis",
-        "chainlink",
-        "circle",
-        "coinbase",
-        "column",
-        "debridge",
-        "dwolla",
-        "ens",
-        "ethena",
-        "ethereum-foundation",
-        "fireblocks",
-        "helius",
-        "iden3",
-        "layerzero",
-        "matter-labs",
-        "moov",
-        "multi-framework",
-        "multi-protocol",
-        "okx",
-        "optimism",
-        "phantom",
-        "plaid",
-        "polygon",
-        "pyth-network",
-        "scroll",
-        "solana",
-        "squads",
-        "starkware",
-        "switchboard",
-        "tangle-network",
-        "tempo",
-        "tonejs",
-        "uniswap-labs",
-        "wise",
-        "wormhole"
-      ],
-      "failureEvidence": [
-        {
-          "source": "blueprint-agent-scenarios",
-          "bucket": "vertical-leaf-demand",
-          "count": 219
-        }
-      ],
-      "intendedStarter": {
-        "family": "react-vite-ts",
-        "layers": [
-          "framework:react-vite-ts",
-          "capability:crypto-bridge-ui"
-        ],
-        "capabilities": [
-          "capability:crypto-bridge-ui"
-        ]
-      },
-      "routingPrompts": [
-        "Build a USDe bridge interface from Ethereum to Arbitrum, Optimism, and Base with LayerZero transfer status",
-        "Build a cross-chain bridge transfer UI with Wormhole",
-        "Build a multichain bridge dashboard with source chain, destination chain, fee estimate, and transaction history"
-      ],
-      "validationCommands": [],
-      "authenticitySignals": [
-        "bridge interface",
-        "bridge transaction history",
-        "destination chain",
-        "fee estimation",
-        "source chain",
-        "transfer status"
-      ],
-      "registryFiles": [
-        "registry/layers/capability/crypto-bridge-ui/manifest.json"
-      ],
-      "filesToModify": [
-        "registry/layers/capability/crypto-bridge-ui/manifest.json",
-        "tests/coverage.test.ts",
-        "tests/domain-packs.test.ts"
-      ],
-      "gatesToRun": [
-        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
-        "pnpm build",
-        "pnpm exec tsc -p tsconfig.test.json",
-        "pnpm exec tsx scripts/validate-registry.ts"
-      ],
-      "sourceFiles": [
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/agents/crypto-defi-agents.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/agents/trading-agents.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/across-bridge.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/aptos-move.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/layerzero-omnichain.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/optimism-l2.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/scroll-zkevm.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-bridges.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-defi.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-relayers.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tempo-payments.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/wormhole-solana.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/fintech/circle-usdc.ts"
-      ]
-    },
-    {
-      "id": "bridge-ui-capability-crypto-bridge-ui",
-      "status": "candidate",
-      "domain": {
-        "family": "bridge",
-        "surface": "ui"
-      },
-      "ambiguityGroup": "bridge-ui",
-      "verticalIds": [
-        "aave-lending",
-        "across-bridge",
-        "alpaca-broker",
-        "aptos-move",
-        "axelar-crosschain",
-        "brevis-zk-coprocessor",
-        "cctp-circle-bridge",
-        "chainlink-oracles",
-        "circle-usdc",
-        "circom-circuits",
-        "coinbase-commerce",
-        "column-banking",
-        "crypto-defi-agents",
-        "debridge-solana",
-        "dex-arb-evm-agents",
-        "dex-arb-solana-agents",
-        "dwolla-ach",
-        "ens-domains",
-        "ethena-stablecoin",
-        "ethereum-foundry-viem",
-        "ethereum-l1",
-        "fireblocks-custody",
-        "helius-rpc",
-        "layerzero-omnichain",
-        "moov-payments",
-        "okx-xlayer",
-        "oneinch-aggregation",
-        "optimism-l2",
-        "phantom-wallet",
-        "plaid-banking",
-        "polygon-pos",
-        "pyth-oracle",
-        "scroll-zkevm",
-        "solana-core",
-        "squads-multisig",
-        "starknet-cairo",
-        "switchboard-oracles",
-        "tangle-blueprints-bridges",
-        "tangle-blueprints-defi",
-        "tangle-blueprints-keeper",
-        "tangle-blueprints-mpc",
-        "tangle-blueprints-relayers",
-        "tangle-blueprints-zk-proofs",
-        "tempo-payments",
-        "tonejs-audio",
-        "trading-agents",
-        "uniswap-v4",
-        "wise-transfers",
-        "wormhole-solana",
-        "zk-identity",
-        "zksync-era"
-      ],
-      "leafIds": {
-        "train": [
-          "across-bridge-comparison-platform",
-          "across-bridge-history",
-          "circle-cctp-bridge",
-          "cross-chain-bridge",
-          "lz-oapp-message-sender",
-          "lz-oft-bridge-ui",
-          "lz-omnichain-nft-game",
-          "lz-onft-bridge",
-          "op-erc20-bridge",
-          "scroll-nft-bridge",
-          "tangle-bridge-liquidity-pool",
-          "tangle-bridge-rate-limiter",
-          "tangle-defi-bridge-attestation",
-          "tangle-relay-message-adapter",
-          "trading-cross-chain-arb",
-          "wormhole-batch-transfer",
-          "wormhole-explorer-viewer",
-          "wormhole-full-bridge",
-          "wormhole-multichain-portfolio",
-          "wormhole-token-transfer"
-        ],
-        "holdout": [
-          "aptos-cross-chain-bridge",
-          "defi-ts-vercel-bridge-aggregator",
-          "lz-oft-send-and-call",
-          "lz-onft-marketplace",
-          "tangle-bridge-fee-estimator",
-          "tangle-bridge-transfer-status",
-          "tempo-tip20-cross-chain-bridge",
-          "wormhole-bridge-status",
-          "wormhole-liquidity-layer",
-          "wormhole-usdc-cctp"
-        ]
-      },
-      "partnerIds": [
-        "1inch",
-        "aave",
-        "across-protocol",
-        "alpaca",
-        "aptos-labs",
-        "axelar",
-        "brevis",
-        "chainlink",
-        "circle",
-        "coinbase",
-        "column",
-        "debridge",
-        "dwolla",
-        "ens",
-        "ethena",
-        "ethereum-foundation",
-        "fireblocks",
-        "helius",
-        "iden3",
-        "layerzero",
-        "matter-labs",
-        "moov",
-        "multi-framework",
-        "multi-protocol",
-        "okx",
-        "optimism",
-        "phantom",
-        "plaid",
-        "polygon",
-        "pyth-network",
-        "scroll",
-        "solana",
-        "squads",
-        "starkware",
-        "switchboard",
-        "tangle-network",
-        "tempo",
-        "tonejs",
-        "uniswap-labs",
-        "wise",
-        "wormhole"
-      ],
-      "failureEvidence": [
-        {
-          "source": "blueprint-agent-scenarios",
-          "bucket": "vertical-leaf-demand",
-          "count": 219
-        }
-      ],
-      "intendedStarter": {
-        "family": "react-vite-ts",
-        "layers": [
-          "framework:react-vite-ts",
-          "capability:crypto-bridge-ui"
-        ],
-        "capabilities": [
-          "capability:crypto-bridge-ui"
-        ]
-      },
-      "routingPrompts": [
-        "Build a USDe bridge interface from Ethereum to Arbitrum, Optimism, and Base with LayerZero transfer status",
-        "Build a cross-chain bridge transfer UI with Wormhole",
-        "Build a multichain bridge dashboard with source chain, destination chain, fee estimate, and transaction history"
-      ],
-      "validationCommands": [],
-      "authenticitySignals": [
-        "bridge interface",
-        "bridge transaction history",
-        "destination chain",
-        "fee estimation",
-        "source chain",
-        "transfer status"
-      ],
-      "registryFiles": [
-        "registry/layers/capability/crypto-bridge-ui/manifest.json"
-      ],
-      "filesToModify": [
-        "registry/layers/capability/crypto-bridge-ui/manifest.json",
-        "tests/coverage.test.ts",
-        "tests/domain-packs.test.ts"
-      ],
-      "gatesToRun": [
-        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
-        "pnpm build",
-        "pnpm exec tsc -p tsconfig.test.json",
-        "pnpm exec tsx scripts/validate-registry.ts"
-      ],
-      "sourceFiles": [
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/agents/crypto-defi-agents.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/agents/trading-agents.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/across-bridge.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/aptos-move.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/layerzero-omnichain.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/optimism-l2.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/scroll-zkevm.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-bridges.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-defi.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-relayers.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tempo-payments.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/wormhole-solana.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/fintech/circle-usdc.ts"
-      ]
-    },
-    {
-      "id": "bridge-indexer",
-      "status": "candidate",
-      "domain": {
-        "family": "bridge",
-        "surface": "indexer"
-      },
-      "ambiguityGroup": "bridge-indexer",
-      "verticalIds": [
-        "across-bridge",
-        "aptos-move",
-        "bnb-chain",
-        "knock-notifications",
-        "optimism-l2",
-        "scroll-zkevm",
-        "starknet-cairo",
-        "tangle-blueprints-bridges",
-        "tangle-blueprints-keeper",
-        "tangle-blueprints-relayers",
-        "tempo-payments",
-        "twilio-comms",
-        "zksync-era"
-      ],
-      "leafIds": {
-        "train": [
-          "across-bridge-status",
-          "across-deposit-v3",
-          "aptos-cross-chain-bridge",
-          "bnb-opbnb-bridge-manager",
-          "op-bridge-status-viewer",
-          "op-cross-chain-defi",
-          "op-eas-credential-platform",
-          "op-erc20-bridge",
-          "op-full-bridge-manager",
-          "op-governance-voting-app",
-          "op-sequencer-health-monitor",
-          "op-superchain-analytics",
-          "scroll-eth-deposit",
-          "starknet-token-bridge-l1",
-          "tangle-keeper-bridge-relay",
-          "tangle-relay-full-stack",
-          "twilio-message-status",
-          "zksync-bridge-deposit-viewer"
-        ],
-        "holdout": [
-          "across-plus-defi-actions",
-          "knock-notification-analytics",
-          "op-cross-chain-governance",
-          "op-eth-bridge-deposit",
-          "op-op-stack-deployer",
-          "scroll-bridge-status-viewer",
-          "tangle-bridge-watcher-alerting",
-          "tempo-mpp-cross-chain-payment-routing",
-          "zksync-eth-deposit-bridge"
-        ]
-      },
-      "partnerIds": [
-        "across-protocol",
-        "aptos-labs",
-        "binance",
-        "knock",
-        "matter-labs",
-        "optimism",
-        "scroll",
-        "starkware",
-        "tangle-network",
-        "tempo",
-        "twilio"
-      ],
-      "failureEvidence": [
-        {
-          "source": "blueprint-agent-scenarios",
-          "bucket": "vertical-leaf-demand",
-          "count": 27
-        }
-      ],
-      "intendedStarter": {
-        "family": "evm-infra-ts",
-        "layers": [
-          "framework:evm-infra-ts",
-          "capability:bridge-protocol-api"
-        ],
-        "capabilities": [
-          "capability:bridge-protocol-api"
-        ]
-      },
-      "routingPrompts": [
-        "Build a bridge deposit and withdrawal indexer that exposes message status by sender and chain pair",
-        "Build a bridge transaction monitor API that indexes source confirmed, relayed, destination confirmed, and failed states",
-        "Build a cross-chain relayer status API with retry queue and destination confirmed tracking"
-      ],
-      "validationCommands": [],
-      "authenticitySignals": [
-        "bridge deposit",
-        "bridge destination confirmed",
-        "bridge failed states",
-        "bridge message status",
-        "bridge relayer status",
-        "bridge retry queue",
-        "bridge source confirmed",
-        "bridge withdrawal",
-        "message status"
-      ],
-      "registryFiles": [
-        "registry/layers/capability/bridge-protocol-api/manifest.json"
-      ],
-      "filesToModify": [
-        "registry/layers/capability/bridge-protocol-api/manifest.json",
-        "tests/coverage.test.ts",
-        "tests/domain-packs.test.ts"
-      ],
-      "gatesToRun": [
-        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
-        "pnpm build",
-        "pnpm exec tsc -p tsconfig.test.json",
-        "pnpm exec tsx scripts/validate-registry.ts"
-      ],
-      "sourceFiles": [
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/ai/twilio-comms.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/across-bridge.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/aptos-move.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/bnb-chain.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/optimism-l2.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/scroll-zkevm.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/starknet-cairo.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-bridges.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-keeper.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-relayers.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tempo-payments.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/zksync-era.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/infra/knock-notifications.ts"
-      ]
-    },
-    {
-      "id": "bridge-indexer-capability-bridge-protocol-api",
-      "status": "candidate",
-      "domain": {
-        "family": "bridge",
-        "surface": "indexer"
-      },
-      "ambiguityGroup": "bridge-indexer",
-      "verticalIds": [
-        "across-bridge",
-        "aptos-move",
-        "bnb-chain",
-        "knock-notifications",
-        "optimism-l2",
-        "scroll-zkevm",
-        "starknet-cairo",
-        "tangle-blueprints-bridges",
-        "tangle-blueprints-keeper",
-        "tangle-blueprints-relayers",
-        "tempo-payments",
-        "twilio-comms",
-        "zksync-era"
-      ],
-      "leafIds": {
-        "train": [
-          "across-bridge-status",
-          "across-deposit-v3",
-          "aptos-cross-chain-bridge",
-          "bnb-opbnb-bridge-manager",
-          "op-bridge-status-viewer",
-          "op-cross-chain-defi",
-          "op-eas-credential-platform",
-          "op-erc20-bridge",
-          "op-full-bridge-manager",
-          "op-governance-voting-app",
-          "op-sequencer-health-monitor",
-          "op-superchain-analytics",
-          "scroll-eth-deposit",
-          "starknet-token-bridge-l1",
-          "tangle-keeper-bridge-relay",
-          "tangle-relay-full-stack",
-          "twilio-message-status",
-          "zksync-bridge-deposit-viewer"
-        ],
-        "holdout": [
-          "across-plus-defi-actions",
-          "knock-notification-analytics",
-          "op-cross-chain-governance",
-          "op-eth-bridge-deposit",
-          "op-op-stack-deployer",
-          "scroll-bridge-status-viewer",
-          "tangle-bridge-watcher-alerting",
-          "tempo-mpp-cross-chain-payment-routing",
-          "zksync-eth-deposit-bridge"
-        ]
-      },
-      "partnerIds": [
-        "across-protocol",
-        "aptos-labs",
-        "binance",
-        "knock",
-        "matter-labs",
-        "optimism",
-        "scroll",
-        "starkware",
-        "tangle-network",
-        "tempo",
-        "twilio"
-      ],
-      "failureEvidence": [
-        {
-          "source": "blueprint-agent-scenarios",
-          "bucket": "vertical-leaf-demand",
-          "count": 27
-        }
-      ],
-      "intendedStarter": {
-        "family": "evm-infra-ts",
-        "layers": [
-          "framework:evm-infra-ts",
-          "capability:bridge-protocol-api"
-        ],
-        "capabilities": [
-          "capability:bridge-protocol-api"
-        ]
-      },
-      "routingPrompts": [
-        "Build a bridge deposit and withdrawal indexer that exposes message status by sender and chain pair",
-        "Build a bridge transaction monitor API that indexes source confirmed, relayed, destination confirmed, and failed states",
-        "Build a cross-chain relayer status API with retry queue and destination confirmed tracking"
-      ],
-      "validationCommands": [],
-      "authenticitySignals": [
-        "bridge deposit",
-        "bridge destination confirmed",
-        "bridge failed states",
-        "bridge message status",
-        "bridge relayer status",
-        "bridge retry queue",
-        "bridge source confirmed",
-        "bridge withdrawal",
-        "message status"
-      ],
-      "registryFiles": [
-        "registry/layers/capability/bridge-protocol-api/manifest.json"
-      ],
-      "filesToModify": [
-        "registry/layers/capability/bridge-protocol-api/manifest.json",
-        "tests/coverage.test.ts",
-        "tests/domain-packs.test.ts"
-      ],
-      "gatesToRun": [
-        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
-        "pnpm build",
-        "pnpm exec tsc -p tsconfig.test.json",
-        "pnpm exec tsx scripts/validate-registry.ts"
-      ],
-      "sourceFiles": [
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/ai/twilio-comms.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/across-bridge.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/aptos-move.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/bnb-chain.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/optimism-l2.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/scroll-zkevm.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/starknet-cairo.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-bridges.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-keeper.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-relayers.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tempo-payments.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/zksync-era.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/infra/knock-notifications.ts"
-      ]
-    },
-    {
-      "id": "dex-hook-contracts",
-      "status": "candidate",
-      "domain": {
-        "family": "dex-hook",
-        "protocol": "uniswap-v4",
-        "runtime": "evm",
-        "surface": "contracts"
-      },
-      "ambiguityGroup": "dex-hook-contracts",
-      "verticalIds": [
-        "brevis-zk-coprocessor",
-        "trading-agents",
-        "uniswap-v4"
-      ],
-      "leafIds": {
-        "train": [
-          "brevis-dynamic-fee-oracle",
-          "trading-uniswap-arb-agent",
-          "uni-v4-custom-accounting-hook",
-          "uni-v4-hook-composability",
-          "uni-v4-hook-event-log",
-          "uni-v4-hook-gas-profiler",
-          "uni-v4-hook-scaffold-basehook",
-          "uni-v4-hook-security-analyzer",
-          "uni-v4-mev-protected-swap-hook",
-          "uni-v4-onchain-options-hook",
-          "uni-v4-volatility-fee-hook"
-        ],
-        "holdout": [
-          "uni-v4-cross-chain-hook-bridge",
-          "uni-v4-hook-deployer",
-          "uni-v4-hook-registry",
-          "uni-v4-limit-order-hook",
-          "uni-v4-twap-oracle-hook"
-        ]
-      },
-      "partnerIds": [
-        "brevis",
-        "multi-framework",
-        "uniswap-labs"
-      ],
-      "failureEvidence": [
-        {
-          "source": "blueprint-agent-scenarios",
-          "bucket": "vertical-leaf-demand",
-          "count": 16
-        }
-      ],
-      "intendedStarter": {
-        "family": "forge-contracts",
-        "layers": [
-          "framework:forge-foundation",
-          "capability:evm-uniswap-v4-hook"
-        ],
-        "capabilities": [
-          "capability:evm-uniswap-v4-hook"
-        ]
-      },
-      "routingPrompts": [
-        "Build a Uniswap V4 hook contract extending BaseHook with beforeSwap logic"
-      ],
-      "validationCommands": [
-        "forge build",
-        "forge test"
-      ],
-      "authenticitySignals": [
-        "BaseHook",
-        "HookFlags",
-        "PoolManager",
-        "afterAddLiquidity",
-        "afterSwap",
-        "beforeAddLiquidity",
-        "beforeSwap",
-        "sqrtPriceX96",
-        "tickSpacing"
-      ],
-      "registryFiles": [
-        "registry/layers/capability/evm-uniswap-v4-hook/manifest.json"
-      ],
-      "filesToModify": [
-        "registry/layers/capability/evm-uniswap-v4-hook/manifest.json",
-        "tests/coverage.test.ts",
-        "tests/domain-packs.test.ts"
-      ],
-      "gatesToRun": [
-        "forge build",
-        "forge test",
-        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
-        "pnpm build",
-        "pnpm exec tsc -p tsconfig.test.json",
-        "pnpm exec tsx scripts/validate-registry.ts"
-      ],
-      "sourceFiles": [
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/agents/trading-agents.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/brevis-zk-coprocessor.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/uniswap-v4.ts"
-      ]
-    },
-    {
-      "id": "dex-hook-contracts-capability-evm-uniswap-v4-hook",
-      "status": "candidate",
-      "domain": {
-        "family": "dex-hook",
-        "protocol": "uniswap-v4",
-        "runtime": "evm",
-        "surface": "contracts"
-      },
-      "ambiguityGroup": "dex-hook-contracts",
-      "verticalIds": [
-        "brevis-zk-coprocessor",
-        "trading-agents",
-        "uniswap-v4"
-      ],
-      "leafIds": {
-        "train": [
-          "brevis-dynamic-fee-oracle",
-          "trading-uniswap-arb-agent",
-          "uni-v4-custom-accounting-hook",
-          "uni-v4-hook-composability",
-          "uni-v4-hook-event-log",
-          "uni-v4-hook-gas-profiler",
-          "uni-v4-hook-scaffold-basehook",
-          "uni-v4-hook-security-analyzer",
-          "uni-v4-mev-protected-swap-hook",
-          "uni-v4-onchain-options-hook",
-          "uni-v4-volatility-fee-hook"
-        ],
-        "holdout": [
-          "uni-v4-cross-chain-hook-bridge",
-          "uni-v4-hook-deployer",
-          "uni-v4-hook-registry",
-          "uni-v4-limit-order-hook",
-          "uni-v4-twap-oracle-hook"
-        ]
-      },
-      "partnerIds": [
-        "brevis",
-        "multi-framework",
-        "uniswap-labs"
-      ],
-      "failureEvidence": [
-        {
-          "source": "blueprint-agent-scenarios",
-          "bucket": "vertical-leaf-demand",
-          "count": 16
-        }
-      ],
-      "intendedStarter": {
-        "family": "forge-contracts",
-        "layers": [
-          "framework:forge-foundation",
-          "capability:evm-uniswap-v4-hook"
-        ],
-        "capabilities": [
-          "capability:evm-uniswap-v4-hook"
-        ]
-      },
-      "routingPrompts": [
-        "Build a Uniswap V4 hook contract extending BaseHook with beforeSwap logic"
-      ],
-      "validationCommands": [
-        "forge build",
-        "forge test"
-      ],
-      "authenticitySignals": [
-        "BaseHook",
-        "HookFlags",
-        "PoolManager",
-        "afterAddLiquidity",
-        "afterSwap",
-        "beforeAddLiquidity",
-        "beforeSwap",
-        "sqrtPriceX96",
-        "tickSpacing"
-      ],
-      "registryFiles": [
-        "registry/layers/capability/evm-uniswap-v4-hook/manifest.json"
-      ],
-      "filesToModify": [
-        "registry/layers/capability/evm-uniswap-v4-hook/manifest.json",
-        "tests/coverage.test.ts",
-        "tests/domain-packs.test.ts"
-      ],
-      "gatesToRun": [
-        "forge build",
-        "forge test",
-        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
-        "pnpm build",
-        "pnpm exec tsc -p tsconfig.test.json",
-        "pnpm exec tsx scripts/validate-registry.ts"
-      ],
-      "sourceFiles": [
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/agents/trading-agents.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/brevis-zk-coprocessor.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/uniswap-v4.ts"
-      ]
-    },
-    {
-      "id": "bridge-contracts-capability-evm-layerzero-oft",
-      "status": "candidate",
-      "domain": {
-        "family": "bridge",
-        "provider": "layerzero",
-        "protocol": "oft",
-        "runtime": "foundry",
-        "surface": "contracts"
-      },
-      "ambiguityGroup": "bridge-contracts",
-      "verticalIds": [
-        "ethena-stablecoin",
-        "layerzero-omnichain"
-      ],
-      "leafIds": {
-        "train": [
-          "ethena-cross-chain-usde",
-          "lz-oft-adapter-deploy",
-          "lz-oft-bridge-ui",
-          "lz-oft-custom-fee-module",
-          "lz-oft-rate-limiter",
-          "lz-oft-send-and-call"
-        ],
-        "holdout": [
-          "lz-oft-balance-tracker",
-          "lz-oft-launch-platform",
-          "lz-oft-token-info"
-        ]
-      },
-      "partnerIds": [
-        "ethena",
-        "layerzero"
-      ],
-      "failureEvidence": [
-        {
-          "source": "blueprint-agent-scenarios",
-          "bucket": "vertical-leaf-demand",
-          "count": 9
-        }
-      ],
-      "intendedStarter": {
-        "family": "forge-contracts",
-        "layers": [
-          "framework:forge-foundation",
-          "capability:evm-layerzero-oft"
-        ],
-        "capabilities": [
-          "capability:evm-layerzero-oft"
-        ]
-      },
-      "routingPrompts": [
-        "Build a LayerZero OFT bridge token with Foundry",
-        "Build a cross-chain token bridge contract with sendTokens, trusted remotes, and LayerZero endpoint config",
-        "Build an omnichain ERC20 contract using LayerZero OFT with forge deploy scripts"
-      ],
-      "validationCommands": [
-        "forge build",
-        "forge test"
-      ],
-      "authenticitySignals": [
-        "LayerZero",
-        "OFT",
-        "bridge",
-        "omnichain",
-        "sendTokens"
-      ],
-      "registryFiles": [
-        "registry/layers/capability/evm-layerzero-oft/manifest.json"
-      ],
-      "filesToModify": [
-        "registry/layers/capability/evm-layerzero-oft/manifest.json",
-        "tests/coverage.test.ts",
-        "tests/domain-packs.test.ts"
-      ],
-      "gatesToRun": [
-        "forge build",
-        "forge test",
-        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
-        "pnpm build",
-        "pnpm exec tsc -p tsconfig.test.json",
-        "pnpm exec tsx scripts/validate-registry.ts"
-      ],
-      "sourceFiles": [
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/ethena-stablecoin.ts",
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/layerzero-omnichain.ts"
-      ]
-    },
-    {
-      "id": "stylus-contracts-contracts",
-      "status": "candidate",
-      "domain": {
-        "family": "stylus-contracts",
-        "protocol": "stylus",
-        "runtime": "stylus",
-        "surface": "contracts"
-      },
-      "verticalIds": [
-        "arbitrum-stylus"
-      ],
-      "leafIds": {
-        "train": [
-          "stylus-abi-interop-explorer",
-          "stylus-amm-pair-router",
-          "stylus-cross-vm-rust-solidity-vault",
-          "stylus-deploy-cockpit",
-          "stylus-merkle-airdrop-claim",
-          "stylus-onchain-orderbook-clob"
-        ],
-        "holdout": [
-          "stylus-cache-bid-manager",
-          "stylus-gas-profiler",
-          "stylus-rust-erc20-vault"
-        ]
-      },
-      "partnerIds": [
-        "arbitrum-foundation"
-      ],
-      "failureEvidence": [
-        {
-          "source": "blueprint-agent-scenarios",
-          "bucket": "vertical-leaf-demand",
-          "count": 9
-        }
-      ],
-      "intendedStarter": {
-        "family": "stylus-contracts",
-        "layers": [
-          "framework:stylus-contracts"
-        ],
-        "capabilities": []
-      },
-      "routingPrompts": [
-        "Build an Arbitrum Stylus Rust contract"
-      ],
-      "validationCommands": [
-        "cargo check",
-        "cargo test --quiet"
-      ],
-      "authenticitySignals": [
-        "#[storage]",
-        "Arbitrum Stylus",
-        "Stylus",
-        "stylus-sdk",
-        "stylus.json"
-      ],
-      "registryFiles": [
-        "registry/families/stylus-contracts/manifest.json"
-      ],
-      "filesToModify": [
-        "registry/families/stylus-contracts/manifest.json",
-        "tests/coverage.test.ts",
-        "tests/domain-packs.test.ts"
-      ],
-      "gatesToRun": [
-        "cargo check",
-        "cargo test --quiet",
-        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
-        "pnpm build",
-        "pnpm exec tsc -p tsconfig.test.json",
-        "pnpm exec tsx scripts/validate-registry.ts"
-      ],
-      "sourceFiles": [
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/arbitrum-stylus.ts"
-      ]
-    },
-    {
-      "id": "stylus-contracts-contracts-arbitrum-stylus",
-      "status": "candidate",
-      "domain": {
-        "family": "stylus-contracts",
-        "protocol": "stylus",
-        "runtime": "stylus",
-        "surface": "contracts"
-      },
-      "verticalIds": [
-        "arbitrum-stylus"
-      ],
-      "leafIds": {
-        "train": [
-          "stylus-abi-interop-explorer",
-          "stylus-amm-pair-router",
-          "stylus-cross-vm-rust-solidity-vault",
-          "stylus-deploy-cockpit",
-          "stylus-merkle-airdrop-claim",
-          "stylus-onchain-orderbook-clob"
-        ],
-        "holdout": [
-          "stylus-cache-bid-manager",
-          "stylus-gas-profiler",
-          "stylus-rust-erc20-vault"
-        ]
-      },
-      "partnerIds": [
-        "arbitrum-foundation"
-      ],
-      "failureEvidence": [
-        {
-          "source": "blueprint-agent-scenarios",
-          "bucket": "vertical-leaf-demand",
-          "count": 9
-        }
-      ],
-      "intendedStarter": {
-        "family": "stylus-contracts",
-        "layers": [
-          "framework:stylus-contracts"
-        ],
-        "capabilities": []
-      },
-      "routingPrompts": [
-        "Build an Arbitrum Stylus Rust contract"
-      ],
-      "validationCommands": [
-        "cargo check",
-        "cargo test --quiet"
-      ],
-      "authenticitySignals": [
-        "#[storage]",
-        "Arbitrum Stylus",
-        "Stylus",
-        "stylus-sdk",
-        "stylus.json"
-      ],
-      "registryFiles": [
-        "registry/families/stylus-contracts/manifest.json"
-      ],
-      "filesToModify": [
-        "registry/families/stylus-contracts/manifest.json",
-        "tests/coverage.test.ts",
-        "tests/domain-packs.test.ts"
-      ],
-      "gatesToRun": [
-        "cargo check",
-        "cargo test --quiet",
-        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
-        "pnpm build",
-        "pnpm exec tsc -p tsconfig.test.json",
-        "pnpm exec tsx scripts/validate-registry.ts"
-      ],
-      "sourceFiles": [
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/arbitrum-stylus.ts"
-      ]
-    },
-    {
-      "id": "stylus-contracts-contracts-stylus-contracts",
-      "status": "candidate",
-      "domain": {
-        "family": "stylus-contracts",
-        "protocol": "stylus",
-        "runtime": "stylus",
-        "surface": "contracts"
-      },
-      "verticalIds": [
-        "arbitrum-stylus"
-      ],
-      "leafIds": {
-        "train": [
-          "stylus-abi-interop-explorer",
-          "stylus-amm-pair-router",
-          "stylus-cross-vm-rust-solidity-vault",
-          "stylus-deploy-cockpit",
-          "stylus-merkle-airdrop-claim",
-          "stylus-onchain-orderbook-clob"
-        ],
-        "holdout": [
-          "stylus-cache-bid-manager",
-          "stylus-gas-profiler",
-          "stylus-rust-erc20-vault"
-        ]
-      },
-      "partnerIds": [
-        "arbitrum-foundation"
-      ],
-      "failureEvidence": [
-        {
-          "source": "blueprint-agent-scenarios",
-          "bucket": "vertical-leaf-demand",
-          "count": 9
-        }
-      ],
-      "intendedStarter": {
-        "family": "stylus-contracts",
-        "layers": [
-          "framework:stylus-contracts"
-        ],
-        "capabilities": []
-      },
-      "routingPrompts": [
-        "Build an Arbitrum Stylus Rust contract"
-      ],
-      "validationCommands": [
-        "cargo check",
-        "cargo test --quiet"
-      ],
-      "authenticitySignals": [
-        "#[storage]",
-        "Arbitrum Stylus",
-        "Stylus",
-        "stylus-sdk",
-        "stylus.json"
-      ],
-      "registryFiles": [
-        "registry/families/stylus-contracts/manifest.json"
-      ],
-      "filesToModify": [
-        "registry/families/stylus-contracts/manifest.json",
-        "tests/coverage.test.ts",
-        "tests/domain-packs.test.ts"
-      ],
-      "gatesToRun": [
-        "cargo check",
-        "cargo test --quiet",
-        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
-        "pnpm build",
-        "pnpm exec tsc -p tsconfig.test.json",
-        "pnpm exec tsx scripts/validate-registry.ts"
-      ],
-      "sourceFiles": [
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/arbitrum-stylus.ts"
       ]
     },
     {
@@ -1894,6 +663,234 @@
       ]
     },
     {
+      "id": "stylus-contracts-contracts",
+      "status": "candidate",
+      "domain": {
+        "family": "stylus-contracts",
+        "protocol": "stylus",
+        "runtime": "stylus",
+        "surface": "contracts"
+      },
+      "verticalIds": [
+        "arbitrum-stylus"
+      ],
+      "leafIds": {
+        "train": [
+          "stylus-amm-pair-router",
+          "stylus-cache-bid-manager",
+          "stylus-deploy-cockpit",
+          "stylus-gas-profiler",
+          "stylus-rust-erc20-vault"
+        ],
+        "holdout": [
+          "stylus-cross-vm-rust-solidity-vault",
+          "stylus-merkle-airdrop-claim"
+        ]
+      },
+      "partnerIds": [
+        "arbitrum-foundation"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 7
+        }
+      ],
+      "intendedStarter": {
+        "family": "stylus-contracts",
+        "layers": [
+          "framework:stylus-contracts"
+        ],
+        "capabilities": []
+      },
+      "routingPrompts": [
+        "Build an Arbitrum Stylus Rust contract"
+      ],
+      "validationCommands": [
+        "cargo check",
+        "cargo test --quiet"
+      ],
+      "authenticitySignals": [
+        "#[storage]",
+        "Arbitrum Stylus",
+        "Stylus",
+        "stylus-sdk",
+        "stylus.json"
+      ],
+      "registryFiles": [
+        "registry/families/stylus-contracts/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/families/stylus-contracts/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "cargo check",
+        "cargo test --quiet",
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/arbitrum-stylus.ts"
+      ]
+    },
+    {
+      "id": "stylus-contracts-contracts-arbitrum-stylus",
+      "status": "candidate",
+      "domain": {
+        "family": "stylus-contracts",
+        "protocol": "stylus",
+        "runtime": "stylus",
+        "surface": "contracts"
+      },
+      "verticalIds": [
+        "arbitrum-stylus"
+      ],
+      "leafIds": {
+        "train": [
+          "stylus-amm-pair-router",
+          "stylus-cache-bid-manager",
+          "stylus-deploy-cockpit",
+          "stylus-gas-profiler",
+          "stylus-rust-erc20-vault"
+        ],
+        "holdout": [
+          "stylus-cross-vm-rust-solidity-vault",
+          "stylus-merkle-airdrop-claim"
+        ]
+      },
+      "partnerIds": [
+        "arbitrum-foundation"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 7
+        }
+      ],
+      "intendedStarter": {
+        "family": "stylus-contracts",
+        "layers": [
+          "framework:stylus-contracts"
+        ],
+        "capabilities": []
+      },
+      "routingPrompts": [
+        "Build an Arbitrum Stylus Rust contract"
+      ],
+      "validationCommands": [
+        "cargo check",
+        "cargo test --quiet"
+      ],
+      "authenticitySignals": [
+        "#[storage]",
+        "Arbitrum Stylus",
+        "Stylus",
+        "stylus-sdk",
+        "stylus.json"
+      ],
+      "registryFiles": [
+        "registry/families/stylus-contracts/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/families/stylus-contracts/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "cargo check",
+        "cargo test --quiet",
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/arbitrum-stylus.ts"
+      ]
+    },
+    {
+      "id": "stylus-contracts-contracts-stylus-contracts",
+      "status": "candidate",
+      "domain": {
+        "family": "stylus-contracts",
+        "protocol": "stylus",
+        "runtime": "stylus",
+        "surface": "contracts"
+      },
+      "verticalIds": [
+        "arbitrum-stylus"
+      ],
+      "leafIds": {
+        "train": [
+          "stylus-amm-pair-router",
+          "stylus-cache-bid-manager",
+          "stylus-deploy-cockpit",
+          "stylus-gas-profiler",
+          "stylus-rust-erc20-vault"
+        ],
+        "holdout": [
+          "stylus-cross-vm-rust-solidity-vault",
+          "stylus-merkle-airdrop-claim"
+        ]
+      },
+      "partnerIds": [
+        "arbitrum-foundation"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 7
+        }
+      ],
+      "intendedStarter": {
+        "family": "stylus-contracts",
+        "layers": [
+          "framework:stylus-contracts"
+        ],
+        "capabilities": []
+      },
+      "routingPrompts": [
+        "Build an Arbitrum Stylus Rust contract"
+      ],
+      "validationCommands": [
+        "cargo check",
+        "cargo test --quiet"
+      ],
+      "authenticitySignals": [
+        "#[storage]",
+        "Arbitrum Stylus",
+        "Stylus",
+        "stylus-sdk",
+        "stylus.json"
+      ],
+      "registryFiles": [
+        "registry/families/stylus-contracts/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/families/stylus-contracts/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "cargo check",
+        "cargo test --quiet",
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/arbitrum-stylus.ts"
+      ]
+    },
+    {
       "id": "fhe-contracts-fhevm-contracts",
       "status": "candidate",
       "domain": {
@@ -1971,6 +968,374 @@
       ]
     },
     {
+      "id": "bridge-ui",
+      "status": "candidate",
+      "domain": {
+        "family": "bridge",
+        "surface": "ui"
+      },
+      "ambiguityGroup": "bridge-ui",
+      "verticalIds": [
+        "aave-lending",
+        "across-bridge",
+        "alpaca-broker",
+        "aptos-move",
+        "axelar-crosschain",
+        "cctp-circle-bridge",
+        "chainlink-oracles",
+        "circle-usdc",
+        "column-banking",
+        "crypto-defi-agents",
+        "dex-arb-solana-agents",
+        "dwolla-ach",
+        "ens-domains",
+        "ethena-stablecoin",
+        "ethereum-foundry-viem",
+        "ethereum-l1",
+        "fireblocks-custody",
+        "helius-rpc",
+        "layerzero-omnichain",
+        "moov-payments",
+        "okx-xlayer",
+        "oneinch-aggregation",
+        "optimism-l2",
+        "phantom-wallet",
+        "plaid-banking",
+        "polygon-pos",
+        "pyth-oracle",
+        "scroll-zkevm",
+        "solana-core",
+        "squads-multisig",
+        "starknet-cairo",
+        "tangle-blueprints-bridges",
+        "tangle-blueprints-defi",
+        "tangle-blueprints-keeper",
+        "tangle-blueprints-mpc",
+        "tangle-blueprints-relayers",
+        "tempo-payments",
+        "tonejs-audio",
+        "wise-transfers",
+        "wormhole-solana",
+        "zksync-era"
+      ],
+      "leafIds": {
+        "train": [
+          "across-bridge-comparison-platform",
+          "across-bridge-history",
+          "aptos-cross-chain-bridge",
+          "circle-cctp-bridge",
+          "lz-message-fee-estimator",
+          "lz-message-tracker",
+          "lz-oft-bridge-ui",
+          "lz-oft-send-and-call",
+          "op-superchain-bridge",
+          "scroll-multi-chain-bridge",
+          "tangle-bridge-fee-estimator",
+          "tangle-bridge-liquidity-pool",
+          "tangle-relay-message-adapter",
+          "tempo-tip20-cross-chain-bridge",
+          "wormhole-bridge-analytics",
+          "wormhole-bridge-status",
+          "wormhole-fee-calculator",
+          "wormhole-full-bridge",
+          "wormhole-relayer-integration",
+          "wormhole-supported-tokens"
+        ],
+        "holdout": [
+          "across-full-bridge-interface",
+          "cross-chain-bridge",
+          "lz-oapp-message-sender",
+          "lz-onft-bridge",
+          "scroll-nft-bridge",
+          "tangle-defi-bridge-attestation",
+          "wormhole-batch-transfer",
+          "wormhole-explorer-viewer",
+          "wormhole-liquidity-layer",
+          "wormhole-token-transfer"
+        ]
+      },
+      "partnerIds": [
+        "1inch",
+        "aave",
+        "across-protocol",
+        "alpaca",
+        "aptos-labs",
+        "axelar",
+        "chainlink",
+        "circle",
+        "column",
+        "dwolla",
+        "ens",
+        "ethena",
+        "ethereum-foundation",
+        "fireblocks",
+        "helius",
+        "layerzero",
+        "matter-labs",
+        "moov",
+        "multi-framework",
+        "multi-protocol",
+        "okx",
+        "optimism",
+        "phantom",
+        "plaid",
+        "polygon",
+        "pyth-network",
+        "scroll",
+        "solana",
+        "squads",
+        "starkware",
+        "tangle-network",
+        "tempo",
+        "tonejs",
+        "wise",
+        "wormhole"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 127
+        }
+      ],
+      "intendedStarter": {
+        "family": "react-vite-ts",
+        "layers": [
+          "framework:react-vite-ts",
+          "capability:crypto-bridge-ui"
+        ],
+        "capabilities": [
+          "capability:crypto-bridge-ui"
+        ]
+      },
+      "routingPrompts": [
+        "Build a USDe bridge interface from Ethereum to Arbitrum, Optimism, and Base with LayerZero transfer status",
+        "Build a cross-chain bridge transfer UI with Wormhole",
+        "Build a multichain bridge dashboard with source chain, destination chain, fee estimate, and transaction history"
+      ],
+      "validationCommands": [],
+      "authenticitySignals": [
+        "bridge interface",
+        "bridge transaction history",
+        "destination chain",
+        "fee estimation",
+        "source chain",
+        "transfer status"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/across-bridge.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/aptos-move.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/layerzero-omnichain.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/optimism-l2.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/scroll-zkevm.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-bridges.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-defi.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-relayers.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tempo-payments.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/wormhole-solana.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/fintech/circle-usdc.ts"
+      ]
+    },
+    {
+      "id": "bridge-ui-capability-crypto-bridge-ui",
+      "status": "candidate",
+      "domain": {
+        "family": "bridge",
+        "surface": "ui"
+      },
+      "ambiguityGroup": "bridge-ui",
+      "verticalIds": [
+        "aave-lending",
+        "across-bridge",
+        "alpaca-broker",
+        "aptos-move",
+        "axelar-crosschain",
+        "cctp-circle-bridge",
+        "chainlink-oracles",
+        "circle-usdc",
+        "column-banking",
+        "crypto-defi-agents",
+        "dex-arb-solana-agents",
+        "dwolla-ach",
+        "ens-domains",
+        "ethena-stablecoin",
+        "ethereum-foundry-viem",
+        "ethereum-l1",
+        "fireblocks-custody",
+        "helius-rpc",
+        "layerzero-omnichain",
+        "moov-payments",
+        "okx-xlayer",
+        "oneinch-aggregation",
+        "optimism-l2",
+        "phantom-wallet",
+        "plaid-banking",
+        "polygon-pos",
+        "pyth-oracle",
+        "scroll-zkevm",
+        "solana-core",
+        "squads-multisig",
+        "starknet-cairo",
+        "tangle-blueprints-bridges",
+        "tangle-blueprints-defi",
+        "tangle-blueprints-keeper",
+        "tangle-blueprints-mpc",
+        "tangle-blueprints-relayers",
+        "tempo-payments",
+        "tonejs-audio",
+        "wise-transfers",
+        "wormhole-solana",
+        "zksync-era"
+      ],
+      "leafIds": {
+        "train": [
+          "across-bridge-comparison-platform",
+          "across-bridge-history",
+          "aptos-cross-chain-bridge",
+          "circle-cctp-bridge",
+          "lz-message-fee-estimator",
+          "lz-message-tracker",
+          "lz-oft-bridge-ui",
+          "lz-oft-send-and-call",
+          "op-superchain-bridge",
+          "scroll-multi-chain-bridge",
+          "tangle-bridge-fee-estimator",
+          "tangle-bridge-liquidity-pool",
+          "tangle-relay-message-adapter",
+          "tempo-tip20-cross-chain-bridge",
+          "wormhole-bridge-analytics",
+          "wormhole-bridge-status",
+          "wormhole-fee-calculator",
+          "wormhole-full-bridge",
+          "wormhole-relayer-integration",
+          "wormhole-supported-tokens"
+        ],
+        "holdout": [
+          "across-full-bridge-interface",
+          "cross-chain-bridge",
+          "lz-oapp-message-sender",
+          "lz-onft-bridge",
+          "scroll-nft-bridge",
+          "tangle-defi-bridge-attestation",
+          "wormhole-batch-transfer",
+          "wormhole-explorer-viewer",
+          "wormhole-liquidity-layer",
+          "wormhole-token-transfer"
+        ]
+      },
+      "partnerIds": [
+        "1inch",
+        "aave",
+        "across-protocol",
+        "alpaca",
+        "aptos-labs",
+        "axelar",
+        "chainlink",
+        "circle",
+        "column",
+        "dwolla",
+        "ens",
+        "ethena",
+        "ethereum-foundation",
+        "fireblocks",
+        "helius",
+        "layerzero",
+        "matter-labs",
+        "moov",
+        "multi-framework",
+        "multi-protocol",
+        "okx",
+        "optimism",
+        "phantom",
+        "plaid",
+        "polygon",
+        "pyth-network",
+        "scroll",
+        "solana",
+        "squads",
+        "starkware",
+        "tangle-network",
+        "tempo",
+        "tonejs",
+        "wise",
+        "wormhole"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 127
+        }
+      ],
+      "intendedStarter": {
+        "family": "react-vite-ts",
+        "layers": [
+          "framework:react-vite-ts",
+          "capability:crypto-bridge-ui"
+        ],
+        "capabilities": [
+          "capability:crypto-bridge-ui"
+        ]
+      },
+      "routingPrompts": [
+        "Build a USDe bridge interface from Ethereum to Arbitrum, Optimism, and Base with LayerZero transfer status",
+        "Build a cross-chain bridge transfer UI with Wormhole",
+        "Build a multichain bridge dashboard with source chain, destination chain, fee estimate, and transaction history"
+      ],
+      "validationCommands": [],
+      "authenticitySignals": [
+        "bridge interface",
+        "bridge transaction history",
+        "destination chain",
+        "fee estimation",
+        "source chain",
+        "transfer status"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/across-bridge.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/aptos-move.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/layerzero-omnichain.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/optimism-l2.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/scroll-zkevm.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-bridges.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-defi.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-relayers.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tempo-payments.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/wormhole-solana.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/fintech/circle-usdc.ts"
+      ]
+    },
+    {
       "id": "bridge-ui-layerzero-omnichain",
       "status": "candidate",
       "domain": {
@@ -1983,38 +1348,31 @@
       ],
       "leafIds": {
         "train": [
-          "lz-chain-endpoint-directory",
-          "lz-composed-message-builder",
-          "lz-cross-chain-swap",
           "lz-dvn-monitoring-dashboard",
           "lz-dvn-security-config",
-          "lz-enforced-options-viewer",
           "lz-message-fee-estimator",
           "lz-message-tracker",
           "lz-native-drop-airdrop",
           "lz-oapp-config-inspector",
           "lz-oapp-message-sender",
-          "lz-oft-adapter-deploy",
-          "lz-oft-bridge-ui",
-          "lz-oft-custom-fee-module",
-          "lz-oft-rate-limiter",
-          "lz-oft-send-and-call",
-          "lz-omnichain-nft-game",
-          "lz-omnichain-yield-aggregator",
-          "lz-onft-marketplace",
-          "lz-peer-configuration"
-        ],
-        "holdout": [
-          "lz-create-lz-oapp-scaffold",
-          "lz-dvn-operator-platform",
-          "lz-message-design-patterns",
-          "lz-messagelib-selector",
-          "lz-oapp-message-receiver",
           "lz-oft-balance-tracker",
           "lz-oft-launch-platform",
-          "lz-omnichain-governance",
+          "lz-oft-rate-limiter",
+          "lz-oft-token-info",
+          "lz-omnichain-dex",
           "lz-onft-bridge",
+          "lz-onft-collection-viewer",
+          "lz-peer-configuration",
           "lz-protocol-analytics"
+        ],
+        "holdout": [
+          "lz-enforced-options-viewer",
+          "lz-messagelib-selector",
+          "lz-oapp-message-receiver",
+          "lz-oft-bridge-ui",
+          "lz-oft-send-and-call",
+          "lz-omnichain-oracle",
+          "lz-ordered-vs-unordered"
         ]
       },
       "partnerIds": [
@@ -2024,7 +1382,7 @@
         {
           "source": "blueprint-agent-scenarios",
           "bucket": "vertical-leaf-demand",
-          "count": 40
+          "count": 23
         }
       ],
       "intendedStarter": {
@@ -2084,32 +1442,22 @@
         "train": [
           "wormhole-batch-transfer",
           "wormhole-bridge-analytics",
-          "wormhole-connect-widget",
           "wormhole-crosschain-defi",
-          "wormhole-explorer-viewer",
+          "wormhole-crosschain-governance",
           "wormhole-fee-calculator",
-          "wormhole-gateway-cosmos",
+          "wormhole-full-bridge",
           "wormhole-guardian-status",
           "wormhole-liquidity-layer",
-          "wormhole-messaging",
-          "wormhole-nft-bridge",
-          "wormhole-ntt-deployer",
           "wormhole-relayer-integration",
           "wormhole-security-monitor",
-          "wormhole-token-attest",
-          "wormhole-token-redeem",
-          "wormhole-usdc-cctp",
-          "wormhole-vaa-parser"
+          "wormhole-token-transfer"
         ],
         "holdout": [
           "wormhole-bridge-status",
-          "wormhole-crosschain-governance",
-          "wormhole-full-bridge",
-          "wormhole-interchain-query",
-          "wormhole-multichain-portfolio",
-          "wormhole-ntt-transfer",
-          "wormhole-supported-tokens",
-          "wormhole-token-transfer"
+          "wormhole-explorer-viewer",
+          "wormhole-gateway-cosmos",
+          "wormhole-messaging",
+          "wormhole-supported-tokens"
         ]
       },
       "partnerIds": [
@@ -2119,7 +1467,7 @@
         {
           "source": "blueprint-agent-scenarios",
           "bucket": "vertical-leaf-demand",
-          "count": 26
+          "count": 16
         }
       ],
       "intendedStarter": {
@@ -2165,178 +1513,189 @@
       ]
     },
     {
-      "id": "bridge-ui-tangle-blueprints-bridges",
+      "id": "dex-hook-contracts",
       "status": "candidate",
       "domain": {
-        "family": "bridge",
-        "surface": "ui"
+        "family": "dex-hook",
+        "protocol": "uniswap-v4",
+        "runtime": "evm",
+        "surface": "contracts"
       },
-      "ambiguityGroup": "bridge-ui",
+      "ambiguityGroup": "dex-hook-contracts",
       "verticalIds": [
-        "tangle-blueprints-bridges"
+        "brevis-zk-coprocessor",
+        "uniswap-v4"
       ],
       "leafIds": {
         "train": [
-          "tangle-bridge-emergency-pause",
-          "tangle-bridge-fee-estimator",
-          "tangle-bridge-header-relay-single",
-          "tangle-bridge-intent-based-bridge",
-          "tangle-bridge-liquidity-pool",
-          "tangle-bridge-message-queue",
-          "tangle-bridge-multi-sig-guardian-network",
-          "tangle-bridge-nonce-manager",
-          "tangle-bridge-rate-limiter",
-          "tangle-bridge-receipt-proof",
-          "tangle-bridge-transfer-status",
-          "tangle-bridge-tss-signing",
-          "tangle-bridge-watcher-alerting",
-          "tangle-bridge-zk-light-client"
+          "brevis-dynamic-fee-oracle",
+          "uni-v4-cross-chain-hook-bridge",
+          "uni-v4-hook-composability",
+          "uni-v4-hook-deployer",
+          "uni-v4-hook-gas-profiler",
+          "uni-v4-hook-scaffold-basehook",
+          "uni-v4-mev-protected-swap-hook",
+          "uni-v4-onchain-options-hook",
+          "uni-v4-volatility-fee-hook"
         ],
         "holdout": [
-          "tangle-bridge-fraud-detector",
-          "tangle-bridge-light-client-sync",
-          "tangle-bridge-multi-chain-header-relay",
-          "tangle-bridge-optimistic-relay",
-          "tangle-bridge-state-proof-relay",
-          "tangle-bridge-validator-set-relay"
+          "uni-v4-custom-accounting-hook",
+          "uni-v4-hook-event-log",
+          "uni-v4-limit-order-hook",
+          "uni-v4-twap-oracle-hook"
         ]
       },
       "partnerIds": [
-        "tangle-network"
+        "brevis",
+        "uniswap-labs"
       ],
       "failureEvidence": [
         {
           "source": "blueprint-agent-scenarios",
           "bucket": "vertical-leaf-demand",
-          "count": 20
+          "count": 13
         }
       ],
       "intendedStarter": {
-        "family": "react-vite-ts",
+        "family": "forge-contracts",
         "layers": [
-          "framework:react-vite-ts",
-          "capability:crypto-bridge-ui"
+          "framework:forge-foundation",
+          "capability:evm-uniswap-v4-hook"
         ],
         "capabilities": [
-          "capability:crypto-bridge-ui"
+          "capability:evm-uniswap-v4-hook"
         ]
       },
       "routingPrompts": [
-        "Build a USDe bridge interface from Ethereum to Arbitrum, Optimism, and Base with LayerZero transfer status",
-        "Build a cross-chain bridge transfer UI with Wormhole",
-        "Build a multichain bridge dashboard with source chain, destination chain, fee estimate, and transaction history"
+        "Build a Uniswap V4 hook contract extending BaseHook with beforeSwap logic"
       ],
-      "validationCommands": [],
+      "validationCommands": [
+        "forge build",
+        "forge test"
+      ],
       "authenticitySignals": [
-        "bridge interface",
-        "bridge transaction history",
-        "destination chain",
-        "fee estimation",
-        "source chain",
-        "transfer status"
+        "BaseHook",
+        "HookFlags",
+        "PoolManager",
+        "afterAddLiquidity",
+        "afterSwap",
+        "beforeAddLiquidity",
+        "beforeSwap",
+        "sqrtPriceX96",
+        "tickSpacing"
       ],
       "registryFiles": [
-        "registry/layers/capability/crypto-bridge-ui/manifest.json"
+        "registry/layers/capability/evm-uniswap-v4-hook/manifest.json"
       ],
       "filesToModify": [
-        "registry/layers/capability/crypto-bridge-ui/manifest.json",
+        "registry/layers/capability/evm-uniswap-v4-hook/manifest.json",
         "tests/coverage.test.ts",
         "tests/domain-packs.test.ts"
       ],
       "gatesToRun": [
+        "forge build",
+        "forge test",
         "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
         "pnpm build",
         "pnpm exec tsc -p tsconfig.test.json",
         "pnpm exec tsx scripts/validate-registry.ts"
       ],
       "sourceFiles": [
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-bridges.ts"
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/brevis-zk-coprocessor.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/uniswap-v4.ts"
       ]
     },
     {
-      "id": "bridge-ui-tangle-blueprints-relayers",
+      "id": "dex-hook-contracts-capability-evm-uniswap-v4-hook",
       "status": "candidate",
       "domain": {
-        "family": "bridge",
-        "surface": "ui"
+        "family": "dex-hook",
+        "protocol": "uniswap-v4",
+        "runtime": "evm",
+        "surface": "contracts"
       },
-      "ambiguityGroup": "bridge-ui",
+      "ambiguityGroup": "dex-hook-contracts",
       "verticalIds": [
-        "tangle-blueprints-relayers"
+        "brevis-zk-coprocessor",
+        "uniswap-v4"
       ],
       "leafIds": {
         "train": [
-          "tangle-relay-batched-merkle",
-          "tangle-relay-config-manager",
-          "tangle-relay-gas-abstraction",
-          "tangle-relay-gas-estimation",
-          "tangle-relay-message-adapter",
-          "tangle-relay-multi-chain-indexer",
-          "tangle-relay-oracle-feed",
-          "tangle-relay-permissioned",
-          "tangle-relay-receipt-aggregator",
-          "tangle-relay-reputation-slashing",
-          "tangle-relay-single-event",
-          "tangle-relay-zk-verified"
+          "brevis-dynamic-fee-oracle",
+          "uni-v4-cross-chain-hook-bridge",
+          "uni-v4-hook-composability",
+          "uni-v4-hook-deployer",
+          "uni-v4-hook-gas-profiler",
+          "uni-v4-hook-scaffold-basehook",
+          "uni-v4-mev-protected-swap-hook",
+          "uni-v4-onchain-options-hook",
+          "uni-v4-volatility-fee-hook"
         ],
         "holdout": [
-          "tangle-relay-cross-chain-proof",
-          "tangle-relay-load-balancer",
-          "tangle-relay-nonce-tracker",
-          "tangle-relay-priority-fees",
-          "tangle-relay-retry-queue"
+          "uni-v4-custom-accounting-hook",
+          "uni-v4-hook-event-log",
+          "uni-v4-limit-order-hook",
+          "uni-v4-twap-oracle-hook"
         ]
       },
       "partnerIds": [
-        "tangle-network"
+        "brevis",
+        "uniswap-labs"
       ],
       "failureEvidence": [
         {
           "source": "blueprint-agent-scenarios",
           "bucket": "vertical-leaf-demand",
-          "count": 17
+          "count": 13
         }
       ],
       "intendedStarter": {
-        "family": "react-vite-ts",
+        "family": "forge-contracts",
         "layers": [
-          "framework:react-vite-ts",
-          "capability:crypto-bridge-ui"
+          "framework:forge-foundation",
+          "capability:evm-uniswap-v4-hook"
         ],
         "capabilities": [
-          "capability:crypto-bridge-ui"
+          "capability:evm-uniswap-v4-hook"
         ]
       },
       "routingPrompts": [
-        "Build a USDe bridge interface from Ethereum to Arbitrum, Optimism, and Base with LayerZero transfer status",
-        "Build a cross-chain bridge transfer UI with Wormhole",
-        "Build a multichain bridge dashboard with source chain, destination chain, fee estimate, and transaction history"
+        "Build a Uniswap V4 hook contract extending BaseHook with beforeSwap logic"
       ],
-      "validationCommands": [],
+      "validationCommands": [
+        "forge build",
+        "forge test"
+      ],
       "authenticitySignals": [
-        "bridge interface",
-        "bridge transaction history",
-        "destination chain",
-        "fee estimation",
-        "source chain",
-        "transfer status"
+        "BaseHook",
+        "HookFlags",
+        "PoolManager",
+        "afterAddLiquidity",
+        "afterSwap",
+        "beforeAddLiquidity",
+        "beforeSwap",
+        "sqrtPriceX96",
+        "tickSpacing"
       ],
       "registryFiles": [
-        "registry/layers/capability/crypto-bridge-ui/manifest.json"
+        "registry/layers/capability/evm-uniswap-v4-hook/manifest.json"
       ],
       "filesToModify": [
-        "registry/layers/capability/crypto-bridge-ui/manifest.json",
+        "registry/layers/capability/evm-uniswap-v4-hook/manifest.json",
         "tests/coverage.test.ts",
         "tests/domain-packs.test.ts"
       ],
       "gatesToRun": [
+        "forge build",
+        "forge test",
         "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
         "pnpm build",
         "pnpm exec tsc -p tsconfig.test.json",
         "pnpm exec tsx scripts/validate-registry.ts"
       ],
       "sourceFiles": [
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-relayers.ts"
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/brevis-zk-coprocessor.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/uniswap-v4.ts"
       ]
     },
     {
@@ -2358,18 +1717,16 @@
           "uni-v4-custom-accounting-hook",
           "uni-v4-hook-deployer",
           "uni-v4-hook-event-log",
-          "uni-v4-hook-registry",
           "uni-v4-hook-scaffold-basehook",
           "uni-v4-limit-order-hook",
-          "uni-v4-mev-protected-swap-hook",
-          "uni-v4-twap-oracle-hook",
-          "uni-v4-volatility-fee-hook"
+          "uni-v4-onchain-options-hook",
+          "uni-v4-twap-oracle-hook"
         ],
         "holdout": [
           "uni-v4-hook-composability",
           "uni-v4-hook-gas-profiler",
-          "uni-v4-hook-security-analyzer",
-          "uni-v4-onchain-options-hook"
+          "uni-v4-mev-protected-swap-hook",
+          "uni-v4-volatility-fee-hook"
         ]
       },
       "partnerIds": [
@@ -2379,7 +1736,7 @@
         {
           "source": "blueprint-agent-scenarios",
           "bucket": "vertical-leaf-demand",
-          "count": 14
+          "count": 12
         }
       ],
       "intendedStarter": {
@@ -2431,90 +1788,7 @@
       ]
     },
     {
-      "id": "bridge-indexer-optimism-l2",
-      "status": "candidate",
-      "domain": {
-        "family": "bridge",
-        "surface": "indexer"
-      },
-      "ambiguityGroup": "bridge-indexer",
-      "verticalIds": [
-        "optimism-l2"
-      ],
-      "leafIds": {
-        "train": [
-          "op-bridge-status-viewer",
-          "op-cross-chain-defi",
-          "op-eas-credential-platform",
-          "op-erc20-bridge",
-          "op-full-bridge-manager",
-          "op-governance-voting-app",
-          "op-sequencer-health-monitor",
-          "op-superchain-analytics"
-        ],
-        "holdout": [
-          "op-cross-chain-governance",
-          "op-eth-bridge-deposit",
-          "op-op-stack-deployer"
-        ]
-      },
-      "partnerIds": [
-        "optimism"
-      ],
-      "failureEvidence": [
-        {
-          "source": "blueprint-agent-scenarios",
-          "bucket": "vertical-leaf-demand",
-          "count": 11
-        }
-      ],
-      "intendedStarter": {
-        "family": "evm-infra-ts",
-        "layers": [
-          "framework:evm-infra-ts",
-          "capability:bridge-protocol-api"
-        ],
-        "capabilities": [
-          "capability:bridge-protocol-api"
-        ]
-      },
-      "routingPrompts": [
-        "Build a bridge deposit and withdrawal indexer that exposes message status by sender and chain pair",
-        "Build a bridge transaction monitor API that indexes source confirmed, relayed, destination confirmed, and failed states",
-        "Build a cross-chain relayer status API with retry queue and destination confirmed tracking"
-      ],
-      "validationCommands": [],
-      "authenticitySignals": [
-        "bridge deposit",
-        "bridge destination confirmed",
-        "bridge failed states",
-        "bridge message status",
-        "bridge relayer status",
-        "bridge retry queue",
-        "bridge source confirmed",
-        "bridge withdrawal",
-        "message status"
-      ],
-      "registryFiles": [
-        "registry/layers/capability/bridge-protocol-api/manifest.json"
-      ],
-      "filesToModify": [
-        "registry/layers/capability/bridge-protocol-api/manifest.json",
-        "tests/coverage.test.ts",
-        "tests/domain-packs.test.ts"
-      ],
-      "gatesToRun": [
-        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
-        "pnpm build",
-        "pnpm exec tsc -p tsconfig.test.json",
-        "pnpm exec tsx scripts/validate-registry.ts"
-      ],
-      "sourceFiles": [
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/optimism-l2.ts"
-      ]
-    },
-    {
-      "id": "bridge-ui-across-bridge",
+      "id": "bridge-ui-tangle-blueprints-relayers",
       "status": "candidate",
       "domain": {
         "family": "bridge",
@@ -2522,27 +1796,27 @@
       },
       "ambiguityGroup": "bridge-ui",
       "verticalIds": [
-        "across-bridge"
+        "tangle-blueprints-relayers"
       ],
       "leafIds": {
         "train": [
-          "across-bridge-analytics",
-          "across-bridge-comparison-platform",
-          "across-cross-chain-intent-matcher",
-          "across-deposit-v3",
-          "across-full-bridge-interface",
-          "across-hubpool-stats",
-          "across-pool-rebalance",
-          "across-supported-routes"
+          "tangle-relay-batched-merkle",
+          "tangle-relay-config-manager",
+          "tangle-relay-gas-estimation",
+          "tangle-relay-load-balancer",
+          "tangle-relay-nonce-tracker",
+          "tangle-relay-oracle-feed",
+          "tangle-relay-receipt-aggregator",
+          "tangle-relay-retry-queue"
         ],
         "holdout": [
-          "across-bridge-history",
-          "across-fee-quote",
-          "across-plus-cross-chain-action"
+          "tangle-relay-gas-abstraction",
+          "tangle-relay-message-adapter",
+          "tangle-relay-priority-fees"
         ]
       },
       "partnerIds": [
-        "across-protocol"
+        "tangle-network"
       ],
       "failureEvidence": [
         {
@@ -2590,11 +1864,219 @@
         "pnpm exec tsx scripts/validate-registry.ts"
       ],
       "sourceFiles": [
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/across-bridge.ts"
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-relayers.ts"
       ]
     },
     {
-      "id": "bridge-ui-cctp-circle-bridge",
+      "id": "bridge-indexer",
+      "status": "candidate",
+      "domain": {
+        "family": "bridge",
+        "surface": "indexer"
+      },
+      "ambiguityGroup": "bridge-indexer",
+      "verticalIds": [
+        "across-bridge",
+        "knock-notifications",
+        "optimism-l2",
+        "scroll-zkevm",
+        "tangle-blueprints-bridges",
+        "tangle-blueprints-keeper",
+        "tangle-blueprints-relayers",
+        "tempo-payments",
+        "zksync-era"
+      ],
+      "leafIds": {
+        "train": [
+          "across-bridge-status",
+          "across-plus-defi-actions",
+          "op-sequencer-health-monitor",
+          "scroll-eth-deposit",
+          "tangle-keeper-bridge-relay",
+          "tangle-relay-full-stack",
+          "zksync-eth-deposit-bridge"
+        ],
+        "holdout": [
+          "knock-notification-analytics",
+          "tangle-bridge-watcher-alerting",
+          "tempo-mpp-cross-chain-payment-routing"
+        ]
+      },
+      "partnerIds": [
+        "across-protocol",
+        "knock",
+        "matter-labs",
+        "optimism",
+        "scroll",
+        "tangle-network",
+        "tempo"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 10
+        }
+      ],
+      "intendedStarter": {
+        "family": "evm-infra-ts",
+        "layers": [
+          "framework:evm-infra-ts",
+          "capability:bridge-protocol-api"
+        ],
+        "capabilities": [
+          "capability:bridge-protocol-api"
+        ]
+      },
+      "routingPrompts": [
+        "Build a bridge deposit and withdrawal indexer that exposes message status by sender and chain pair",
+        "Build a bridge transaction monitor API that indexes source confirmed, relayed, destination confirmed, and failed states",
+        "Build a cross-chain relayer status API with retry queue and destination confirmed tracking"
+      ],
+      "validationCommands": [],
+      "authenticitySignals": [
+        "bridge deposit",
+        "bridge destination confirmed",
+        "bridge failed states",
+        "bridge message status",
+        "bridge relayer status",
+        "bridge retry queue",
+        "bridge source confirmed",
+        "bridge withdrawal",
+        "message status"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/bridge-protocol-api/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/bridge-protocol-api/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/across-bridge.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/optimism-l2.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/scroll-zkevm.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-bridges.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-keeper.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-relayers.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tempo-payments.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/zksync-era.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/infra/knock-notifications.ts"
+      ]
+    },
+    {
+      "id": "bridge-indexer-capability-bridge-protocol-api",
+      "status": "candidate",
+      "domain": {
+        "family": "bridge",
+        "surface": "indexer"
+      },
+      "ambiguityGroup": "bridge-indexer",
+      "verticalIds": [
+        "across-bridge",
+        "knock-notifications",
+        "optimism-l2",
+        "scroll-zkevm",
+        "tangle-blueprints-bridges",
+        "tangle-blueprints-keeper",
+        "tangle-blueprints-relayers",
+        "tempo-payments",
+        "zksync-era"
+      ],
+      "leafIds": {
+        "train": [
+          "across-bridge-status",
+          "across-plus-defi-actions",
+          "op-sequencer-health-monitor",
+          "scroll-eth-deposit",
+          "tangle-keeper-bridge-relay",
+          "tangle-relay-full-stack",
+          "zksync-eth-deposit-bridge"
+        ],
+        "holdout": [
+          "knock-notification-analytics",
+          "tangle-bridge-watcher-alerting",
+          "tempo-mpp-cross-chain-payment-routing"
+        ]
+      },
+      "partnerIds": [
+        "across-protocol",
+        "knock",
+        "matter-labs",
+        "optimism",
+        "scroll",
+        "tangle-network",
+        "tempo"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 10
+        }
+      ],
+      "intendedStarter": {
+        "family": "evm-infra-ts",
+        "layers": [
+          "framework:evm-infra-ts",
+          "capability:bridge-protocol-api"
+        ],
+        "capabilities": [
+          "capability:bridge-protocol-api"
+        ]
+      },
+      "routingPrompts": [
+        "Build a bridge deposit and withdrawal indexer that exposes message status by sender and chain pair",
+        "Build a bridge transaction monitor API that indexes source confirmed, relayed, destination confirmed, and failed states",
+        "Build a cross-chain relayer status API with retry queue and destination confirmed tracking"
+      ],
+      "validationCommands": [],
+      "authenticitySignals": [
+        "bridge deposit",
+        "bridge destination confirmed",
+        "bridge failed states",
+        "bridge message status",
+        "bridge relayer status",
+        "bridge retry queue",
+        "bridge source confirmed",
+        "bridge withdrawal",
+        "message status"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/bridge-protocol-api/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/bridge-protocol-api/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/across-bridge.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/optimism-l2.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/scroll-zkevm.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-bridges.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-keeper.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-relayers.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tempo-payments.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/zksync-era.ts",
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/infra/knock-notifications.ts"
+      ]
+    },
+    {
+      "id": "bridge-ui-across-bridge",
       "status": "candidate",
       "domain": {
         "family": "bridge",
@@ -2602,25 +2084,104 @@
       },
       "ambiguityGroup": "bridge-ui",
       "verticalIds": [
-        "cctp-circle-bridge"
+        "across-bridge"
       ],
       "leafIds": {
         "train": [
-          "cctp-attestation-polling",
-          "cctp-composable-bridge-defi",
-          "cctp-full-bridge-evm-to-evm",
-          "cctp-hook-integration",
-          "cctp-receive-message",
-          "cctp-transfer-status-tracker"
+          "across-bridge-analytics",
+          "across-bridge-comparison-platform",
+          "across-deposit-v3",
+          "across-fee-quote",
+          "across-hubpool-stats",
+          "across-plus-cross-chain-action",
+          "across-supported-routes"
         ],
         "holdout": [
-          "cctp-cross-chain-swap",
-          "cctp-multi-hop-routing",
-          "cctp-v2-fast-finality"
+          "across-bridge-history",
+          "across-full-bridge-interface",
+          "across-pool-rebalance"
         ]
       },
       "partnerIds": [
-        "circle"
+        "across-protocol"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 10
+        }
+      ],
+      "intendedStarter": {
+        "family": "react-vite-ts",
+        "layers": [
+          "framework:react-vite-ts",
+          "capability:crypto-bridge-ui"
+        ],
+        "capabilities": [
+          "capability:crypto-bridge-ui"
+        ]
+      },
+      "routingPrompts": [
+        "Build a USDe bridge interface from Ethereum to Arbitrum, Optimism, and Base with LayerZero transfer status",
+        "Build a cross-chain bridge transfer UI with Wormhole",
+        "Build a multichain bridge dashboard with source chain, destination chain, fee estimate, and transaction history"
+      ],
+      "validationCommands": [],
+      "authenticitySignals": [
+        "bridge interface",
+        "bridge transaction history",
+        "destination chain",
+        "fee estimation",
+        "source chain",
+        "transfer status"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/across-bridge.ts"
+      ]
+    },
+    {
+      "id": "bridge-ui-tangle-blueprints-bridges",
+      "status": "candidate",
+      "domain": {
+        "family": "bridge",
+        "surface": "ui"
+      },
+      "ambiguityGroup": "bridge-ui",
+      "verticalIds": [
+        "tangle-blueprints-bridges"
+      ],
+      "leafIds": {
+        "train": [
+          "tangle-bridge-fee-estimator",
+          "tangle-bridge-header-relay-single",
+          "tangle-bridge-multi-chain-header-relay",
+          "tangle-bridge-nonce-manager",
+          "tangle-bridge-state-proof-relay",
+          "tangle-bridge-tss-signing"
+        ],
+        "holdout": [
+          "tangle-bridge-liquidity-pool",
+          "tangle-bridge-optimistic-relay",
+          "tangle-bridge-validator-set-relay"
+        ]
+      },
+      "partnerIds": [
+        "tangle-network"
       ],
       "failureEvidence": [
         {
@@ -2668,7 +2229,7 @@
         "pnpm exec tsx scripts/validate-registry.ts"
       ],
       "sourceFiles": [
-        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/cctp-circle-bridge.ts"
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/tangle-blueprints-bridges.ts"
       ]
     },
     {
@@ -2686,14 +2247,11 @@
         "train": [
           "axelar-cross-chain-nft",
           "axelar-crosschain-defi-aggregator",
-          "axelar-gas-estimator",
-          "axelar-gmp-status-tracker",
-          "axelar-its-register-existing",
+          "axelar-its-interchain-transfer",
           "axelar-transfer-history"
         ],
         "holdout": [
-          "axelar-crosschain-governance",
-          "axelar-its-interchain-transfer"
+          "axelar-gas-estimator"
         ]
       },
       "partnerIds": [
@@ -2703,7 +2261,7 @@
         {
           "source": "blueprint-agent-scenarios",
           "bucket": "vertical-leaf-demand",
-          "count": 8
+          "count": 5
         }
       ],
       "intendedStarter": {
@@ -2746,6 +2304,233 @@
       ],
       "sourceFiles": [
         "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/axelar-crosschain.ts"
+      ]
+    },
+    {
+      "id": "bridge-ui-scroll-zkevm",
+      "status": "candidate",
+      "domain": {
+        "family": "bridge",
+        "surface": "ui"
+      },
+      "ambiguityGroup": "bridge-ui",
+      "verticalIds": [
+        "scroll-zkevm"
+      ],
+      "leafIds": {
+        "train": [
+          "scroll-erc20-bridge",
+          "scroll-eth-deposit",
+          "scroll-multi-chain-bridge",
+          "scroll-nft-bridge"
+        ],
+        "holdout": [
+          "scroll-gateway-custom-erc20"
+        ]
+      },
+      "partnerIds": [
+        "scroll"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 5
+        }
+      ],
+      "intendedStarter": {
+        "family": "react-vite-ts",
+        "layers": [
+          "framework:react-vite-ts",
+          "capability:crypto-bridge-ui"
+        ],
+        "capabilities": [
+          "capability:crypto-bridge-ui"
+        ]
+      },
+      "routingPrompts": [
+        "Build a USDe bridge interface from Ethereum to Arbitrum, Optimism, and Base with LayerZero transfer status",
+        "Build a cross-chain bridge transfer UI with Wormhole",
+        "Build a multichain bridge dashboard with source chain, destination chain, fee estimate, and transaction history"
+      ],
+      "validationCommands": [],
+      "authenticitySignals": [
+        "bridge interface",
+        "bridge transaction history",
+        "destination chain",
+        "fee estimation",
+        "source chain",
+        "transfer status"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/scroll-zkevm.ts"
+      ]
+    },
+    {
+      "id": "bridge-contracts-capability-evm-layerzero-oft",
+      "status": "candidate",
+      "domain": {
+        "family": "bridge",
+        "provider": "layerzero",
+        "protocol": "oft",
+        "runtime": "foundry",
+        "surface": "contracts"
+      },
+      "ambiguityGroup": "bridge-contracts",
+      "verticalIds": [
+        "layerzero-omnichain"
+      ],
+      "leafIds": {
+        "train": [
+          "lz-oft-adapter-deploy",
+          "lz-oft-custom-fee-module",
+          "lz-oft-send-and-call"
+        ],
+        "holdout": [
+          "lz-oft-launch-platform"
+        ]
+      },
+      "partnerIds": [
+        "layerzero"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 4
+        }
+      ],
+      "intendedStarter": {
+        "family": "forge-contracts",
+        "layers": [
+          "framework:forge-foundation",
+          "capability:evm-layerzero-oft"
+        ],
+        "capabilities": [
+          "capability:evm-layerzero-oft"
+        ]
+      },
+      "routingPrompts": [
+        "Build a LayerZero OFT bridge token with Foundry",
+        "Build a cross-chain token bridge contract with sendTokens, trusted remotes, and LayerZero endpoint config",
+        "Build an omnichain ERC20 contract using LayerZero OFT with forge deploy scripts"
+      ],
+      "validationCommands": [
+        "forge build",
+        "forge test"
+      ],
+      "authenticitySignals": [
+        "LayerZero",
+        "OFT",
+        "bridge",
+        "omnichain",
+        "sendTokens"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/evm-layerzero-oft/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/evm-layerzero-oft/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "forge build",
+        "forge test",
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/layerzero-omnichain.ts"
+      ]
+    },
+    {
+      "id": "bridge-ui-cctp-circle-bridge",
+      "status": "candidate",
+      "domain": {
+        "family": "bridge",
+        "surface": "ui"
+      },
+      "ambiguityGroup": "bridge-ui",
+      "verticalIds": [
+        "cctp-circle-bridge"
+      ],
+      "leafIds": {
+        "train": [
+          "cctp-cross-chain-swap",
+          "cctp-full-bridge-evm-to-evm",
+          "cctp-v2-fast-finality"
+        ],
+        "holdout": [
+          "cctp-transfer-status-tracker"
+        ]
+      },
+      "partnerIds": [
+        "circle"
+      ],
+      "failureEvidence": [
+        {
+          "source": "blueprint-agent-scenarios",
+          "bucket": "vertical-leaf-demand",
+          "count": 4
+        }
+      ],
+      "intendedStarter": {
+        "family": "react-vite-ts",
+        "layers": [
+          "framework:react-vite-ts",
+          "capability:crypto-bridge-ui"
+        ],
+        "capabilities": [
+          "capability:crypto-bridge-ui"
+        ]
+      },
+      "routingPrompts": [
+        "Build a USDe bridge interface from Ethereum to Arbitrum, Optimism, and Base with LayerZero transfer status",
+        "Build a cross-chain bridge transfer UI with Wormhole",
+        "Build a multichain bridge dashboard with source chain, destination chain, fee estimate, and transaction history"
+      ],
+      "validationCommands": [],
+      "authenticitySignals": [
+        "bridge interface",
+        "bridge transaction history",
+        "destination chain",
+        "fee estimation",
+        "source chain",
+        "transfer status"
+      ],
+      "registryFiles": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json"
+      ],
+      "filesToModify": [
+        "registry/layers/capability/crypto-bridge-ui/manifest.json",
+        "tests/coverage.test.ts",
+        "tests/domain-packs.test.ts"
+      ],
+      "gatesToRun": [
+        "node --test --test-concurrency=1 dist-tests/domain-packs.test.js dist-tests/coverage.test.js",
+        "pnpm build",
+        "pnpm exec tsc -p tsconfig.test.json",
+        "pnpm exec tsx scripts/validate-registry.ts"
+      ],
+      "sourceFiles": [
+        "../blueprint-agent/scripts/experiments/scenarios/verticals/crypto/cctp-circle-bridge.ts"
       ]
     }
   ]

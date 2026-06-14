@@ -1,0 +1,133 @@
+{
+  "generatedAt": "2026-06-14T12:45:35Z",
+  "issue": 148,
+  "scope": "surface-compatible domain-pack candidate planning and workspace routing",
+  "candidateQueue": {
+    "generatedAt": "2026-06-14T11:49:15.845Z",
+    "scenariosScanned": 319,
+    "domainGroupsScanned": 7,
+    "candidates": 25,
+    "targets": [
+      {
+        "id": "fhe-contracts-fhenix-foundry",
+        "verticalIds": ["fhenix-fhe"],
+        "intendedStarter": {
+          "family": "fhenix-foundry",
+          "layers": ["framework:fhenix-foundry"]
+        },
+        "trainLeaves": [
+          "fhenix-blind-poker-showdown",
+          "fhenix-confidential-dex",
+          "fhenix-encrypted-erc20-token",
+          "fhenix-private-dao-vote",
+          "fhenix-sealed-bid-auction",
+          "fhenix-sealed-payroll-stream"
+        ],
+        "holdoutLeaves": [
+          "fhenix-confidential-lending-vault",
+          "fhenix-private-prediction-market"
+        ]
+      },
+      {
+        "id": "bridge-contracts-capability-evm-layerzero-oft",
+        "verticalIds": ["layerzero-omnichain"],
+        "intendedStarter": {
+          "family": "forge-contracts",
+          "layers": [
+            "framework:forge-foundation",
+            "capability:evm-layerzero-oft"
+          ]
+        },
+        "trainLeaves": [
+          "lz-oft-adapter-deploy",
+          "lz-oft-custom-fee-module",
+          "lz-oft-send-and-call"
+        ],
+        "holdoutLeaves": ["lz-oft-launch-platform"],
+        "excludedBySurfaceFilter": [
+          "ethena-cross-chain-usde",
+          "lz-oft-bridge-ui"
+        ]
+      }
+    ]
+  },
+  "liveEvidence": {
+    "rawArtifactsCommitted": false,
+    "fhePiDeepseekTrain": {
+      "leafId": "fhenix-blind-poker-showdown",
+      "outcome": "max-shots",
+      "turns": 1,
+      "wallTimeMs": 479546,
+      "blendedScore": 0.527,
+      "allPass": false,
+      "failingLayers": ["typecheck", "lint", "domain", "semantic"],
+      "toolCallsByName": {
+        "Read": 20,
+        "Bash": 59,
+        "Write": 7,
+        "Edit": 6
+      }
+    },
+    "bridgePiDeepseekPreFilter": {
+      "status": "failed",
+      "train": {
+        "n": 1,
+        "median": 0.7272727272727273,
+        "completionPassCount": 0,
+        "scaffoldPassCount": 0
+      },
+      "holdout": {
+        "n": 1,
+        "median": 0.7272727272727273,
+        "completionPassCount": 0,
+        "scaffoldPassCount": 1
+      },
+      "primaryFailure": "train leaf ethena-cross-chain-usde was a bridge-interface workspace, not LayerZero OFT contract evidence"
+    },
+    "bridgePiDeepseekPostSurfaceFilter": {
+      "train": {
+        "leafId": "lz-oft-adapter-deploy",
+        "outcome": "max-shots",
+        "turns": 1,
+        "wallTimeMs": 388300,
+        "meanComposite": 0.5606060606060606,
+        "completionPassRate": 0,
+        "scaffold": {
+          "family": "forge-contracts",
+          "layers": [
+            "framework:forge-foundation",
+            "capability:evm-layerzero-oft"
+          ],
+          "domainPackGuidanceSources": ["capability:evm-layerzero-oft"]
+        },
+        "toolCallsByName": {
+          "Bash": 29,
+          "Read": 8,
+          "Write": 27,
+          "web_search": 4,
+          "Edit": 1
+        }
+      },
+      "holdout": {
+        "leafId": "lz-oft-launch-platform",
+        "completed": false,
+        "streamLines": 412,
+        "sdkEventLines": 441,
+        "scaffold": {
+          "family": "react-vite-ts+api-service+forge-contracts",
+          "layers": [
+            "web:react-vite-ts",
+            "api:api-service",
+            "evm:forge-contracts"
+          ],
+          "domainPackGuidanceSources": []
+        },
+        "interruption": "wrapper stopped before final bridge-scored.json was written"
+      }
+    }
+  },
+  "blueprintAgentFollowUp": {
+    "finding": "workspace scored scaffold artifacts preserve top-level project families but not the selected EVM subproject domain-pack guidance",
+    "expectedFix": "aggregate workspace project compose reports or workspace-report components into blueprint-agent scaffold-compose.json"
+  }
+}

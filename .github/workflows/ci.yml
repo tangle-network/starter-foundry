@@ -123,8 +123,11 @@ jobs:
             // recorded baseline of 0.878 minus a 2pp tolerance band.
             if (heldOut.meanRecall !== undefined && heldOut.meanRecall < 1.0) fail.push(`held-out recall ${heldOut.meanRecall} < 1.0`);
             if (ideasai.meanRecall !== undefined && ideasai.meanRecall < 0.85) fail.push(`ideasai recall ${ideasai.meanRecall} < 0.85 (baseline 0.878)`);
-            // Latency floor on the deterministic path.
-            if (agg.p95Ms > 5) fail.push(`p95 ${agg.p95Ms}ms > 5ms (deterministic path)`);
+            // Latency is noisy on shared self-hosted runners. Keep accuracy and
+            // recall as hard gates; record p95 for trend review and only fail
+            // on a catastrophic deterministic-path slowdown.
+            if (agg.p95Ms > 5) console.warn(`p95 ${agg.p95Ms}ms > 5ms advisory latency budget`);
+            if (agg.p95Ms > 25) fail.push(`p95 ${agg.p95Ms}ms > 25ms catastrophic latency budget`);
             if (fail.length) {
               console.error("CI threshold failures:");
               for (const f of fail) console.error("  - " + f);

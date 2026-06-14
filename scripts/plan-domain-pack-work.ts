@@ -76,6 +76,54 @@ const DEFAULT_SCENARIOS = resolve(REPO, '../blueprint-agent/scripts/experiments/
 const DEFAULT_OUTPUT = join(REPO, '.evolve/domain-pack-candidates.json')
 const GENERIC_TERMS = new Set(['app', 'apps', 'contract', 'contracts', 'custom', 'generic', 'ui'])
 const TOOLCHAIN_PROVIDES = new Set(['forge-build', 'hardhat-build', 'solidity-contracts'])
+const KNOWN_SURFACES = new Set(['api', 'contracts', 'indexer', 'research', 'ui', 'worker'])
+const SURFACE_TERMS: Record<string, Array<[RegExp, number]>> = {
+  api: [[/\bapi\b|\bbackend\b|\bserver\b|\bendpoint\b|\bwebhook\b|\brest\b|\bgraphql\b/, 2]],
+  contracts: [
+    [/\bsmart\s+contracts?\b|\bcontracts?\b|\bsolidity\b|\bfoundry\b|\bforge\b|\bhardhat\b/, 4],
+    [/\bdeploy(?:ment|ed|s)?\b|\bdeployer\b|\bdeploy\s+scripts?\b/, 2],
+    [/\berc[-\s]?\d+\b|\btoken\s+contracts?\b|\bvault\s+contracts?\b/, 2],
+    [/\bimplement\b|\boverride\b|\bhandler\b|\bprotocol\s+logic\b/, 2],
+    [/\b[A-Za-z_][A-Za-z0-9_]*(?:\([^)]*\)|\[\])/, 2],
+  ],
+  indexer: [
+    [/\bindexer\b|\bmonitor(?:ing)?\b|\bwatcher\b|\banalytics\b|\bscanner\b/, 3],
+    [/\brelayer\b|\brelay\b|\bqueue\b|\bevent\s+listener\b|\balert(?:ing)?\b/, 2],
+  ],
+  research: [[/\bresearch\b|\bexplain\b|\bwhitepaper\b|\bcomparison\b|\banalysis\b/, 3]],
+  ui: [
+    [/\bui\b|\bux\b|\bfrontend\b|\bfront-end\b|\binterface\b|\bdashboard\b/, 4],
+    [
+      /\bviewer\b|\bwizard\b|\bpanel\b|\bpage\b|\bscreen\b|\bform\b|\bexplorer\b|\bcalculator\b|\bestimator\b/,
+      3,
+    ],
+    [
+      /\bdisplay\b|\bshow\b|\brender\b|\bchart\b|\btable\b|\bwallet-connected\b|\buser\s+selects?\b/,
+      2,
+    ],
+  ],
+  worker: [[/\bworker\b|\bjob\b|\bcron\b|\bscheduler\b|\bbackground\b/, 3]],
+}
+const ARTIFACT_SURFACES: Record<string, string[]> = {
+  api: ['api'],
+  backend: ['api', 'indexer'],
+  contract: ['contracts'],
+  contracts: ['contracts'],
+  dashboard: ['ui'],
+  frontend: ['ui'],
+  indexer: ['indexer'],
+  interface: ['ui'],
+  research: ['research'],
+  ui: ['ui'],
+  worker: ['worker'],
+}
+const FAMILY_SURFACES: Array<[RegExp, string[]]> = [
+  [/(^|-)contracts?$/, ['contracts']],
+  [/foundry|forge|hardhat|solana-program/, ['contracts']],
+  [/react|nextjs|vue|svelte|frontend|static|ui/, ['ui']],
+  [/api|server|backend/, ['api']],
+  [/infra|indexer|relayer|worker/, ['indexer']],
+]
 
 const argv = process.argv.slice(2)
 const JSON_OUT = argv.includes('--json')
@@ -523,8 +571,7 @@ function candidateTier(candidate: DomainPackWorkCandidate): number {
   )
   const allLayerFiles = candidate.registryFiles.every((file) => file.startsWith('registry/layers/'))
   const groupWide = candidate.ambiguityGroup === candidate.id
-  const explicitRegistryEntry =
-    candidate.registryFiles.length === 1 && candidate.sourceFiles.length > 1
+  const explicitRegistryEntry = candidate.registryFiles.length === 1
   if (groupWide && candidate.registryFiles.length > 1 && allFamilyFiles) return 8
   if (groupWide && candidate.registryFiles.length > 1 && allLayerFiles) return 7
   if (explicitRegistryEntry && allFamilyFiles) return 6
@@ -663,6 +710,7 @@ function evidenceForGroup(group: DomainGroup, seeds: ScenarioSeed[]): Evidence[]
   for (const seed of seeds) {
     const seedScore = scoreText(seed.text, group)
     for (const leaf of seed.leaves) {
+      if (!leafMatchesDomainSurface(group, seed, leaf)) continue
       const leafScore = scoreText(leafEvidenceText(seed, leaf), group)
       if (leafScore.evidence <= 0) continue
       if (requiresCapabilityIntent && leafScore.capabilityIntent <= 0) continue
@@ -674,6 +722,94 @@ function evidenceForGroup(group: DomainGroup, seeds: ScenarioSeed[]): Evidence[]
   return evidence.sort(
     (left, right) => right.score - left.score || left.leaf.id.localeCompare(right.leaf.id),
   )
+}
+
+function leafMatchesDomainSurface(
+  group: DomainGroup,
+  seed: ScenarioSeed,
+  leaf: ScenarioLeaf,
+): boolean {
+  const target = normalizeSurface(group.domain.surface)
+  if (!target || !KNOWN_SURFACES.has(target)) return true
+
+  const profile = leafSurfaceProfile(seed, leaf)
+  if (profile.explicit.size > 0) {
+    return [...profile.explicit].some((surface) => surfacesCompatible(target, surface))
+  }
+
+  const targetScore = surfaceScore(profile.scores, target)
+  const strongestScore = Math.max(0, ...profile.scores.values())
+  if (strongestScore === 0) return true
+  if (targetScore === 0) return false
+
+  return targetScore + 1 >= strongestScore
+}
+
+function leafSurfaceProfile(
+  seed: ScenarioSeed,
+  leaf: ScenarioLeaf,
+): { explicit: Set<string>; scores: Map<string, number> } {
+  const explicit = new Set<string>()
+  const scores = new Map<string, number>()
+  const addExplicit = (surface: string): void => {
+    const normalized = normalizeSurface(surface)
+    if (normalized) explicit.add(normalized)
+  }
+  const addScore = (surface: string, score: number): void => {
+    const normalized = normalizeSurface(surface)
+    if (!normalized) return
+    scores.set(normalized, (scores.get(normalized) ?? 0) + score)
+  }
+
+  for (const surface of artifactSurfaces(leaf.loadBearingArtifact)) addExplicit(surface)
+  for (const surface of familySurfaces(leaf.expectedFamily)) addExplicit(surface)
+
+  const text = leafEvidenceText(seed, leaf).toLowerCase()
+  for (const [surface, patterns] of Object.entries(SURFACE_TERMS)) {
+    for (const [pattern, weight] of patterns) {
+      if (pattern.test(text)) addScore(surface, weight)
+    }
+  }
+
+  return { explicit, scores }
+}
+
+function artifactSurfaces(value: string | undefined): string[] {
+  if (!value) return []
+  return ARTIFACT_SURFACES[value.toLowerCase()] ?? []
+}
+
+function familySurfaces(value: string | undefined): string[] {
+  if (!value) return []
+  const lower = value.toLowerCase()
+  return FAMILY_SURFACES.flatMap(([pattern, surfaces]) => (pattern.test(lower) ? surfaces : []))
+}
+
+function normalizeSurface(value: string | undefined): string | null {
+  if (!value) return null
+  const lower = value.toLowerCase()
+  if (/contracts?|solidity|evm/.test(lower)) return 'contracts'
+  if (/ui|frontend|front-end|interface|dashboard|viewer|app/.test(lower)) return 'ui'
+  if (/indexer|analytics|monitor|relayer/.test(lower)) return 'indexer'
+  if (/api|backend|server/.test(lower)) return 'api'
+  if (/worker|job|cron/.test(lower)) return 'worker'
+  if (/research|analysis|docs?/.test(lower)) return 'research'
+  return lower
+}
+
+function surfaceScore(scores: Map<string, number>, target: string): number {
+  let total = scores.get(target) ?? 0
+  for (const [surface, score] of scores) {
+    if (surface !== target && surfacesCompatible(target, surface)) total += score
+  }
+  return total
+}
+
+function surfacesCompatible(target: string, observed: string): boolean {
+  if (target === observed) return true
+  if (target === 'indexer') return observed === 'api' || observed === 'worker'
+  if (target === 'api') return observed === 'indexer'
+  return false
 }
 
 function leafEvidenceText(seed: ScenarioSeed, leaf: ScenarioLeaf): string {

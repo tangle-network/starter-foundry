@@ -528,6 +528,11 @@ export const UI_SURFACE_SIGNALS = [
   'website',
   'dashboard',
   'interface',
+  'viewer',
+  'wizard',
+  'panel',
+  'explorer',
+  'form',
   'front end',
 ]
 

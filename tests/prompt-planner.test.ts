@@ -346,6 +346,24 @@ test('planPrompt preserves domain-pack capability defaults for contract workspac
   }
 })
 
+test('planPrompt routes protocol deployment wizards as workspaces with contract domain packs', async () => {
+  const result = await planPrompt({
+    prompt:
+      'Build a deployment wizard for wrapping an existing ERC-20 as a LayerZero OFTAdapter. Deploy OFT contracts on destination chains and wire peers via setPeer().',
+    partner: null,
+  })
+
+  assert.equal(result.kind, 'workspace')
+  assert.equal(
+    result.spec.projects.find((project) => project.id === 'web')?.spec.family,
+    'react-vite-ts',
+  )
+  const evm = result.spec.projects.find((project) => project.id === 'evm')
+  assert.ok(evm)
+  assert.equal(evm.spec.family, 'forge-contracts')
+  assert.ok(evm.spec.layers!.includes('capability:evm-layerzero-oft'))
+})
+
 test('planPrompt infers coinbase partner when not provided', async () => {
   const result = await planPrompt({
     prompt:

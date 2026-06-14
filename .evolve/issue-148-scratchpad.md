@@ -250,7 +250,7 @@ bridges, and a clear consumer path back into blueprint-agent.
 Current `.evolve/domain-pack-candidates.json` evidence:
 
 - `scenariosScanned`: 319
-- `domainGroupsScanned`: 4
+- `domainGroupsScanned`: 7
 - `candidates`: 25
 - Includes FHE rows for `fhenix-foundry`, `fhenix-contracts`,
   `fhevm-contracts`, FHE capability rows, LayerZero OFT bridge contracts, bridge
@@ -354,6 +354,39 @@ Current scaffold-evidence reintegration slice:
     scaffold-evidence artifact contract.
   - `starter-foundry`: `pnpm exec prettier --check scripts/domain-pack-smoke.ts tests/domain-pack-smoke.test.ts`
     -> pass.
+
+Current surface-generalization slice:
+
+- Planner change: `scripts/plan-domain-pack-work.ts` now filters candidate
+  evidence by generic surface compatibility (`contracts`, `ui`, `api`,
+  `indexer`, `worker`, `research`) before a leaf can support a domain-pack row.
+  This is metadata/signal based, not a Fhenix or LayerZero exception.
+- Prompt planner change: generic UI surface signals now include `viewer`,
+  `wizard`, `panel`, `explorer`, and `form`, so protocol deployment products can
+  route as workspaces while still attaching contract domain packs to the EVM
+  subproject.
+- Regenerated queue evidence:
+  - `fhe-contracts-fhenix-foundry`: `fhenix-fhe` only, `6` train leaves and
+    `2` holdout leaves.
+  - `bridge-contracts-capability-evm-layerzero-oft`: `layerzero-omnichain`
+    only, `3` train leaves and `1` holdout leaf; it no longer absorbs
+    `ethena-cross-chain-usde` or `lz-oft-bridge-ui`.
+- Live pi/deepseek telemetry evidence:
+  - FHE train checkpoint: `toolCallsByName` recorded `Read:20`, `Bash:59`,
+    `Write:7`, `Edit:6`; this confirms pi tool activity is visible to
+    downstream scoring.
+  - LayerZero pure-contract train checkpoint: scaffold artifact recorded
+    `forge-contracts`, `framework:forge-foundation`, and
+    `capability:evm-layerzero-oft`; `toolCallsByName` recorded `Bash:29`,
+    `Read:8`, `Write:27`, `web_search:4`, `Edit:1`.
+  - LayerZero workspace holdout reached a real `web + api + evm` scaffold and
+    wrote `853` stream/event lines before the wrapper was interrupted; no final
+    `bridge-scored.json` was produced, so this is partial evidence only.
+- Reintegration gap: blueprint-agent's scored scaffold artifact still flattens
+  workspace mode to top-level `web/api/evm` layers and drops the EVM subproject's
+  domain-pack guidance. Starter-foundry `planPrompt` and direct
+  `compose-prompt` route the same prompt correctly, so the next integration fix
+  belongs in the blueprint-agent artifact extraction path.
 
 ## Open Follow-up Candidates
 

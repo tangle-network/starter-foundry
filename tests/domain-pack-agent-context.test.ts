@@ -90,12 +90,22 @@ test('FHE domain packs emit manifest-derived agent context', () => {
     assert.match(agents, /`FHE\.asEuint`/)
     assert.match(agents, /`FHE\.allow`/)
     assert.match(agents, /`cofhejs`/)
+    assert.match(agents, /Required evidence groups/)
+    assert.match(agents, /`cofhe-sdk`/)
+    assert.match(agents, /`@fhenixprotocol\/cofhe-contracts`/)
+    assert.match(agents, /`cofhe-contract-apis`/)
     assert.match(agents, /`forge build`/)
     assert.match(llms, /## Domain Pack Contract/)
     assert.match(llms, /Required signals\/APIs: .*FHE\.asEuint/)
+    assert.match(llms, /Required evidence groups: .*cofhe-sdk/)
     assert.equal(report.domainPackGuidance.length, 1)
     assert.equal(report.domainPackGuidance[0].domain.family, 'fhe')
     assert.ok(report.domainPackGuidance[0].authenticitySignals.includes('FHE.asEuint'))
+    assert.ok(
+      report.domainPackGuidance[0].authenticityGroups.some(
+        (group: any) => group.id === 'cofhe-contract-apis' && group.minRequired === 2,
+      ),
+    )
   } finally {
     cleanup()
   }
@@ -115,6 +125,11 @@ test('context command exposes domain-pack guidance as machine-readable context',
     assert.equal(contextPack.domainPackGuidance[0].domain.family, 'fhe')
     assert.ok(contextPack.domainPackGuidance[0].validationCommands.includes('forge build'))
     assert.ok(contextPack.domainPackGuidance[0].authenticitySignals.includes('FHE.asEuint'))
+    assert.ok(
+      contextPack.domainPackGuidance[0].authenticityGroups.some(
+        (group: any) => group.id === 'cofhe-sdk',
+      ),
+    )
   } finally {
     cleanup()
   }
@@ -140,10 +155,18 @@ test('bridge contract domain packs distinguish protocol and contract surface', (
     assert.match(agents, /`script\/SendTokens\.s\.sol`/)
     assert.match(agents, /`LayerZero`/)
     assert.match(agents, /`sendTokens`/)
+    assert.match(agents, /`layerzero-sdk`/)
+    assert.match(agents, /`@layerzerolabs\/lz-evm-oapp-v2`/)
+    assert.match(agents, /`oft-contract`/)
     assert.match(agents, /`forge test`/)
     assert.ok(
       report.domainPackGuidance.some(
         (item: any) => item.domain.family === 'bridge' && item.domain.surface === 'contracts',
+      ),
+    )
+    assert.ok(
+      report.domainPackGuidance.some((item: any) =>
+        item.authenticityGroups?.some((group: any) => group.id === 'oft-contract'),
       ),
     )
   } finally {

@@ -10,6 +10,7 @@ import type {
   ResolvedComponents,
   ValidationCheck,
   ContextHints,
+  DomainPackAuthenticityGroup,
   DomainPackGuidance,
   MediaManifest,
   MediaSlot,
@@ -154,8 +155,18 @@ function collectDomainPackGuidance(
         ambiguityGroup: pack.ambiguityGroup ?? null,
         validationCommands: [...new Set(pack.validationCommands ?? [])],
         authenticitySignals: [...new Set(pack.authenticitySignals ?? [])],
+        authenticityGroups: normalizeAuthenticityGroups(pack.authenticityGroups),
       }
     })
+}
+
+function normalizeAuthenticityGroups(
+  groups: DomainPackAuthenticityGroup[] | undefined,
+): DomainPackAuthenticityGroup[] {
+  return (groups ?? []).map((group) => ({
+    ...group,
+    signals: [...new Set(group.signals)],
+  }))
 }
 
 export async function composeStarter({
@@ -671,6 +682,16 @@ function inlineCodeList(values: string[]): string {
   return values.map((value) => `\`${value}\``).join(', ')
 }
 
+function formatEvidenceGroup(group: DomainPackAuthenticityGroup): string {
+  const description = group.description ? `; ${group.description}` : ''
+  return `\`${group.id}\` (need ${group.minRequired ?? 1}${description}): ${inlineCodeList(group.signals)}`
+}
+
+function formatEvidenceGroupPlain(group: DomainPackAuthenticityGroup): string {
+  const description = group.description ? `; ${group.description}` : ''
+  return `${group.id} (need ${group.minRequired ?? 1}${description}): ${group.signals.join(', ')}`
+}
+
 function buildDomainPackAgentsLines(
   guidance: DomainPackGuidance[],
   contextHints: ReturnType<typeof collectContextHints>,
@@ -704,6 +725,12 @@ function buildDomainPackAgentsLines(
     if (item.authenticitySignals.length > 0) {
       lines.push(`- **Required domain signals/APIs:** ${inlineCodeList(item.authenticitySignals)}`)
     }
+    if (item.authenticityGroups.length > 0) {
+      lines.push('- **Required evidence groups:**')
+      for (const group of item.authenticityGroups) {
+        lines.push(`  - ${formatEvidenceGroup(group)}`)
+      }
+    }
     lines.push('')
   }
 
@@ -721,6 +748,11 @@ function buildDomainPackLlmsLines(guidance: DomainPackGuidance[]): string[] {
       lines.push(`  - Validate: ${item.validationCommands.join(', ')}`)
     if (item.authenticitySignals.length > 0)
       lines.push(`  - Required signals/APIs: ${item.authenticitySignals.join(', ')}`)
+    if (item.authenticityGroups.length > 0) {
+      lines.push(
+        `  - Required evidence groups: ${item.authenticityGroups.map(formatEvidenceGroupPlain).join('; ')}`,
+      )
+    }
   }
   return lines
 }

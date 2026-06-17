@@ -51,9 +51,9 @@ jobs:
         run: pnpm exec tsx scripts/propose-capabilities.ts --out .evolve/proposals/capabilities.json || true
       - name: detect capability gaps + run RLM proposer on top-3 candidates
         env:
-          TANGLE_API_KEY: ${{ secrets.TANGLE_API_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          TOGETHER_API_KEY: ${{ secrets.TOGETHER_API_KEY }}
+          TANGLE_API_KEY: ${{ secrets.TANGLE_CI_ROUTER_KEY }}
+          TANGLE_ROUTER_URL: https://router.tangle.tools/v1
+          EVOLVE_MODEL: deepseek/deepseek-chat
         # Demand-driven: detect-capability-gaps finds scenario tokens no
         # existing capability keyword covers, pipes candidates into the
         # RLM capability proposer. Failing is non-fatal — the promoter
@@ -98,8 +98,9 @@ jobs:
         run: pnpm build
       - name: detect gaps + run RLM proposer on top-3 candidates
         env:
-          TANGLE_API_KEY: ${{ secrets.TANGLE_API_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TANGLE_API_KEY: ${{ secrets.TANGLE_CI_ROUTER_KEY }}
+          TANGLE_ROUTER_URL: https://router.tangle.tools/v1
+          EVOLVE_MODEL: deepseek/deepseek-chat
         # Demand-driven: detect-family-gaps pipes JSON candidates into the
         # RLM proposer. Failing the proposer (LLM unavailable, rate limit)
         # should not fail the job — downstream promoter will reject any

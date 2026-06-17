@@ -73,8 +73,9 @@ jobs:
 
       - name: LLM buildout diagnosis (no-op without key)
         env:
-          TANGLE_API_KEY: ${{ secrets.TANGLE_API_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TANGLE_API_KEY: ${{ secrets.TANGLE_CI_ROUTER_KEY }}
+          TANGLE_ROUTER_URL: https://router.tangle.tools/v1
+          EVOLVE_MODEL: deepseek/deepseek-chat
         run: pnpm exec tsx scripts/llm-buildout-diagnose.ts || true
 
       - name: regenerate reference docs from manifests

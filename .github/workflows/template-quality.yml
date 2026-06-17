@@ -5,7 +5,7 @@ name: Template-quality sweep
 # files, audits each candidate in a composed scaffold, opens a PR per
 # promotable candidate.
 #
-# Needs repo secret TANGLE_API_KEY for LLM synthesis. If missing,
+# Needs repo secret TANGLE_CI_ROUTER_KEY for LLM synthesis. If missing,
 # the synthesizer falls back to deterministic mode (imports grafted,
 # long comment runs stripped) — still useful but less interesting.
 
@@ -60,7 +60,9 @@ jobs:
 
       - name: sweep top-N templates
         env:
-          TANGLE_API_KEY: ${{ secrets.TANGLE_API_KEY }}
+          TANGLE_API_KEY: ${{ secrets.TANGLE_CI_ROUTER_KEY }}
+          TANGLE_ROUTER_URL: https://router.tangle.tools/v1
+          EVOLVE_MODEL: deepseek/deepseek-chat
         run: |
           TOP_N="${{ inputs.top_n || '5' }}"
           pnpm exec tsx scripts/template-quality-sweep.ts --top "$TOP_N"

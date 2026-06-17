@@ -7,7 +7,7 @@ name: eval-recruiter
 #   - schedule (daily 06:00 UTC) — catches model drift independent of code change
 #   - push to main — refresh scorecard on merge (PR-mediated, never direct push)
 #
-# Gating: the live LLM eval step only runs when the TANGLE_API_KEY repo
+# Gating: the live LLM eval step only runs when the TANGLE_CI_ROUTER_KEY repo
 # secret is set. When absent, the workflow logs a structured warning and
 # exits 0 — it does NOT fail PRs. Set the secret to unlock live measurement.
 #
@@ -86,7 +86,7 @@ jobs:
       - name: bootstrap pnpm-lock.yaml when missing
         if: hashFiles('examples/recruiter-eval-workspace/pnpm-lock.yaml') == '' && env.TANGLE_API_KEY != ''
         env:
-          TANGLE_API_KEY: ${{ secrets.TANGLE_API_KEY }}
+          TANGLE_API_KEY: ${{ secrets.TANGLE_CI_ROUTER_KEY }}
         working-directory: examples/recruiter-eval-workspace
         run: |
           set -euo pipefail
@@ -98,21 +98,22 @@ jobs:
             git commit -m "chore(eval): bootstrap recruiter-eval-workspace lockfile" || true
             git push origin HEAD:${{ github.head_ref }} || echo "::warning::could not push lockfile to PR branch"
           fi
-      - name: skip bootstrap (TANGLE_API_KEY not set)
+      - name: skip bootstrap (TANGLE_CI_ROUTER_KEY not set)
         if: hashFiles('examples/recruiter-eval-workspace/pnpm-lock.yaml') == '' && env.TANGLE_API_KEY == ''
         env:
-          TANGLE_API_KEY: ${{ secrets.TANGLE_API_KEY }}
+          TANGLE_API_KEY: ${{ secrets.TANGLE_CI_ROUTER_KEY }}
         run: |
-          echo "::warning::TANGLE_API_KEY not set — skipping lockfile bootstrap. Run 'pnpm install --lockfile-only' inside examples/recruiter-eval-workspace/ and commit pnpm-lock.yaml."
+          echo "::warning::TANGLE_CI_ROUTER_KEY not set — skipping lockfile bootstrap. Run 'pnpm install --lockfile-only' inside examples/recruiter-eval-workspace/ and commit pnpm-lock.yaml."
 
-      - name: run live eval (gated on TANGLE_API_KEY)
+      - name: run live eval (gated on TANGLE_CI_ROUTER_KEY)
         id: live
         env:
-          TANGLE_API_KEY: ${{ secrets.TANGLE_API_KEY }}
+          TANGLE_API_KEY: ${{ secrets.TANGLE_CI_ROUTER_KEY }}
+          RUBRIC_JUDGE_MODEL: deepseek/deepseek-chat
         working-directory: examples/recruiter-eval-workspace
         run: |
           if [ -z "${TANGLE_API_KEY}" ]; then
-            echo "::warning::TANGLE_API_KEY not set as repo secret. Skipping workspace install + live eval — agent_eval_meta_pass_rate will remain 'unmeasured'. Set the secret to enable live measurement."
+            echo "::warning::TANGLE_CI_ROUTER_KEY not set as repo secret. Skipping workspace install + live eval — agent_eval_meta_pass_rate will remain 'unmeasured'. Set the secret to enable live measurement."
             echo "ran=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi

@@ -121,7 +121,7 @@ jobs:
           pnpm eval || true
           echo "ran=true" >> "$GITHUB_OUTPUT"
       - name: upload scorecard artifact
-        if: steps.live.outputs.ran == 'true'
+        if: steps.live.outputs.ran == 'true' && github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: recruiter-eval-scorecard

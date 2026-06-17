@@ -165,6 +165,83 @@ test('rubric-quality judge returns unmeasured (status + NaN) when TANGLE_API_KEY
   }
 })
 
+test('eval runner passes a router client to judges when TANGLE_API_KEY is present', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'sf-eval-client-'))
+  try {
+    mkdirSync(join(tmp, 'scenarios'), { recursive: true })
+    mkdirSync(join(tmp, 'judges'), { recursive: true })
+    writeFileSync(join(tmp, 'package.json'), '{"type":"module"}\n')
+    writeFileSync(
+      join(tmp, 'scenarios/client.scenario.js'),
+      `export default {
+  id: 'router-client/live',
+  persona: 'test',
+  label: 'Router client smoke',
+  thesis: 'The runner must pass a TCloud client to live judges.',
+  dimensions: ['client'],
+  turns: [{ user: 'hello', expectedBehaviors: ['respond'] }],
+  artifactChecks: [],
+  testCommand: 'true'
+}
+`,
+    )
+    writeFileSync(
+      join(tmp, 'judges/client.judge.js'),
+      `export default async function judge(tc) {
+  if (!tc || typeof tc.chat !== 'function') throw new Error('missing router chat client')
+  return [{ judgeName: 'client-smoke', dimension: 'client', score: 1, reasoning: 'router client present' }]
+}
+`,
+    )
+    writeFileSync(
+      join(tmp, 'run-client.mjs'),
+      `
+import { runHarness } from ${JSON.stringify(pathToFileURL(join(WORKSPACE, 'eval/src/eval/runner.ts')).href)}
+
+const report = await runHarness({
+  projectRoot: ${JSON.stringify(tmp)},
+  threshold: 0.7,
+  targetUrl: 'http://127.0.0.1:9',
+  tracesDir: ${JSON.stringify(join(tmp, '.evolve/agent-eval/traces'))},
+  experimentsDir: ${JSON.stringify(join(tmp, '.evolve/agent-eval/experiments'))},
+  scorecardPath: ${JSON.stringify(join(tmp, '.evolve/scorecard.json'))}
+})
+console.log('REPORT_JSON ' + JSON.stringify({
+  aggregate: report.aggregate,
+  measuredScenarioCount: report.measuredScenarioCount,
+  measuredJudgeCount: report.outcomes[0]?.measuredJudgeCount
+}))
+`,
+    )
+
+    const env: NodeJS.ProcessEnv = {
+      ...process.env,
+      TANGLE_API_KEY: 'sk-tan-test',
+      LLM_ROUTER_URL: 'https://router.tangle.tools',
+    }
+    delete env.EVAL_LLM_API_KEY
+    const r = spawnSync(process.execPath, ['--import', 'tsx', join(tmp, 'run-client.mjs')], {
+      cwd: REPO,
+      env,
+      stdio: 'pipe',
+      encoding: 'utf8',
+    })
+    assert.equal(r.status, 0, `runner subprocess failed:\nSTDOUT:\n${r.stdout}\nSTDERR:\n${r.stderr}`)
+    const match = r.stdout.match(/REPORT_JSON (.+)$/m)
+    assert.ok(match, `runner subprocess did not print report JSON:\n${r.stdout}`)
+    const report = JSON.parse(match[1]) as {
+      aggregate: number | null
+      measuredScenarioCount: number
+      measuredJudgeCount: number
+    }
+    assert.equal(report.aggregate, 1)
+    assert.equal(report.measuredScenarioCount, 1)
+    assert.equal(report.measuredJudgeCount, 1)
+  } finally {
+    rmSync(tmp, { recursive: true, force: true })
+  }
+})
+
 test('aggregateJudgeScores skips unmeasured scores rather than averaging them as 0', async () => {
   // Gen-16.1 audit verification: with all-pass programmatic judges +
   // rubric-quality returning unmeasured, the workspace aggregate MUST
@@ -485,11 +562,11 @@ test('CI workflow YAML parses + has triggers + gates on TANGLE_API_KEY (audit B4
     'sync step MUST set SYNC_FAIL_ON_DRIFT=1 to fail CI on registry→workspace drift',
   )
 
-  // TANGLE_API_KEY secret (textual assertion).
+  // CI uses the scoped repo secret while scripts continue reading TANGLE_API_KEY.
   assert.match(
     text,
-    /\$\{\{\s*secrets\.TANGLE_API_KEY\s*\}\}/,
-    'workflow must reference secrets.TANGLE_API_KEY',
+    /\$\{\{\s*secrets\.TANGLE_CI_ROUTER_KEY\s*\}\}/,
+    'workflow must reference secrets.TANGLE_CI_ROUTER_KEY',
   )
 
   // pnpm eval invocation

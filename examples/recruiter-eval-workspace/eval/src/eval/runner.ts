@@ -36,6 +36,7 @@ import {
   type JudgeScore,
   type CollectedArtifacts,
 } from '@tangle-network/agent-eval'
+import { TCloud } from '@tangle-network/tcloud'
 import { writeScorecard, type ScorecardFlow } from './scorecard.js'
 
 export interface RunnerOptions {
@@ -79,6 +80,24 @@ interface ScenarioOutcome {
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const DEFAULT_ROOT = resolve(HERE, '..', '..')
+
+function normalizeRouterBaseURL(baseURL: string): string {
+  const trimmed = baseURL.replace(/\/+$/, '')
+  return trimmed.endsWith('/v1') ? trimmed : `${trimmed}/v1`
+}
+
+function createJudgeClient(): TCloud | undefined {
+  const apiKey = process.env.EVAL_LLM_API_KEY ?? process.env.TANGLE_API_KEY
+  if (!apiKey) return undefined
+
+  const baseURL =
+    process.env.EVAL_LLM_BASE_URL ?? process.env.TANGLE_ROUTER_BASE_URL ?? process.env.LLM_ROUTER_URL
+
+  return TCloud.create({
+    apiKey,
+    ...(baseURL ? { baseURL: normalizeRouterBaseURL(baseURL) } : {}),
+  })
+}
 
 function shQuote(s: string): string {
   return `'${String(s).replace(/'/g, `'\\''`)}'`
@@ -218,6 +237,7 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
   }
 
   const judges = await loadJudgesFrom(judgesDir)
+  const judgeClient = createJudgeClient()
 
   const outcomes: ScenarioOutcome[] = []
   for (const { scenario, filePath } of loaded) {
@@ -260,7 +280,7 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
       }
       for (const j of judges) {
         try {
-          const out = await j.fn(undefined as never, judgeInput)
+          const out = await j.fn(judgeClient as TCloud, judgeInput)
           judgeScores.push(...out)
         } catch (err) {
           console.warn(`  ! judge ${j.filePath} threw: ${(err as Error).message}`)

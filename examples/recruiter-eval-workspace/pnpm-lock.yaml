@@ -53,6 +53,9 @@ importers:
       '@tangle-network/agent-eval':
         specifier: ^0.30.0
         version: 0.30.0(typescript@5.9.3)
+      '@tangle-network/tcloud':
+        specifier: ^0.4.12
+        version: 0.4.12(typescript@5.9.3)(zod@4.4.3)
     devDependencies:
       '@types/node':
         specifier: ^22.7.0

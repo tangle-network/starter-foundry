@@ -485,11 +485,11 @@ test('CI workflow YAML parses + has triggers + gates on TANGLE_API_KEY (audit B4
     'sync step MUST set SYNC_FAIL_ON_DRIFT=1 to fail CI on registry→workspace drift',
   )
 
-  // TANGLE_API_KEY secret (textual assertion).
+  // CI uses the scoped repo secret while scripts continue reading TANGLE_API_KEY.
   assert.match(
     text,
-    /\$\{\{\s*secrets\.TANGLE_API_KEY\s*\}\}/,
-    'workflow must reference secrets.TANGLE_API_KEY',
+    /\$\{\{\s*secrets\.TANGLE_CI_ROUTER_KEY\s*\}\}/,
+    'workflow must reference secrets.TANGLE_CI_ROUTER_KEY',
   )
 
   // pnpm eval invocation

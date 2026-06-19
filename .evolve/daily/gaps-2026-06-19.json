@@ -1,0 +1,453 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-04-24T01:31:36.746Z",
+  "processedEvents": 24,
+  "totalAgentInstalls": 102,
+  "breakdown": {
+    "scaffoldGap": 9,
+    "orchestration": 93
+  },
+  "topScaffoldGaps": [
+    {
+      "package": "react-router-dom",
+      "timesInstalled": 3,
+      "onPass": 3,
+      "onFail": 0,
+      "inScaffoldDeps": false,
+      "mapsToCapability": null,
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "dao-proposals"
+      ],
+      "sampleFamilies": [
+        "forge-contracts",
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "vite-plugin-node-polyfills",
+      "timesInstalled": 2,
+      "onPass": 0,
+      "onFail": 2,
+      "inScaffoldDeps": false,
+      "mapsToCapability": null,
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "forge-contracts",
+        "nextjs-ts",
+        "zk-prover-service"
+      ]
+    },
+    {
+      "package": "axios",
+      "timesInstalled": 1,
+      "onPass": 1,
+      "onFail": 0,
+      "inScaffoldDeps": false,
+      "mapsToCapability": null,
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "nft-mint-page"
+      ],
+      "sampleFamilies": [
+        "forge-contracts",
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "@vitejs/plugin-react",
+      "timesInstalled": 1,
+      "onPass": 0,
+      "onFail": 1,
+      "inScaffoldDeps": false,
+      "mapsToCapability": null,
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "dex-swap"
+      ],
+      "sampleFamilies": [
+        "forge-contracts",
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "pnpm",
+      "timesInstalled": 1,
+      "onPass": 0,
+      "onFail": 1,
+      "inScaffoldDeps": false,
+      "mapsToCapability": null,
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "forge-contracts",
+        "nextjs-ts",
+        "zk-prover-service"
+      ]
+    },
+    {
+      "package": "add",
+      "timesInstalled": 1,
+      "onPass": 0,
+      "onFail": 1,
+      "inScaffoldDeps": false,
+      "mapsToCapability": null,
+      "concern": "scaffold-gap",
+      "scenarios": [
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "forge-contracts",
+        "nextjs-ts",
+        "zk-prover-service"
+      ]
+    }
+  ],
+  "topOrchestrationInstalls": [
+    {
+      "package": "lucide-react",
+      "timesInstalled": 17,
+      "onPass": 12,
+      "onFail": 5,
+      "inScaffoldDeps": true,
+      "mapsToCapability": "capability:shadcn",
+      "concern": "orchestration",
+      "scenarios": [
+        "agent-trading",
+        "cross-chain-bridge",
+        "dao-proposals",
+        "dex-swap",
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "agent-service-rust",
+        "forge-contracts",
+        "nextjs-ts",
+        "rust-service",
+        "zk-prover-service"
+      ]
+    },
+    {
+      "package": "tailwindcss",
+      "timesInstalled": 14,
+      "onPass": 9,
+      "onFail": 5,
+      "inScaffoldDeps": true,
+      "mapsToCapability": "capability:tailwind",
+      "concern": "orchestration",
+      "scenarios": [
+        "agent-trading",
+        "dao-proposals",
+        "dex-swap",
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "agent-service-rust",
+        "forge-contracts",
+        "nextjs-ts",
+        "rust-service",
+        "zk-prover-service"
+      ]
+    },
+    {
+      "package": "@tailwindcss/vite",
+      "timesInstalled": 14,
+      "onPass": 9,
+      "onFail": 5,
+      "inScaffoldDeps": true,
+      "mapsToCapability": "capability:tailwind",
+      "concern": "orchestration",
+      "scenarios": [
+        "agent-trading",
+        "dao-proposals",
+        "dex-swap",
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "agent-service-rust",
+        "forge-contracts",
+        "nextjs-ts",
+        "rust-service",
+        "zk-prover-service"
+      ]
+    },
+    {
+      "package": "clsx",
+      "timesInstalled": 9,
+      "onPass": 6,
+      "onFail": 3,
+      "inScaffoldDeps": true,
+      "mapsToCapability": "capability:shadcn",
+      "concern": "orchestration",
+      "scenarios": [
+        "cross-chain-bridge",
+        "dao-proposals",
+        "dex-swap"
+      ],
+      "sampleFamilies": [
+        "forge-contracts",
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "snarkjs",
+      "timesInstalled": 4,
+      "onPass": 0,
+      "onFail": 4,
+      "inScaffoldDeps": true,
+      "mapsToCapability": "capability:zk-browser",
+      "concern": "orchestration",
+      "scenarios": [
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "forge-contracts",
+        "nextjs-ts",
+        "zk-prover-service"
+      ]
+    },
+    {
+      "package": "circomlibjs",
+      "timesInstalled": 4,
+      "onPass": 0,
+      "onFail": 4,
+      "inScaffoldDeps": true,
+      "mapsToCapability": "capability:zk-browser",
+      "concern": "orchestration",
+      "scenarios": [
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "forge-contracts",
+        "nextjs-ts",
+        "zk-prover-service"
+      ]
+    },
+    {
+      "package": "date-fns",
+      "timesInstalled": 3,
+      "onPass": 3,
+      "onFail": 0,
+      "inScaffoldDeps": true,
+      "mapsToCapability": "capability:date-utils",
+      "concern": "orchestration",
+      "scenarios": [
+        "dao-proposals"
+      ],
+      "sampleFamilies": [
+        "forge-contracts",
+        "nextjs-ts",
+        "rust-service"
+      ]
+    },
+    {
+      "package": "@codemirror/view",
+      "timesInstalled": 3,
+      "onPass": 3,
+      "onFail": 0,
+      "inScaffoldDeps": true,
+      "mapsToCapability": "capability:code-editor",
+      "concern": "orchestration",
+      "scenarios": [
+        "agent-trading"
+      ],
+      "sampleFamilies": [
+        "agent-service-rust",
+        "forge-contracts",
+        "nextjs-ts"
+      ]
+    },
+    {
+      "package": "@codemirror/state",
+      "timesInstalled": 3,
+      "onPass": 3,
+      "onFail": 0,
+      "inScaffoldDeps": true,
+      "mapsToCapability": "capability:code-editor",
+      "concern": "orchestration",
+      "scenarios": [
+        "agent-trading"
+      ],
+      "sampleFamilies": [
+        "agent-service-rust",
+        "forge-contracts",
+        "nextjs-ts"
+      ]
+    },
+    {
+      "package": "@codemirror/lang-javascript",
+      "timesInstalled": 3,
+      "onPass": 3,
+      "onFail": 0,
+      "inScaffoldDeps": true,
+      "mapsToCapability": "capability:code-editor",
+      "concern": "orchestration",
+      "scenarios": [
+        "agent-trading"
+      ],
+      "sampleFamilies": [
+        "agent-service-rust",
+        "forge-contracts",
+        "nextjs-ts"
+      ]
+    },
+    {
+      "package": "@codemirror/theme-one-dark",
+      "timesInstalled": 3,
+      "onPass": 3,
+      "onFail": 0,
+      "inScaffoldDeps": true,
+      "mapsToCapability": "capability:code-editor",
+      "concern": "orchestration",
+      "scenarios": [
+        "agent-trading"
+      ],
+      "sampleFamilies": [
+        "agent-service-rust",
+        "forge-contracts",
+        "nextjs-ts"
+      ]
+    },
+    {
+      "package": "codemirror",
+      "timesInstalled": 3,
+      "onPass": 3,
+      "onFail": 0,
+      "inScaffoldDeps": true,
+      "mapsToCapability": "capability:code-editor",
+      "concern": "orchestration",
+      "scenarios": [
+        "agent-trading"
+      ],
+      "sampleFamilies": [
+        "agent-service-rust",
+        "forge-contracts",
+        "nextjs-ts"
+      ]
+    },
+    {
+      "package": "circomlib",
+      "timesInstalled": 3,
+      "onPass": 0,
+      "onFail": 3,
+      "inScaffoldDeps": true,
+      "mapsToCapability": "capability:zk-browser",
+      "concern": "orchestration",
+      "scenarios": [
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "forge-contracts",
+        "nextjs-ts",
+        "zk-prover-service"
+      ]
+    },
+    {
+      "package": "vite",
+      "timesInstalled": 3,
+      "onPass": 1,
+      "onFail": 2,
+      "inScaffoldDeps": true,
+      "mapsToCapability": null,
+      "concern": "orchestration",
+      "scenarios": [
+        "cross-chain-bridge",
+        "dex-swap",
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "forge-contracts",
+        "nextjs-ts",
+        "rust-service",
+        "zk-prover-service"
+      ]
+    },
+    {
+      "package": "@zk-kit/incremental-merkle-tree",
+      "timesInstalled": 2,
+      "onPass": 0,
+      "onFail": 2,
+      "inScaffoldDeps": true,
+      "mapsToCapability": null,
+      "concern": "orchestration",
+      "scenarios": [
+        "zk-mixer-ui"
+      ],
+      "sampleFamilies": [
+        "forge-contracts",
+        "nextjs-ts",
+        "zk-prover-service"
+      ]
+    }
+  ],
+  "topMissedCapabilities": [],
+  "perScenarioGap": [
+    {
+      "scenarioId": "zk-mixer-ui",
+      "distinctGapPackages": 3,
+      "totalGapInstalls": 4,
+      "gapPackages": [
+        {
+          "package": "vite-plugin-node-polyfills",
+          "times": 2,
+          "capability": null
+        },
+        {
+          "package": "pnpm",
+          "times": 1,
+          "capability": null
+        },
+        {
+          "package": "add",
+          "times": 1,
+          "capability": null
+        }
+      ]
+    },
+    {
+      "scenarioId": "dao-proposals",
+      "distinctGapPackages": 1,
+      "totalGapInstalls": 3,
+      "gapPackages": [
+        {
+          "package": "react-router-dom",
+          "times": 3,
+          "capability": null
+        }
+      ]
+    },
+    {
+      "scenarioId": "nft-mint-page",
+      "distinctGapPackages": 1,
+      "totalGapInstalls": 1,
+      "gapPackages": [
+        {
+          "package": "axios",
+          "times": 1,
+          "capability": null
+        }
+      ]
+    },
+    {
+      "scenarioId": "dex-swap",
+      "distinctGapPackages": 1,
+      "totalGapInstalls": 1,
+      "gapPackages": [
+        {
+          "package": "@vitejs/plugin-react",
+          "times": 1,
+          "capability": null
+        }
+      ]
+    }
+  ]
+}

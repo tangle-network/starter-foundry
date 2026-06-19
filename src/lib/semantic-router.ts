@@ -6,7 +6,11 @@
  * user prompts via cosine similarity.
  *
  * Model: bge-small-en-v1.5 (17MB quantized, ~15ms per inference)
- * Dependencies: @huggingface/transformers (uses onnxruntime-node)
+ *
+ * @huggingface/transformers (which pulls onnxruntime-node) is an OPTIONAL peer
+ * dependency: consumers that never call initSemanticRouter don't install it. When
+ * it is absent, the dynamic import below throws, initSemanticRouter logs and leaves
+ * the pipeline null, and the keyword scorer handles routing alone.
  */
 
 import type { Registry, FamilyManifest } from '../types.js'

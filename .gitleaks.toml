@@ -1,0 +1,14 @@
+# Allowlist for scaffold-template fixtures. starter-foundry SHIPS example code,
+# so the registry contains deliberately-fake secrets (a privacy-redaction layer's
+# test fixtures, curl auth examples in a service README). These are template
+# content emitted into generated projects, never live credentials. Audited
+# 2026-06; all findings under these paths are placeholders.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "scaffold-template fixtures (fake secrets in shipped example code)"
+paths = [
+  '''registry/layers/agent-base/privacy/files/lib/privacy/index\.test\.ts''',
+  '''registry/families/agent-orchestrator-service-ts/files/README\.md''',
+]

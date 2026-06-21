@@ -1,246 +1,101 @@
 # starter-foundry
 
-Deterministic project scaffold engine for AI coding platforms. Routes a user prompt to the right project structure, composes files, and gives the AI agent a concrete build plan — all in under 10ms.
-
-starter-foundry ships **starter folders** for any project the user prompts — webapps, contracts, full-stack monorepos, **and agent bundles**. Agent bundles are folders of `AGENTS.md` + methodology + a thin `agent.json` ([`AgentProfile`][agent-profile]), plus `agents.json` for multi-agent — the harness-native files the in-sandbox OpenCode/Claude/Hermes loop auto-discovers. They deploy **into a Tangle sandbox** via the sandbox SDK at `/home/agent/`; the sandbox is the runtime, not this repo. See [`docs/architecture/agent-bundles.md`](./docs/architecture/agent-bundles.md) for the canonical model and the agent-bundle cookbooks under [`docs/cookbooks/`](./docs/cookbooks/) for the deploy path.
-
-[agent-profile]: https://github.com/tangle-network/agent-dev-container/blob/main/products/sandbox/sdk/src/agent-profile.ts
+A deterministic project-scaffold engine for AI coding agents. It routes a natural-language prompt to the right project structure, composes the files, and hands the agent a concrete build plan — in **under 10 ms, with no LLM call on the hot path**.
 
 ```
 "Build a Next.js SaaS with Stripe billing and team management"
-  → nextjs-ts + capability:saas-teams + capability:tailwind + capability:layout-dashboard
-  → 14 files composed
-  → Build plan: create /settings/team, /dashboard, wire /api/team/invite, build TeamMemberList, InviteForm, Sidebar
+  → nextjs-ts + saas-teams + tailwind + layout-dashboard
+  → 14 files written, plus a build plan:
+    create /settings/team and /dashboard, wire /api/team/invite,
+    build TeamMemberList, InviteForm, Sidebar
+```
+
+The point: give the agent a real starting point instead of a blank directory. The routing is a keyword scorer plus a capability detector — fully reproducible, no network, no model.
+
+## Install
+
+```sh
+npm i @tangle-network/starter-foundry        # library
+npx @tangle-network/starter-foundry --help   # CLI
+```
+
+Requires Node ≥ 20.
+
+## Quickstart
+
+Scaffold a project from a prompt into the current directory:
+
+```sh
+npx @tangle-network/starter-foundry compose-prompt --prompt "realtime chat app with auth" --out .
+```
+
+Or drive the pipeline from code:
+
+```ts
+import { planPrompt } from '@tangle-network/starter-foundry/planner'
+import { composeStarter } from '@tangle-network/starter-foundry/compose'
+
+const plan = planPrompt('realtime chat app with auth')   // family + capability layers
+const result = await composeStarter({ spec: plan.spec, outDir: './app' })
+console.log(result.files, result.buildPlan)
 ```
 
 ## How it works
 
 ```
-User prompt → planPrompt() → composeStarter() → scaffold + build plan → AI agent starts building
-              ~1ms            ~3ms               ~5ms
+prompt ──► planPrompt() ──► composeStarter() ──► files + build plan ──► agent builds
+            ~1 ms            ~5 ms
 ```
 
-The hot path is fully deterministic — no LLM calls, no network. A keyword scorer routes prompts to families, a capability detector attaches specialization layers, and the compose engine writes template files to disk.
+1. **plan** — score the prompt against the family registry, attach capability/slot layers.
+2. **compose** — write the family template plus every layer's files, resolving variants deterministically from the project name.
+3. **build plan** — emit the concrete next steps (routes to create, components to build, APIs to wire) for the agent.
+
+Each stage is a CLI subcommand (`plan`, `compose`, `context`) and a library export, so you can stop at a spec, a file tree, or a full plan.
 
 ## Registry
 
-|                        | Count | Examples                                                                                                                                                                                                          |
-| ---------------------- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Families**           | 94    | nextjs-ts, react-vite-ts, agent-service-ts, forge-contracts, solana-native-rust, python-http, go-net-http, sveltekit-ts, wasm-rust, bun-http, tangle-blueprint, kotlin-multiplatform                              |
-| **Capability layers**  | 104   | See categories below                                                                                                                                                                                              |
-| **Slot layers**        | 28    | database (sqlite/postgres/mongodb/convex), auth (clerk/better-auth/supabase), payments (stripe/coinbase-commerce), sdk (evm-wallet/solana-web3/coinbase-cdp), queue (bullmq/trigger-dev), industry (10 verticals) |
-| **Partners**           | 19    | Arbitrum, Avalanche, Chainlink, Coinbase, EigenLayer, Farcaster, Hyperliquid, Lens, Linea, Monad, Polygon, Sei-EVM, Solana, Sui, Tangle, Tempo, Tether, USDC-Circle, XLayer                                       |
-| **Product archetypes** | 115+  | "Twitter clone" → fullstack-ts + realtime-ws + saas-teams                                                                                                                                                         |
+The value is the registry — versioned scaffold families and composable layers:
 
-### Capability layers by category
+| | Count | What it is |
+|---|---|---|
+| Families | 94 | Base project types (`nextjs-ts`, `forge-contracts`, `solana-native-rust`, `python-http`, …) |
+| Capability layers | 104 | UI/feature overlays (`layout-dashboard`, `saas-teams`, `crypto-swap-ui`, `agent-rag`, …) |
+| Slot layers | 28 | Swappable infra: database, auth, payments, sdk, queue, industry |
+| Partner layers | 19 | Chain/protocol presets (Coinbase, EigenLayer, Solana, Tangle, …) |
+| Archetypes | 115+ | Prompt shorthands ("Twitter clone" → `fullstack-ts + realtime-ws + saas-teams`) |
 
-**Layout (rich UI — production-ready React components):**
-layout-dashboard (sidebar + KPIs + activity feed), layout-landing (hero + features + pricing), layout-chat (message list + streaming input + sidebar), layout-admin (TanStack data table + entity form), layout-auth (sign-in/sign-up pages), layout-settings (profile/billing/team tabs)
+List the live registry instead of trusting a table that can go stale:
 
-**Crypto frontend UI:**
-crypto-swap-ui (DEX swap card + token selector + pool card), crypto-staking-ui (staking dashboard + validator card), crypto-bridge-ui (bridge card + tx history), crypto-portfolio-ui (portfolio overview + token rows), crypto-governance-ui (proposal cards + voting), crypto-launchpad-ui (sale card + vesting schedule)
-
-**AI/Agent UI:**
-ai-chat-sessions (ChatGPT-style session list + folders + header), ai-agent-orchestrator (multi-agent timeline + tool call traces), ai-rag-chat (source citations + knowledge base manager), ai-voice-chat (voice orb + transcript + call controls)
-
-**Agent frameworks:** agent-rag, agent-langgraph, agent-mastra, agent-multi-agent, agent-trading, agent-voice, agent-slack, agent-github, agent-browser, agent-code-review, agent-customer-support, agent-data-pipeline, agent-intel, agent-openclaw, agent-hermes, agent-ai-sdk
-
-**DeFi/Crypto config:** defi-lending, defi-dex, defi-perpetuals, defi-yield, defi-restaking, defi-bridge, solana-amm, solana-perps, solana-staking, solana-nft, solana-prediction, solana-launchpad, solana-keeper, move-amm, move-staking, move-nft, move-oracle, move-launchpad, fhe-private-token, fhe-private-voting, fhe-sealed-auction
-
-**EVM infra:** evm-account-abstraction, evm-chain-monitor, evm-deploy-foundry, evm-layerzero-oft, evm-protocol-api, evm-wallet-dashboard
-
-**Other:** marketplace, webrtc, shadcn, tailwind, chart-widget, json-render, saas-billing, saas-teams, realtime-ws, deploy-docker, deploy-github-actions, infra-k8s, infra-terraform, infra-pulumi, exchange-binance, exchange-coinbase, exchange-okx, gpu-modal, gpu-replicate, gpu-together, effect-ts, logging, webhook-processor, market-sim, icons, typography, tangle-custody, tangle-oracle, ai-chat-ui, ai-agent-dashboard, ai-fine-tuning, admin-crud
-
-### Variants
-
-Layout layers support **visual variants** — different design treatments of the same component structure. The compose engine picks a variant deterministically from the project name, so every scaffold looks distinct but the result is reproducible.
-
-| Layer            | Variants                                   |
-| ---------------- | ------------------------------------------ |
-| layout-landing   | gradient-hero, minimal-clean, dark-product |
-| layout-dashboard | sidebar, topnav                            |
-
-## Programmatic API
-
-```typescript
-import { planPrompt, composeStarter, createContextPack } from 'starter-foundry'
-
-const plan = await planPrompt({
-  prompt: 'Build a RAG chatbot with vector search',
-  partner: null,
-})
-
-const result = await composeStarter({ spec: plan.spec, outDir: '/tmp/project' })
-const context = await createContextPack({ spec: plan.spec, outDir: '/tmp/project' })
+```sh
+npx @tangle-network/starter-foundry list                    # families + layers
+npx @tangle-network/starter-foundry select --prompt "..."   # what a prompt routes to
 ```
 
 ## CLI
 
-```bash
-npm run build && node dist/cli.js <command>
-```
+| Command | Purpose |
+|---|---|
+| `compose-prompt --prompt <text> --out <dir>` | One shot: prompt → scaffold + build plan |
+| `plan --prompt <text>` | Route a prompt to a spec (family + layers) |
+| `select --prompt <text>` | Show the routing decision without composing |
+| `compose --spec <path> --out <dir>` | Compose a saved spec to disk |
+| `context --spec <path>` | Emit the agent build-plan context for a spec |
+| `validate --spec <path>` | Check a spec against the registry |
+| `list` | Print the live registry |
 
-| Command                                       | Description                               |
-| --------------------------------------------- | ----------------------------------------- |
-| `plan --prompt <text> [--partner <id>]`       | Route a prompt to a family + capabilities |
-| `compose --spec <path> --out <dir>`           | Compose a starter project                 |
-| `workspace-compose --spec <path> --out <dir>` | Compose a multi-project workspace         |
-| `workspace-compose --preset <id> --out <dir>` | Compose a preset workspace (see below)    |
-| `workspace-presets`                           | List available workspace presets          |
-| `validate --spec <path>`                      | Run validation checks                     |
-| `context --spec <path>`                       | Generate a context pack with build plan   |
-| `bench --spec <path> [--runs <n>]`            | Benchmark compose + validate timing       |
-| `prove --corpus <path> --out <dir>`           | Run proof suite over a prompt corpus      |
-| `catalog`                                     | List all families and layers              |
+`--help` lists the full set (mining, evaluation, workspace composition, release).
 
-### Workspace Presets
+## Library exports
 
-Canonical multi-bundle stacks for the Tangle agent runtime. One flag, full pnpm workspace with env wiring, top-level scripts, and a CI workflow:
+`@tangle-network/starter-foundry` ships typed subpath exports: `/planner`, `/compose`, `/compose-prompt`, `/agent-context`, `/registry`, `/context`, `/build-plan`, `/industries`, `/workspace`, `/keywords`, `/types`.
 
-```bash
-# 3-bundle stack (app shell + agent runtime + eval harness)
-pnpm workspace:compose --preset app+agent+eval \
-  --agent agent-runtime-recruiter-ts \
-  --out ./my-stack
+## Documentation
 
-# 4-bundle stack (adds research harness)
-pnpm workspace:compose --preset app+agent+eval+research \
-  --agent agent-runtime-cs-research-ts \
-  --out ./my-research-stack
-```
+- `docs/INTEGRATION.md` — embedding the engine in a product
+- `docs/cookbooks/` — end-to-end recipes
+- `docs/reference/` — family and capability reference
 
-Each preset emits:
+## License
 
-- a per-slot directory (`app/`, `agent/`, `eval/`, optional `research/`) composed via `composeStarter`
-- a root `package.json` with private workspace flag and pnpm-style scripts (`dev`, `build`, `eval`, optional `research`)
-- a `pnpm-workspace.yaml`
-- per-bundle `.env` files populated with placeholder URLs for sibling services (e.g. `app/.env` reads `VITE_AGENT_ENDPOINT` from the agent slot)
-- `.github/workflows/ci.yml` that runs `pnpm install --frozen-lockfile`, `pnpm build`, `pnpm eval` (and `pnpm research` when applicable)
-- a top-level `README.md` documenting the layout
-
-Slot constraints are enforced — `--agent` must satisfy `agent-runtime-*-ts`, `--app` must be one of the three app shells. Run `node dist/cli.js workspace-presets` to see the full preset registry as JSON.
-
-## Toolchain (for `pnpm test`)
-
-A handful of integration tests validate composed scaffolds end-to-end and
-need real binaries on `PATH`. Without them the tests fail with
-`spawn <bin> ENOENT`. `pnpm pretest` probes the env and prints install
-hints; the actual tests are strict (no auto-skip).
-
-| Tool    | Needed for                                                                                                                                                               | Install                                                                    |
-| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
-| `forge` | `forge-contracts` family validation, `xlayer-foundry-deploy` / `layerzero-oft` / `account-abstraction` specs, `runPromptCorpus` multichain scenario, workspace benchmark | `curl -L https://foundry.paradigm.xyz \| bash && ~/.foundry/bin/foundryup` |
-| `cargo` | `solana-program` toolchain validation in workspace tests                                                                                                                 | `curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs \| sh`          |
-
-After installing forge, ensure `~/.foundry/bin` is on your `PATH`
-(`foundryup` adds it to `~/.zshenv`/`~/.bashrc`; restart shell or
-`source` the rc file).
-
-## Routing
-
-Three layers, evaluated in order:
-
-1. **Product archetypes** — "Twitter clone" → fullstack-ts. 115+ known product patterns.
-2. **Keyword scoring** — Each family manifest declares tiered keywords. Highest match wins.
-3. **Fuzzy fallback** — Levenshtein distance ≤ 1 catches typos ("Ract" → "react").
-
-After family selection, **capability detection** scans the prompt against capability keywords and attaches matching layers.
-
-## Quality
-
-| Metric                                         | Value                       |
-| ---------------------------------------------- | --------------------------- |
-| Route accuracy (training corpus, 60 scenarios) | 100%                        |
-| Route accuracy (held-out corpus, 43 scenarios) | 100%                        |
-| Route accuracy (IdeasAI corpus, 60 scenarios)  | 100%                        |
-| Unit + integration tests                       | 615/615                     |
-| Scaffold audit pass rate                       | 85/89 (4 toolchain-blocked) |
-| Compose latency (warm)                         | ~5ms                        |
-
-### Template regeneration pipeline
-
-The `src/training/template_v1/` pipeline rewrites scaffold template files from the convergent-patterns miner, guarded by a four-stage audit: **compose → install → typecheck → correctness**. The correctness stage catches classes of bug the TypeScript compiler can't: unused imports in the candidate file (since no family tsconfig enables `noUnusedLocals`), missing `<script src=...>` targets, and `document.getElementById('X')` calls with no matching HTML id. Any stage failing rejects the candidate before it can land.
-
-Run: `pnpm tsx src/training/template_v1/run.ts --template-key <file> --family <id> --template-target <path> --source-path <repo path> [--apply --yes]`
-
-## Install
-
-```bash
-npm install
-npm run build
-npm test
-```
-
-Requires Node.js >= 20.
-
-## Adding families or capabilities
-
-1. Create `registry/families/{id}/manifest.json` or `registry/layers/capability/{id}/manifest.json`
-2. Add template files in `files/` subdirectory
-3. For rich UI layers: provide real `.tsx` components (not config stubs)
-4. For variants: add `variants/` subdirectory with alternative file sets + `"variants": [...]` in manifest
-5. Run `npm run sync:warm-list` to update the container warm cache
-6. Run `npm test` — the meta test enforces every capability has a coverage test
-
-## Integration
-
-starter-foundry powers the free-text scaffold path in blueprint-agent. When a user types a prompt, starter-foundry routes, composes, and provides the build plan.
-
-```typescript
-import { planPrompt, composeStarter } from 'starter-foundry'
-
-const plan = await planPrompt({ prompt: userMessage, partner })
-if (plan.kind === 'starter') {
-  const result = await composeStarter({ spec: plan.spec, outDir })
-}
-```
-
-**Integrating into a downstream agent runtime?** See **[docs/INTEGRATION.md](./docs/INTEGRATION.md)** — programmatic API, multi-family workspaces, the 4 telemetry events to emit, scrubbing rules, and how to consume the pipeline's rankings.
-
-## Buildout pipeline (agent-behavior → registry signal)
-
-The `scripts/*-buildout*.mjs` pipeline mines Claude Code session transcripts of real agent buildouts on top of starter-foundry scaffolds and produces two ranked reports: **missing capabilities** (packages agents install because our router didn't attach the right layer) and **bad templates** (files agents rewrite within the first few turns).
-
-### Run it
-
-```bash
-pnpm build
-node scripts/run-buildout-pipeline.mjs   # mine → join → analyze
-```
-
-Outputs:
-
-- `.evolve/buildout-analysis.json` — per-scenario pass rate, top-added packages, top-rewritten files (committed evidence)
-- `.evolve/capability-gaps.json` — ranked (scenario, capability) router misses
-- `.evolve/traces/buildouts.jsonl` — append-only corpus (gitignored, regenerable)
-
-### Stages
-
-| Script                       | Input                                                    | Output                                  |
-| ---------------------------- | -------------------------------------------------------- | --------------------------------------- |
-| `mine-buildout-sessions.mjs` | `~/.claude/projects/**/factory-local-phase2-*/*.jsonl`   | `.evolve/traces/buildouts.jsonl`        |
-| `join-buildout-outcomes.mjs` | VB execution traces + buildouts                          | buildouts.jsonl annotated with outcomes |
-| `analyze-buildouts.mjs`      | joined buildouts                                         | `.evolve/buildout-analysis.json`        |
-| `infer-capability-gaps.mjs`  | joined buildouts + `registry/package-to-capability.json` | `.evolve/capability-gaps.json`          |
-
-### Fault tolerance
-
-- **Resumable**: per-session mtime stored in `.evolve/traces/.buildouts-miner-state.json`. Unchanged sessions skip; next run is ~0ms.
-- **Concurrent-safe**: O_EXCL lock file prevents simultaneous miner entry. Stale locks (PID not alive) auto-steal.
-- **Corruption-tolerant**: a malformed state file is logged and reseeded instead of crashing.
-- **Schema-versioned**: bumping `BUILDOUT_SCHEMA_VERSION` auto-rebuilds from source.
-- **Append-only output**: JSONL with per-row schema version; malformed lines are skipped by every consumer.
-
-### Adding a new source (GLM, GPT, etc.)
-
-Write a new miner script (e.g., `mine-glm-sessions.mjs`) that emits rows conforming to `BuildoutEvent` in `src/lib/buildout-traces.ts` — same append-only JSONL, same schema version, different `sourceModel` value. The join + analyze stages consume it unchanged.
-
-### Extending `registry/package-to-capability.json`
-
-When an agent installs package X, we want our router to pre-attach the capability X maps to. Add an entry:
-
-```json
-"package-name": { "capability": "capability:foo", "confidence": 0.9 }
-```
-
-`tests/package-to-capability.test.ts` validates every capability ID against the live registry at build time.
+Licensed under either of **MIT** ([LICENSE-MIT](./LICENSE-MIT)) or **Apache-2.0** ([LICENSE-APACHE](./LICENSE-APACHE)) at your option.

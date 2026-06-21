@@ -42,7 +42,8 @@
     { "source": "files/src/components/EventInspector.tsx", "target": "src/components/EventInspector.tsx" },
     { "source": "files/src/components/ReplayScrubber.tsx", "target": "src/components/ReplayScrubber.tsx" },
     { "source": "files/src/lib/sandbox-stream.ts", "target": "src/lib/sandbox-stream.ts" },
-    { "source": "files/src/lib/event-types.ts", "target": "src/lib/event-types.ts" }
+    { "source": "files/src/lib/event-types.ts", "target": "src/lib/event-types.ts" },
+    { "source": "files/pnpm-workspace.yaml", "target": "pnpm-workspace.yaml" }
   ],
   "validationChecks": [
     { "type": "file-exists", "path": "package.json" },

@@ -44,7 +44,8 @@
     { "source": "files/src/components/ScoreRadar.tsx", "target": "src/components/ScoreRadar.tsx" },
     { "source": "files/src/components/RunDiff.tsx", "target": "src/components/RunDiff.tsx" },
     { "source": "files/src/lib/traces.ts", "target": "src/lib/traces.ts" },
-    { "source": "files/src/lib/scoring.ts", "target": "src/lib/scoring.ts" }
+    { "source": "files/src/lib/scoring.ts", "target": "src/lib/scoring.ts" },
+    { "source": "files/pnpm-workspace.yaml", "target": "pnpm-workspace.yaml" }
   ],
   "validationChecks": [
     { "type": "file-exists", "path": "package.json" },

@@ -18,7 +18,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@tangle-network/agent-eval": "^0.23.0"
+    "@tangle-network/agent-eval": "^0.95.1"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
@@ -27,9 +27,5 @@
   },
   "engines": {
     "node": ">=20"
-  },
-  "pnpm": {
-    "minimumReleaseAge": 4320,
-    "minimumReleaseAgeExclude": []
   }
 }

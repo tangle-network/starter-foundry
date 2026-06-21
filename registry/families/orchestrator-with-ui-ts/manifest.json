@@ -39,7 +39,8 @@
     { "source": "files/app/page.tsx", "target": "app/page.tsx" },
     { "source": "files/app/globals.css", "target": "app/globals.css" },
     { "source": "files/app/agents/[id]/page.tsx", "target": "app/agents/[id]/page.tsx" },
-    { "source": "files/src/lib/agent-roster.ts", "target": "src/lib/agent-roster.ts" }
+    { "source": "files/src/lib/agent-roster.ts", "target": "src/lib/agent-roster.ts" },
+    { "source": "files/pnpm-workspace.yaml", "target": "pnpm-workspace.yaml" }
   ],
   "validationChecks": [
     { "type": "file-exists", "path": "package.json" },

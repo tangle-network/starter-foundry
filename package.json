@@ -131,7 +131,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@huggingface/transformers": "^4.0.0",
-    "@tangle-network/agent-eval": "^0.77.0",
+    "@tangle-network/agent-eval": "^0.95.1",
     "@types/node": "^20.0.0",
     "eslint": "^10.2.1",
     "eslint-config-prettier": "^10.1.8",

@@ -29,6 +29,8 @@
   },
   "pnpm": {
     "minimumReleaseAge": 4320,
-    "minimumReleaseAgeExclude": []
+    "minimumReleaseAgeExclude": [
+      "@tangle-network/*"
+    ]
   }
 }

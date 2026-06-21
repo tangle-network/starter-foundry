@@ -1,6 +1,6 @@
 # research-harness
 
-Hypothesis-driven research harness on top of `@tangle-network/agent-eval@^0.77.0`.
+Hypothesis-driven research harness on top of `@tangle-network/agent-eval@^0.95.1`.
 
 ## What this bundle is
 

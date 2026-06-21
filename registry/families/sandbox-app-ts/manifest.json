@@ -36,7 +36,8 @@
     { "source": "files/src/main.tsx", "target": "src/main.tsx" },
     { "source": "files/src/App.tsx", "target": "src/App.tsx" },
     { "source": "files/src/index.css", "target": "src/index.css" },
-    { "source": "files/src/lib/sandbox-client.ts", "target": "src/lib/sandbox-client.ts" }
+    { "source": "files/src/lib/sandbox-client.ts", "target": "src/lib/sandbox-client.ts" },
+    { "source": "files/pnpm-workspace.yaml", "target": "pnpm-workspace.yaml" }
   ],
   "validationChecks": [
     { "type": "file-exists", "path": "package.json" },

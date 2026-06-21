@@ -34,7 +34,8 @@
     { "source": "files/README.md", "target": "README.md" },
     { "source": "files/src/main.tsx", "target": "src/main.tsx" },
     { "source": "files/src/App.tsx", "target": "src/App.tsx" },
-    { "source": "files/src/index.css", "target": "src/index.css" }
+    { "source": "files/src/index.css", "target": "src/index.css" },
+    { "source": "files/pnpm-workspace.yaml", "target": "pnpm-workspace.yaml" }
   ],
   "validationChecks": [
     { "type": "file-exists", "path": "package.json" },

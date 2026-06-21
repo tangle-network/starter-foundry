@@ -44,7 +44,8 @@
     { "source": "files/src/components/DeployFlow.tsx", "target": "src/components/DeployFlow.tsx" },
     { "source": "files/src/lib/catalog.ts", "target": "src/lib/catalog.ts" },
     { "source": "files/src/lib/search.ts", "target": "src/lib/search.ts" },
-    { "source": "files/src/styles/globals.css", "target": "src/styles/globals.css" }
+    { "source": "files/src/styles/globals.css", "target": "src/styles/globals.css" },
+    { "source": "files/pnpm-workspace.yaml", "target": "pnpm-workspace.yaml" }
   ],
   "validationChecks": [
     { "type": "file-exists", "path": "package.json" },

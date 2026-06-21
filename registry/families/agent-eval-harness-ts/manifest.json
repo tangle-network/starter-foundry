@@ -62,7 +62,8 @@
     { "source": "files/scenarios/.gitkeep", "target": "scenarios/.gitkeep" },
     { "source": "files/scenarios/example.scenario.ts", "target": "scenarios/example.scenario.ts" },
     { "source": "files/judges/example.judge.ts", "target": "judges/example.judge.ts" },
-    { "source": "files/.github/workflows/eval.yml", "target": ".github/workflows/eval.yml" }
+    { "source": "files/.github/workflows/eval.yml", "target": ".github/workflows/eval.yml" },
+    { "source": "files/pnpm-workspace.yaml", "target": "pnpm-workspace.yaml" }
   ],
   "validationChecks": [
     { "type": "file-exists", "path": "package.json" },

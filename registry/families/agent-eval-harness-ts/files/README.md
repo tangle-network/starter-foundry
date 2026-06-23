@@ -129,8 +129,8 @@ verdict from `pnpm eval:gate` against `origin/main`'s scorecard.
 
 ## Extending
 
-- Need a different judge dimension? Add a file in `judges/`. Use
-  `createCustomJudge` from agent-eval.
+- Need a different judge dimension? Add a file in `judges/`. Build it
+  with `llmJudge` from agent-eval (see `judges/example.judge.ts`).
 - Need a custom regression policy? Edit
   `src/eval/regression/gate.ts` — it's composed from the
   `eval:regression` layer; override the thresholds in your scaffold.

@@ -7,7 +7,7 @@
  *   - redTeamDataset(extras)   — wraps corpus + extras into a Dataset.
  *   - scoreRedTeamOutput       — per-scenario PASS/FAIL with reason + evidence.
  *   - redTeamReport            — aggregates findings into category pass rates.
- *   - adversarialJudge         — optional LLM judge for ambiguous refusals.
+ *   - llmJudge(...)            — optional LLM judge for ambiguous refusals.
  *   - runFailureClass          — derives FailureClass from each Run for the
  *                                "WHY did this fail?" view (refused vs leaked).
  */

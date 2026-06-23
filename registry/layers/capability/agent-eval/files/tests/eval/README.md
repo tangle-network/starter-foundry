@@ -48,13 +48,13 @@ Supported assertions: `status`, `statusIn`, `requireJson`, `jsonShape` (per-fiel
 
 ## LLM judge (opt-in)
 
-`judge.mjs` is a hook that imports `createCustomJudge` from `@tangle-network/agent-eval`. It's a no-op by default because an uncalibrated rubric is worse than no rubric — it will happily score everything ~0.7 and make your gate useless. Before turning it on, calibrate: score 10-20 real scenario outputs by hand, feed them to your judge, confirm direction-agreement ≥0.8, then turn the hook on and extend `run-eval.mjs` to merge judge scores into the scorecard.
+`judge.mjs` is a hook that builds a judge with `llmJudge` from `@tangle-network/agent-eval`. It's a no-op by default because an uncalibrated rubric is worse than no rubric — it will happily score everything ~0.7 and make your gate useless. Before turning it on, calibrate: score 10-20 real scenario outputs by hand, feed them to your judge, confirm direction-agreement ≥0.8, then turn the hook on and extend `run-eval.mjs` to merge judge scores into the scorecard.
 
 Relevant library primitives for the LLM layer:
-- `createCustomJudge(name, systemPrompt, opts?)` — rubric-backed judge
-- `createDomainExpertJudge(domain)` — default persona-based rubric
-- `coherenceJudge` / `codeExecutionJudge` / `defaultJudges(domain)` — ready-made judges
-- `JudgeRunner` — runs a set of judges over a Run and merges scores
+- `llmJudge(name, prompt, { chat, dimensions, scale, weights? })` — a campaign `JudgeConfig` whose `score()` makes one LLM call and returns `{ dimensions, composite, notes }` on `[0,1]`
+- `createChatClient(opts)` — the transport-agnostic LLM seam `llmJudge` consumes (`router` / `sandbox-sdk` / `mock`)
+- `ensembleJudge(opts)` — multi-model panel when one judge is too noisy
+- `createIntentMatchJudge` — ready-made intent-match judge
 
 ## Baseline + regression
 

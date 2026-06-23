@@ -35,9 +35,11 @@ The harness is a thin shell over `@tangle-network/agent-eval@^0.95.1`
   one file per scenario in `scenarios/*.ts`. Each scenario declares
   `id`, `persona`, `turns[]`, `dimensions[]`, and `artifactChecks[]`.
 - **Judges** are `JudgeFn` callables. Author one file per judge in
-  `judges/*.ts`. Use `createCustomJudge`, `createSemanticConceptJudge`,
-  or `createIntentMatchJudge` from agent-eval. Calibrate against a
-  golden set with `calibrateJudge` before relying on the score.
+  `judges/*.ts`. Build the LLM call with `llmJudge` (a campaign
+  `JudgeConfig` you adapt back into `JudgeScore[]` — see
+  `judges/example.judge.ts`), or use `createIntentMatchJudge` from
+  agent-eval. Calibrate against a golden set with `calibrateJudge`
+  before relying on the score.
 - **Runner** lives in `src/eval/runner.ts` (smoke-test path) and
   `src/eval/campaign.ts` (campaign path).
   - `runHarness` (smoke) loads scenarios, runs each via

@@ -109,7 +109,7 @@ LIBRARIES YOU MUST USE (read before writing code):
   - @tangle-network/agent-eval
       src: ${agentEvalSrc}
       types: ${agentEvalDts}
-      Key exports to consider: runTestGradedScenario, InMemoryTraceStore, SubprocessSandboxDriver, createCustomJudge
+      Key exports to consider: runTestGradedScenario, InMemoryTraceStore, SubprocessSandboxDriver, llmJudge
   - @tangle-network/tcloud
       src: ${tcloudSrc}
       types: ${tcloudDts}

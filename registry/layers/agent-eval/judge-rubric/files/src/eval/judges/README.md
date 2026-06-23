@@ -4,8 +4,9 @@ This directory hosts the LLM-as-judge functions that grade scenario
 responses. The `agent-eval:judge-rubric` layer ships:
 
 - `rubric-runner.ts` — `buildRubricJudge`, `runRubric`, `calibrateRubric`,
-  `isCiGating`. The rubric runner wraps `createCustomJudge` from
-  `@tangle-network/agent-eval` with a structured prompt template.
+  `isCiGating`. The rubric runner builds an `llmJudge` `JudgeConfig` from
+  `@tangle-network/agent-eval` (rubric dimensions + anchors → judge dimensions)
+  and adapts its canonical `[0,1]` verdict back into per-dimension `JudgeScore[]`.
 - `judges/rubric.example.ts` — copyable starting point for a multi-
   dimensional rubric (correctness / helpfulness / safety).
 

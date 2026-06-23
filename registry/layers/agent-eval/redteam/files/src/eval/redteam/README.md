@@ -2,7 +2,7 @@
 
 Adversarial / safety eval battery built on `@tangle-network/agent-eval`'s
 `redTeamDataset` + `DEFAULT_RED_TEAM_CORPUS` + `scoreRedTeamOutput` +
-`redTeamReport` + `adversarialJudge` + `runFailureClass`.
+`redTeamReport` + `runFailureClass` (+ an optional `llmJudge` for ambiguous refusals).
 
 ## Methodology
 

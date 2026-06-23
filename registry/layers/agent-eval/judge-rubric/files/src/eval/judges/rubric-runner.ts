@@ -12,14 +12,17 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 import {
   calibrateJudge,
-  createCustomJudge,
+  createChatClient,
+  llmJudge,
   type CalibrationResult,
   type CandidateScore,
+  type ChatClient,
   type GoldenItem,
   type JudgeFn,
   type JudgeInput,
   type JudgeRubric,
   type JudgeScore,
+  type LlmJudgeDimension,
   type RubricDimension,
 } from '@tangle-network/agent-eval'
 
@@ -54,37 +57,122 @@ export function buildRubric(spec: RubricSpec): JudgeRubric {
   }
 }
 
-// Build a single JudgeFn that asks the underlying LLM for one number per
-// dimension. Uses createCustomJudge under the hood — the system prompt is
-// templated from the rubric so authors only edit the rubric, not the prompt.
-export function buildRubricJudge(spec: RubricSpec): JudgeFn {
-  const rubric = buildRubric(spec)
-  const prompt = renderRubricPrompt(rubric)
-  const wrapped = createCustomJudge(rubric.name, prompt, {
-    model: spec.model,
-    temperature: spec.temperature ?? 0,
-  })
-  return wrapped
+// A TCloud-shaped client: `.chat()` takes an OpenAI-style request and resolves
+// an OpenAI `ChatCompletion` (the legacy judge read `choices[0].message.content`).
+// The runner threads exactly this into every JudgeFn.
+interface OpenAiChatClient {
+  chat(req: {
+    model: string
+    messages: { role: string; content: string }[]
+    temperature?: number
+    maxTokens?: number
+    jsonMode?: boolean
+  }): Promise<{ choices?: { message?: { content?: string } }[]; model?: string }>
 }
 
-function renderRubricPrompt(rubric: JudgeRubric): string {
-  const dimsBlock = rubric.dimensions
+// Adapt the TCloud-shaped client (OpenAI `ChatCompletion` out) into the
+// transport-agnostic `ChatClient` `llmJudge` consumes (`LlmCallResult` out, i.e.
+// top-level `content`). The `sandbox-sdk` transport is the published
+// pass-through seam for "I already have a callable chat()"; we normalize the
+// completion shape so the judge stays decoupled from the OpenAI envelope. Model
+// is resolved per-judge (spec.model), so no defaultModel is required here.
+function chatClientFor(tc: OpenAiChatClient): ChatClient {
+  return createChatClient({
+    transport: 'sandbox-sdk',
+    chat: async (req) => {
+      const resp = await tc.chat({
+        model: req.model ?? '',
+        messages: req.messages.map((m) => ({
+          role: String(m.role),
+          content: typeof m.content === 'string' ? m.content : JSON.stringify(m.content),
+        })),
+        ...(req.temperature !== undefined ? { temperature: req.temperature } : {}),
+        ...(req.maxTokens !== undefined ? { maxTokens: req.maxTokens } : {}),
+        ...(req.jsonMode !== undefined ? { jsonMode: req.jsonMode } : {}),
+      })
+      return {
+        content: resp.choices?.[0]?.message?.content ?? '',
+        model: resp.model ?? req.model ?? '',
+        usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+        costUsd: null,
+        durationMs: 0,
+        finishReason: null,
+        raw: resp,
+      }
+    },
+  })
+}
+
+// Render the rubric's dimensions as `llmJudge` dimension specs: the anchored
+// description becomes the per-dimension instruction the judge contract surfaces.
+// `llmJudge` owns the JSON output contract + [0,1] normalization, so authors
+// only edit the rubric anchors, never the scoring-protocol prose.
+function rubricDimensions(rubric: JudgeRubric): LlmJudgeDimension[] {
+  return rubric.dimensions.map((d) => ({
+    key: d.name,
+    description:
+      `${d.description}\n` +
+      `0.0 = ${d.anchor_low}\n` +
+      `1.0 = ${d.anchor_high}`,
+  }))
+}
+
+// Per-dimension composite weights, normalized from the rubric weights.
+function rubricWeights(rubric: JudgeRubric): Record<string, number> {
+  return Object.fromEntries(rubric.dimensions.map((d) => [d.name, d.weight]))
+}
+
+// Surface the agent transcript as the artifact the judge scores. Mirrors the
+// turn-by-turn rendering the legacy judge used so calibration goldens stay
+// comparable across the migration.
+function renderTranscript(input: JudgeInput): string {
+  return input.turns
     .map(
-      (d) =>
-        `- ${d.name} (weight ${d.weight}): ${d.description}\n` +
-        `  0.0: ${d.anchor_low}\n  1.0: ${d.anchor_high}`,
+      (t, i) =>
+        `Turn ${i + 1}:\nUser: ${t.userMessage}\nAgent: ${t.agentResponse.slice(0, 2000)}`,
     )
-    .join('\n')
+    .join('\n\n---\n\n')
+}
+
+// Build a single JudgeFn over the published `llmJudge` JudgeConfig. The rubric
+// is rendered into `llmJudge`'s dimension specs; `llmJudge.score()` returns the
+// canonical `{ dimensions, composite, notes }` object on the [0,1] scale, which
+// we fan back out into the per-dimension `JudgeScore[]` rows the runner +
+// regression suite consume. Scale is `unit` — the rubric scores on [0,1].
+export function buildRubricJudge(spec: RubricSpec): JudgeFn {
+  const rubric = buildRubric(spec)
+  const dimensions = rubricDimensions(rubric)
+  return async (tc, input): Promise<JudgeScore[]> => {
+    const judge = llmJudge<string>(rubric.name, renderRubricSystemPrompt(rubric), {
+      chat: chatClientFor(tc as unknown as OpenAiChatClient),
+      dimensions,
+      weights: rubricWeights(rubric),
+      scale: 'unit',
+      ...(spec.model ? { model: spec.model } : {}),
+      temperature: spec.temperature ?? 0,
+      renderUser: ({ artifact }) => artifact,
+    })
+    const verdict = await judge.score({
+      artifact: renderTranscript(input),
+      scenario: input.scenario as unknown as Parameters<typeof judge.score>[0]['scenario'],
+      signal: new AbortController().signal,
+    })
+    return rubric.dimensions.map<JudgeScore>((d) => ({
+      judgeName: rubric.name,
+      dimension: d.name,
+      score: verdict.dimensions[d.name],
+      reasoning: verdict.notes,
+    }))
+  }
+}
+
+function renderRubricSystemPrompt(rubric: JudgeRubric): string {
   return `You are a strict, calibrated evaluator running the rubric "${rubric.name}".
 
 ${rubric.description}
 
-Score the agent's response on every dimension below. Output a JSON array
-of {"dimension": string, "score": number 0..1, "reasoning": string}.
-No prose outside the JSON.
-
-Dimensions:
-${dimsBlock}`
+Score the agent's response on every rubric dimension. Each dimension is
+anchored: 0.0 is the worst response, 1.0 is the best.`
 }
 
 export async function runRubric(

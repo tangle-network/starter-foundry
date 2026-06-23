@@ -33,7 +33,7 @@ import { resolve, join, dirname } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import {
   FileSystemTraceStore,
-  FileSystemExperimentStore,
+  fileExperimentStore,
   SubprocessSandboxDriver,
   assertLlmRoute,
   LlmRouteAssertionError,
@@ -234,11 +234,12 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
   }
 
   const traceStore = new FileSystemTraceStore({ dir: tracesDir })
-  // Experiment store is created so callers can persist experiment metadata
-  // alongside traces; its mere existence ensures the dir is created.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const _experimentStore = new FileSystemExperimentStore({ dir: experimentsDir })
-  const driver = new SubprocessSandboxDriver({ cwd: projectRoot })
+  // Experiment store: agent-eval 0.99 exposes this as the `fileExperimentStore`
+  // factory (replacing the old `FileSystemExperimentStore` class). Constructed
+  // so callers extending this runner can persist experiment metadata alongside
+  // traces; `void` marks the intentional construct-for-availability.
+  void fileExperimentStore(experimentsDir)
+  const driver = new SubprocessSandboxDriver({ cwd: projectRoot }) // muffle-ok: agent-eval honors constructor cwd as fallback when HarnessConfig.cwd is unset; runTestGradedScenario does not thread per-call cwd here, so the constructor arg is the active value.
 
   const loaded: LoadedScenario[] = await loadScenarios(scenariosDir)
   if (loaded.length === 0) {

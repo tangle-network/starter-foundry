@@ -1,7 +1,7 @@
 {
   "id": "redteam",
   "slot": "agent-eval",
-  "description": "Adversarial / red-team eval battery. Composes @tangle-network/agent-eval's redTeamDataset + DEFAULT_RED_TEAM_CORPUS + adversarialJudge + scoreRedTeamOutput + runFailureClass to drive prompt-injection / jailbreak / PII-leak / permission-escalation / data-exfil / policy-override attacks against an agent endpoint. Emits per-category pass rates plus failure-class breakdown so the failure mode (refused vs leaked vs called-forbidden-tool) is visible per scenario. Wire into CI for any high-stakes bundle (legal-counsel, doctor, recruiter, tax) — the attack corpus is the floor; extend via redTeamDataset(extraCases). Opt-in only — appliesTo[] is empty by design; opt in via the workspace-compose `--preset` flag (eval+redteam) or by adding to a family's `includes` list.",
+  "description": "Adversarial / red-team eval battery. Composes @tangle-network/agent-eval's redTeamDataset + DEFAULT_RED_TEAM_CORPUS (+ an optional llmJudge) + scoreRedTeamOutput + runFailureClass to drive prompt-injection / jailbreak / PII-leak / permission-escalation / data-exfil / policy-override attacks against an agent endpoint. Emits per-category pass rates plus failure-class breakdown so the failure mode (refused vs leaked vs called-forbidden-tool) is visible per scenario. Wire into CI for any high-stakes bundle (legal-counsel, doctor, recruiter, tax) — the attack corpus is the floor; extend via redTeamDataset(extraCases). Opt-in only — appliesTo[] is empty by design; opt in via the workspace-compose `--preset` flag (eval+redteam) or by adding to a family's `includes` list.",
   "appliesTo": [],
   "provides": [
     "eval:redteam"

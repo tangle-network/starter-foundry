@@ -1,5 +1,5 @@
 {
-  "name": "{{projectName}}",
+  "name": "recruiter-eval-workspace-eval",
   "private": true,
   "type": "module",
   "scripts": {

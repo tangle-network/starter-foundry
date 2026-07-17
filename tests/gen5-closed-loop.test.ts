@@ -8,11 +8,19 @@ import { tmpdir } from 'node:os'
 const REPO = process.cwd()
 const GAP_SCRIPT = join(REPO, 'scripts/detect-family-gaps.ts')
 const PROMOTE_SCRIPT = join(REPO, 'scripts/promote-family-proposal.ts')
+const BUILDOUT_FIXTURE = join(REPO, 'tests/fixtures/buildouts.jsonl')
+
+function gapArgs(...args: string[]): string[] {
+  return [GAP_SCRIPT, '--traces', BUILDOUT_FIXTURE, ...args]
+}
 
 // ── gap detector contract tests ─────────────────────────────────────
 
 test('detect-family-gaps: emits parseable JSON with candidate shape', () => {
-  const res = spawnSync('node', [GAP_SCRIPT, '--json', '--top', '3'], { cwd: REPO, encoding: 'utf8' })
+  const res = spawnSync('node', gapArgs('--json', '--top', '3'), {
+    cwd: REPO,
+    encoding: 'utf8',
+  })
   assert.equal(res.status, 0, `gap detector failed: ${res.stderr}`)
   const parsed = JSON.parse(res.stdout) as {
     topN: number
@@ -40,7 +48,7 @@ test('detect-family-gaps: emits parseable JSON with candidate shape', () => {
 })
 
 test('detect-family-gaps: --min-count filters low-demand scenarios', () => {
-  const res = spawnSync('node', [GAP_SCRIPT, '--json', '--top', '50', '--min-count', '3'], {
+  const res = spawnSync('node', gapArgs('--json', '--top', '50', '--min-count', '3'), {
     cwd: REPO,
     encoding: 'utf8',
     env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
@@ -53,7 +61,10 @@ test('detect-family-gaps: --min-count filters low-demand scenarios', () => {
 })
 
 test('detect-family-gaps: candidates are priority-sorted descending', () => {
-  const res = spawnSync('node', [GAP_SCRIPT, '--json', '--top', '10'], { cwd: REPO, encoding: 'utf8' })
+  const res = spawnSync('node', gapArgs('--json', '--top', '10'), {
+    cwd: REPO,
+    encoding: 'utf8',
+  })
   assert.equal(res.status, 0)
   const parsed = JSON.parse(res.stdout) as { candidates: Array<{ priority: number }> }
   for (let i = 1; i < parsed.candidates.length; i++) {
@@ -168,7 +179,10 @@ test('promote-family-proposal: missing draft dir exits cleanly with informative 
 // ── Candidate-shape contract (for nightly feedback closure) ─────────
 
 test('gap candidates → propose input shape: taxonomy fields are non-empty strings', () => {
-  const res = spawnSync('node', [GAP_SCRIPT, '--json', '--top', '5'], { cwd: REPO, encoding: 'utf8' })
+  const res = spawnSync('node', gapArgs('--json', '--top', '5'), {
+    cwd: REPO,
+    encoding: 'utf8',
+  })
   const parsed = JSON.parse(res.stdout) as { candidates: Array<{ taxonomy: { language: string; runtime: string; surface: string } }> }
   for (const c of parsed.candidates) {
     assert.ok(typeof c.taxonomy.language === 'string' && c.taxonomy.language.length > 0)

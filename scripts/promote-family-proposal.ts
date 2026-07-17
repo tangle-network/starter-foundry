@@ -101,7 +101,8 @@ const targets = ALL
   : [ID]
 
 if (targets.length === 0) {
-  console.log('promote-family-proposal: no drafts to process')
+  console.log('\n━━━━ promotion summary ━━━━')
+  console.log('  promoted: 0 / 0 (no drafts to process)')
   process.exit(0)
 }
 

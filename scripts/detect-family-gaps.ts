@@ -20,13 +20,13 @@
 //   node scripts/detect-family-gaps.ts --json       # machine-readable
 //   node scripts/detect-family-gaps.ts --top 20     # configurable top-N
 //   node scripts/detect-family-gaps.ts --min-count 3 # require N occurrences
+//   node scripts/detect-family-gaps.ts --traces path/to/buildouts.jsonl
 
 import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { join, resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const TRACES = join(REPO, '.evolve/traces/buildouts.jsonl')
 const FAMILIES_DIR = join(REPO, 'registry/families')
 
 const argv = process.argv.slice(2)
@@ -34,6 +34,7 @@ const arg = (flag, fallback) => {
   const i = argv.indexOf(flag)
   return i >= 0 ? argv[i + 1] : fallback
 }
+const TRACES = resolve(REPO, arg('--traces', '.evolve/traces/buildouts.jsonl'))
 const JSON_OUT = argv.includes('--json')
 const TOP_N = Number(arg('--top', '10')) || 10
 const MIN_COUNT = Number(arg('--min-count', '1')) || 1

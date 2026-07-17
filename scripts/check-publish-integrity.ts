@@ -88,7 +88,9 @@ function checkProtocolDeps(label: string, deps: Record<string, string> | undefin
   if (!deps) return
   for (const [name, version] of Object.entries(deps)) {
     if (/^(link:|file:|workspace:)/.test(version)) {
-      fail(`${label}["${name}"] = "${version}" — protocol deps cannot be published; replace with a real version`)
+      fail(
+        `${label}["${name}"] = "${version}" — protocol deps cannot be published; replace with a real version`,
+      )
     }
   }
 }
@@ -113,12 +115,28 @@ const SENSITIVE_PATTERNS: RegExp[] = [
   /(?:^|\/)\.npmrc$/,
 ]
 
-function walkPublishable(dir: string, into: string[] = []): string[] {
-  if (!existsSync(dir)) return into
-  for (const name of readdirSync(dir)) {
-    const abs = join(dir, name)
+function walkPublishable(root: string, into: string[] = []): string[] {
+  if (!existsSync(root)) return into
+
+  let rootStat
+  try {
+    rootStat = statSync(root)
+  } catch {
+    return into
+  }
+  if (!rootStat.isDirectory()) {
+    into.push(root)
+    return into
+  }
+
+  for (const name of readdirSync(root)) {
+    const abs = join(root, name)
     let st
-    try { st = statSync(abs) } catch { continue }
+    try {
+      st = statSync(abs)
+    } catch {
+      continue
+    }
     if (st.isDirectory()) {
       if (name === 'node_modules' || name === '.git') continue
       walkPublishable(abs, into)
@@ -150,7 +168,11 @@ function newestMtime(dir: string, ext: RegExp): number {
     if (name === 'node_modules' || name === '.git' || name === 'dist') continue
     const abs = join(dir, name)
     let st
-    try { st = statSync(abs) } catch { continue }
+    try {
+      st = statSync(abs)
+    } catch {
+      continue
+    }
     if (st.isDirectory()) {
       const sub = newestMtime(abs, ext)
       if (sub > newest) newest = sub
@@ -167,7 +189,7 @@ if (srcNewest > 0 && distNewest > 0 && srcNewest > distNewest + 1000) {
   // 1s grace period for filesystem mtime jitter
   warn(
     `src/ has files newer than dist/ — dist may be stale. ` +
-    `Run \`pnpm build\` to refresh before publishing.`,
+      `Run \`pnpm build\` to refresh before publishing.`,
   )
 }
 
@@ -179,7 +201,11 @@ function dirSize(dir: string): number {
   for (const name of readdirSync(dir)) {
     const abs = join(dir, name)
     let st
-    try { st = statSync(abs) } catch { continue }
+    try {
+      st = statSync(abs)
+    } catch {
+      continue
+    }
     if (st.isDirectory()) total += dirSize(abs)
     else total += st.size
   }
@@ -190,7 +216,9 @@ const distBytes = dirSize(distPath)
 const distMb = distBytes / 1024 / 1024
 const BUDGET_MB = 10 // sane upper bound; bump if the package legitimately grows
 if (distMb > BUDGET_MB) {
-  fail(`dist/ is ${distMb.toFixed(2)} MB — exceeds the ${BUDGET_MB} MB budget. Audit what crept in.`)
+  fail(
+    `dist/ is ${distMb.toFixed(2)} MB — exceeds the ${BUDGET_MB} MB budget. Audit what crept in.`,
+  )
 }
 
 // ── Check 8: name/version sanity ─────────────────────────────────────
@@ -208,7 +236,9 @@ if (!process.env['CI']) {
   try {
     const status = execSync('git status --porcelain', { cwd: REPO, encoding: 'utf8' }).trim()
     if (status.length > 0) {
-      warn(`git working tree is dirty — uncommitted changes will not be published. \`git status\` to inspect.`)
+      warn(
+        `git working tree is dirty — uncommitted changes will not be published. \`git status\` to inspect.`,
+      )
     }
   } catch {
     // git not available; skip

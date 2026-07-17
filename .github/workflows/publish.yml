@@ -1,18 +1,8 @@
 name: Release
 
-# Publishes @tangle-network/starter-foundry to GitHub Packages on git tag push.
-#
-# Proprietary — All Rights Reserved. The package is intentionally NOT
-# published to public npmjs.org. Internal consumers (blueprint-agent,
-# agent-dev-container, etc.) route the @tangle-network scope to
-# https://npm.pkg.github.com/ via .npmrc.
-#
-# Prior versions 0.4.0–0.7.3 are on public npm under MIT (perpetual
-# grant — cannot be revoked). v0.8.0 onward is proprietary on
-# GitHub Packages only.
-#
-# Authentication uses the workflow's GITHUB_TOKEN automatically via
-# the registry-url override; no long-lived secret needed.
+# Publishes @tangle-network/starter-foundry to public npm on git tag push.
+# Blueprint Agent installs this package from the public registry inside
+# sandboxes, so the release destination must match package.json publishConfig.
 #
 # To cut a release:
 #   1. Bump version in package.json
@@ -34,28 +24,29 @@ on:
 permissions:
   contents: write # for creating the github release
   id-token: write # for npm provenance attestation
-  packages: write # for publishing to GitHub Packages
 
 jobs:
   publish:
-    name: Publish to GitHub Packages
-    runs-on: [self-hosted, ci-linux]
+    name: Publish to npm
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # Install deps from public npm — @tangle-network/agent-eval and
-      # @tangle-network/tcloud-agent live on npmjs.org. Switching the
-      # default registry to GH Packages here would 404 on those.
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           registry-url: https://registry.npmjs.org
+          cache: pnpm
 
       - name: Install
-        run: npm install
+        run: pnpm install --frozen-lockfile
 
       - name: Verify version matches tag
         run: |
@@ -73,37 +64,28 @@ jobs:
           fi
 
       - name: Build
-        run: npm run build
+        run: pnpm build
+
+      - name: Test
+        run: pnpm test
 
       - name: Pack (verify the tarball is sane before publishing)
         run: |
           npm pack
           ls -la *.tgz
 
-      # Switch the default registry + auth to GH Packages only for the
-      # publish step. Done after install so dep resolution from
-      # npmjs.org isn't disturbed.
-      - name: Configure Node for GitHub Packages
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          registry-url: https://npm.pkg.github.com
-          scope: '@tangle-network'
-
-      - name: Publish to GitHub Packages
-        # Idempotent on retry: skip if the version is already on gh
-        # packages (e.g. a partial earlier run that succeeded here but
-        # failed elsewhere). Auth uses GITHUB_TOKEN automatically via
-        # the registry-url override above; no extra secret needed.
+      - name: Publish to npm
+        # Idempotent on retry: a partial run may publish successfully before
+        # GitHub release creation fails.
         run: |
           PKG_VERSION=$(node -p "require('./package.json').version")
-          if npm view "@tangle-network/starter-foundry@$PKG_VERSION" version --registry=https://npm.pkg.github.com/ >/dev/null 2>&1; then
-            echo "@tangle-network/starter-foundry@$PKG_VERSION already on gh packages — skipping"
+          if npm view "@tangle-network/starter-foundry@$PKG_VERSION" version --registry=https://registry.npmjs.org/ >/dev/null 2>&1; then
+            echo "@tangle-network/starter-foundry@$PKG_VERSION already on npm — skipping"
           else
-            npm publish --registry=https://npm.pkg.github.com/
+            npm publish --provenance --access public
           fi
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create Github release
         uses: softprops/action-gh-release@v2

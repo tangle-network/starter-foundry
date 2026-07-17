@@ -3,13 +3,16 @@
 // (deterministic fallback path is the contract-under-test).
 
 import assert from 'node:assert/strict'
+import { join } from 'node:path'
 import test from 'node:test'
 import { harvest } from '../dist/training/template_v1/harvest.js'
 import { synthesize } from '../dist/training/template_v1/synthesize.js'
 import { judge } from '../dist/training/template_v1/judge.js'
 
+const REWRITES_FIXTURE = join(process.cwd(), 'tests/fixtures/template-rewrites')
+
 test('harvest: reads mined tuples and extracts patterns', () => {
-  const h = harvest('src.App.tsx')
+  const h = harvest('src.App.tsx', REWRITES_FIXTURE)
   assert.ok(h.tupleCount > 0, `expected tuples for src.App.tsx, got ${h.tupleCount}`)
   assert.ok(h.templatePath.length > 0)
   assert.ok(Array.isArray(h.frequentlyAddedLines))
@@ -19,13 +22,14 @@ test('harvest: reads mined tuples and extracts patterns', () => {
 })
 
 test('harvest: empty key returns zero tuples', () => {
-  const h = harvest('does.not.exist')
+  const h = harvest('does.not.exist', REWRITES_FIXTURE)
   assert.equal(h.tupleCount, 0)
 })
 
 test('synthesize: deterministic fallback produces a non-empty candidate', async () => {
-  const h = harvest('src.App.tsx')
-  const current = 'import React from "react"\n\n// leading comment\n// another comment\n// third comment\n\nexport default function App() { return null }'
+  const h = harvest('src.App.tsx', REWRITES_FIXTURE)
+  const current =
+    'import React from "react"\n\n// leading comment\n// another comment\n// third comment\n\nexport default function App() { return null }'
   const s = await synthesize({
     templatePath: 'src/App.tsx',
     currentSource: current,
@@ -38,9 +42,10 @@ test('synthesize: deterministic fallback produces a non-empty candidate', async 
 })
 
 test('judge: computes bounded composite score', async () => {
-  const h = harvest('src.App.tsx')
+  const h = harvest('src.App.tsx', REWRITES_FIXTURE)
   const current = 'export default function App() { return null }'
-  const candidate = 'import { Button } from "@/components/ui/button"\nexport default function App() { return <Button>Go</Button> }'
+  const candidate =
+    'import { Button } from "@/components/ui/button"\nexport default function App() { return <Button>Go</Button> }'
   const j = judge({
     templatePath: 'src/App.tsx',
     currentSource: current,

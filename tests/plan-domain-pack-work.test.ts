@@ -215,8 +215,12 @@ test('plan-domain-pack-work emits parallelizable FHE and bridge candidates from 
 test(
   'plan-domain-pack-work emits at least 10 candidates from the current blueprint-agent corpus',
   { skip: !existsSync(BLUEPRINT_AGENT_SCENARIOS) },
-  () => {
-    const result = spawnSync(TSX, [SCRIPT, '--json'], {
+  (t) => {
+    const outputDir = mkdtempSync(join(tmpdir(), 'sf-domain-pack-current-'))
+    const output = join(outputDir, 'domain-pack-candidates.json')
+    t.after(() => rmSync(outputDir, { recursive: true, force: true }))
+
+    const result = spawnSync(TSX, [SCRIPT, '--json', '--write', '--output', output], {
       cwd: process.cwd(),
       encoding: 'utf8',
     })
@@ -253,9 +257,7 @@ test(
       'provider-specific FHE candidates should not absorb generic FHE research leaves',
     )
 
-    const persisted = JSON.parse(
-      readFileSync(join(process.cwd(), '.evolve/domain-pack-candidates.json'), 'utf8'),
-    )
+    const persisted = JSON.parse(readFileSync(output, 'utf8'))
     assert.deepEqual(
       persisted.candidates.map((candidate: any) => candidate.id),
       ids,

@@ -1,0 +1,7 @@
+{
+  "logicalModel": "stable-sonnet-4-6",
+  "alias": "claude-sonnet-4-6",
+  "temperature": 0.2,
+  "maxTokens": 4096,
+  "costCeilingUsd": 0.5
+}

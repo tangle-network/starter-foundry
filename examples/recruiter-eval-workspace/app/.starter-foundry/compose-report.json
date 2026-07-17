@@ -1,0 +1,113 @@
+{
+  "spec": {
+    "projectName": "recruiter-eval-workspace-app",
+    "family": "agent-with-ui-ts",
+    "layers": [],
+    "partner": null,
+    "slots": {},
+    "variables": {}
+  },
+  "components": {
+    "family": "agent-with-ui-ts",
+    "layers": [
+      "ui-adapter:blocks-renderer"
+    ],
+    "partner": null,
+    "slots": {}
+  },
+  "variables": {
+    "projectName": "recruiter-eval-workspace-app",
+    "packageName": "recruiter-eval-workspace-app",
+    "crateName": "recruiter_eval_workspace_app",
+    "projectType": "agent-runtime-ui",
+    "agentName": "my-agent",
+    "agentBundleFamily": "agent-runtime-research",
+    "sandboxApiUrl": "https://api.tangle.tools",
+    "port": 4174,
+    "blocksRenderer": true,
+    "supportedBlockTypes": [
+      "artifact",
+      "escalation",
+      "screener-result",
+      "audio-cue",
+      "suggestion",
+      "proposal",
+      "filing",
+      "survey"
+    ]
+  },
+  "fileOwnership": {
+    "package.json": "agent-with-ui-ts",
+    "index.html": "agent-with-ui-ts",
+    "vite.config.ts": "agent-with-ui-ts",
+    "tsconfig.json": "agent-with-ui-ts",
+    "tailwind.config.cjs": "agent-with-ui-ts",
+    "postcss.config.cjs": "agent-with-ui-ts",
+    "README.md": "agent-with-ui-ts",
+    "src/main.tsx": "agent-with-ui-ts",
+    "src/App.tsx": "agent-with-ui-ts",
+    "src/index.css": "agent-with-ui-ts",
+    "pnpm-workspace.yaml": "agent-with-ui-ts",
+    "src/lib/parse-blocks.ts": "ui-adapter:blocks-renderer",
+    "src/lib/blocks-to-artifacts.tsx": "ui-adapter:blocks-renderer",
+    "src/lib/parse-blocks.test.ts": "ui-adapter:blocks-renderer"
+  },
+  "validationChecks": [
+    {
+      "type": "file-exists",
+      "path": "package.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "index.html"
+    },
+    {
+      "type": "file-exists",
+      "path": "vite.config.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "tsconfig.json"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/main.tsx"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/App.tsx"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/parse-blocks.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/blocks-to-artifacts.tsx"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/parse-blocks.ts"
+    },
+    {
+      "type": "file-exists",
+      "path": "src/lib/blocks-to-artifacts.tsx"
+    }
+  ],
+  "contextHints": {
+    "commands": [
+      "pnpm dev",
+      "pnpm build"
+    ],
+    "entrypoints": [
+      "src/App.tsx"
+    ],
+    "preview": null,
+    "extensionPoints": [
+      "src/App.tsx",
+      "src/lib/blocks-to-artifacts.tsx",
+      "src/lib/parse-blocks.ts"
+    ]
+  },
+  "domainPackGuidance": []
+}

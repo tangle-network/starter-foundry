@@ -1,0 +1,6 @@
+{
+  "extends": "default-proposer",
+  "role": "family-author",
+  "maxTokens": 8192,
+  "costCeilingUsd": 1.0
+}

@@ -10,7 +10,8 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@tangle-network/agent-eval": "^0.99.0"
+    "@tangle-network/agent-eval": "^0.99.0",
+    "@tangle-network/tcloud": "^0.4.2"
   },
   "devDependencies": {
     "@types/node": "^22.7.0",

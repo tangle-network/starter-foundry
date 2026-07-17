@@ -1,0 +1,6 @@
+{
+  "extends": "default-proposer",
+  "role": "capability-author",
+  "maxTokens": 6144,
+  "costCeilingUsd": 0.75
+}

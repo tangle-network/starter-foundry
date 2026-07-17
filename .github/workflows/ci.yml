@@ -13,7 +13,7 @@ concurrency:
 jobs:
   build-test:
     name: build + test
-    runs-on: [self-hosted, ci-linux]
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -29,12 +29,6 @@ jobs:
 
       - name: install Rust toolchain for cargo-backed scaffold tests
         uses: dtolnay/rust-toolchain@stable
-
-      - name: reap stale anvil (shared-runner foundryup guard)
-        # foundryup refuses to install while an anvil process is alive; on the
-        # shared self-hosted runner a prior job's anvil can linger and bail this
-        # install. Clear it before foundry-toolchain runs.
-        run: pkill -9 -f '/anvil( |$)' 2>/dev/null || true
 
       - uses: foundry-rs/foundry-toolchain@v1
         with:
@@ -78,7 +72,7 @@ jobs:
 
   matrix-eval:
     name: router matrix eval (deterministic, no key)
-    runs-on: [self-hosted, ci-linux]
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: build-test
     steps:
@@ -123,7 +117,7 @@ jobs:
             // recorded baseline of 0.878 minus a 2pp tolerance band.
             if (heldOut.meanRecall !== undefined && heldOut.meanRecall < 1.0) fail.push(`held-out recall ${heldOut.meanRecall} < 1.0`);
             if (ideasai.meanRecall !== undefined && ideasai.meanRecall < 0.85) fail.push(`ideasai recall ${ideasai.meanRecall} < 0.85 (baseline 0.878)`);
-            // Latency is noisy on shared self-hosted runners. Keep accuracy and
+            // Latency is noisy on shared CI runners. Keep accuracy and
             // recall as hard gates; record p95 for trend review and only fail
             // on a catastrophic deterministic-path slowdown.
             if (agg.p95Ms > 5) console.warn(`p95 ${agg.p95Ms}ms > 5ms advisory latency budget`);

@@ -8,6 +8,7 @@ import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 
+import { composeStarter } from '../dist/lib/compose.js'
 import { checkHtmlTsWireup, findUnusedImports } from '../dist/training/template_v1/correctness.js'
 
 describe('findUnusedImports — catches the App.tsx bug (unused useState)', () => {
@@ -214,6 +215,24 @@ describe('checkHtmlTsWireup — catches the index.html bug (main.tsx/#root vs ma
       // Expect TWO failures: missing script src + missing element id
       const kinds = out.map((f) => f.kind).sort()
       assert.deepEqual(kinds, ['missing-element-id', 'missing-script-src'])
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  })
+
+  it('keeps the shipped react-vite-ts entry and mount point connected', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'sf-react-wireup-'))
+    try {
+      await composeStarter({
+        spec: {
+          projectName: 'react-wireup-probe',
+          family: 'react-vite-ts',
+          layers: ['framework:react-vite-ts'],
+        },
+        outDir: dir,
+      })
+
+      assert.deepEqual(checkHtmlTsWireup(dir), [])
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }

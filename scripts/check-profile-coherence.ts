@@ -24,6 +24,11 @@ const lockRaw = JSON.parse(readFileSync(lockPath, 'utf8')) as { roles?: Record<s
 const lockEmpty = !lockRaw.roles || Object.keys(lockRaw.roles).length === 0
 
 const names = listProfileNames(profilesDir)
+if (names.length === 0) {
+  console.error(`check-profile-coherence: no profiles found in ${profilesDir}`)
+  process.exit(1)
+}
+
 const violations: Array<{ profile: string; reason: string }> = []
 
 for (const name of names) {

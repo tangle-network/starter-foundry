@@ -35,9 +35,9 @@ export interface HarvestSummary {
   editPatterns: { before: string; after: string; count: number }[]
 }
 
-function readTuples(key: string): RewriteTuple[] {
+function readTuples(key: string, rewritesDir: string): RewriteTuple[] {
   // Key is e.g. "src.App.tsx" — the filesystem-safe form of the template path.
-  const candidate = join(REWRITES_DIR, `${key}.jsonl`)
+  const candidate = join(rewritesDir, `${key}.jsonl`)
   if (!existsSync(candidate)) return []
   return readFileSync(candidate, 'utf8')
     .split('\n')
@@ -94,8 +94,8 @@ function editPatterns(tuples: RewriteTuple[]): { before: string; after: string; 
   return [...buckets.values()].sort((a, b) => b.count - a.count).slice(0, 10)
 }
 
-export function harvest(templateKey: string): HarvestSummary {
-  const tuples = readTuples(templateKey)
+export function harvest(templateKey: string, rewritesDir = REWRITES_DIR): HarvestSummary {
+  const tuples = readTuples(templateKey, rewritesDir)
   const writes = tuples.filter((t) => t.tool === 'Write')
   const edits = tuples.filter((t) => t.tool === 'Edit')
 

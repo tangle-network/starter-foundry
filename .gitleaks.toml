@@ -11,4 +11,5 @@ description = "scaffold-template fixtures (fake secrets in shipped example code)
 paths = [
   '''registry/layers/agent-base/privacy/files/lib/privacy/index\.test\.ts''',
   '''registry/families/agent-orchestrator-service-ts/files/README\.md''',
+  '''examples/recruiter-eval-workspace/agent/src/lib/privacy/index\.test\.ts''',
 ]

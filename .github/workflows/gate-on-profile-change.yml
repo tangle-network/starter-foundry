@@ -8,7 +8,7 @@ on:
 jobs:
   require-gate:
     name: require HeldOutGate PROMOTE or bypass label
-    runs-on: [self-hosted, ci-linux]
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4

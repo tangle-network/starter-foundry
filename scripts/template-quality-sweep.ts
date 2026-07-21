@@ -48,7 +48,6 @@ const topFiles = (analysis.topRewrittenFiles ?? []).slice(0, TOP_N)
 
 if (topFiles.length === 0) {
   console.log('no top-rewritten files in analysis — nothing to sweep')
-  process.exit(0)
 }
 
 // Walk registry/ to index templates by their scaffold target path.

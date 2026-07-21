@@ -18,6 +18,7 @@ const REPO = resolve(import.meta.dirname, '..')
 const MINE = join(REPO, 'scripts/mine-buildout-sessions.ts')
 const JOIN = join(REPO, 'scripts/join-buildout-outcomes.ts')
 const ANALYZE = join(REPO, 'scripts/analyze-buildouts.ts')
+const PIPELINE = join(REPO, 'scripts/run-buildout-pipeline.ts')
 
 function run(cmd: string, args: string[], cwd: string): SpawnSyncReturns<string> {
   return spawnSync(cmd, args, {
@@ -36,11 +37,31 @@ function setupWorkspace() {
 
 function makeFakeSessionProjectsDir(root: string) {
   const projects = join(root, 'projects')
-  const slug = '-private-var-folders-wk-T-factory-local-phase2-ethereum-l1-mozxcvbnm-fake-scenario-r1-fake-scenario-abcd'
+  const slug =
+    '-private-var-folders-wk-T-factory-local-phase2-ethereum-l1-mozxcvbnm-fake-scenario-r1-fake-scenario-abcd'
   const sessDir = join(projects, slug)
   mkdirSync(sessDir, { recursive: true })
   return { projects, sessDir }
 }
+
+test('hardening: pipeline treats a missing session source as an empty corpus', () => {
+  const dir = setupWorkspace()
+  try {
+    const r = run(
+      process.execPath,
+      [PIPELINE, '--projects-dir', join(dir, 'missing-projects')],
+      dir,
+    )
+    assert.equal(r.status, 0, `pipeline failed without source sessions: ${r.stderr}`)
+    assert.equal(readFileSync(join(dir, '.evolve/traces/buildouts.jsonl'), 'utf8').trim(), '')
+
+    const analysis = JSON.parse(readFileSync(join(dir, '.evolve/buildout-analysis.json'), 'utf8'))
+    assert.equal(analysis.summary.totalBuildouts, 0)
+    assert.deepEqual(analysis.topRewrittenFiles, [])
+  } finally {
+    rmSync(dir, { recursive: true, force: true })
+  }
+})
 
 test('hardening: miner recovers from corrupted state file', () => {
   const dir = setupWorkspace()
@@ -65,9 +86,7 @@ test('hardening: concurrent miners — lock prevents duplicate events', async ()
         JSON.stringify({
           type: 'assistant',
           message: {
-            content: [
-              { type: 'tool_use', name: 'Bash', input: { command: 'pnpm add zod' } },
-            ],
+            content: [{ type: 'tool_use', name: 'Bash', input: { command: 'pnpm add zod' } }],
           },
         }),
       ].join('\n'),
@@ -102,7 +121,10 @@ test('hardening: concurrent miners — lock prevents duplicate events', async ()
     // 1 event. This holds as long as ONE of {lock, mtime-skip} works.
     const out = join(dir, '.evolve/traces/buildouts.jsonl')
     const lines = existsSync(out)
-      ? readFileSync(out, 'utf8').trim().split('\n').filter((l) => l.length > 0)
+      ? readFileSync(out, 'utf8')
+          .trim()
+          .split('\n')
+          .filter((l) => l.length > 0)
       : []
     assert.equal(lines.length, 1, `expected exactly 1 mined event, got ${lines.length}`)
   } finally {
@@ -232,14 +254,18 @@ test('hardening: miner tolerates unknown Claude Code message types (schema drift
         JSON.stringify({ type: 'user', message: { content: 'real prompt' } }),
         JSON.stringify({
           type: 'assistant',
-          message: { content: [{ type: 'tool_use', name: 'Bash', input: { command: 'pnpm add react' } }] },
+          message: {
+            content: [{ type: 'tool_use', name: 'Bash', input: { command: 'pnpm add react' } }],
+          },
         }),
         JSON.stringify({ type: 'system', message: { foo: 'bar' } }),
       ].join('\n'),
     )
     const r = run(process.execPath, [MINE, '--projects-dir', projects], dir)
     assert.equal(r.status, 0, `miner crashed on drift: ${r.stderr}`)
-    const lines = readFileSync(join(dir, '.evolve/traces/buildouts.jsonl'), 'utf8').trim().split('\n')
+    const lines = readFileSync(join(dir, '.evolve/traces/buildouts.jsonl'), 'utf8')
+      .trim()
+      .split('\n')
     assert.equal(lines.length, 1)
     const parsed = JSON.parse(lines[0]!)
     assert.equal(parsed.initialPrompt, 'real prompt')

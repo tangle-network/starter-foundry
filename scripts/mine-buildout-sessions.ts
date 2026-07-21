@@ -16,7 +16,18 @@
 //   node scripts/mine-buildout-sessions.ts --rebuild            # start fresh
 //   node scripts/mine-buildout-sessions.ts --force-all          # retry poisoned
 
-import { readdirSync, readFileSync, statSync, existsSync, mkdirSync, writeFileSync, appendFileSync, rmSync, openSync, closeSync } from 'node:fs'
+import {
+  readdirSync,
+  readFileSync,
+  statSync,
+  existsSync,
+  mkdirSync,
+  writeFileSync,
+  appendFileSync,
+  rmSync,
+  openSync,
+  closeSync,
+} from 'node:fs'
 import { join } from 'node:path'
 import { homedir } from 'node:os'
 import { performance } from 'node:perf_hooks'
@@ -59,7 +70,11 @@ function acquireLock() {
 }
 
 function releaseLock() {
-  try { rmSync(LOCK_PATH, { force: true }) } catch { /* best-effort */ }
+  try {
+    rmSync(LOCK_PATH, { force: true })
+  } catch {
+    /* best-effort */
+  }
 }
 
 function isPidAlive(pid) {
@@ -90,8 +105,14 @@ if (!acquireLock()) {
   process.exit(75) // EX_TEMPFAIL
 }
 process.on('exit', releaseLock)
-process.on('SIGINT', () => { releaseLock(); process.exit(130) })
-process.on('SIGTERM', () => { releaseLock(); process.exit(143) })
+process.on('SIGINT', () => {
+  releaseLock()
+  process.exit(130)
+})
+process.on('SIGTERM', () => {
+  releaseLock()
+  process.exit(143)
+})
 
 if (rebuild) {
   rmSync(DEFAULT_PATHS.buildoutsJsonl, { force: true })
@@ -100,13 +121,21 @@ if (rebuild) {
   console.log(`rebuild: cleared output + state`)
 }
 
+// An empty corpus is valid input for downstream aggregation. Create the
+// sentinel after taking the miner lock so concurrent runs cannot truncate a
+// corpus another miner has started to append.
+if (!existsSync(DEFAULT_PATHS.buildoutsJsonl)) {
+  writeFileSync(DEFAULT_PATHS.buildoutsJsonl, '')
+}
+
 // Load state with corruption recovery. A truncated/corrupted state file
 // would otherwise crash the miner permanently. Instead we log + reseed.
 let state
 if (existsSync(DEFAULT_PATHS.minerState)) {
   try {
     state = JSON.parse(readFileSync(DEFAULT_PATHS.minerState, 'utf8'))
-    if (!state || typeof state !== 'object' || !state.schemaVersion) throw new Error('state missing schemaVersion')
+    if (!state || typeof state !== 'object' || !state.schemaVersion)
+      throw new Error('state missing schemaVersion')
   } catch (err) {
     console.warn(`state file corrupt (${err?.message}); reseeding empty state`)
     state = emptyMinerState()
@@ -140,16 +169,18 @@ function findInitialPrompt(entries) {
   for (const e of entries) {
     if (e?.type !== 'user') continue
     const content = e?.message?.content
-    const text = typeof content === 'string'
-      ? content
-      : Array.isArray(content)
-      ? content
-          .filter((p) => p?.type === 'text' && typeof p.text === 'string')
-          .map((p) => p.text)
-          .join('\n')
-      : ''
+    const text =
+      typeof content === 'string'
+        ? content
+        : Array.isArray(content)
+          ? content
+              .filter((p) => p?.type === 'text' && typeof p.text === 'string')
+              .map((p) => p.text)
+              .join('\n')
+          : ''
     if (!text) continue
-    if (text.startsWith('[tool:') || text.startsWith('<command-') || text.includes('<tool_result>')) continue
+    if (text.startsWith('[tool:') || text.startsWith('<command-') || text.includes('<tool_result>'))
+      continue
     if (text.startsWith('<system-reminder>')) continue
     return text.trim().slice(0, 4000)
   }
@@ -314,7 +345,8 @@ for (const projectSlug of projectDirs) {
     }
 
     const prevMtime = state.mtimes[stateKey] ?? 0
-    if (!rebuild && !forceAll && forceSession !== sessionId && fileStat.mtimeMs <= prevMtime) continue
+    if (!rebuild && !forceAll && forceSession !== sessionId && fileStat.mtimeMs <= prevMtime)
+      continue
 
     try {
       const raw = readFileSync(sourcePath, 'utf8')

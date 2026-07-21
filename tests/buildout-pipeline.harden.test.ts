@@ -10,7 +10,15 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { spawn, spawnSync, type SpawnSyncReturns } from 'node:child_process'
-import { mkdtempSync, mkdirSync, writeFileSync, existsSync, readFileSync, rmSync } from 'node:fs'
+import {
+  copyFileSync,
+  mkdtempSync,
+  mkdirSync,
+  writeFileSync,
+  existsSync,
+  readFileSync,
+  rmSync,
+} from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 
@@ -19,6 +27,7 @@ const MINE = join(REPO, 'scripts/mine-buildout-sessions.ts')
 const JOIN = join(REPO, 'scripts/join-buildout-outcomes.ts')
 const ANALYZE = join(REPO, 'scripts/analyze-buildouts.ts')
 const PIPELINE = join(REPO, 'scripts/run-buildout-pipeline.ts')
+const TEMPLATE_SWEEP = join(REPO, 'scripts/template-quality-sweep.ts')
 
 function run(cmd: string, args: string[], cwd: string): SpawnSyncReturns<string> {
   return spawnSync(cmd, args, {
@@ -58,6 +67,31 @@ test('hardening: pipeline treats a missing session source as an empty corpus', (
     const analysis = JSON.parse(readFileSync(join(dir, '.evolve/buildout-analysis.json'), 'utf8'))
     assert.equal(analysis.summary.totalBuildouts, 0)
     assert.deepEqual(analysis.topRewrittenFiles, [])
+  } finally {
+    rmSync(dir, { recursive: true, force: true })
+  }
+})
+
+test('hardening: template sweep writes an empty summary when nothing was rewritten', () => {
+  const dir = setupWorkspace()
+  try {
+    const scriptDir = join(dir, 'scripts')
+    mkdirSync(scriptDir, { recursive: true })
+    const script = join(scriptDir, 'template-quality-sweep.ts')
+    copyFileSync(TEMPLATE_SWEEP, script)
+    writeFileSync(
+      join(dir, '.evolve/buildout-analysis.json'),
+      JSON.stringify({ topRewrittenFiles: [] }),
+    )
+
+    const r = run(process.execPath, [script], dir)
+    assert.equal(r.status, 0, `template sweep failed without rewritten files: ${r.stderr}`)
+
+    const summary = JSON.parse(
+      readFileSync(join(dir, '.evolve/template-candidates/sweep-summary.json'), 'utf8'),
+    )
+    assert.equal(summary.topN, 5)
+    assert.deepEqual(summary.results, [])
   } finally {
     rmSync(dir, { recursive: true, force: true })
   }

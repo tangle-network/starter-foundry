@@ -87,6 +87,7 @@ jobs:
         if: hashFiles('examples/recruiter-eval-workspace/pnpm-lock.yaml') == '' && env.TANGLE_API_KEY != ''
         env:
           TANGLE_API_KEY: ${{ secrets.TANGLE_CI_ROUTER_KEY }}
+          PR_HEAD_REF: ${{ github.head_ref }}
         working-directory: examples/recruiter-eval-workspace
         run: |
           set -euo pipefail
@@ -96,7 +97,7 @@ jobs:
             git config user.email "bot@tangle.tools"
             git add pnpm-lock.yaml
             git commit -m "chore(eval): bootstrap recruiter-eval-workspace lockfile" || true
-            git push origin HEAD:${{ github.head_ref }} || echo "::warning::could not push lockfile to PR branch"
+            git push origin "HEAD:$PR_HEAD_REF" || echo "::warning::could not push lockfile to PR branch"
           fi
       - name: skip bootstrap (TANGLE_CI_ROUTER_KEY not set)
         if: hashFiles('examples/recruiter-eval-workspace/pnpm-lock.yaml') == '' && env.TANGLE_API_KEY == ''

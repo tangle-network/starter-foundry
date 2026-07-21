@@ -30,7 +30,7 @@ permissions:
 
 jobs:
   sweep:
-    runs-on: [self-hosted, ci-linux]
+    runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4

@@ -4,7 +4,7 @@
 
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 
@@ -233,6 +233,31 @@ describe('checkHtmlTsWireup — catches the index.html bug (main.tsx/#root vs ma
       })
 
       assert.deepEqual(checkHtmlTsWireup(dir), [])
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  })
+
+  it('renders declared copy in the composed React body', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'sf-react-visible-copy-'))
+    try {
+      await composeStarter({
+        spec: {
+          projectName: 'react-visible-copy',
+          family: 'react-vite-ts',
+          layers: ['framework:react-vite-ts'],
+          variables: {
+            headline: 'Visible product headline',
+            subheadline: 'Visible product subheadline',
+          },
+        },
+        outDir: dir,
+      })
+
+      const app = readFileSync(join(dir, 'src', 'App.tsx'), 'utf8')
+      assert.match(app, /Visible product headline/)
+      assert.match(app, /Visible product subheadline/)
+      assert.doesNotMatch(app, /\{\{(?:headline|subheadline)\}\}/)
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }

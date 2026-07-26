@@ -1,4 +1,3 @@
-// Minimal App skeleton. Replace the <main> contents with your product UI.
 // shadcn/ui components are pre-installed under @/components/ui/.
 // Path alias @/ → src/ is configured in vite.config.ts and tsconfig.json.
 // See AGENTS.md for the full component inventory and extension points.
@@ -11,8 +10,11 @@ export default function App() {
           <span className="text-sm font-semibold">{'{{projectName}}'}</span>
         </div>
       </header>
-      <main className="container mx-auto px-4 py-8">
-        {/* Build your UI here. */}
+      <main className="container mx-auto max-w-3xl px-4 py-16">
+        <h1 className="text-4xl font-semibold tracking-tight">{'{{headline}}'}</h1>
+        <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
+          {'{{subheadline}}'}
+        </p>
       </main>
     </div>
   )

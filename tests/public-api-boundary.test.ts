@@ -50,7 +50,7 @@ test('every package.json exports entry points at a real file in dist/', () => {
     assert.ok(
       existsSync(abs),
       `exports["${entry.subpath}"] → ${entry.built} but ${abs} does not exist. ` +
-      `Run \`pnpm build\` then re-run, or remove the export.`,
+        `Run \`pnpm build\` then re-run, or remove the export.`,
     )
   }
 })
@@ -64,17 +64,17 @@ test('package.json files[] declares dist/ so the exports actually ship', () => {
   )
 })
 
-test('public exports cover the established surface (12 entrypoints)', () => {
+test('public exports cover the established surface (13 entrypoints)', () => {
   // Lock the public surface size — adding a new entry is intentional;
   // accidentally exposing a 13th internal module shouldn't pass silently.
   // If you genuinely need a new public export, bump this number AND add the
   // export AND document the API stability commitment in CONTRIBUTING.md.
-  const EXPECTED_PUBLIC_ENTRYPOINTS = 12
+  const EXPECTED_PUBLIC_ENTRYPOINTS = 13
   assert.equal(
     PUBLIC_EXPORTS.length,
     EXPECTED_PUBLIC_ENTRYPOINTS,
     `Public exports count drifted (was ${EXPECTED_PUBLIC_ENTRYPOINTS}, now ${PUBLIC_EXPORTS.length}). ` +
-    `If intentional, update this assertion. If accidental, audit the change.`,
+      `If intentional, update this assertion. If accidental, audit the change.`,
   )
 })
 

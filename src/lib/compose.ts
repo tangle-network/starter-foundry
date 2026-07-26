@@ -19,6 +19,7 @@ import type {
 import { generateBuildPlan } from './build-plan.js'
 import { ensureDir, sanitizePackageName, writeJson } from './fs.js'
 import { renderIndustryFirstTurn } from './industry-flows.js'
+import { writePrimaryProjectManifest } from './primary-project-writer.js'
 import { buildVariables, resolveComponents, resolveTemplateObject } from './registry.js'
 import { selectTemplateVersion } from './selection.js'
 import { emit, traced } from './telemetry.js'
@@ -348,6 +349,13 @@ async function composeStarterInner(spec: ComposeSpec, outDir: string): Promise<C
 
   await ensureDir(path.join(outDir, '.starter-foundry'))
   await writeJson(path.join(outDir, '.starter-foundry', 'compose-report.json'), composeReport)
+  await writePrimaryProjectManifest(outDir, {
+    schemaVersion: 1,
+    projectId: 'root',
+    cwd: '.',
+    composeReportPath: '.starter-foundry/compose-report.json',
+    preview: composeReport.contextHints.preview ?? null,
+  })
 
   // Merge media manifests from all layers into a single root manifest
   const mediaSlots = await mergeMediaManifests(outDir)
@@ -384,7 +392,15 @@ async function composeStarterInner(spec: ComposeSpec, outDir: string): Promise<C
 
   return {
     outDir,
-    filesWritten: [...new Set([...filesWritten, 'AGENTS.md', 'CLAUDE.md', 'llms.txt'])].sort(),
+    filesWritten: [
+      ...new Set([
+        ...filesWritten,
+        'AGENTS.md',
+        'CLAUDE.md',
+        'llms.txt',
+        '.starter-foundry/primary-project.json',
+      ]),
+    ].sort(),
     composeReportPath: path.join(outDir, '.starter-foundry', 'compose-report.json'),
     components: composeReport.components,
     promptFragment,

@@ -19,6 +19,7 @@ import {
   removeDir,
   writeJson,
 } from './fs.js'
+import { writePrimaryProjectManifest } from './primary-project-writer.js'
 import { validateStarter } from './validate.js'
 
 interface ProjectRecord {
@@ -85,6 +86,15 @@ function buildProjectMd(spec: WorkspaceSpec, workspaceReport: WorkspaceReport): 
 }
 
 function buildAgentsMd(workspaceReport: WorkspaceReport): string {
+  const primaryProject = workspaceReport.projects.find(
+    (project) => project.id === workspaceReport.launchPlan.primaryProjectId,
+  )
+  if (!primaryProject) {
+    throw new Error(
+      `Workspace primary project is missing: ${workspaceReport.launchPlan.primaryProjectId}`,
+    )
+  }
+  const requestBody = JSON.stringify({ cwd: primaryProject.path }).replaceAll("'", "'\"'\"'")
   const projectLines = workspaceReport.projects.flatMap((project) => [
     `## ${project.id}`,
     `- path: \`${project.path}\``,
@@ -101,7 +111,7 @@ function buildAgentsMd(workspaceReport: WorkspaceReport): string {
     "Before reading anything else in this file, run this command in `bash` to start the primary project's dev server. The user is waiting for a preview. This is idempotent — safe to call multiple times (returns the same pid). It auto-installs dependencies on first call, so you do NOT need to run `pnpm install` separately. Subsequent edits hot-reload via HMR; do NOT call this again to restart unless the response says you should.",
     '',
     '```bash',
-    'curl -fsS -X POST "http://localhost:${SIDECAR_PORT:-9000}/process/ensure-dev-server" -H "Content-Type: application/json" -H "Authorization: Bearer ${SIDECAR_AUTH_TOKEN}" -d \'{}\'',
+    `curl -fsS -X POST "http://localhost:\${SIDECAR_PORT:-9000}/process/ensure-dev-server" -H "Content-Type: application/json" -H "Authorization: Bearer \${SIDECAR_AUTH_TOKEN}" -d '${requestBody}'`,
     '```',
     '',
     'The `SIDECAR_PORT` and `SIDECAR_AUTH_TOKEN` env vars are pre-set in your bash environment — you do NOT need to look them up.',
@@ -156,6 +166,21 @@ async function writeWorkspaceScaffolding(
     workspaceReport.launchPlan,
   )
   await writeJson(path.join(outDir, '.starter-foundry', 'workspace-report.json'), workspaceReport)
+  const primaryProject = workspaceReport.projects.find(
+    (project) => project.id === workspaceReport.launchPlan.primaryProjectId,
+  )
+  if (!primaryProject) {
+    throw new Error(
+      `Workspace primary project is missing: ${workspaceReport.launchPlan.primaryProjectId}`,
+    )
+  }
+  await writePrimaryProjectManifest(outDir, {
+    schemaVersion: 1,
+    projectId: primaryProject.id,
+    cwd: primaryProject.path,
+    composeReportPath: primaryProject.composeReportPath,
+    preview: primaryProject.preview,
+  })
 }
 
 function buildSharedDependenciesMd(workspaceReport: WorkspaceReport): string {

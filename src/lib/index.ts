@@ -26,6 +26,11 @@ export { selectStarter } from './selection.js'
 export { validateStarter } from './validate.js'
 export { benchmarkStarter } from './eval/benchmark.js'
 export { composeWorkspace, createWorkspaceContextPack, benchmarkWorkspace } from './workspace.js'
+export {
+  PRIMARY_PROJECT_MANIFEST_PATH,
+  PrimaryProjectManifestValidationError,
+  validatePrimaryProjectManifest,
+} from './primary-project.js'
 export { augmentWithLayer } from './augment.js'
 export { fattenStarter, fattenWorkspace } from './fatten.js'
 export {
@@ -150,6 +155,7 @@ export type {
   WorkspacePromptPlan,
   SelectionResult,
   ComposeResult,
+  PrimaryProjectManifest,
   ValidationResult,
   BenchmarkReport,
   ContextPack,

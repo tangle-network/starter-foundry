@@ -2,7 +2,7 @@
 // input (ComposeSpec, WorkspaceSpec) and produces as output (ComposeResult,
 // ComposeReport, BuildPlan).
 
-import type { ContextHints, DomainPackGuidance, ValidationCheck } from './registry.js'
+import type { ContextHints, DomainPackGuidance, PreviewHint, ValidationCheck } from './registry.js'
 
 export interface ComposeSpec {
   projectName: string
@@ -40,6 +40,20 @@ export interface ComposeResult {
    * no manifested deps (e.g. Go/Rust without Cargo.toml).
    */
   sbomPath: string | null
+}
+
+/**
+ * The runnable project selected by Starter Foundry for a composed output.
+ *
+ * Written to `.starter-foundry/primary-project.json` so consumers can start
+ * the correct project without inferring a workspace layout.
+ */
+export interface PrimaryProjectManifest {
+  schemaVersion: 1
+  projectId: string
+  cwd: string
+  composeReportPath: string
+  preview: PreviewHint | null
 }
 
 export interface ComposeReport {

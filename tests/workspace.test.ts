@@ -1,65 +1,109 @@
-import assert from "node:assert/strict";
-import fs from "node:fs/promises";
-import path from "node:path";
-import test from "node:test";
-import { createTempDir, readJson, removeDir } from "../dist/lib/fs.js";
-import { benchmarkWorkspace, composeWorkspace, createWorkspaceContextPack } from "../dist/lib/workspace.js";
-import type { WorkspaceReport } from "../dist/lib/workspace.js";
-import type { WorkspaceSpec } from "../dist/types.js";
+import assert from 'node:assert/strict'
+import { spawnSync } from 'node:child_process'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import test from 'node:test'
+import { createTempDir, readJson, removeDir } from '../dist/lib/fs.js'
+import {
+  benchmarkWorkspace,
+  composeWorkspace,
+  createWorkspaceContextPack,
+} from '../dist/lib/workspace.js'
+import type { WorkspaceReport } from '../dist/lib/workspace.js'
+import type { PrimaryProjectManifest, WorkspaceSpec } from '../dist/types.js'
 
 async function loadWorkspaceSpec() {
-  return readJson<WorkspaceSpec>(path.resolve("specs/multichain-workspace.json"));
+  return readJson<WorkspaceSpec>(path.resolve('specs/multichain-workspace.json'))
 }
 
-test("workspace compose writes root instructions and launch plan", async () => {
-  const spec = await loadWorkspaceSpec();
-  const outDir = await createTempDir("starter-foundry-workspace-compose");
+test('workspace compose writes root instructions and launch plan', async () => {
+  const spec = await loadWorkspaceSpec()
+  const outDir = await createTempDir('starter-foundry-workspace-compose')
 
   try {
-    const result = await composeWorkspace({ spec, outDir });
-    const projectDoc = await fs.readFile(path.join(outDir, "PROJECT.md"), "utf8");
-    const agentsDoc = await fs.readFile(path.join(outDir, "AGENTS.md"), "utf8");
-    const report = await readJson<WorkspaceReport>(result.workspaceReportPath);
+    const result = await composeWorkspace({ spec, outDir })
+    const projectDoc = await fs.readFile(path.join(outDir, 'PROJECT.md'), 'utf8')
+    const agentsDoc = await fs.readFile(path.join(outDir, 'AGENTS.md'), 'utf8')
+    const report = await readJson<WorkspaceReport>(result.workspaceReportPath)
+    const primaryProject = await readJson<PrimaryProjectManifest>(
+      path.join(outDir, '.starter-foundry', 'primary-project.json'),
+    )
 
-    assert.equal(result.projectCount, 4);
-    assert.equal(report.launchPlan.primaryProjectId, "web");
-    assert.match(projectDoc, /multichain product studio/i);
-    assert.match(agentsDoc, /Primary project is `web`/);
-    assert.ok(report.projects.some((project) => project.path === "apps/web"));
-    assert.ok(report.projects.some((project) => project.path === "contracts/solana"));
+    assert.equal(result.projectCount, 4)
+    assert.equal(report.launchPlan.primaryProjectId, 'web')
+    assert.match(projectDoc, /multichain product studio/i)
+    assert.match(agentsDoc, /Primary project is `web`/)
+    assert.match(agentsDoc, /\{"cwd":"apps\/web"\}/)
+    assert.ok(report.projects.some((project) => project.path === 'apps/web'))
+    assert.ok(report.projects.some((project) => project.path === 'contracts/solana'))
+    assert.deepEqual(primaryProject, {
+      schemaVersion: 1,
+      projectId: 'web',
+      cwd: 'apps/web',
+      composeReportPath: 'apps/web/.starter-foundry/compose-report.json',
+      preview: { path: '/' },
+    })
   } finally {
-    await removeDir(outDir);
+    await removeDir(outDir)
   }
-});
+})
 
-test("workspace context pack captures project boundaries and launch plan", async () => {
-  const spec = await loadWorkspaceSpec();
-  const outDir = await createTempDir("starter-foundry-workspace-context");
+test('workspace instructions safely pass the primary project cwd to the sidecar', async () => {
+  const spec = await loadWorkspaceSpec()
+  const primaryPath = "apps/o'brien"
+  spec.projects[0] = { ...spec.projects[0]!, path: primaryPath }
+  const outDir = await createTempDir('starter-foundry-workspace-quoted-cwd')
 
   try {
-    await composeWorkspace({ spec, outDir });
-    const workspaceReport = await readJson<WorkspaceReport>(path.join(outDir, ".starter-foundry", "workspace-report.json"));
-    const result = await createWorkspaceContextPack({ spec, outDir, workspaceReport });
+    await composeWorkspace({ spec, outDir })
+    const agentsDoc = await fs.readFile(path.join(outDir, 'AGENTS.md'), 'utf8')
+    const command = agentsDoc.split('\n').find((line) => line.startsWith('curl '))
+    assert.ok(command, 'AGENTS.md should include the sidecar start command')
+
+    const dataIndex = command.lastIndexOf(' -d ')
+    assert.notEqual(dataIndex, -1, 'sidecar command should include a JSON request body')
+    const dataArgument = command.slice(dataIndex + 4)
+    const parsed = spawnSync('bash', ['-c', 'set -- -d ' + dataArgument + '; printf \'%s\' "$2"'], {
+      encoding: 'utf8',
+    })
+
+    assert.equal(parsed.status, 0, parsed.stderr)
+    assert.equal(parsed.stdout, JSON.stringify({ cwd: primaryPath }))
+  } finally {
+    await removeDir(outDir)
+  }
+})
+
+test('workspace context pack captures project boundaries and launch plan', async () => {
+  const spec = await loadWorkspaceSpec()
+  const outDir = await createTempDir('starter-foundry-workspace-context')
+
+  try {
+    await composeWorkspace({ spec, outDir })
+    const workspaceReport = await readJson<WorkspaceReport>(
+      path.join(outDir, '.starter-foundry', 'workspace-report.json'),
+    )
+    const result = await createWorkspaceContextPack({ spec, outDir, workspaceReport })
     const contextPack = result.contextPack as WorkspaceReport & {
       projects: Array<{ path: string; entrypoints: string[] }>
-    };
+    }
 
-    assert.equal(contextPack.projects.length, 4);
-    assert.equal(workspaceReport.launchPlan.primaryProjectId, "web");
-    assert.ok(contextPack.projects.some((project) => project.path === "contracts/evm"));
-    assert.ok(contextPack.projects.some((project) => project.entrypoints.includes("app/page.tsx")));
+    assert.equal(contextPack.projects.length, 4)
+    assert.equal(workspaceReport.launchPlan.primaryProjectId, 'web')
+    assert.ok(contextPack.projects.some((project) => project.path === 'contracts/evm'))
+    assert.ok(contextPack.projects.some((project) => project.entrypoints.includes('app/page.tsx')))
   } finally {
-    await removeDir(outDir);
+    await removeDir(outDir)
   }
-});
+})
 
-test("workspace benchmark measures primary artifact target separately from full validation", async () => {
-  const spec = await loadWorkspaceSpec();
-  const report = await benchmarkWorkspace({ spec, runs: 1 });
+test('workspace benchmark measures primary artifact target separately from full validation', async () => {
+  const spec = await loadWorkspaceSpec()
+  const report = await benchmarkWorkspace({ spec, runs: 1 })
 
-  assert.equal(report.runs, 1);
-  assert.equal(report.summary.primaryArtifactTargetMs, 2500);
-  assert.equal(report.summary.primaryArtifactHitRate, 1);
-  assert.equal(report.summary.passRate, 1);
-  assert.ok(report.results[0]!.primaryArtifactMs <= 2500);
-});
+  assert.equal(report.runs, 1)
+  assert.equal(report.summary.primaryArtifactTargetMs, 2500)
+  assert.equal(report.summary.primaryArtifactHitRate, 1)
+  assert.equal(report.summary.passRate, 1)
+  assert.ok(report.results[0]!.primaryArtifactMs <= 2500)
+})

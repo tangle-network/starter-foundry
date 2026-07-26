@@ -35,7 +35,7 @@ Or drive the pipeline from code:
 import { planPrompt } from '@tangle-network/starter-foundry/planner'
 import { composeStarter } from '@tangle-network/starter-foundry/compose'
 
-const plan = planPrompt('realtime chat app with auth')   // family + capability layers
+const plan = planPrompt('realtime chat app with auth') // family + capability layers
 const result = await composeStarter({ spec: plan.spec, outDir: './app' })
 console.log(result.files, result.buildPlan)
 ```
@@ -57,13 +57,13 @@ Each stage is a CLI subcommand (`plan`, `compose`, `context`) and a library expo
 
 The value is the registry — versioned scaffold families and composable layers:
 
-| | Count | What it is |
-|---|---|---|
-| Families | 94 | Base project types (`nextjs-ts`, `forge-contracts`, `solana-native-rust`, `python-http`, …) |
-| Capability layers | 104 | UI/feature overlays (`layout-dashboard`, `saas-teams`, `crypto-swap-ui`, `agent-rag`, …) |
-| Slot layers | 28 | Swappable infra: database, auth, payments, sdk, queue, industry |
-| Partner layers | 19 | Chain/protocol presets (Coinbase, EigenLayer, Solana, Tangle, …) |
-| Archetypes | 115+ | Prompt shorthands ("Twitter clone" → `fullstack-ts + realtime-ws + saas-teams`) |
+|                   | Count | What it is                                                                                  |
+| ----------------- | ----- | ------------------------------------------------------------------------------------------- |
+| Families          | 94    | Base project types (`nextjs-ts`, `forge-contracts`, `solana-native-rust`, `python-http`, …) |
+| Capability layers | 104   | UI/feature overlays (`layout-dashboard`, `saas-teams`, `crypto-swap-ui`, `agent-rag`, …)    |
+| Slot layers       | 28    | Swappable infra: database, auth, payments, sdk, queue, industry                             |
+| Partner layers    | 19    | Chain/protocol presets (Coinbase, EigenLayer, Solana, Tangle, …)                            |
+| Archetypes        | 115+  | Prompt shorthands ("Twitter clone" → `fullstack-ts + realtime-ws + saas-teams`)             |
 
 List the live registry instead of trusting a table that can go stale:
 
@@ -74,21 +74,21 @@ npx @tangle-network/starter-foundry select --prompt "..."   # what a prompt rout
 
 ## CLI
 
-| Command | Purpose |
-|---|---|
-| `compose-prompt --prompt <text> --out <dir>` | One shot: prompt → scaffold + build plan |
-| `plan --prompt <text>` | Route a prompt to a spec (family + layers) |
-| `select --prompt <text>` | Show the routing decision without composing |
-| `compose --spec <path> --out <dir>` | Compose a saved spec to disk |
-| `context --spec <path>` | Emit the agent build-plan context for a spec |
-| `validate --spec <path>` | Check a spec against the registry |
-| `list` | Print the live registry |
+| Command                                      | Purpose                                      |
+| -------------------------------------------- | -------------------------------------------- |
+| `compose-prompt --prompt <text> --out <dir>` | One shot: prompt → scaffold + build plan     |
+| `plan --prompt <text>`                       | Route a prompt to a spec (family + layers)   |
+| `select --prompt <text>`                     | Show the routing decision without composing  |
+| `compose --spec <path> --out <dir>`          | Compose a saved spec to disk                 |
+| `context --spec <path>`                      | Emit the agent build-plan context for a spec |
+| `validate --spec <path>`                     | Check a spec against the registry            |
+| `list`                                       | Print the live registry                      |
 
 `--help` lists the full set (mining, evaluation, workspace composition, release).
 
 ## Library exports
 
-`@tangle-network/starter-foundry` ships typed subpath exports: `/planner`, `/compose`, `/compose-prompt`, `/agent-context`, `/registry`, `/context`, `/build-plan`, `/industries`, `/workspace`, `/keywords`, `/types`.
+`@tangle-network/starter-foundry` ships typed subpath exports: `/planner`, `/compose`, `/compose-prompt`, `/agent-context`, `/registry`, `/context`, `/build-plan`, `/industries`, `/workspace`, `/primary-project`, `/keywords`, `/types`.
 
 ## Documentation
 

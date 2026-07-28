@@ -5,11 +5,13 @@
 
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
-import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync, cpSync } from 'node:fs'
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import test from 'node:test'
 import { fileURLToPath } from 'node:url'
+
+import { validateRunRecord } from '@tangle-network/agent-eval'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const REPO = resolve(__dirname, '..')
@@ -39,11 +41,8 @@ test('migration is idempotent on a fixture experiments.jsonl', () => {
       ].join('\n') + '\n',
     )
 
-    // Stage tsconfig + script-relative src/ — the migration script's imports
-    // resolve relative to its own location, so we need to run it with cwd
-    // set such that it finds the right .evolve. The script imports
-    // `../src/lib/run-record.js` relative to itself, so we keep it at the
-    // repo location (cwd-only changes the migration's read paths).
+    // The script stays at the repo location so its source imports resolve;
+    // changing cwd only redirects its `.evolve` input and output paths.
     const r1 = runMigration(dir)
     assert.equal(r1.exitCode, 0, `first run failed: ${r1.stderr}`)
     const after1 = JSON.parse(r1.stdout) as { appended: number; skipped: number }
@@ -51,7 +50,15 @@ test('migration is idempotent on a fixture experiments.jsonl', () => {
 
     const runsPath = join(dir, '.evolve', 'runs.jsonl')
     assert.ok(existsSync(runsPath))
-    const linesAfter1 = readFileSync(runsPath, 'utf8').trim().split('\n').length
+    const records = readFileSync(runsPath, 'utf8')
+      .trim()
+      .split('\n')
+      .map((line) => validateRunRecord(JSON.parse(line)))
+    const linesAfter1 = records.length
+    assert.equal(records[0]?.splitTag, 'dev')
+    assert.equal(records[0]?.terminalOutcome, 'unknown')
+    assert.equal(records[0]?.costProvenance.kind, 'estimated')
+    assert.match(records[0]?.scenarioId ?? '', /^legacy\/experiments\//)
 
     // Second run — must be a no-op.
     const r2 = runMigration(dir)

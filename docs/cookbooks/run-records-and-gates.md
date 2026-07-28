@@ -18,6 +18,7 @@ One JSON object per line. The shape:
 interface RunRecord {
   runId: string // crypto.randomUUID()
   experimentId: string // logical experiment grouping
+  scenarioId: string // stable evaluated-work identity
   candidateId: string // identifies the variant
   seed: number // for reproducibility
   model: string // <alias>@<snapshot> form ONLY
@@ -25,25 +26,25 @@ interface RunRecord {
   configHash: string // sha256 of role config
   commitSha: string // git rev-parse HEAD
   wallMs: number
-  costUsd: number
+  costUsd: number | null
+  costProvenance:
+    | { kind: 'observed' | 'estimated'; usd: number }
+    | { kind: 'uncaptured'; usd: null }
   tokenUsage: { input: number; output: number }
+  terminalOutcome: 'succeeded' | 'failed' | 'cancelled' | 'incomplete' | 'unknown'
   outcome: {
-    searchScore: number // primary objective in [0,1]
-    holdoutScore?: number // optional, present when held-out eval ran
-    raw: Record<string, number | boolean> // domain-specific subscores
+    searchScore?: number
+    holdoutScore?: number
+    raw: Record<string, number> // domain-specific subscores
   }
-  splitTag: 'search' | 'holdout' | 'historical'
-  failureMode?: string // first failing stage name
-  source: 'foundry' | 'vb' // verticalbench coupling
+  splitTag: 'search' | 'dev' | 'holdout'
+  failureClass?: FailureClass
 }
 ```
 
-The `model` field MUST be `<alias>@<snapshot>` (e.g.
-`claude-sonnet-4-6@claude-sonnet-4-5-20250929`). The CI invariant
-`scripts/check-bare-alias.ts` rejects any record without the snapshot
-suffix. The only exception: `splitTag: 'historical'` may carry
-`<alias>@unknown-historical` for runs migrated from pre-Gen-17
-experiments.
+The `model` field MUST be `<alias>@<snapshot>` (for example, `claude-sonnet-4-6@2025-09-29`).
+The CI invariant `scripts/check-bare-alias.ts` rejects any record without the snapshot suffix.
+Validation is the exported `@tangle-network/agent-eval` validator; Starter Foundry has no second parser.
 
 The file is gitignored — it's high-volume local state. The monthly CI
 workflow `runs-export.yml` uploads it as a long-retention artifact.
@@ -52,10 +53,11 @@ workflow `runs-export.yml` uploads it as a long-retention artifact.
 
 Run it after a candidate accumulates at least 20 matched runs against a
 baseline.
-It uses agent-eval's paired bootstrap, exact sign test, and paired Cohen's dz.
-Runs pair by seed.
-Mismatched or duplicate seeds, partial held-out data, fewer than 20 pairs, or
-an undefined paired effect produce `HOLD`.
+Each file must contain separately tagged search and holdout rows.
+Rows pair by `(experimentId, scenarioId, seed)`.
+Continuous scores use agent-eval's held-out bootstrap decision.
+Binary scores use its paired risk-difference interval and exact McNemar test.
+Mismatched identities, incomplete coverage, or fewer than 20 held-out pairs produce `HOLD`.
 
 ```bash
 pnpm gate baseline.jsonl candidate.jsonl
@@ -64,17 +66,12 @@ echo "exit: $?"   # 0 = PROMOTE, 1 = REVERT, 2 = HOLD
 
 Decision logic:
 
-- **REVERT** if the paired interval is below zero and the one-sided exact sign
-  test has `p < 0.05`
-- **REVERT** if `holdoutScore` is known and
-  `searchScore - holdoutScore >= 0.20`
-- **PROMOTE** if the paired interval is wholly above the minimum useful delta,
-  the one-sided exact sign test has `p < 0.05`, paired Cohen's dz is defined,
-  and the held-out result does not show overfitting
-- **HOLD** otherwise
+- **REVERT** when paired held-out evidence is confidently negative.
+- **REVERT** when the candidate's search-to-holdout gap exceeds the baseline's gap by more than `0.20`.
+- **PROMOTE** when the paired held-out interval clears zero and the candidate does not regress on overfit or cost policy.
+- **HOLD** when evidence or coverage is incomplete or inconclusive.
 
-`HeldOutGate` defaults: `minPairs: 20`, `minimumDelta: 0`,
-`maximumOverfitGap: 0.20`, `confidence: 0.95`, and `resamples: 2000`.
+The CLI sets `minProductiveRuns: 20`, `pairedDeltaThreshold: 0`, `overfitGapThreshold: 0.20`, `confidence: 0.95`, and a deterministic seed.
 
 ## Profiles and `extends` inheritance
 
@@ -174,10 +171,9 @@ Pre-Gen-17 generations stored ad-hoc JSONL under
 pnpm migrate:experiments
 ```
 
-The script appends synthetic RunRecords with `splitTag: 'historical'` and
-`model: '<alias>@unknown-historical'` (allowlisted by the bare-alias
-check). It's idempotent — re-runs dedup by content hash, so no double
-entries.
+The script appends canonical RunRecords tagged `dev`, with `terminalOutcome: 'unknown'` and explicit cost provenance.
+The `dev` tag prevents historical rows from entering search-versus-holdout promotion decisions.
+The migration is idempotent: reruns deduplicate by content hash.
 
 ## CI invariants
 

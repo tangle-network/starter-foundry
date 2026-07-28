@@ -92,24 +92,15 @@ export type { RollbackRecord } from './version-history.js'
 export { seedForSpec, seededRng, buildLockFile, verifyLockMatches } from './eval/reproducibility.js'
 export type { SeededRng, ComposeLockFile } from './eval/reproducibility.js'
 
-// Local compatibility exports for existing starter-foundry callers. New eval
-// scaffolds import the canonical primitives from @tangle-network/agent-eval.
-export {
-  isPinnedModel,
-  makeRunRecord,
-  RunRecordValidationError,
-  validateRunRecord,
-  HISTORICAL_SNAPSHOT,
-  sha256,
-} from './run-record.js'
+export { RunRecordValidationError, validateRunRecord } from '@tangle-network/agent-eval'
 export type {
   RunRecord,
-  RunRecordOutcome,
-  RunRecordSource,
-  RunRecordSplitTag,
-  RunRecordTokenUsage,
-  MakeRunRecordInput,
-} from './run-record.js'
+  RunCostProvenance,
+  RunOutcome,
+  RunSplitTag,
+  RunTerminalOutcome,
+  RunTokenUsage,
+} from '@tangle-network/agent-eval'
 export { HeldOutGate } from './held-out-gate.js'
 export type { HeldOutGateConfig, GateDecision, GateEvidence, GateVerdict } from './held-out-gate.js'
 export {

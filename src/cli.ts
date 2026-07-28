@@ -371,14 +371,18 @@ async function main(): Promise<void> {
         const { emitRunRecord } = await import('./lib/eval/emit-run-record.js')
         emitRunRecord({
           experimentId: 'audit',
+          scenarioId: result.contextPath,
           candidateId: spec.family ?? 'unknown',
           profile: 'default',
           promptText: result.contextPath,
           configObject: spec,
           wallMs: Date.now() - startedAt,
           costUsd: 0,
+          costProvenance: { kind: 'observed', usd: 0 },
           tokenUsage: { input: 0, output: 0 },
-          outcome: { searchScore: 1, raw: { bundleEmitted: true } },
+          terminalOutcome: 'succeeded',
+          outcome: { searchScore: 1, raw: { bundleEmitted: 1 } },
+          splitTag: 'search',
           skipSnapshotResolve: true,
         })
       } catch (e) {
@@ -494,7 +498,7 @@ async function main(): Promise<void> {
 
     case 'gate': {
       const { runGate } = await import('./lib/cli/gate.js')
-      const exitCode = await runGate({
+      const exitCode = runGate({
         baselinePath: positional[0],
         candidatePath: positional[1],
         baselineKey: options['baseline-key'] ? String(options['baseline-key']) : undefined,

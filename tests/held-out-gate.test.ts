@@ -1,157 +1,178 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
+import { validateRunRecord, type RunRecord, type RunSplitTag } from '@tangle-network/agent-eval'
+
 import { HeldOutGate } from '../dist/lib/held-out-gate.js'
-import { makeRunRecord, type RunRecord } from '../dist/lib/run-record.js'
 
-const PINNED_MODEL = 'claude-sonnet-4-6@claude-sonnet-4-5-20250929'
+const PINNED_MODEL = 'claude-sonnet-4-6@2025-09-29'
+let runSequence = 0
 
-function makeBatch(scores: number[], opts: { holdout?: number[] } = {}): RunRecord[] {
-  return scores.map((score, i) =>
-    makeRunRecord({
-      experimentId: 'audit/test',
-      candidateId: `c-${i}`,
-      seed: i,
-      model: PINNED_MODEL,
-      promptHash: 'p'.repeat(64),
-      configHash: 'c'.repeat(64),
-      commitSha: 'sha',
-      wallMs: 0,
-      costUsd: 0,
-      tokenUsage: { input: 0, output: 0 },
-      outcome: {
-        searchScore: score,
-        raw: {},
-        ...(opts.holdout ? { holdoutScore: opts.holdout[i] } : {}),
-      },
-      splitTag: 'search',
-      source: 'foundry',
-    }),
-  )
+function makeRun(
+  candidateId: string,
+  scenarioId: string,
+  splitTag: RunSplitTag,
+  score: number,
+  seed = 0,
+): RunRecord {
+  runSequence += 1
+  return validateRunRecord({
+    runId: `00000000-0000-4000-8000-${String(runSequence).padStart(12, '0')}`,
+    experimentId: 'audit/held-out',
+    scenarioId,
+    candidateId,
+    seed,
+    model: PINNED_MODEL,
+    promptHash: 'a'.repeat(64),
+    configHash: 'b'.repeat(64),
+    commitSha: 'deadbeef',
+    wallMs: 1,
+    costUsd: 0,
+    costProvenance: { kind: 'observed', usd: 0 },
+    tokenUsage: { input: 0, output: 0 },
+    terminalOutcome: 'succeeded',
+    outcome:
+      splitTag === 'holdout' ? { holdoutScore: score, raw: {} } : { searchScore: score, raw: {} },
+    splitTag,
+  })
 }
 
-const BASELINE = Array.from({ length: 24 }, (_, i) => 0.42 + (i % 6) * 0.015)
-const BETTER = BASELINE.map((score, i) => score + 0.16 + (i % 4) * 0.005)
-const WORSE = BASELINE.map((score, i) => score - 0.14 - (i % 3) * 0.005)
-
-test('HOLD below the paired sample floor', () => {
-  const decision = new HeldOutGate({ baselineKey: 'b' }).evaluate(
-    makeBatch(BETTER.slice(0, 19)),
-    makeBatch(BASELINE.slice(0, 19)),
-  )
-
-  assert.equal(decision.verdict, 'HOLD')
-  assert.match(decision.reason, /below minPairs=20/)
-})
-
-test('HOLD when candidate and baseline runs cannot be paired', () => {
-  const baseline = makeBatch(BASELINE.slice(0, 23))
-  baseline[0] = { ...baseline[0], seed: 99 }
-  const decision = new HeldOutGate({ baselineKey: 'b' }).evaluate(makeBatch(BETTER), baseline)
-
-  assert.equal(decision.verdict, 'HOLD')
-  assert.equal(decision.evidence.pairedN, 22)
-  assert.match(decision.reason, /seed sets differ/)
-})
-
-test('pairs by seed rather than array position', () => {
-  const baseline = makeBatch(BASELINE).reverse()
-  const decision = new HeldOutGate({ baselineKey: 'b', seed: 1 }).evaluate(
-    makeBatch(BETTER),
-    baseline,
-  )
-
-  assert.equal(decision.verdict, 'PROMOTE', decision.reason)
-})
-
-test('HOLD when duplicate seeds make pairing ambiguous', () => {
-  const candidate = makeBatch(BETTER)
-  candidate[1] = { ...candidate[1], seed: candidate[0].seed }
-  const decision = new HeldOutGate({ baselineKey: 'b' }).evaluate(candidate, makeBatch(BASELINE))
-
-  assert.equal(decision.verdict, 'HOLD')
-  assert.match(decision.reason, /duplicate seed/)
-})
-
-test('PROMOTE only when paired evidence clears every requirement', () => {
-  const decision = new HeldOutGate({ baselineKey: 'b', seed: 1 }).evaluate(
-    makeBatch(BETTER),
-    makeBatch(BASELINE),
-  )
-
-  assert.equal(decision.verdict, 'PROMOTE', decision.reason)
-  assert.ok(
-    decision.evidence.pairedDeltaInterval !== null &&
-      decision.evidence.pairedDeltaInterval.lower > 0,
-  )
-  assert.ok(decision.evidence.pairedCohensDz !== null && decision.evidence.pairedCohensDz > 0)
-  assert.ok(decision.evidence.signPValue !== null && decision.evidence.signPValue < 0.05)
-})
-
-test('REVERT when paired evidence is significantly worse', () => {
-  const decision = new HeldOutGate({ baselineKey: 'b', seed: 1 }).evaluate(
-    makeBatch(WORSE),
-    makeBatch(BASELINE),
-  )
-
-  assert.equal(decision.verdict, 'REVERT', decision.reason)
-  assert.ok(
-    decision.evidence.pairedDeltaInterval !== null &&
-      decision.evidence.pairedDeltaInterval.upper < 0,
-  )
-})
-
-test('REVERT when search performance does not survive held-out evaluation', () => {
-  const candidate = makeBatch(BETTER, {
-    holdout: BETTER.map((score) => score - 0.3),
+function makeArm(
+  candidateId: string,
+  searchScores: readonly number[],
+  holdoutScores: readonly number[],
+): RunRecord[] {
+  assert.equal(searchScores.length, holdoutScores.length)
+  return searchScores.flatMap((searchScore, index) => {
+    const scenarioId = `case-${index}`
+    return [
+      makeRun(candidateId, scenarioId, 'search', searchScore),
+      makeRun(candidateId, scenarioId, 'holdout', holdoutScores[index]!),
+    ]
   })
-  const decision = new HeldOutGate({
-    baselineKey: 'b',
-    maximumOverfitGap: 0.2,
+}
+
+function decisionFor(candidate: RunRecord[], baseline: RunRecord[]) {
+  return new HeldOutGate({
+    baselineKey: 'baseline',
+    minProductiveRuns: 20,
+    pairedDeltaThreshold: 0,
+    overfitGapThreshold: 0.2,
     seed: 1,
-  }).evaluate(candidate, makeBatch(BASELINE))
+  }).evaluate(candidate, baseline)
+}
+
+test('rejects the exact 40-pair candidate that regresses held-out by 0.295', () => {
+  const n = 40
+  const candidate = makeArm(
+    'candidate',
+    Array.from({ length: n }, () => 0.615),
+    Array.from({ length: n }, () => 0.52),
+  ).reverse()
+  const baseline = makeArm(
+    'baseline',
+    Array.from({ length: n }, () => 0.415),
+    Array.from({ length: n }, () => 0.815),
+  )
+
+  const decision = decisionFor(candidate, baseline)
 
   assert.equal(decision.verdict, 'REVERT', decision.reason)
-  assert.match(decision.reason, /overfit gap/)
+  assert.equal(decision.rejectionCode, 'negative_delta')
+  assert.equal(decision.evidence.productiveRuns, 40)
+  assert.ok(Math.abs(decision.evidence.searchScore! - 0.615) < 1e-12)
+  assert.ok(Math.abs(decision.evidence.holdoutScore! - 0.52) < 1e-12)
+  assert.ok(Math.abs(decision.evidence.medianPairedDelta! - -0.295) < 1e-12)
+  assert.ok(decision.evidence.pairedCI !== null && decision.evidence.pairedCI.high < 0)
 })
 
-test('HOLD when held-out scores cover only part of the candidate runs', () => {
-  const holdout = BETTER.map((score, index) => (index === 0 ? score : undefined))
-  const candidate = makeBatch(BETTER)
-  candidate[0] = {
-    ...candidate[0],
-    outcome: { ...candidate[0].outcome, holdoutScore: holdout[0] },
+test('never promotes a held-out regression through a negative configured threshold', () => {
+  const scores = Array.from({ length: 24 }, () => 0.6)
+  const regressed = Array.from({ length: 24 }, () => 0.5)
+  const decision = new HeldOutGate({
+    baselineKey: 'baseline',
+    minProductiveRuns: 20,
+    pairedDeltaThreshold: -0.2,
+    seed: 1,
+  }).evaluate(makeArm('candidate', regressed, regressed), makeArm('baseline', scores, scores))
+
+  assert.equal(decision.verdict, 'REVERT', decision.reason)
+  assert.equal(decision.rejectionCode, 'negative_delta')
+  assert.ok(decision.evidence.pairedCI !== null && decision.evidence.pairedCI.high < 0)
+})
+
+test('promotes the exact 100-pair binary improvement from 50% to 75%', () => {
+  const baselineScores = Array.from({ length: 100 }, (_, index) => (index < 50 ? 1 : 0))
+  const candidateScores = Array.from({ length: 100 }, (_, index) => (index < 75 ? 1 : 0))
+  const candidate = makeArm('candidate', candidateScores, candidateScores).reverse()
+  const baseline = makeArm('baseline', baselineScores, baselineScores)
+
+  const decision = decisionFor(candidate, baseline)
+
+  assert.equal(decision.verdict, 'PROMOTE', decision.reason)
+  assert.equal(decision.rejectionCode, null)
+  assert.equal(decision.evidence.comparison, 'binary')
+  assert.equal(decision.evidence.productiveRuns, 100)
+  assert.equal(decision.evidence.medianPairedDelta, 0)
+  assert.deepEqual(decision.evidence.pairedCI, { low: 0, high: 0 })
+  assert.equal(decision.evidence.binaryRiskDifference?.riskDifference, 0.25)
+  assert.ok((decision.evidence.binaryRiskDifference?.lower ?? 0) > 0)
+  assert.equal(decision.evidence.binaryMcNemar?.b, 25)
+  assert.equal(decision.evidence.binaryMcNemar?.c, 0)
+  assert.ok((decision.evidence.binaryMcNemar?.pValue ?? 1) < 0.05)
+})
+
+test('pairs by scenarioId and seed rather than input position or seed alone', () => {
+  const baseline: RunRecord[] = []
+  const candidate: RunRecord[] = []
+  for (let scenario = 0; scenario < 12; scenario += 1) {
+    for (const seed of [0, 1]) {
+      const scenarioId = `seeded-case-${scenario}`
+      const baselineScore = seed === 0 ? 0.1 : 0.7
+      const candidateScore = baselineScore + 0.2
+      baseline.push(
+        makeRun('baseline', scenarioId, 'search', baselineScore, seed),
+        makeRun('baseline', scenarioId, 'holdout', baselineScore, seed),
+      )
+      candidate.push(
+        makeRun('candidate', scenarioId, 'search', candidateScore, seed),
+        makeRun('candidate', scenarioId, 'holdout', candidateScore, seed),
+      )
+    }
   }
-  const decision = new HeldOutGate({ baselineKey: 'b' }).evaluate(candidate, makeBatch(BASELINE))
 
-  assert.equal(decision.verdict, 'HOLD')
-  assert.match(decision.reason, /held-out scores are incomplete/)
+  const decision = decisionFor(candidate.reverse(), baseline)
+
+  assert.equal(decision.verdict, 'PROMOTE', decision.reason)
+  assert.equal(decision.evidence.productiveRuns, 24)
+  assert.ok(Math.abs(decision.evidence.medianPairedDelta! - 0.2) < 1e-12)
 })
 
-test('HOLD when a constant non-zero delta makes paired effect undefined', () => {
-  const baseline = Array.from({ length: 20 }, () => 0.5)
-  const candidate = Array.from({ length: 20 }, () => 0.75)
-  const decision = new HeldOutGate({ baselineKey: 'b' }).evaluate(
-    makeBatch(candidate),
-    makeBatch(baseline),
+test('holds below the configured paired sample floor', () => {
+  const baselineScores = Array.from({ length: 19 }, () => 0.4)
+  const candidateScores = Array.from({ length: 19 }, () => 0.8)
+
+  const decision = decisionFor(
+    makeArm('candidate', candidateScores, candidateScores),
+    makeArm('baseline', baselineScores, baselineScores),
   )
 
   assert.equal(decision.verdict, 'HOLD')
-  assert.equal(decision.evidence.pairedCohensDz, null)
-  assert.match(decision.reason, /undefined/)
+  assert.equal(decision.rejectionCode, 'few_runs')
 })
 
-test('rejects a configured sample floor below the calibrated minimum', () => {
+test('throws when a split contains duplicate scenarioId and seed identities', () => {
+  const baselineScores = Array.from({ length: 20 }, () => 0.4)
+  const candidateScores = Array.from({ length: 20 }, () => 0.8)
+  const candidate = makeArm('candidate', candidateScores, candidateScores)
+  candidate[2] = {
+    ...candidate[2]!,
+    scenarioId: candidate[0]!.scenarioId,
+    seed: candidate[0]!.seed,
+  }
+
   assert.throws(
-    () => new HeldOutGate({ baselineKey: 'b', minPairs: 19 }),
-    /minPairs must be at least 20/,
+    () => decisionFor(candidate, makeArm('baseline', baselineScores, baselineScores)),
+    /duplicate/i,
   )
-})
-
-test('decision records the baseline key', () => {
-  const decision = new HeldOutGate({ baselineKey: 'frontier-2026-04' }).evaluate(
-    makeBatch(BETTER),
-    makeBatch(BASELINE),
-  )
-  assert.equal(decision.baselineKey, 'frontier-2026-04')
 })

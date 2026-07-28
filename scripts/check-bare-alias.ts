@@ -10,7 +10,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve as resolvePath } from 'node:path'
 
-import { isPinnedModel, type RunRecordSplitTag } from '../src/lib/run-record.js'
+import { modelHasSnapshot } from '@tangle-network/agent-eval'
 
 const path = process.argv[2] ?? resolvePath(process.cwd(), '.evolve', 'runs.jsonl')
 
@@ -19,7 +19,9 @@ if (!existsSync(path)) {
   process.exit(0)
 }
 
-const lines = readFileSync(path, 'utf8').split('\n').filter((l) => l.trim().length > 0)
+const lines = readFileSync(path, 'utf8')
+  .split('\n')
+  .filter((l) => l.trim().length > 0)
 const violations: Array<{ line: number; runId: string; model: string; splitTag: string }> = []
 
 for (let i = 0; i < lines.length; i += 1) {
@@ -32,10 +34,15 @@ for (let i = 0; i < lines.length; i += 1) {
   }
   const { model, splitTag, runId } = record
   if (typeof model !== 'string') {
-    violations.push({ line: i + 1, runId: runId ?? '?', model: '(missing)', splitTag: splitTag ?? '?' })
+    violations.push({
+      line: i + 1,
+      runId: runId ?? '?',
+      model: '(missing)',
+      splitTag: splitTag ?? '?',
+    })
     continue
   }
-  if (!isPinnedModel(model, splitTag as RunRecordSplitTag | undefined)) {
+  if (!modelHasSnapshot(model)) {
     violations.push({ line: i + 1, runId: runId ?? '?', model, splitTag: splitTag ?? '?' })
   }
 }

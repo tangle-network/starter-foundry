@@ -19,6 +19,7 @@ function fixtureRecord(model: string, splitTag: string, runId: string): string {
   return JSON.stringify({
     runId,
     experimentId: 'audit/test',
+    scenarioId: `scenario-${runId}`,
     candidateId: 'c',
     seed: 0,
     model,
@@ -27,10 +28,11 @@ function fixtureRecord(model: string, splitTag: string, runId: string): string {
     commitSha: 'sha',
     wallMs: 1,
     costUsd: 0,
+    costProvenance: { kind: 'observed', usd: 0 },
     tokenUsage: { input: 0, output: 0 },
+    terminalOutcome: 'succeeded',
     outcome: { searchScore: 0.5, raw: {} },
     splitTag,
-    source: 'foundry',
   })
 }
 
@@ -50,7 +52,7 @@ test('check-bare-alias passes on all-pinned fixture', () => {
       path,
       [
         fixtureRecord('claude-sonnet-4-6@claude-sonnet-4-5-20250929', 'search', '1'),
-        fixtureRecord('claude-sonnet-4-6@unknown-historical', 'historical', '2'),
+        fixtureRecord('claude-sonnet-4-6@unknown-historical', 'dev', '2'),
       ].join('\n') + '\n',
     )
     const r = runScript(path)
@@ -74,21 +76,6 @@ test('check-bare-alias fails when a record has a bare alias', () => {
     const r = runScript(path)
     assert.notEqual(r.exitCode, 0)
     assert.match(r.stderr, /bare-alias violation/)
-  } finally {
-    rmSync(dir, { recursive: true, force: true })
-  }
-})
-
-test('check-bare-alias fails when historical sentinel used outside historical splitTag', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'sf-bare-'))
-  try {
-    const path = join(dir, 'runs.jsonl')
-    writeFileSync(
-      path,
-      fixtureRecord('claude-sonnet-4-6@unknown-historical', 'search', '1') + '\n',
-    )
-    const r = runScript(path)
-    assert.notEqual(r.exitCode, 0)
   } finally {
     rmSync(dir, { recursive: true, force: true })
   }

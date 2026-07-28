@@ -7,6 +7,7 @@ import {
 } from '@tangle-network/sandbox-ui/workspace'
 import type { TextPart } from '@tangle-network/sandbox-ui/types'
 import { makeArtifactStreamAdapter } from './lib/blocks-to-artifacts'
+import { serverAgentInvoker } from './lib/agent-client'
 
 // Connect this UI to Sandbox.streamPrompt(), an HTTP route, or another
 // transport by implementing AgentInvoker.
@@ -26,7 +27,15 @@ export interface AppProps {
 const ENV_AGENT_NAME =
   (import.meta.env.VITE_AGENT_NAME as string | undefined) ?? '{{agentName}}'
 
-export function App({ agentName = ENV_AGENT_NAME, invoker }: AppProps = {}) {
+interface ActiveRun {
+  controller: AbortController
+  messageId: string
+}
+
+export function App({
+  agentName = ENV_AGENT_NAME,
+  invoker = serverAgentInvoker,
+}: AppProps = {}) {
   const {
     messages,
     partMap,
@@ -43,7 +52,7 @@ export function App({ agentName = ENV_AGENT_NAME, invoker }: AppProps = {}) {
   const [composerText, setComposerText] = useState('')
   const adapter = useMemo(() => makeArtifactStreamAdapter(), [])
   const [artifacts, setArtifacts] = useState<SandboxWorkbenchArtifact[]>([])
-  const abortRef = useRef<AbortController | null>(null)
+  const activeRunRef = useRef<ActiveRun | null>(null)
 
   // Re-parse the active assistant message text on every part update and
   // hand the rebuilt SandboxWorkbenchArtifact[] to the workbench. The
@@ -89,6 +98,14 @@ export function App({ agentName = ENV_AGENT_NAME, invoker }: AppProps = {}) {
     async (text: string) => {
       const trimmed = text.trim()
       if (!trimmed) return
+
+      const previous = activeRunRef.current
+      if (previous) {
+        activeRunRef.current = null
+        previous.controller.abort()
+        completeAssistantMessage({ messageId: previous.messageId })
+      }
+
       appendUserMessage({ content: trimmed })
       const assistantId = beginAssistantMessage()
 
@@ -100,26 +117,28 @@ export function App({ agentName = ENV_AGENT_NAME, invoker }: AppProps = {}) {
         return
       }
 
-      abortRef.current?.abort()
-      const ac = new AbortController()
-      abortRef.current = ac
+      const controller = new AbortController()
+      activeRunRef.current = { controller, messageId: assistantId }
 
       try {
         await invoker.invoke({
           userText: trimmed,
-          signal: ac.signal,
-          onEvent: (event) => applySdkEvent(event, { messageId: assistantId }),
+          signal: controller.signal,
+          onEvent: (event) => {
+            if (activeRunRef.current?.controller === controller) {
+              applySdkEvent(event, { messageId: assistantId })
+            }
+          },
         })
-        completeAssistantMessage({ messageId: assistantId })
       } catch (err) {
-        if (ac.signal.aborted) {
-          completeAssistantMessage({ messageId: assistantId })
-        } else {
-          const reason = err instanceof Error ? err.message : String(err)
-          failAssistantMessage(reason, { messageId: assistantId })
-        }
+        if (controller.signal.aborted) return
+        const reason = err instanceof Error ? err.message : String(err)
+        failAssistantMessage(reason, { messageId: assistantId })
       } finally {
-        if (abortRef.current === ac) abortRef.current = null
+        if (activeRunRef.current?.controller === controller) {
+          activeRunRef.current = null
+          completeAssistantMessage({ messageId: assistantId })
+        }
       }
     },
     [
@@ -132,7 +151,21 @@ export function App({ agentName = ENV_AGENT_NAME, invoker }: AppProps = {}) {
     ],
   )
 
-  useEffect(() => () => abortRef.current?.abort(), [])
+  const handleCancel = useCallback(() => {
+    const active = activeRunRef.current
+    if (!active) return
+    activeRunRef.current = null
+    active.controller.abort()
+    completeAssistantMessage({ messageId: active.messageId })
+  }, [completeAssistantMessage])
+
+  useEffect(
+    () => () => {
+      activeRunRef.current?.controller.abort()
+      activeRunRef.current = null
+    },
+    [],
+  )
 
   const handleSubmit = useCallback(() => {
     const text = composerText.trim()
@@ -155,12 +188,7 @@ export function App({ agentName = ENV_AGENT_NAME, invoker }: AppProps = {}) {
             onChange={setComposerText}
             onSubmit={handleSubmit}
             busy={isStreaming}
-            onCancel={() => {
-              abortRef.current?.abort()
-              if (activeAssistantMessageId) {
-                completeAssistantMessage({ messageId: activeAssistantMessageId })
-              }
-            }}
+            onCancel={handleCancel}
           />
         ),
       }}

@@ -1,5 +1,3 @@
-import { createSandboxRuntimeClient } from '@tangle-network/sandbox/runtime'
-import { SessionGatewayClient } from '@tangle-network/sandbox/session-gateway'
 import {
   type AnySandboxEvent,
   type MessagePart,
@@ -7,193 +5,25 @@ import {
   type SandboxEvent,
 } from './event-types'
 
-export interface SessionCredentials {
-  sandboxId: string
-  gatewayUrl: string
-  gatewayToken: string
-  browserSessionId: string
-  runtimeUrl: string
-  runtimeToken: string
-  runtimeSessionId: string
-  expiresAt: number
-}
-
 export interface StreamRunArgs {
-  sessionUrl: string
   prompt: string
   signal?: AbortSignal
-  fetch?: typeof globalThis.fetch
-}
-
-export async function loadSessionCredentials(
-  sessionUrl: string,
-  options: { signal?: AbortSignal; fetch?: typeof globalThis.fetch } = {},
-): Promise<SessionCredentials> {
-  const fetchImpl = options.fetch ?? globalThis.fetch
-  const response = await fetchImpl(sessionUrl, {
-    credentials: 'include',
-    signal: options.signal,
-  })
-  if (!response.ok) {
-    throw new Error(`Session bootstrap failed: HTTP ${response.status}`)
-  }
-  const value = (await response.json()) as Partial<SessionCredentials>
-  for (const field of [
-    'sandboxId',
-    'gatewayUrl',
-    'gatewayToken',
-    'browserSessionId',
-    'runtimeUrl',
-    'runtimeToken',
-    'runtimeSessionId',
-  ] as const) {
-    if (typeof value[field] !== 'string' || value[field].length === 0) {
-      throw new Error(`Session bootstrap response is missing ${field}`)
-    }
-  }
-  if (!Number.isFinite(value.expiresAt)) {
-    throw new Error('Session bootstrap response is missing expiresAt')
-  }
-  return value as SessionCredentials
+  sessionId?: string
 }
 
 export async function* streamRun(args: StreamRunArgs): AsyncIterable<NormalizedEvent> {
-  let credentials = await loadSessionCredentials(args.sessionUrl, {
+  const response = await fetch('/api/prompt', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ prompt: args.prompt, sessionId: args.sessionId }),
     signal: args.signal,
-    fetch: args.fetch,
   })
-  const runtime = createSandboxRuntimeClient({
-    baseUrl: credentials.runtimeUrl,
-    token: credentials.runtimeToken,
-    ...(args.fetch ? { fetch: args.fetch } : {}),
-  })
-  const queue = new EventQueue()
-  let connected = false
-  let resolveConnected: (() => void) | undefined
-  let rejectConnected: ((error: Error) => void) | undefined
-  const connection = new Promise<void>((resolve, reject) => {
-    resolveConnected = resolve
-    rejectConnected = reject
-  })
-  const gateway = new SessionGatewayClient({
-    url: credentials.gatewayUrl,
-    token: credentials.gatewayToken,
-    sessionId: credentials.browserSessionId,
-    enableReplayPersistence: true,
-    replayStorageKeyPrefix: `agent-debug:${credentials.browserSessionId}:`,
-    onTokenRefresh: async () => {
-      credentials = await loadSessionCredentials(args.sessionUrl, { fetch: args.fetch })
-      runtime.updateToken(credentials.runtimeToken)
-      return { token: credentials.gatewayToken, expiresAt: credentials.expiresAt }
-    },
-    handlers: {
-      onConnect: () => {
-        connected = true
-        resolveConnected?.()
-      },
-      onAgentEvent: (channel, data) => {
-        const event = normalizeGatewayEvent(channel, data)
-        queue.push(event)
-        if (isTerminalEvent(event)) queue.end()
-      },
-      onError: (message) => {
-        const error = new Error(`Session gateway: ${message}`)
-        if (connected) queue.fail(error)
-        else rejectConnected?.(error)
-      },
-      onDisconnect: (code, reason) => {
-        if (!connected || gateway.getState() === 'disconnected') {
-          const error = new Error(`Session gateway disconnected (${code}): ${reason || 'unknown'}`)
-          if (connected) queue.fail(error)
-          else rejectConnected?.(error)
-        }
-      },
-    },
-  })
-  const abort = () => {
-    gateway.disconnect()
-    queue.fail(new Error('Run aborted'))
-    rejectConnected?.(new Error('Run aborted'))
-  }
-  args.signal?.addEventListener('abort', abort, { once: true })
-
-  try {
-    gateway.connect()
-    await connection
-    if (args.signal?.aborted) throw new Error('Run aborted')
-    gateway.setSessionContext(credentials.runtimeSessionId)
-    await runtime.sendSessionMessage(
-      credentials.runtimeSessionId,
-      {
-        parts: [{ type: 'text', text: args.prompt }],
-        turnId: crypto.randomUUID(),
-      },
-      { signal: args.signal },
-    )
-    yield* normalizeEventStream(queue)
-  } finally {
-    args.signal?.removeEventListener('abort', abort)
-    gateway.disconnect()
-  }
-}
-
-export function normalizeGatewayEvent(channel: string, data: unknown): AnySandboxEvent {
-  if (isRecord(data) && typeof data.type === 'string') {
-    if ('data' in data) return data as AnySandboxEvent
-    const { type, ...rest } = data
-    return { type, data: rest }
-  }
-  return { type: channel, data }
-}
-
-export function isTerminalEvent(event: AnySandboxEvent): boolean {
-  if (event.type === 'result' || event.type === 'done' || event.type === 'error') return true
-  if (event.type !== 'status' || !isRecord(event.data)) return false
-  return event.data.status === 'completed' || event.data.status === 'failed'
-}
-
-class EventQueue implements AsyncIterable<AnySandboxEvent> {
-  private values: AnySandboxEvent[] = []
-  private waiters: Array<{
-    resolve: (result: IteratorResult<AnySandboxEvent>) => void
-    reject: (error: Error) => void
-  }> = []
-  private closed = false
-  private error: Error | undefined
-
-  push(value: AnySandboxEvent): void {
-    if (this.closed) return
-    const waiter = this.waiters.shift()
-    if (waiter) waiter.resolve({ value, done: false })
-    else this.values.push(value)
+  if (!response.ok) {
+    const message = (await response.text()).trim()
+    throw new Error(message || `Sandbox stream failed with status ${response.status}`)
   }
 
-  end(): void {
-    if (this.closed) return
-    this.closed = true
-    for (const waiter of this.waiters.splice(0)) waiter.resolve({ value: undefined, done: true })
-  }
-
-  fail(error: Error): void {
-    if (this.closed) return
-    this.closed = true
-    this.error = error
-    for (const waiter of this.waiters.splice(0)) waiter.reject(error)
-  }
-
-  [Symbol.asyncIterator](): AsyncIterator<AnySandboxEvent> {
-    return {
-      next: async () => {
-        const value = this.values.shift()
-        if (value) return { value, done: false }
-        if (this.error) throw this.error
-        if (this.closed) return { value: undefined, done: true }
-        return new Promise<IteratorResult<AnySandboxEvent>>((resolve, reject) => {
-          this.waiters.push({ resolve, reject })
-        })
-      },
-    }
-  }
+  yield* normalizeEventStream(decodeEventStream(response))
 }
 
 type PartKey = string
@@ -215,6 +45,7 @@ export async function* normalizeEventStream(
   for await (const event of raw) {
     const receivedAt = Date.now()
     if (firstAt === undefined) firstAt = receivedAt
+
     let normalized: AnySandboxEvent = event
 
     if (event.type === 'message.part.updated') {
@@ -228,14 +59,21 @@ export async function* normalizeEventStream(
             : 0
       const key = partKey(incoming, fallbackIdx)
       const prior = partAccum.get(key)
+
       if (!prior) {
         if (incoming.type === 'text') textPartCount++
         else if (incoming.type === 'reasoning') reasoningPartCount++
       }
+
       const accumulatedText =
         data.delta !== undefined ? (prior?.text ?? '') + data.delta : incoming.text
-      const merged: MessagePart = { ...incoming, text: accumulatedText }
+
+      const merged: MessagePart = {
+        ...incoming,
+        text: accumulatedText,
+      }
       partAccum.set(key, merged)
+
       normalized = {
         type: 'message.part.updated',
         data: {
@@ -251,6 +89,7 @@ export async function* normalizeEventStream(
       elapsedMs: receivedAt - firstAt,
       event: normalized,
     }
+
     eventIdx++
   }
 }
@@ -263,6 +102,47 @@ export async function collectRun(
   return out
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null
+async function* decodeEventStream(response: Response): AsyncIterable<AnySandboxEvent> {
+  if (!response.body) throw new Error('Sandbox stream response has no body')
+
+  const reader = response.body.getReader()
+  const decoder = new TextDecoder()
+  let buffer = ''
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read()
+      buffer += decoder.decode(value, { stream: !done })
+      let newline = buffer.indexOf('\n')
+      while (newline >= 0) {
+        const line = buffer.slice(0, newline).trim()
+        buffer = buffer.slice(newline + 1)
+        if (line) yield parseEvent(line)
+        newline = buffer.indexOf('\n')
+      }
+      if (done) break
+    }
+
+    const finalLine = buffer.trim()
+    if (finalLine) yield parseEvent(finalLine)
+  } finally {
+    reader.releaseLock()
+  }
+}
+
+function parseEvent(line: string): AnySandboxEvent {
+  let value: unknown
+  try {
+    value = JSON.parse(line)
+  } catch {
+    throw new Error('Sandbox stream returned invalid JSON')
+  }
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error('Sandbox stream returned a non-object event')
+  }
+  const event = value as Record<string, unknown>
+  if (typeof event.type !== 'string' || event.type.length === 0) {
+    throw new Error('Sandbox stream event is missing a type')
+  }
+  return value as AnySandboxEvent
 }

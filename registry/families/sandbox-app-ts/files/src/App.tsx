@@ -15,10 +15,6 @@ const APP_KIND = (import.meta.env.VITE_APP_KIND ?? 'editor') as
   | 'repl'
   | 'file-browser'
 
-const SANDBOX_RUNTIME_URL = import.meta.env.VITE_SANDBOX_RUNTIME_URL ?? ''
-const SANDBOX_RUNTIME_TOKEN = import.meta.env.VITE_SANDBOX_RUNTIME_TOKEN ?? ''
-const SANDBOX_ID = import.meta.env.VITE_SANDBOX_ID ?? ''
-
 export function App(): JSX.Element {
   const [sandbox, setSandbox] = useState<SandboxHandle | null>(null)
   const [selectedPath, setSelectedPath] = useState<string | null>(null)
@@ -28,20 +24,18 @@ export function App(): JSX.Element {
   const { lines } = useSandboxTerminal(sandbox)
 
   useEffect(() => {
-    if (!SANDBOX_RUNTIME_URL || !SANDBOX_RUNTIME_TOKEN || !SANDBOX_ID) {
-      setConnectError(
-        'Set VITE_SANDBOX_RUNTIME_URL, VITE_SANDBOX_RUNTIME_TOKEN, and VITE_SANDBOX_ID.',
-      )
-      return
-    }
-    try {
-      setSandbox(connectToSandbox({
-      runtimeUrl: SANDBOX_RUNTIME_URL,
-      runtimeToken: SANDBOX_RUNTIME_TOKEN,
-      sandboxId: SANDBOX_ID,
-      }))
-    } catch (cause) {
-      setConnectError(cause instanceof Error ? cause.message : String(cause))
+    let cancelled = false
+    connectToSandbox()
+      .then((handle) => {
+        if (!cancelled) setSandbox(handle)
+      })
+      .catch((cause: unknown) => {
+        if (!cancelled) {
+          setConnectError(cause instanceof Error ? cause.message : String(cause))
+        }
+      })
+    return () => {
+      cancelled = true
     }
   }, [])
 

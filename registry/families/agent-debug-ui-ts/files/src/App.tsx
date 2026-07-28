@@ -7,25 +7,7 @@ import { ToolCallTimeline } from './components/ToolCallTimeline'
 import type { NormalizedEvent } from './lib/event-types'
 import { streamRun } from './lib/sandbox-stream'
 
-interface DebugConfig {
-  sessionUrl: string
-}
-
-function readConfig(): { config?: DebugConfig; missing: string[] } {
-  const env = import.meta.env
-  const sessionUrl = env.VITE_SANDBOX_SESSION_URL as string | undefined
-  const missing: string[] = []
-  if (!sessionUrl) missing.push('VITE_SANDBOX_SESSION_URL')
-  if (missing.length > 0) return { missing }
-  return {
-    config: { sessionUrl: sessionUrl! },
-    missing: [],
-  }
-}
-
 export function App() {
-  const { config, missing } = useMemo(() => readConfig(), [])
-
   const [prompt, setPrompt] = useState('')
   const [activePrompt, setActivePrompt] = useState('')
   const [events, setEvents] = useState<NormalizedEvent[]>([])
@@ -58,7 +40,6 @@ export function App() {
   )
 
   const handleRun = useCallback(async () => {
-    if (!config) return
     const trimmed = prompt.trim()
     if (!trimmed) return
 
@@ -77,7 +58,6 @@ export function App() {
 
     try {
       for await (const evt of streamRun({
-        sessionUrl: config.sessionUrl,
         prompt: trimmed,
         signal: ac.signal,
       })) {
@@ -90,48 +70,30 @@ export function App() {
         setError(err instanceof Error ? err.message : String(err))
       }
     } finally {
-      setIsStreaming(false)
+      if (abortRef.current === ac) {
+        abortRef.current = null
+        setIsStreaming(false)
+      }
     }
-  }, [config, prompt])
+  }, [prompt])
 
   const handleStop = useCallback(() => {
-    abortRef.current?.abort()
+    const activeRun = abortRef.current
+    if (!activeRun) return
+    abortRef.current = null
+    activeRun.abort()
+    setIsStreaming(false)
   }, [])
 
   // Cancel the in-flight stream if the component unmounts.
   useEffect(() => () => abortRef.current?.abort(), [])
-
-  if (!config) {
-    return (
-      <div className='app app--config-error'>
-        <h1>agent-debug-ui — configuration missing</h1>
-        <p>
-          Copy <code>.env.example</code> to <code>.env</code> and set the
-          following variables before starting:
-        </p>
-        <ul>
-          {missing.map((k) => (
-            <li key={k}>
-              <code>{k}</code>
-            </li>
-          ))}
-        </ul>
-        <p>
-          See <code>README.md</code> for how to point this debugger at a Tangle
-          sandbox.
-        </p>
-      </div>
-    )
-  }
 
   return (
     <div className='app'>
       <header className='app__header'>
         <div>
           <h1>agent-debug-ui</h1>
-          <p className='app__subtitle'>
-            Live debugger via {config.sessionUrl}
-          </p>
+          <p className='app__subtitle'>Live debugger through the local Sandbox API</p>
         </div>
         <div className='app__prompt-bar'>
           <input

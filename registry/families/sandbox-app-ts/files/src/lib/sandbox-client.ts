@@ -1,34 +1,24 @@
 import { useCallback, useEffect, useState } from 'react'
-import {
-  createSandboxRuntimeClient,
-  type FileTreeResult,
-  type SandboxRuntimeClient,
-} from '@tangle-network/sandbox/runtime'
 import type { FileNode } from '@tangle-network/ui/files'
 import type { TerminalLine } from '@tangle-network/sandbox-ui/workspace'
 
-export interface SandboxConnectOptions {
-  runtimeUrl: string
-  runtimeToken: string
-  sandboxId: string
+interface FileTreeResult {
+  root: string
+  directories: string[]
+  files: Array<{ path: string; size: number }>
+}
+
+interface ExecResult {
+  stdout: string
+  stderr: string
 }
 
 export interface SandboxHandle {
   sandboxId: string
-  runtime: SandboxRuntimeClient
 }
 
-export function connectToSandbox(opts: SandboxConnectOptions): SandboxHandle {
-  if (!opts.runtimeUrl) throw new Error('connectToSandbox: runtimeUrl required')
-  if (!opts.runtimeToken) throw new Error('connectToSandbox: runtimeToken required')
-  if (!opts.sandboxId) throw new Error('connectToSandbox: sandboxId required')
-  return {
-    sandboxId: opts.sandboxId,
-    runtime: createSandboxRuntimeClient({
-      baseUrl: opts.runtimeUrl,
-      token: opts.runtimeToken,
-    }),
-  }
+export async function connectToSandbox(): Promise<SandboxHandle> {
+  return requestJson<SandboxHandle>('/api/config')
 }
 
 export interface UseSandboxFilesResult {
@@ -60,8 +50,7 @@ export function useSandboxFiles(
 
     setLoading(true)
     setError(null)
-    sandbox.runtime
-      .fileTree(root)
+    requestJson<FileTreeResult>(`/api/files?path=${encodeURIComponent(root)}`)
       .then((result) => {
         if (!cancelled) setTree(toFileNode(result))
       })
@@ -78,41 +67,86 @@ export function useSandboxFiles(
   }, [sandbox, root, refreshVersion])
 
   const refresh = useCallback(() => setRefreshVersion((version) => version + 1), [])
-  const read = useCallback(
-    async (path: string) => {
-      if (!sandbox) throw new Error('Sandbox not connected')
-      const result = await sandbox.runtime.readFiles([path], { encoding: 'utf8' })
-      const file = result.files[0]
-      if (!file) {
-        const detail = result.errors[0]?.error ?? 'file was not returned'
-        throw new Error(`Failed to read ${path}: ${detail}`)
-      }
-      return file.content
-    },
-    [sandbox],
-  )
-  const write = useCallback(
-    async (path: string, content: string) => {
-      if (!sandbox) throw new Error('Sandbox not connected')
-      await sandbox.runtime.writeFile(path, content)
-      refresh()
-    },
-    [sandbox, refresh],
-  )
+  const read = useCallback(async (path: string) => {
+    if (!sandbox) throw new Error('Sandbox not connected')
+    const result = await requestJson<{ content: string }>(
+      `/api/file?path=${encodeURIComponent(path)}`,
+    )
+    return result.content
+  }, [sandbox])
+  const write = useCallback(async (path: string, content: string) => {
+    if (!sandbox) throw new Error('Sandbox not connected')
+    await requestJson('/api/file', {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ path, content }),
+    })
+    refresh()
+  }, [sandbox, refresh])
 
   return { tree, refresh, read, write, error, loading }
 }
 
-export function useSandboxTerminal(sandbox: SandboxHandle | null): { lines: TerminalLine[] } {
+export interface UseSandboxTerminalResult {
+  lines: TerminalLine[]
+  write: (command: string) => Promise<void>
+  error: Error | null
+}
+
+export function useSandboxTerminal(
+  sandbox: SandboxHandle | null,
+): UseSandboxTerminalResult {
   const [lines, setLines] = useState<TerminalLine[]>([])
+  const [error, setError] = useState<Error | null>(null)
+
   useEffect(() => {
     setLines(
       sandbox
         ? [{ id: 'connected', type: 'system', text: `Connected to ${sandbox.sandboxId}` }]
         : [],
     )
+    setError(null)
   }, [sandbox])
-  return { lines }
+
+  const write = useCallback(async (command: string) => {
+    if (!sandbox) throw new Error('Sandbox not connected')
+    const timestamp = Date.now()
+    setLines((current) => [
+      ...current,
+      { id: `command-${timestamp}`, type: 'command', text: command, timestamp },
+    ])
+    try {
+      const result = await requestJson<ExecResult>('/api/exec', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ command }),
+      })
+      setLines((current) => [
+        ...current,
+        ...(result.stdout
+          ? [{ id: `stdout-${timestamp}`, type: 'stdout' as const, text: result.stdout }]
+          : []),
+        ...(result.stderr
+          ? [{ id: `stderr-${timestamp}`, type: 'stderr' as const, text: result.stderr }]
+          : []),
+      ])
+    } catch (cause) {
+      const nextError = asError(cause)
+      setError(nextError)
+      throw nextError
+    }
+  }, [sandbox])
+
+  return { lines, write, error }
+}
+
+async function requestJson<T = unknown>(input: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(input, init)
+  if (!response.ok) {
+    const message = (await response.text()).trim()
+    throw new Error(message || `Sandbox request failed with status ${response.status}`)
+  }
+  return response.json() as Promise<T>
 }
 
 function toFileNode(result: FileTreeResult): FileNode {
@@ -148,7 +182,12 @@ function toFileNode(result: FileTreeResult): FileNode {
     const path = resolvePath(file.path)
     const parent = ensureDirectory(dirname(path))
     parent.children ??= []
-    parent.children.push({ name: basename(path), path, type: 'file', size: file.size })
+    parent.children.push({
+      name: basename(path),
+      path,
+      type: 'file',
+      size: file.size,
+    })
   }
   sortTree(root)
   return root
@@ -161,7 +200,12 @@ function normalizeRoot(path: string): string {
 }
 
 function emptyRoot(path: string): FileNode {
-  return { name: basename(path) || '/', path, type: 'directory', children: [] }
+  return {
+    name: basename(path) || '/',
+    path,
+    type: 'directory',
+    children: [],
+  }
 }
 
 function basename(path: string): string {

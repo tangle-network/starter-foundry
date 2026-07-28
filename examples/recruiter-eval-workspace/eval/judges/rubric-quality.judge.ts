@@ -33,7 +33,6 @@
 // strip-types handles it directly.
 import { buildRubricJudge, type RubricSpec } from '../src/eval/judges/rubric-runner.ts'
 import type { JudgeFn, JudgeScore, JudgeInput } from '@tangle-network/agent-eval'
-import type { TCloud } from '@tangle-network/tcloud'
 import { unmeasuredScore, type ExtendedJudgeScore } from './aggregate.ts'
 
 /**
@@ -157,7 +156,7 @@ const judge: JudgeFn = async (tc, input): Promise<JudgeScore[]> => {
     artifacts: input.artifacts,
   }
 
-  const scores = await innerJudge(tc as TCloud, fencedInput)
+  const scores = await innerJudge(tc, fencedInput)
 
   // Tag every measured score with status: 'measured' so downstream
   // aggregators see a consistent discriminant.

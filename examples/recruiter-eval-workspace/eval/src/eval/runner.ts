@@ -37,8 +37,10 @@ import {
   fileExperimentStore,
   SubprocessSandboxDriver,
   assertLlmRoute,
+  createChatClient,
   LlmRouteAssertionError,
   runTestGradedScenario,
+  type ChatClient,
   type Scenario,
   type TestGradedScenario,
   type TestGradedRunResult,
@@ -53,7 +55,6 @@ import {
   type RawProviderSink,
   type RunIntegrityReport,
 } from '@tangle-network/agent-eval/traces'
-import { TCloud } from '@tangle-network/tcloud'
 // Single source of truth for scenario loading: the agent-eval:scenarios
 // layer composes `src/eval/scenario-loader.ts` next to this runner. Pre-fix
 // the family re-implemented a weaker loader inline (no shape validation),
@@ -175,11 +176,23 @@ async function loadJudgesFrom(dir: string): Promise<LoadedJudge[]> {
   return judges
 }
 
-function createJudgeClient(apiKey: string | undefined, baseUrl: string | undefined): TCloud | undefined {
-  if (!apiKey) return undefined
+function createJudgeClient(apiKey: string | undefined, baseUrl: string | undefined): ChatClient {
+  if (!apiKey) {
+    return createChatClient({
+      transport: 'custom',
+      maximumAttempts: 1,
+      chat: async () => {
+        throw new Error('TANGLE_API_KEY not set; model-based judges cannot run')
+      },
+    })
+  }
   const trimmed = baseUrl?.replace(/\/+$/, '')
   const baseURL = trimmed ? (trimmed.endsWith('/v1') ? trimmed : `${trimmed}/v1`) : undefined
-  return TCloud.create({ apiKey, ...(baseURL ? { baseURL } : {}) })
+  return createChatClient({
+    transport: 'router',
+    apiKey,
+    ...(baseURL ? { baseUrl: baseURL } : {}),
+  })
 }
 
 // Translate a Scenario into a TestGradedScenario — the bridge between
@@ -360,7 +373,7 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
       }
       for (const judge of judges) {
         try {
-          const scores = await judge.fn(judgeClient as TCloud, judgeInput)
+          const scores = await judge.fn(judgeClient, judgeInput)
           judgeScores.push(...scores)
         } catch (err) {
           console.warn(`  ! judge ${judge.filePath} threw: ${(err as Error).message}`)

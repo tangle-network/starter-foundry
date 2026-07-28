@@ -84,7 +84,10 @@ describe('agent-eval-scaffold cost tracking', () => {
     assert.equal(summary.completedCount, 1, 'completedCount reflects markOutcome(true)')
     assert.equal(summary.totalInputTokens, 2100, 'input tokens sum')
     assert.equal(summary.totalOutputTokens, 700, 'output tokens sum')
-    assert.ok(summary.totalCostUsd > 0, 'totalCostUsd > 0 when non-zero tokens recorded with priced model')
+    assert.ok(
+      summary.totalCostUsd > 0,
+      'totalCostUsd > 0 when non-zero tokens recorded with priced model',
+    )
     assert.ok(
       summary.costPerCompletedTaskUsd != null && summary.costPerCompletedTaskUsd > 0,
       'costPerCompletedTaskUsd populated when ≥1 markOutcome(true)',

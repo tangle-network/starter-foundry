@@ -44,7 +44,9 @@ const FAMILIES_DIR = join(REPO_ROOT, 'registry/families')
 const CAPABILITIES_DIR = join(REPO_ROOT, 'registry/layers/capability')
 
 if (!existsSync(DEFAULT_PATHS.buildoutsJsonl)) {
-  console.error(`no buildouts file at ${DEFAULT_PATHS.buildoutsJsonl} — run scripts/run-buildout-pipeline.ts first`)
+  console.error(
+    `no buildouts file at ${DEFAULT_PATHS.buildoutsJsonl} — run scripts/run-buildout-pipeline.ts first`,
+  )
   process.exit(2)
 }
 
@@ -68,7 +70,12 @@ function loadFamilyDeps() {
       continue
     }
     const deps = new Set()
-    for (const block of [pkg.dependencies, pkg.devDependencies, pkg.peerDependencies, pkg.optionalDependencies]) {
+    for (const block of [
+      pkg.dependencies,
+      pkg.devDependencies,
+      pkg.peerDependencies,
+      pkg.optionalDependencies,
+    ]) {
       for (const name of Object.keys(block ?? {})) deps.add(name)
     }
     for (const name of Object.keys(pkg.overrides ?? {})) deps.add(name)
@@ -93,10 +100,19 @@ function loadCapabilityDeps() {
     const mPath = join(CAPABILITIES_DIR, cap, 'manifest.json')
     if (!existsSync(mPath)) continue
     let m
-    try { m = JSON.parse(readFileSync(mPath, 'utf8')) } catch { continue }
+    try {
+      m = JSON.parse(readFileSync(mPath, 'utf8'))
+    } catch {
+      continue
+    }
     const deps = new Set()
     const pd = m.packageDeps ?? {}
-    for (const block of [pd.dependencies, pd.devDependencies, pd.peerDependencies, pd.optionalDependencies]) {
+    for (const block of [
+      pd.dependencies,
+      pd.devDependencies,
+      pd.peerDependencies,
+      pd.optionalDependencies,
+    ]) {
       for (const name of Object.keys(block ?? {})) deps.add(name)
     }
     byCapability.set(cap, deps)
@@ -107,11 +123,12 @@ function loadCapabilityDeps() {
 // Capabilities on the plan look like 'capability:tailwind' / 'capability:zk-browser'.
 // Strip the prefix to look up packageDeps.
 function planCapabilities(plan) {
-  const layers = plan.kind === 'starter'
-    ? (plan.spec.layers ?? [])
-    : plan.kind === 'workspace'
-    ? (plan.spec.projects ?? []).flatMap((p) => p.spec.layers ?? [])
-    : []
+  const layers =
+    plan.kind === 'starter'
+      ? (plan.spec.layers ?? [])
+      : plan.kind === 'workspace'
+        ? (plan.spec.projects ?? []).flatMap((p) => p.spec.layers ?? [])
+        : []
   return layers
     .filter((l) => typeof l === 'string' && l.startsWith('capability:'))
     .map((l) => l.slice('capability:'.length))
@@ -128,7 +145,11 @@ function planFamilies(plan) {
 function* iterBuildouts(path) {
   for (const line of readFileSync(path, 'utf8').split('\n')) {
     if (!line) continue
-    try { yield JSON.parse(line) } catch { /* skip malformed */ }
+    try {
+      yield JSON.parse(line)
+    } catch {
+      /* skip malformed */
+    }
   }
 }
 
@@ -138,9 +159,9 @@ const capMap = loadCapabilityMap().mapping
 const buildouts = [...iterBuildouts(DEFAULT_PATHS.buildoutsJsonl)]
 
 // Aggregate per-package and per-capability across all buildouts.
-const pkgIndex = new Map()       // pkgName → aggregate
-const capIndex = new Map()       // capability → aggregate
-const scenarioIndex = new Map()  // scenarioId → { pkgs, caps }
+const pkgIndex = new Map() // pkgName → aggregate
+const capIndex = new Map() // capability → aggregate
+const scenarioIndex = new Map() // scenarioId → { pkgs, caps }
 
 let processed = 0
 let totalAddedPackages = 0
@@ -207,7 +228,8 @@ for (const e of buildouts) {
       pkgIndex.set(name, agg)
     }
     agg.timesInstalled++
-    if (pass) agg.onPass++; else agg.onFail++
+    if (pass) agg.onPass++
+    else agg.onFail++
     agg.scenarios.add(scenario)
     for (const f of families) agg.sampleFamilies.add(f)
 
@@ -264,9 +286,7 @@ const allPackages = [...pkgIndex.values()]
   .map(serializePkg)
   .sort((a, b) => b.timesInstalled - a.timesInstalled)
 
-const topScaffoldGaps = allPackages
-  .filter((p) => p.concern === 'scaffold-gap')
-  .slice(0, 25)
+const topScaffoldGaps = allPackages.filter((p) => p.concern === 'scaffold-gap').slice(0, 25)
 
 const topOrchestrationInstalls = allPackages
   .filter((p) => p.concern === 'orchestration')
@@ -323,12 +343,16 @@ console.log('')
 console.log(`top 10 scaffold gaps (packages not shipped — fix in registry):`)
 for (const p of topScaffoldGaps.slice(0, 10)) {
   const capTag = p.mapsToCapability ? `[${p.mapsToCapability}]` : '[no-cap]'
-  console.log(`  ${p.package.padEnd(32)} ${String(p.timesInstalled).padStart(3)}×  pass=${p.onPass} fail=${p.onFail}  ${capTag}  scenarios: ${p.scenarios.slice(0,3).join(',')}`)
+  console.log(
+    `  ${p.package.padEnd(32)} ${String(p.timesInstalled).padStart(3)}×  pass=${p.onPass} fail=${p.onFail}  ${capTag}  scenarios: ${p.scenarios.slice(0, 3).join(',')}`,
+  )
 }
 console.log('')
 console.log(`top 5 orchestration installs (packages already shipped — install-pipeline issue):`)
 for (const p of topOrchestrationInstalls.slice(0, 5)) {
-  console.log(`  ${p.package.padEnd(32)} ${String(p.timesInstalled).padStart(3)}×  pass=${p.onPass} fail=${p.onFail}`)
+  console.log(
+    `  ${p.package.padEnd(32)} ${String(p.timesInstalled).padStart(3)}×  pass=${p.onPass} fail=${p.onFail}`,
+  )
 }
 console.log('')
 console.log(`wrote: ${OUT}`)

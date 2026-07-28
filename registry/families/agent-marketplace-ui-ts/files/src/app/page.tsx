@@ -3,16 +3,15 @@
 // filter state. Server-side load keeps the initial render free of `'use
 // client'` overhead and lets crawlers index the catalog.
 
-import { loadCatalog, resolveRegistryPath } from '../lib/catalog'
+import { loadCatalog, resolveRegistryPath, type Bundle } from '../lib/catalog'
 import { CatalogClient } from './page-client'
 
 export default async function CatalogPage() {
-  let bundles
+  let bundles: Bundle[] = []
   let error: string | undefined
   try {
     bundles = await loadCatalog(resolveRegistryPath())
   } catch (err) {
-    bundles = []
     error = err instanceof Error ? err.message : String(err)
   }
 

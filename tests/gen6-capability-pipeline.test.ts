@@ -10,7 +10,10 @@ const GAP_SCRIPT = join(REPO, 'scripts/detect-capability-gaps.ts')
 // ── Gen 6 R6: capability gap detector contract ───────────────────────
 
 test('detect-capability-gaps: emits parseable JSON with ProposeCapabilityInput-shaped candidates', () => {
-  const res = spawnSync('node', [GAP_SCRIPT, '--json', '--top', '3'], { cwd: REPO, encoding: 'utf8' })
+  const res = spawnSync('node', [GAP_SCRIPT, '--json', '--top', '3'], {
+    cwd: REPO,
+    encoding: 'utf8',
+  })
   assert.equal(res.status, 0, `gap detector failed: ${res.stderr}`)
   const parsed = JSON.parse(res.stdout) as {
     topN: number
@@ -31,28 +34,45 @@ test('detect-capability-gaps: emits parseable JSON with ProposeCapabilityInput-s
     assert.match(c.id, /^[a-z][a-z0-9-]*$/, `id ${c.id} must be kebab-case`)
     assert.ok(c.description.length >= 10, 'description too short')
     assert.ok(Array.isArray(c.appliesTo) && c.appliesTo.length > 0, 'appliesTo must be non-empty')
-    assert.ok(Array.isArray(c.slotFiles) && c.slotFiles.length >= 2, 'slotFiles must have ≥2 entries')
+    assert.ok(
+      Array.isArray(c.slotFiles) && c.slotFiles.length >= 2,
+      'slotFiles must have ≥2 entries',
+    )
     assert.ok(c.priority >= 0 && c.priority <= 1, `priority ${c.priority} out of [0,1]`)
     assert.ok(c.occurrences >= 1, `occurrences=${c.occurrences}`)
-    assert.ok(Array.isArray(c.uncoveredTokens) && c.uncoveredTokens.length > 0, 'uncoveredTokens must be non-empty (that is the gap signal)')
+    assert.ok(
+      Array.isArray(c.uncoveredTokens) && c.uncoveredTokens.length > 0,
+      'uncoveredTokens must be non-empty (that is the gap signal)',
+    )
     assert.ok(Array.isArray(c.productCues), 'productCues must be array')
   }
 })
 
 test('detect-capability-gaps: appliesTo families all exist in registry', () => {
-  const res = spawnSync('node', [GAP_SCRIPT, '--json', '--top', '10', '--min-count', '3'], { cwd: REPO, encoding: 'utf8' })
+  const res = spawnSync('node', [GAP_SCRIPT, '--json', '--top', '10', '--min-count', '3'], {
+    cwd: REPO,
+    encoding: 'utf8',
+  })
   assert.equal(res.status, 0)
-  const parsed = JSON.parse(res.stdout) as { candidates: Array<{ id: string; appliesTo: string[] }> }
+  const parsed = JSON.parse(res.stdout) as {
+    candidates: Array<{ id: string; appliesTo: string[] }>
+  }
   const existingFamilies = new Set(readdirSync(join(REPO, 'registry/families')))
   for (const c of parsed.candidates) {
     for (const fam of c.appliesTo) {
-      assert.ok(existingFamilies.has(fam), `${c.id} claims appliesTo:${fam} but registry/families/${fam} doesn't exist`)
+      assert.ok(
+        existingFamilies.has(fam),
+        `${c.id} claims appliesTo:${fam} but registry/families/${fam} doesn't exist`,
+      )
     }
   }
 })
 
 test('detect-capability-gaps: candidates are priority-sorted descending', () => {
-  const res = spawnSync('node', [GAP_SCRIPT, '--json', '--top', '10'], { cwd: REPO, encoding: 'utf8' })
+  const res = spawnSync('node', [GAP_SCRIPT, '--json', '--top', '10'], {
+    cwd: REPO,
+    encoding: 'utf8',
+  })
   assert.equal(res.status, 0)
   const parsed = JSON.parse(res.stdout) as { candidates: Array<{ priority: number }> }
   for (let i = 1; i < parsed.candidates.length; i++) {
@@ -77,7 +97,10 @@ test('detect-capability-gaps: --min-count filters low-demand scenarios', () => {
 
 test('detect-capability-gaps: never proposes a token that is already in a capability keyword', () => {
   // Smoke: uncoveredTokens should truly be uncovered by any cap's keywords.
-  const res = spawnSync('node', [GAP_SCRIPT, '--json', '--top', '5'], { cwd: REPO, encoding: 'utf8' })
+  const res = spawnSync('node', [GAP_SCRIPT, '--json', '--top', '5'], {
+    cwd: REPO,
+    encoding: 'utf8',
+  })
   const parsed = JSON.parse(res.stdout) as { candidates: Array<{ uncoveredTokens: string[] }> }
 
   // Build the real capability keyword set
@@ -87,11 +110,20 @@ test('detect-capability-gaps: never proposes a token that is already in a capabi
     const mp = join(capsDir, id, 'manifest.json')
     if (!existsSync(mp)) continue
     try {
-      const m = JSON.parse(readFileSync(mp, 'utf8')) as { keywords?: string[]; tieredKeywords?: { tier1?: string[]; tier2?: string[] } }
-      for (const k of [...(m.keywords ?? []), ...(m.tieredKeywords?.tier1 ?? []), ...(m.tieredKeywords?.tier2 ?? [])]) {
+      const m = JSON.parse(readFileSync(mp, 'utf8')) as {
+        keywords?: string[]
+        tieredKeywords?: { tier1?: string[]; tier2?: string[] }
+      }
+      for (const k of [
+        ...(m.keywords ?? []),
+        ...(m.tieredKeywords?.tier1 ?? []),
+        ...(m.tieredKeywords?.tier2 ?? []),
+      ]) {
         kw.add(String(k).toLowerCase())
       }
-    } catch { /* skip */ }
+    } catch {
+      /* skip */
+    }
   }
 
   for (const c of parsed.candidates) {

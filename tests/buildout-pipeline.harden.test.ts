@@ -75,6 +75,8 @@ test('hardening: pipeline treats a missing session source as an empty corpus', (
 test('hardening: template sweep writes an empty summary when nothing was rewritten', () => {
   const dir = setupWorkspace()
   try {
+    // Preserve the ESM package context that the copied script has in the repository.
+    writeFileSync(join(dir, 'package.json'), '{"type":"module"}\n')
     const scriptDir = join(dir, 'scripts')
     mkdirSync(scriptDir, { recursive: true })
     const script = join(scriptDir, 'template-quality-sweep.ts')

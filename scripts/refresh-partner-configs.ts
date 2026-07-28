@@ -15,7 +15,7 @@ const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const PARTNERS_DIR = join(REPO, 'registry/partners')
 const OUT = join(REPO, '.evolve/proposals/partner-refresh.json')
 
-const MAX_AGE_MS = 90 * 24 * 60 * 60 * 1000  // 90 days
+const MAX_AGE_MS = 90 * 24 * 60 * 60 * 1000 // 90 days
 
 const stale = []
 for (const id of readdirSync(PARTNERS_DIR)) {
@@ -41,9 +41,18 @@ for (const id of readdirSync(PARTNERS_DIR)) {
 }
 
 mkdirSync(dirname(OUT), { recursive: true })
-writeFileSync(OUT, JSON.stringify({ generatedAt: new Date().toISOString(), staleCount: stale.length, stale }, null, 2))
+writeFileSync(
+  OUT,
+  JSON.stringify(
+    { generatedAt: new Date().toISOString(), staleCount: stale.length, stale },
+    null,
+    2,
+  ),
+)
 
-console.log(`✓ partner-refresh proposal: ${stale.length} config(s) beyond ${Math.floor(MAX_AGE_MS / (24 * 60 * 60 * 1000))} days old`)
+console.log(
+  `✓ partner-refresh proposal: ${stale.length} config(s) beyond ${Math.floor(MAX_AGE_MS / (24 * 60 * 60 * 1000))} days old`,
+)
 for (const s of stale.slice(0, 10)) {
   console.log(`  ${s.partnerId.padEnd(16)} age=${s.ageDays}d  docs=${s.docsUrl ?? '(none)'}`)
 }

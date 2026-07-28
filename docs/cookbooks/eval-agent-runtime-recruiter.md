@@ -233,14 +233,21 @@ import { emitRunRecord } from '@tangle-network/starter-foundry'
 
 emitRunRecord({
   experimentId: `eval/${bundleId}`,
-  candidateId: `${scenarioId}.${variantId}`,
+  scenarioId,
+  candidateId: variantId,
   profile: 'default-judge', // pulls model + ceiling from the profile
   promptText: scenario.prompt,
   configObject: judgeConfig,
   wallMs,
   costUsd,
+  costProvenance,
   tokenUsage,
-  outcome: { searchScore, raw: { rubricPass, refusalCorrect } },
+  terminalOutcome: 'succeeded',
+  outcome: {
+    searchScore,
+    raw: { rubricPass: Number(rubricPass), refusalCorrect: Number(refusalCorrect) },
+  },
+  splitTag: 'search',
 })
 ```
 

@@ -62,8 +62,18 @@ describe('AGENTS.md pre-installed packages hint', () => {
     const { outDir, cleanup } = compose(['framework:react-vite-ts', 'capability:zk-browser'])
     try {
       const agents = readFileSync(join(outDir, 'AGENTS.md'), 'utf8')
-      for (const pkg of ['snarkjs', 'circomlibjs', 'circomlib', '@zk-kit/incremental-merkle-tree', 'ethers']) {
-        assert.match(agents, new RegExp(`\`${pkg.replace(/[/]/g, '\\/')}\``), `${pkg} must appear when zk-browser attached`)
+      for (const pkg of [
+        'snarkjs',
+        'circomlibjs',
+        'circomlib',
+        '@zk-kit/incremental-merkle-tree',
+        'ethers',
+      ]) {
+        assert.match(
+          agents,
+          new RegExp(`\`${pkg.replace(/[/]/g, '\\/')}\``),
+          `${pkg} must appear when zk-browser attached`,
+        )
       }
     } finally {
       cleanup()
@@ -75,7 +85,11 @@ describe('AGENTS.md pre-installed packages hint', () => {
     try {
       const agents = readFileSync(join(outDir, 'AGENTS.md'), 'utf8')
       const claude = readFileSync(join(outDir, 'CLAUDE.md'), 'utf8')
-      assert.equal(agents, claude, 'AGENTS.md and CLAUDE.md must be identical — one doc, two filenames')
+      assert.equal(
+        agents,
+        claude,
+        'AGENTS.md and CLAUDE.md must be identical — one doc, two filenames',
+      )
     } finally {
       cleanup()
     }

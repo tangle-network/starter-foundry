@@ -51,7 +51,7 @@ for (const line of readFileSync(TRACES, 'utf8').split('\n')) {
   const sid = event.scenarioId
   if (!sid) continue
   const family = mapping[sid]
-  if (!family) continue  // scenarios not in the mapping are skipped (e.g. synthetic / untagged)
+  if (!family) continue // scenarios not in the mapping are skipped (e.g. synthetic / untagged)
   const ts = event.firstTs ? Date.parse(event.firstTs) : null
   if (!ts) continue
   const week = isoWeek(ts)
@@ -67,7 +67,9 @@ for (const line of readFileSync(TRACES, 'utf8').split('\n')) {
 mkdirSync(dirname(OUT), { recursive: true })
 const rows = [...stats.values()]
   .map((s) => ({ ...s, passRate: s.totalBuildouts === 0 ? 0 : s.passes / s.totalBuildouts }))
-  .sort((a, b) => (a.family === b.family ? a.isoWeek.localeCompare(b.isoWeek) : a.family.localeCompare(b.family)))
+  .sort((a, b) =>
+    a.family === b.family ? a.isoWeek.localeCompare(b.isoWeek) : a.family.localeCompare(b.family),
+  )
 
 writeFileSync(OUT, rows.map((r) => JSON.stringify(r)).join('\n') + (rows.length > 0 ? '\n' : ''))
 
@@ -80,6 +82,8 @@ console.log(`top families by buildout volume:`)
 for (const [f, n] of topFamilies) {
   const weeklyRates = rows.filter((r) => r.family === f).map((r) => r.passRate)
   const avg = weeklyRates.length ? weeklyRates.reduce((a, b) => a + b, 0) / weeklyRates.length : 0
-  console.log(`  ${f.padEnd(24)} ${n} buildouts  avg passRate: ${(avg * 100).toFixed(0)}%  weeks: ${weeklyRates.length}`)
+  console.log(
+    `  ${f.padEnd(24)} ${n} buildouts  avg passRate: ${(avg * 100).toFixed(0)}%  weeks: ${weeklyRates.length}`,
+  )
 }
 console.log(`\noutput → ${OUT}`)

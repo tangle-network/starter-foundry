@@ -1,6 +1,6 @@
 {
   "id": "agent-with-ui-ts",
-  "description": "React + Vite + sandbox-ui scaffold for a single agent-runtime bundle. Wires `@tangle-network/sandbox` session events into `SandboxWorkbench`'s chat + artifact surface, with a built-in :::output-block parser (via agent-output/blocks-renderer). NOTE: src/lib/parse-blocks.ts and src/lib/blocks-to-artifacts.tsx are provided by the ui-adapter:blocks-renderer layer at compose time — they are NOT duplicated in this family's files[] but ARE asserted by validationChecks because the layer composes them in.",
+  "description": "React chat and artifact UI plus a local Node API for one agent in a Tangle sandbox. The server owns the Sandbox SDK and credentials; the browser consumes a same-origin event stream. The blocks-renderer layer supplies structured-output parsing.",
   "tags": [
     "agent-ui",
     "react",
@@ -26,15 +26,20 @@
   },
   "files": [
     { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/.env.example", "target": ".env.example" },
     { "source": "files/index.html", "target": "index.html" },
     { "source": "files/vite.config.ts", "target": "vite.config.ts" },
     { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/tsconfig.node.json", "target": "tsconfig.node.json" },
+    { "source": "files/tsconfig.server.json", "target": "tsconfig.server.json" },
     { "source": "files/tailwind.config.cjs", "target": "tailwind.config.cjs" },
     { "source": "files/postcss.config.cjs", "target": "postcss.config.cjs" },
     { "source": "files/README.md", "target": "README.md" },
     { "source": "files/src/main.tsx", "target": "src/main.tsx" },
     { "source": "files/src/App.tsx", "target": "src/App.tsx" },
     { "source": "files/src/index.css", "target": "src/index.css" },
+    { "source": "files/src/lib/agent-client.ts", "target": "src/lib/agent-client.ts" },
+    { "source": "files/server/index.ts", "target": "server/index.ts" },
     { "source": "files/pnpm-workspace.yaml", "target": "pnpm-workspace.yaml" }
   ],
   "validationChecks": [
@@ -42,8 +47,11 @@
     { "type": "file-exists", "path": "index.html" },
     { "type": "file-exists", "path": "vite.config.ts" },
     { "type": "file-exists", "path": "tsconfig.json" },
+    { "type": "file-exists", "path": "tsconfig.server.json" },
     { "type": "file-exists", "path": "src/main.tsx" },
     { "type": "file-exists", "path": "src/App.tsx" },
+    { "type": "file-exists", "path": "src/lib/agent-client.ts" },
+    { "type": "file-exists", "path": "server/index.ts" },
     { "type": "file-exists", "path": "src/lib/parse-blocks.ts" },
     { "type": "file-exists", "path": "src/lib/blocks-to-artifacts.tsx" }
   ],
@@ -72,11 +80,13 @@
       "pnpm build"
     ],
     "entrypoints": [
-      "src/App.tsx"
+      "src/App.tsx",
+      "server/index.ts"
     ],
     "extensionPoints": [
       "src/App.tsx",
-      "src/lib/blocks-to-artifacts.tsx"
+      "src/lib/blocks-to-artifacts.tsx",
+      "server/index.ts"
     ]
   }
 }

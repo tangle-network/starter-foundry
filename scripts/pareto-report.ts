@@ -49,9 +49,9 @@ function dominates(a, b) {
   )
 }
 
-const frontier = scenarios.filter(
-  (p) => !scenarios.some((q) => q !== p && dominates(q, p)),
-).sort((a, b) => a.meanWallMs - b.meanWallMs)
+const frontier = scenarios
+  .filter((p) => !scenarios.some((q) => q !== p && dominates(q, p)))
+  .sort((a, b) => a.meanWallMs - b.meanWallMs)
 
 mkdirSync(dirname(OUT), { recursive: true })
 writeFileSync(
@@ -71,7 +71,8 @@ writeFileSync(
 // Render a small ASCII chart so the terminal output is useful.
 const minWall = Math.min(...scenarios.map((s) => s.meanWallMs))
 const maxWall = Math.max(...scenarios.map((s) => s.meanWallMs))
-const W = 60, H = 16
+const W = 60,
+  H = 16
 
 console.log('\nQuality × Speed Pareto')
 console.log(`(${scenarios.length} scenarios, ${frontier.length} on frontier)\n`)
@@ -97,7 +98,9 @@ for (let y = H; y >= 0; y--) {
   console.log(line)
 }
 console.log('0.0 └' + '─'.repeat(W))
-console.log(`    ${(minWall / 1000).toFixed(0)}s`.padEnd(30) + `${(maxWall / 1000).toFixed(0)}s (wall time)`)
+console.log(
+  `    ${(minWall / 1000).toFixed(0)}s`.padEnd(30) + `${(maxWall / 1000).toFixed(0)}s (wall time)`,
+)
 
 console.log('\nFrontier (sorted fast → slow):')
 for (const p of frontier.slice(0, 10)) {

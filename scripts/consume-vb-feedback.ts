@@ -57,7 +57,9 @@ const QUIET = process.argv.includes('--quiet')
 const LLM_FALLBACK = process.env.SF_VB_LLM_FALLBACK === '1'
 
 if (!SOURCE) {
-  console.error('Usage: consume-vb-feedback --source <path> [--consumer <name>] [--since-gen N] [--dry-run]')
+  console.error(
+    'Usage: consume-vb-feedback --source <path> [--consumer <name>] [--since-gen N] [--dry-run]',
+  )
   process.exit(2)
 }
 if (!existsSync(SOURCE)) {
@@ -68,7 +70,11 @@ if (!existsSync(SOURCE)) {
 // ── readers ──────────────────────────────────────────────────────────
 
 function readJson(path) {
-  try { return JSON.parse(readFileSync(path, 'utf8')) } catch { return null }
+  try {
+    return JSON.parse(readFileSync(path, 'utf8'))
+  } catch {
+    return null
+  }
 }
 
 function listSessions(root) {
@@ -78,11 +84,19 @@ function listSessions(root) {
   const sessions = []
   const walk = (dir, depth) => {
     let entries
-    try { entries = readdirSync(dir) } catch { return }
+    try {
+      entries = readdirSync(dir)
+    } catch {
+      return
+    }
     for (const entry of entries) {
       const sub = join(dir, entry)
       let st
-      try { st = statSync(sub) } catch { continue }
+      try {
+        st = statSync(sub)
+      } catch {
+        continue
+      }
       if (!st.isDirectory()) continue
       if (existsSync(join(sub, 'manifest.json'))) {
         sessions.push(sub)
@@ -108,7 +122,8 @@ async function llmVerdictForUnknown(session, scaffold, verifyShots) {
       const llm = createLLM()
       _llmReviewer = createLlmReviewer({
         llm,
-        rubric: 'Classify a single coding-agent session as scaffold-side or agent-side fault. ' +
+        rubric:
+          'Classify a single coding-agent session as scaffold-side or agent-side fault. ' +
           'Output JSON: { "verdict": "scaffold-gap" | "agent-error" | "pass" | "unknown", "reason": "<short>" }. ' +
           'pass = the session succeeded. scaffold-gap = the SF scaffold provided wrong/missing content forcing rewrite. ' +
           'agent-error = SF scaffold was sound; the coding agent broke it. unknown = signal genuinely insufficient.',
@@ -126,7 +141,11 @@ async function llmVerdictForUnknown(session, scaffold, verifyShots) {
         scaffold,
         verifyShotsSummary: verifyShots.map((v) => ({
           allPass: v?.allPass,
-          layers: (v?.layers ?? []).map((l) => ({ layer: l.layer, status: l.status, findings: (l.findings ?? []).slice(0, 3) })),
+          layers: (v?.layers ?? []).map((l) => ({
+            layer: l.layer,
+            status: l.status,
+            findings: (l.findings ?? []).slice(0, 3),
+          })),
         })),
       }),
     })
@@ -267,8 +286,14 @@ async function attribute(sessionDir) {
       // First-shot typecheck fail = often scaffold typo; multi-shot
       // typecheck fail = agent broke it. Conservative: only first-shot.
       attribution = 'scaffold-gap'
-      signals.push('shot-1 typecheck failed before agent had edit budget — likely scaffold-side TS error')
-    } else if (build?.status === 'fail' || lint?.status === 'fail' || typecheck?.status === 'fail') {
+      signals.push(
+        'shot-1 typecheck failed before agent had edit budget — likely scaffold-side TS error',
+      )
+    } else if (
+      build?.status === 'fail' ||
+      lint?.status === 'fail' ||
+      typecheck?.status === 'fail'
+    ) {
       attribution = 'agent-error'
       signals.push('verification failed on layer the agent had time to fix — agent-side')
     } else {
@@ -296,14 +321,16 @@ async function attribute(sessionDir) {
     wallMs: manifest.wallMs,
     completenessScore: manifest.extra?.completenessScore ?? null,
     previewSucceeded: manifest.extra?.previewSucceeded ?? null,
-    scaffold: scaffold ? {
-      available: scaffold.available !== false,
-      family: scaffold.family,
-      layers: scaffold.layers ?? [],
-      partner: scaffold.partner,
-      fileCount: scaffold.fileCount,
-      sfVersion: scaffold.starterFoundryVersion,
-    } : null,
+    scaffold: scaffold
+      ? {
+          available: scaffold.available !== false,
+          family: scaffold.family,
+          layers: scaffold.layers ?? [],
+          partner: scaffold.partner,
+          fileCount: scaffold.fileCount,
+          sfVersion: scaffold.starterFoundryVersion,
+        }
+      : null,
     attribution,
     signals,
   }
@@ -323,14 +350,14 @@ for (const dir of sessions) {
 }
 
 const buckets = {
-  'pass': 0,
+  pass: 0,
   'sf-not-invoked': 0,
   'routing-error': 0,
   'routing-unrouteable': 0,
   'routing-fixed-forward': 0,
   'scaffold-gap': 0,
   'agent-error': 0,
-  'unknown': 0,
+  unknown: 0,
 }
 for (const r of results) buckets[r.attribution] = (buckets[r.attribution] ?? 0) + 1
 
@@ -387,16 +414,18 @@ writeFileSync(summaryPath, JSON.stringify(summary, null, 2))
 const latestPath = join(FEEDBACK_DIR, 'latest.json')
 writeFileSync(latestPath, JSON.stringify(summary, null, 2))
 
-console.log([
-  `consumer=${CONSUMER}`,
-  `sessions=${results.length}`,
-  `pass=${buckets.pass}`,
-  `sf-not-invoked=${buckets['sf-not-invoked']}`,
-  `routing-error=${buckets['routing-error']}`,
-  `routing-unrouteable=${buckets['routing-unrouteable']}`,
-  `routing-fixed-forward=${buckets['routing-fixed-forward']}`,
-  `scaffold-gap=${buckets['scaffold-gap']}`,
-  `agent-error=${buckets['agent-error']}`,
-  `unknown=${buckets.unknown}`,
-  `scaffoldAttributableRate=${(scaffoldAttributableRate * 100).toFixed(1)}%`,
-].join(' '))
+console.log(
+  [
+    `consumer=${CONSUMER}`,
+    `sessions=${results.length}`,
+    `pass=${buckets.pass}`,
+    `sf-not-invoked=${buckets['sf-not-invoked']}`,
+    `routing-error=${buckets['routing-error']}`,
+    `routing-unrouteable=${buckets['routing-unrouteable']}`,
+    `routing-fixed-forward=${buckets['routing-fixed-forward']}`,
+    `scaffold-gap=${buckets['scaffold-gap']}`,
+    `agent-error=${buckets['agent-error']}`,
+    `unknown=${buckets.unknown}`,
+    `scaffoldAttributableRate=${(scaffoldAttributableRate * 100).toFixed(1)}%`,
+  ].join(' '),
+)

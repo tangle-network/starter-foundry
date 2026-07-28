@@ -59,15 +59,21 @@ if (!existsSync(trainPath)) {
   writeFileSync(scoreOut, JSON.stringify({ variant, failed: 'no-train-entry' }, null, 2))
   process.exit(3)
 }
-const trainRes = run(process.execPath, ['-e', `
+const trainRes = run(process.execPath, [
+  '-e',
+  `
 import('${resolve(trainPath)}').then(async (mod) => {
   if (typeof mod.runTrainingLoop !== 'function') throw new Error('runTrainingLoop not exported');
   await mod.runTrainingLoop({ corpusPath: 'corpus/ideasai-prompts.json', outPath: '${optimizedPath}' });
   console.log('train complete');
 }).catch(e => { console.error(e?.stack ?? e); process.exit(1); });
-`])
+`,
+])
 if (trainRes.status !== 0) {
-  writeFileSync(scoreOut, JSON.stringify({ variant, failed: 'train-nonzero', durationMs: trainRes.durationMs }, null, 2))
+  writeFileSync(
+    scoreOut,
+    JSON.stringify({ variant, failed: 'train-nonzero', durationMs: trainRes.durationMs }, null, 2),
+  )
   process.exit(4)
 }
 
@@ -77,8 +83,10 @@ const loaderPath = `dist/training/${variant}/brief-loader.js`
 const matrixArgs = [
   'scripts/meta-harness-eval.ts',
   '--brief',
-  '--out', matrixOut,
-  '--label', variant,
+  '--out',
+  matrixOut,
+  '--label',
+  variant,
 ]
 if (existsSync(loaderPath)) {
   matrixArgs.push('--brief-loader', loaderPath)
@@ -104,7 +112,10 @@ if (existsSync(genPath) && existsSync(judgePath)) {
   console.log(`\n=== [${variant}] GENERATE + JUDGE ===`)
   const ideaOut = `.evolve/ideas/${variant}.json`
   mkdirSync('.evolve/ideas', { recursive: true })
-  const genRes = run(process.execPath, ['--input-type=module', '-e', `
+  const genRes = run(process.execPath, [
+    '--input-type=module',
+    '-e',
+    `
     import fs from 'node:fs';
     const g = await import('${resolve(genPath)}');
     const j = await import('${resolve(judgePath)}');
@@ -116,7 +127,8 @@ if (existsSync(genPath) && existsSync(judgePath)) {
     }
     const promotable = scored.filter(s => s.score?.promotable).length;
     fs.writeFileSync('${ideaOut}', JSON.stringify({ ideas: scored, promotable }, null, 2));
-  `.replace(/\n/g, ' ')])
+  `.replace(/\n/g, ' '),
+  ])
   if (genRes.status === 0 && existsSync(ideaOut)) {
     const ideaData = JSON.parse(readFileSync(ideaOut, 'utf8'))
     archetypePromotionYield = ideaData.promotable ?? 0

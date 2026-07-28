@@ -59,7 +59,7 @@ export const schedule = {
   validateCron(cron: string): null | string {
     const fields = cron.trim().split(/\s+/)
     if (fields.length !== 5) return `expected 5 fields (m h dom mon dow), got ${fields.length}`
-    const ranges = [
+    const ranges: ReadonlyArray<readonly [number, number]> = [
       [0, 59], // minute
       [0, 23], // hour
       [1, 31], // day-of-month
@@ -68,6 +68,7 @@ export const schedule = {
     ]
     for (let i = 0; i < 5; i++) {
       const f = fields[i]!
+      const [minimum, maximum] = ranges[i]!
       if (f === '*') continue
       // Allow simple comma-separated lists, ranges, steps.
       if (!/^(\*|\*\/\d+|\d+(-\d+)?(,\d+(-\d+)?)*(\/\d+)?)$/.test(f)) {
@@ -75,7 +76,9 @@ export const schedule = {
       }
       const numbers = f.match(/\d+/g)?.map(Number) ?? []
       for (const n of numbers) {
-        if (n < ranges[i]![0] || n > ranges[i]![1]) return `field ${i} value ${n} out of range [${ranges[i]![0]}, ${ranges[i]![1]}]`
+        if (n < minimum || n > maximum) {
+          return `field ${i} value ${n} out of range [${minimum}, ${maximum}]`
+        }
       }
     }
     return null

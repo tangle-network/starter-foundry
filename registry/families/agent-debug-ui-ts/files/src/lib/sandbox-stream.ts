@@ -1,13 +1,3 @@
-// Wraps `Sandbox.streamPrompt()` into a normalized AsyncIterable that:
-//   1. Adds a wall-clock timestamp + monotonic index to every event.
-//   2. Pre-accumulates streaming `delta`s into part text so consumers
-//      never have to track per-part state themselves.
-//   3. Surfaces unknown event types unchanged so the debugger never
-//      silently drops frames it doesn't recognise.
-//
-// Consumers iterate with `for await (const evt of streamRun(...))`.
-
-import { connectSandbox, type Sandbox } from '@tangle-network/sandbox'
 import {
   type AnySandboxEvent,
   type MessagePart,
@@ -16,19 +6,26 @@ import {
 } from './event-types'
 
 export interface StreamRunArgs {
-  baseUrl: string
-  apiKey: string
-  sandboxId: string
   prompt: string
   signal?: AbortSignal
-  // Optional — pass through to streamPrompt's PromptOptions.
   sessionId?: string
 }
 
-// Internal: per-run accumulator for streaming text parts. Keyed by
-// (toolCallId | partType + index) — we use the part's own identity when
-// available, falling back to type+ordinal so concurrent text parts don't
-// collide. The SDK's actual key strategy is opaque, so we reconstruct.
+export async function* streamRun(args: StreamRunArgs): AsyncIterable<NormalizedEvent> {
+  const response = await fetch('/api/prompt', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ prompt: args.prompt, sessionId: args.sessionId }),
+    signal: args.signal,
+  })
+  if (!response.ok) {
+    const message = (await response.text()).trim()
+    throw new Error(message || `Sandbox stream failed with status ${response.status}`)
+  }
+
+  yield* normalizeEventStream(decodeEventStream(response))
+}
+
 type PartKey = string
 
 function partKey(part: MessagePart, fallbackIdx: number): PartKey {
@@ -36,25 +33,6 @@ function partKey(part: MessagePart, fallbackIdx: number): PartKey {
   return `${part.type}:${fallbackIdx}`
 }
 
-export async function* streamRun(
-  args: StreamRunArgs,
-): AsyncIterable<NormalizedEvent> {
-  const sandbox: Sandbox = await connectSandbox({
-    baseUrl: args.baseUrl,
-    apiKey: args.apiKey,
-    id: args.sandboxId,
-  })
-
-  yield* normalizeEventStream(
-    sandbox.streamPrompt(args.prompt, {
-      signal: args.signal,
-      sessionId: args.sessionId,
-    }),
-  )
-}
-
-// Exposed separately so tests + alternative transports (replay from disk,
-// websocket bridges, mock streams) can normalize without a real Sandbox.
 export async function* normalizeEventStream(
   raw: AsyncIterable<AnySandboxEvent>,
 ): AsyncIterable<NormalizedEvent> {
@@ -82,17 +60,13 @@ export async function* normalizeEventStream(
       const key = partKey(incoming, fallbackIdx)
       const prior = partAccum.get(key)
 
-      // First time we see this part: register it and bump the per-type
-      // ordinal so subsequent same-type parts don't collide.
       if (!prior) {
         if (incoming.type === 'text') textPartCount++
         else if (incoming.type === 'reasoning') reasoningPartCount++
       }
 
       const accumulatedText =
-        data.delta !== undefined
-          ? (prior?.text ?? '') + data.delta
-          : incoming.text
+        data.delta !== undefined ? (prior?.text ?? '') + data.delta : incoming.text
 
       const merged: MessagePart = {
         ...incoming,
@@ -104,8 +78,6 @@ export async function* normalizeEventStream(
         type: 'message.part.updated',
         data: {
           part: merged,
-          // `delta` preserved so consumers can distinguish "fresh chunk" vs
-          // "snapshot" if they care; the part.text is already cumulative.
           ...(data.delta !== undefined ? { delta: data.delta } : {}),
         },
       }
@@ -122,12 +94,55 @@ export async function* normalizeEventStream(
   }
 }
 
-// Helper: collect a finished run into an array. Useful for tests + the
-// step-through replay scrubber, which needs random access to the buffer.
 export async function collectRun(
   iter: AsyncIterable<NormalizedEvent>,
 ): Promise<NormalizedEvent[]> {
   const out: NormalizedEvent[] = []
-  for await (const evt of iter) out.push(evt)
+  for await (const event of iter) out.push(event)
   return out
+}
+
+async function* decodeEventStream(response: Response): AsyncIterable<AnySandboxEvent> {
+  if (!response.body) throw new Error('Sandbox stream response has no body')
+
+  const reader = response.body.getReader()
+  const decoder = new TextDecoder()
+  let buffer = ''
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read()
+      buffer += decoder.decode(value, { stream: !done })
+      let newline = buffer.indexOf('\n')
+      while (newline >= 0) {
+        const line = buffer.slice(0, newline).trim()
+        buffer = buffer.slice(newline + 1)
+        if (line) yield parseEvent(line)
+        newline = buffer.indexOf('\n')
+      }
+      if (done) break
+    }
+
+    const finalLine = buffer.trim()
+    if (finalLine) yield parseEvent(finalLine)
+  } finally {
+    reader.releaseLock()
+  }
+}
+
+function parseEvent(line: string): AnySandboxEvent {
+  let value: unknown
+  try {
+    value = JSON.parse(line)
+  } catch {
+    throw new Error('Sandbox stream returned invalid JSON')
+  }
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error('Sandbox stream returned a non-object event')
+  }
+  const event = value as Record<string, unknown>
+  if (typeof event.type !== 'string' || event.type.length === 0) {
+    throw new Error('Sandbox stream event is missing a type')
+  }
+  return value as AnySandboxEvent
 }

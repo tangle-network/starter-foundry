@@ -7,7 +7,7 @@
 
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createHmac } from 'node:crypto'
@@ -310,9 +310,10 @@ test('webhook-out: subdomain match works', async () => {
       allowedDomains: ['tangle.tools'],
     })
     assert.equal(r.ok, true)
-    assert.ok(captured)
-    assert.ok(captured!.headers['x-tangle-signature'])
-    assert.ok(captured!.headers['x-tangle-timestamp'])
+    const request = captured as { url: string; headers: Record<string, string> } | null
+    assert.ok(request)
+    assert.ok(request.headers['x-tangle-signature'])
+    assert.ok(request.headers['x-tangle-timestamp'])
   } finally {
     globalThis.fetch = realFetch
     delete process.env.OUT_SECRET2

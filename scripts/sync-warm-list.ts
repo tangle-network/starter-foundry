@@ -59,8 +59,11 @@ async function collectCapabilityDeps() {
 
   // shadcn deps (referenced in buildHints, installed by the agent)
   const shadcnDeps = [
-    'clsx', 'tailwind-merge', 'class-variance-authority',
-    '@radix-ui/react-slot', 'lucide-react',
+    'clsx',
+    'tailwind-merge',
+    'class-variance-authority',
+    '@radix-ui/react-slot',
+    'lucide-react',
   ]
   shadcnDeps.forEach((d) => deps.add(d))
 
@@ -87,8 +90,12 @@ async function main() {
   const allDeps = new Set([...familyDeps, ...capDeps])
 
   const warmList = await readWarmList()
-  const existingNpm = new Set(warmList.filter((e) => e.startsWith('npm:')).map((e) => e.replace('npm:', '')))
-  const existingPnpm = new Set(warmList.filter((e) => e.startsWith('pnpm:')).map((e) => e.replace('pnpm:', '')))
+  const existingNpm = new Set(
+    warmList.filter((e) => e.startsWith('npm:')).map((e) => e.replace('npm:', '')),
+  )
+  const existingPnpm = new Set(
+    warmList.filter((e) => e.startsWith('pnpm:')).map((e) => e.replace('pnpm:', '')),
+  )
 
   const missingNpm = [...allDeps].filter((d) => !existingNpm.has(d)).sort()
   const missingPnpm = [...allDeps].filter((d) => !existingPnpm.has(d)).sort()
@@ -102,10 +109,7 @@ async function main() {
   missingNpm.forEach((d) => console.log(`  npm:${d}`))
 
   if (shouldWrite) {
-    const additions = [
-      ...missingNpm.map((d) => `npm:${d}`),
-      ...missingPnpm.map((d) => `pnpm:${d}`),
-    ]
+    const additions = [...missingNpm.map((d) => `npm:${d}`), ...missingPnpm.map((d) => `pnpm:${d}`)]
 
     // Insert before the crates section
     const cratesIdx = warmList.findIndex((e) => e.startsWith('crates:'))

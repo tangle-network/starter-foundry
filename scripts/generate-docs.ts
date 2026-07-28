@@ -11,12 +11,20 @@ const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const OUT = join(REPO, 'docs/reference')
 
 function readManifest(path) {
-  try { return JSON.parse(readFileSync(path, 'utf8')) } catch { return null }
+  try {
+    return JSON.parse(readFileSync(path, 'utf8'))
+  } catch {
+    return null
+  }
 }
 
 function renderFamily(id, m) {
   const lines = [`# Family: \`${id}\``, '', m.description ?? '', '']
-  if (m.taxonomy) lines.push(`**Taxonomy**: language=${m.taxonomy.language ?? '?'} · runtime=${m.taxonomy.runtime ?? '?'} · surface=${m.taxonomy.surface ?? '?'}`, '')
+  if (m.taxonomy)
+    lines.push(
+      `**Taxonomy**: language=${m.taxonomy.language ?? '?'} · runtime=${m.taxonomy.runtime ?? '?'} · surface=${m.taxonomy.surface ?? '?'}`,
+      '',
+    )
   if (m.tags) lines.push(`**Tags**: ${m.tags.join(', ')}`, '')
   if (m.buildHints?.whenToUse) lines.push(`## When to use`, '', m.buildHints.whenToUse, '')
   if (m.buildHints?.firstSteps?.length) {
@@ -37,14 +45,19 @@ function renderFamily(id, m) {
   if (m.slots) {
     lines.push('## Slots', '')
     for (const [slotName, slotCfg] of Object.entries(m.slots)) {
-      lines.push(`- \`${slotName}\` — options: ${(slotCfg.options ?? []).join(', ')} (default: \`${slotCfg.default ?? '(none)'}\`)`)
+      lines.push(
+        `- \`${slotName}\` — options: ${(slotCfg.options ?? []).join(', ')} (default: \`${slotCfg.default ?? '(none)'}\`)`,
+      )
     }
     lines.push('')
   }
   if (m.tieredKeywords) {
     lines.push('## Routing keywords', '')
     for (const [tier, kws] of Object.entries(m.tieredKeywords)) {
-      if (Array.isArray(kws) && kws.length > 0) lines.push(`- **${tier}**: ${kws.slice(0, 20).join(', ')}${kws.length > 20 ? ` +${kws.length - 20} more` : ''}`)
+      if (Array.isArray(kws) && kws.length > 0)
+        lines.push(
+          `- **${tier}**: ${kws.slice(0, 20).join(', ')}${kws.length > 20 ? ` +${kws.length - 20} more` : ''}`,
+        )
     }
     lines.push('')
   }
@@ -139,4 +152,6 @@ const index = [
 ]
 writeFileSync(join(OUT, 'README.md'), index.join('\n'))
 
-console.log(`✓ wrote docs/reference/ — ${familyIds.length} families, ${capIds.length} capabilities, ${partnerIds.length} partners`)
+console.log(
+  `✓ wrote docs/reference/ — ${familyIds.length} families, ${capIds.length} capabilities, ${partnerIds.length} partners`,
+)

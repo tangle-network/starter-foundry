@@ -16,7 +16,7 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs'
 import { dirname, resolve as resolvePath } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { validateRunRecord, type RunRecord } from './run-record.js'
+import { validateRunRecord, type RunRecord } from '@tangle-network/agent-eval'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -35,12 +35,14 @@ export function appendRunRecord(record: RunRecord, path: string = RUNS_JSONL_PAT
 /** Read every record. Returns empty array when the file is missing. */
 export function readRunRecords(path: string = RUNS_JSONL_PATH): RunRecord[] {
   if (!existsSync(path)) return []
-  const lines = readFileSync(path, 'utf8').split('\n').filter((l) => l.trim().length > 0)
+  const lines = readFileSync(path, 'utf8')
+    .split('\n')
+    .filter((l) => l.trim().length > 0)
   return lines.map((line, idx) => {
     try {
       return validateRunRecord(JSON.parse(line))
     } catch (e) {
-      throw new Error(`runs.jsonl line ${idx + 1}: ${(e as Error).message}`, { cause: e })
+      throw new Error(`${path} line ${idx + 1}: ${(e as Error).message}`, { cause: e })
     }
   })
 }
@@ -55,7 +57,7 @@ export function* iterRunRecords(path: string = RUNS_JSONL_PATH): Generator<RunRe
     try {
       yield validateRunRecord(JSON.parse(line))
     } catch (e) {
-      throw new Error(`runs.jsonl line ${idx + 1}: ${(e as Error).message}`, { cause: e })
+      throw new Error(`${path} line ${idx + 1}: ${(e as Error).message}`, { cause: e })
     }
   }
 }

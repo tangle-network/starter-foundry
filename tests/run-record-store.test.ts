@@ -10,11 +10,14 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import test from 'node:test'
 
+import type { RunRecord } from '@tangle-network/agent-eval'
+
 import { appendRunRecord, readRunRecords, iterRunRecords } from '../dist/lib/run-record-store.js'
 
-const VALID = {
+const VALID: RunRecord = {
   runId: '00000000-0000-0000-0000-000000000001',
   experimentId: 'audit/gen17',
+  scenarioId: 'scenario-1',
   candidateId: 'remix-static-ts',
   seed: 0,
   model: 'claude-sonnet-4-6@claude-sonnet-4-5-20250929',
@@ -23,10 +26,11 @@ const VALID = {
   commitSha: 'deadbeef',
   wallMs: 1234,
   costUsd: 0.012,
+  costProvenance: { kind: 'observed', usd: 0.012 },
   tokenUsage: { input: 100, output: 200 },
-  outcome: { searchScore: 0.85, raw: { install: true, typecheck: true } },
-  splitTag: 'search' as const,
-  source: 'foundry' as const,
+  terminalOutcome: 'succeeded',
+  outcome: { searchScore: 0.85, raw: { install: 1, typecheck: 1 } },
+  splitTag: 'search',
 }
 
 function freshPath(): { dir: string; path: string } {
@@ -39,7 +43,9 @@ test('appendRunRecord writes one line per record', () => {
   try {
     appendRunRecord(VALID, path)
     appendRunRecord({ ...VALID, runId: '00000000-0000-0000-0000-000000000002' }, path)
-    const lines = readFileSync(path, 'utf8').split('\n').filter((l) => l.length > 0)
+    const lines = readFileSync(path, 'utf8')
+      .split('\n')
+      .filter((l) => l.length > 0)
     assert.equal(lines.length, 2)
     assert.equal(JSON.parse(lines[0]).runId, VALID.runId)
   } finally {
@@ -84,13 +90,10 @@ test('readRunRecords surfaces corrupt lines with line number', () => {
   const { dir, path } = freshPath()
   try {
     appendRunRecord(VALID, path)
-    writeFileSync(
-      path,
-      readFileSync(path, 'utf8') + 'not-json{{\n' + JSON.stringify(VALID) + '\n',
-    )
+    writeFileSync(path, readFileSync(path, 'utf8') + 'not-json{{\n' + JSON.stringify(VALID) + '\n')
     assert.throws(
       () => readRunRecords(path),
-      (e: Error) => /runs\.jsonl line 2/.test(e.message),
+      (e: Error) => e.message.includes(`${path} line 2`),
     )
   } finally {
     rmSync(dir, { recursive: true, force: true })
@@ -108,7 +111,7 @@ test('readRunRecords rejects validator-failing lines (e.g. bare alias) post-writ
     )
     assert.throws(
       () => readRunRecords(path),
-      (e: Error) => /runs\.jsonl line 2/.test(e.message),
+      (e: Error) => e.message.includes(`${path} line 2`),
     )
   } finally {
     rmSync(dir, { recursive: true, force: true })
@@ -134,7 +137,7 @@ test('iterRunRecords skips blank lines and surfaces line errors', () => {
     writeFileSync(path, JSON.stringify(VALID) + '\n\n' + 'broken\n', 'utf8')
     assert.throws(
       () => [...iterRunRecords(path)],
-      (e: Error) => /runs\.jsonl line 3/.test(e.message),
+      (e: Error) => e.message.includes(`${path} line 3`),
     )
   } finally {
     rmSync(dir, { recursive: true, force: true })

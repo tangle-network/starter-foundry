@@ -5,7 +5,7 @@
 // `compare` diffs two scorecards (no statistical gate — for that, use the
 // regression layer's `eval:gate` CLI).
 
-import { runHarness } from './runner.js'
+import { exitCodeForReport, runHarness } from './runner.js'
 import { readScorecard, diffScorecards } from './scorecard.js'
 
 function help(): never {
@@ -30,7 +30,7 @@ async function cmdRun(argv: string[]): Promise<void> {
     process.exit(2)
   }
   const report = await runHarness({ targetUrl: target, threshold, variantId })
-  process.exitCode = report.aggregate < report.threshold ? 1 : 0
+  process.exitCode = exitCodeForReport(report)
 }
 
 async function cmdCompare(argv: string[]): Promise<void> {
@@ -39,10 +39,13 @@ async function cmdCompare(argv: string[]): Promise<void> {
   const baseline = await readScorecard(baselinePath)
   const head = await readScorecard(headPath)
   const diff = diffScorecards(baseline, head)
-  const arrow = diff.aggregateDelta >= 0 ? '↑' : '↓'
-  console.log(
-    `aggregate ${baseline.aggregate.toFixed(3)} → ${head.aggregate.toFixed(3)} (${arrow}${Math.abs(diff.aggregateDelta).toFixed(3)})`,
-  )
+  const baselineAggregate = baseline.aggregate?.toFixed(3) ?? 'unmeasured'
+  const headAggregate = head.aggregate?.toFixed(3) ?? 'unmeasured'
+  const delta =
+    diff.aggregateDelta === null
+      ? 'unmeasured'
+      : `${diff.aggregateDelta >= 0 ? '+' : ''}${diff.aggregateDelta.toFixed(3)}`
+  console.log(`aggregate ${baselineAggregate} -> ${headAggregate} (${delta})`)
   for (const f of diff.perFlow) {
     const b = f.baseline?.toFixed(3) ?? '—'
     const h = f.head?.toFixed(3) ?? '—'

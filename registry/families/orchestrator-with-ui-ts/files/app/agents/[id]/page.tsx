@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { notFound, useParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import { SandboxWorkbench } from '@tangle-network/sandbox-ui/workspace'
+import { AgentComposer } from '@tangle-network/sandbox-ui/chat'
 import type { SandboxWorkbenchArtifact } from '@tangle-network/sandbox-ui/workspace'
 import { useSdkSession } from '@tangle-network/sandbox-ui/sdk-hooks'
 import { findAgent } from '../../../src/lib/agent-roster'
@@ -25,9 +26,8 @@ import { makeArtifactStreamAdapter } from '../../../src/lib/blocks-to-artifacts'
 // context provider in app/layout.tsx (one useSdkSession() per AgentEntry,
 // keyed by id) and read from it here. See README.md → 'Session lifecycle'.
 //
-// Server-side persistence (resume the same SDK conversation across page
-// reloads, browsers, devices) is a separate concern: hydrate the session via
-// `replaceHistory` from the sandbox-sdk's session-history endpoint on mount.
+// To resume across reloads, persist session messages in your application and
+// hydrate them with `replaceHistory` on mount.
 
 export default function AgentChatPage() {
   const params = useParams<{ id: string }>()
@@ -42,6 +42,7 @@ export default function AgentChatPage() {
   const session = useSdkSession()
   const [artifacts, setArtifacts] = useState<SandboxWorkbenchArtifact[]>([])
   const [activeArtifactId, setActiveArtifactId] = useState<string | undefined>()
+  const [composerText, setComposerText] = useState('')
 
   // One adapter per route mount — the closure preserves last-text/last-artifacts
   // across re-renders so partial streams don't cause flicker.
@@ -81,6 +82,13 @@ export default function AgentChatPage() {
     session.completeAssistantMessage()
   }
 
+  const handleSubmit = () => {
+    const text = composerText.trim()
+    if (!text) return
+    setComposerText('')
+    handleSend(text)
+  }
+
   return (
     <div className='flex min-h-screen flex-col bg-[hsl(var(--background))] text-[hsl(var(--foreground))]'>
       <header className='flex items-center justify-between border-b border-[hsl(var(--border))] px-6 py-4'>
@@ -112,7 +120,14 @@ export default function AgentChatPage() {
             messages: session.messages,
             partMap: session.partMap,
             isStreaming: session.isStreaming,
-            onSend: handleSend,
+            composerControls: (
+              <AgentComposer
+                value={composerText}
+                onChange={setComposerText}
+                onSubmit={handleSubmit}
+                busy={session.isStreaming}
+              />
+            ),
           }}
           artifacts={artifacts}
           activeArtifactId={activeArtifactId}

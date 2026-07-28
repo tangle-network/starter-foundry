@@ -1,22 +1,15 @@
 /**
  * Liveness canaries for `.evolve/runs.jsonl`.
  *
- * Mirrors the v0.16/0.17 agent-eval `runCanaries` API shape so the
- * forward swap is rename-only:
+ * Starter Foundry-specific liveness checks over agent-eval RunRecords.
  *
- *   import { runCanaries } from '@tangle-network/agent-eval'
- *   `rm src/lib/run-canaries.ts`
- *
- * Adapted to the starter-foundry RunRecord shape:
- *   - There is no `judgeMetadata` on foundry runs (Gen-17 chose a leaner
- *     shape than upstream agent-eval). Silent-fallback detection is
- *     therefore re-keyed onto stage-flag streaks: consecutive runs whose
+ * Silent-fallback detection is re-keyed onto stage-flag streaks:
+ * consecutive runs whose
  *     `outcome.raw[stage]` flips false (e.g. a proposer that suddenly
  *     stops producing typechecking output) is the foundry-specific
  *     equivalent of a silent judge fallback.
- *   - Distribution shift is keyed on `failureMode`, since that's the
- *     categorical bucket the foundry already populates.
- *   - Calibration drift is gated on `outcome.searchScore` (or any other
+ *   - Distribution shift is keyed on `failureClass`.
+ *   - Calibration drift is keyed on `outcome.searchScore` (or any other
  *     numeric raw key the caller picks) and falls back to no-op when
  *     numeric scores are absent.
  *
@@ -27,7 +20,7 @@
  *   2. `score_calibration_drift` — recent vs historical `searchScore`
  *      distributions diverge (two-sample KS).
  *   3. `failure_mode_distribution_shift` — chi-square on the
- *      `failureMode` bucket counts.
+ *      `failureClass` bucket counts.
  *
  * Outputs are alerts, not test failures. A canary firing means
  * investigate, not abort. The CLI script (`scripts/canary-check.ts`)
@@ -39,7 +32,7 @@
  * @public
  */
 
-import type { RunRecord } from './run-record.js'
+import type { RunRecord } from '@tangle-network/agent-eval'
 
 export type CanaryKind =
   | 'silent_stage_failure'
@@ -84,7 +77,7 @@ export interface CanaryOptions {
    *   Default `'searchScore'`.
    */
   scoreDrift?: {
-    key?: 'searchScore' | string
+    key?: string
     historyWindow?: number
     recentWindow?: number
     ksAlpha?: number
@@ -94,7 +87,7 @@ export interface CanaryOptions {
   /**
    * Failure-mode distribution shift (chi-square).
    * Skipped entirely if `category` is omitted AND the default extractor
-   * yields too-few buckets. The default extractor uses `failureMode`
+   * yields too-few buckets. The default extractor uses `failureClass`
    * (or `'pass'` when the run succeeded).
    */
   failureModeShift?: {
@@ -140,17 +133,16 @@ function detectSilentStageFailure(
   let streakStartRunId: string | null = null
   let alreadyFiredForStreak = false
 
-  for (let i = 0; i < runs.length; i += 1) {
-    const run = runs[i]
+  for (const run of runs) {
     const raw = run.outcome.raw
-    if (raw === undefined || !(stage in raw)) {
+    if (!(stage in raw)) {
       streak = 0
       streakStartRunId = null
       alreadyFiredForStreak = false
       continue
     }
     const value = raw[stage]
-    const failed = value === false || value === 0
+    const failed = value === 0
     if (failed) {
       streak += 1
       if (streak === 1) streakStartRunId = run.runId
@@ -160,7 +152,7 @@ function detectSilentStageFailure(
           severity: 'error',
           message:
             `silent stage failure: ${streak} consecutive run(s) with ` +
-            `outcome.raw.${stage} === false`,
+            `outcome.raw.${stage} === 0`,
           evidence: {
             stage,
             streakLength: streak,
@@ -201,7 +193,7 @@ function detectScoreDrift(
     if (key === 'searchScore') {
       v = r.outcome.searchScore
     } else {
-      v = r.outcome.raw?.[key]
+      v = r.outcome.raw[key]
     }
     if (typeof v === 'number' && Number.isFinite(v)) series.push(v)
   }
@@ -335,15 +327,16 @@ function detectFailureModeShift(
 }
 
 function defaultFailureModeCategory(run: RunRecord): string | null {
-  if (typeof run.failureMode === 'string' && run.failureMode.length > 0) {
-    return run.failureMode
+  if (typeof run.failureClass === 'string' && run.failureClass.length > 0) {
+    return run.failureClass
   }
   return 'pass'
 }
 
 function chiSquareCritical(df: number, alpha: number): number {
   // Critical values at α = 0.1, 0.05, 0.025, 0.01.
-  const TABLE: Record<number, [number, number, number, number]> = {
+  const fallback = [15.99, 18.31, 20.48, 23.21] as const
+  const TABLE: Partial<Record<number, readonly [number, number, number, number]>> = {
     1: [2.71, 3.84, 5.02, 6.63],
     2: [4.61, 5.99, 7.38, 9.21],
     3: [6.25, 7.81, 9.35, 11.34],
@@ -353,18 +346,18 @@ function chiSquareCritical(df: number, alpha: number): number {
     7: [12.02, 14.07, 16.01, 18.48],
     8: [13.36, 15.51, 17.53, 20.09],
     9: [14.68, 16.92, 19.02, 21.67],
-    10: [15.99, 18.31, 20.48, 23.21],
+    10: fallback,
     15: [22.31, 25.0, 27.49, 30.58],
     20: [28.41, 31.41, 34.17, 37.57],
     25: [34.38, 37.65, 40.65, 44.31],
     30: [40.26, 43.77, 46.98, 50.89],
   }
   const idx = alpha >= 0.1 ? 0 : alpha >= 0.05 ? 1 : alpha >= 0.025 ? 2 : 3
-  if (TABLE[df]) return TABLE[df][idx]
+  const exact = TABLE[df]
+  if (exact) return exact[idx]
   if (df > 30) {
     // Wilson-Hilferty normal approximation.
-    const zMap: Record<number, number> = { 0: 1.282, 1: 1.645, 2: 1.96, 3: 2.326 }
-    const z = zMap[idx] ?? 1.96
+    const z = [1.282, 1.645, 1.96, 2.326][idx] ?? 1.96
     const term = 1 - 2 / (9 * df) + z * Math.sqrt(2 / (9 * df))
     return df * term ** 3
   }
@@ -375,11 +368,14 @@ function chiSquareCritical(df: number, alpha: number): number {
     const lo = keys[i - 1]
     const hi = keys[i]
     if (df >= lo && df <= hi) {
+      const loValues = TABLE[lo]
+      const hiValues = TABLE[hi]
+      if (!loValues || !hiValues) continue
       const t = (df - lo) / (hi - lo)
-      return TABLE[lo][idx] * (1 - t) + TABLE[hi][idx] * t
+      return loValues[idx] * (1 - t) + hiValues[idx] * t
     }
   }
-  return TABLE[10][idx]
+  return fallback[idx]
 }
 
 function mean(xs: number[]): number {

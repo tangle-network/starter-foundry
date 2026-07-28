@@ -29,9 +29,15 @@ const date = new Date().toISOString().slice(0, 10)
 const pkg = JSON.parse(readFileSync('package.json', 'utf8'))
 
 // Registry state at HEAD.
-const families = readdirSync('registry/families').filter((e) => !e.startsWith('_') && !e.startsWith('.')).sort()
-const capabilities = readdirSync('registry/layers/capability').filter((e) => !e.startsWith('_') && !e.startsWith('.')).sort()
-const partners = readdirSync('registry/partners').filter((e) => !e.startsWith('_') && !e.startsWith('.')).sort()
+const families = readdirSync('registry/families')
+  .filter((e) => !e.startsWith('_') && !e.startsWith('.'))
+  .sort()
+const capabilities = readdirSync('registry/layers/capability')
+  .filter((e) => !e.startsWith('_') && !e.startsWith('.'))
+  .sort()
+const partners = readdirSync('registry/partners')
+  .filter((e) => !e.startsWith('_') && !e.startsWith('.'))
+  .sort()
 
 // Registry state at the range's start (best-effort; skip if unavailable).
 const rangeStart = RANGE.split('..')[0]
@@ -39,9 +45,24 @@ let baselineFamilies = new Set()
 let baselineCapabilities = new Set()
 let baselinePartners = new Set()
 try {
-  baselineFamilies = new Set(run('git', ['ls-tree', '-d', '--name-only', rangeStart, 'registry/families/']).split('\n').filter(Boolean).map((p) => p.split('/').pop()))
-  baselineCapabilities = new Set(run('git', ['ls-tree', '-d', '--name-only', rangeStart, 'registry/layers/capability/']).split('\n').filter(Boolean).map((p) => p.split('/').pop()))
-  baselinePartners = new Set(run('git', ['ls-tree', '-d', '--name-only', rangeStart, 'registry/partners/']).split('\n').filter(Boolean).map((p) => p.split('/').pop()))
+  baselineFamilies = new Set(
+    run('git', ['ls-tree', '-d', '--name-only', rangeStart, 'registry/families/'])
+      .split('\n')
+      .filter(Boolean)
+      .map((p) => p.split('/').pop()),
+  )
+  baselineCapabilities = new Set(
+    run('git', ['ls-tree', '-d', '--name-only', rangeStart, 'registry/layers/capability/'])
+      .split('\n')
+      .filter(Boolean)
+      .map((p) => p.split('/').pop()),
+  )
+  baselinePartners = new Set(
+    run('git', ['ls-tree', '-d', '--name-only', rangeStart, 'registry/partners/'])
+      .split('\n')
+      .filter(Boolean)
+      .map((p) => p.split('/').pop()),
+  )
 } catch {
   // History may not go back that far; accept empty baseline.
 }
@@ -54,7 +75,9 @@ function descriptionOf(baseDir, id) {
   try {
     const m = JSON.parse(readFileSync(join(baseDir, id, 'manifest.json'), 'utf8'))
     return (m.description ?? '').slice(0, 140)
-  } catch { return '' }
+  } catch {
+    return ''
+  }
 }
 
 const lines = []
@@ -99,9 +122,15 @@ lines.push(`- capabilities: ${capabilities.length}`)
 lines.push(`- partners: ${partners.length}`)
 lines.push('')
 lines.push('### Consumer action items')
-lines.push('- Ensure your bench container has the toolchains any new families require (e.g. `bun`, `deno`, `wasm-pack`, `vllm`).')
-lines.push('- Re-emit your buildout traces via `emitBuildoutEvent` — new family IDs will be classified by the detector.')
+lines.push(
+  '- Ensure your bench container has the toolchains any new families require (e.g. `bun`, `deno`, `wasm-pack`, `vllm`).',
+)
+lines.push(
+  '- Re-emit your buildout traces via `emitBuildoutEvent` — new family IDs will be classified by the detector.',
+)
 lines.push('')
 
 writeFileSync('CHANGELOG.md', lines.join('\n'))
-console.log(`✓ wrote CHANGELOG.md (${commits.length} commits, +${newFamilies.length} families, +${newCapabilities.length} capabilities, +${newPartners.length} partners)`)
+console.log(
+  `✓ wrote CHANGELOG.md (${commits.length} commits, +${newFamilies.length} families, +${newCapabilities.length} capabilities, +${newPartners.length} partners)`,
+)

@@ -2,7 +2,7 @@
  * Canary detector tests — fixture data exercises every alert path:
  *   1. silent stage failure (consecutive typecheck=false)
  *   2. score-calibration drift (KS over searchScore)
- *   3. failure-mode distribution shift (chi-square over failureMode)
+ *   3. failure-mode distribution shift (chi-square over failureClass)
  *
  * Each named regression: the test asserts both the firing case and the
  * just-below-threshold case so a calibration-bump on either side breaks
@@ -12,8 +12,9 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
+import type { RunRecord } from '@tangle-network/agent-eval'
+
 import { runCanaries } from '../dist/lib/run-canaries.js'
-import type { RunRecord } from '../dist/lib/run-record.js'
 
 const BASE: Omit<RunRecord, 'runId' | 'outcome'> = {
   experimentId: 'canary-fixture',
@@ -25,30 +26,38 @@ const BASE: Omit<RunRecord, 'runId' | 'outcome'> = {
   commitSha: 'fixture',
   wallMs: 100,
   costUsd: 0.001,
+  costProvenance: { kind: 'observed', usd: 0.001 },
   tokenUsage: { input: 10, output: 10 },
+  terminalOutcome: 'succeeded',
   splitTag: 'search',
-  source: 'foundry',
+  scenarioId: 'canary-scenario',
 }
 
-function mkRun(i: number, outcome: RunRecord['outcome'], failureMode?: string): RunRecord {
+function mkRun(
+  i: number,
+  outcome: RunRecord['outcome'],
+  failureClass?: RunRecord['failureClass'],
+): RunRecord {
   return {
     ...BASE,
     runId: `00000000-0000-0000-0000-${String(i).padStart(12, '0')}`,
+    scenarioId: `canary-scenario-${i}`,
     outcome,
-    ...(failureMode ? { failureMode } : {}),
+    terminalOutcome: failureClass ? 'failed' : 'succeeded',
+    ...(failureClass ? { failureClass } : {}),
   }
 }
 
 test('silent_stage_failure fires after threshold consecutive typecheck=false', () => {
   // 3 passes, then 4 typecheck failures. Default threshold is 3.
   const runs: RunRecord[] = [
-    mkRun(1, { searchScore: 1, raw: { typecheck: true } }),
-    mkRun(2, { searchScore: 1, raw: { typecheck: true } }),
-    mkRun(3, { searchScore: 1, raw: { typecheck: true } }),
-    mkRun(4, { searchScore: 0, raw: { typecheck: false } }),
-    mkRun(5, { searchScore: 0, raw: { typecheck: false } }),
-    mkRun(6, { searchScore: 0, raw: { typecheck: false } }),
-    mkRun(7, { searchScore: 0, raw: { typecheck: false } }),
+    mkRun(1, { searchScore: 1, raw: { typecheck: 1 } }),
+    mkRun(2, { searchScore: 1, raw: { typecheck: 1 } }),
+    mkRun(3, { searchScore: 1, raw: { typecheck: 1 } }),
+    mkRun(4, { searchScore: 0, raw: { typecheck: 0 } }),
+    mkRun(5, { searchScore: 0, raw: { typecheck: 0 } }),
+    mkRun(6, { searchScore: 0, raw: { typecheck: 0 } }),
+    mkRun(7, { searchScore: 0, raw: { typecheck: 0 } }),
   ]
   const report = runCanaries(runs)
   const fires = report.alerts.filter((a) => a.kind === 'silent_stage_failure')
@@ -61,10 +70,10 @@ test('silent_stage_failure fires after threshold consecutive typecheck=false', (
 test('silent_stage_failure does NOT fire when streak < threshold', () => {
   // Only 2 consecutive failures — below default threshold of 3.
   const runs: RunRecord[] = [
-    mkRun(1, { searchScore: 1, raw: { typecheck: true } }),
-    mkRun(2, { searchScore: 0, raw: { typecheck: false } }),
-    mkRun(3, { searchScore: 0, raw: { typecheck: false } }),
-    mkRun(4, { searchScore: 1, raw: { typecheck: true } }),
+    mkRun(1, { searchScore: 1, raw: { typecheck: 1 } }),
+    mkRun(2, { searchScore: 0, raw: { typecheck: 0 } }),
+    mkRun(3, { searchScore: 0, raw: { typecheck: 0 } }),
+    mkRun(4, { searchScore: 1, raw: { typecheck: 1 } }),
   ]
   const report = runCanaries(runs)
   const fires = report.alerts.filter((a) => a.kind === 'silent_stage_failure')
@@ -74,11 +83,11 @@ test('silent_stage_failure does NOT fire when streak < threshold', () => {
 test('silent_stage_failure resets on a passing run', () => {
   // Streak of 2, pass, streak of 2 → no fire (threshold = 3).
   const runs: RunRecord[] = [
-    mkRun(1, { searchScore: 0, raw: { typecheck: false } }),
-    mkRun(2, { searchScore: 0, raw: { typecheck: false } }),
-    mkRun(3, { searchScore: 1, raw: { typecheck: true } }),
-    mkRun(4, { searchScore: 0, raw: { typecheck: false } }),
-    mkRun(5, { searchScore: 0, raw: { typecheck: false } }),
+    mkRun(1, { searchScore: 0, raw: { typecheck: 0 } }),
+    mkRun(2, { searchScore: 0, raw: { typecheck: 0 } }),
+    mkRun(3, { searchScore: 1, raw: { typecheck: 1 } }),
+    mkRun(4, { searchScore: 0, raw: { typecheck: 0 } }),
+    mkRun(5, { searchScore: 0, raw: { typecheck: 0 } }),
   ]
   const report = runCanaries(runs)
   const fires = report.alerts.filter((a) => a.kind === 'silent_stage_failure')
@@ -87,9 +96,9 @@ test('silent_stage_failure resets on a passing run', () => {
 
 test('silent_stage_failure honors a custom stage selector', () => {
   const runs: RunRecord[] = [
-    mkRun(1, { searchScore: 1, raw: { build: false } }),
-    mkRun(2, { searchScore: 1, raw: { build: false } }),
-    mkRun(3, { searchScore: 1, raw: { build: false } }),
+    mkRun(1, { searchScore: 1, raw: { build: 0 } }),
+    mkRun(2, { searchScore: 1, raw: { build: 0 } }),
+    mkRun(3, { searchScore: 1, raw: { build: 0 } }),
   ]
   const report = runCanaries(runs, {
     silentStageFailure: { stage: 'build', consecutiveThreshold: 3 },
@@ -148,13 +157,17 @@ test('score_calibration_drift skips when too few runs', () => {
 test('failure_mode_distribution_shift fires when recent failure mix shifts', () => {
   const runs: RunRecord[] = []
   // 50 historical: balanced typecheck/build/lint failures.
-  const histModes = ['typecheck', 'build', 'lint']
+  const histModes: NonNullable<RunRecord['failureClass']>[] = [
+    'reasoning_error',
+    'format_drift',
+    'timeout',
+  ]
   for (let i = 0; i < 50; i += 1) {
     runs.push(mkRun(i, { searchScore: 0, raw: {} }, histModes[i % 3]!))
   }
   // 20 recent: dominated by 'install' (a new failure mode entirely).
   for (let i = 0; i < 20; i += 1) {
-    runs.push(mkRun(100 + i, { searchScore: 0, raw: {} }, 'install'))
+    runs.push(mkRun(100 + i, { searchScore: 0, raw: {} }, 'sandbox_failure'))
   }
   const report = runCanaries(runs, {
     failureModeShift: { historyWindow: 50, recentWindow: 20, minRecent: 10, chiSquareAlpha: 0.05 },
@@ -169,7 +182,7 @@ test('failure_mode_distribution_shift fires when recent failure mix shifts', () 
 test('failure_mode_distribution_shift skips when too few runs', () => {
   const runs: RunRecord[] = []
   for (let i = 0; i < 5; i += 1) {
-    runs.push(mkRun(i, { searchScore: 0, raw: {} }, 'typecheck'))
+    runs.push(mkRun(i, { searchScore: 0, raw: {} }, 'reasoning_error'))
   }
   const report = runCanaries(runs, {
     failureModeShift: { minRecent: 10 },
@@ -179,9 +192,9 @@ test('failure_mode_distribution_shift skips when too few runs', () => {
 
 test('runCanaries returns per-kind counts', () => {
   const runs: RunRecord[] = [
-    mkRun(1, { searchScore: 0, raw: { typecheck: false } }),
-    mkRun(2, { searchScore: 0, raw: { typecheck: false } }),
-    mkRun(3, { searchScore: 0, raw: { typecheck: false } }),
+    mkRun(1, { searchScore: 0, raw: { typecheck: 0 } }),
+    mkRun(2, { searchScore: 0, raw: { typecheck: 0 } }),
+    mkRun(3, { searchScore: 0, raw: { typecheck: 0 } }),
   ]
   const report = runCanaries(runs)
   assert.equal(report.counts.silent_stage_failure, 1)

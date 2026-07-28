@@ -19,6 +19,7 @@ function record(experimentId: string, costUsd: number): string {
   return JSON.stringify({
     runId: `${experimentId}-${costUsd}`,
     experimentId,
+    scenarioId: 'cost-ceiling',
     candidateId: 'c',
     seed: 0,
     model: 'claude-sonnet-4-6@claude-sonnet-4-5-20250929',
@@ -27,10 +28,11 @@ function record(experimentId: string, costUsd: number): string {
     commitSha: 'sha',
     wallMs: 1,
     costUsd,
+    costProvenance: { kind: 'observed', usd: costUsd },
     tokenUsage: { input: 0, output: 0 },
+    terminalOutcome: 'succeeded',
     outcome: { searchScore: 0.5, raw: {} },
     splitTag: 'search',
-    source: 'foundry',
   })
 }
 

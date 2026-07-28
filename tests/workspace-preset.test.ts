@@ -245,6 +245,10 @@ test('buildPresetReadme references each chosen family + every script + every wir
   for (const wire of preset.envWiring) {
     assert.match(readme, new RegExp(`${wire.to}/.env.*${wire.toVar}`))
   }
+  assert.ok(
+    preset.envWiring.some((wire) => wire.to === 'eval' && wire.toVar === 'EVAL_TARGET_BASE_URL'),
+    'eval workspace wiring must use the variable consumed by the eval runner',
+  )
 })
 
 // ── 5. End-to-end compose (integration; requires W1/W3 families) ─────────

@@ -12,16 +12,16 @@
     "svelte": "^5.0.0"
   },
   "devDependencies": {
-    "vite": "^6.4.2",
+    "vite": "^6.4.3",
     "@sveltejs/adapter-auto": "^4.0.0",
     "@sveltejs/vite-plugin-svelte": "^5.0.0"
   },
   "overrides": {
-    "vite": "^6.4.2"
+    "vite": "^6.4.3"
   },
   "pnpm": {
     "overrides": {
-      "vite": "^6.4.2"
+      "vite": "^6.4.3"
     },
     "minimumReleaseAge": 4320,
     "minimumReleaseAgeExclude": []

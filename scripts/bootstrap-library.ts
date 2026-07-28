@@ -10,7 +10,15 @@
 //   node scripts/bootstrap-library.ts --dry-run
 //   node scripts/bootstrap-library.ts --only threejs-game,bevy-web
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync, cpSync } from 'node:fs'
+import {
+  readFileSync,
+  writeFileSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  statSync,
+  cpSync,
+} from 'node:fs'
 import { dirname, join, resolve, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createHash } from 'node:crypto'
@@ -26,7 +34,11 @@ function arg(flag, fallback) {
   return i >= 0 ? argv[i + 1] : fallback
 }
 const DRY = argv.includes('--dry-run')
-const ONLY = arg('--only', null)?.split(',').map((s) => s.trim()).filter(Boolean) ?? null
+const ONLY =
+  arg('--only', null)
+    ?.split(',')
+    .map((s) => s.trim())
+    .filter(Boolean) ?? null
 
 // Families to bootstrap: every summary.json with finalPass=true.
 const candidates = readdirSync(MEMORY)

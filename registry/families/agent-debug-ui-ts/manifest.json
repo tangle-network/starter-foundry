@@ -1,6 +1,6 @@
 {
   "id": "agent-debug-ui-ts",
-  "description": "Vite+React UI for live debugging of agent runs. Connects to a Tangle sandbox via @tangle-network/sandbox SSE stream, visualizes events in real-time, supports step-through replay. Composes ui-adapter:blocks-renderer + @tangle-network/sandbox-ui primitives.",
+  "description": "React UI plus a local Node API for debugging agent runs in a Tangle sandbox. The server owns the Sandbox SDK and credentials; the browser visualizes a same-origin event stream with step-through replay.",
   "tags": [
     "ui",
     "agent-debug",
@@ -22,13 +22,13 @@
     }
   },
   "defaults": {
-    "projectType": "agent-debug-ui",
-    "publicVars": ["TANGLE_SANDBOX_BASE_URL", "SANDBOX_ID"]
+    "projectType": "agent-debug-ui"
   },
   "files": [
     { "source": "files/package.json", "target": "package.json" },
     { "source": "files/tsconfig.json", "target": "tsconfig.json" },
     { "source": "files/tsconfig.node.json", "target": "tsconfig.node.json" },
+    { "source": "files/tsconfig.server.json", "target": "tsconfig.server.json" },
     { "source": "files/vite.config.ts", "target": "vite.config.ts" },
     { "source": "files/index.html", "target": "index.html" },
     { "source": "files/.env.example", "target": ".env.example" },
@@ -43,6 +43,7 @@
     { "source": "files/src/components/ReplayScrubber.tsx", "target": "src/components/ReplayScrubber.tsx" },
     { "source": "files/src/lib/sandbox-stream.ts", "target": "src/lib/sandbox-stream.ts" },
     { "source": "files/src/lib/event-types.ts", "target": "src/lib/event-types.ts" },
+    { "source": "files/server/index.ts", "target": "server/index.ts" },
     { "source": "files/pnpm-workspace.yaml", "target": "pnpm-workspace.yaml" }
   ],
   "validationChecks": [
@@ -50,10 +51,12 @@
     { "type": "file-exists", "path": "index.html" },
     { "type": "file-exists", "path": "vite.config.ts" },
     { "type": "file-exists", "path": "tsconfig.json" },
+    { "type": "file-exists", "path": "tsconfig.server.json" },
     { "type": "file-exists", "path": "src/main.tsx" },
     { "type": "file-exists", "path": "src/App.tsx" },
     { "type": "file-exists", "path": "src/lib/sandbox-stream.ts" },
     { "type": "file-exists", "path": "src/lib/event-types.ts" },
+    { "type": "file-exists", "path": "server/index.ts" },
     { "type": "file-exists", "path": "src/components/EventStream.tsx" },
     { "type": "file-exists", "path": "src/components/ToolCallTimeline.tsx" },
     { "type": "file-exists", "path": "src/components/ChatPair.tsx" },
@@ -82,11 +85,12 @@
   },
   "contextHints": {
     "commands": ["pnpm dev", "pnpm build"],
-    "entrypoints": ["src/App.tsx"],
+    "entrypoints": ["src/App.tsx", "server/index.ts"],
     "extensionPoints": [
       "src/App.tsx",
       "src/lib/sandbox-stream.ts",
-      "src/components/EventStream.tsx"
+      "src/components/EventStream.tsx",
+      "server/index.ts"
     ]
   }
 }

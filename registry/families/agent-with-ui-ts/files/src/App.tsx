@@ -1,22 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSdkSession, type SdkSessionEvent } from '@tangle-network/sandbox-ui/hooks'
+import { AgentComposer } from '@tangle-network/sandbox-ui/chat'
 import {
   SandboxWorkbench,
   type SandboxWorkbenchArtifact,
 } from '@tangle-network/sandbox-ui/workspace'
 import type { TextPart } from '@tangle-network/sandbox-ui/types'
-import {
-  makeArtifactStreamAdapter,
-} from './lib/blocks-to-artifacts'
+import { makeArtifactStreamAdapter } from './lib/blocks-to-artifacts'
+import { serverAgentInvoker } from './lib/agent-client'
 
-// AgentInvoker is the seam between this UI scaffold and whichever
-// agent-runtime bundle the operator is driving. The scaffold has zero
-// per-bundle knowledge — the operator wires the actual transport
-// (sandbox-sdk client, fetch to /api/chat, websocket, etc.) here.
-//
-// Contract: invoke is given the full message history + the new user text;
-// it must stream `SdkSessionEvent`s back via onEvent until the run is done.
-// Returning ends the streaming state.
+// Connect this UI to Sandbox.streamPrompt(), an HTTP route, or another
+// transport by implementing AgentInvoker.
 export interface AgentInvoker {
   invoke: (args: {
     userText: string
@@ -33,7 +27,15 @@ export interface AppProps {
 const ENV_AGENT_NAME =
   (import.meta.env.VITE_AGENT_NAME as string | undefined) ?? '{{agentName}}'
 
-export function App({ agentName = ENV_AGENT_NAME, invoker }: AppProps = {}) {
+interface ActiveRun {
+  controller: AbortController
+  messageId: string
+}
+
+export function App({
+  agentName = ENV_AGENT_NAME,
+  invoker = serverAgentInvoker,
+}: AppProps = {}) {
   const {
     messages,
     partMap,
@@ -42,13 +44,15 @@ export function App({ agentName = ENV_AGENT_NAME, invoker }: AppProps = {}) {
     appendUserMessage,
     beginAssistantMessage,
     applySdkEvent,
+    completeAssistantMessage,
     failAssistantMessage,
   } = useSdkSession()
 
   const [activeArtifactId, setActiveArtifactId] = useState<string | undefined>()
+  const [composerText, setComposerText] = useState('')
   const adapter = useMemo(() => makeArtifactStreamAdapter(), [])
   const [artifacts, setArtifacts] = useState<SandboxWorkbenchArtifact[]>([])
-  const abortRef = useRef<AbortController | null>(null)
+  const activeRunRef = useRef<ActiveRun | null>(null)
 
   // Re-parse the active assistant message text on every part update and
   // hand the rebuilt SandboxWorkbenchArtifact[] to the workbench. The
@@ -94,40 +98,81 @@ export function App({ agentName = ENV_AGENT_NAME, invoker }: AppProps = {}) {
     async (text: string) => {
       const trimmed = text.trim()
       if (!trimmed) return
+
+      const previous = activeRunRef.current
+      if (previous) {
+        activeRunRef.current = null
+        previous.controller.abort()
+        completeAssistantMessage({ messageId: previous.messageId })
+      }
+
       appendUserMessage({ content: trimmed })
       const assistantId = beginAssistantMessage()
 
-      // No invoker wired? Surface a helpful failure rather than a silent
-      // stuck-streaming spinner.
       if (!invoker) {
         failAssistantMessage(
-          'No agent invoker wired. See README — pass an `invoker` prop that ' +
-            'streams SdkSessionEvents from your sandbox-sdk client.',
+          'No agent invoker configured. Pass an `invoker` prop that streams Sandbox events.',
           { messageId: assistantId },
         )
         return
       }
 
-      abortRef.current?.abort()
-      const ac = new AbortController()
-      abortRef.current = ac
+      const controller = new AbortController()
+      activeRunRef.current = { controller, messageId: assistantId }
 
       try {
         await invoker.invoke({
           userText: trimmed,
-          signal: ac.signal,
-          onEvent: (event) => applySdkEvent(event, { messageId: assistantId }),
+          signal: controller.signal,
+          onEvent: (event) => {
+            if (activeRunRef.current?.controller === controller) {
+              applySdkEvent(event, { messageId: assistantId })
+            }
+          },
         })
       } catch (err) {
-        if (ac.signal.aborted) return
+        if (controller.signal.aborted) return
         const reason = err instanceof Error ? err.message : String(err)
         failAssistantMessage(reason, { messageId: assistantId })
+      } finally {
+        if (activeRunRef.current?.controller === controller) {
+          activeRunRef.current = null
+          completeAssistantMessage({ messageId: assistantId })
+        }
       }
     },
-    [appendUserMessage, beginAssistantMessage, applySdkEvent, failAssistantMessage, invoker],
+    [
+      appendUserMessage,
+      beginAssistantMessage,
+      applySdkEvent,
+      completeAssistantMessage,
+      failAssistantMessage,
+      invoker,
+    ],
   )
 
-  useEffect(() => () => abortRef.current?.abort(), [])
+  const handleCancel = useCallback(() => {
+    const active = activeRunRef.current
+    if (!active) return
+    activeRunRef.current = null
+    active.controller.abort()
+    completeAssistantMessage({ messageId: active.messageId })
+  }, [completeAssistantMessage])
+
+  useEffect(
+    () => () => {
+      activeRunRef.current?.controller.abort()
+      activeRunRef.current = null
+    },
+    [],
+  )
+
+  const handleSubmit = useCallback(() => {
+    const text = composerText.trim()
+    if (!text) return
+    setComposerText('')
+    void handleSend(text)
+  }, [composerText, handleSend])
 
   return (
     <SandboxWorkbench
@@ -137,7 +182,15 @@ export function App({ agentName = ENV_AGENT_NAME, invoker }: AppProps = {}) {
         messages,
         partMap,
         isStreaming,
-        onSend: handleSend,
+        composerControls: (
+          <AgentComposer
+            value={composerText}
+            onChange={setComposerText}
+            onSubmit={handleSubmit}
+            busy={isStreaming}
+            onCancel={handleCancel}
+          />
+        ),
       }}
       artifacts={artifacts}
       activeArtifactId={activeArtifactId}

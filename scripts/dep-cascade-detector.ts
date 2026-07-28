@@ -37,7 +37,7 @@ function collectPackageJsons() {
         const deps = {
           ...(pkg.dependencies ?? {}),
           ...(pkg.devDependencies ?? {}),
-          ...((pkg.peerDependencies ?? {})),
+          ...(pkg.peerDependencies ?? {}),
         }
         hits.push({ kind, id, deps, path: pkgPath.replace(REPO + '/', '') })
       } catch {
@@ -61,7 +61,12 @@ function collectPackageJsons() {
           ...(pd.devDependencies ?? {}),
         }
         if (Object.keys(deps).length === 0) continue
-        hits.push({ kind: 'capability-deps', id, deps, path: `registry/layers/capability/${id}/manifest.json` })
+        hits.push({
+          kind: 'capability-deps',
+          id,
+          deps,
+          path: `registry/layers/capability/${id}/manifest.json`,
+        })
       } catch {
         /* skip */
       }

@@ -35,7 +35,15 @@
 //   node scripts/dispatch-scaffold-fix.ts --cluster <key>    # specific cluster
 //   node scripts/dispatch-scaffold-fix.ts --dry-run          # show plan, no dispatch
 
-import { readFileSync, existsSync, mkdtempSync, readdirSync, appendFileSync, writeFileSync, rmSync } from 'node:fs'
+import {
+  readFileSync,
+  existsSync,
+  mkdtempSync,
+  readdirSync,
+  appendFileSync,
+  writeFileSync,
+  rmSync,
+} from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, dirname } from 'node:path'
 import { spawnSync } from 'node:child_process'
@@ -58,7 +66,9 @@ const CLUSTER_OVERRIDE = arg('cluster')
 
 if (!FORCE && process.env.SF_AUTO_DISPATCH !== '1') {
   console.error('dispatch-scaffold-fix: gated. Set SF_AUTO_DISPATCH=1 or pass --force.')
-  console.error('  Reason: this dispatches an LLM agent ($/iter spend). Default off; opt in explicitly.')
+  console.error(
+    '  Reason: this dispatches an LLM agent ($/iter spend). Default off; opt in explicitly.',
+  )
   process.exit(2)
 }
 
@@ -75,8 +85,16 @@ function pickCluster() {
   if (CLUSTER_OVERRIDE) return { key: CLUSTER_OVERRIDE, count: 0, kind: 'override' }
   // Combine scaffold-gap + routing-error clusters; pick highest count.
   const candidates = [
-    ...Object.entries(feedback.topScaffoldGaps ?? {}).map(([k, n]) => ({ key: k, count: n, kind: 'scaffold-gap' })),
-    ...Object.entries(feedback.topRoutingErrors ?? {}).map(([k, n]) => ({ key: k, count: n, kind: 'routing-error' })),
+    ...Object.entries(feedback.topScaffoldGaps ?? {}).map(([k, n]) => ({
+      key: k,
+      count: n,
+      kind: 'scaffold-gap',
+    })),
+    ...Object.entries(feedback.topRoutingErrors ?? {}).map(([k, n]) => ({
+      key: k,
+      count: n,
+      kind: 'routing-error',
+    })),
   ]
   candidates.sort((a, b) => b.count - a.count)
   return candidates.find((c) => c.count >= 3) ?? null
@@ -101,13 +119,29 @@ function loadSampleFailures(clusterKey, kind) {
     .sort()
     .slice(-1) // newest
   if (detailFiles.length === 0) return []
-  const rows = readFileSync(join(detailDir, detailFiles[0]), 'utf8').trim().split('\n').map((l) => {
-    try { return JSON.parse(l) } catch { return null }
-  }).filter(Boolean)
+  const rows = readFileSync(join(detailDir, detailFiles[0]), 'utf8')
+    .trim()
+    .split('\n')
+    .map((l) => {
+      try {
+        return JSON.parse(l)
+      } catch {
+        return null
+      }
+    })
+    .filter(Boolean)
   if (kind === 'scaffold-gap') {
-    return rows.filter((r) => r.attribution === 'scaffold-gap' && `${r.scaffold?.family ?? 'no-family'}/${r.verticalId}` === clusterKey).slice(0, 3)
+    return rows
+      .filter(
+        (r) =>
+          r.attribution === 'scaffold-gap' &&
+          `${r.scaffold?.family ?? 'no-family'}/${r.verticalId}` === clusterKey,
+      )
+      .slice(0, 3)
   }
-  return rows.filter((r) => r.attribution === 'routing-error' && r.verticalId === clusterKey).slice(0, 3)
+  return rows
+    .filter((r) => r.attribution === 'routing-error' && r.verticalId === clusterKey)
+    .slice(0, 3)
 }
 
 const samples = loadSampleFailures(cluster.key, cluster.kind)
@@ -119,14 +153,20 @@ if (samples.length === 0) {
 // ── build agent brief ───────────────────────────────────────────────
 
 function buildBrief(cluster, samples) {
-  const sampleLines = samples.map((s, i) => `  Sample ${i + 1}: leafId=${s.leafId} verticalId=${s.verticalId} ` +
-    `family=${s.scaffold?.family ?? 'null'} layers=[${(s.scaffold?.layers ?? []).join(',')}] ` +
-    `partner=${s.scaffold?.partner ?? 'null'} fileCount=${s.scaffold?.fileCount ?? 0} ` +
-    `signals=${s.signals?.join('; ') ?? 'none'}`).join('\n')
+  const sampleLines = samples
+    .map(
+      (s, i) =>
+        `  Sample ${i + 1}: leafId=${s.leafId} verticalId=${s.verticalId} ` +
+        `family=${s.scaffold?.family ?? 'null'} layers=[${(s.scaffold?.layers ?? []).join(',')}] ` +
+        `partner=${s.scaffold?.partner ?? 'null'} fileCount=${s.scaffold?.fileCount ?? 0} ` +
+        `signals=${s.signals?.join('; ') ?? 'none'}`,
+    )
+    .join('\n')
 
-  const failurePattern = cluster.kind === 'scaffold-gap'
-    ? 'agents extending this scaffold consistently fail at install / typecheck / build on shot 1 — implies the scaffold ships content the agent has to fight'
-    : "this consumer's leaves in this vertical route to family=null (no SF family matched) — implies the prompt-planner needs better signals for this vertical"
+  const failurePattern =
+    cluster.kind === 'scaffold-gap'
+      ? 'agents extending this scaffold consistently fail at install / typecheck / build on shot 1 — implies the scaffold ships content the agent has to fight'
+      : "this consumer's leaves in this vertical route to family=null (no SF family matched) — implies the prompt-planner needs better signals for this vertical"
 
   return [
     `# starter-foundry registry fix dispatch`,
@@ -187,11 +227,15 @@ const profile = {
   // in scripts/_lib/agentic-proposer.mjs). Kept minimal — the brief
   // carries the actual instruction.
   goal: `Fix the ${cluster.kind} cluster: ${cluster.key}`,
-  systemPrompt: 'You are a registry-maintenance agent for starter-foundry. Your job is to make the smallest registry change that closes a cluster of failures. Read first, edit second, explain third.',
+  systemPrompt:
+    'You are a registry-maintenance agent for starter-foundry. Your job is to make the smallest registry change that closes a cluster of failures. Read first, edit second, explain third.',
 }
 const criteria = [
   { name: 'edits-made', check: 'agent must produce at least one file edit' },
-  { name: 'no-new-families', check: 'agent must not add new family manifests; only tighten existing ones' },
+  {
+    name: 'no-new-families',
+    check: 'agent must not add new family manifests; only tighten existing ones',
+  },
   { name: 'rationale-present', check: 'agent must explain why the edit closes the cluster' },
 ]
 const budget = { iterations: 5, wallSec: 600, usd: 1 }
@@ -208,9 +252,16 @@ try {
     workspaceDir,
     onEvent: (ev) => {
       if (ev.type === 'verdict' || ev.type === 'criterion.check') {
-        appendFileSync(DISPATCH_LOG, JSON.stringify({
-          ts: new Date().toISOString(), source: 'dispatch-scaffold-fix', event: ev.type, cluster: cluster.key, payload: ev,
-        }) + '\n')
+        appendFileSync(
+          DISPATCH_LOG,
+          JSON.stringify({
+            ts: new Date().toISOString(),
+            source: 'dispatch-scaffold-fix',
+            event: ev.type,
+            cluster: cluster.key,
+            payload: ev,
+          }) + '\n',
+        )
       }
     },
   })
@@ -234,13 +285,16 @@ try {
 
 // ── persist outcome ─────────────────────────────────────────────────
 
-appendFileSync(DISPATCH_LOG, JSON.stringify({
-  ts: new Date().toISOString(),
-  source: 'dispatch-scaffold-fix',
-  action: 'dispatch-fix',
-  cluster: cluster.key,
-  outcome,
-}) + '\n')
+appendFileSync(
+  DISPATCH_LOG,
+  JSON.stringify({
+    ts: new Date().toISOString(),
+    source: 'dispatch-scaffold-fix',
+    action: 'dispatch-fix',
+    cluster: cluster.key,
+    outcome,
+  }) + '\n',
+)
 
 console.log(JSON.stringify(outcome, null, 2))
 if (!outcome.success) process.exit(1)

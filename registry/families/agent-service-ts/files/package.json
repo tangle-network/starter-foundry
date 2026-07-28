@@ -6,11 +6,11 @@
     "start": "node agent.mjs"
   },
   "overrides": {
-    "vite": "^6.4.2"
+    "vite": "^6.4.3"
   },
   "pnpm": {
     "overrides": {
-      "vite": "^6.4.2"
+      "vite": "^6.4.3"
     },
     "minimumReleaseAge": 4320,
     "minimumReleaseAgeExclude": []

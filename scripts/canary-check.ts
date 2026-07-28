@@ -14,8 +14,9 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve as resolvePath } from 'node:path'
 
+import { validateRunRecord, type RunRecord } from '@tangle-network/agent-eval'
+
 import { runCanaries, type CanaryReport } from '../src/lib/run-canaries.js'
-import { validateRunRecord, type RunRecord } from '../src/lib/run-record.js'
 
 interface Args {
   path: string

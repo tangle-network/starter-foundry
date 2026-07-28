@@ -9,36 +9,12 @@
 // the registry with `registerBlockMapper` when a bundle ships a
 // domain-specific block type.
 
-import type { ReactNode } from 'react'
+import type { OpenUIComponentNode } from '@tangle-network/sandbox-ui/openui'
+import type { SandboxWorkbenchArtifact } from '@tangle-network/sandbox-ui/workspace'
 import type { AgentBlock, ParsedBlock } from './parse-blocks.js'
-import { isAgentBlock } from './parse-blocks.js'
+import { isAgentBlock, parseBlocks } from './parse-blocks.js'
 
-// SandboxWorkbenchArtifact is the published shape from
-// @tangle-network/sandbox-ui/workspace. We re-state the relevant variants
-// inline so this file has no hard dep on sandbox-ui — UI-family scaffolds
-// import it from sandbox-ui directly.
-export type SandboxWorkbenchArtifact =
-  | {
-      kind: 'markdown'
-      id: string
-      title?: string
-      content: string
-      meta?: Record<string, unknown>
-    }
-  | {
-      kind: 'openui'
-      id: string
-      title?: string
-      schema: unknown
-      meta?: Record<string, unknown>
-    }
-  | {
-      kind: 'custom'
-      id: string
-      title?: string
-      content: ReactNode
-      meta?: Record<string, unknown>
-    }
+export type { SandboxWorkbenchArtifact }
 
 export type BlockMapper = (block: AgentBlock, index: number) => SandboxWorkbenchArtifact | null
 
@@ -48,56 +24,56 @@ const DEFAULT_MAPPERS: Record<string, BlockMapper> = {
     id: block.attrs.id ?? `artifact-${i}`,
     title: block.attrs.title ?? block.attrs.label ?? 'Artifact',
     content: block.body,
-    meta: { source: 'agent-output:artifact', attrs: block.attrs },
+    meta: blockMetadata(block),
   }),
   escalation: (block, i) => ({
     kind: 'markdown',
     id: block.attrs.id ?? `escalation-${i}`,
     title: 'Escalation — see a real expert',
     content: block.body,
-    meta: { source: 'agent-output:escalation', severity: block.attrs.severity ?? 'high', attrs: block.attrs },
+    meta: blockMetadata(block, { severity: block.attrs.severity ?? 'high' }),
   }),
   'screener-result': (block, i) => ({
     kind: 'markdown',
     id: block.attrs.id ?? `screener-${i}`,
     title: `${block.attrs.instrument ?? 'Screener'} result`,
     content: block.body,
-    meta: { source: 'agent-output:screener-result', band: block.attrs.band, score: block.attrs.score, attrs: block.attrs },
+    meta: blockMetadata(block, { band: block.attrs.band, score: block.attrs.score }),
   }),
   'audio-cue': (block, i) => ({
     kind: 'markdown',
     id: block.attrs.id ?? `audio-${i}`,
     title: block.attrs.title ?? 'Audio cue',
     content: block.body,
-    meta: { source: 'agent-output:audio-cue', voiceProfile: block.attrs['voice-profile'], attrs: block.attrs },
+    meta: blockMetadata(block, { voiceProfile: block.attrs['voice-profile'] }),
   }),
   suggestion: (block, i) => ({
     kind: 'markdown',
     id: block.attrs.id ?? `suggestion-${i}`,
     title: block.attrs.title ?? 'Suggestion',
     content: block.body,
-    meta: { source: 'agent-output:suggestion', priority: block.attrs.priority, attrs: block.attrs },
+    meta: blockMetadata(block, { priority: block.attrs.priority }),
   }),
   proposal: (block, i) => ({
     kind: 'markdown',
     id: block.attrs.id ?? `proposal-${i}`,
     title: block.attrs.title ?? 'Proposal',
     content: block.body,
-    meta: { source: 'agent-output:proposal', attrs: block.attrs },
+    meta: blockMetadata(block),
   }),
   filing: (block, i) => ({
     kind: 'markdown',
     id: block.attrs.id ?? `filing-${i}`,
     title: block.attrs.title ?? 'Filing',
     content: block.body,
-    meta: { source: 'agent-output:filing', attrs: block.attrs },
+    meta: blockMetadata(block),
   }),
   survey: (block, i) => ({
     kind: 'markdown',
     id: block.attrs.id ?? `survey-${i}`,
     title: block.attrs.title ?? 'Survey',
     content: block.body,
-    meta: { source: 'agent-output:survey', attrs: block.attrs },
+    meta: blockMetadata(block),
   }),
 }
 
@@ -124,13 +100,14 @@ export function blocksToArtifacts(blocks: ParsedBlock[]): SandboxWorkbenchArtifa
     if (!isAgentBlock(block)) continue
     if (block.attrs.format === 'openui') {
       try {
-        const schema = JSON.parse(block.body)
+        const schema: unknown = JSON.parse(block.body)
+        if (!isOpenUISchema(schema)) throw new Error('Invalid OpenUI schema')
         out.push({
           kind: 'openui',
           id: block.attrs.id ?? `openui-${i}`,
           title: block.attrs.title ?? block.kind,
           schema,
-          meta: { source: `agent-output:${block.kind}`, attrs: block.attrs },
+          meta: blockMetadata(block),
         })
         i++
         continue
@@ -149,7 +126,7 @@ export function blocksToArtifacts(blocks: ParsedBlock[]): SandboxWorkbenchArtifa
         id: block.attrs.id ?? `unknown-${i}`,
         title: `[${block.kind}]`,
         content: block.body,
-        meta: { source: `agent-output:${block.kind}`, unknown: true, attrs: block.attrs },
+        meta: blockMetadata(block, { unknown: true }),
       })
     }
     i++
@@ -171,11 +148,7 @@ export function makeArtifactStreamAdapter(): {
   return {
     feed(text: string): SandboxWorkbenchArtifact[] {
       if (text === lastText) return lastArtifacts
-      const blocks = (() => {
-        // Lazy-import to avoid circular reference.
-        const { parseBlocks } = require('./parse-blocks.js') as typeof import('./parse-blocks.js')
-        return parseBlocks(text)
-      })()
+      const blocks = parseBlocks(text)
       lastText = text
       lastArtifacts = blocksToArtifacts(blocks)
       return lastArtifacts
@@ -185,4 +158,43 @@ export function makeArtifactStreamAdapter(): {
       lastArtifacts = []
     },
   }
+}
+
+function blockMetadata(
+  block: AgentBlock,
+  extra: Record<string, unknown> = {},
+): string {
+  return JSON.stringify({
+    source: `agent-output:${block.kind}`,
+    ...extra,
+    attrs: block.attrs,
+  })
+}
+
+function isOpenUISchema(value: unknown): value is OpenUIComponentNode | OpenUIComponentNode[] {
+  if (Array.isArray(value)) return value.every(isOpenUINode)
+  return isOpenUINode(value)
+}
+
+function isOpenUINode(value: unknown): value is OpenUIComponentNode {
+  if (typeof value !== 'object' || value === null) return false
+  const type = (value as { type?: unknown }).type
+  return (
+    typeof type === 'string' &&
+    [
+      'actions',
+      'badge',
+      'card',
+      'code',
+      'grid',
+      'heading',
+      'key_value',
+      'markdown',
+      'separator',
+      'stack',
+      'stat',
+      'table',
+      'text',
+    ].includes(type)
+  )
 }

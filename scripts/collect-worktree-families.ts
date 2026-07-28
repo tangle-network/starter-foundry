@@ -92,14 +92,17 @@ console.log(`scanned worktrees: ${worktrees.length}`)
 console.log(`added: ${collected.added.length}`)
 for (const a of collected.added) console.log(`  + ${a.kind}/${a.id}  ← ${a.worktree}`)
 console.log(`conflicts: ${collected.conflicts.length}`)
-for (const c of collected.conflicts) console.log(`  ! ${c.kind}/${c.id}  already added from a prior worktree (${c.worktree} skipped)`)
+for (const c of collected.conflicts)
+  console.log(`  ! ${c.kind}/${c.id}  already added from a prior worktree (${c.worktree} skipped)`)
 
 if (!DRY_RUN && collected.added.length > 0) {
   console.log('\nNext:')
   console.log('  1. Review pnpm validate:registry output')
   console.log('  2. Wire routing in src/lib/planner/projects.ts for the new families')
   console.log('  3. Add coverage entries in tests/coverage.test.ts')
-  console.log('  4. Update tests/family-vite-pin.test.ts SKIP list for non-JS/non-frontend families')
+  console.log(
+    '  4. Update tests/family-vite-pin.test.ts SKIP list for non-JS/non-frontend families',
+  )
   const validation = spawnSync('pnpm', ['validate:registry'], { cwd: REPO, encoding: 'utf8' })
   console.log('\n--- validate:registry ---')
   console.log((validation.stdout ?? '').split('\n').slice(-15).join('\n'))

@@ -62,7 +62,9 @@ async function draftHintsWithLLM(nameArg, runtimeArg, surfaceArg, descriptionArg
 }
 
 if (!name || !/^[a-z][a-z0-9-]*$/.test(name)) {
-  console.error('usage: --name <kebab-case-id> [--runtime <node|bun|deno|rust|go|python|wasm>] [--surface <api|frontend|worker|contracts|agent-service|inference>] [--description "..."]')
+  console.error(
+    'usage: --name <kebab-case-id> [--runtime <node|bun|deno|rust|go|python|wasm>] [--surface <api|frontend|worker|contracts|agent-service|inference>] [--description "..."]',
+  )
   process.exit(2)
 }
 
@@ -70,21 +72,32 @@ const familyDir = join(REPO, 'registry/families', name)
 const frameworkDir = join(REPO, 'registry/layers/framework', name)
 
 if (existsSync(familyDir) || existsSync(frameworkDir)) {
-  console.error(`family "${name}" already exists. Delete ${familyDir} and ${frameworkDir} to regenerate.`)
+  console.error(
+    `family "${name}" already exists. Delete ${familyDir} and ${frameworkDir} to regenerate.`,
+  )
   process.exit(2)
 }
 
 // Infer a sensible language from runtime.
-const language = {
-  bun: 'typescript', deno: 'typescript', node: 'typescript',
-  rust: 'rust', go: 'go', python: 'python', wasm: 'rust',
-}[runtime] || 'typescript'
+const language =
+  {
+    bun: 'typescript',
+    deno: 'typescript',
+    node: 'typescript',
+    rust: 'rust',
+    go: 'go',
+    python: 'python',
+    wasm: 'rust',
+  }[runtime] || 'typescript'
 
 const drafted = await draftHintsWithLLM(name, runtime, surface, description)
 
 const familyManifest = {
   id: name,
-  description: description.length >= 20 ? description : `${description} — ${runtime} ${surface} starter (regenerate description before shipping)`,
+  description:
+    description.length >= 20
+      ? description
+      : `${description} — ${runtime} ${surface} starter (regenerate description before shipping)`,
   tags: [runtime, surface, language],
   taxonomy: { language, runtime, surface },
   defaults: { projectType: surface, serviceName: `starter-foundry-${name}` },
@@ -97,17 +110,25 @@ const familyManifest = {
     tier2: [],
   },
   buildHints: {
-    whenToUse: drafted?.whenToUse ?? `TODO: one sentence on when a prompt should route here. Describe the product archetype, not the tech.`,
-    firstSteps: drafted?.firstSteps?.length ? drafted.firstSteps : [
-      'TODO: first command an agent should run (install deps + start dev server).',
-      'TODO: primary entrypoint the agent extends.',
-      'TODO: where brand / product strings live.',
-    ],
-    gotchas: drafted?.gotchas?.length ? drafted.gotchas : [
-      'TODO: one non-obvious trap specific to this runtime.',
-    ],
+    whenToUse:
+      drafted?.whenToUse ??
+      `TODO: one sentence on when a prompt should route here. Describe the product archetype, not the tech.`,
+    firstSteps: drafted?.firstSteps?.length
+      ? drafted.firstSteps
+      : [
+          'TODO: first command an agent should run (install deps + start dev server).',
+          'TODO: primary entrypoint the agent extends.',
+          'TODO: where brand / product strings live.',
+        ],
+    gotchas: drafted?.gotchas?.length
+      ? drafted.gotchas
+      : ['TODO: one non-obvious trap specific to this runtime.'],
     placeholders: [
-      { path: 'TODO/entrypoint.xyz', description: 'TODO: name the default file agents must replace with product logic (≥20 chars).' },
+      {
+        path: 'TODO/entrypoint.xyz',
+        description:
+          'TODO: name the default file agents must replace with product logic (≥20 chars).',
+      },
     ],
   },
 }
@@ -125,7 +146,10 @@ mkdirSync(frameworkDir, { recursive: true })
 mkdirSync(join(frameworkDir, 'files'), { recursive: true })
 
 writeFileSync(join(familyDir, 'manifest.json'), JSON.stringify(familyManifest, null, 2) + '\n')
-writeFileSync(join(frameworkDir, 'manifest.json'), JSON.stringify(frameworkManifest, null, 2) + '\n')
+writeFileSync(
+  join(frameworkDir, 'manifest.json'),
+  JSON.stringify(frameworkManifest, null, 2) + '\n',
+)
 
 // Minimal .gitkeep so empty `files/` dirs stay tracked.
 writeFileSync(join(familyDir, 'files/.gitkeep'), '')
@@ -135,15 +159,21 @@ console.log(`✓ created family: ${name}`)
 console.log('')
 console.log('Next steps (none are optional):')
 console.log(`  1. Fill the TODO fields in registry/families/${name}/manifest.json buildHints.`)
-console.log(`  2. Add template files under registry/families/${name}/files/ (e.g. package.json, validate-*.mjs)`)
+console.log(
+  `  2. Add template files under registry/families/${name}/files/ (e.g. package.json, validate-*.mjs)`,
+)
 console.log(`     and register them in the family manifest's "files" array.`)
-console.log(`  3. Add framework-layer template files under registry/layers/framework/${name}/files/`)
+console.log(
+  `  3. Add framework-layer template files under registry/layers/framework/${name}/files/`,
+)
 console.log(`     and register them in the layer manifest's "files" array.`)
 console.log(`  4. Wire routing in src/lib/planner/projects.ts (chooseApiFamily or buildWebProject)`)
 console.log(`     so prompts matching your keywords route to "${name}".`)
 console.log(`  5. Add a coverage test entry in tests/coverage.test.ts FAMILY_PROMPTS:`)
 console.log(`     "${name}": "A prompt that should route here"`)
 console.log(`  6. If this family needs slot layers (database/auth/payments/queue),`)
-console.log(`     add "${name}" to each slot layer's appliesTo array in registry/layers/{database,auth,payments,queue}/*/manifest.json`)
+console.log(
+  `     add "${name}" to each slot layer's appliesTo array in registry/layers/{database,auth,payments,queue}/*/manifest.json`,
+)
 console.log(`  7. pnpm validate:registry && pnpm build && pnpm test — all must pass.`)
 console.log(`  8. Before opening a PR, run scripts/run-buildout-pipeline.ts and attach the delta.`)

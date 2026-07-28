@@ -12,7 +12,6 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 import {
   calibrateJudge,
-  createChatClient,
   llmJudge,
   type CalibrationResult,
   type CandidateScore,
@@ -44,6 +43,21 @@ export interface RubricDimensionSpec extends RubricDimension {
 }
 
 export function buildRubric(spec: RubricSpec): JudgeRubric {
+  if (spec.dimensions.length === 0) {
+    throw new Error(`rubric "${spec.name}" requires at least one dimension`)
+  }
+  const names = new Set<string>()
+  for (const dimension of spec.dimensions) {
+    if (names.has(dimension.name)) {
+      throw new Error(`rubric "${spec.name}" repeats dimension "${dimension.name}"`)
+    }
+    if (!Number.isFinite(dimension.weight) || dimension.weight <= 0) {
+      throw new Error(
+        `rubric "${spec.name}" dimension "${dimension.name}" requires a positive finite weight`,
+      )
+    }
+    names.add(dimension.name)
+  }
   return {
     name: spec.name,
     description: spec.description,
@@ -55,52 +69,6 @@ export function buildRubric(spec: RubricSpec): JudgeRubric {
       weight: d.weight,
     })),
   }
-}
-
-// A TCloud-shaped client: `.chat()` takes an OpenAI-style request and resolves
-// an OpenAI `ChatCompletion` (the legacy judge read `choices[0].message.content`).
-// The runner threads exactly this into every JudgeFn.
-interface OpenAiChatClient {
-  chat(req: {
-    model: string
-    messages: { role: string; content: string }[]
-    temperature?: number
-    maxTokens?: number
-    jsonMode?: boolean
-  }): Promise<{ choices?: { message?: { content?: string } }[]; model?: string }>
-}
-
-// Adapt the TCloud-shaped client (OpenAI `ChatCompletion` out) into the
-// transport-agnostic `ChatClient` `llmJudge` consumes (`LlmCallResult` out, i.e.
-// top-level `content`). The `sandbox-sdk` transport is the published
-// pass-through seam for "I already have a callable chat()"; we normalize the
-// completion shape so the judge stays decoupled from the OpenAI envelope. Model
-// is resolved per-judge (spec.model), so no defaultModel is required here.
-function chatClientFor(tc: OpenAiChatClient): ChatClient {
-  return createChatClient({
-    transport: 'sandbox-sdk',
-    chat: async (req) => {
-      const resp = await tc.chat({
-        model: req.model ?? '',
-        messages: req.messages.map((m) => ({
-          role: String(m.role),
-          content: typeof m.content === 'string' ? m.content : JSON.stringify(m.content),
-        })),
-        ...(req.temperature !== undefined ? { temperature: req.temperature } : {}),
-        ...(req.maxTokens !== undefined ? { maxTokens: req.maxTokens } : {}),
-        ...(req.jsonMode !== undefined ? { jsonMode: req.jsonMode } : {}),
-      })
-      return {
-        content: resp.choices?.[0]?.message?.content ?? '',
-        model: resp.model ?? req.model ?? '',
-        usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
-        costUsd: null,
-        durationMs: 0,
-        finishReason: null,
-        raw: resp,
-      }
-    },
-  })
 }
 
 // Render the rubric's dimensions as `llmJudge` dimension specs: the anchored
@@ -144,7 +112,7 @@ export function buildRubricJudge(spec: RubricSpec): JudgeFn {
   const dimensions = rubricDimensions(rubric)
   return async (tc, input): Promise<JudgeScore[]> => {
     const judge = llmJudge<string>(rubric.name, renderRubricSystemPrompt(rubric), {
-      chat: chatClientFor(tc as unknown as OpenAiChatClient),
+      chat: tc,
       dimensions,
       weights: rubricWeights(rubric),
       scale: 'unit',
@@ -157,12 +125,19 @@ export function buildRubricJudge(spec: RubricSpec): JudgeFn {
       scenario: input.scenario as unknown as Parameters<typeof judge.score>[0]['scenario'],
       signal: new AbortController().signal,
     })
-    return rubric.dimensions.map<JudgeScore>((d) => ({
-      judgeName: rubric.name,
-      dimension: d.name,
-      score: verdict.dimensions[d.name],
-      reasoning: verdict.notes,
-    }))
+    return rubric.dimensions.map((dimension) => {
+      const score = verdict.dimensions[dimension.name]
+      if (typeof score !== 'number' || !Number.isFinite(score)) {
+        throw new Error(`rubric "${rubric.name}" returned no finite score for "${dimension.name}"`)
+      }
+      return {
+        judgeName: rubric.name,
+        dimension: dimension.name,
+        score,
+        reasoning: verdict.notes,
+        weight: dimension.weight,
+      }
+    })
   }
 }
 
@@ -178,12 +153,10 @@ anchored: 0.0 is the worst response, 1.0 is the best.`
 export async function runRubric(
   spec: RubricSpec,
   input: JudgeInput,
-  // The published JudgeFn signature wants a TCloud — callers thread it in.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  tc: any,
+  chat: ChatClient,
 ): Promise<JudgeScore[]> {
   const judge = buildRubricJudge(spec)
-  return judge(tc, input)
+  return judge(chat, input)
 }
 
 export interface CalibrationOutput {

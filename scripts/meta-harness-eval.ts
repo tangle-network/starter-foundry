@@ -122,7 +122,7 @@ function extractActual(plan) {
     // expected family rather than the literal string "workspace". Multi-
     // project workspaces still report "workspace" as the family sentinel.
     const projects = plan.spec?.projects ?? []
-    const singleProjectFamily = projects.length === 1 ? projects[0]?.spec?.family ?? null : null
+    const singleProjectFamily = projects.length === 1 ? (projects[0]?.spec?.family ?? null) : null
     return {
       kind: 'workspace',
       family: singleProjectFamily ?? 'workspace', // muffle-ok: this derives the ACTUAL workspace family for scoring, not an expected-kind default — the literal 'workspace' is the sentinel for multi-project workspaces
@@ -169,7 +169,12 @@ for (const s of scenarios) {
   let plan = null
   let error = null
   try {
-    plan = await planPrompt({ prompt: s.prompt, partner: s.partner, rewriter: useRewriter, brief: useBrief })
+    plan = await planPrompt({
+      prompt: s.prompt,
+      partner: s.partner,
+      rewriter: useRewriter,
+      brief: useBrief,
+    })
   } catch (err) {
     error = String(err?.message ?? err)
   }
@@ -248,8 +253,7 @@ const agg = {
   dims: {
     accuracy: overall,
     latencyP95: p(0.95),
-    capabilityHitMean:
-      Object.values(perCorpus).reduce((a, v) => a + v.sumCapHit, 0) / lines.length,
+    capabilityHitMean: Object.values(perCorpus).reduce((a, v) => a + v.sumCapHit, 0) / lines.length,
     capabilityRecallMean:
       Object.values(perCorpus).reduce((a, v) => a + v.sumRecall, 0) / lines.length,
   },
@@ -264,7 +268,9 @@ writeFileSync(outPath, lines.join('\n') + '\n')
 console.log(`planner: ${plannerPath}`)
 console.log(`scenarios: ${lines.length - 1}`)
 console.log(`passRate: ${overall.toFixed(4)}`)
-console.log(`latency p50/p95/p99: ${p(0.5).toFixed(3)} / ${p(0.95).toFixed(3)} / ${p(0.99).toFixed(3)} ms`)
+console.log(
+  `latency p50/p95/p99: ${p(0.5).toFixed(3)} / ${p(0.95).toFixed(3)} / ${p(0.99).toFixed(3)} ms`,
+)
 console.log(`mean: ${mean.toFixed(3)} ms`)
 for (const [k, v] of Object.entries(corporaOut)) {
   console.log(

@@ -65,7 +65,8 @@ for (const line of readFileSync(TRACES, 'utf8').split('\n')) {
   }
   const ts = event.firstTs ? Date.parse(event.firstTs) : null
   if (!ts || !Array.isArray(event.rewrittenFiles)) continue
-  const bucket = ts >= recentStart ? recentCounts : ts >= priorStart && ts < priorEnd ? priorCounts : null
+  const bucket =
+    ts >= recentStart ? recentCounts : ts >= priorStart && ts < priorEnd ? priorCounts : null
   if (!bucket) continue
   for (const rawPath of event.rewrittenFiles) {
     const key = normalize(rawPath)
@@ -78,8 +79,8 @@ const regressions = []
 for (const target of allTargets) {
   const recent = recentCounts.get(target) ?? 0
   const prior = priorCounts.get(target) ?? 0
-  if (prior === 0) continue  // nothing to compare against
-  if (recent < 3) continue   // too few events to trust
+  if (prior === 0) continue // nothing to compare against
+  if (recent < 3) continue // too few events to trust
   const ratio = recent / prior
   if (ratio > REGRESSION_THRESHOLD) {
     regressions.push({ target, recent, prior, ratio })
@@ -104,7 +105,11 @@ function findSweepCommitFor(target) {
     })
   if (matches.length === 0) return null
   // Rough heuristic: pick the commit whose subject contains a token from the target path.
-  const tok = target.split('/').pop()?.replace(/\.[^.]+$/, '') ?? ''
+  const tok =
+    target
+      .split('/')
+      .pop()
+      ?.replace(/\.[^.]+$/, '') ?? ''
   const hit = matches.find((m) => tok && m.subject.toLowerCase().includes(tok.toLowerCase()))
   return hit ?? matches[0]
 }
@@ -133,8 +138,12 @@ console.log(`recent-window events: ${[...recentCounts.values()].reduce((a, b) =>
 console.log(`prior-window events:  ${[...priorCounts.values()].reduce((a, b) => a + b, 0)}`)
 console.log(`regressions flagged:  ${withCommits.length}`)
 for (const r of withCommits.slice(0, 10)) {
-  const sweepTag = r.recentSweepCommit ? `← ${r.recentSweepCommit.sha.slice(0, 8)} ${r.recentSweepCommit.subject.slice(0, 60)}` : '(no sweep commit found)'
-  console.log(`  ${r.target.padEnd(48)} ${r.recent}/${r.prior} (×${r.ratio.toFixed(2)}) ${sweepTag}`)
+  const sweepTag = r.recentSweepCommit
+    ? `← ${r.recentSweepCommit.sha.slice(0, 8)} ${r.recentSweepCommit.subject.slice(0, 60)}`
+    : '(no sweep commit found)'
+  console.log(
+    `  ${r.target.padEnd(48)} ${r.recent}/${r.prior} (×${r.ratio.toFixed(2)}) ${sweepTag}`,
+  )
 }
 
 if (!OPEN_PR) process.exit(0)
@@ -187,7 +196,9 @@ for (const r of withCommits) {
   for (const [cmd, args] of steps) {
     const proc = spawnSync(cmd, args, { cwd: REPO, encoding: 'utf8' })
     if (proc.status !== 0) {
-      console.error(`  ✗ ${cmd} ${args.slice(0, 2).join(' ')}: exit ${proc.status} — ${(proc.stderr ?? '').slice(0, 300)}`)
+      console.error(
+        `  ✗ ${cmd} ${args.slice(0, 2).join(' ')}: exit ${proc.status} — ${(proc.stderr ?? '').slice(0, 300)}`,
+      )
       spawnSync('git', ['checkout', '-'], { cwd: REPO, encoding: 'utf8' })
       ok = false
       break

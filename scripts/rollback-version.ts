@@ -92,15 +92,22 @@ writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n')
 
 // 3. Commit.
 console.log('3. git commit')
-r = spawnSync('git', ['add', 'registry/', 'corpus/', 'package.json'], { cwd: REPO, encoding: 'utf8' })
+r = spawnSync('git', ['add', 'registry/', 'corpus/', 'package.json'], {
+  cwd: REPO,
+  encoding: 'utf8',
+})
 if (r.status !== 0) {
   console.error(`✗ add failed: ${r.stderr}`)
   process.exit(1)
 }
-r = spawnSync('git', ['commit', '-m', `chore(rollback): revert registry to ${targetTag} → ${newVersion}\n\n${reason}`], {
-  cwd: REPO,
-  encoding: 'utf8',
-})
+r = spawnSync(
+  'git',
+  ['commit', '-m', `chore(rollback): revert registry to ${targetTag} → ${newVersion}\n\n${reason}`],
+  {
+    cwd: REPO,
+    encoding: 'utf8',
+  },
+)
 if (r.status !== 0) {
   console.error(`✗ commit failed: ${r.stderr}`)
   process.exit(1)

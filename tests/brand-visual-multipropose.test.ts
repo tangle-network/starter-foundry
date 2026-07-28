@@ -4,14 +4,21 @@ import assert from 'node:assert/strict'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import test from 'node:test'
-import { generateBrand, brandToPersonalizeJson, brandToPersonalizeCss } from '../dist/lib/brand/index.js'
+import {
+  generateBrand,
+  brandToPersonalizeJson,
+  brandToPersonalizeCss,
+} from '../dist/lib/brand/index.js'
 import { snapshot, diff } from '../dist/lib/visual-regression.js'
 import { multiPropose } from '../dist/training/template_v1/multi-propose.js'
 import { harvest } from '../dist/training/template_v1/harvest.js'
 import { createTempDir, removeDir } from '../dist/lib/fs.js'
 
 test('brand: deterministic fallback produces a complete BrandKit', async () => {
-  const kit = await generateBrand({ prompt: 'Build an inventory dashboard for small grocery stores', industry: 'fintech' })
+  const kit = await generateBrand({
+    prompt: 'Build an inventory dashboard for small grocery stores',
+    industry: 'fintech',
+  })
   assert.ok(kit.brandName.length > 0)
   assert.ok(kit.tagline.length > 0)
   assert.ok(['formal', 'casual', 'technical', 'playful', 'neutral'].includes(kit.voice))
@@ -20,7 +27,10 @@ test('brand: deterministic fallback produces a complete BrandKit', async () => {
 })
 
 test('brand: serializes to personalize.json + personalize.css correctly', async () => {
-  const kit = await generateBrand({ prompt: 'Build a crypto portfolio tracker', industry: 'crypto' })
+  const kit = await generateBrand({
+    prompt: 'Build a crypto portfolio tracker',
+    industry: 'crypto',
+  })
   const json = brandToPersonalizeJson(kit)
   assert.ok(typeof (json as { brand: { name: string } }).brand.name === 'string')
   const css = brandToPersonalizeCss(kit)

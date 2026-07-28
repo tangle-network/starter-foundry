@@ -15,7 +15,10 @@ function arg(flag, fallback) {
 }
 
 const name = arg('--name')
-const applies = (arg('--applies') || '').split(',').map((s) => s.trim()).filter(Boolean)
+const applies = (arg('--applies') || '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean)
 const description = arg('--description') || 'TODO: describe what this capability adds (≥20 chars).'
 
 if (!name || !/^[a-z][a-z0-9-]*$/.test(name)) {
@@ -31,7 +34,8 @@ if (existsSync(dir)) {
 
 const manifest = {
   id: name,
-  description: description.length >= 20 ? description : `${description} (regenerate: must be ≥20 chars).`,
+  description:
+    description.length >= 20 ? description : `${description} (regenerate: must be ≥20 chars).`,
   appliesTo: applies.length > 0 ? applies : ['TODO-family-id'],
   files: [],
   packageDeps: { dependencies: {} },
@@ -53,9 +57,13 @@ console.log(`✓ created capability: ${name}`)
 console.log('')
 console.log('Next steps:')
 console.log(`  1. Fill TODO fields in registry/layers/capability/${name}/manifest.json.`)
-console.log(`  2. Add runtime deps to packageDeps.dependencies (compose merges them into family package.json).`)
+console.log(
+  `  2. Add runtime deps to packageDeps.dependencies (compose merges them into family package.json).`,
+)
 console.log(`  3. Add template files under files/ and register them in the manifest's files array.`)
-console.log(`  4. Add keywords that trigger auto-detection. If archetype-shaped (not literal), add a signal set in`)
+console.log(
+  `  4. Add keywords that trigger auto-detection. If archetype-shaped (not literal), add a signal set in`,
+)
 console.log(`     src/lib/planner/signals.ts + wire it in src/lib/planner/implicit-caps.ts.`)
 console.log(`  5. Add a coverage test entry in tests/coverage.test.ts CAP_PROMPTS.`)
 console.log(`  6. pnpm validate:registry && pnpm build && pnpm test — all must pass.`)

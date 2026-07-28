@@ -48,7 +48,9 @@ const totalDur = performance.now() - t0
 console.log('\n━━━━ pipeline summary ━━━━')
 for (const r of results) {
   const mark = r.ok ? '✓' : '✗'
-  console.log(`  ${mark} ${r.stage.padEnd(10)} ${(r.durationMs / 1000).toFixed(1)}s${r.ok ? '' : `  (exit ${r.exitCode})`}`)
+  console.log(
+    `  ${mark} ${r.stage.padEnd(10)} ${(r.durationMs / 1000).toFixed(1)}s${r.ok ? '' : `  (exit ${r.exitCode})`}`,
+  )
 }
 console.log(`  total                ${(totalDur / 1000).toFixed(1)}s`)
 

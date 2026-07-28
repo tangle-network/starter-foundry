@@ -81,6 +81,10 @@ async function main(): Promise<void> {
   console.log(`alpha=${report.alpha} fdr=${report.fdr}`)
   console.log('')
   for (const f of report.perFlow) {
+    if (f.baseline === null || f.head === null || f.delta === null) {
+      console.log(`  [inconclusive] ${f.flow}: unmeasured`)
+      continue
+    }
     const sig = f.bhSignificant ? ' (BH-sig)' : ''
     const ci =
       f.bootstrap !== null

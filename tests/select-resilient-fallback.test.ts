@@ -58,7 +58,11 @@ for (const id of UNKNOWN_TECH_IDS) {
   test(`unrouteable: "${id}" returns routingRisk='unrouteable' instead of silent fallback`, async () => {
     const r = await selectStarter({ prompt: id })
     assert.equal(r.confidence, 'unknown', `confidence must be unknown, got ${r.confidence}`)
-    assert.equal(r.routingRisk, 'unrouteable', `routingRisk must be unrouteable, got ${r.routingRisk}`)
+    assert.equal(
+      r.routingRisk,
+      'unrouteable',
+      `routingRisk must be unrouteable, got ${r.routingRisk}`,
+    )
     assert.equal(r.fallbackUsed, true)
     // Reason string must explain why and what to do — not "no confident match"
     const reason = r.reasons[0] ?? ''
@@ -73,15 +77,21 @@ test('natural-language prompt is never classified unrouteable', async () => {
   // Natural-language prompts contain whitespace; the technical-ID detector
   // requires no whitespace, so any prose phrase is structurally exempt.
   const r = await selectStarter({ prompt: 'build me a tax filer for an LLC' })
-  assert.notEqual(r.routingRisk, 'unrouteable',
-    'natural-language prompts must not be classified unrouteable')
+  assert.notEqual(
+    r.routingRisk,
+    'unrouteable',
+    'natural-language prompts must not be classified unrouteable',
+  )
   assert.notEqual(r.confidence, 'unknown')
 })
 
 test('natural-language portfolio prompt routes safely (not unrouteable)', async () => {
   const r = await selectStarter({ prompt: 'I want a personal portfolio site' })
-  assert.notEqual(r.routingRisk, 'unrouteable',
-    'natural language with spaces must NEVER be classified unrouteable')
+  assert.notEqual(
+    r.routingRisk,
+    'unrouteable',
+    'natural language with spaces must NEVER be classified unrouteable',
+  )
 })
 
 // ── isTechnicalIdShape unit tests — narrow + specific + adversarial. ──

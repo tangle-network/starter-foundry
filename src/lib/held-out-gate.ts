@@ -1,261 +1,266 @@
 /**
- * HeldOutGate — promote/hold/revert decision over a candidate vs baseline.
- *
- * Composes from `@tangle-network/agent-eval@0.19.1` primitives:
- *   - `bootstrapCi` for paired-delta CI
- *   - `pairedTTest` for paired p-value
- *   - `cohensD` for effect size
- *   - `welchsTTest` for unpaired fallback
- *   - `benjaminiHochberg` for FDR adjustment
- *
- * The shape is the v0.16 agent-eval `HeldOutGate` API exactly so the swap is
- * rename-only:
- *
- *   import { HeldOutGate } from '@tangle-network/agent-eval'
- *   `rm src/lib/held-out-gate.ts`
- *
- * Verdict logic:
- *   - REVERT if pairedDeltaMedian < 0 AND pValue < 0.05
- *     (candidate is significantly worse on the search distribution)
- *   - REVERT if overfitGap >= overfitGapThreshold AND holdoutScore is known
- *     (candidate gamed the search judge — held-out shows the gap)
- *   - PROMOTE if pairedDeltaMedian >= pairedDeltaThreshold AND
- *     cohensD >= cohensDThreshold AND
- *     n >= minProductiveRuns AND
- *     (pValue (or qValueBh) < 0.05) AND
- *     overfitGap < overfitGapThreshold (or holdoutScore unknown)
- *   - HOLD otherwise (insufficient evidence)
+ * Starter Foundry's tri-state promotion policy over agent-eval's canonical
+ * RunRecord, held-out comparison, and paired-statistics primitives.
  *
  * @public
  */
 
 import {
-  benjaminiHochberg,
-  bootstrapCi,
-  cohensD,
-  pairedTTest,
-  welchsTTest,
+  HeldOutGate as AgentEvalHeldOutGate,
+  isRealnessGated,
+  mcnemar,
+  observedSplitScore,
+  pairRunRecords,
+  pairedRiskDifference,
+  type RunRecord,
 } from '@tangle-network/agent-eval'
 
-import type { RunRecord } from './run-record.js'
+export type HeldOutGateConfig = ConstructorParameters<typeof AgentEvalHeldOutGate>[0]
 
-export interface HeldOutGateConfig {
-  /** Logical baseline name — recorded on the decision for traceability. */
-  baselineKey: string
-  /** Floor below which we always HOLD (not enough data). Default 3. */
-  minProductiveRuns?: number
-  /** Median paired-delta required for PROMOTE. Default 0. */
-  pairedDeltaThreshold?: number
-  /**
-   * Held-out vs search-score gap above which we REVERT (overfit). Default 0.20
-   * (20pp — operator-locked).
-   */
-  overfitGapThreshold?: number
-  /** Minimum |Cohen's d| required for PROMOTE. Default 0.5. */
-  cohensDThreshold?: number
-  /** Apply Benjamini-Hochberg correction across this evaluation. Default true. */
-  applyBHCorrection?: boolean
-  /** Confidence alpha for the bootstrap CI. Default 0.05 (95% CI). */
-  alpha?: number
-  /** Bootstrap iterations. Default 1000. */
-  iterations?: number
-  /** RNG seed for the bootstrap (reproducibility). */
-  seed?: number
-}
+type AgentEvalDecision = ReturnType<AgentEvalHeldOutGate['evaluate']>
+type BinaryRiskDifference = ReturnType<typeof pairedRiskDifference>
+type BinaryMcNemar = ReturnType<typeof mcnemar>
 
 export type GateVerdict = 'PROMOTE' | 'HOLD' | 'REVERT'
 
-export interface GateEvidence {
-  n: number
-  pairedDeltaMedian: number
-  pairedDeltaCi95: { lower: number; upper: number }
-  cohensD: number
-  searchScore: number
-  holdoutScore: number | null
-  overfitGap: number | null
-  pValue: number
-  /** BH-corrected q-value for this single hypothesis. null if applyBHCorrection: false. */
-  qValueBh: number | null
+export type GateEvidence = AgentEvalDecision['evidence'] & {
+  comparison: 'continuous' | 'binary'
+  binaryRiskDifference: BinaryRiskDifference | null
+  binaryMcNemar: BinaryMcNemar | null
 }
 
 export interface GateDecision {
   verdict: GateVerdict
-  reason: string
+  candidateId: string
   baselineKey: string
+  rejectionCode: AgentEvalDecision['rejectionCode']
+  reason: string
   evidence: GateEvidence
 }
 
-const DEFAULTS = {
-  minProductiveRuns: 3,
-  pairedDeltaThreshold: 0,
-  overfitGapThreshold: 0.2,
-  cohensDThreshold: 0.5,
-  applyBHCorrection: true,
-  alpha: 0.05,
-  iterations: 1000,
+interface PairedHoldoutScores {
+  baseline: number[]
+  candidate: number[]
 }
 
-function median(xs: number[]): number {
-  if (xs.length === 0) return 0
-  const sorted = [...xs].sort((a, b) => a - b)
-  const mid = Math.floor(sorted.length / 2)
-  return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid]
+const PRECONDITION_REJECTIONS = new Set<AgentEvalDecision['rejectionCode']>([
+  'few_runs',
+  'incomplete_coverage',
+  'missing_split_scores',
+])
+
+function scoredHoldoutRuns(runs: readonly RunRecord[]): RunRecord[] {
+  return runs.filter((run) => {
+    if (run.splitTag !== 'holdout' || isRealnessGated(run)) return false
+    const score = observedSplitScore(run, 'holdout')
+    return typeof score === 'number' && Number.isFinite(score)
+  })
 }
 
-function mean(xs: number[]): number {
-  if (xs.length === 0) return 0
-  let s = 0
-  for (const x of xs) s += x
-  return s / xs.length
+function holdoutScore(run: RunRecord): number {
+  const score = observedSplitScore(run, 'holdout')
+  if (typeof score !== 'number' || !Number.isFinite(score)) {
+    throw new Error(`HeldOutGate: paired holdout run ${run.runId} has no finite holdout score`)
+  }
+  return score
 }
 
-/** Average outcome.holdoutScore over runs where it's defined, else null. */
-function meanHoldoutScore(runs: readonly RunRecord[]): number | null {
-  const xs = runs
-    .map((r) => r.outcome.holdoutScore)
-    .filter((v): v is number => typeof v === 'number')
-  if (xs.length === 0) return null
-  return mean(xs)
+function pairedHoldoutScores(
+  candidate: readonly RunRecord[],
+  baseline: readonly RunRecord[],
+): PairedHoldoutScores {
+  const pairing = pairRunRecords(scoredHoldoutRuns(baseline), scoredHoldoutRuns(candidate))
+  return {
+    baseline: pairing.pairs.map((pair) => holdoutScore(pair.baseline)),
+    candidate: pairing.pairs.map((pair) => holdoutScore(pair.treatment)),
+  }
 }
 
+function isBinary(scores: PairedHoldoutScores): boolean {
+  return (
+    scores.baseline.length > 0 &&
+    [...scores.baseline, ...scores.candidate].every((score) => score === 0 || score === 1)
+  )
+}
+
+function continuousDecisionFields(
+  decision: AgentEvalDecision,
+): Pick<GateDecision, 'verdict' | 'rejectionCode' | 'reason'> {
+  const ci = decision.evidence.pairedCI
+  if (ci !== null && ci.high < 0) {
+    return {
+      verdict: 'REVERT',
+      rejectionCode: 'negative_delta',
+      reason: `negative_delta: paired held-out CI=[${ci.low.toFixed(4)}, ${ci.high.toFixed(4)}] is below zero`,
+    }
+  }
+  if (decision.promote && (ci === null || ci.low <= 0)) {
+    return {
+      verdict: 'HOLD',
+      rejectionCode: 'negative_delta',
+      reason:
+        'negative_delta: paired held-out evidence does not establish an improvement above zero',
+    }
+  }
+  if (decision.promote) {
+    return { verdict: 'PROMOTE', rejectionCode: null, reason: decision.reason }
+  }
+  if (decision.rejectionCode === 'overfit_gap') {
+    return {
+      verdict: 'REVERT',
+      rejectionCode: decision.rejectionCode,
+      reason: decision.reason,
+    }
+  }
+  return {
+    verdict: 'HOLD',
+    rejectionCode: decision.rejectionCode,
+    reason: decision.reason,
+  }
+}
+
+function fromAgentEval(
+  decision: AgentEvalDecision,
+  comparison: GateEvidence['comparison'] = 'continuous',
+): GateDecision {
+  const fields = continuousDecisionFields(decision)
+  return {
+    ...fields,
+    candidateId: decision.candidateId,
+    baselineKey: decision.baselineId,
+    evidence: {
+      ...decision.evidence,
+      comparison,
+      binaryRiskDifference: null,
+      binaryMcNemar: null,
+    },
+  }
+}
+
+/**
+ * Uses agent-eval's production held-out decision for continuous scores.
+ * Binary scores use its paired risk-difference and McNemar primitives because
+ * a median delta is zero until more than half of all matched cases flip.
+ */
 export class HeldOutGate {
-  private readonly cfg: Required<HeldOutGateConfig>
+  private readonly agentEvalGate: AgentEvalHeldOutGate
+  private readonly config: HeldOutGateConfig
 
   constructor(config: HeldOutGateConfig) {
-    this.cfg = {
-      baselineKey: config.baselineKey,
-      minProductiveRuns: config.minProductiveRuns ?? DEFAULTS.minProductiveRuns,
-      pairedDeltaThreshold: config.pairedDeltaThreshold ?? DEFAULTS.pairedDeltaThreshold,
-      overfitGapThreshold: config.overfitGapThreshold ?? DEFAULTS.overfitGapThreshold,
-      cohensDThreshold: config.cohensDThreshold ?? DEFAULTS.cohensDThreshold,
-      applyBHCorrection: config.applyBHCorrection ?? DEFAULTS.applyBHCorrection,
-      alpha: config.alpha ?? DEFAULTS.alpha,
-      iterations: config.iterations ?? DEFAULTS.iterations,
-      seed: config.seed ?? 0,
-    }
+    this.agentEvalGate = new AgentEvalHeldOutGate(config)
+    this.config = config
   }
 
-  /**
-   * Evaluate a candidate vs baseline. Both arrays are RunRecords; pairing
-   * is positional (record i in candidate paired with record i in baseline).
-   * If lengths differ, the smaller length is used for paired stats and a
-   * note is included in the reason.
-   */
-  evaluate(candidate: readonly RunRecord[], baseline: readonly RunRecord[]): GateDecision {
-    const n = Math.min(candidate.length, baseline.length)
-    const candidateScores = candidate.map((r) => r.outcome.searchScore)
-    const baselineScores = baseline.map((r) => r.outcome.searchScore)
+  evaluate(candidate: RunRecord[], baseline: RunRecord[]): GateDecision {
+    const baseDecision = this.agentEvalGate.evaluate(candidate, baseline)
+    const scores = pairedHoldoutScores(candidate, baseline)
+    if (!isBinary(scores)) return fromAgentEval(baseDecision)
 
-    const candidateMean = mean(candidateScores)
-    const baselineMean = mean(baselineScores)
-
-    if (n < this.cfg.minProductiveRuns) {
-      return this.decision('HOLD', `n=${n} below minProductiveRuns=${this.cfg.minProductiveRuns}`, {
-        n,
-        pairedDeltaMedian: 0,
-        pairedDeltaCi95: { lower: 0, upper: 0 },
-        cohensD: 0,
-        searchScore: candidateMean,
-        holdoutScore: meanHoldoutScore(candidate),
-        overfitGap: null,
-        pValue: 1,
-        qValueBh: null,
-      })
+    if (PRECONDITION_REJECTIONS.has(baseDecision.rejectionCode)) {
+      return fromAgentEval(baseDecision, 'binary')
     }
 
-    const pairedDeltas: number[] = []
-    for (let i = 0; i < n; i += 1) {
-      pairedDeltas.push(candidateScores[i] - baselineScores[i])
-    }
-    const pairedDeltaMedian = median(pairedDeltas)
-
-    const boot = bootstrapCi(baselineScores, candidateScores, {
-      alpha: this.cfg.alpha,
-      iterations: this.cfg.iterations,
-      seed: this.cfg.seed,
-    })
-    const ci95 = { lower: boot.ciLower, upper: boot.ciUpper }
-
-    const d = cohensD(baselineScores, candidateScores)
-
-    // Use paired t-test when arrays are equal length; fall back to Welch's
-    // when they differ (rare; documented in reason).
-    let pValue: number
-    if (candidateScores.length === baselineScores.length) {
-      pValue = pairedTTest(baselineScores, candidateScores).p
-    } else {
-      pValue = welchsTTest(baselineScores, candidateScores).p
-    }
-
-    const qValueBh = this.cfg.applyBHCorrection
-      ? benjaminiHochberg([pValue], this.cfg.alpha).qValues[0]
-      : null
-
-    const candidateHoldout = meanHoldoutScore(candidate)
-    const overfitGap = candidateHoldout !== null ? candidateMean - candidateHoldout : null
-
+    const confidence = this.config.confidence ?? 0.95
+    const alpha = 1 - confidence
+    const threshold = this.config.pairedDeltaThreshold ?? 0
+    const promotionThreshold = Math.max(threshold, 0)
+    const risk = pairedRiskDifference(scores.baseline, scores.candidate, confidence)
+    const exact = mcnemar(scores.baseline, scores.candidate)
     const evidence: GateEvidence = {
-      n,
-      pairedDeltaMedian,
-      pairedDeltaCi95: ci95,
-      cohensD: d,
-      searchScore: candidateMean,
-      holdoutScore: candidateHoldout,
-      overfitGap,
-      pValue,
-      qValueBh,
+      ...baseDecision.evidence,
+      comparison: 'binary',
+      binaryRiskDifference: risk,
+      binaryMcNemar: exact,
     }
 
-    const effectiveP = qValueBh ?? pValue
-
-    // REVERT: significantly worse on search
-    if (pairedDeltaMedian < 0 && effectiveP < this.cfg.alpha) {
-      return this.decision(
+    if (risk.upper < 0 && exact.pValue < alpha) {
+      return this.binaryDecision(
+        baseDecision,
         'REVERT',
-        `paired-delta median ${pairedDeltaMedian.toFixed(4)} < 0 with p=${effectiveP.toFixed(4)} < alpha=${this.cfg.alpha}`,
+        'negative_delta',
+        `negative_delta: paired holdout risk difference=${risk.riskDifference.toFixed(4)} ` +
+          `CI=[${risk.lower.toFixed(4)}, ${risk.upper.toFixed(4)}], ` +
+          `McNemar p=${exact.pValue.toFixed(6)}`,
         evidence,
       )
     }
 
-    // REVERT: overfit (held-out gap exceeds threshold)
-    if (overfitGap !== null && overfitGap >= this.cfg.overfitGapThreshold) {
-      return this.decision(
+    const overfitThreshold = this.config.overfitGapThreshold ?? 0.15
+    if (
+      evidence.overfitGap !== null &&
+      evidence.baselineOverfitGap !== null &&
+      evidence.overfitGap > evidence.baselineOverfitGap + overfitThreshold
+    ) {
+      return this.binaryDecision(
+        baseDecision,
         'REVERT',
-        `overfit-gap ${overfitGap.toFixed(4)} >= threshold ${this.cfg.overfitGapThreshold}`,
+        'overfit_gap',
+        `overfit_gap: candidate gap=${evidence.overfitGap.toFixed(4)} exceeds ` +
+          `baseline gap=${evidence.baselineOverfitGap.toFixed(4)} by more than ` +
+          overfitThreshold.toFixed(4),
         evidence,
       )
     }
 
-    // PROMOTE: positive median delta + adequate effect size + significant
-    const positiveDelta = pairedDeltaMedian >= this.cfg.pairedDeltaThreshold
-    const adequateEffect = Math.abs(d) >= this.cfg.cohensDThreshold && d > 0
-    const significant = effectiveP < this.cfg.alpha
-    if (positiveDelta && adequateEffect && significant) {
-      return this.decision(
+    if (this.config.costPerTaskCeiling !== undefined) {
+      if (evidence.medianCandidateCost === null) {
+        return this.binaryDecision(
+          baseDecision,
+          'HOLD',
+          'missing_cost',
+          'missing_cost: candidate cost evidence is incomplete',
+          evidence,
+        )
+      }
+      if (evidence.medianCandidateCost > this.config.costPerTaskCeiling) {
+        return this.binaryDecision(
+          baseDecision,
+          'HOLD',
+          'cost_ceiling',
+          `cost_ceiling: candidate median cost $${evidence.medianCandidateCost.toFixed(4)} ` +
+            `exceeds ceiling $${this.config.costPerTaskCeiling.toFixed(4)}`,
+          evidence,
+        )
+      }
+    }
+
+    if (risk.lower > promotionThreshold && exact.pValue < alpha) {
+      return this.binaryDecision(
+        baseDecision,
         'PROMOTE',
-        `paired-delta ${pairedDeltaMedian.toFixed(4)} >= ${this.cfg.pairedDeltaThreshold}, ` +
-          `cohen's d ${d.toFixed(3)} >= ${this.cfg.cohensDThreshold}, ` +
-          `p=${effectiveP.toFixed(4)} < ${this.cfg.alpha}` +
-          (overfitGap !== null
-            ? `, overfit-gap ${overfitGap.toFixed(4)} < ${this.cfg.overfitGapThreshold}`
-            : ''),
+        null,
+        `promote: paired holdout risk difference=${risk.riskDifference.toFixed(4)} ` +
+          `CI=[${risk.lower.toFixed(4)}, ${risk.upper.toFixed(4)}] over ${risk.n} pairs; ` +
+          `McNemar p=${exact.pValue.toFixed(6)}`,
         evidence,
       )
     }
 
-    // HOLD with explanation
-    const reasons: string[] = []
-    if (!positiveDelta)
-      reasons.push(
-        `paired-delta ${pairedDeltaMedian.toFixed(4)} < ${this.cfg.pairedDeltaThreshold}`,
-      )
-    if (!adequateEffect)
-      reasons.push(`|cohen's d| ${Math.abs(d).toFixed(3)} < ${this.cfg.cohensDThreshold}`)
-    if (!significant) reasons.push(`p=${effectiveP.toFixed(4)} >= ${this.cfg.alpha}`)
-    return this.decision('HOLD', `insufficient evidence: ${reasons.join('; ')}`, evidence)
+    return this.binaryDecision(
+      baseDecision,
+      'HOLD',
+      'indeterminate_delta',
+      `indeterminate_delta: paired holdout risk difference=${risk.riskDifference.toFixed(4)} ` +
+        `CI=[${risk.lower.toFixed(4)}, ${risk.upper.toFixed(4)}] does not clear ` +
+        `threshold ${promotionThreshold.toFixed(4)} with McNemar p=${exact.pValue.toFixed(6)}`,
+      evidence,
+    )
   }
 
-  private decision(verdict: GateVerdict, reason: string, evidence: GateEvidence): GateDecision {
-    return { verdict, reason, baselineKey: this.cfg.baselineKey, evidence }
+  private binaryDecision(
+    base: AgentEvalDecision,
+    verdict: GateVerdict,
+    rejectionCode: AgentEvalDecision['rejectionCode'],
+    reason: string,
+    evidence: GateEvidence,
+  ): GateDecision {
+    return {
+      verdict,
+      candidateId: base.candidateId,
+      baselineKey: base.baselineId,
+      rejectionCode,
+      reason,
+      evidence,
+    }
   }
 }

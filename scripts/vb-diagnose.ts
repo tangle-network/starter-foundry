@@ -46,7 +46,9 @@ console.log(`VB execution traces — diagnostic report`)
 console.log('='.repeat(70))
 console.log(`total traces:        ${traces.length}`)
 console.log(`distinct scenarios:  ${outcomes.length}`)
-console.log(`overall pass rate:   ${totalPass}/${traces.length} = ${(totalPass / traces.length).toFixed(3)}`)
+console.log(
+  `overall pass rate:   ${totalPass}/${traces.length} = ${(totalPass / traces.length).toFixed(3)}`,
+)
 console.log(`mean blended score:  ${totalScore.toFixed(3)}`)
 console.log('')
 
@@ -54,9 +56,10 @@ console.log('per-scenario:')
 console.log('  scenario'.padEnd(27), '| pass   | score | failing-layers')
 console.log('  ', '-'.repeat(70))
 for (const o of outcomes) {
-  const fl = Object.entries(o.failingLayersByKind)
-    .map(([k, v]) => `${k}:${v}`)
-    .join(',') || '—'
+  const fl =
+    Object.entries(o.failingLayersByKind)
+      .map(([k, v]) => `${k}:${v}`)
+      .join(',') || '—'
   console.log(
     '  ' + o.scenarioId.padEnd(25),
     '|',

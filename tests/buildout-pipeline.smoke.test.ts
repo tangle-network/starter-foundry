@@ -48,7 +48,10 @@ test('smoke: full pipeline end-to-end on synthetic fixture', () => {
     writeFileSync(
       join(s2, 'sess.jsonl'),
       [
-        JSON.stringify({ type: 'user', message: { content: 'Build something that does not join' } }),
+        JSON.stringify({
+          type: 'user',
+          message: { content: 'Build something that does not join' },
+        }),
         JSON.stringify({
           type: 'assistant',
           message: {
@@ -79,17 +82,17 @@ test('smoke: full pipeline end-to-end on synthetic fixture', () => {
       }) + '\n',
     )
 
-    const r = spawnSync(
-      process.execPath,
-      [ORCHESTRATOR, '--projects-dir', projects],
-      {
-        cwd: dir,
-        encoding: 'utf8',
-        env: { ...process.env },
-        timeout: 60_000,
-      },
+    const r = spawnSync(process.execPath, [ORCHESTRATOR, '--projects-dir', projects], {
+      cwd: dir,
+      encoding: 'utf8',
+      env: { ...process.env },
+      timeout: 60_000,
+    })
+    assert.equal(
+      r.status,
+      0,
+      `orchestrator failed: exit=${r.status}\nstdout:\n${r.stdout}\nstderr:\n${r.stderr}`,
     )
-    assert.equal(r.status, 0, `orchestrator failed: exit=${r.status}\nstdout:\n${r.stdout}\nstderr:\n${r.stderr}`)
 
     // buildouts.jsonl: 2 events
     const buildouts = readFileSync(join(dir, '.evolve/traces/buildouts.jsonl'), 'utf8')
@@ -160,7 +163,10 @@ test('smoke: infer-capability-gaps imports cleanly and runs on the fixture', () 
       timeout: 30_000,
     })
     assert.equal(r.status, 0, `gaps script failed:\n${r.stderr}\n${r.stdout}`)
-    assert.ok(existsSync(join(dir, '.evolve/capability-gaps.json')), 'expected capability-gaps.json output')
+    assert.ok(
+      existsSync(join(dir, '.evolve/capability-gaps.json')),
+      'expected capability-gaps.json output',
+    )
 
     const gaps = JSON.parse(readFileSync(join(dir, '.evolve/capability-gaps.json'), 'utf8'))
     assert.equal(gaps.schemaVersion, 2)

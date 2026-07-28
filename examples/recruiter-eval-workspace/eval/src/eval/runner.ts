@@ -3,28 +3,23 @@
 // Lifecycle:
 //   1. Load every Scenario exported from `scenarios/*.scenario.ts`.
 //   2. For each scenario, build a TestGradedScenario whose harness.testCommand
-//      is a curl-based assertion against the target URL (or skip the test
-//      command entirely when running in `judge-only` mode).
+//      executes every turn against the target URL and records the responses.
 //   3. Delegate to `runTestGradedScenario` from agent-eval — it spawns the
 //      command via SubprocessSandboxDriver, emits a Run, persists spans
 //      via FileSystemTraceStore.
-//   4. Run every JudgeFn in `judges/*.judge.ts` over the collected
-//      ScenarioResult; aggregate via `JudgeRunner` when sandbox-graded.
+//   4. Run each applicable JudgeFn over the complete conversation and
+//      aggregate dimensions by rubric weights.
 //   5. Emit a scorecard via `writeScorecard` (see scorecard.ts).
 //
 // Capture integrity (agent-eval 0.21+):
 //   - Allocates a `FileSystemRawProviderSink` per run, rooted under
-//     `<tracesDir>/raw-events/<runId>/`. LLM-as-judge call sites that
-//     read `globalThis.__agentEvalRawSink` (or that consumers wire
-//     explicitly) auto-capture every provider HTTP request/response.
+//     `<tracesDir>/raw-events/<runId>/`, and passes it directly to the
+//     run-bound judge client.
 //   - When `EVAL_LLM_BASE_URL` is set the runner calls `assertLlmRoute`
 //     at preflight so the sweep fails loud if it would silently fall
 //     back to the public router.
-//   - After every `runTestGradedScenario` the runner calls
-//     `assertRunCaptured` to verify the run wrote the expected spans
-//     (and, when judges ran, that every LlmSpan has a matching raw
-//     `request` event). Integrity issues are surfaced on the outcome
-//     row but only fail the scenario when `EVAL_INTEGRITY=strict`.
+//   - Strict checks require raw request coverage for every local model
+//     span, while non-model scenarios require only a completed outcome.
 //
 // All primitives come from the published package — this file is the
 // integration glue, not new measurement infra.
@@ -44,7 +39,6 @@ import {
   type TestGradedRunResult,
   type JudgeFn,
   type JudgeInput,
-  type JudgeScore,
   type CollectedArtifacts,
 } from '@tangle-network/agent-eval'
 import {
@@ -53,7 +47,6 @@ import {
   type RawProviderSink,
   type RunIntegrityReport,
 } from '@tangle-network/agent-eval/traces'
-import { TCloud } from '@tangle-network/tcloud'
 // Single source of truth for scenario loading: the agent-eval:scenarios
 // layer composes `src/eval/scenario-loader.ts` next to this runner. Pre-fix
 // the family re-implemented a weaker loader inline (no shape validation),
@@ -61,6 +54,9 @@ import { TCloud } from '@tangle-network/tcloud'
 // "extend, don't duplicate", the runner imports the layer's loader.
 import { loadScenarios, type LoadedScenario } from './scenario-loader.js'
 import { writeScorecard, type ScorecardFlow } from './scorecard.js'
+import { decodeConversationOutput } from './conversation.js'
+import { createJudgeClient } from './judge-client.js'
+import { aggregateJudgeScores, judgeAppliesTo, type WeightedJudgeScore } from './judge-policy.js'
 
 export type IntegrityMode = 'off' | 'log' | 'strict'
 
@@ -118,31 +114,17 @@ export interface RunnerOptions {
 interface ScenarioOutcome {
   scenarioId: string
   pass: boolean
-  score: number
+  score: number | null
   durationMs: number
   failureClass: string | null
   filePath: string
   runId: string
+  applicableJudgeCount: number
   measuredJudgeCount: number
   unmeasuredJudgeCount: number
-  /**
-   * Capture-integrity issues observed at run-end. Empty in the common
-   * happy-path case. Surfaced on the row so a launch reviewer can spot
-   * runs that completed structurally but lost their forensic evidence.
-   */
+  judgeErrorCount: number
+  evaluationErrors?: string[]
   integrityIssues?: string[]
-}
-
-/**
- * Lightweight RawProviderSink handle exposed on `globalThis` for ad-hoc
- * LLM-judge wiring. A judge call site can read this to pass `rawSink`
- * into `callLlm` without the runner having to know about the judge. The
- * canonical pattern is to wire `rawSink` explicitly via dependency
- * injection — this hook exists so the example judge auto-captures.
- */
-declare global {
-  // eslint-disable-next-line no-var
-  var __agentEvalRawSink: RawProviderSink | undefined
 }
 
 const HERE = dirname(fileURLToPath(import.meta.url))
@@ -155,6 +137,8 @@ function shQuote(s: string): string {
 interface LoadedJudge {
   fn: JudgeFn
   filePath: string
+  dimensions: readonly string[]
+  usesModel: boolean
 }
 
 async function loadJudgesFrom(dir: string): Promise<LoadedJudge[]> {
@@ -169,35 +153,52 @@ async function loadJudgesFrom(dir: string): Promise<LoadedJudge[]> {
     if (!entry.endsWith('.judge.ts') && !entry.endsWith('.judge.js')) continue
     const filePath = join(dir, entry)
     const url = pathToFileURL(isAbsolute(filePath) ? filePath : resolve(filePath)).href
-    const mod = (await import(url)) as { default?: JudgeFn }
-    if (typeof mod.default === 'function') judges.push({ fn: mod.default, filePath })
+    const mod = (await import(url)) as {
+      default?: JudgeFn
+      dimensions?: unknown
+      usesModel?: unknown
+    }
+    if (typeof mod.default !== 'function') {
+      throw new Error(`eval-harness: ${filePath} must default-export a JudgeFn`)
+    }
+    if (
+      !Array.isArray(mod.dimensions) ||
+      mod.dimensions.length === 0 ||
+      !mod.dimensions.every((value) => typeof value === 'string' && value.length > 0)
+    ) {
+      throw new Error(`eval-harness: ${filePath} must export a non-empty string[] named dimensions`)
+    }
+    if (typeof mod.usesModel !== 'boolean') {
+      throw new Error(`eval-harness: ${filePath} must export a boolean named usesModel`)
+    }
+    judges.push({
+      fn: mod.default,
+      filePath,
+      dimensions: mod.dimensions as string[],
+      usesModel: mod.usesModel,
+    })
   }
   return judges
-}
-
-function createJudgeClient(apiKey: string | undefined, baseUrl: string | undefined): TCloud | undefined {
-  if (!apiKey) return undefined
-  const trimmed = baseUrl?.replace(/\/+$/, '')
-  const baseURL = trimmed ? (trimmed.endsWith('/v1') ? trimmed : `${trimmed}/v1`) : undefined
-  return TCloud.create({ apiKey, ...(baseURL ? { baseURL } : {}) })
 }
 
 // Translate a Scenario into a TestGradedScenario — the bridge between
 // the conversational scenario shape and the test-graded-runner shape.
 //
-// Default policy: every scenario's first turn is POST-ed at the target
-// URL's /chat route, and the response is checked for non-empty content.
-// Override by editing the testCommand in your scenario file's tags.
+// Default policy: every turn is POST-ed in order by conversation-cli.ts.
+// Each request carries the complete user/assistant history accumulated so far.
 function toTestGraded(scenario: Scenario, targetUrl: string): TestGradedScenario {
   const customTestCommand = (scenario as Scenario & { testCommand?: string }).testCommand
-  const firstTurn = scenario.turns[0]
-  const userMessage = firstTurn?.user ?? ''
-  const bodyPath = `/tmp/eval-body-${scenario.id.replace(/[^a-zA-Z0-9_-]/g, '_')}`
+  const encodedScenario = Buffer.from(
+    JSON.stringify({
+      id: scenario.id,
+      turns: scenario.turns.map((turn) => ({ user: turn.user })),
+    }),
+    'utf8',
+  ).toString('base64')
   const defaultTest =
-    `body=${shQuote(bodyPath)}; status=$(curl -sS -o "$body" -w '%{http_code}' -X POST -H 'content-type: application/json' ` +
-    `--data ${shQuote(JSON.stringify({ message: userMessage, scenarioId: scenario.id }))} ` +
-    `${shQuote(`${targetUrl}/chat`)}); printf '%s' "$status" | grep -E '^(200|201)$' >/dev/null && ` +
-    `test $(wc -c < "$body") -ge 1 && cat "$body"`
+    `EVAL_SCENARIO_JSON=${shQuote(encodedScenario)} ` +
+    `EVAL_TARGET_BASE_URL=${shQuote(targetUrl)} ` +
+    'node --import tsx src/eval/conversation-cli.ts'
   return {
     id: scenario.id,
     description: scenario.label ?? scenario.thesis ?? scenario.id,
@@ -215,7 +216,7 @@ export interface RunReport {
   variantId?: string
   scenarioCount: number
   passCount: number
-  aggregate: number
+  aggregate: number | null
   measuredScenarioCount: number
   unmeasuredScenarioCount: number
   threshold: number
@@ -226,6 +227,26 @@ export interface RunReport {
   integrityMode: IntegrityMode
   /** Per-run integrity reports, indexed by runId. */
   integrityReports: Record<string, RunIntegrityReport>
+}
+
+const OPERATIONAL_FAILURES = new Set([
+  'harness_error',
+  'turn_capture_error',
+  'judge_error',
+  'judge_unmeasured',
+  'integrity',
+])
+
+export function exitCodeForReport(report: RunReport): 0 | 1 {
+  const operationalFailure = report.outcomes.some(
+    (outcome) => outcome.failureClass !== null && OPERATIONAL_FAILURES.has(outcome.failureClass),
+  )
+  return report.aggregate === null ||
+    report.aggregate < report.threshold ||
+    report.unmeasuredScenarioCount > 0 ||
+    operationalFailure
+    ? 1
+    : 0
 }
 
 function resolveIntegrityMode(opt: IntegrityMode | undefined): IntegrityMode {
@@ -244,8 +265,7 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
   const tracesDir = opts.tracesDir ?? join(projectRoot, '.evolve', 'agent-eval', 'traces')
   const experimentsDir =
     opts.experimentsDir ?? join(projectRoot, '.evolve', 'agent-eval', 'experiments')
-  const rawEventsDir =
-    opts.rawEventsDir ?? join(projectRoot, '.evolve', 'agent-eval', 'raw-events')
+  const rawEventsDir = opts.rawEventsDir ?? join(projectRoot, '.evolve', 'agent-eval', 'raw-events')
   const scorecardPath = opts.scorecardPath ?? join(projectRoot, '.evolve', 'scorecard.json')
   const variantId = opts.variantId ?? process.env.EVAL_VARIANT_ID
   const integrityMode = resolveIntegrityMode(opts.integrityMode)
@@ -256,7 +276,8 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
   // don't want to block users who never call an LLM. When a route IS
   // declared, fail loud before any scenario runs.
   const llmBaseUrl = opts.llmOpts?.baseUrl ?? process.env.EVAL_LLM_BASE_URL
-  const llmApiKey = opts.llmOpts?.apiKey ?? process.env.EVAL_LLM_API_KEY ?? process.env.TANGLE_API_KEY
+  const llmApiKey =
+    opts.llmOpts?.apiKey ?? process.env.EVAL_LLM_API_KEY ?? process.env.TANGLE_API_KEY
   const llmProvider = opts.llmOpts?.provider ?? process.env.EVAL_LLM_PROVIDER
   if (llmBaseUrl) {
     try {
@@ -290,67 +311,115 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
     )
   }
   const judges = await loadJudgesFrom(judgesDir)
-  const judgeClient = createJudgeClient(
-    llmApiKey,
-    llmBaseUrl ?? process.env.LLM_ROUTER_URL,
-  )
 
   const integrityReports: Record<string, RunIntegrityReport> = {}
   const outcomes: ScenarioOutcome[] = []
   for (const { scenario, filePath } of loaded) {
     const tgs = toTestGraded(scenario, targetUrl)
     const startedAt = Date.now()
-
-    // ── 0.21 Directive 1: per-run RawProviderSink ──────────────────────
-    // Allocated even when no LLM judge runs — the cost is one (possibly
-    // empty) NDJSON file per scenario, and the alternative is a silent
-    // partial-capture bug the next time someone wires in an LLM judge.
-    // Exposed via globalThis so the ad-hoc judge call sites in this
-    // template's `judges/` dir pick it up without explicit plumbing.
-    let rawSink: RawProviderSink | undefined
-    if (integrityMode !== 'off') {
-      rawSink = new FileSystemRawProviderSink({
-        dir: join(rawEventsDir, scenario.id),
-      })
-      globalThis.__agentEvalRawSink = rawSink
-    }
+    const applicableJudges = judges.filter((judge) =>
+      judgeAppliesTo(judge.dimensions, scenario.dimensions),
+    )
+    const usesModel = applicableJudges.some((judge) => judge.usesModel)
 
     let result: TestGradedRunResult
     try {
       result = await runTestGradedScenario(tgs, traceStore, { driver, variantId })
-    } catch (err) {
+    } catch (error) {
       outcomes.push({
         scenarioId: scenario.id,
         pass: false,
-        score: 0,
+        score: null,
         durationMs: Date.now() - startedAt,
         failureClass: 'harness_error',
         filePath,
         runId: '',
+        applicableJudgeCount: applicableJudges.length,
         measuredJudgeCount: 0,
         unmeasuredJudgeCount: 0,
+        judgeErrorCount: 0,
+        evaluationErrors: [error instanceof Error ? error.message : String(error)],
       })
-      console.error(`  ✗ ${scenario.id} — harness error: ${(err as Error).message}`)
-      globalThis.__agentEvalRawSink = undefined
+      console.error(
+        `  x ${scenario.id} - harness error: ${error instanceof Error ? error.message : String(error)}`,
+      )
       continue
     }
 
-    const judgeScores: JudgeScore[] = []
-    if (judges.length > 0) {
-      const response = result.harness.test?.stdout ?? ''
+    const stdout = result.harness.test?.stdout ?? ''
+    let turns
+    try {
+      turns = decodeConversationOutput(stdout)
+    } catch (error) {
+      outcomes.push({
+        scenarioId: scenario.id,
+        pass: false,
+        score: null,
+        durationMs: Date.now() - startedAt,
+        failureClass: 'turn_capture_error',
+        filePath,
+        runId: result.runId,
+        applicableJudgeCount: applicableJudges.length,
+        measuredJudgeCount: 0,
+        unmeasuredJudgeCount: 0,
+        judgeErrorCount: 0,
+        evaluationErrors: [error instanceof Error ? error.message : String(error)],
+      })
+      continue
+    }
+    if (!turns && scenario.turns.length === 1 && stdout.trim().length > 0) {
+      turns = [
+        {
+          turnIndex: 0,
+          userMessage: scenario.turns[0]?.user ?? '',
+          agentResponse: stdout,
+          durationMs: result.harness.test?.wallMs ?? 0,
+        },
+      ]
+    }
+    if (!turns || turns.length !== scenario.turns.length) {
+      const captured = turns?.length ?? 0
+      outcomes.push({
+        scenarioId: scenario.id,
+        pass: false,
+        score: null,
+        durationMs: Date.now() - startedAt,
+        failureClass: 'turn_capture_error',
+        filePath,
+        runId: result.runId,
+        applicableJudgeCount: applicableJudges.length,
+        measuredJudgeCount: 0,
+        unmeasuredJudgeCount: 0,
+        judgeErrorCount: 0,
+        evaluationErrors: [
+          `captured ${captured}/${scenario.turns.length} declared conversation turns`,
+        ],
+      })
+      console.error(
+        `  x ${scenario.id} - captured ${captured}/${scenario.turns.length} conversation turns`,
+      )
+      continue
+    }
+
+    const rawSink: RawProviderSink | undefined =
+      integrityMode !== 'off' && usesModel
+        ? new FileSystemRawProviderSink({ dir: join(rawEventsDir, scenario.id) })
+        : undefined
+    const evaluationErrors: string[] = []
+    const judgeMeans: number[] = []
+    let measuredJudgeCount = 0
+    let unmeasuredJudgeCount = 0
+    let judgeErrorCount = 0
+
+    if (result.pass && applicableJudges.length > 0) {
       const judgeInput: JudgeInput = {
         scenario,
-        turns: [
-          {
-            turnIndex: 0,
-            userMessage: scenario.turns[0]?.user ?? '',
-            agentResponse: response,
-            durationMs: result.harness.test?.wallMs ?? 0,
-            blocksExtracted: [],
-            containsCode: response.includes('```'),
-            containsToolCall: false,
-          },
-        ],
+        turns: turns.map((turn) => ({
+          ...turn,
+          blocksExtracted: [],
+          containsCode: turn.agentResponse.includes('```'),
+          containsToolCall: false,
+        })),
         artifacts: {
           vaultFiles: [],
           blocksExtracted: [],
@@ -358,88 +427,129 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
           toolCalls: [],
         } as CollectedArtifacts,
       }
-      for (const judge of judges) {
+      const judgeClient = createJudgeClient({
+        apiKey: llmApiKey,
+        baseUrl: llmBaseUrl ?? process.env.LLM_ROUTER_URL,
+        provider: llmProvider,
+        rawSink,
+        traceStore,
+        runId: result.runId,
+      })
+      for (const judge of applicableJudges) {
         try {
-          const scores = await judge.fn(judgeClient as TCloud, judgeInput)
-          judgeScores.push(...scores)
-        } catch (err) {
-          console.warn(`  ! judge ${judge.filePath} threw: ${(err as Error).message}`)
+          const scores = (await judge.fn(judgeClient, judgeInput)) as WeightedJudgeScore[]
+          if (scores.length === 0) {
+            unmeasuredJudgeCount += 1
+            evaluationErrors.push(`${judge.filePath}: returned no scores`)
+            continue
+          }
+          const aggregate = aggregateJudgeScores(scores)
+          if (aggregate.mean === null || aggregate.unmeasuredCount > 0) {
+            unmeasuredJudgeCount += 1
+            evaluationErrors.push(
+              `${judge.filePath}: returned ${aggregate.unmeasuredCount} unmeasured scores`,
+            )
+            continue
+          }
+          measuredJudgeCount += 1
+          judgeMeans.push(aggregate.mean)
+        } catch (error) {
+          judgeErrorCount += 1
+          evaluationErrors.push(
+            `${judge.filePath}: ${error instanceof Error ? error.message : String(error)}`,
+          )
         }
       }
     }
-    globalThis.__agentEvalRawSink = undefined
 
-    let measuredJudgeCount = 0
-    let unmeasuredJudgeCount = 0
-    let judgeScoreTotal = 0
-    for (const score of judgeScores) {
-      const status = (score as JudgeScore & { status?: string }).status
-      if (status === 'unmeasured' || !Number.isFinite(score.score)) {
-        unmeasuredJudgeCount += 1
-      } else {
-        measuredJudgeCount += 1
-        judgeScoreTotal += score.score
-      }
-    }
-    const score =
-      measuredJudgeCount > 0
-        ? (result.score + judgeScoreTotal) / (measuredJudgeCount + 1)
-        : result.score
+    const judgingIncomplete =
+      result.pass &&
+      applicableJudges.length > 0 &&
+      (judgeErrorCount > 0 ||
+        unmeasuredJudgeCount > 0 ||
+        measuredJudgeCount !== applicableJudges.length)
+    const judgeMean =
+      judgeMeans.length === 0
+        ? null
+        : judgeMeans.reduce((sum, value) => sum + value, 0) / judgeMeans.length
+    const score = !result.pass
+      ? result.score
+      : judgingIncomplete
+        ? null
+        : (judgeMean ?? result.score)
 
-    // ── 0.21 Directive 3: assert the run captured before declaring done ─
-    // Read-only. We do NOT set `requireRawCoverageOfLlmSpans` because
-    // the test-graded path may not call any LLM at all (the default
-    // testCommand is a curl). When an LLM judge IS wired the sink will
-    // be populated and consumers can tighten this in `runIntegrityExpect`.
     let integrityIssues: string[] | undefined
     if (integrityMode !== 'off' && result.runId) {
-      const report = await assertRunCaptured(traceStore, result.runId, {
-        rawSink,
-        // requireOutcome: the harness always sets pass/score, so this is
-        // a cheap belt-and-suspenders check.
-        requireOutcome: true,
-      })
+      const expectedLlmSpans =
+        result.pass && !judgingIncomplete
+          ? applicableJudges.filter((judge) => judge.usesModel).length
+          : 0
+      const report =
+        expectedLlmSpans === 0
+          ? await assertRunCaptured(traceStore, result.runId, { requireOutcome: true })
+          : await assertRunCaptured(traceStore, result.runId, {
+              rawSink,
+              llmSpansMin: expectedLlmSpans,
+              requireRawCoverageOfLlmSpans: true,
+              requireOutcome: true,
+            })
       integrityReports[result.runId] = report
-      if (!report.ok) {
-        integrityIssues = report.issues.map((i) => i.code)
-      }
+      if (!report.ok) integrityIssues = report.issues.map((issue) => issue.code)
     }
 
     const integrityFailed = integrityMode === 'strict' && integrityIssues !== undefined
-    const scenarioPassed = result.pass && score >= threshold
+    const scenarioPassed = score !== null && result.pass && score >= threshold
+    const failureClass = integrityFailed
+      ? 'integrity'
+      : judgeErrorCount > 0
+        ? 'judge_error'
+        : judgingIncomplete
+          ? 'judge_unmeasured'
+          : (result.failureClass ?? null)
     outcomes.push({
       scenarioId: scenario.id,
-      pass: integrityFailed ? false : scenarioPassed,
-      score: integrityFailed ? 0 : score,
+      pass: !integrityFailed && scenarioPassed,
+      score: integrityFailed ? null : score,
       durationMs: Date.now() - startedAt,
-      failureClass: integrityFailed ? 'integrity' : (result.failureClass ?? null),
+      failureClass,
       filePath,
       runId: result.runId,
+      applicableJudgeCount: applicableJudges.length,
       measuredJudgeCount,
       unmeasuredJudgeCount,
+      judgeErrorCount,
+      ...(evaluationErrors.length > 0 ? { evaluationErrors } : {}),
       ...(integrityIssues ? { integrityIssues } : {}),
     })
-    const mark = integrityFailed ? '✗' : scenarioPassed ? '✓' : '✗'
-    const integritySuffix = integrityIssues ? ` (integrity: ${integrityIssues.join(', ')})` : ''
+    const displayedScore = score?.toFixed(3) ?? 'unmeasured'
     const judgeSuffix =
-      judges.length > 0
-        ? ` judges=${measuredJudgeCount} measured/${unmeasuredJudgeCount} unmeasured`
+      applicableJudges.length > 0
+        ? ` judges=${measuredJudgeCount} measured/${unmeasuredJudgeCount} unmeasured/${judgeErrorCount} errors`
         : ''
+    const issueSuffix =
+      evaluationErrors.length > 0 ? ` (evaluation: ${evaluationErrors.join('; ')})` : ''
+    const integritySuffix = integrityIssues ? ` (integrity: ${integrityIssues.join(', ')})` : ''
     console.log(
-      `  ${mark} ${scenario.id} — score=${score.toFixed(3)}${judgeSuffix}${integritySuffix}`,
+      `  ${!integrityFailed && scenarioPassed ? 'ok' : 'x'} ${scenario.id} - score=${displayedScore}${judgeSuffix}${issueSuffix}${integritySuffix}`,
     )
   }
 
-  const passCount = outcomes.filter((o) => o.pass).length
-  const aggregate = outcomes.reduce((a, o) => a + o.score, 0) / Math.max(outcomes.length, 1)
+  const passCount = outcomes.filter((outcome) => outcome.pass).length
+  const measuredOutcomes = outcomes.filter(
+    (outcome): outcome is ScenarioOutcome & { score: number } => outcome.score !== null,
+  )
+  const aggregate =
+    measuredOutcomes.length === 0
+      ? null
+      : measuredOutcomes.reduce((sum, outcome) => sum + outcome.score, 0) / measuredOutcomes.length
 
-  const flows: ScorecardFlow[] = outcomes.map((o) => ({
-    name: o.scenarioId,
-    value: o.score,
-    target: 1.0,
-    status: o.pass ? 'pass' : 'fail',
+  const flows: ScorecardFlow[] = outcomes.map((outcome) => ({
+    name: outcome.scenarioId,
+    value: outcome.score,
+    target: threshold,
+    status: outcome.score === null ? 'skip' : outcome.pass ? 'pass' : 'fail',
     direction: 'higher-better',
-    productValueClaim: `Scenario "${o.scenarioId}" — pass rate against the agent under test.`,
+    productValueClaim: `Scenario "${outcome.scenarioId}" pass rate against the agent under test.`,
   }))
   const report: RunReport = {
     timestamp: new Date().toISOString(),
@@ -447,8 +557,8 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
     scenarioCount: outcomes.length,
     passCount,
     aggregate,
-    measuredScenarioCount: outcomes.length,
-    unmeasuredScenarioCount: 0,
+    measuredScenarioCount: measuredOutcomes.length,
+    unmeasuredScenarioCount: outcomes.length - measuredOutcomes.length,
     threshold,
     outcomes,
     tracesDir,
@@ -461,18 +571,16 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
     product: process.env.EVAL_PRODUCT_NAME ?? 'eval-harness',
     timestamp: report.timestamp,
     aggregate,
-    coverage: `${passCount}/${outcomes.length} scenarios passed`,
+    coverage: `${passCount}/${outcomes.length} scenarios passed; ${measuredOutcomes.length}/${outcomes.length} measured`,
     flows,
   })
   const integritySummary =
     integrityMode === 'off'
       ? 'integrity=off'
       : `integrity=${integrityMode} ` +
-        `${Object.values(integrityReports).filter((r) => !r.ok).length}/${
-          Object.keys(integrityReports).length
-        } flagged`
+        `${Object.values(integrityReports).filter((report) => !report.ok).length}/${Object.keys(integrityReports).length} flagged`
   console.log(
-    `\naggregate=${aggregate.toFixed(3)} pass=${passCount}/${outcomes.length} threshold=${threshold} ${integritySummary}`,
+    `\naggregate=${aggregate?.toFixed(3) ?? 'unmeasured'} pass=${passCount}/${outcomes.length} threshold=${threshold} ${integritySummary}`,
   )
   return report
 }
@@ -482,7 +590,7 @@ if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
   const projectRoot = process.env.EVAL_PROJECT_ROOT ?? DEFAULT_ROOT
   runHarness({ projectRoot })
     .then((r) => {
-      process.exitCode = r.aggregate < r.threshold ? 1 : 0
+      process.exitCode = exitCodeForReport(r)
     })
     .catch((err) => {
       console.error('[runner] fatal:', err)

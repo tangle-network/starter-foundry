@@ -11,13 +11,12 @@
 
 import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
-import {
-  DEFAULT_PATHS,
-  VERTICAL_TO_PARTNER,
-} from '../dist/lib/buildout-traces.js'
+import { DEFAULT_PATHS, VERTICAL_TO_PARTNER } from '../dist/lib/buildout-traces.js'
 
 if (!existsSync(DEFAULT_PATHS.buildoutsJsonl)) {
-  console.error(`no buildouts file at ${DEFAULT_PATHS.buildoutsJsonl} — run mine-buildout-sessions first`)
+  console.error(
+    `no buildouts file at ${DEFAULT_PATHS.buildoutsJsonl} — run mine-buildout-sessions first`,
+  )
   process.exit(2)
 }
 
@@ -41,7 +40,7 @@ if (existsSync(DEFAULT_PATHS.vbTracesDir)) {
           const oldTs = Date.parse(existing.timestamp ?? '') || 0
           const newIsBetter =
             (t.execution?.allPass && !existing.execution?.allPass) ||
-            ((t.execution?.allPass === existing.execution?.allPass) && newTs > oldTs)
+            (t.execution?.allPass === existing.execution?.allPass && newTs > oldTs)
           if (newIsBetter) vbByKey.set(key, t)
         }
       } catch {
@@ -53,7 +52,10 @@ if (existsSync(DEFAULT_PATHS.vbTracesDir)) {
 
 console.log(`loaded VB traces: ${vbByKey.size} keys (scenarioId,partner)`)
 
-const lines = readFileSync(DEFAULT_PATHS.buildoutsJsonl, 'utf8').trim().split('\n').filter((l) => l.length > 0)
+const lines = readFileSync(DEFAULT_PATHS.buildoutsJsonl, 'utf8')
+  .trim()
+  .split('\n')
+  .filter((l) => l.length > 0)
 let annotated = 0
 let missing = 0
 const rewritten = []

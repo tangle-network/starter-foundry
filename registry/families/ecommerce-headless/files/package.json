@@ -10,21 +10,21 @@
     "db:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
-    "drizzle-orm": "^0.36.0",
+    "drizzle-orm": "^0.45.2",
     "postgres": "^3.4.5",
     "stripe": "^17.0.0"
   },
   "devDependencies": {
-    "drizzle-kit": "^0.30.0",
+    "drizzle-kit": "^0.31.10",
     "typescript": "^5.9.0",
     "@types/node": "^20.17.0"
   },
   "overrides": {
-    "vite": "^6.4.2"
+    "vite": "^6.4.3"
   },
   "pnpm": {
     "overrides": {
-      "vite": "^6.4.2"
+      "vite": "^6.4.3"
     },
     "minimumReleaseAge": 4320,
     "minimumReleaseAgeExclude": []

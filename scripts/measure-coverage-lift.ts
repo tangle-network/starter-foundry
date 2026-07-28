@@ -43,7 +43,7 @@ const arg = (flag, fallback) => {
 const BASELINE = argv.includes('--baseline')
 const COMPARE_TO = arg('--compare', null)
 const OUT_PATH = arg('--out', BASELINE_PATH)
-const NEW_FAMILY = arg('--new-family', null)  // tag the emitted event with the promote under test
+const NEW_FAMILY = arg('--new-family', null) // tag the emitted event with the promote under test
 
 if (!BASELINE && !COMPARE_TO) {
   console.error('usage: --baseline [--out path] | --compare <baseline.json> [--new-family <id>]')
@@ -66,7 +66,9 @@ for (const line of readFileSync(TRACES, 'utf8').split('\n').filter(Boolean)) {
       partner: r.partnerGuess ?? null,
       prompt: String(r.initialPrompt ?? '').slice(0, 2000),
     })
-  } catch { /* skip */ }
+  } catch {
+    /* skip */
+  }
 }
 
 console.log(`Replaying ${scenarios.size} unique buildout scenarios through router…`)
@@ -79,11 +81,15 @@ for (const s of scenarios.values()) {
       prompt: s.prompt,
       partner: s.partner,
     })
-    const family = plan?.kind === 'single'
-      ? plan.spec?.family ?? null
-      : plan?.kind === 'workspace'
-        ? (plan.spec?.projects ?? []).map((p) => p.spec?.family).filter(Boolean).join('+') || null
-        : null
+    const family =
+      plan?.kind === 'single'
+        ? (plan.spec?.family ?? null)
+        : plan?.kind === 'workspace'
+          ? (plan.spec?.projects ?? [])
+              .map((p) => p.spec?.family)
+              .filter(Boolean)
+              .join('+') || null
+          : null
     results.push({
       scenarioId: s.scenarioId,
       partner: s.partner,
@@ -123,7 +129,9 @@ if (BASELINE) {
   writeFileSync(OUT_PATH, JSON.stringify(coverage, null, 2) + '\n')
   console.log(`✓ wrote baseline → ${OUT_PATH}`)
   console.log(`  scenarios: ${coverage.scenarioCount}`)
-  console.log(`  routed:    ${coverage.routedCount} (${((coverage.routedCount / coverage.scenarioCount) * 100).toFixed(1)}%)`)
+  console.log(
+    `  routed:    ${coverage.routedCount} (${((coverage.routedCount / coverage.scenarioCount) * 100).toFixed(1)}%)`,
+  )
   console.log(`  unrouted:  ${coverage.unroutedCount}`)
   console.log(`  unique families hit: ${Object.keys(coverage.familyDistribution).length}`)
   process.exit(0)
@@ -178,7 +186,9 @@ appendFileSync(IMPACT_LOG, JSON.stringify(event) + '\n')
 
 console.log(`✓ coverage comparison complete`)
 console.log(`  baseline at:   ${baseline.timestamp}`)
-console.log(`  gained route:  ${gainedRoute.length} scenarios (${(diff.liftRatio * 100).toFixed(1)}% of prior unrouted)`)
+console.log(
+  `  gained route:  ${gainedRoute.length} scenarios (${(diff.liftRatio * 100).toFixed(1)}% of prior unrouted)`,
+)
 console.log(`  lost route:    ${lostRoute.length}`)
 console.log(`  flipped:       ${flipped.length}`)
 if (NEW_FAMILY) console.log(`  attributed to: ${NEW_FAMILY}`)

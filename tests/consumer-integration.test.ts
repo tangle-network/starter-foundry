@@ -45,12 +45,16 @@ test('consumer-flow: validatePlan catches unknown family + incompatible partner'
     projectName: 'y',
     family: 'remix-ts',
     layers: [],
-    partner: 'tangle',  // tangle isn't in remix-ts's partner set
+    partner: 'tangle', // tangle isn't in remix-ts's partner set
     slots: {},
     variables: {},
   })
   assert.equal(badPartner.ok, false)
-  assert.ok(badPartner.issues.some((i) => /partner.*not.*apply/i.test(i.message) || /does not apply/i.test(i.message)))
+  assert.ok(
+    badPartner.issues.some(
+      (i) => /partner.*not.*apply/i.test(i.message) || /does not apply/i.test(i.message),
+    ),
+  )
 })
 
 test('consumer-flow: validatePlan passes on a valid spec', async () => {
@@ -80,12 +84,20 @@ test('consumer-flow: composeFromPrompt → compose → emit outcome back', async
 
     // AGENTS.md is shipped and contains progressive-disclosure sections.
     const agentsMd = await fs.readFile(path.join(outDir, 'AGENTS.md'), 'utf8')
-    assert.match(agentsMd, /## Turn 1/, 'AGENTS.md must have progressive-disclosure turn-order sections')
+    assert.match(
+      agentsMd,
+      /## Turn 1/,
+      'AGENTS.md must have progressive-disclosure turn-order sections',
+    )
     assert.match(agentsMd, /## Before first preview/, 'AGENTS.md must have Before-preview section')
     assert.match(agentsMd, /## Placeholders — MUST replace/, 'AGENTS.md must name placeholders')
 
     // promptFragment surface — blueprint-agent reads this to splice into system prompt.
-    assert.equal(typeof result.result.promptFragment, 'string', 'composeResult.promptFragment must be string')
+    assert.equal(
+      typeof result.result.promptFragment,
+      'string',
+      'composeResult.promptFragment must be string',
+    )
 
     // Emit a fake outcome back.
     const event = await emitBuildoutEvent(

@@ -14,7 +14,8 @@ import { spawnSync } from 'node:child_process'
 const TOOLS = [
   {
     bin: 'forge',
-    needFor: '4 forge/xlayer integration tests + multichain workspace benchmark + runPromptCorpus multichain',
+    needFor:
+      '4 forge/xlayer integration tests + multichain workspace benchmark + runPromptCorpus multichain',
     install: 'curl -L https://foundry.paradigm.xyz | bash && ~/.foundry/bin/foundryup',
   },
   {
@@ -34,6 +35,8 @@ for (const t of TOOLS) {
   process.stderr.write(`            install: ${t.install}\n\n`)
 }
 if (missing > 0) {
-  process.stderr.write(`[toolchain] ${missing} tool(s) not on PATH — related integration tests will fail. Continuing.\n`)
+  process.stderr.write(
+    `[toolchain] ${missing} tool(s) not on PATH — related integration tests will fail. Continuing.\n`,
+  )
 }
 process.exit(0)

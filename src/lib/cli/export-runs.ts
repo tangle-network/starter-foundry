@@ -29,7 +29,8 @@ export async function runExport(opts: ExportRunsCliOptions): Promise<void> {
     throw new Error(`--month must be YYYY-MM, got "${opts.month}"`)
   }
 
-  const out = opts.outPath ?? resolvePath(REPO_ROOT, '.evolve', `runs-${opts.month ?? 'export'}.jsonl`)
+  const out =
+    opts.outPath ?? resolvePath(REPO_ROOT, '.evolve', `runs-${opts.month ?? 'export'}.jsonl`)
   if (!existsSync(dirname(out))) mkdirSync(dirname(out), { recursive: true })
 
   const lines: string[] = []
@@ -63,7 +64,9 @@ export async function runExport(opts: ExportRunsCliOptions): Promise<void> {
     process.stdout.write(JSON.stringify(summary, null, 2) + '\n')
   } else {
     process.stdout.write(
-      `wrote ${kept}/${total} run records to ${out}` + (opts.month ? ` (month=${opts.month})` : '') + '\n',
+      `wrote ${kept}/${total} run records to ${out}` +
+        (opts.month ? ` (month=${opts.month})` : '') +
+        '\n',
     )
   }
 }

@@ -30,7 +30,10 @@ function titleCase(s) {
 function tsTypeFor(schema, definitions = {}) {
   if (!schema) return 'unknown'
   if (schema.$ref) {
-    const refName = schema.$ref.split('/').pop().replace(/\.json$/, '')
+    const refName = schema.$ref
+      .split('/')
+      .pop()
+      .replace(/\.json$/, '')
     const name = titleCase(refName.replace(/\.schema$/, ''))
     return name
   }
@@ -39,11 +42,17 @@ function tsTypeFor(schema, definitions = {}) {
   if (schema.const !== undefined) return JSON.stringify(schema.const)
 
   switch (schema.type) {
-    case 'string': return 'string'
-    case 'number': case 'integer': return 'number'
-    case 'boolean': return 'boolean'
-    case 'null': return 'null'
-    case 'array': return `Array<${tsTypeFor(schema.items ?? {}, definitions)}>`
+    case 'string':
+      return 'string'
+    case 'number':
+    case 'integer':
+      return 'number'
+    case 'boolean':
+      return 'boolean'
+    case 'null':
+      return 'null'
+    case 'array':
+      return `Array<${tsTypeFor(schema.items ?? {}, definitions)}>`
     case 'object': {
       if (!schema.properties) {
         if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
@@ -101,7 +110,9 @@ if (CHECK) {
   }
   const existing = readFileSync(OUT_PATH, 'utf8')
   if (existing.trim() !== content.trim()) {
-    console.error(`generated types are stale at ${OUT_PATH} — run: node scripts/gen-types-from-schemas.ts`)
+    console.error(
+      `generated types are stale at ${OUT_PATH} — run: node scripts/gen-types-from-schemas.ts`,
+    )
     process.exit(1)
   }
   console.log(`✓ generated types in sync (${schemas.length} schemas)`)

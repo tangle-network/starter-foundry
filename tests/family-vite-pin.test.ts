@@ -97,8 +97,7 @@ test('every JS-family package.json template pins vite (direct or overrides)', ()
     // introduce any installed deps and should not require a vite pin.
     const pnpmBlock = (pkg as { pnpm?: { overrides?: unknown } }).pnpm
     const pnpmHasOverrides = !!(pnpmBlock && pnpmBlock.overrides)
-    const hasAnyDeps =
-      pkg.dependencies || pkg.devDependencies || pkg.overrides || pnpmHasOverrides
+    const hasAnyDeps = pkg.dependencies || pkg.devDependencies || pkg.overrides || pnpmHasOverrides
     if (!hasAnyDeps) continue
     if (!hasVitePin(pkg)) missing.push(family)
   }

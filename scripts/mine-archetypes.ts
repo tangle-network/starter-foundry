@@ -27,11 +27,16 @@ function arg(k, fallback) {
 }
 
 const corpusPath = arg('--corpus', 'corpus/ideasai-prompts.json')
-const outPath = arg('--out', `.evolve/mining/proposals-${new Date().toISOString().replace(/[:.]/g, '-')}.json`)
+const outPath = arg(
+  '--out',
+  `.evolve/mining/proposals-${new Date().toISOString().replace(/[:.]/g, '-')}.json`,
+)
 const provider = arg('--provider', undefined)
 
 if (!isLLMAvailable()) {
-  console.error('No LLM provider configured. Set GROQ_API_KEY, ANTHROPIC_API_KEY, or OPENAI_API_KEY.')
+  console.error(
+    'No LLM provider configured. Set GROQ_API_KEY, ANTHROPIC_API_KEY, or OPENAI_API_KEY.',
+  )
   process.exit(2)
 }
 
@@ -70,9 +75,11 @@ const families = manifests.filter((m) => m.path.includes('/families/'))
 const layers = manifests.filter((m) => m.path.includes('/layers/'))
 
 const corpus = JSON.parse(readFileSync(corpusPath, 'utf8'))
-const corpusScenarios = Array.isArray(corpus) ? corpus : corpus.scenarios ?? []
+const corpusScenarios = Array.isArray(corpus) ? corpus : (corpus.scenarios ?? [])
 
-console.log(`loaded: ${families.length} families, ${layers.length} layers, ${corpusScenarios.length} scenarios`)
+console.log(
+  `loaded: ${families.length} families, ${layers.length} layers, ${corpusScenarios.length} scenarios`,
+)
 
 // Compact JSON representations to keep context tight.
 const familySummary = families.map((f) => ({

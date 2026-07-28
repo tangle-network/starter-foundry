@@ -13,8 +13,14 @@
 // Output: per-family log + final _index.json shape.
 
 import {
-  readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync,
-  cpSync, rmSync,
+  readFileSync,
+  writeFileSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  statSync,
+  cpSync,
+  rmSync,
 } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -61,8 +67,12 @@ function promoteFamily(family) {
   }
   const versionDirs = readdirSync(famLibDir)
     .filter((e) => e.startsWith('v_'))
-    .map((e) => ({ name: e, full: join(famLibDir, e), mtime: statSync(join(famLibDir, e)).mtimeMs }))
-    .sort((a, b) => b.mtime - a.mtime)  // recent first, stable tie-break
+    .map((e) => ({
+      name: e,
+      full: join(famLibDir, e),
+      mtime: statSync(join(famLibDir, e)).mtimeMs,
+    }))
+    .sort((a, b) => b.mtime - a.mtime) // recent first, stable tie-break
 
   if (versionDirs.length === 0) {
     return { family, skipped: 'no-versions' }
@@ -83,19 +93,29 @@ function promoteFamily(family) {
     const summaryPath = join(v.full, 'summary.json')
     let audit = null
     let summary = null
-    try { if (existsSync(auditPath)) audit = JSON.parse(readFileSync(auditPath, 'utf8')) } catch {}
-    try { if (existsSync(summaryPath)) summary = JSON.parse(readFileSync(summaryPath, 'utf8')) } catch {}
+    try {
+      if (existsSync(auditPath)) audit = JSON.parse(readFileSync(auditPath, 'utf8'))
+    } catch {}
+    try {
+      if (existsSync(summaryPath)) summary = JSON.parse(readFileSync(summaryPath, 'utf8'))
+    } catch {}
     let quality = null
     if (existsSync(qualityPath)) {
-      try { quality = JSON.parse(readFileSync(qualityPath, 'utf8')) } catch {}
+      try {
+        quality = JSON.parse(readFileSync(qualityPath, 'utf8'))
+      } catch {}
     }
     if (!quality) {
       // Compute score on the fly. The audit may already be structured as the
       // multi-family rollup ({audits:[{...}]}) or the single-layer shape; handle both.
       const auditReport = Array.isArray(audit?.audits)
-        ? audit.audits.find((a) => a.layerId === `framework:${family}`) ?? { layerId: `framework:${family}` }
-        : audit ?? { layerId: `framework:${family}` }
-      const createdAt = existsSync(manifestPath) ? new Date(statSync(manifestPath).mtimeMs).toISOString() : new Date().toISOString()
+        ? (audit.audits.find((a) => a.layerId === `framework:${family}`) ?? {
+            layerId: `framework:${family}`,
+          })
+        : (audit ?? { layerId: `framework:${family}` })
+      const createdAt = existsSync(manifestPath)
+        ? new Date(statSync(manifestPath).mtimeMs).toISOString()
+        : new Date().toISOString()
       quality = scoreVersion({
         audit: auditReport,
         summary,
@@ -104,11 +124,16 @@ function promoteFamily(family) {
       })
       if (!DRY) writeFileSync(qualityPath, JSON.stringify(quality, null, 2))
     }
-    scored.push({ name: v.name, score: quality.score, components: quality.components, dimensions: quality.dimensions })
+    scored.push({
+      name: v.name,
+      score: quality.score,
+      components: quality.components,
+      dimensions: quality.dimensions,
+    })
   }
 
   const scorable = scored.filter((s) => typeof s.score === 'number')
-  scorable.sort((a, b) => b.score - a.score || a.name.localeCompare(b.name))  // deterministic tie-break
+  scorable.sort((a, b) => b.score - a.score || a.name.localeCompare(b.name)) // deterministic tie-break
 
   if (scorable.length === 0) {
     return { family, skipped: 'no-scorable-versions', versions: scored.length }
@@ -126,7 +151,11 @@ function promoteFamily(family) {
     family,
     current,
     topN,
-    all: scored.map((s) => ({ version: s.name, score: s.score ?? null, skipped: s.skipped ?? null })),
+    all: scored.map((s) => ({
+      version: s.name,
+      score: s.score ?? null,
+      skipped: s.skipped ?? null,
+    })),
     generationCount: versionDirs.length,
     lastPromotedAt: new Date().toISOString(),
   }
@@ -150,7 +179,9 @@ function promoteFamily(family) {
 }
 
 const targets = ALL
-  ? (existsSync(LIB) ? readdirSync(LIB).filter((e) => !e.startsWith('.') && !e.startsWith('_')) : [])
+  ? existsSync(LIB)
+    ? readdirSync(LIB).filter((e) => !e.startsWith('.') && !e.startsWith('_'))
+    : []
   : [FAMILY]
 
 const results = []
@@ -160,8 +191,12 @@ for (const fam of targets) {
   if (r.skipped) {
     console.log(`  − ${fam}: skipped (${r.skipped})`)
   } else {
-    console.log(`  ✓ ${fam}: current=${r.current} score=${r.topScore.toFixed(3)} topN=[${r.topN.join(', ')}] versions=${r.versions}`)
+    console.log(
+      `  ✓ ${fam}: current=${r.current} score=${r.topScore.toFixed(3)} topN=[${r.topN.join(', ')}] versions=${r.versions}`,
+    )
   }
 }
 
-console.log(`\ndone — ${results.filter((r) => !r.skipped).length}/${targets.length} promoted${DRY ? ' (dry-run)' : ''}`)
+console.log(
+  `\ndone — ${results.filter((r) => !r.skipped).length}/${targets.length} promoted${DRY ? ' (dry-run)' : ''}`,
+)

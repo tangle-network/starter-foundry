@@ -77,14 +77,19 @@ function readProfile(name: string, profilesDir: string): RawProfile {
  * Walk the `extends` chain, collecting profiles parent-first. Rejects cycles
  * + chains deeper than MAX_DEPTH.
  */
-function buildChain(name: string, profilesDir: string): { chain: string[]; profiles: RawProfile[] } {
+function buildChain(
+  name: string,
+  profilesDir: string,
+): { chain: string[]; profiles: RawProfile[] } {
   const seen = new Set<string>()
   const chain: string[] = []
   const profiles: RawProfile[] = []
   let cursor: string | undefined = name
   while (cursor !== undefined) {
     if (seen.has(cursor)) {
-      throw new Error(`profile cycle detected at "${cursor}" (chain: ${[...seen, cursor].join(' → ')})`)
+      throw new Error(
+        `profile cycle detected at "${cursor}" (chain: ${[...seen, cursor].join(' → ')})`,
+      )
     }
     seen.add(cursor)
     if (chain.length >= MAX_DEPTH) {

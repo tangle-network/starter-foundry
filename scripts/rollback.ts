@@ -32,7 +32,9 @@ const APPLY = args.includes('--apply')
 mkdirSync(VERSIONS, { recursive: true })
 
 if (LIST) {
-  const files = readdirSync(VERSIONS).filter((f) => f.endsWith('.json')).sort()
+  const files = readdirSync(VERSIONS)
+    .filter((f) => f.endsWith('.json'))
+    .sort()
   if (files.length === 0) {
     console.log('no snapshots recorded — run `node scripts/rollback.ts --snapshot` after a release')
     process.exit(0)
@@ -40,7 +42,9 @@ if (LIST) {
   console.log('available snapshots:')
   for (const f of files) {
     const snap = JSON.parse(readFileSync(join(VERSIONS, f), 'utf8'))
-    console.log(`  ${f.replace('.json', '').padEnd(16)}  commit ${snap.commitSha?.slice(0, 12)}  ${snap.recordedAt}`)
+    console.log(
+      `  ${f.replace('.json', '').padEnd(16)}  commit ${snap.commitSha?.slice(0, 12)}  ${snap.recordedAt}`,
+    )
   }
   process.exit(0)
 }
@@ -49,7 +53,10 @@ if (args.includes('--snapshot')) {
   // Record the current commit SHA + package.json version as a rollback target.
   const pkg = JSON.parse(readFileSync(join(REPO, 'package.json'), 'utf8'))
   const version = pkg.version
-  const commitSha = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: REPO, encoding: 'utf8' }).stdout.trim()
+  const commitSha = spawnSync('git', ['rev-parse', 'HEAD'], {
+    cwd: REPO,
+    encoding: 'utf8',
+  }).stdout.trim()
   const snap = {
     version,
     commitSha,

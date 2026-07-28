@@ -90,7 +90,8 @@ async function runVariant(variant) {
         variant,
         scenarioTarget,
         timeoutSec: TIMEOUT_SEC,
-        instruction: 'Run this VB sweep, emit buildout events via emitBuildoutEvent, then re-run meta-optimize-vb --collect.',
+        instruction:
+          'Run this VB sweep, emit buildout events via emitBuildoutEvent, then re-run meta-optimize-vb --collect.',
       }
       writeFileSync(join(OUT_DIR, `${variant}.dispatch.json`), JSON.stringify(manifest, null, 2))
       console.log(`  wrote dispatch manifest: ${OUT_DIR}/${variant}.dispatch.json`)
@@ -103,7 +104,8 @@ async function runVariant(variant) {
     }
     const scorecard = JSON.parse(readFileSync(scorecardPath, 'utf8'))
     const passRate = scorecard.flows?.find((f) => f.name === 'buildout_pass_rate')?.value ?? 0
-    const costPerBuildout = scorecard.flows?.find((f) => f.name === 'cost_usd_per_buildout')?.value ?? null
+    const costPerBuildout =
+      scorecard.flows?.find((f) => f.name === 'cost_usd_per_buildout')?.value ?? null
     const costTarget = 0.5
     const costPenalty = typeof costPerBuildout === 'number' ? costPerBuildout / costTarget : 0
 
@@ -117,7 +119,9 @@ async function runVariant(variant) {
       score,
     }
     writeFileSync(join(OUT_DIR, `${variant}.result.json`), JSON.stringify(result, null, 2))
-    console.log(`  score: ${score.toFixed(4)}  (pass ${(passRate * 100).toFixed(1)}%, cost $${costPerBuildout ?? '?'})`)
+    console.log(
+      `  score: ${score.toFixed(4)}  (pass ${(passRate * 100).toFixed(1)}%, cost $${costPerBuildout ?? '?'})`,
+    )
     return result
   } finally {
     if (!DRY_RUN) {

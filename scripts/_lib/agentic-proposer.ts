@@ -11,7 +11,16 @@
 // exercise the pure helpers (brief construction, criterion wrappers,
 // event shape) without touching the network.
 
-import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, statSync, cpSync, writeFileSync } from 'node:fs'
+import {
+  appendFileSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  statSync,
+  cpSync,
+  writeFileSync,
+} from 'node:fs'
 import { dirname, join, relative, resolve } from 'node:path'
 import { tmpdir } from 'node:os'
 import { randomBytes } from 'node:crypto'
@@ -83,7 +92,10 @@ export function buildCapabilityBrief(args) {
   const family = candidate.appliesTo?.[0] ?? 'agent-service-ts'
   const familyManifest = join(repoRoot, 'registry/families', family, 'manifest.json')
   const peerPaths = peerCapabilities
-    .map((id) => `  - registry/layers/capability/${id}/ (${join(repoRoot, 'registry/layers/capability', id)})`)
+    .map(
+      (id) =>
+        `  - registry/layers/capability/${id}/ (${join(repoRoot, 'registry/layers/capability', id)})`,
+    )
     .join('\n')
 
   // Library pointers — resolve-or-skip. If the package isn't in
@@ -94,7 +106,10 @@ export function buildCapabilityBrief(args) {
   const tcloudSrc = '/home/drew/code/tcloud/packages/tcloud/src/'
   const tcloudDts = join(repoRoot, 'node_modules/@tangle-network/tcloud/dist/index.d.ts')
 
-  const tokens = candidate.productCues?.slice(0, 6).join(', ') ?? candidate.cues?.slice(0, 6).join(', ') ?? '(none)'
+  const tokens =
+    candidate.productCues?.slice(0, 6).join(', ') ??
+    candidate.cues?.slice(0, 6).join(', ') ??
+    '(none)'
 
   return `CAPABILITY TO SCAFFOLD: ${candidate.id}
 TARGET FAMILY: ${family}
@@ -164,7 +179,10 @@ export function buildFamilyBrief(args) {
     .map((id) => `  - registry/families/${id}/ (${join(repoRoot, 'registry/families', id)})`)
     .join('\n')
 
-  const tokens = candidate.cues?.slice(0, 6).join(', ') ?? candidate.productCues?.slice(0, 6).join(', ') ?? '(none)'
+  const tokens =
+    candidate.cues?.slice(0, 6).join(', ') ??
+    candidate.productCues?.slice(0, 6).join(', ') ??
+    '(none)'
 
   return `FAMILY TO SCAFFOLD: ${candidate.id}
 DOMAIN: ${taxonomy.language ?? '?'}/${taxonomy.runtime ?? '?'}/${taxonomy.surface ?? '?'}
@@ -267,7 +285,10 @@ export function buildCapabilityCriteria(args) {
     check: async (ctx) => {
       const manifestPath = join(ctx.workspaceDir ?? '', 'manifest.json')
       if (!existsSync(manifestPath)) {
-        return { ok: false, reason: 'manifest.json not found — schema-valid gate should have caught this' }
+        return {
+          ok: false,
+          reason: 'manifest.json not found — schema-valid gate should have caught this',
+        }
       }
       const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'))
       // The promoter gate expects a composed scaffold dir. For an
@@ -281,7 +302,10 @@ export function buildCapabilityCriteria(args) {
       const scanDir = existsSync(filesDir) ? filesDir : (ctx.workspaceDir ?? '')
       const result = gates.checkDeclaredDepUsed({ manifest, composedDir: scanDir })
       if (result.status === 'pass' || result.status === 'skipped') return { ok: true }
-      return { ok: false, reason: result.message ?? `unused deps: ${result.unusedDeps?.join(', ')}` }
+      return {
+        ok: false,
+        reason: result.message ?? `unused deps: ${result.unusedDeps?.join(', ')}`,
+      }
     },
   }
 
@@ -324,7 +348,10 @@ export function buildCapabilityCriteria(args) {
             options: { port: 3100, timeoutMs: 120_000 },
           })
           if (result.status === 'pass' || result.status === 'skipped') return { ok: true }
-          return { ok: false, reason: result.message ?? `aggregate ${result.aggregate} < ${result.threshold}` }
+          return {
+            ok: false,
+            reason: result.message ?? `aggregate ${result.aggregate} < ${result.threshold}`,
+          }
         },
       })
     }
@@ -346,7 +373,8 @@ export function buildFamilyCriteria(args) {
     name: 'schema-valid',
     check: async (ctx) => {
       const manifestPath = join(ctx.workspaceDir ?? '', 'manifest.json')
-      if (!existsSync(manifestPath)) return { ok: false, reason: `manifest.json missing at ${manifestPath}` }
+      if (!existsSync(manifestPath))
+        return { ok: false, reason: `manifest.json missing at ${manifestPath}` }
       let manifest
       try {
         manifest = JSON.parse(readFileSync(manifestPath, 'utf8'))
@@ -360,7 +388,10 @@ export function buildFamilyCriteria(args) {
         try {
           JSON.parse(readFileSync(fm, 'utf8'))
         } catch (err) {
-          return { ok: false, reason: `framework.manifest.json parse error: ${err?.message ?? err}` }
+          return {
+            ok: false,
+            reason: `framework.manifest.json parse error: ${err?.message ?? err}`,
+          }
         }
       }
       const todos = findTodoStrings(ctx.workspaceDir ?? '')
@@ -379,7 +410,10 @@ export function buildFamilyCriteria(args) {
       const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'))
       const result = gates.checkDeclaredDepUsed({ manifest, composedDir: ctx.workspaceDir })
       if (result.status === 'pass' || result.status === 'skipped') return { ok: true }
-      return { ok: false, reason: result.message ?? `unused deps: ${result.unusedDeps?.join(', ')}` }
+      return {
+        ok: false,
+        reason: result.message ?? `unused deps: ${result.unusedDeps?.join(', ')}`,
+      }
     },
   }
 
@@ -390,7 +424,11 @@ export function buildFamilyCriteria(args) {
       check: async (ctx) => {
         const manifestPath = join(ctx.workspaceDir ?? '', 'manifest.json')
         const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'))
-        const result = await gates.checkScaffoldRuns({ composedDir: ctx.workspaceDir, manifest, options: {} })
+        const result = await gates.checkScaffoldRuns({
+          composedDir: ctx.workspaceDir,
+          manifest,
+          options: {},
+        })
         if (result.status === 'pass' || result.status === 'skipped') return { ok: true }
         return { ok: false, reason: result.message ?? result.reason ?? 'scaffold did not boot' }
       },
@@ -485,7 +523,9 @@ function resolveProposerModel() {
     const { loadProfile } = requireFromHere('../../dist/lib/profile-loader.js')
     return loadProfile('default-proposer').model
   } catch (e) {
-    process.stderr.write(`agentic-proposer: profile resolution failed (${(e instanceof Error ? e.message : String(e))}) — falling back to bare alias\n`)
+    process.stderr.write(
+      `agentic-proposer: profile resolution failed (${e instanceof Error ? e.message : String(e)}) — falling back to bare alias\n`,
+    )
     return 'claude-sonnet-4-6'
   }
 }
@@ -557,8 +597,15 @@ export async function dispatchAgenticProposal(args) {
         process.stdout.write(ev.text)
         break
       case 'criterion.check':
-        process.stdout.write(`\n  [${candidate.id}] gate ${ev.ok ? 'pass' : 'fail'}: ${ev.name}${ev.reason ? ` - ${ev.reason}` : ''}\n`)
-        criterionOutcomes.push({ iteration: ev.iteration, name: ev.name, ok: ev.ok, reason: ev.reason })
+        process.stdout.write(
+          `\n  [${candidate.id}] gate ${ev.ok ? 'pass' : 'fail'}: ${ev.name}${ev.reason ? ` - ${ev.reason}` : ''}\n`,
+        )
+        criterionOutcomes.push({
+          iteration: ev.iteration,
+          name: ev.name,
+          ok: ev.ok,
+          reason: ev.reason,
+        })
         break
       case 'verdict':
         process.stdout.write(
@@ -592,8 +639,20 @@ export async function dispatchAgenticProposal(args) {
 // ──────────────────────────────────────────────────────────────────
 
 const SCANNABLE_EXTS = new Set([
-  '.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs',
-  '.json', '.md', '.py', '.rs', '.go', '.sol', '.yml', '.yaml',
+  '.ts',
+  '.tsx',
+  '.js',
+  '.jsx',
+  '.mjs',
+  '.cjs',
+  '.json',
+  '.md',
+  '.py',
+  '.rs',
+  '.go',
+  '.sol',
+  '.yml',
+  '.yaml',
 ])
 
 function findTodoStrings(rootDir) {
@@ -601,16 +660,31 @@ function findTodoStrings(rootDir) {
   const found = []
   const walk = (dir) => {
     let entries
-    try { entries = readdirSync(dir) } catch { return }
+    try {
+      entries = readdirSync(dir)
+    } catch {
+      return
+    }
     for (const entry of entries) {
       if (entry === 'node_modules' || entry === '.git' || entry === 'dist') continue
       const full = join(dir, entry)
       let s
-      try { s = statSync(full) } catch { continue }
-      if (s.isDirectory()) { walk(full); continue }
+      try {
+        s = statSync(full)
+      } catch {
+        continue
+      }
+      if (s.isDirectory()) {
+        walk(full)
+        continue
+      }
       if (!SCANNABLE_EXTS.has(extLower(entry))) continue
       let text
-      try { text = readFileSync(full, 'utf8') } catch { continue }
+      try {
+        text = readFileSync(full, 'utf8')
+      } catch {
+        continue
+      }
       if (/\b(?:TODO|FIXME)\b/.test(text)) {
         found.push(relative(rootDir, full))
       }

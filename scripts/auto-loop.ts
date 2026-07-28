@@ -36,8 +36,9 @@ const VB_FEEDBACK_LATEST = join(REPO, '.evolve/vb-feedback/latest.json')
 // Default consumer source. Override at runtime if other consumers
 // expose verticalbench-shaped output. The contract is the directory
 // shape, not the path.
-const VB_DEFAULT_SOURCE = process.env.VB_FEEDBACK_SOURCE
-  ?? join(REPO, '../blueprint-agent/scripts/experiments/results/sessions')
+const VB_DEFAULT_SOURCE =
+  process.env.VB_FEEDBACK_SOURCE ??
+  join(REPO, '../blueprint-agent/scripts/experiments/results/sessions')
 const VB_DEFAULT_CONSUMER = process.env.VB_FEEDBACK_CONSUMER ?? 'blueprint-agent'
 
 function emit(entry) {
@@ -61,7 +62,15 @@ function redFlows(card) {
 function lastGovernorDecisions(n = 5) {
   if (!existsSync(GOVERNOR_LOG)) return []
   const lines = readFileSync(GOVERNOR_LOG, 'utf8').trim().split('\n').slice(-n)
-  return lines.map((l) => { try { return JSON.parse(l) } catch { return null } }).filter(Boolean)
+  return lines
+    .map((l) => {
+      try {
+        return JSON.parse(l)
+      } catch {
+        return null
+      }
+    })
+    .filter(Boolean)
 }
 
 function scorecardStale() {
@@ -120,9 +129,7 @@ function decide() {
   // and has new data since the last probe, surface it. This is the
   // "augment any vibecoder consumer" path.
   if (existsSync(VB_DEFAULT_SOURCE)) {
-    const lastProbe = existsSync(VB_FEEDBACK_LATEST)
-      ? statSync(VB_FEEDBACK_LATEST).mtimeMs
-      : 0
+    const lastProbe = existsSync(VB_FEEDBACK_LATEST) ? statSync(VB_FEEDBACK_LATEST).mtimeMs : 0
     const sourceM = statSync(VB_DEFAULT_SOURCE).mtimeMs
     if (sourceM > lastProbe) {
       return {
@@ -141,17 +148,22 @@ function decide() {
   const dispatchAllowed = process.env.SF_AUTO_DISPATCH === '1'
   if (dispatchAllowed && existsSync(VB_FEEDBACK_LATEST)) {
     const fb = (() => {
-      try { return JSON.parse(readFileSync(VB_FEEDBACK_LATEST, 'utf8')) } catch { return null }
+      try {
+        return JSON.parse(readFileSync(VB_FEEDBACK_LATEST, 'utf8'))
+      } catch {
+        return null
+      }
     })()
     if (fb && typeof fb.scaffoldAttributableRate === 'number') {
       const targetFlow = card?.flows?.find((f) => f.name === 'consumer_scaffold_attributable_rate')
-      const target = targetFlow?.target ?? 0.20
+      const target = targetFlow?.target ?? 0.2
       const above = fb.scaffoldAttributableRate > target
       const clusters = [
         ...Object.entries(fb.topScaffoldGaps ?? {}),
         ...Object.entries(fb.topRoutingErrors ?? {}),
       ]
-      const topClusterCount = clusters.length > 0 ? Math.max(...clusters.map(([, n]) => Number(n))) : 0
+      const topClusterCount =
+        clusters.length > 0 ? Math.max(...clusters.map(([, n]) => Number(n))) : 0
       const lastDispatch = lastDispatchTs()
       const hoursSinceLast = (Date.now() - lastDispatch) / 3_600_000
       if (above && topClusterCount >= 3 && hoursSinceLast >= 1) {
@@ -178,7 +190,9 @@ function lastDispatchTs() {
     try {
       const e = JSON.parse(lines[i])
       if (e.action === 'dispatch-fix') return Date.parse(e.ts) || 0
-    } catch { /* skip */ }
+    } catch {
+      /* skip */
+    }
   }
   return 0
 }
@@ -187,7 +201,11 @@ function lastDispatchTs() {
 
 function refreshScorecard() {
   try {
-    const out = execSync('node scripts/refresh-scorecard.ts', { cwd: REPO, encoding: 'utf8', timeout: 60_000 })
+    const out = execSync('node scripts/refresh-scorecard.ts', {
+      cwd: REPO,
+      encoding: 'utf8',
+      timeout: 60_000,
+    })
     const card = readScorecard()
     return {
       success: true,
@@ -206,7 +224,15 @@ function probeRedFlow(flowName) {
   // next loop iteration.
   if (!existsSync(BUILDOUTS)) return { success: false, reason: 'no buildouts.jsonl' }
   const lines = readFileSync(BUILDOUTS, 'utf8').trim().split('\n')
-  const parsed = lines.map((l) => { try { return JSON.parse(l) } catch { return null } }).filter(Boolean)
+  const parsed = lines
+    .map((l) => {
+      try {
+        return JSON.parse(l)
+      } catch {
+        return null
+      }
+    })
+    .filter(Boolean)
   const withOutcome = parsed.filter((e) => e.outcome && e.outcome.allPass != null)
   const failing = withOutcome.filter((e) => !e.outcome.allPass)
   const clusters = {}
@@ -214,7 +240,9 @@ function probeRedFlow(flowName) {
     const key = `${f.scenarioId}/${f.partnerGuess ?? ''}`
     clusters[key] = (clusters[key] ?? 0) + 1
   }
-  const top = Object.entries(clusters).sort((a, b) => b[1] - a[1]).slice(0, 5)
+  const top = Object.entries(clusters)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
   return {
     success: true,
     flow: flowName,
@@ -227,7 +255,10 @@ function dispatchFix() {
   // Gate: only proceed when opt-in env is set. The decide() guard
   // already checks this; defense in depth.
   if (process.env.SF_AUTO_DISPATCH !== '1') {
-    return { success: false, error: 'SF_AUTO_DISPATCH not set; refusing to spend LLM budget without explicit opt-in' }
+    return {
+      success: false,
+      error: 'SF_AUTO_DISPATCH not set; refusing to spend LLM budget without explicit opt-in',
+    }
   }
   try {
     const out = execSync('node scripts/dispatch-scaffold-fix.ts', {
@@ -237,7 +268,12 @@ function dispatchFix() {
       env: { ...process.env, SF_AUTO_DISPATCH: '1' },
     })
     // Last line is JSON outcome from dispatch-scaffold-fix.
-    const lastJson = out.trim().split('\n').reverse().find((l) => l.startsWith('{')) ?? '{}'
+    const lastJson =
+      out
+        .trim()
+        .split('\n')
+        .reverse()
+        .find((l) => l.startsWith('{')) ?? '{}'
     const outcome = JSON.parse(lastJson)
     return { success: outcome.success === true, ...outcome }
   } catch (err) {
@@ -299,7 +335,9 @@ async function main() {
     entry.outcome?.scaffoldAttributableRate != null
       ? `sfAttribRate=${(entry.outcome.scaffoldAttributableRate * 100).toFixed(1)}%`
       : null,
-  ].filter(Boolean).join(' ')
+  ]
+    .filter(Boolean)
+    .join(' ')
   console.log(summary)
   if (decision.needsOperator) process.exit(2)
 }

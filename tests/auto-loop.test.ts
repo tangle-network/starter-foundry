@@ -19,8 +19,15 @@ const LOG = join(REPO, '.evolve/auto-loop.jsonl')
 describe('auto-loop runner', () => {
   test('script runs, writes one line to .evolve/auto-loop.jsonl, prints one-line summary', () => {
     const res = spawnSync('node', [SCRIPT], { cwd: REPO, encoding: 'utf8', timeout: 60_000 })
-    assert.ok(res.status === 0 || res.status === 2, `auto-loop must exit 0 or 2, got ${res.status}: ${res.stderr}`)
-    assert.match(res.stdout, /^action=/, 'auto-loop stdout must be a single action=... summary line')
+    assert.ok(
+      res.status === 0 || res.status === 2,
+      `auto-loop must exit 0 or 2, got ${res.status}: ${res.stderr}`,
+    )
+    assert.match(
+      res.stdout,
+      /^action=/,
+      'auto-loop stdout must be a single action=... summary line',
+    )
     assert.ok(existsSync(LOG), 'auto-loop must write .evolve/auto-loop.jsonl')
     const lines = readFileSync(LOG, 'utf8').trim().split('\n')
     const last = JSON.parse(lines[lines.length - 1]!)

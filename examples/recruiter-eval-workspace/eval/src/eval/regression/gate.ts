@@ -53,9 +53,9 @@ export interface GateOptions {
 
 export interface PerFlowVerdict {
   flow: string
-  baseline: number
-  head: number
-  delta: number
+  baseline: number | null
+  head: number | null
+  delta: number | null
   bootstrap: BootstrapResult | null
   welch: { t: number; df: number; p: number } | null
   cohensD: number | null
@@ -104,7 +104,7 @@ export function gate(baseline: Scorecard, head: Scorecard, opts: GateOptions = {
   for (const name of filteredNames) {
     const b = baselineFlows.get(name)
     const h = headFlows.get(name)
-    if (!b || !h) continue
+    if (!b || !h || b.value === null || h.value === null) continue
     const samples = opts.withSamples?.get(name)
     metricSamples.push({
       metric: name,
@@ -144,12 +144,12 @@ export function gate(baseline: Scorecard, head: Scorecard, opts: GateOptions = {
   for (const name of filteredNames) {
     const b = baselineFlows.get(name)
     const h = headFlows.get(name)
-    if (!b && h) {
+    if (!b || !h) {
       perFlow.push({
         flow: name,
-        baseline: 0,
-        head: h.value,
-        delta: h.value,
+        baseline: b?.value ?? null,
+        head: h?.value ?? null,
+        delta: null,
         bootstrap: null,
         welch: null,
         cohensD: null,
@@ -157,16 +157,18 @@ export function gate(baseline: Scorecard, head: Scorecard, opts: GateOptions = {
         bhSignificant: false,
         bhQValue: null,
         verdict: 'inconclusive',
-        direction: h.direction ?? 'higher-better',
+        direction: b?.direction ?? h?.direction ?? 'higher-better',
       })
       continue
     }
-    if (b && !h) {
+    const baselineValue = b.value
+    const headValue = h.value
+    if (baselineValue === null || headValue === null) {
       perFlow.push({
         flow: name,
-        baseline: b.value,
-        head: 0,
-        delta: -b.value,
+        baseline: baselineValue,
+        head: headValue,
+        delta: null,
         bootstrap: null,
         welch: null,
         cohensD: null,
@@ -174,15 +176,14 @@ export function gate(baseline: Scorecard, head: Scorecard, opts: GateOptions = {
         bhSignificant: false,
         bhQValue: null,
         verdict: 'inconclusive',
-        direction: b.direction ?? 'higher-better',
+        direction: b.direction,
       })
       continue
     }
-    if (!b || !h) continue
 
     const samples = opts.withSamples?.get(name)
-    const baselineSamples = samples?.baseline ?? [b.value]
-    const candidateSamples = samples?.candidate ?? [h.value]
+    const baselineSamples = samples?.baseline ?? [baselineValue]
+    const candidateSamples = samples?.candidate ?? [headValue]
 
     let bootstrap: BootstrapResult | null = null
     let welch: { t: number; df: number; p: number } | null = null
@@ -202,7 +203,7 @@ export function gate(baseline: Scorecard, head: Scorecard, opts: GateOptions = {
       verdict = metricVerdict.verdict
     } else {
       // Fallback when compareToBaseline didn't yield a verdict (single sample).
-      const delta = h.value - b.value
+      const delta = headValue - baselineValue
       if (Math.abs(delta) < STABILITY_EPSILON) verdict = 'stable'
       else {
         const better = direction === 'higher-better' ? delta > 0 : delta < 0
@@ -212,9 +213,9 @@ export function gate(baseline: Scorecard, head: Scorecard, opts: GateOptions = {
 
     perFlow.push({
       flow: name,
-      baseline: b.value,
-      head: h.value,
-      delta: h.value - b.value,
+      baseline: baselineValue,
+      head: headValue,
+      delta: headValue - baselineValue,
       bootstrap,
       welch,
       cohensD: cd,
@@ -233,9 +234,12 @@ export function gate(baseline: Scorecard, head: Scorecard, opts: GateOptions = {
   let reason = 'No flow regressed; aggregate stable or improved.'
   const regressed = perFlow.filter((p) => p.verdict === 'regressed')
   const significantRegressions = regressed.filter(
-    (p) => p.bhSignificant || (p.metricVerdict === null && Math.abs(p.delta) >= STABILITY_EPSILON),
+    (p) =>
+      p.bhSignificant ||
+      (p.metricVerdict === null && p.delta !== null && Math.abs(p.delta) >= STABILITY_EPSILON),
   )
   const unstable = perFlow.filter((p) => p.verdict === 'unstable')
+  const unmeasured = perFlow.filter((p) => p.baseline === null || p.head === null)
   if (significantRegressions.length > 0) {
     finalVerdict = 'REVERT'
     reason = `Statistically significant regressions on: ${significantRegressions.map((p) => p.flow).join(', ')}`
@@ -245,6 +249,9 @@ export function gate(baseline: Scorecard, head: Scorecard, opts: GateOptions = {
   } else if (unstable.length > 0) {
     finalVerdict = 'HOLD'
     reason = `Flows too noisy to gate on: ${unstable.map((p) => p.flow).join(', ')}`
+  } else if (unmeasured.length > 0) {
+    finalVerdict = 'HOLD'
+    reason = `Flows are unmeasured: ${unmeasured.map((p) => p.flow).join(', ')}`
   }
 
   return {

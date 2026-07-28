@@ -133,28 +133,33 @@ function classify(args: {
   ciLower: number
   ciUpper: number
   delta: number
-  cohensDValue: number
+  cohensDValue: number | null
   effectFloor: number
   qValue: number
   fdr: number
 }): { verdict: Verdict; reason: string } {
   const { ciLower, ciUpper, delta, cohensDValue, effectFloor, qValue, fdr } = args
+  const effectText = cohensDValue === null ? 'undefined' : cohensDValue.toFixed(3)
   // Promote requires BOTH a CI strictly above 0 AND BH-adjusted q below
   // the configured FDR. CI alone inflates false-promote rate when N
   // hypotheses are tested jointly.
   if (ciLower > 0 && qValue < fdr) {
     return {
       verdict: 'promote',
-      reason: `CI95=[${ciLower.toFixed(4)}, ${ciUpper.toFixed(4)}] strictly > 0; q=${qValue.toFixed(4)} < ${fdr}; cohensD=${cohensDValue.toFixed(3)}`,
+      reason: `CI95=[${ciLower.toFixed(4)}, ${ciUpper.toFixed(4)}] strictly > 0; q=${qValue.toFixed(4)} < ${fdr}; cohensD=${effectText}`,
     }
   }
   if (ciUpper < 0 && qValue < fdr) {
     return {
       verdict: 'reject',
-      reason: `CI95=[${ciLower.toFixed(4)}, ${ciUpper.toFixed(4)}] strictly < 0; q=${qValue.toFixed(4)} < ${fdr}; cohensD=${cohensDValue.toFixed(3)}`,
+      reason: `CI95=[${ciLower.toFixed(4)}, ${ciUpper.toFixed(4)}] strictly < 0; q=${qValue.toFixed(4)} < ${fdr}; cohensD=${effectText}`,
     }
   }
-  if (Math.abs(cohensDValue) >= effectFloor && Math.abs(delta) > 0) {
+  if (
+    cohensDValue !== null &&
+    Math.abs(cohensDValue) >= effectFloor &&
+    Math.abs(delta) > 0
+  ) {
     return {
       verdict: 'candidate',
       reason: `signal present (|cohensD|=${Math.abs(cohensDValue).toFixed(3)} >= ${effectFloor}) but FDR-adjusted q=${qValue.toFixed(4)} ≥ ${fdr} or CI straddles 0; needs more reps`,
@@ -162,7 +167,7 @@ function classify(args: {
   }
   return {
     verdict: 'inconclusive',
-    reason: `CI95=[${ciLower.toFixed(4)}, ${ciUpper.toFixed(4)}], q=${qValue.toFixed(4)}, |cohensD|=${Math.abs(cohensDValue).toFixed(3)} — no signal`,
+    reason: `CI95=[${ciLower.toFixed(4)}, ${ciUpper.toFixed(4)}], q=${qValue.toFixed(4)}, |cohensD|=${cohensDValue === null ? 'undefined' : Math.abs(cohensDValue).toFixed(3)} — no signal`,
   }
 }
 
@@ -197,7 +202,7 @@ export async function validate(options: ValidatorOptions): Promise<ValidatorRepo
     delta: number
     ciLower: number
     ciUpper: number
-    cohensDValue: number
+    cohensDValue: number | null
     pValue: number
     meanCostUsd: number
     meanWallSeconds: number

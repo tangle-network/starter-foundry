@@ -60,10 +60,12 @@ describe('selectTemplateVersion — diverse-serve flag', () => {
     try {
       // Same seed → same pick, always.
       const a = selectTemplateVersion('react-vite-ts', 'my-project', {
-        repoRoot: root, envDiverseServe: '1',
+        repoRoot: root,
+        envDiverseServe: '1',
       })
       const b = selectTemplateVersion('react-vite-ts', 'my-project', {
-        repoRoot: root, envDiverseServe: '1',
+        repoRoot: root,
+        envDiverseServe: '1',
       })
       assert.equal(a, b)
       assert.ok(['v_aaa', 'v_bbb', 'v_ccc'].includes(a!))
@@ -81,9 +83,12 @@ describe('selectTemplateVersion — diverse-serve flag', () => {
     try {
       const picks = new Set<string>()
       for (let i = 0; i < 30; i++) {
-        picks.add(selectTemplateVersion('react-vite-ts', `proj-${i}`, {
-          repoRoot: root, envDiverseServe: '1',
-        })!)
+        picks.add(
+          selectTemplateVersion('react-vite-ts', `proj-${i}`, {
+            repoRoot: root,
+            envDiverseServe: '1',
+          })!,
+        )
       }
       // At least 2 of 3 versions should appear across 30 seeds (birthday-style).
       assert.ok(picks.size >= 2, `expected >=2 versions across 30 seeds, got ${picks.size}`)
@@ -96,7 +101,8 @@ describe('selectTemplateVersion — diverse-serve flag', () => {
     const root = mkdtempSync(join(tmpdir(), 'sf-diverse-'))
     try {
       const v = selectTemplateVersion('nonexistent-family', 'seed', {
-        repoRoot: root, envDiverseServe: '1',
+        repoRoot: root,
+        envDiverseServe: '1',
       })
       assert.equal(v, null)
     } finally {
@@ -112,7 +118,8 @@ describe('selectTemplateVersion — diverse-serve flag', () => {
     })
     try {
       const v = selectTemplateVersion('react-vite-ts', 'seed', {
-        repoRoot: root, envDiverseServe: '1',
+        repoRoot: root,
+        envDiverseServe: '1',
       })
       assert.equal(v, 'v_only')
     } finally {
@@ -128,10 +135,12 @@ describe('selectTemplateVersion — diverse-serve flag', () => {
     })
     try {
       const a = selectTemplateVersion('react-vite-ts', 'x', {
-        repoRoot: root, envDiverseServe: '1',
+        repoRoot: root,
+        envDiverseServe: '1',
       })
       const b = selectTemplateVersion('react-vite-ts', 'x', {
-        repoRoot: root, envDiverseServe: 'true',
+        repoRoot: root,
+        envDiverseServe: 'true',
       })
       assert.equal(a, b)
     } finally {

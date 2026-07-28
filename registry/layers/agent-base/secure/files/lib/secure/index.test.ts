@@ -7,7 +7,7 @@
 
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createHmac } from 'node:crypto'
@@ -298,9 +298,9 @@ test('webhook-out: subdomain match works', async () => {
   process.env.OUT_SECRET2 = 'k'
   // Stub global fetch to capture the request without making it
   const realFetch = globalThis.fetch
-  let captured: { url: string; headers: Record<string, string> } | null = null
+  const captured: Array<{ url: string; headers: Record<string, string> }> = []
   globalThis.fetch = (async (url: string, init: RequestInit) => {
-    captured = { url, headers: init.headers as Record<string, string> }
+    captured.push({ url, headers: init.headers as Record<string, string> })
     return new Response('ok', { status: 200 })
   }) as typeof fetch
   try {
@@ -310,9 +310,12 @@ test('webhook-out: subdomain match works', async () => {
       allowedDomains: ['tangle.tools'],
     })
     assert.equal(r.ok, true)
-    assert.ok(captured)
-    assert.ok(captured!.headers['x-tangle-signature'])
-    assert.ok(captured!.headers['x-tangle-timestamp'])
+    assert.equal(captured.length, 1)
+    const request = captured[0]
+    assert.ok(request)
+    assert.equal(request.url, 'https://api.tangle.tools/hook')
+    assert.ok(request.headers['x-tangle-signature'])
+    assert.ok(request.headers['x-tangle-timestamp'])
   } finally {
     globalThis.fetch = realFetch
     delete process.env.OUT_SECRET2

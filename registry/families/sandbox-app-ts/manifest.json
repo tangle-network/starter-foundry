@@ -27,9 +27,12 @@
   },
   "files": [
     { "source": "files/package.json", "target": "package.json" },
+    { "source": "files/.env.example", "target": ".env.example" },
     { "source": "files/index.html", "target": "index.html" },
     { "source": "files/vite.config.ts", "target": "vite.config.ts" },
     { "source": "files/tsconfig.json", "target": "tsconfig.json" },
+    { "source": "files/tsconfig.node.json", "target": "tsconfig.node.json" },
+    { "source": "files/tsconfig.server.json", "target": "tsconfig.server.json" },
     { "source": "files/tailwind.config.cjs", "target": "tailwind.config.cjs" },
     { "source": "files/postcss.config.cjs", "target": "postcss.config.cjs" },
     { "source": "files/README.md", "target": "README.md" },
@@ -37,6 +40,7 @@
     { "source": "files/src/App.tsx", "target": "src/App.tsx" },
     { "source": "files/src/index.css", "target": "src/index.css" },
     { "source": "files/src/lib/sandbox-client.ts", "target": "src/lib/sandbox-client.ts" },
+    { "source": "files/server/index.ts", "target": "server/index.ts" },
     { "source": "files/pnpm-workspace.yaml", "target": "pnpm-workspace.yaml" }
   ],
   "validationChecks": [
@@ -44,9 +48,11 @@
     { "type": "file-exists", "path": "index.html" },
     { "type": "file-exists", "path": "vite.config.ts" },
     { "type": "file-exists", "path": "tsconfig.json" },
+    { "type": "file-exists", "path": "tsconfig.server.json" },
     { "type": "file-exists", "path": "src/main.tsx" },
     { "type": "file-exists", "path": "src/App.tsx" },
-    { "type": "file-exists", "path": "src/lib/sandbox-client.ts" }
+    { "type": "file-exists", "path": "src/lib/sandbox-client.ts" },
+    { "type": "file-exists", "path": "server/index.ts" }
   ],
   "tieredKeywords": {
     "tier1": [
@@ -74,11 +80,13 @@
       "pnpm build"
     ],
     "entrypoints": [
-      "src/App.tsx"
+      "src/App.tsx",
+      "server/index.ts"
     ],
     "extensionPoints": [
       "src/App.tsx",
-      "src/lib/sandbox-client.ts"
+      "src/lib/sandbox-client.ts",
+      "server/index.ts"
     ]
   }
 }

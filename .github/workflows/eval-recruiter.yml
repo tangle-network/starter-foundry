@@ -110,16 +110,18 @@ jobs:
         id: live
         env:
           TANGLE_API_KEY: ${{ secrets.TANGLE_CI_ROUTER_KEY }}
+          EVAL_TARGET_BASE_URL: ${{ vars.RECRUITER_EVAL_TARGET_URL }}
+          EVAL_INTEGRITY: strict
           RUBRIC_JUDGE_MODEL: deepseek/deepseek-chat
         working-directory: examples/recruiter-eval-workspace
         run: |
-          if [ -z "${TANGLE_API_KEY}" ]; then
-            echo "::warning::TANGLE_CI_ROUTER_KEY not set as repo secret. Skipping workspace install + live eval — agent_eval_meta_pass_rate will remain 'unmeasured'. Set the secret to enable live measurement."
+          if [ -z "${TANGLE_API_KEY}" ] || [ -z "${EVAL_TARGET_BASE_URL}" ]; then
+            echo "::warning::TANGLE_CI_ROUTER_KEY or RECRUITER_EVAL_TARGET_URL is not configured. Skipping live eval; agent_eval_meta_pass_rate remains unmeasured."
             echo "ran=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           pnpm install --frozen-lockfile
-          pnpm eval || true
+          pnpm eval
           echo "ran=true" >> "$GITHUB_OUTPUT"
       - name: upload scorecard artifact
         if: steps.live.outputs.ran == 'true' && github.event_name != 'pull_request'

@@ -96,7 +96,9 @@ writeFileSync(
 
 console.log(`probed ${results.length} mirrors → ${out}`)
 for (const r of results) {
-  console.log(`  ${r.status.padEnd(8)} p50=${r.p50Ms.toFixed(0).padStart(5)}ms p95=${r.p95Ms.toFixed(0).padStart(5)}ms  ${r.url}`)
+  console.log(
+    `  ${r.status.padEnd(8)} p50=${r.p50Ms.toFixed(0).padStart(5)}ms p95=${r.p95Ms.toFixed(0).padStart(5)}ms  ${r.url}`,
+  )
 }
 if (!integrityUnanimous) {
   console.error(`⚠ integrity mismatch: ${shas.size} distinct SHAs across mirrors`)

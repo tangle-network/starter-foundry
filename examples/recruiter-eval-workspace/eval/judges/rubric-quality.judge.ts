@@ -35,6 +35,9 @@ import { buildRubricJudge, type RubricSpec } from '../src/eval/judges/rubric-run
 import type { JudgeFn, JudgeScore, JudgeInput } from '@tangle-network/agent-eval'
 import { unmeasuredScore, type ExtendedJudgeScore } from './aggregate.ts'
 
+export const dimensions = ['rubric-quality', 'bias-resistance'] as const
+export const usesModel = true
+
 /**
  * Recruiter rubric spec. Three dimensions matching the original judge
  * (coverage / bias-resistance / actionability), now declared once and

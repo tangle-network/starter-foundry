@@ -50,12 +50,16 @@ const argv = process.argv.slice(2)
 const MODE = parseArg(argv, '--mode', 'agent') // 'agent' | 'rlm'
 const MAX_ITER = Number(parseArg(argv, '--max-iterations', '8')) || 8
 const WALL_SEC = Number(parseArg(argv, '--wall-sec', '900')) || 900
-const USD = Number(parseArg(argv, '--usd', '2.00')) || 2.00
+const USD = Number(parseArg(argv, '--usd', '2.00')) || 2.0
 const MAX_SHOTS = Number(parseArg(argv, '--max-shots', '2')) || 2
 const TOP_N = Number(parseArg(argv, '--top', '3')) || 3
 const DRY_RUN = argv.includes('--dry-run')
 const FULL_BOOT = argv.includes('--full-boot')
-const EXPERIMENT_ID = parseArg(argv, '--experiment', `capability-proposer-${new Date().toISOString().slice(0, 10)}`)
+const EXPERIMENT_ID = parseArg(
+  argv,
+  '--experiment',
+  `capability-proposer-${new Date().toISOString().slice(0, 10)}`,
+)
 
 // ── Collect candidates ──────────────────────────────────────────────
 let candidates
@@ -68,10 +72,14 @@ if (stdinRaw.trim().length > 0) {
     process.exit(2)
   }
 } else {
-  const res = spawnSync('node', ['scripts/detect-capability-gaps.ts', '--json', '--top', String(TOP_N)], {
-    cwd: REPO,
-    encoding: 'utf8',
-  })
+  const res = spawnSync(
+    'node',
+    ['scripts/detect-capability-gaps.ts', '--json', '--top', String(TOP_N)],
+    {
+      cwd: REPO,
+      encoding: 'utf8',
+    },
+  )
   if (res.status !== 0) {
     console.error('detect-capability-gaps failed:', res.stderr)
     process.exit(2)
@@ -90,7 +98,9 @@ console.log(
     `(mode=${MODE}, max-iter=${MAX_ITER}, wall=${WALL_SEC}s, usd=$${USD}, experiment=${EXPERIMENT_ID})`,
 )
 for (const c of candidates) {
-  console.log(`  - ${c.id} (priority=${(c.priority ?? 0).toFixed(2)}, appliesTo=${(c.appliesTo ?? []).join(',')})`)
+  console.log(
+    `  - ${c.id} (priority=${(c.priority ?? 0).toFixed(2)}, appliesTo=${(c.appliesTo ?? []).join(',')})`,
+  )
 }
 
 if (DRY_RUN) {
@@ -110,7 +120,9 @@ for (const c of candidates) {
 
 const ok = results.filter((r) => r.ok).length
 console.log(`\nCapability propose complete: ${ok}/${results.length} drafts written`)
-console.log(`Next: run \`node scripts/promote-capability-proposal.ts --all\` to validate + promote.`)
+console.log(
+  `Next: run \`node scripts/promote-capability-proposal.ts --all\` to validate + promote.`,
+)
 
 // ────────────────────────────────────────────────────────────────────
 // Agentic path
@@ -252,7 +264,11 @@ async function proposeViaAgent(c) {
     // already copied the contents out. On blocked we keep it for forensics if
     // KEEP_SCRATCH is set.
     if (!process.env.KEEP_SCRATCH) {
-      try { rmSync(scratchDir, { recursive: true, force: true }) } catch { /* noop */ }
+      try {
+        rmSync(scratchDir, { recursive: true, force: true })
+      } catch {
+        /* noop */
+      }
     }
   }
 }
@@ -264,7 +280,8 @@ async function proposeViaAgent(c) {
 async function proposeViaRLM(c) {
   const t0 = Date.now()
   try {
-    const { proposeCapabilityWithRLMToDisk } = await import('../dist/training/capability_proposer/propose.js')
+    const { proposeCapabilityWithRLMToDisk } =
+      await import('../dist/training/capability_proposer/propose.js')
     const proposal = await proposeCapabilityWithRLMToDisk(
       {
         id: c.id,
@@ -288,7 +305,9 @@ async function proposeViaRLM(c) {
       appliesTo: c.appliesTo,
       durationMs,
     })
-    console.log(`  ✓ ${c.id}: mode=${proposal.mode} files=${proposal.templateFiles.length} dir=${proposal.proposalDir}`)
+    console.log(
+      `  ✓ ${c.id}: mode=${proposal.mode} files=${proposal.templateFiles.length} dir=${proposal.proposalDir}`,
+    )
     return { id: c.id, ok: true, mode: `rlm-${proposal.mode}`, durationMs }
   } catch (err) {
     const durationMs = Date.now() - t0
@@ -322,7 +341,9 @@ function loadPeerCapabilities(appliesTo, limit) {
     try {
       const m = JSON.parse(readFileSync(mp, 'utf8'))
       rows.push({ id: m.id, appliesTo: m.appliesTo ?? [] })
-    } catch { /* skip malformed */ }
+    } catch {
+      /* skip malformed */
+    }
   }
   return rows
     .map((r) => ({ r, score: r.appliesTo.filter((f) => appliesTo.includes(f)).length }))

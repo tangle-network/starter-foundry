@@ -25,7 +25,12 @@ const FRONTEND_SPECS = [
     spec: {
       projectName: 'landing-default',
       family: 'react-vite-ts',
-      layers: ['framework:react-vite-ts', 'capability:tailwind', 'capability:shadcn', 'capability:layout-landing'],
+      layers: [
+        'framework:react-vite-ts',
+        'capability:tailwind',
+        'capability:shadcn',
+        'capability:layout-landing',
+      ],
       variables: { headline: 'Ship your product faster' },
     },
   },
@@ -34,7 +39,12 @@ const FRONTEND_SPECS = [
     spec: {
       projectName: 'alpha-project',
       family: 'react-vite-ts',
-      layers: ['framework:react-vite-ts', 'capability:tailwind', 'capability:shadcn', 'capability:layout-landing'],
+      layers: [
+        'framework:react-vite-ts',
+        'capability:tailwind',
+        'capability:shadcn',
+        'capability:layout-landing',
+      ],
       variables: { headline: 'Ship your product faster' },
     },
   },
@@ -43,7 +53,13 @@ const FRONTEND_SPECS = [
     spec: {
       projectName: 'dashboard-audit',
       family: 'nextjs-ts',
-      layers: ['framework:nextjs-app-router', 'capability:tailwind', 'capability:shadcn', 'capability:layout-dashboard', 'capability:chart-widget'],
+      layers: [
+        'framework:nextjs-app-router',
+        'capability:tailwind',
+        'capability:shadcn',
+        'capability:layout-dashboard',
+        'capability:chart-widget',
+      ],
     },
   },
   {
@@ -51,7 +67,12 @@ const FRONTEND_SPECS = [
     spec: {
       projectName: 'chat-audit',
       family: 'react-vite-ts',
-      layers: ['framework:react-vite-ts', 'capability:tailwind', 'capability:shadcn', 'capability:layout-chat'],
+      layers: [
+        'framework:react-vite-ts',
+        'capability:tailwind',
+        'capability:shadcn',
+        'capability:layout-chat',
+      ],
     },
   },
   {
@@ -59,13 +80,20 @@ const FRONTEND_SPECS = [
     spec: {
       projectName: 'admin-audit',
       family: 'react-vite-ts',
-      layers: ['framework:react-vite-ts', 'capability:tailwind', 'capability:shadcn', 'capability:layout-admin'],
+      layers: [
+        'framework:react-vite-ts',
+        'capability:tailwind',
+        'capability:shadcn',
+        'capability:layout-admin',
+      ],
     },
   },
 ]
 
 function kill(pid) {
-  try { process.kill(pid, 'SIGTERM') } catch {}
+  try {
+    process.kill(pid, 'SIGTERM')
+  } catch {}
 }
 
 async function auditSpec(name, spec) {
@@ -76,7 +104,10 @@ async function auditSpec(name, spec) {
   await fs.writeFile(specPath, JSON.stringify(spec, null, 2))
 
   // Compose
-  execSync(`node dist/cli.js compose --spec ${specPath} --out ${outDir}`, { cwd: repoRoot, stdio: 'pipe' })
+  execSync(`node dist/cli.js compose --spec ${specPath} --out ${outDir}`, {
+    cwd: repoRoot,
+    stdio: 'pipe',
+  })
 
   // Install
   execSync('pnpm install', { cwd: outDir, stdio: 'pipe', timeout: 60000 })
@@ -95,10 +126,16 @@ async function auditSpec(name, spec) {
     const check = setInterval(async () => {
       try {
         const res = await fetch(`http://localhost:${port}`)
-        if (res.ok) { clearInterval(check); resolve() }
+        if (res.ok) {
+          clearInterval(check)
+          resolve()
+        }
       } catch {}
     }, 500)
-    setTimeout(() => { clearInterval(check); resolve() }, 15000)
+    setTimeout(() => {
+      clearInterval(check)
+      resolve()
+    }, 15000)
   })
 
   // Run audit
@@ -156,7 +193,10 @@ async function main() {
   // Write results
   const resultsPath = path.join(repoRoot, '.evolve', 'visual-audit-results.json')
   await fs.mkdir(path.dirname(resultsPath), { recursive: true })
-  await fs.writeFile(resultsPath, JSON.stringify({ timestamp: new Date().toISOString(), results, average: avg }, null, 2) + '\n')
+  await fs.writeFile(
+    resultsPath,
+    JSON.stringify({ timestamp: new Date().toISOString(), results, average: avg }, null, 2) + '\n',
+  )
   console.log(`Results → ${resultsPath}`)
 }
 

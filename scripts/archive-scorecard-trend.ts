@@ -3,7 +3,14 @@
 // single .evolve/trends/trend.jsonl — one entry per flow per day.
 // Downstream: a trend-viewer consumer (or just `jq`) charts week-over-week.
 
-import { readFileSync, writeFileSync, readdirSync, mkdirSync, existsSync, appendFileSync } from 'node:fs'
+import {
+  readFileSync,
+  writeFileSync,
+  readdirSync,
+  mkdirSync,
+  existsSync,
+  appendFileSync,
+} from 'node:fs'
 import { join, resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -18,9 +25,19 @@ if (!existsSync(DAILY_DIR)) {
 
 mkdirSync(dirname(OUT), { recursive: true })
 const seen = existsSync(OUT)
-  ? new Set(readFileSync(OUT, 'utf8').split('\n').filter(Boolean).map((l) => {
-      try { const e = JSON.parse(l); return `${e.date}:${e.flow}` } catch { return '' }
-    }))
+  ? new Set(
+      readFileSync(OUT, 'utf8')
+        .split('\n')
+        .filter(Boolean)
+        .map((l) => {
+          try {
+            const e = JSON.parse(l)
+            return `${e.date}:${e.flow}`
+          } catch {
+            return ''
+          }
+        }),
+    )
   : new Set()
 
 let added = 0
@@ -31,14 +48,17 @@ for (const f of readdirSync(DAILY_DIR)) {
   for (const flow of sc.flows ?? []) {
     const key = `${date}:${flow.name}`
     if (seen.has(key)) continue
-    appendFileSync(OUT, JSON.stringify({
-      date,
-      flow: flow.name,
-      value: flow.value,
-      target: flow.target,
-      status: flow.status,
-      direction: flow.direction,
-    }) + '\n')
+    appendFileSync(
+      OUT,
+      JSON.stringify({
+        date,
+        flow: flow.name,
+        value: flow.value,
+        target: flow.target,
+        status: flow.status,
+        direction: flow.direction,
+      }) + '\n',
+    )
     added++
   }
 }

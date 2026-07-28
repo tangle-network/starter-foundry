@@ -30,13 +30,16 @@ function runScorecardIn(fixtureDir: string): { code: number; stdout: string } {
   return { code: res.status ?? -1, stdout: res.stdout + '\n' + res.stderr }
 }
 
-function writeFixture(dir: string, opts: {
-  buildoutsJsonl?: string
-  buildoutAnalysis?: object | null
-  capabilityGaps?: object | null
-  scaffoldAudit?: object | null
-  markStaleBy?: 'buildout' | 'gaps' | 'audit' | 'none'
-}): void {
+function writeFixture(
+  dir: string,
+  opts: {
+    buildoutsJsonl?: string
+    buildoutAnalysis?: object | null
+    capabilityGaps?: object | null
+    scaffoldAudit?: object | null
+    markStaleBy?: 'buildout' | 'gaps' | 'audit' | 'none'
+  },
+): void {
   mkdirSync(join(dir, '.evolve/traces'), { recursive: true })
   mkdirSync(join(dir, 'registry/families'), { recursive: true })
   mkdirSync(join(dir, 'registry/layers/capability'), { recursive: true })
@@ -45,13 +48,19 @@ function writeFixture(dir: string, opts: {
     writeFileSync(join(dir, '.evolve/traces/buildouts.jsonl'), opts.buildoutsJsonl)
   }
   if (opts.buildoutAnalysis !== undefined && opts.buildoutAnalysis !== null) {
-    writeFileSync(join(dir, '.evolve/buildout-analysis.json'), JSON.stringify(opts.buildoutAnalysis))
+    writeFileSync(
+      join(dir, '.evolve/buildout-analysis.json'),
+      JSON.stringify(opts.buildoutAnalysis),
+    )
   }
   if (opts.capabilityGaps !== undefined && opts.capabilityGaps !== null) {
     writeFileSync(join(dir, '.evolve/capability-gaps.json'), JSON.stringify(opts.capabilityGaps))
   }
   if (opts.scaffoldAudit !== undefined && opts.scaffoldAudit !== null) {
-    writeFileSync(join(dir, '.evolve/scaffold-quality-audit.json'), JSON.stringify(opts.scaffoldAudit))
+    writeFileSync(
+      join(dir, '.evolve/scaffold-quality-audit.json'),
+      JSON.stringify(opts.scaffoldAudit),
+    )
   }
   // Registry placeholders so family/capability/partner counts are known.
   mkdirSync(join(dir, 'registry/families/f1'), { recursive: true })
@@ -70,14 +79,21 @@ function writeFixture(dir: string, opts: {
   const oneHourAgo = (nowMs - 3600_000) / 1000
 
   const touch = (sub: string, t: number) => {
-    try { utimesSync(join(dir, sub), t, t) } catch { /* noop */ }
+    try {
+      utimesSync(join(dir, sub), t, t)
+    } catch {
+      /* noop */
+    }
   }
 
   // All analysis files: future mtime. Ensures they're unambiguously
   // fresh-relative-to-source unless the test explicitly backdates one.
-  if (opts.buildoutAnalysis !== undefined && opts.buildoutAnalysis !== null) touch('.evolve/buildout-analysis.json', future)
-  if (opts.capabilityGaps !== undefined && opts.capabilityGaps !== null) touch('.evolve/capability-gaps.json', future)
-  if (opts.scaffoldAudit !== undefined && opts.scaffoldAudit !== null) touch('.evolve/scaffold-quality-audit.json', future)
+  if (opts.buildoutAnalysis !== undefined && opts.buildoutAnalysis !== null)
+    touch('.evolve/buildout-analysis.json', future)
+  if (opts.capabilityGaps !== undefined && opts.capabilityGaps !== null)
+    touch('.evolve/capability-gaps.json', future)
+  if (opts.scaffoldAudit !== undefined && opts.scaffoldAudit !== null)
+    touch('.evolve/scaffold-quality-audit.json', future)
 
   // Source: now. Any analysis file < now is stale.
   if (opts.buildoutsJsonl) touch('.evolve/traces/buildouts.jsonl', now)
@@ -93,10 +109,14 @@ describe('refresh-scorecard', () => {
     const dir = mkdtempSync(join(tmpdir(), 'scorecard-test-'))
     try {
       // 5 runs with turn counts [10, 20, 30, 40, 50] → median = 30
-      const lines = [10, 20, 30, 40, 50].map((t, i) => JSON.stringify({
-        outcome: { toolCallsTotal: t, allPass: true },
-        scenarioId: `s${i}`,
-      })).join('\n')
+      const lines = [10, 20, 30, 40, 50]
+        .map((t, i) =>
+          JSON.stringify({
+            outcome: { toolCallsTotal: t, allPass: true },
+            scenarioId: `s${i}`,
+          }),
+        )
+        .join('\n')
       writeFixture(dir, {
         buildoutsJsonl: lines,
         buildoutAnalysis: {
@@ -121,7 +141,11 @@ describe('refresh-scorecard', () => {
     try {
       writeFixture(dir, {
         buildoutsJsonl: JSON.stringify({ outcome: { toolCallsTotal: 50 }, scenarioId: 's1' }),
-        buildoutAnalysis: { summary: { passRate: 1, costRollup: {} }, perScenario: [], topRewrittenFiles: [] },
+        buildoutAnalysis: {
+          summary: { passRate: 1, costRollup: {} },
+          perScenario: [],
+          topRewrittenFiles: [],
+        },
         capabilityGaps: { breakdown: { scaffoldGap: 0, orchestration: 0 } },
         scaffoldAudit: { audits: [{ phases: [{ ok: true }] }] },
       })
@@ -130,9 +154,18 @@ describe('refresh-scorecard', () => {
       const out = JSON.parse(readFileSync(join(dir, '.evolve/scorecard.json'), 'utf8'))
       assert.ok(Array.isArray(out.inputs), 'scorecard should emit inputs[]')
       const paths = out.inputs.map((i: any) => i.path)
-      assert.ok(paths.some((p: string) => p.includes('buildout-analysis')), 'includes buildout-analysis.json')
-      assert.ok(paths.some((p: string) => p.includes('capability-gaps')), 'includes capability-gaps.json')
-      assert.ok(paths.some((p: string) => p.includes('scaffold-quality-audit')), 'includes scaffold-quality-audit.json')
+      assert.ok(
+        paths.some((p: string) => p.includes('buildout-analysis')),
+        'includes buildout-analysis.json',
+      )
+      assert.ok(
+        paths.some((p: string) => p.includes('capability-gaps')),
+        'includes capability-gaps.json',
+      )
+      assert.ok(
+        paths.some((p: string) => p.includes('scaffold-quality-audit')),
+        'includes scaffold-quality-audit.json',
+      )
       for (const entry of out.inputs) {
         assert.match(entry.mtime, /^\d{4}-\d{2}-\d{2}T/, 'mtime is ISO 8601')
       }
@@ -147,7 +180,11 @@ describe('refresh-scorecard', () => {
       writeFixture(dir, {
         // buildouts.jsonl is NOW; buildout-analysis.json is backdated → stale
         buildoutsJsonl: JSON.stringify({ outcome: { toolCallsTotal: 50 }, scenarioId: 's1' }),
-        buildoutAnalysis: { summary: { passRate: 0.9, costRollup: {} }, perScenario: [], topRewrittenFiles: [{ timesRewritten: 7 }] },
+        buildoutAnalysis: {
+          summary: { passRate: 0.9, costRollup: {} },
+          perScenario: [],
+          topRewrittenFiles: [{ timesRewritten: 7 }],
+        },
         capabilityGaps: { breakdown: { scaffoldGap: 5, orchestration: 2 } },
         scaffoldAudit: { audits: [{ phases: [{ ok: true }] }] },
         markStaleBy: 'buildout',
@@ -162,7 +199,11 @@ describe('refresh-scorecard', () => {
       assert.equal(passRate.stale, true, 'buildout_pass_rate is marked stale')
       // Flows NOT reading from the stale input should not be marked.
       const gaps = out.flows.find((f: any) => f.name === 'scaffold_gap_installs')
-      assert.notEqual(gaps.stale, true, 'scaffold_gap_installs (from capability-gaps) is NOT stale in this fixture')
+      assert.notEqual(
+        gaps.stale,
+        true,
+        'scaffold_gap_installs (from capability-gaps) is NOT stale in this fixture',
+      )
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }
@@ -197,9 +238,16 @@ describe('refresh-scorecard', () => {
     const dir = mkdtempSync(join(tmpdir(), 'scorecard-cf-test-'))
     try {
       writeFixture(dir, {
-        buildoutsJsonl: JSON.stringify({ outcome: { toolCallsTotal: 50, allPass: true }, scenarioId: 's1' }),
+        buildoutsJsonl: JSON.stringify({
+          outcome: { toolCallsTotal: 50, allPass: true },
+          scenarioId: 's1',
+        }),
         // Main stale pass rate = 0.5
-        buildoutAnalysis: { summary: { passRate: 0.5, costRollup: {} }, perScenario: [], topRewrittenFiles: [] },
+        buildoutAnalysis: {
+          summary: { passRate: 0.5, costRollup: {} },
+          perScenario: [],
+          topRewrittenFiles: [],
+        },
         markStaleBy: 'buildout',
       })
       // Internal analysis is fresh + has a different pass rate (0.99) so we
@@ -242,8 +290,15 @@ describe('refresh-scorecard', () => {
     const dir = mkdtempSync(join(tmpdir(), 'scorecard-cf-test-'))
     try {
       writeFixture(dir, {
-        buildoutsJsonl: JSON.stringify({ outcome: { toolCallsTotal: 50, allPass: true }, scenarioId: 's1' }),
-        buildoutAnalysis: { summary: { passRate: 0.75, costRollup: {} }, perScenario: [], topRewrittenFiles: [] },
+        buildoutsJsonl: JSON.stringify({
+          outcome: { toolCallsTotal: 50, allPass: true },
+          scenarioId: 's1',
+        }),
+        buildoutAnalysis: {
+          summary: { passRate: 0.75, costRollup: {} },
+          perScenario: [],
+          topRewrittenFiles: [],
+        },
       })
       // Both main and internal exist, both fresh. Scorecard should prefer main.
       mkdirSync(join(dir, '.evolve'), { recursive: true })

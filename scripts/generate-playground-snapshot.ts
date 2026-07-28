@@ -17,8 +17,11 @@ import { fileURLToPath } from 'node:url'
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 
 function readJson(path) {
-  try { return JSON.parse(readFileSync(path, 'utf8')) }
-  catch { return null }
+  try {
+    return JSON.parse(readFileSync(path, 'utf8'))
+  } catch {
+    return null
+  }
 }
 
 function readFamilies() {
@@ -83,9 +86,7 @@ function readSampleComposedFiles(familyId) {
   if (existsSync(familyFilesDir)) {
     walk(familyFilesDir, '', out)
   }
-  const layerManifest = readJson(
-    join(REPO, 'registry/layers/framework', familyId, 'manifest.json'),
-  )
+  const layerManifest = readJson(join(REPO, 'registry/layers/framework', familyId, 'manifest.json'))
   if (layerManifest?.files) {
     for (const f of layerManifest.files) out.push(f.target)
   }
@@ -96,7 +97,11 @@ function walk(dir, prefix, out) {
   for (const name of readdirSync(dir)) {
     const full = join(dir, name)
     let st
-    try { st = statSync(full) } catch { continue }
+    try {
+      st = statSync(full)
+    } catch {
+      continue
+    }
     const rel = prefix ? `${prefix}/${name}` : name
     if (st.isDirectory()) walk(full, rel, out)
     else out.push(rel)

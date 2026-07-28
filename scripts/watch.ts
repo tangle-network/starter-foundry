@@ -16,7 +16,10 @@ let building = false
 let pending = false
 
 function rebuild() {
-  if (building) { pending = true; return }
+  if (building) {
+    pending = true
+    return
+  }
   building = true
   pending = false
   const t0 = Date.now()
@@ -24,7 +27,10 @@ function rebuild() {
   const ms = Date.now() - t0
   if (r.status === 0) {
     console.log(`  ✓ build ok (${ms}ms)`)
-    const validate = spawnSync('node', ['scripts/validate-registry.ts'], { cwd: REPO, encoding: 'utf8' })
+    const validate = spawnSync('node', ['scripts/validate-registry.ts'], {
+      cwd: REPO,
+      encoding: 'utf8',
+    })
     if (validate.status === 0) console.log(`  ✓ registry valid`)
     else console.error(`  ✗ registry: ${validate.stdout.slice(-500)}`)
   } else {

@@ -133,8 +133,8 @@ test('package.json pins @tangle-network/agent-eval to the current cohort', () =>
   const dep = pkg.dependencies?.['@tangle-network/agent-eval']
   assert.equal(
     dep,
-    '0.134.1',
-    `package.json must pin @tangle-network/agent-eval 0.134.1; got ${dep}`,
+    '0.134.2',
+    `package.json must pin @tangle-network/agent-eval 0.134.2; got ${dep}`,
   )
   assert.ok(pkg.scripts?.eval, 'pnpm eval script must be wired')
   assert.ok(pkg.scripts?.['eval:gate'], 'pnpm eval:gate script must be wired')

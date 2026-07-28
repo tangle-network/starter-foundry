@@ -15,12 +15,12 @@
     "@tangle-network/sandbox-ui": "0.90.3",
     "@tangle-network/sandbox": "0.15.2",
     "@tangle-network/ui": "11.2.1",
-    "@tiptap/core": "^3.29.2",
-    "@tiptap/extension-collaboration": "^3.29.2",
-    "@tiptap/extension-collaboration-caret": "^3.29.2",
-    "@tiptap/react": "^3.29.2",
-    "@tiptap/starter-kit": "^3.29.2",
-    "next": "^14.2.0",
+    "@tiptap/core": "^3.29.0",
+    "@tiptap/extension-collaboration": "^3.29.0",
+    "@tiptap/extension-collaboration-caret": "^3.29.0",
+    "@tiptap/react": "^3.29.0",
+    "@tiptap/starter-kit": "^3.29.0",
+    "next": "^15.5.21",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
     "yjs": "^13.6.31"
@@ -35,6 +35,6 @@
     "typescript": "^5.9.0"
   },
   "overrides": {
-    "vite": "^5.4.10"
+    "vite": "^6.4.3"
   }
 }

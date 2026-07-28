@@ -95,9 +95,9 @@ function renderTranscript(input: JudgeInput): string {
 export function buildRubricJudge(spec: RubricSpec): JudgeFn {
   const rubric = buildRubric(spec)
   const dimensions = rubricDimensions(rubric)
-  return async (chat, input): Promise<JudgeScore[]> => {
+  return async (tc, input): Promise<JudgeScore[]> => {
     const judge = llmJudge<string>(rubric.name, renderRubricSystemPrompt(rubric), {
-      chat,
+      chat: tc,
       dimensions,
       weights: rubricWeights(rubric),
       scale: 'unit',

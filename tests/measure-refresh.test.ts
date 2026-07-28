@@ -43,7 +43,11 @@ describe('measure-refresh orchestrator', () => {
     run()
     // Re-run — should detect no drift.
     const res = run(['--dry-run'])
-    assert.equal(res.code, 0, `dry-run on clean state should exit 0; got ${res.code}\n${res.stdout}\n${res.stderr}`)
+    assert.equal(
+      res.code,
+      0,
+      `dry-run on clean state should exit 0; got ${res.code}\n${res.stdout}\n${res.stderr}`,
+    )
     assert.match(res.stdout + res.stderr, /clean/, 'expected "clean" in output')
   })
 
@@ -66,15 +70,25 @@ describe('measure-refresh orchestrator', () => {
     const now = Date.now() / 1000
     try {
       utimesSync(srcPath, now + 60, now + 60)
-    } catch { /* noop */ }
+    } catch {
+      /* noop */
+    }
 
     try {
       const res = run(['--dry-run'])
       // Exit 2 when --dry-run detects drift.
-      assert.equal(res.code, 2, `dry-run after touch should exit 2; got ${res.code}\n${res.stdout}\n${res.stderr}`)
+      assert.equal(
+        res.code,
+        2,
+        `dry-run after touch should exit 2; got ${res.code}\n${res.stdout}\n${res.stderr}`,
+      )
     } finally {
       // Restore source mtime regardless of assertion outcome.
-      try { utimesSync(srcPath, originalMtime, originalMtime) } catch { /* noop */ }
+      try {
+        utimesSync(srcPath, originalMtime, originalMtime)
+      } catch {
+        /* noop */
+      }
       // Run once more to re-align analysis mtimes with the restored source.
       run()
     }

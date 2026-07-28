@@ -7,24 +7,18 @@ import { ToolCallTimeline } from './components/ToolCallTimeline'
 import type { NormalizedEvent } from './lib/event-types'
 import { streamRun } from './lib/sandbox-stream'
 
-interface SandboxConfig {
-  baseUrl: string
-  apiKey: string
-  sandboxId: string
+interface DebugConfig {
+  sessionUrl: string
 }
 
-function readConfig(): { config?: SandboxConfig; missing: string[] } {
+function readConfig(): { config?: DebugConfig; missing: string[] } {
   const env = import.meta.env
-  const baseUrl = env.VITE_TANGLE_SANDBOX_BASE_URL as string | undefined
-  const apiKey = env.VITE_TANGLE_SANDBOX_API_KEY as string | undefined
-  const sandboxId = env.VITE_SANDBOX_ID as string | undefined
+  const sessionUrl = env.VITE_SANDBOX_SESSION_URL as string | undefined
   const missing: string[] = []
-  if (!baseUrl) missing.push('VITE_TANGLE_SANDBOX_BASE_URL')
-  if (!apiKey) missing.push('VITE_TANGLE_SANDBOX_API_KEY')
-  if (!sandboxId) missing.push('VITE_SANDBOX_ID')
+  if (!sessionUrl) missing.push('VITE_SANDBOX_SESSION_URL')
   if (missing.length > 0) return { missing }
   return {
-    config: { baseUrl: baseUrl!, apiKey: apiKey!, sandboxId: sandboxId! },
+    config: { sessionUrl: sessionUrl! },
     missing: [],
   }
 }
@@ -83,9 +77,7 @@ export function App() {
 
     try {
       for await (const evt of streamRun({
-        baseUrl: config.baseUrl,
-        apiKey: config.apiKey,
-        sandboxId: config.sandboxId,
+        sessionUrl: config.sessionUrl,
         prompt: trimmed,
         signal: ac.signal,
       })) {
@@ -138,7 +130,7 @@ export function App() {
         <div>
           <h1>agent-debug-ui</h1>
           <p className='app__subtitle'>
-            Live debugger for {config.sandboxId} via {config.baseUrl}
+            Live debugger via {config.sessionUrl}
           </p>
         </div>
         <div className='app__prompt-bar'>

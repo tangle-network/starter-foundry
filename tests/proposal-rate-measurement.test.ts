@@ -43,10 +43,10 @@ describe('proposal_promotion_rate measurement', () => {
     const text = readFileSync(join(REPO, 'scripts/refresh-scorecard.ts'), 'utf8')
     // Known fixture patterns that must stay in the filter.
     for (const pattern of [
-      /\^test-/,       // test- prefix
-      /\^synthetic-/,  // synthetic- prefix
-      /nonexistent/,   // (definitely-)?nonexistent variants
-      /bun-monolith/,  // schema-reject fixture
+      /\^test-/, // test- prefix
+      /\^synthetic-/, // synthetic- prefix
+      /nonexistent/, // (definitely-)?nonexistent variants
+      /bun-monolith/, // schema-reject fixture
       /ts-eval-harness/, // schema-reject fixture
       /already exists/, // idempotency retry
     ]) {

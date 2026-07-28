@@ -27,7 +27,11 @@ const events = readFileSync(DEFAULT_PATHS.buildoutsJsonl, 'utf8')
   .split('\n')
   .filter((l) => l.length > 0)
   .map((l) => {
-    try { return JSON.parse(l) } catch { return null }
+    try {
+      return JSON.parse(l)
+    } catch {
+      return null
+    }
   })
   .filter(Boolean)
 
@@ -200,9 +204,7 @@ const summary = {
 const report = {
   schemaVersion: 1,
   summary,
-  perScenario: Object.values(byScenario).sort(
-    (a, b) => (b.passRate ?? -1) - (a.passRate ?? -1),
-  ),
+  perScenario: Object.values(byScenario).sort((a, b) => (b.passRate ?? -1) - (a.passRate ?? -1)),
   topAddedPackages: topPackages,
   topAddedDirs: topDirs,
   topRewrittenFiles,
@@ -214,8 +216,12 @@ writeFileSync(DEFAULT_PATHS.analysisJson, JSON.stringify(report, null, 2))
 console.log('=== buildout corpus summary ===')
 console.log(`total buildouts:      ${summary.totalBuildouts}`)
 console.log(`with VB outcome:      ${summary.withOutcome}`)
-console.log(`pass rate:            ${summary.passRate === null ? 'n/a' : (summary.passRate * 100).toFixed(1) + '%'}`)
-console.log(`mean blended score:   ${summary.meanBlendedScore === null ? 'n/a' : summary.meanBlendedScore.toFixed(3)}`)
+console.log(
+  `pass rate:            ${summary.passRate === null ? 'n/a' : (summary.passRate * 100).toFixed(1) + '%'}`,
+)
+console.log(
+  `mean blended score:   ${summary.meanBlendedScore === null ? 'n/a' : summary.meanBlendedScore.toFixed(3)}`,
+)
 console.log(`distinct scenarios:   ${summary.distinctScenarios}`)
 console.log(`partners:             ${summary.distinctPartners.join(', ')}`)
 console.log('')

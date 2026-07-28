@@ -18,7 +18,17 @@ const OUT = join(REPO, '.evolve/proposals/dead-families.json')
 
 const buildoutsPath = join(REPO, '.evolve/traces/buildouts.jsonl')
 const buildouts = existsSync(buildoutsPath)
-  ? readFileSync(buildoutsPath, 'utf8').split('\n').filter(Boolean).map((l) => { try { return JSON.parse(l) } catch { return null } }).filter(Boolean)
+  ? readFileSync(buildoutsPath, 'utf8')
+      .split('\n')
+      .filter(Boolean)
+      .map((l) => {
+        try {
+          return JSON.parse(l)
+        } catch {
+          return null
+        }
+      })
+      .filter(Boolean)
   : []
 
 // Families that showed up in any routed plan would appear via the analyze
@@ -40,7 +50,10 @@ for (const id of readdirSync(FAMILIES_DIR)) {
   if (!existsSync(manifestPath)) continue
 
   // Git mtime — most recent commit touching this family.
-  const gitLog = spawnSync('git', ['log', '-1', '--format=%ct', '--', `registry/families/${id}/`], { cwd: REPO, encoding: 'utf8' })
+  const gitLog = spawnSync('git', ['log', '-1', '--format=%ct', '--', `registry/families/${id}/`], {
+    cwd: REPO,
+    encoding: 'utf8',
+  })
   const ts = Number.parseInt(gitLog.stdout.trim(), 10) * 1000
   const ageMs = Number.isFinite(ts) ? Date.now() - ts : 0
   const mentioned = mentionedInPrompts.has(id)
@@ -57,13 +70,22 @@ for (const id of readdirSync(FAMILIES_DIR)) {
 }
 
 mkdirSync(dirname(OUT), { recursive: true })
-writeFileSync(OUT, JSON.stringify({
-  generatedAt: new Date().toISOString(),
-  corpusSize: buildouts.length,
-  candidates,
-}, null, 2))
+writeFileSync(
+  OUT,
+  JSON.stringify(
+    {
+      generatedAt: new Date().toISOString(),
+      corpusSize: buildouts.length,
+      candidates,
+    },
+    null,
+    2,
+  ),
+)
 
-console.log(`✓ dead-family audit: ${candidates.length} candidate(s) based on ${buildouts.length} buildouts`)
+console.log(
+  `✓ dead-family audit: ${candidates.length} candidate(s) based on ${buildouts.length} buildouts`,
+)
 for (const c of candidates.slice(0, 10)) {
   console.log(`  ${c.familyId.padEnd(24)} age=${c.ageDays}d  ${c.description.slice(0, 60)}`)
 }

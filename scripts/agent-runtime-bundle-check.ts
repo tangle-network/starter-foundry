@@ -41,7 +41,9 @@ const MAX_FILE_BYTES = 10 * 1024 * 1024
 // Crash handler — turns any uncaught exception into a clean exit 2.
 // The harness then knows the failure is in the checker, not the bundle.
 process.on('uncaughtException', (err) => {
-  process.stderr.write(`agent-runtime-bundle-check: uncaught exception: ${(err as Error).stack ?? err}\n`)
+  process.stderr.write(
+    `agent-runtime-bundle-check: uncaught exception: ${(err as Error).stack ?? err}\n`,
+  )
   process.exit(EXIT_CHECKER_CRASH)
 })
 process.on('unhandledRejection', (reason) => {
@@ -74,12 +76,17 @@ for (const rel of REQUIRED_FILES) {
 
 // ── 2. Anti-bomb scan: no symlinks outside the bundle, no oversized files ──
 
-function walkBundle(dir: string, into: { rel: string; abs: string; lstat: ReturnType<typeof lstatSync> }[]): void {
+function walkBundle(
+  dir: string,
+  into: { rel: string; abs: string; lstat: ReturnType<typeof lstatSync> }[],
+): void {
   let entries: string[]
   try {
     entries = readdirSync(dir)
   } catch (err) {
-    failures.push(`cannot read directory ${relative(bundleDir, dir) || '.'}: ${(err as Error).message}`)
+    failures.push(
+      `cannot read directory ${relative(bundleDir, dir) || '.'}: ${(err as Error).message}`,
+    )
     return
   }
   for (const name of entries) {
@@ -165,11 +172,16 @@ if (failures.length === 0) {
   try {
     const result = await validateComposedDir({ composedDir: bundleDir, checks })
     for (const c of result.checks) {
-      if (!c.ok) failures.push(`${c.check.type}${c.check.path ? ` ${c.check.path}` : ''}: ${c.error ?? 'failed'}`)
+      if (!c.ok)
+        failures.push(
+          `${c.check.type}${c.check.path ? ` ${c.check.path}` : ''}: ${c.error ?? 'failed'}`,
+        )
     }
   } catch (err) {
     // Validator crash → checker crash, not bundle defect.
-    process.stderr.write(`agent-runtime-bundle-check: validator threw: ${(err as Error).stack ?? err}\n`)
+    process.stderr.write(
+      `agent-runtime-bundle-check: validator threw: ${(err as Error).stack ?? err}\n`,
+    )
     process.exit(EXIT_CHECKER_CRASH)
   }
 }
@@ -177,11 +189,15 @@ if (failures.length === 0) {
 // ── Report ──────────────────────────────────────────────────────────────
 
 if (failures.length > 0) {
-  process.stderr.write(`agent-runtime-bundle-check: ${failures.length} check(s) failed in ${bundleDir}\n`)
+  process.stderr.write(
+    `agent-runtime-bundle-check: ${failures.length} check(s) failed in ${bundleDir}\n`,
+  )
   for (const f of failures) process.stderr.write(`  ✗ ${f}\n`)
   process.exit(EXIT_BUNDLE_DEFECT)
 }
 
 const fileCount = allEntries.filter((e) => e.lstat.isFile()).length
-process.stdout.write(`agent-runtime-bundle-check: PASS (${fileCount} files inspected, all checks ok)\n`)
+process.stdout.write(
+  `agent-runtime-bundle-check: PASS (${fileCount} files inspected, all checks ok)\n`,
+)
 process.exit(EXIT_OK)

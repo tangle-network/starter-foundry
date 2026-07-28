@@ -30,7 +30,8 @@ test('package-to-capability: confidence values are between 0 and 1', () => {
   const bad: string[] = []
   for (const [pkg, entry] of Object.entries(map.mapping)) {
     if (typeof entry.confidence !== 'number') bad.push(`${pkg}: confidence not a number`)
-    else if (entry.confidence < 0 || entry.confidence > 1) bad.push(`${pkg}: confidence=${entry.confidence} out of range`)
+    else if (entry.confidence < 0 || entry.confidence > 1)
+      bad.push(`${pkg}: confidence=${entry.confidence} out of range`)
   }
   assert.equal(bad.length, 0, `bad confidence values:\n  ${bad.join('\n  ')}`)
 })

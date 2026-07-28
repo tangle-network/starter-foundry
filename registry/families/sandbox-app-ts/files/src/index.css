@@ -1,4 +1,4 @@
-@import '@tangle-network/sandbox-ui/styles.css';
+@import '@tangle-network/sandbox-ui/styles';
 
 @tailwind base;
 @tailwind components;

@@ -5,6 +5,9 @@
 
 import { buildRubricJudge, type RubricSpec } from '../src/eval/judges/rubric-runner.js'
 
+export const dimensions = ['basic-coherence'] as const
+export const usesModel = true
+
 const spec: RubricSpec = {
   name: 'core-quality',
   description: 'Multi-dimensional rubric covering correctness, helpfulness, and safety.',

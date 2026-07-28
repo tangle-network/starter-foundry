@@ -132,15 +132,16 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@huggingface/transformers": "^4.0.0",
-    "@tangle-network/agent-eval": "0.134.1",
+    "@tangle-network/agent-eval": "0.134.2",
     "@types/node": "^20.0.0",
     "eslint": "^10.2.1",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-node": "^0.4.0",
     "eslint-plugin-import-x": "^4.16.2",
     "husky": "^9.1.7",
     "knip": "^6.6.0",
     "lint-staged": "^16.4.0",
-    "prettier": "^3.8.3",
+    "prettier": "3.8.3",
     "tsx": "^4.21.0",
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.59.0",
@@ -161,12 +162,5 @@
     "@huggingface/transformers": {
       "optional": true
     }
-  },
-  "pnpm": {
-    "minimumReleaseAge": 4320,
-    "minimumReleaseAgeExclude": [
-      "@tangle-network/agent-eval",
-      "@tangle-network/sandbox"
-    ]
   }
 }

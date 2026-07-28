@@ -14,7 +14,15 @@
 //   node scripts/audit-scaffold-quality.ts --layer framework:forge-foundation
 
 import { spawnSync } from 'node:child_process'
-import { mkdtempSync, rmSync, existsSync, writeFileSync, mkdirSync, readFileSync, readdirSync } from 'node:fs'
+import {
+  mkdtempSync,
+  rmSync,
+  existsSync,
+  writeFileSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+} from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { performance } from 'node:perf_hooks'
@@ -40,14 +48,28 @@ const validationTimeoutMs = Number.parseInt(arg('--validation-timeout', '60000')
 // whose first token is in this allowlist. A hostile manifest can't turn
 // this into an arbitrary-exec vector.
 const VALIDATION_CMD_ALLOWLIST = new Set([
-  'node', 'pnpm', 'npm', 'yarn', 'tsx', 'python3', 'python', 'go',
-  'cargo', 'forge', 'aptos', 'sui', 'bash', 'sh',
+  'node',
+  'pnpm',
+  'npm',
+  'yarn',
+  'tsx',
+  'python3',
+  'python',
+  'go',
+  'cargo',
+  'forge',
+  'aptos',
+  'sui',
+  'bash',
+  'sh',
 ])
 
 const registry = await loadRegistry()
 
 const frameworks = [...registry.layers.values()].filter((l) => l.group === 'framework')
-const filtered = onlyLayer ? frameworks.filter((f) => `${f.group}:${f.id}` === onlyLayer) : frameworks
+const filtered = onlyLayer
+  ? frameworks.filter((f) => `${f.group}:${f.id}` === onlyLayer)
+  : frameworks
 
 console.log(`auditing ${filtered.length} framework layers...`)
 
@@ -102,10 +124,13 @@ function runCmdWithColdToolchainRetry(cmd, args, cwd, perCallTimeoutMs) {
 }
 
 function detectPackageManager(dir) {
-  if (existsSync(join(dir, 'pnpm-lock.yaml'))) return { cmd: 'pnpm', install: ['install', '--frozen-lockfile'] }
+  if (existsSync(join(dir, 'pnpm-lock.yaml')))
+    return { cmd: 'pnpm', install: ['install', '--frozen-lockfile'] }
   if (existsSync(join(dir, 'package-lock.json'))) return { cmd: 'npm', install: ['ci'] }
-  if (existsSync(join(dir, 'yarn.lock'))) return { cmd: 'yarn', install: ['install', '--frozen-lockfile'] }
-  if (existsSync(join(dir, 'package.json'))) return { cmd: 'pnpm', install: ['install', '--no-frozen-lockfile'] }
+  if (existsSync(join(dir, 'yarn.lock')))
+    return { cmd: 'yarn', install: ['install', '--frozen-lockfile'] }
+  if (existsSync(join(dir, 'package.json')))
+    return { cmd: 'pnpm', install: ['install', '--no-frozen-lockfile'] }
   if (existsSync(join(dir, 'Cargo.toml'))) return { cmd: 'cargo', install: ['check'] }
   if (existsSync(join(dir, 'foundry.toml'))) return { cmd: 'forge', install: ['build'] }
   if (existsSync(join(dir, 'go.mod'))) return { cmd: 'go', install: ['build', './...'] }
@@ -137,7 +162,8 @@ function detectPackageManager(dir) {
   }
   // Kotlin/Gradle — check gradle wrapper before global gradle.
   if (existsSync(join(dir, 'build.gradle.kts')) || existsSync(join(dir, 'build.gradle'))) {
-    if (existsSync(join(dir, 'gradlew'))) return { cmd: './gradlew', install: ['compileKotlin', '--no-daemon'] }
+    if (existsSync(join(dir, 'gradlew')))
+      return { cmd: './gradlew', install: ['compileKotlin', '--no-daemon'] }
     if (existsSync('/opt/homebrew/bin/gradle') || existsSync('/usr/local/bin/gradle')) {
       return { cmd: 'gradle', install: ['compileKotlin', '--no-daemon'] }
     }
@@ -169,16 +195,32 @@ for (const layer of filtered) {
   const specPath = join(tmp, 'spec.json')
   writeFileSync(specPath, JSON.stringify(spec))
 
-  const compose = runCmd('node', ['dist/cli.js', 'compose', '--spec', specPath, '--out', tmp, '--json'], '.')
+  const compose = runCmd(
+    'node',
+    ['dist/cli.js', 'compose', '--spec', specPath, '--out', tmp, '--json'],
+    '.',
+  )
   if (compose.exitCode !== 0) {
-    audits.push({ layerId, family, phase: 'compose', ok: false, error: compose.stderrTail.slice(-500) })
+    audits.push({
+      layerId,
+      family,
+      phase: 'compose',
+      ok: false,
+      error: compose.stderrTail.slice(-500),
+    })
     rmSync(tmp, { recursive: true, force: true })
     continue
   }
 
   const pm = detectPackageManager(tmp)
   if (!pm) {
-    audits.push({ layerId, family, phase: 'detect', skipped: 'no-package-manager', files: 'no recognizable project manifest' })
+    audits.push({
+      layerId,
+      family,
+      phase: 'detect',
+      skipped: 'no-package-manager',
+      files: 'no recognizable project manifest',
+    })
     rmSync(tmp, { recursive: true, force: true })
     continue
   }
@@ -219,7 +261,12 @@ for (const layer of filtered) {
   // `pnpm run build` or `pnpm build`). Catches bundler errors, dead imports,
   // missing public assets — classes of bug that typecheck alone misses.
   // Only runs when install + typecheck pass; skipped if no `build` script.
-  if (doBuild && install.exitCode === 0 && pm.cmd === 'pnpm' && phases.every((p) => p.ok || p.skipped)) {
+  if (
+    doBuild &&
+    install.exitCode === 0 &&
+    pm.cmd === 'pnpm' &&
+    phases.every((p) => p.ok || p.skipped)
+  ) {
     const pkgPath = join(tmp, 'package.json')
     let hasBuild = false
     try {
@@ -267,13 +314,19 @@ for (const layer of filtered) {
         } else if (check.type === 'command-success' && Array.isArray(check.command)) {
           const cmdHead = check.command[0]
           if (!VALIDATION_CMD_ALLOWLIST.has(cmdHead)) {
-            checkResults.push({ kind: 'command-success', cmd: check.command.join(' '), ok: false, reason: 'not-whitelisted' })
+            checkResults.push({
+              kind: 'command-success',
+              cmd: check.command.join(' '),
+              ok: false,
+              reason: 'not-whitelisted',
+            })
             continue
           }
           const res = runCmd(cmdHead, check.command.slice(1), tmp, validationTimeoutMs)
           const expectedSub = typeof check.expect === 'string' ? check.expect : null
           const exitOk = res.exitCode === 0
-          const subOk = expectedSub === null ? true : (res.stdoutTail + res.stderrTail).includes(expectedSub)
+          const subOk =
+            expectedSub === null ? true : (res.stdoutTail + res.stderrTail).includes(expectedSub)
           checkResults.push({
             kind: 'command-success',
             cmd: check.command.join(' '),
@@ -283,7 +336,12 @@ for (const layer of filtered) {
             stderrTail: res.stderrTail.slice(-400),
           })
         } else {
-          checkResults.push({ kind: 'unknown', type: check.type, ok: false, reason: 'unknown-check-type' })
+          checkResults.push({
+            kind: 'unknown',
+            type: check.type,
+            ok: false,
+            reason: 'unknown-check-type',
+          })
         }
       }
       const passCount = checkResults.filter((r) => r.ok).length
@@ -320,7 +378,9 @@ for (const layer of filtered) {
       const fam = JSON.parse(readFileSync(famManifestPath2, 'utf8'))
       surface = fam.taxonomy?.surface ?? null
       // 1) Prefer family.requires[] if it names a framework layer (newer convention).
-      const frameworkReq = (fam.requires ?? []).find((r) => typeof r === 'string' && r.startsWith('framework:'))
+      const frameworkReq = (fam.requires ?? []).find(
+        (r) => typeof r === 'string' && r.startsWith('framework:'),
+      )
       if (frameworkReq) {
         frameworkLayerId = frameworkReq
       } else {
@@ -342,11 +402,17 @@ for (const layer of filtered) {
                 frameworkLayerId = `framework:${dir}`
                 break
               }
-            } catch { /* ignore malformed framework manifest */ }
+            } catch {
+              /* ignore malformed framework manifest */
+            }
           }
-        } catch { /* framework dir not readable */ }
+        } catch {
+          /* framework dir not readable */
+        }
       }
-    } catch { /* no family manifest — fall back to `framework:${family}` */ }
+    } catch {
+      /* no family manifest — fall back to `framework:${family}` */
+    }
 
     // Gen-3 fix: only append capability:tailwind when the family is declared
     // compatible with it (tailwind.appliesTo includes the family). Prior code
@@ -359,13 +425,19 @@ for (const layer of filtered) {
     // not real scaffold regressions.
     let tailwindCompatible = false
     try {
-      const twManifest = JSON.parse(readFileSync('registry/layers/capability/tailwind/manifest.json', 'utf8'))
-      tailwindCompatible = Array.isArray(twManifest.appliesTo) && twManifest.appliesTo.includes(family)
-    } catch { /* tailwind manifest unreadable — stay conservative (no tailwind) */ }
+      const twManifest = JSON.parse(
+        readFileSync('registry/layers/capability/tailwind/manifest.json', 'utf8'),
+      )
+      tailwindCompatible =
+        Array.isArray(twManifest.appliesTo) && twManifest.appliesTo.includes(family)
+    } catch {
+      /* tailwind manifest unreadable — stay conservative (no tailwind) */
+    }
 
     const smokeLayers =
-      surface === 'frontend' && tailwindCompatible ? [frameworkLayerId, 'capability:tailwind']
-      : [frameworkLayerId]
+      surface === 'frontend' && tailwindCompatible
+        ? [frameworkLayerId, 'capability:tailwind']
+        : [frameworkLayerId]
 
     const smokeSpec = {
       projectName: `smoke-${layer.id}`,
@@ -379,7 +451,11 @@ for (const layer of filtered) {
     const smokeSpecPath = join(smokeTmp, 'spec.json')
     writeFileSync(smokeSpecPath, JSON.stringify(smokeSpec))
 
-    const smokeCompose = runCmd('node', ['dist/cli.js', 'compose', '--spec', smokeSpecPath, '--out', smokeTmp, '--json'], '.')
+    const smokeCompose = runCmd(
+      'node',
+      ['dist/cli.js', 'compose', '--spec', smokeSpecPath, '--out', smokeTmp, '--json'],
+      '.',
+    )
     if (smokeCompose.exitCode !== 0) {
       phases.push({
         phase: 'smoke-compose',
@@ -399,10 +475,16 @@ for (const layer of filtered) {
           stderrTail: smokeInstall.stderrTail.slice(-800),
         })
       } else {
-        phases.push({ phase: 'smoke-compose', skipped: 'no-package-manager-after-compose', ok: true })
+        phases.push({
+          phase: 'smoke-compose',
+          skipped: 'no-package-manager-after-compose',
+          ok: true,
+        })
       }
     }
-    try { rmSync(smokeTmp, { recursive: true, force: true, maxRetries: 3, retryDelay: 50 }) } catch {}
+    try {
+      rmSync(smokeTmp, { recursive: true, force: true, maxRetries: 3, retryDelay: 50 })
+    } catch {}
   }
 
   audits.push({ layerId, family, pm: pm.cmd, phases })

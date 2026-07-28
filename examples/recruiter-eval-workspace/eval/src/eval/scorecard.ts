@@ -15,7 +15,7 @@ export type FlowStatus = 'pass' | 'fail' | 'skip'
 
 export interface ScorecardFlow {
   name: string
-  value: number
+  value: number | null
   target: number
   status: FlowStatus
   productValueClaim: string
@@ -25,7 +25,7 @@ export interface ScorecardFlow {
 export interface Scorecard {
   product: string
   timestamp: string
-  aggregate: number
+  aggregate: number | null
   coverage: string
   flows: ScorecardFlow[]
 }
@@ -44,13 +44,13 @@ export async function readScorecard(path: string): Promise<Scorecard> {
 export interface ScorecardDiff {
   baseline: Scorecard
   head: Scorecard
-  aggregateDelta: number
+  aggregateDelta: number | null
   perFlow: Array<{
     name: string
     baseline: number | null
     head: number | null
     delta: number | null
-    status: 'improved' | 'regressed' | 'stable' | 'introduced' | 'removed'
+    status: 'improved' | 'regressed' | 'stable' | 'introduced' | 'removed' | 'unmeasured'
   }>
 }
 
@@ -67,6 +67,16 @@ export function diffScorecards(baseline: Scorecard, head: Scorecard): ScorecardD
     const b = baselineByName.get(name)
     const h = headByName.get(name)
     if (b && h) {
+      if (b.value === null || h.value === null) {
+        perFlow.push({
+          name,
+          baseline: b.value,
+          head: h.value,
+          delta: null,
+          status: 'unmeasured',
+        })
+        continue
+      }
       const delta = h.value - b.value
       let status: ScorecardDiff['perFlow'][number]['status'] = 'stable'
       if (Math.abs(delta) >= STABILITY_EPSILON) {
@@ -83,7 +93,10 @@ export function diffScorecards(baseline: Scorecard, head: Scorecard): ScorecardD
   return {
     baseline,
     head,
-    aggregateDelta: head.aggregate - baseline.aggregate,
+    aggregateDelta:
+      head.aggregate === null || baseline.aggregate === null
+        ? null
+        : head.aggregate - baseline.aggregate,
     perFlow,
   }
 }

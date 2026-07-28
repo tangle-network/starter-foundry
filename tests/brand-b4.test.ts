@@ -7,7 +7,10 @@ import test from 'node:test'
 import { buildMediaManifest } from '../dist/lib/brand/media-manifest.js'
 import { applyVoice, defaultVoiceForIndustry } from '../dist/lib/brand/voice.js'
 import { buildI18nFiles, isRtl, generateLocalePack } from '../dist/lib/brand/i18n.js'
-import { firstTurnFlowForFamily, firstTurnFlowAsMarkdown } from '../dist/lib/brand/first-turn-flows.js'
+import {
+  firstTurnFlowForFamily,
+  firstTurnFlowAsMarkdown,
+} from '../dist/lib/brand/first-turn-flows.js'
 import { inferSegment, segmentDefaultsAsMarkdown } from '../dist/lib/brand/user-segments.js'
 import type { BrandKit } from '../dist/lib/brand/index.js'
 
@@ -15,7 +18,8 @@ const sampleKit: BrandKit = {
   brandName: 'Atlas Health',
   tagline: 'Build care workflows, not paperwork.',
   heroHeadline: 'Patient care, simplified.',
-  heroSubheadline: 'A HIPAA-compliant backend that handles the compliance so your clinicians do not.',
+  heroSubheadline:
+    'A HIPAA-compliant backend that handles the compliance so your clinicians do not.',
   voice: 'technical',
   palette: {
     primary: '196 80% 45%',
@@ -45,7 +49,10 @@ test('media-manifest: emits 5 branded SVG assets + a manifest file', () => {
 
 test('media-manifest: brand fingerprint changes when palette changes', () => {
   const a = buildMediaManifest(sampleKit).manifest.brandFingerprint
-  const b = buildMediaManifest({ ...sampleKit, palette: { ...sampleKit.palette, primary: '0 0% 0%' } }).manifest.brandFingerprint
+  const b = buildMediaManifest({
+    ...sampleKit,
+    palette: { ...sampleKit.palette, primary: '0 0% 0%' },
+  }).manifest.brandFingerprint
   assert.notEqual(a, b)
 })
 
@@ -123,12 +130,21 @@ test('first-turn flows: markdown render has ordered list', () => {
 })
 
 test('user-segments: enterprise signals route to enterprise', () => {
-  assert.equal(inferSegment('Build an internal HR tool with SAML SSO and audit trail'), 'enterprise')
-  assert.equal(inferSegment('Ship a B2B SaaS with role hierarchy and SOC2 compliance'), 'enterprise')
+  assert.equal(
+    inferSegment('Build an internal HR tool with SAML SSO and audit trail'),
+    'enterprise',
+  )
+  assert.equal(
+    inferSegment('Ship a B2B SaaS with role hierarchy and SOC2 compliance'),
+    'enterprise',
+  )
 })
 
 test('user-segments: power-user signals route to power-user', () => {
-  assert.equal(inferSegment('Build a keyboard-first code editor with Vim keybindings'), 'power-user')
+  assert.equal(
+    inferSegment('Build a keyboard-first code editor with Vim keybindings'),
+    'power-user',
+  )
   assert.equal(inferSegment('A command palette driven log viewer with hotkeys'), 'power-user')
 })
 

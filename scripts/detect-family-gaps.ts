@@ -40,7 +40,10 @@ const TOP_N = Number(arg('--top', '10')) || 10
 const MIN_COUNT = Number(arg('--min-count', '1')) || 1
 
 function tokenize(s) {
-  return String(s).toLowerCase().split(/[^a-z0-9]+/).filter((t) => t.length > 2)
+  return String(s)
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((t) => t.length > 2)
 }
 
 // ── Build family lookup ──────────────────────────────────────────────
@@ -158,32 +161,33 @@ function proposeInputFor(gap) {
   const language = /\brust\b|cargo|tokio/.test(head)
     ? 'rust'
     : /\bpython\b|pytorch|numpy|pip install/.test(head)
-    ? 'python'
-    : /\bgo\b|go\s+mod|gopath/.test(head)
-    ? 'go'
-    : 'typescript'
+      ? 'python'
+      : /\bgo\b|go\s+mod|gopath/.test(head)
+        ? 'go'
+        : 'typescript'
   const surface = /\bdashboard|mint page|swap|ui|frontend|react|next\b/.test(head)
     ? 'frontend'
     : /\bapi|endpoint|rest|graphql\b/.test(head)
-    ? 'api'
-    : /\bcli|command-line/.test(head)
-    ? 'cli'
-    : /\bpipeline|job|worker|agent\b/.test(head)
-    ? 'agent'
-    : 'frontend'
-  const runtime = language === 'rust'
-    ? 'cargo'
-    : language === 'python'
-    ? 'python'
-    : language === 'go'
-    ? 'go'
-    : /\bbun\b/.test(head)
-    ? 'bun'
-    : /\bdeno\b/.test(head)
-    ? 'deno'
-    : /cloudflare.?worker|cf\s+worker/.test(head)
-    ? 'cloudflare-worker'
-    : 'node'
+      ? 'api'
+      : /\bcli|command-line/.test(head)
+        ? 'cli'
+        : /\bpipeline|job|worker|agent\b/.test(head)
+          ? 'agent'
+          : 'frontend'
+  const runtime =
+    language === 'rust'
+      ? 'cargo'
+      : language === 'python'
+        ? 'python'
+        : language === 'go'
+          ? 'go'
+          : /\bbun\b/.test(head)
+            ? 'bun'
+            : /\bdeno\b/.test(head)
+              ? 'deno'
+              : /cloudflare.?worker|cf\s+worker/.test(head)
+                ? 'cloudflare-worker'
+                : 'node'
   const description = `${gap.scenarioId} starter — derived from ${gap.occurrences}× real demand signal${
     gap.partner ? ` (partner: ${gap.partner})` : ''
   }. Taxonomy guess: ${language}/${runtime}/${surface}.`
@@ -211,17 +215,25 @@ if (JSON_OUT) {
   console.log(JSON.stringify({ topN: TOP_N, minCount: MIN_COUNT, candidates }, null, 2))
 } else {
   console.log(`\n━━━━ Top ${TOP_N} family-proposal candidates ━━━━`)
-  console.log(`(from ${scenarios.size} scenarios in ${TRACES}, against ${Object.keys(families).length} registered families)\n`)
+  console.log(
+    `(from ${scenarios.size} scenarios in ${TRACES}, against ${Object.keys(families).length} registered families)\n`,
+  )
   for (const c of candidates) {
     console.log(`  priority=${c.priority.toFixed(2)}  id=${c.id}`)
-    console.log(`    occ=${c.occurrences} partner=${c.partner ?? '(none)'} taxonomy=${c.taxonomy.language}/${c.taxonomy.runtime}/${c.taxonomy.surface}`)
+    console.log(
+      `    occ=${c.occurrences} partner=${c.partner ?? '(none)'} taxonomy=${c.taxonomy.language}/${c.taxonomy.runtime}/${c.taxonomy.surface}`,
+    )
     console.log(`    reason: ${c.reason}`)
     console.log(`    desc: ${c.description}`)
     console.log('')
   }
   console.log('To propose one:')
-  console.log(`  pnpm propose:family --rlm --id <id> --description "<desc>" --language <lang> --runtime <rt> --surface <sfc>`)
+  console.log(
+    `  pnpm propose:family --rlm --id <id> --description "<desc>" --language <lang> --runtime <rt> --surface <sfc>`,
+  )
   console.log('')
   console.log('Or drive all via (nightly):')
-  console.log('  node scripts/detect-family-gaps.ts --json | node scripts/propose-family-candidates.ts')
+  console.log(
+    '  node scripts/detect-family-gaps.ts --json | node scripts/propose-family-candidates.ts',
+  )
 }

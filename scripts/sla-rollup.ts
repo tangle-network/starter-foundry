@@ -60,7 +60,9 @@ const rollupRows = [...byMirrorDay.values()].map((b) => ({
   statusBreakdown: b.statuses,
 }))
 
-rollupRows.sort((a, b) => (a.day === b.day ? a.url.localeCompare(b.url) : b.day.localeCompare(a.day)))
+rollupRows.sort((a, b) =>
+  a.day === b.day ? a.url.localeCompare(b.url) : b.day.localeCompare(a.day),
+)
 
 // Only keep the last 30 days.
 const cutoff = new Date(Date.now() - 30 * 86400_000).toISOString().slice(0, 10)

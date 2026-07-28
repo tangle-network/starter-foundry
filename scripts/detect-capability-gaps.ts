@@ -38,7 +38,10 @@ const TOP_N = Number(arg('--top', '10')) || 10
 const MIN_COUNT = Number(arg('--min-count', '3')) || 3
 
 function tokenize(s) {
-  return String(s).toLowerCase().split(/[^a-z0-9]+/).filter((t) => t.length > 2)
+  return String(s)
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((t) => t.length > 2)
 }
 
 // ── Build capability keyword lookup ──────────────────────────────────
@@ -62,7 +65,9 @@ for (const id of readdirSync(CAPS_DIR)) {
       arr.push(id)
       capAppliesIndex.set(fam, arr)
     }
-  } catch { /* skip malformed */ }
+  } catch {
+    /* skip malformed */
+  }
 }
 
 if (capKeywords.size === 0) {
@@ -72,7 +77,9 @@ if (capKeywords.size === 0) {
 
 // ── Identify which families exist (for appliesTo recommendations) ────
 const existingFamilies = new Set(
-  readdirSync(FAMS_DIR).filter((f) => existsSync(join(FAMS_DIR, f, 'manifest.json')) && !f.startsWith('.')),
+  readdirSync(FAMS_DIR).filter(
+    (f) => existsSync(join(FAMS_DIR, f, 'manifest.json')) && !f.startsWith('.'),
+  ),
 )
 
 // ── Load buildouts + feature-phrase extraction ───────────────────────
@@ -94,7 +101,9 @@ for (const line of readFileSync(TRACES, 'utf8').split('\n').filter(Boolean)) {
     s.count += 1
     if (r.initialPrompt && s.prompts.length < 2) s.prompts.push(r.initialPrompt.slice(0, 1000))
     scenarios.set(r.scenarioId, s)
-  } catch { /* skip */ }
+  } catch {
+    /* skip */
+  }
 }
 
 // ── Score each scenario for capability coverage ──────────────────────
@@ -110,7 +119,10 @@ for (const s of scenarios.values()) {
   for (const t of scenarioTokens) {
     let covered = false
     for (const kw of capKeywords) {
-      if (kw === t || kw.includes(t) || t.includes(kw)) { covered = true; break }
+      if (kw === t || kw.includes(t) || t.includes(kw)) {
+        covered = true
+        break
+      }
     }
     if (!covered) uncoveredTokens.push(t)
   }
@@ -143,9 +155,9 @@ function appliesForGap(g) {
     'fintech-mixed': ['fintech-ledger-backend', 'fullstack-ts'],
     'tangle-network': ['agent-service-ts', 'react-vite-ts'],
     'polymarket-prediction': ['polymarket-portfolio-hedging', 'react-vite-ts'],
-    'deno': ['deno-edge'],
+    deno: ['deno-edge'],
   }
-  const hinted = (g.partner && partnerHints[g.partner]) ? partnerHints[g.partner] : []
+  const hinted = g.partner && partnerHints[g.partner] ? partnerHints[g.partner] : []
   const fallback = ['react-vite-ts', 'nextjs-ts', 'fullstack-ts'] // safe frontend default
   const candidates = [...hinted, ...fallback].filter((f) => existingFamilies.has(f))
   // Dedup + cap at 3
@@ -172,13 +184,19 @@ function slotFilesFor(g) {
   // and a markdown doc. Keep minimal — the proposer expands.
   return [
     `src/${base}-config.json`,
-    `src/components/${base.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join('')}.tsx`,
+    `src/components/${base
+      .split('-')
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join('')}.tsx`,
     `${base}.md`,
   ]
 }
 
 const candidates = top.map((g) => ({
-  id: g.scenarioId.replace(/[^a-z0-9]+/gi, '-').toLowerCase().slice(0, 48),
+  id: g.scenarioId
+    .replace(/[^a-z0-9]+/gi, '-')
+    .toLowerCase()
+    .slice(0, 48),
   description: describeFor(g),
   appliesTo: appliesForGap(g),
   slotFiles: slotFilesFor(g),
@@ -197,10 +215,14 @@ if (JSON_OUT) {
   console.log(JSON.stringify({ topN: TOP_N, minCount: MIN_COUNT, candidates }, null, 2))
 } else {
   console.log(`\n━━━━ Top ${TOP_N} capability-proposal candidates ━━━━`)
-  console.log(`(from ${scenarios.size} scenarios in ${TRACES}, ${capKeywords.size} existing capability keywords)\n`)
+  console.log(
+    `(from ${scenarios.size} scenarios in ${TRACES}, ${capKeywords.size} existing capability keywords)\n`,
+  )
   for (const c of candidates) {
     console.log(`  priority=${c.priority.toFixed(2)}  id=${c.id}`)
-    console.log(`    occ=${c.occurrences} partner=${c.partner ?? '(none)'} appliesTo=${c.appliesTo.join(', ') || '(no families)'}`)
+    console.log(
+      `    occ=${c.occurrences} partner=${c.partner ?? '(none)'} appliesTo=${c.appliesTo.join(', ') || '(no families)'}`,
+    )
     console.log(`    uncovered: ${c.uncoveredTokens.join(', ')}`)
     console.log(`    slot files: ${c.slotFiles.join(', ')}`)
     console.log('')

@@ -15,8 +15,12 @@ function arg(flag, fallback) {
 }
 
 const name = arg('--name')
-const applies = (arg('--applies') || '').split(',').map((s) => s.trim()).filter(Boolean)
-const description = arg('--description') || 'TODO: describe the partner / what this pack biases (≥20 chars).'
+const applies = (arg('--applies') || '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean)
+const description =
+  arg('--description') || 'TODO: describe the partner / what this pack biases (≥20 chars).'
 
 if (!name || !/^[a-z][a-z0-9-]*$/.test(name)) {
   console.error('usage: --name <kebab-case-id> --applies "fam1,fam2" [--description "..."]')
@@ -33,9 +37,7 @@ const manifest = {
   id: name,
   description: description.length >= 20 ? description : `${description} (regenerate: ≥20 chars).`,
   appliesTo: applies.length > 0 ? applies : ['TODO-family-id'],
-  files: [
-    { source: `files/${name}-config.json`, target: `${name}-config.json` },
-  ],
+  files: [{ source: `files/${name}-config.json`, target: `${name}-config.json` }],
   buildHints: {
     whenToUse: 'TODO: one sentence on when a prompt should set this partner.',
     firstSteps: ['TODO: first concrete action an agent takes for this partner.'],
@@ -48,18 +50,24 @@ mkdirSync(join(dir, 'files'), { recursive: true })
 writeFileSync(join(dir, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n')
 writeFileSync(
   join(dir, 'files', `${name}-config.json`),
-  JSON.stringify({
-    partner: name,
-    docs: 'TODO: partner documentation URL',
-    networks: {},
-    sdk: {},
-  }, null, 2) + '\n',
+  JSON.stringify(
+    {
+      partner: name,
+      docs: 'TODO: partner documentation URL',
+      networks: {},
+      sdk: {},
+    },
+    null,
+    2,
+  ) + '\n',
 )
 
 console.log(`✓ created partner: ${name}`)
 console.log('')
 console.log('Next steps:')
 console.log(`  1. Fill TODO fields in registry/partners/${name}/manifest.json + the config.json.`)
-console.log(`  2. Wire inferPartner() in src/lib/planner/detectors.ts — keywords that should route here.`)
+console.log(
+  `  2. Wire inferPartner() in src/lib/planner/detectors.ts — keywords that should route here.`,
+)
 console.log(`  3. Wire resolvePartnerForFamily() in src/lib/planner/helpers.ts — compat matrix.`)
 console.log(`  4. pnpm validate:registry && pnpm build && pnpm test.`)

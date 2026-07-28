@@ -7,7 +7,7 @@
     "validate": "node validate-types.mjs"
   },
   "devDependencies": {
-    "vite": "^6.4.2",
+    "vite": "^6.4.3",
     "typescript": "^5.9.0",
     "@types/chrome": "^0.0.280",
     "@types/node": "^20.17.0"

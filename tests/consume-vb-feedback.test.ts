@@ -35,7 +35,13 @@ function fixture(): string {
   // 1. Pass: outcome=satisfied
   writeSession(
     join(root, 'gen44', 'variant-a', 'run-pass'),
-    { runId: 'run-pass', generation: 44, leafId: 'leaf-1', verticalId: 'crypto', outcome: 'satisfied' },
+    {
+      runId: 'run-pass',
+      generation: 44,
+      leafId: 'leaf-1',
+      verticalId: 'crypto',
+      outcome: 'satisfied',
+    },
     { available: true, family: 'react-vite-ts', layers: [], partner: null, fileCount: 10 },
     [{ allPass: true, layers: [{ layer: 'install', status: 'pass' }] }],
   )
@@ -43,39 +49,82 @@ function fixture(): string {
   // 2. Routing-error: scaffold-compose.available=false
   writeSession(
     join(root, 'gen44', 'variant-a', 'run-routing-error'),
-    { runId: 'run-routing-error', generation: 44, leafId: 'leaf-2', verticalId: 'ai-agents', outcome: 'failed' },
-    { available: false, error: 'no family matched', family: null, layers: [], partner: null, fileCount: 0 },
+    {
+      runId: 'run-routing-error',
+      generation: 44,
+      leafId: 'leaf-2',
+      verticalId: 'ai-agents',
+      outcome: 'failed',
+    },
+    {
+      available: false,
+      error: 'no family matched',
+      family: null,
+      layers: [],
+      partner: null,
+      fileCount: 0,
+    },
     [],
   )
 
   // 3. Scaffold-gap: install failed on shot 1
   writeSession(
     join(root, 'gen44', 'variant-a', 'run-scaffold-gap'),
-    { runId: 'run-scaffold-gap', generation: 44, leafId: 'leaf-3', verticalId: 'fintech', outcome: 'failed' },
+    {
+      runId: 'run-scaffold-gap',
+      generation: 44,
+      leafId: 'leaf-3',
+      verticalId: 'fintech',
+      outcome: 'failed',
+    },
     { available: true, family: 'api-service', layers: [], partner: null, fileCount: 5 },
-    [{
-      allPass: false,
-      layers: [
-        { layer: 'install', status: 'fail', findings: [{ msg: 'pkg X not found' }] },
-      ],
-    }],
+    [
+      {
+        allPass: false,
+        layers: [{ layer: 'install', status: 'fail', findings: [{ msg: 'pkg X not found' }] }],
+      },
+    ],
   )
 
   // 4. Agent-error: install passed, build failed on shot 2 (multi-shot)
   writeSession(
     join(root, 'gen44', 'variant-a', 'run-agent-error'),
-    { runId: 'run-agent-error', generation: 44, leafId: 'leaf-4', verticalId: 'crypto', outcome: 'failed' },
+    {
+      runId: 'run-agent-error',
+      generation: 44,
+      leafId: 'leaf-4',
+      verticalId: 'crypto',
+      outcome: 'failed',
+    },
     { available: true, family: 'react-vite-ts', layers: [], partner: null, fileCount: 12 },
     [
-      { allPass: false, layers: [{ layer: 'install', status: 'pass' }, { layer: 'build', status: 'fail' }] },
-      { allPass: false, layers: [{ layer: 'install', status: 'pass' }, { layer: 'build', status: 'fail' }] },
+      {
+        allPass: false,
+        layers: [
+          { layer: 'install', status: 'pass' },
+          { layer: 'build', status: 'fail' },
+        ],
+      },
+      {
+        allPass: false,
+        layers: [
+          { layer: 'install', status: 'pass' },
+          { layer: 'build', status: 'fail' },
+        ],
+      },
     ],
   )
 
   // 5. Below since-gen filter (must be excluded)
   writeSession(
     join(root, 'gen30', 'variant-old', 'run-old'),
-    { runId: 'run-old', generation: 30, leafId: 'old-leaf', verticalId: 'crypto', outcome: 'failed' },
+    {
+      runId: 'run-old',
+      generation: 30,
+      leafId: 'old-leaf',
+      verticalId: 'crypto',
+      outcome: 'failed',
+    },
     { available: false, family: null, layers: [], partner: null, fileCount: 0 },
     [],
   )
@@ -134,7 +183,10 @@ describe('consume-vb-feedback', () => {
   })
 
   test('source missing on disk → exit 2 with helpful error', () => {
-    const res = spawnSync(TSX, [SCRIPT, '--source', '/nonexistent/path'], { cwd: REPO, encoding: 'utf8' })
+    const res = spawnSync(TSX, [SCRIPT, '--source', '/nonexistent/path'], {
+      cwd: REPO,
+      encoding: 'utf8',
+    })
     assert.equal(res.status, 2)
     assert.match(res.stderr, /source not found/)
   })

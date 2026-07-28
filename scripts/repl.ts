@@ -13,11 +13,16 @@ import { planPrompt } from '../dist/lib/prompt-planner.js'
 import { validatePlan } from '../dist/lib/validate-plan.js'
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
-process.stdout.write('starter-foundry repl — type a prompt, get the routing decision. ctrl-c to exit.\n> ')
+process.stdout.write(
+  'starter-foundry repl — type a prompt, get the routing decision. ctrl-c to exit.\n> ',
+)
 
 rl.on('line', async (line) => {
   const prompt = line.trim()
-  if (!prompt) { process.stdout.write('> '); return }
+  if (!prompt) {
+    process.stdout.write('> ')
+    return
+  }
 
   try {
     const plan = await planPrompt({ prompt, partner: null })
@@ -30,11 +35,15 @@ rl.on('line', async (line) => {
       process.stdout.write(`slots:      ${JSON.stringify(plan.spec.slots ?? {})}\n`)
       process.stdout.write(`confidence: ${plan.confidence}\n`)
       const v = await validatePlan(plan.spec)
-      process.stdout.write(`validates:  ${v.ok ? '✓' : '✗'}${v.ok ? '' : ' — ' + v.issues.map((i) => i.message).join('; ')}\n`)
+      process.stdout.write(
+        `validates:  ${v.ok ? '✓' : '✗'}${v.ok ? '' : ' — ' + v.issues.map((i) => i.message).join('; ')}\n`,
+      )
     } else if (kind === 'workspace') {
       process.stdout.write(`projects:\n`)
       for (const proj of plan.spec.projects ?? []) {
-        process.stdout.write(`  - ${proj.id ?? '?'} → ${proj.spec.family} [${(proj.spec.layers ?? []).length} layers]\n`)
+        process.stdout.write(
+          `  - ${proj.id ?? '?'} → ${proj.spec.family} [${(proj.spec.layers ?? []).length} layers]\n`,
+        )
       }
     }
     process.stdout.write(`reasons:    ${(plan.reasons ?? []).join(' | ')}\n`)
@@ -44,4 +53,7 @@ rl.on('line', async (line) => {
   process.stdout.write('\n> ')
 })
 
-rl.on('close', () => { process.stdout.write('\n'); process.exit(0) })
+rl.on('close', () => {
+  process.stdout.write('\n')
+  process.exit(0)
+})

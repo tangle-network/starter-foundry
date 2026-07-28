@@ -21,11 +21,7 @@ describe('invokeJudgeFleet', () => {
     const src = readFileSync(join(REPO, 'src/eval/scaffold-bridge.ts'), 'utf8')
     assert.match(src, /export interface FleetVerdict/)
     for (const field of ['unanimousPass', 'byJudge', 'overall', 'wallMs']) {
-      assert.match(
-        src,
-        new RegExp(`${field}:`),
-        `FleetVerdict must declare ${field}`,
-      )
+      assert.match(src, new RegExp(`${field}:`), `FleetVerdict must declare ${field}`)
     }
   })
 
@@ -41,7 +37,11 @@ describe('invokeJudgeFleet', () => {
       components: components as never,
       harness: { setupCommand: 'true', testCommand: 'true', timeoutMs: 1000 },
     })
-    assert.equal(verdict.unanimousPass, false, 'no judges = no unanimous pass (honest-null shape, never fabricated true)')
+    assert.equal(
+      verdict.unanimousPass,
+      false,
+      'no judges = no unanimous pass (honest-null shape, never fabricated true)',
+    )
     assert.equal(verdict.byJudge.length, 0)
     assert.equal(verdict.overall, 0)
   })

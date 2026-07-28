@@ -19,7 +19,8 @@ import { createTempDir, removeDir } from '../dist/lib/fs.js'
 
 test('planPrompt attaches capability:agent-eval on agentic prompts with eval vocabulary', async () => {
   const plan = await planPrompt({
-    prompt: 'Build a TypeScript agent service that handles customer questions. Ship it with an agent eval harness so every PR runs a quality gate against the scenarios.',
+    prompt:
+      'Build a TypeScript agent service that handles customer questions. Ship it with an agent eval harness so every PR runs a quality gate against the scenarios.',
     partner: null,
   })
   if (plan.kind !== 'starter') return
@@ -32,7 +33,8 @@ test('planPrompt attaches capability:agent-eval on agentic prompts with eval voc
 
 test('planPrompt attaches capability:agent-eval on swarm prompts with scoring vocabulary', async () => {
   const plan = await planPrompt({
-    prompt: 'Build a research agent swarm with a supervisor and workers. Include a scoring pipeline with LLM as judge for every agent turn.',
+    prompt:
+      'Build a research agent swarm with a supervisor and workers. Include a scoring pipeline with LLM as judge for every agent turn.',
     partner: null,
   })
   if (plan.kind !== 'starter') return
@@ -79,9 +81,15 @@ test('composeStarter merges @tangle-network/agent-eval into package.json via cap
       `@tangle-network/agent-eval must be in dependencies, got keys: ${Object.keys(pkg.dependencies ?? {}).join(', ')}`,
     )
     // The capability's files should have landed at their targets.
-    const runnerExists = await fs.stat(path.join(dir, 'tests/eval/run-eval.mjs')).then(() => true).catch(() => false)
+    const runnerExists = await fs
+      .stat(path.join(dir, 'tests/eval/run-eval.mjs'))
+      .then(() => true)
+      .catch(() => false)
     assert.ok(runnerExists, 'tests/eval/run-eval.mjs missing from composed scaffold')
-    const workflowExists = await fs.stat(path.join(dir, '.github/workflows/eval.yml')).then(() => true).catch(() => false)
+    const workflowExists = await fs
+      .stat(path.join(dir, '.github/workflows/eval.yml'))
+      .then(() => true)
+      .catch(() => false)
     assert.ok(workflowExists, '.github/workflows/eval.yml missing from composed scaffold')
   } finally {
     await removeDir(dir)

@@ -41,7 +41,11 @@ describe('forge-lint config ships on every forge-based framework layer', () => {
       assert.ok(sevMatch, `${relPath} [lint] section must set severity`)
       const sev = sevMatch![1]!
       assert.match(sev, /"high"/, `${relPath} severity must keep "high" (real bug classes)`)
-      assert.doesNotMatch(sev, /"info"/, `${relPath} severity must NOT include "info" (naming-convention noise)`)
+      assert.doesNotMatch(
+        sev,
+        /"info"/,
+        `${relPath} severity must NOT include "info" (naming-convention noise)`,
+      )
 
       // test/script directories ignored — fixture code routinely uses
       // bytes32 casts and raw arithmetic that are not real bugs.

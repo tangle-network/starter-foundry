@@ -13,7 +13,16 @@
 
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { existsSync, readFileSync, readdirSync, statSync, mkdirSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs'
+import {
+  existsSync,
+  readFileSync,
+  readdirSync,
+  statSync,
+  mkdirSync,
+  writeFileSync,
+  mkdtempSync,
+  rmSync,
+} from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -25,11 +34,65 @@ const CHECK = process.argv.includes('--check')
 // Golden specs — one per archetype. Add new ones when a new family
 // graduates to "must not regress" status. Keep small and representative.
 const SPECS = [
-  { name: 'react-vite-ts-landing', spec: { projectName: 'golden-rv', family: 'react-vite-ts', layers: ['framework:react-vite-ts', 'capability:layout-landing'], partner: null, slots: {}, variables: { headline: 'Golden', subheadline: 'Golden' } } },
-  { name: 'nextjs-ts-dashboard', spec: { projectName: 'golden-nx', family: 'nextjs-ts', layers: ['framework:nextjs-app-router', 'capability:layout-dashboard', 'capability:layout-admin'], partner: null, slots: {}, variables: { headline: 'Golden', subheadline: 'Golden' } } },
-  { name: 'fullstack-ts-saas', spec: { projectName: 'golden-fs', family: 'fullstack-ts', layers: ['framework:fullstack-node-ts', 'capability:saas-teams', 'capability:multi-tenancy'], partner: null, slots: {}, variables: { headline: 'Golden', subheadline: 'Golden' } } },
-  { name: 'astro-static-plain', spec: { projectName: 'golden-as', family: 'astro-static', layers: ['framework:astro-static'], partner: null, slots: {}, variables: { headline: 'Golden', subheadline: 'Golden' } } },
-  { name: 'bun-http-api', spec: { projectName: 'golden-bn', family: 'bun-http', layers: ['framework:bun-http'], partner: null, slots: {}, variables: { headline: 'Golden', subheadline: 'Golden' } } },
+  {
+    name: 'react-vite-ts-landing',
+    spec: {
+      projectName: 'golden-rv',
+      family: 'react-vite-ts',
+      layers: ['framework:react-vite-ts', 'capability:layout-landing'],
+      partner: null,
+      slots: {},
+      variables: { headline: 'Golden', subheadline: 'Golden' },
+    },
+  },
+  {
+    name: 'nextjs-ts-dashboard',
+    spec: {
+      projectName: 'golden-nx',
+      family: 'nextjs-ts',
+      layers: [
+        'framework:nextjs-app-router',
+        'capability:layout-dashboard',
+        'capability:layout-admin',
+      ],
+      partner: null,
+      slots: {},
+      variables: { headline: 'Golden', subheadline: 'Golden' },
+    },
+  },
+  {
+    name: 'fullstack-ts-saas',
+    spec: {
+      projectName: 'golden-fs',
+      family: 'fullstack-ts',
+      layers: ['framework:fullstack-node-ts', 'capability:saas-teams', 'capability:multi-tenancy'],
+      partner: null,
+      slots: {},
+      variables: { headline: 'Golden', subheadline: 'Golden' },
+    },
+  },
+  {
+    name: 'astro-static-plain',
+    spec: {
+      projectName: 'golden-as',
+      family: 'astro-static',
+      layers: ['framework:astro-static'],
+      partner: null,
+      slots: {},
+      variables: { headline: 'Golden', subheadline: 'Golden' },
+    },
+  },
+  {
+    name: 'bun-http-api',
+    spec: {
+      projectName: 'golden-bn',
+      family: 'bun-http',
+      layers: ['framework:bun-http'],
+      partner: null,
+      slots: {},
+      variables: { headline: 'Golden', subheadline: 'Golden' },
+    },
+  },
 ]
 
 function hashTree(rootDir) {
@@ -93,7 +156,9 @@ for (const { name, spec } of SPECS) {
       }
       const committed = readFileSync(goldenPath, 'utf8').split('\n')[0]?.trim()
       if (committed !== manifestSha) {
-        console.error(`  ! ${name}: DRIFT — committed ${committed}, actual ${manifestSha} (${fileCount} files)`)
+        console.error(
+          `  ! ${name}: DRIFT — committed ${committed}, actual ${manifestSha} (${fileCount} files)`,
+        )
         drifted++
       } else {
         console.log(`  ✓ ${name}: ${manifestSha.slice(0, 12)}... (${fileCount} files)`)

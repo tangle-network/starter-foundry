@@ -9,28 +9,34 @@ const REPO = process.cwd()
 // ── Track A: filesForTaxonomy coverage ──────────────────────────────
 
 test('filesForTaxonomy: typescript/node/tooling returns ≥3 files (eval-harness scaffold)', async () => {
-  const mod = await import(`file://${join(REPO, 'dist/training/family_proposer/propose.js')}`) as {
+  const mod = (await import(
+    `file://${join(REPO, 'dist/training/family_proposer/propose.js')}`
+  )) as {
     proposeFamilyWithRLMToDisk: unknown
   }
   // filesForTaxonomy is internal. Indirect proof via deterministic path:
   // call proposeFamily in deterministic mode (no LLM) and check templateFiles.
   // Simpler: import the internal module and spot-check its export surface.
-  assert.ok(typeof mod.proposeFamilyWithRLMToDisk === 'function', 'proposeFamilyWithRLMToDisk must be exported')
+  assert.ok(
+    typeof mod.proposeFamilyWithRLMToDisk === 'function',
+    'proposeFamilyWithRLMToDisk must be exported',
+  )
 })
 
 test('filesForTaxonomy: every demand-signal surface has a non-bare file set', () => {
   // Indirect via the deterministic proposer script — invoke without LLM and
   // verify we got >1 file stub for every surface in our demand corpus.
-  const SURFACES: Array<{ language: string; runtime: string; surface: string; minFiles: number }> = [
-    { language: 'typescript', runtime: 'node', surface: 'frontend', minFiles: 5 },
-    { language: 'typescript', runtime: 'node', surface: 'api', minFiles: 4 },
-    { language: 'typescript', runtime: 'node', surface: 'cli', minFiles: 4 },
-    { language: 'typescript', runtime: 'node', surface: 'agent', minFiles: 4 },
-    { language: 'typescript', runtime: 'node', surface: 'tooling', minFiles: 5 },
-    { language: 'python', runtime: 'python', surface: 'api', minFiles: 5 },
-    { language: 'rust', runtime: 'cargo', surface: 'api', minFiles: 3 },
-    { language: 'go', runtime: 'go', surface: 'cli', minFiles: 3 },
-  ]
+  const SURFACES: Array<{ language: string; runtime: string; surface: string; minFiles: number }> =
+    [
+      { language: 'typescript', runtime: 'node', surface: 'frontend', minFiles: 5 },
+      { language: 'typescript', runtime: 'node', surface: 'api', minFiles: 4 },
+      { language: 'typescript', runtime: 'node', surface: 'cli', minFiles: 4 },
+      { language: 'typescript', runtime: 'node', surface: 'agent', minFiles: 4 },
+      { language: 'typescript', runtime: 'node', surface: 'tooling', minFiles: 5 },
+      { language: 'python', runtime: 'python', surface: 'api', minFiles: 5 },
+      { language: 'rust', runtime: 'cargo', surface: 'api', minFiles: 3 },
+      { language: 'go', runtime: 'go', surface: 'cli', minFiles: 3 },
+    ]
   // All we can measure without an LLM is the deterministic path's manifest.files length,
   // which is empty when LLM is unavailable. So test by reading the compiled source
   // to assert the filesForTaxonomy has cases for each surface.
@@ -49,11 +55,15 @@ test('filesForTaxonomy: every demand-signal surface has a non-bare file set', ()
 test('measure-coverage-lift: --baseline writes snapshot with expected shape', () => {
   const tmpOut = join(REPO, '.evolve/coverage-baseline-test.json')
   try {
-    const res = spawnSync('node', ['scripts/measure-coverage-lift.ts', '--baseline', '--out', tmpOut], {
-      cwd: REPO,
-      encoding: 'utf8',
-      env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
-    })
+    const res = spawnSync(
+      'node',
+      ['scripts/measure-coverage-lift.ts', '--baseline', '--out', tmpOut],
+      {
+        cwd: REPO,
+        encoding: 'utf8',
+        env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
+      },
+    )
     assert.equal(res.status, 0, `--baseline failed: ${res.stderr}`)
     assert.ok(existsSync(tmpOut), 'baseline file not written')
     const b = JSON.parse(readFileSync(tmpOut, 'utf8'))
@@ -77,15 +87,32 @@ test('measure-coverage-lift: --compare writes coverage-measured event on unchang
   const impactLog = join(REPO, '.evolve/generation-impact.jsonl')
   const pre = existsSync(impactLog) ? readFileSync(impactLog, 'utf8').split('\n').length : 0
   try {
-    spawnSync('node', ['scripts/measure-coverage-lift.ts', '--baseline', '--out', baseline], { cwd: REPO, encoding: 'utf8' })
-    const res = spawnSync('node', ['scripts/measure-coverage-lift.ts', '--compare', baseline, '--new-family', 'synthetic-test-family'], {
+    spawnSync('node', ['scripts/measure-coverage-lift.ts', '--baseline', '--out', baseline], {
       cwd: REPO,
       encoding: 'utf8',
-      env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
     })
+    const res = spawnSync(
+      'node',
+      [
+        'scripts/measure-coverage-lift.ts',
+        '--compare',
+        baseline,
+        '--new-family',
+        'synthetic-test-family',
+      ],
+      {
+        cwd: REPO,
+        encoding: 'utf8',
+        env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
+      },
+    )
     assert.equal(res.status, 0, `--compare failed: ${res.stderr}`)
     // Same router state → liftRatio should be 0 (no new routes gained)
-    assert.match(res.stdout, /gained route:\s+0/, 'expected 0 new routes on identical-state compare')
+    assert.match(
+      res.stdout,
+      /gained route:\s+0/,
+      'expected 0 new routes on identical-state compare',
+    )
     // A coverage-measured event must have been appended
     const post = readFileSync(impactLog, 'utf8').split('\n').filter(Boolean)
     const lastLine = post[post.length - 1]!
@@ -107,13 +134,18 @@ test('promote-capability-proposal: rejects manifest without appliesTo at schema 
   mkdirSync(join(draftDir, 'files'), { recursive: true })
   writeFileSync(
     join(draftDir, 'manifest.json'),
-    JSON.stringify({
-      id,
-      description: 'valid description longer than the twenty character minimum for the schema gate',
-      appliesTo: [],  // EMPTY — must fail
-      files: [],
-      defaults: {},
-    }, null, 2),
+    JSON.stringify(
+      {
+        id,
+        description:
+          'valid description longer than the twenty character minimum for the schema gate',
+        appliesTo: [], // EMPTY — must fail
+        files: [],
+        defaults: {},
+      },
+      null,
+      2,
+    ),
   )
   try {
     const res = spawnSync('node', ['scripts/promote-capability-proposal.ts', '--id', id], {
@@ -139,12 +171,16 @@ test('promote-capability-proposal: rejects TODO placeholders', () => {
   mkdirSync(join(draftDir, 'files'), { recursive: true })
   writeFileSync(
     join(draftDir, 'manifest.json'),
-    JSON.stringify({
-      id,
-      description: 'TODO: describe this capability — placeholder must trip the gate',
-      appliesTo: ['nextjs-ts'],
-      files: [],
-    }, null, 2),
+    JSON.stringify(
+      {
+        id,
+        description: 'TODO: describe this capability — placeholder must trip the gate',
+        appliesTo: ['nextjs-ts'],
+        files: [],
+      },
+      null,
+      2,
+    ),
   )
   try {
     const res = spawnSync('node', ['scripts/promote-capability-proposal.ts', '--id', id], {
@@ -167,12 +203,16 @@ test('promote-capability-proposal: rejects appliesTo pointing to non-existent fa
   mkdirSync(join(draftDir, 'files'), { recursive: true })
   writeFileSync(
     join(draftDir, 'manifest.json'),
-    JSON.stringify({
-      id,
-      description: 'valid description for a capability that claims a phantom family',
-      appliesTo: ['definitely-nonexistent-family-xyz'],
-      files: [],
-    }, null, 2),
+    JSON.stringify(
+      {
+        id,
+        description: 'valid description for a capability that claims a phantom family',
+        appliesTo: ['definitely-nonexistent-family-xyz'],
+        files: [],
+      },
+      null,
+      2,
+    ),
   )
   try {
     const res = spawnSync('node', ['scripts/promote-capability-proposal.ts', '--id', id], {
@@ -182,7 +222,11 @@ test('promote-capability-proposal: rejects appliesTo pointing to non-existent fa
     })
     assert.equal(res.status, 0)
     // Schema passes (appliesTo is non-empty), compose fails (no family exists)
-    assert.match(res.stdout, /no appliesTo family in registry|schema-pass/, 'must fail at compose not schema')
+    assert.match(
+      res.stdout,
+      /no appliesTo family in registry|schema-pass/,
+      'must fail at compose not schema',
+    )
   } finally {
     rmSync(draftDir, { recursive: true, force: true })
   }
@@ -191,7 +235,7 @@ test('promote-capability-proposal: rejects appliesTo pointing to non-existent fa
 // ── Track D: multi-provider fallback ────────────────────────────────
 
 test('llm: availableProviders returns only providers with keys set', async () => {
-  const mod = await import(`file://${join(REPO, 'dist/lib/llm.js')}`) as {
+  const mod = (await import(`file://${join(REPO, 'dist/lib/llm.js')}`)) as {
     availableProviders: () => string[]
   }
   const result = mod.availableProviders()
@@ -201,7 +245,7 @@ test('llm: availableProviders returns only providers with keys set', async () =>
 })
 
 test('llm: createLLM with fallback=true does not throw when any provider key exists', async () => {
-  const mod = await import(`file://${join(REPO, 'dist/lib/llm.js')}`) as {
+  const mod = (await import(`file://${join(REPO, 'dist/lib/llm.js')}`)) as {
     createLLM: (opts: { fallback?: boolean }) => unknown
     isLLMAvailable: () => boolean
     availableProviders: () => string[]
@@ -227,26 +271,39 @@ test('promote-family-proposal: --skip-fidelity flag suppresses the fidelity gate
   // Deliberately thin but schema-valid — would fidelity-fail if judged.
   writeFileSync(
     join(draftDir, 'manifest.json'),
-    JSON.stringify({
-      id,
-      description: 'Thin scaffold used to assert --skip-fidelity suppresses the fidelity gate check',
-      tags: ['test'],
-      taxonomy: { language: 'typescript', runtime: 'node', surface: 'frontend' },
-      defaults: { projectType: 'frontend' },
-      files: [],
-    }, null, 2),
+    JSON.stringify(
+      {
+        id,
+        description:
+          'Thin scaffold used to assert --skip-fidelity suppresses the fidelity gate check',
+        tags: ['test'],
+        taxonomy: { language: 'typescript', runtime: 'node', surface: 'frontend' },
+        defaults: { projectType: 'frontend' },
+        files: [],
+      },
+      null,
+      2,
+    ),
   )
   try {
-    const res = spawnSync('node', ['scripts/promote-family-proposal.ts', '--id', id, '--no-pr', '--dry-run', '--skip-fidelity'], {
-      cwd: REPO,
-      encoding: 'utf8',
-      env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
-    })
+    const res = spawnSync(
+      'node',
+      ['scripts/promote-family-proposal.ts', '--id', id, '--no-pr', '--dry-run', '--skip-fidelity'],
+      {
+        cwd: REPO,
+        encoding: 'utf8',
+        env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
+      },
+    )
     assert.equal(res.status, 0)
     // schema passes (description ≥20, files array, etc.), compose may or may not
     // succeed depending on environment, but we MUST NOT see fidelity-pass or
     // fidelity-fail in the output — the flag suppresses that code path.
-    assert.doesNotMatch(res.stdout, /fidelity-pass|fidelity-fail/, 'fidelity gate should be skipped')
+    assert.doesNotMatch(
+      res.stdout,
+      /fidelity-pass|fidelity-fail/,
+      'fidelity gate should be skipped',
+    )
   } finally {
     rmSync(draftDir, { recursive: true, force: true })
   }
@@ -255,11 +312,22 @@ test('promote-family-proposal: --skip-fidelity flag suppresses the fidelity gate
 test('promote-family-proposal: --fidelity-threshold flag parses numeric override', () => {
   // Smoke: pass a clearly-out-of-range threshold and verify the flag is
   // accepted without crashing script start. Does not require LLM.
-  const res = spawnSync('node', ['scripts/promote-family-proposal.ts', '--id', 'nonexistent-xyz', '--no-pr', '--fidelity-threshold', '0.95'], {
-    cwd: REPO,
-    encoding: 'utf8',
-    env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
-  })
+  const res = spawnSync(
+    'node',
+    [
+      'scripts/promote-family-proposal.ts',
+      '--id',
+      'nonexistent-xyz',
+      '--no-pr',
+      '--fidelity-threshold',
+      '0.95',
+    ],
+    {
+      cwd: REPO,
+      encoding: 'utf8',
+      env: { ...process.env, STARTER_FOUNDRY_SYNTHETIC_RUN: '1' },
+    },
+  )
   assert.equal(res.status, 0)
   assert.match(res.stdout, /no-draft|missing manifest/)
 })

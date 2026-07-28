@@ -15,9 +15,8 @@ const APP_KIND = (import.meta.env.VITE_APP_KIND ?? 'editor') as
   | 'repl'
   | 'file-browser'
 
-const SANDBOX_API_URL =
-  import.meta.env.VITE_SANDBOX_API_URL ?? 'https://sandbox.tangle.tools'
-const SANDBOX_API_TOKEN = import.meta.env.VITE_SANDBOX_API_TOKEN ?? ''
+const SANDBOX_RUNTIME_URL = import.meta.env.VITE_SANDBOX_RUNTIME_URL ?? ''
+const SANDBOX_RUNTIME_TOKEN = import.meta.env.VITE_SANDBOX_RUNTIME_TOKEN ?? ''
 const SANDBOX_ID = import.meta.env.VITE_SANDBOX_ID ?? ''
 
 export function App(): JSX.Element {
@@ -29,26 +28,20 @@ export function App(): JSX.Element {
   const { lines } = useSandboxTerminal(sandbox)
 
   useEffect(() => {
-    if (!SANDBOX_API_TOKEN || !SANDBOX_ID) {
-      setConnectError('Set VITE_SANDBOX_API_TOKEN and VITE_SANDBOX_ID in .env.local.')
+    if (!SANDBOX_RUNTIME_URL || !SANDBOX_RUNTIME_TOKEN || !SANDBOX_ID) {
+      setConnectError(
+        'Set VITE_SANDBOX_RUNTIME_URL, VITE_SANDBOX_RUNTIME_TOKEN, and VITE_SANDBOX_ID.',
+      )
       return
     }
-    let cancelled = false
-    connectToSandbox({
-      apiUrl: SANDBOX_API_URL,
-      token: SANDBOX_API_TOKEN,
+    try {
+      setSandbox(connectToSandbox({
+      runtimeUrl: SANDBOX_RUNTIME_URL,
+      runtimeToken: SANDBOX_RUNTIME_TOKEN,
       sandboxId: SANDBOX_ID,
-    })
-      .then((handle) => {
-        if (!cancelled) setSandbox(handle)
-      })
-      .catch((cause: unknown) => {
-        if (!cancelled) {
-          setConnectError(cause instanceof Error ? cause.message : String(cause))
-        }
-      })
-    return () => {
-      cancelled = true
+      }))
+    } catch (cause) {
+      setConnectError(cause instanceof Error ? cause.message : String(cause))
     }
   }, [])
 

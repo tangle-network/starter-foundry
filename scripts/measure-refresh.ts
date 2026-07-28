@@ -89,14 +89,21 @@ function mtimeOf(path) {
 // has many files; any change to any manifest invalidates replay-traces.
 function maxMtimeInDir(dirPath) {
   try {
-    const r = spawnSync('find', [dirPath, '-type', 'f', '-newer', '/dev/null', '-printf', '%T@\n'], {
-      encoding: 'utf8',
-    })
+    const r = spawnSync(
+      'find',
+      [dirPath, '-type', 'f', '-newer', '/dev/null', '-printf', '%T@\n'],
+      {
+        encoding: 'utf8',
+      },
+    )
     if (r.status !== 0 || !r.stdout.trim()) {
       // BSD find (macOS) doesn't have -printf; fall back to node-level traversal.
       return maxMtimeNodeFallback(dirPath)
     }
-    const times = r.stdout.trim().split('\n').map((x) => Number.parseFloat(x) * 1000)
+    const times = r.stdout
+      .trim()
+      .split('\n')
+      .map((x) => Number.parseFloat(x) * 1000)
     return Math.max(...times, 0)
   } catch {
     return maxMtimeNodeFallback(dirPath)
@@ -112,7 +119,9 @@ function maxMtimeNodeFallback(dirPath) {
     try {
       const t = statSync(f).mtime.getTime()
       if (t > max) max = t
-    } catch { /* noop */ }
+    } catch {
+      /* noop */
+    }
   }
   return max
 }
@@ -159,7 +168,13 @@ function runStage(stage) {
     encoding: 'utf8',
   })
   const durationMs = Date.now() - t0
-  return { ok: r.status === 0, exitCode: r.status, durationMs, stdout: r.stdout ?? '', stderr: r.stderr ?? '' }
+  return {
+    ok: r.status === 0,
+    exitCode: r.status,
+    durationMs,
+    stdout: r.stdout ?? '',
+    stderr: r.stderr ?? '',
+  }
 }
 
 function fmtAge(path) {
@@ -179,14 +194,24 @@ function summary(preDrift, results) {
     const outPath = join(REPO, s.output)
     if (res) {
       const mark = res.ok ? '✓' : '✗'
-      console.log(`  ${mark} ${s.name.padEnd(22)} ${(res.durationMs / 1000).toFixed(2)}s  → ${s.output}`)
+      console.log(
+        `  ${mark} ${s.name.padEnd(22)} ${(res.durationMs / 1000).toFixed(2)}s  → ${s.output}`,
+      )
     } else {
-      console.log(`  · ${s.name.padEnd(22)} (already fresh)      → ${s.output} (${fmtAge(outPath)})`)
+      console.log(
+        `  · ${s.name.padEnd(22)} (already fresh)      → ${s.output} (${fmtAge(outPath)})`,
+      )
     }
   }
   const stalePre = preDrift.filter(Boolean).length
   if (stalePre === 0) console.log(`  status: clean — all outputs fresh relative to source`)
-  else if (results.some((r) => !r.ok)) console.log(`  status: FAILED — ${results.filter((r) => !r.ok).map((r) => r.stage).join(', ')}`)
+  else if (results.some((r) => !r.ok))
+    console.log(
+      `  status: FAILED — ${results
+        .filter((r) => !r.ok)
+        .map((r) => r.stage)
+        .join(', ')}`,
+    )
   else console.log(`  status: regenerated ${stalePre} stale stage${stalePre === 1 ? '' : 's'}`)
 }
 

@@ -27,8 +27,17 @@ function arg(flag, fallback) {
 const CONCURRENCY = Math.max(1, Number.parseInt(arg('--concurrency', '2'), 10))
 const MAX_SHOTS = Math.max(1, Number.parseInt(arg('--max-shots', '3'), 10))
 const BUILDER_MODEL = arg('--builder-model', 'sonnet')
-const ONLY = arg('--only', null)?.split(',').map((s) => s.trim()).filter(Boolean) ?? null
-const SKIP = new Set((arg('--skip', '') ?? '').split(',').map((s) => s.trim()).filter(Boolean))
+const ONLY =
+  arg('--only', null)
+    ?.split(',')
+    .map((s) => s.trim())
+    .filter(Boolean) ?? null
+const SKIP = new Set(
+  (arg('--skip', '') ?? '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean),
+)
 const FAMILY_ROOT = join(REPO, 'registry/layers/framework')
 const MEMORY_DIR = join(REPO, '.evolve/review-memory')
 const SUMMARY_OUT = join(REPO, '.evolve/evolve-summary.json')
@@ -67,14 +76,18 @@ function discoverNewFamilies() {
 }
 
 const discovered = discoverNewFamilies()
-const targets = ONLY ? ONLY.filter((f) => existsSync(join(FAMILY_ROOT, f, 'manifest.json'))) : discovered
+const targets = ONLY
+  ? ONLY.filter((f) => existsSync(join(FAMILY_ROOT, f, 'manifest.json')))
+  : discovered
 
 if (targets.length === 0) {
   console.error('no families to evolve — pass --only <id> or ensure family dirs exist')
   process.exit(2)
 }
 
-console.log(`evolve-branch: ${targets.length} families, concurrency=${CONCURRENCY}, max-shots=${MAX_SHOTS}`)
+console.log(
+  `evolve-branch: ${targets.length} families, concurrency=${CONCURRENCY}, max-shots=${MAX_SHOTS}`,
+)
 for (const f of targets) console.log(`  • ${f}`)
 
 // ── Concurrent runner ────────────────────────────────────────────────
@@ -92,9 +105,12 @@ function runFamily(family) {
       'node',
       [
         'scripts/enrich-family.ts',
-        '--family', family,
-        '--max-shots', String(MAX_SHOTS),
-        '--builder-model', BUILDER_MODEL,
+        '--family',
+        family,
+        '--max-shots',
+        String(MAX_SHOTS),
+        '--builder-model',
+        BUILDER_MODEL,
       ],
       { cwd: REPO, env: process.env },
     )
@@ -129,14 +145,18 @@ function next() {
         const family = targets[cursor++]
         inFlight++
         const pad = (s, n) => s.padEnd(n, ' ')
-        console.log(`[${new Date().toISOString().slice(11, 19)}] → ${pad(family, 28)} (${cursor}/${targets.length} started)`)
+        console.log(
+          `[${new Date().toISOString().slice(11, 19)}] → ${pad(family, 28)} (${cursor}/${targets.length} started)`,
+        )
         runFamily(family).then((res) => {
           inFlight--
           const pass = res.summary?.finalPass === true
           const shots = res.summary?.shotsUsed ?? '?'
           const wallS = (res.durationMs / 1000).toFixed(0)
           const mark = pass ? '✓' : res.exitCode === 0 ? '~' : '✗'
-          console.log(`[${new Date().toISOString().slice(11, 19)}] ${mark} ${pad(family, 28)} shots=${shots} ${wallS}s`)
+          console.log(
+            `[${new Date().toISOString().slice(11, 19)}] ${mark} ${pad(family, 28)} shots=${shots} ${wallS}s`,
+          )
           results.push(res)
           if (cursor >= targets.length && inFlight === 0) resolvePromise()
           else tick()

@@ -42,7 +42,9 @@ if (!existsSync(WEBHOOKS_PATH)) {
 }
 
 const hooks = JSON.parse(readFileSync(WEBHOOKS_PATH, 'utf8')).webhooks ?? []
-const subscribed = hooks.filter((h) => (h.events ?? []).includes(event) || (h.events ?? []).includes('*'))
+const subscribed = hooks.filter(
+  (h) => (h.events ?? []).includes(event) || (h.events ?? []).includes('*'),
+)
 
 console.log(`event=${event} ref=${ref ?? '(none)'} subscribers=${subscribed.length}`)
 
@@ -83,5 +85,7 @@ for (const h of subscribed) {
 for (const r of results) {
   console.log(`  ${r.id}  ${r.url}  →  ${r.status}`)
 }
-const failCount = results.filter((r) => typeof r.status === 'string' && r.status.startsWith('error')).length
+const failCount = results.filter(
+  (r) => typeof r.status === 'string' && r.status.startsWith('error'),
+).length
 process.exit(failCount > 0 ? 1 : 0)

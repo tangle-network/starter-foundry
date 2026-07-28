@@ -25,7 +25,15 @@
 //   node scripts/collect-session-traces.ts --rebuild    # from scratch
 //   node scripts/collect-session-traces.ts --project <slug>
 
-import { readdirSync, readFileSync, existsSync, mkdirSync, statSync, writeFileSync, appendFileSync } from 'node:fs'
+import {
+  readdirSync,
+  readFileSync,
+  existsSync,
+  mkdirSync,
+  statSync,
+  writeFileSync,
+  appendFileSync,
+} from 'node:fs'
 import { join } from 'node:path'
 import { homedir } from 'node:os'
 
@@ -101,7 +109,11 @@ function extractBashToolCalls(entry) {
     const cmd = part?.input?.command
     if (!cmd) continue
     // Match scaffold CLI invocations: `node dist/cli.js plan/compose/...`
-    if (/node\s+dist\/cli\.js\s+(plan|compose|compose-prompt|validate|context|select|bench|prove)\b/.test(cmd)) {
+    if (
+      /node\s+dist\/cli\.js\s+(plan|compose|compose-prompt|validate|context|select|bench|prove)\b/.test(
+        cmd,
+      )
+    ) {
       out.push({ toolUseId: part.id, command: cmd })
     }
   }
@@ -146,11 +158,12 @@ function processSession(sessionPath, sessionId) {
           if (!Array.isArray(content)) continue
           for (const p of content) {
             if (p?.type === 'tool_result' && p?.tool_use_id === b.toolUseId) {
-              result = typeof p.content === 'string'
-                ? p.content
-                : Array.isArray(p.content)
-                ? p.content.map((x) => x?.text ?? '').join('')
-                : ''
+              result =
+                typeof p.content === 'string'
+                  ? p.content
+                  : Array.isArray(p.content)
+                    ? p.content.map((x) => x?.text ?? '').join('')
+                    : ''
               break
             }
           }
@@ -253,7 +266,8 @@ for (const projectSlug of readdirSync(PROJECTS_DIR)) {
     sessionCount++
     const events = processSession(path, sessionId)
     if (events.length === 0) continue
-    const buffered = events.map((ev) => JSON.stringify({ ...ev, project: projectSlug })).join('\n') + '\n'
+    const buffered =
+      events.map((ev) => JSON.stringify({ ...ev, project: projectSlug })).join('\n') + '\n'
     appendFileSync(OUT, buffered)
     eventCount += events.length
     for (const ev of events) perKind[ev.kind] = (perKind[ev.kind] ?? 0) + 1

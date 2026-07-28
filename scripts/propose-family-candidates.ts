@@ -38,13 +38,17 @@ const argv = process.argv.slice(2)
 const MODE = parseArg(argv, '--mode', 'agent')
 const MAX_ITER = Number(parseArg(argv, '--max-iterations', '8')) || 8
 const WALL_SEC = Number(parseArg(argv, '--wall-sec', '900')) || 900
-const USD = Number(parseArg(argv, '--usd', '2.00')) || 2.00
+const USD = Number(parseArg(argv, '--usd', '2.00')) || 2.0
 const MAX_SHOTS = Number(parseArg(argv, '--max-shots', '2')) || 2
 const TOP_N = Number(parseArg(argv, '--top', '3')) || 3
 const DRY_RUN = argv.includes('--dry-run')
 const PARALLEL = argv.includes('--parallel')
 const FULL_BOOT = argv.includes('--full-boot')
-const EXPERIMENT_ID = parseArg(argv, '--experiment', `family-proposer-${new Date().toISOString().slice(0, 10)}`)
+const EXPERIMENT_ID = parseArg(
+  argv,
+  '--experiment',
+  `family-proposer-${new Date().toISOString().slice(0, 10)}`,
+)
 
 let candidates
 const stdinRaw = await readStdin()
@@ -56,10 +60,14 @@ if (stdinRaw.trim().length > 0) {
     process.exit(2)
   }
 } else {
-  const res = spawnSync('node', ['scripts/detect-family-gaps.ts', '--json', '--top', String(TOP_N)], {
-    cwd: REPO,
-    encoding: 'utf8',
-  })
+  const res = spawnSync(
+    'node',
+    ['scripts/detect-family-gaps.ts', '--json', '--top', String(TOP_N)],
+    {
+      cwd: REPO,
+      encoding: 'utf8',
+    },
+  )
   if (res.status !== 0) {
     console.error('detect-family-gaps failed:', res.stderr)
     process.exit(2)
@@ -78,7 +86,9 @@ console.log(
     `(mode=${MODE}, max-iter=${MAX_ITER}, wall=${WALL_SEC}s, usd=$${USD}, experiment=${EXPERIMENT_ID})`,
 )
 for (const c of candidates) {
-  console.log(`  - ${c.id} (priority=${(c.priority ?? 0).toFixed(2)}, ${c.reason ?? c.description ?? ''})`)
+  console.log(
+    `  - ${c.id} (priority=${(c.priority ?? 0).toFixed(2)}, ${c.reason ?? c.description ?? ''})`,
+  )
 }
 
 if (DRY_RUN) {
@@ -238,7 +248,11 @@ async function proposeViaAgent(c) {
     return { id: c.id, ok: false, mode: 'agent', durationMs, error: String(err?.message ?? err) }
   } finally {
     if (!process.env.KEEP_SCRATCH) {
-      try { rmSync(scratchDir, { recursive: true, force: true }) } catch { /* noop */ }
+      try {
+        rmSync(scratchDir, { recursive: true, force: true })
+      } catch {
+        /* noop */
+      }
     }
   }
 }
@@ -250,7 +264,8 @@ async function proposeViaAgent(c) {
 async function proposeViaRLM(c) {
   const t0 = Date.now()
   try {
-    const { proposeFamilyWithRLMToDisk } = await import('../dist/training/family_proposer/propose.js')
+    const { proposeFamilyWithRLMToDisk } =
+      await import('../dist/training/family_proposer/propose.js')
     const proposal = await proposeFamilyWithRLMToDisk(
       {
         id: c.id,
@@ -273,7 +288,9 @@ async function proposeViaRLM(c) {
       taxonomy: c.taxonomy,
       durationMs,
     })
-    console.log(`  ✓ ${c.id}: mode=${proposal.mode} files=${proposal.templateFiles.length} dir=${proposal.proposalDir}`)
+    console.log(
+      `  ✓ ${c.id}: mode=${proposal.mode} files=${proposal.templateFiles.length} dir=${proposal.proposalDir}`,
+    )
     return { id: c.id, ok: true, mode: `rlm-${proposal.mode}`, durationMs }
   } catch (err) {
     const durationMs = Date.now() - t0
@@ -308,7 +325,9 @@ function loadPeerFamilies(taxonomy, limit) {
     try {
       const m = JSON.parse(readFileSync(mp, 'utf8'))
       rows.push({ id: m.id, taxonomy: m.taxonomy ?? {} })
-    } catch { /* skip malformed */ }
+    } catch {
+      /* skip malformed */
+    }
   }
   return rows
     .map((r) => {

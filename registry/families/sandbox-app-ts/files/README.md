@@ -19,7 +19,7 @@ Non-agent workspace app on Tangle sandbox SDK. Workspace-first layout (file tree
 - `FileTree` + `FilePreview` (left pane, driven by the sandbox SDK file API)
 - `DocumentEditorPane` (center pane, `backend="local"` by default)
 - `TerminalPanel` (bottom pane, read-only line stream)
-- `lib/sandbox-client.ts` — typed wrapper around `@tangle-network/sandbox` with TODO seams clearly documented for each hook
+- `lib/sandbox-client.ts`: browser-safe file access through `@tangle-network/sandbox/runtime`
 
 ## Switching `appKind`
 
@@ -29,24 +29,27 @@ The default is `editor`. Change `defaults.appKind` in `manifest.json` (or set `V
 
 ## Required env vars
 
-```
-VITE_SANDBOX_API_URL=https://sandbox.tangle.tools
-VITE_SANDBOX_API_TOKEN=<your-token>
+```dotenv
+VITE_SANDBOX_RUNTIME_URL=https://runtime-proxy.example.com
+VITE_SANDBOX_RUNTIME_TOKEN=<short-lived-scoped-token>
 VITE_SANDBOX_ID=<existing-sandbox-id>
 VITE_APP_KIND=editor
 ```
 
-Without the token or sandbox ID, the app shows a connection error instead of an
-empty workspace.
+Mint the URL and token on your server with `box.mintScopedToken({ scope: 'session-runtime', sessionId })`.
+Use `scope: 'read-only'` for a file browser that cannot edit files.
+Never expose the full Sandbox API key to Vite or any other browser bundle.
+Without the scoped values, the app shows a connection error instead of an empty workspace.
 
 ## Collaboration story
 
-`DocumentEditorPane` is collaboration-ready: pass `backend="collaborative"` and a Hocuspocus URL to enable Yjs-backed multi-cursor editing. **The sandbox-SDK collaboration backend (token issuance, document bootstrap, file bridge) is not yet shipped** — see `~/webb/sandbox-ui/SANDBOX-SDK-COLLABORATION-SPEC.md`. Until that lands, leave `backend="local"`. UI-level collaboration code is already wired; only the transport is missing.
+`DocumentEditorPane` supports a collaborative backend through Hocuspocus and Yjs.
+The starter defaults to local editing because collaboration credentials and document identity belong to the product backend.
 
 ## Extension points
 
 - `src/App.tsx` — layout composition. Swap pane content per `appKind`, add toolbars, wire workspace-specific actions.
-- `src/lib/sandbox-client.ts` — Sandbox connection, file tree, file I/O, and command execution.
+- `src/lib/sandbox-client.ts`: scoped runtime connection and file I/O
 
 ## What's NOT in scope
 

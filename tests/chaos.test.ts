@@ -9,10 +9,7 @@ import test from 'node:test'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import os from 'node:os'
-import {
-  loadRegistryFromMirrors,
-  MirrorLoadError,
-} from '../dist/lib/registry-mirror.js'
+import { loadRegistryFromMirrors, MirrorLoadError } from '../dist/lib/registry-mirror.js'
 import { decideCanaryBucket, DEFAULT_CANARY_EXPERIMENT } from '../dist/lib/canary.js'
 
 test('chaos: mirror failover — first mirror times out, second returns', async () => {
@@ -61,11 +58,12 @@ test('chaos: mirror integrity — SHA mismatch fails fast', async () => {
   const fakeFetch: typeof fetch = async () => new Response('tampered body', { status: 200 })
   await assert.rejects(
     () =>
-      loadRegistryFromMirrors(
-        [{ url: 'https://a.example.com/registry.json' }],
-        { fetchImpl: fakeFetch, expectedSha256: 'aa'.repeat(32) },
-      ),
-    (err: Error) => err instanceof MirrorLoadError && err.attempts[0]!.status === 'integrity-mismatch',
+      loadRegistryFromMirrors([{ url: 'https://a.example.com/registry.json' }], {
+        fetchImpl: fakeFetch,
+        expectedSha256: 'aa'.repeat(32),
+      }),
+    (err: Error) =>
+      err instanceof MirrorLoadError && err.attempts[0]!.status === 'integrity-mismatch',
   )
 })
 

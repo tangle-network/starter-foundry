@@ -34,6 +34,7 @@ export function App({ agentName = ENV_AGENT_NAME, invoker }: AppProps = {}) {
     appendUserMessage,
     beginAssistantMessage,
     applySdkEvent,
+    completeAssistantMessage,
     failAssistantMessage,
   } = useSdkSession()
 
@@ -108,13 +109,26 @@ export function App({ agentName = ENV_AGENT_NAME, invoker }: AppProps = {}) {
           signal: ac.signal,
           onEvent: (event) => applySdkEvent(event, { messageId: assistantId }),
         })
+        completeAssistantMessage({ messageId: assistantId })
       } catch (err) {
-        if (ac.signal.aborted) return
-        const reason = err instanceof Error ? err.message : String(err)
-        failAssistantMessage(reason, { messageId: assistantId })
+        if (ac.signal.aborted) {
+          completeAssistantMessage({ messageId: assistantId })
+        } else {
+          const reason = err instanceof Error ? err.message : String(err)
+          failAssistantMessage(reason, { messageId: assistantId })
+        }
+      } finally {
+        if (abortRef.current === ac) abortRef.current = null
       }
     },
-    [appendUserMessage, beginAssistantMessage, applySdkEvent, failAssistantMessage, invoker],
+    [
+      appendUserMessage,
+      beginAssistantMessage,
+      applySdkEvent,
+      completeAssistantMessage,
+      failAssistantMessage,
+      invoker,
+    ],
   )
 
   useEffect(() => () => abortRef.current?.abort(), [])
@@ -140,7 +154,12 @@ export function App({ agentName = ENV_AGENT_NAME, invoker }: AppProps = {}) {
             onChange={setComposerText}
             onSubmit={handleSubmit}
             busy={isStreaming}
-            onCancel={() => abortRef.current?.abort()}
+            onCancel={() => {
+              abortRef.current?.abort()
+              if (activeAssistantMessageId) {
+                completeAssistantMessage({ messageId: activeAssistantMessageId })
+              }
+            }}
           />
         ),
       }}

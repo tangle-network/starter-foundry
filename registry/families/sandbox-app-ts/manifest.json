@@ -33,6 +33,7 @@
     { "source": "files/tailwind.config.cjs", "target": "tailwind.config.cjs" },
     { "source": "files/postcss.config.cjs", "target": "postcss.config.cjs" },
     { "source": "files/README.md", "target": "README.md" },
+    { "source": "files/.env.example", "target": ".env.example" },
     { "source": "files/src/main.tsx", "target": "src/main.tsx" },
     { "source": "files/src/App.tsx", "target": "src/App.tsx" },
     { "source": "files/src/index.css", "target": "src/index.css" },

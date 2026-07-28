@@ -32,13 +32,21 @@ const out = arg('--out', '.evolve/pr-delta.md')
 function readAtRef(ref, path) {
   const r = spawnSync('git', ['show', `${ref}:${path}`], { cwd: REPO, encoding: 'utf8' })
   if (r.status !== 0) return null
-  try { return JSON.parse(r.stdout) } catch { return null }
+  try {
+    return JSON.parse(r.stdout)
+  } catch {
+    return null
+  }
 }
 
 function readAtHead(path) {
   const abs = resolve(REPO, path)
   if (!existsSync(abs)) return null
-  try { return JSON.parse(readFileSync(abs, 'utf8')) } catch { return null }
+  try {
+    return JSON.parse(readFileSync(abs, 'utf8'))
+  } catch {
+    return null
+  }
 }
 
 const files = [
@@ -59,11 +67,41 @@ function getPath(obj, keys) {
 }
 
 const metrics = [
-  { label: 'buildout_pass_rate', file: '.evolve/buildout-analysis.json', path: ['summary', 'passRate'], direction: 'higher-better', fmt: (v) => v == null ? 'n/a' : v.toFixed(3) },
-  { label: 'scaffold_gap_installs', file: '.evolve/capability-gaps.json', path: ['breakdown', 'scaffoldGap'], direction: 'lower-better', fmt: (v) => v == null ? 'n/a' : String(v) },
-  { label: 'orchestration_installs', file: '.evolve/capability-gaps.json', path: ['breakdown', 'orchestration'], direction: 'lower-better', fmt: (v) => v == null ? 'n/a' : String(v) },
-  { label: 'top_file_rewrite_count', file: '.evolve/buildout-analysis.json', path: ['topRewrittenFiles', '0', 'timesRewritten'], direction: 'lower-better', fmt: (v) => v == null ? 'n/a' : String(v) },
-  { label: 'scorecard_aggregate', file: '.evolve/scorecard.json', path: ['aggregate'], direction: 'higher-better', fmt: (v) => v == null ? 'n/a' : v.toFixed(3) },
+  {
+    label: 'buildout_pass_rate',
+    file: '.evolve/buildout-analysis.json',
+    path: ['summary', 'passRate'],
+    direction: 'higher-better',
+    fmt: (v) => (v == null ? 'n/a' : v.toFixed(3)),
+  },
+  {
+    label: 'scaffold_gap_installs',
+    file: '.evolve/capability-gaps.json',
+    path: ['breakdown', 'scaffoldGap'],
+    direction: 'lower-better',
+    fmt: (v) => (v == null ? 'n/a' : String(v)),
+  },
+  {
+    label: 'orchestration_installs',
+    file: '.evolve/capability-gaps.json',
+    path: ['breakdown', 'orchestration'],
+    direction: 'lower-better',
+    fmt: (v) => (v == null ? 'n/a' : String(v)),
+  },
+  {
+    label: 'top_file_rewrite_count',
+    file: '.evolve/buildout-analysis.json',
+    path: ['topRewrittenFiles', '0', 'timesRewritten'],
+    direction: 'lower-better',
+    fmt: (v) => (v == null ? 'n/a' : String(v)),
+  },
+  {
+    label: 'scorecard_aggregate',
+    file: '.evolve/scorecard.json',
+    path: ['aggregate'],
+    direction: 'higher-better',
+    fmt: (v) => (v == null ? 'n/a' : v.toFixed(3)),
+  },
 ]
 
 function resolvePath(obj, parts) {
@@ -86,16 +124,30 @@ let regressed = 0
 for (const m of metrics) {
   const baseVal = resolvePath(baseState[m.file], m.path)
   const headVal = resolvePath(headState[m.file], m.path)
-  const delta = (baseVal == null || headVal == null) ? null : (Number(headVal) - Number(baseVal))
-  const marker = delta == null ? '?' :
-    m.direction === 'higher-better'
-      ? (delta > 0 ? '✅ ↑' : delta < 0 ? '🔻 ↓' : '—')
-      : (delta < 0 ? '✅ ↓' : delta > 0 ? '🔻 ↑' : '—')
-  if ((m.direction === 'higher-better' && delta != null && delta < -0.02) ||
-      (m.direction === 'lower-better' && delta != null && delta > 1)) {
+  const delta = baseVal == null || headVal == null ? null : Number(headVal) - Number(baseVal)
+  const marker =
+    delta == null
+      ? '?'
+      : m.direction === 'higher-better'
+        ? delta > 0
+          ? '✅ ↑'
+          : delta < 0
+            ? '🔻 ↓'
+            : '—'
+        : delta < 0
+          ? '✅ ↓'
+          : delta > 0
+            ? '🔻 ↑'
+            : '—'
+  if (
+    (m.direction === 'higher-better' && delta != null && delta < -0.02) ||
+    (m.direction === 'lower-better' && delta != null && delta > 1)
+  ) {
     regressed++
   }
-  lines.push(`| \`${m.label}\` | ${m.fmt(baseVal)} | ${m.fmt(headVal)} | ${m.direction} | ${marker} ${delta == null ? '' : Number(delta).toFixed(3)} |`)
+  lines.push(
+    `| \`${m.label}\` | ${m.fmt(baseVal)} | ${m.fmt(headVal)} | ${m.direction} | ${marker} ${delta == null ? '' : Number(delta).toFixed(3)} |`,
+  )
 }
 
 lines.push('')

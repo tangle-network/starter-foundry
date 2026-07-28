@@ -35,7 +35,9 @@ function pad(n, w = 3) {
 async function main() {
   const args = parseArgs(process.argv.slice(2))
   // Dynamic import so this script still runs if dist is fresh.
-  const { loadTraces, replayTrace, buildReport } = await import(path.join(ROOT, 'dist', 'eval', 'replay.js'))
+  const { loadTraces, replayTrace, buildReport } = await import(
+    path.join(ROOT, 'dist', 'eval', 'replay.js')
+  )
 
   const commit = execSync('git rev-parse --short HEAD', { cwd: ROOT, encoding: 'utf8' }).trim()
 
@@ -56,7 +58,9 @@ async function main() {
       const r = await replayTrace(trace)
       results.push(r)
     } catch (err) {
-      process.stderr.write(`[trace ${i}/${traces.length}] ${trace.scenarioId}: ${err?.message ?? err}\n`)
+      process.stderr.write(
+        `[trace ${i}/${traces.length}] ${trace.scenarioId}: ${err?.message ?? err}\n`,
+      )
     }
     if (i % 25 === 0) process.stdout.write(`  ${i}/${traces.length}\n`)
   }
@@ -69,18 +73,28 @@ async function main() {
 
   const s = report.summary
   process.stdout.write(`=== summary ===\n`)
-  process.stdout.write(`  buildouts: ${s.totalBuildouts}  withOutcome: ${s.withOutcome}  distinctScenarios: ${s.distinctScenarios}\n`)
-  process.stdout.write(`  passRate: ${(s.passRate * 100).toFixed(1)}%  meanScore: ${s.meanBlendedScore.toFixed(3)}\n`)
+  process.stdout.write(
+    `  buildouts: ${s.totalBuildouts}  withOutcome: ${s.withOutcome}  distinctScenarios: ${s.distinctScenarios}\n`,
+  )
+  process.stdout.write(
+    `  passRate: ${(s.passRate * 100).toFixed(1)}%  meanScore: ${s.meanBlendedScore.toFixed(3)}\n`,
+  )
   process.stdout.write(`\n`)
   process.stdout.write(`=== install prevention (the scorecard move) ===\n`)
   process.stdout.write(`  historical agent installs:  ${pad(s.totalHistoricalInstalls, 4)}\n`)
-  process.stdout.write(`  prevented by current regs:  ${pad(s.totalPreventedInstalls, 4)}  (${(s.preventionRate * 100).toFixed(1)}%)\n`)
+  process.stdout.write(
+    `  prevented by current regs:  ${pad(s.totalPreventedInstalls, 4)}  (${(s.preventionRate * 100).toFixed(1)}%)\n`,
+  )
   process.stdout.write(`  remaining gap installs:     ${pad(s.totalRemainingGapInstalls, 4)}\n`)
-  process.stdout.write(`  gap installs per buildout:  ${s.estimatedGapInstallsPerBuildout.toFixed(2)}\n`)
+  process.stdout.write(
+    `  gap installs per buildout:  ${s.estimatedGapInstallsPerBuildout.toFixed(2)}\n`,
+  )
   process.stdout.write(`\n`)
   process.stdout.write(`=== top 10 remaining gaps (intervention targets) ===\n`)
   for (const g of report.topRemainingGapInstalls.slice(0, 10)) {
-    process.stdout.write(`  ${pad(g.timesRemaining)}×  ${g.key}  (pass ${g.remainingOnPass} / fail ${g.remainingOnFail})\n`)
+    process.stdout.write(
+      `  ${pad(g.timesRemaining)}×  ${g.key}  (pass ${g.remainingOnPass} / fail ${g.remainingOnFail})\n`,
+    )
   }
   if (report.topPreventedInstalls.length > 0) {
     process.stdout.write(`\n=== top 10 prevented (R-round wins) ===\n`)

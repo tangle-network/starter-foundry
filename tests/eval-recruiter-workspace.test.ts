@@ -187,7 +187,10 @@ test('eval runner passes a router client to judges when TANGLE_API_KEY is presen
     )
     writeFileSync(
       join(tmp, 'judges/client.judge.js'),
-      `export default async function judge(tc) {
+      `export const dimensions = ['client']
+export const usesModel = true
+
+export default async function judge(tc) {
   if (!tc || typeof tc.chat !== 'function') throw new Error('missing router chat client')
   return [{ judgeName: 'client-smoke', dimension: 'client', score: 1, reasoning: 'router client present' }]
 }
@@ -226,7 +229,11 @@ console.log('REPORT_JSON ' + JSON.stringify({
       stdio: 'pipe',
       encoding: 'utf8',
     })
-    assert.equal(r.status, 0, `runner subprocess failed:\nSTDOUT:\n${r.stdout}\nSTDERR:\n${r.stderr}`)
+    assert.equal(
+      r.status,
+      0,
+      `runner subprocess failed:\nSTDOUT:\n${r.stdout}\nSTDERR:\n${r.stderr}`,
+    )
     const match = r.stdout.match(/REPORT_JSON (.+)$/m)
     assert.ok(match, `runner subprocess did not print report JSON:\n${r.stdout}`)
     const report = JSON.parse(match[1]) as {

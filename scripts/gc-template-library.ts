@@ -68,12 +68,16 @@ for (const family of families) {
   const toArchive = allVersions.filter((v) => !keepSet.has(v))
 
   if (toArchive.length === 0) {
-    console.log(`  ✓ ${family}: ${allVersions.length} versions, all within keep=${KEEP} (no archive)`)
+    console.log(
+      `  ✓ ${family}: ${allVersions.length} versions, all within keep=${KEEP} (no archive)`,
+    )
     kept += allVersions.length
     continue
   }
 
-  console.log(`  ~ ${family}: keeping ${keepSet.size}, archiving ${toArchive.length}${APPLY ? '' : ' (dry-run)'}`)
+  console.log(
+    `  ~ ${family}: keeping ${keepSet.size}, archiving ${toArchive.length}${APPLY ? '' : ' (dry-run)'}`,
+  )
   if (APPLY) {
     const archiveFam = join(ARCHIVE, family)
     mkdirSync(archiveFam, { recursive: true })

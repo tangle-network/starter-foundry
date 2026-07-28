@@ -60,20 +60,21 @@ function argAfter(flag, fallback) {
   return i >= 0 ? process.argv[i + 1] : fallback
 }
 
-const ADC_PATH = resolve(
-  SF_REPO,
-  argAfter('--adc-path', '../agent-dev-container'),
-)
+const ADC_PATH = resolve(SF_REPO, argAfter('--adc-path', '../agent-dev-container'))
 const DEFAULT_OUT = join(ADC_PATH, 'apps/host-agent/cache-warm-list.json')
 const OUT_PATH = argAfter('--out', DEFAULT_OUT)
 const CHECK = process.argv.includes('--check')
 const VERBOSE = process.argv.includes('--verbose')
 
-const log = (msg) => { if (VERBOSE) process.stderr.write(`[warm-emit] ${msg}\n`) }
+const log = (msg) => {
+  if (VERBOSE) process.stderr.write(`[warm-emit] ${msg}\n`)
+}
 
 if (!existsSync(ADC_PATH)) {
   console.error(`ERROR: ADC path not found: ${ADC_PATH}`)
-  console.error('Pass --adc-path <path> or clone agent-dev-container as a sibling of starter-foundry.')
+  console.error(
+    'Pass --adc-path <path> or clone agent-dev-container as a sibling of starter-foundry.',
+  )
   process.exit(3)
 }
 
@@ -92,7 +93,11 @@ function* walkFiles(root) {
   while (stack.length > 0) {
     const dir = stack.pop()
     let entries
-    try { entries = readdirSync(dir, { withFileTypes: true }) } catch { continue }
+    try {
+      entries = readdirSync(dir, { withFileTypes: true })
+    } catch {
+      continue
+    }
     for (const e of entries) {
       if (e.name === 'node_modules' || e.name === '.git') continue
       const full = join(dir, e.name)
@@ -108,7 +113,9 @@ function* walkFiles(root) {
 function parsePackageJson(path) {
   const raw = readFileSync(path, 'utf8')
   let json
-  try { json = JSON.parse(raw) } catch (err) {
+  try {
+    json = JSON.parse(raw)
+  } catch (err) {
     console.error(`ERROR: invalid JSON in ${path}: ${err.message}`)
     process.exit(2)
   }
@@ -157,21 +164,33 @@ function parseCargoToml(path) {
     const line = rawLine.replace(/#.*$/, '').trimEnd()
     if (!line) continue
     const sectionMatch = line.match(/^\s*\[(.+)\]\s*$/)
-    if (sectionMatch) { currentSection = sectionMatch[1]; continue }
-    if (currentSection !== 'dependencies'
-        && currentSection !== 'dev-dependencies'
-        && !/\.dependencies$/.test(currentSection ?? '')
-        && !/\.dev-dependencies$/.test(currentSection ?? '')) continue
+    if (sectionMatch) {
+      currentSection = sectionMatch[1]
+      continue
+    }
+    if (
+      currentSection !== 'dependencies' &&
+      currentSection !== 'dev-dependencies' &&
+      !/\.dependencies$/.test(currentSection ?? '') &&
+      !/\.dev-dependencies$/.test(currentSection ?? '')
+    )
+      continue
     const kvMatch = line.match(/^\s*([A-Za-z0-9_-]+)\s*=\s*(.+)$/)
     if (!kvMatch) continue
     const [, name, value] = kvMatch
     if (HAS_TEMPLATE_MARKER.test(name)) continue
     // Literal `x = "1.2"` — version is the string.
     const stringMatch = value.match(/^"([^"]+)"/)
-    if (stringMatch) { deps.push({ name, version: stringMatch[1] }); continue }
+    if (stringMatch) {
+      deps.push({ name, version: stringMatch[1] })
+      continue
+    }
     // Inline table `x = { version = "1", features = [...] }`.
     const inlineVersion = value.match(/version\s*=\s*"([^"]+)"/)
-    if (inlineVersion) { deps.push({ name, version: inlineVersion[1] }); continue }
+    if (inlineVersion) {
+      deps.push({ name, version: inlineVersion[1] })
+      continue
+    }
     // Workspace-inherited or path/git dep — no version we can emit.
     deps.push({ name })
   }
@@ -180,10 +199,7 @@ function parseCargoToml(path) {
 
 // ─── Discover manifests ────────────────────────────────────────────────────
 
-const ROOTS = [
-  join(SF_REPO, 'registry/families'),
-  join(SF_REPO, 'registry/layers'),
-]
+const ROOTS = [join(SF_REPO, 'registry/families'), join(SF_REPO, 'registry/layers')]
 
 const npmDeps = new Set()
 const pipDeps = new Set()
@@ -223,14 +239,18 @@ for (const root of ROOTS) {
   }
 }
 
-log(`parsed ${manifestCount} manifests → ${npmDeps.size} npm, ${pipDeps.size} pip, ${cargoDeps.size} crates`)
+log(
+  `parsed ${manifestCount} manifests → ${npmDeps.size} npm, ${pipDeps.size} pip, ${cargoDeps.size} crates`,
+)
 
 // ─── Merge with existing ADC list ──────────────────────────────────────────
 
 const adcListPath = join(ADC_PATH, 'apps/host-agent/cache-warm-list.json')
 let existing = []
 if (existsSync(adcListPath)) {
-  try { existing = JSON.parse(readFileSync(adcListPath, 'utf8')) } catch (err) {
+  try {
+    existing = JSON.parse(readFileSync(adcListPath, 'utf8'))
+  } catch (err) {
     console.error(`ERROR: failed to parse existing ${adcListPath}: ${err.message}`)
     process.exit(2)
   }

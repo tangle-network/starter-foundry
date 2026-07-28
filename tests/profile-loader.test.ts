@@ -67,8 +67,22 @@ test('child profile overrides parent fields', () => {
 test('cycles are rejected', () => {
   const dir = tempProfilesDir()
   try {
-    writeProfile(dir, 'a', { extends: 'b', logicalModel: 'x', alias: 'x', temperature: 0, maxTokens: 1, costCeilingUsd: 0 })
-    writeProfile(dir, 'b', { extends: 'a', logicalModel: 'x', alias: 'x', temperature: 0, maxTokens: 1, costCeilingUsd: 0 })
+    writeProfile(dir, 'a', {
+      extends: 'b',
+      logicalModel: 'x',
+      alias: 'x',
+      temperature: 0,
+      maxTokens: 1,
+      costCeilingUsd: 0,
+    })
+    writeProfile(dir, 'b', {
+      extends: 'a',
+      logicalModel: 'x',
+      alias: 'x',
+      temperature: 0,
+      maxTokens: 1,
+      costCeilingUsd: 0,
+    })
     assert.throws(() => loadProfile('a', { profilesDir: dir, skipSnapshotResolve: true }), /cycle/)
   } finally {
     rmSync(dir, { recursive: true, force: true })
@@ -78,11 +92,20 @@ test('cycles are rejected', () => {
 test('chains deeper than 5 are rejected', () => {
   const dir = tempProfilesDir()
   try {
-    writeProfile(dir, 'p0', { logicalModel: 'x', alias: 'x', temperature: 0, maxTokens: 1, costCeilingUsd: 0 })
+    writeProfile(dir, 'p0', {
+      logicalModel: 'x',
+      alias: 'x',
+      temperature: 0,
+      maxTokens: 1,
+      costCeilingUsd: 0,
+    })
     for (let i = 1; i <= 6; i += 1) {
       writeProfile(dir, `p${i}`, { extends: `p${i - 1}` })
     }
-    assert.throws(() => loadProfile('p6', { profilesDir: dir, skipSnapshotResolve: true }), /max depth/)
+    assert.throws(
+      () => loadProfile('p6', { profilesDir: dir, skipSnapshotResolve: true }),
+      /max depth/,
+    )
   } finally {
     rmSync(dir, { recursive: true, force: true })
   }
@@ -153,7 +176,15 @@ test('repo default profiles resolve cleanly (skipSnapshotResolve)', () => {
 })
 
 test('rejects unsafe profile names (path traversal + odd chars)', () => {
-  for (const bad of ['../etc/passwd', '..', './foo', 'has space', 'CapsName', '-leading-dash', '']) {
+  for (const bad of [
+    '../etc/passwd',
+    '..',
+    './foo',
+    'has space',
+    'CapsName',
+    '-leading-dash',
+    '',
+  ]) {
     assert.throws(
       () => loadProfile(bad, { skipSnapshotResolve: true }),
       /invalid profile name/,

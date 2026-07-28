@@ -29,6 +29,7 @@
 // All primitives come from the published package — this file is the
 // integration glue, not new measurement infra.
 
+import { randomUUID } from 'node:crypto'
 import { readdir } from 'node:fs/promises'
 import { resolve, join, dirname, isAbsolute } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
@@ -37,8 +38,10 @@ import {
   fileExperimentStore,
   SubprocessSandboxDriver,
   assertLlmRoute,
+  createChatClient,
   LlmRouteAssertionError,
   runTestGradedScenario,
+  type ChatClient,
   type Scenario,
   type TestGradedScenario,
   type TestGradedRunResult,
@@ -53,7 +56,6 @@ import {
   type RawProviderSink,
   type RunIntegrityReport,
 } from '@tangle-network/agent-eval/traces'
-import { TCloud } from '@tangle-network/tcloud'
 // Single source of truth for scenario loading: the agent-eval:scenarios
 // layer composes `src/eval/scenario-loader.ts` next to this runner. Pre-fix
 // the family re-implemented a weaker loader inline (no shape validation),
@@ -118,13 +120,15 @@ export interface RunnerOptions {
 interface ScenarioOutcome {
   scenarioId: string
   pass: boolean
-  score: number
+  score: number | null
   durationMs: number
   failureClass: string | null
   filePath: string
   runId: string
+  applicableJudgeCount: number
   measuredJudgeCount: number
   unmeasuredJudgeCount: number
+  judgeErrorCount: number
   /**
    * Capture-integrity issues observed at run-end. Empty in the common
    * happy-path case. Surfaced on the row so a launch reviewer can spot
@@ -133,20 +137,9 @@ interface ScenarioOutcome {
   integrityIssues?: string[]
 }
 
-/**
- * Lightweight RawProviderSink handle exposed on `globalThis` for ad-hoc
- * LLM-judge wiring. A judge call site can read this to pass `rawSink`
- * into `callLlm` without the runner having to know about the judge. The
- * canonical pattern is to wire `rawSink` explicitly via dependency
- * injection — this hook exists so the example judge auto-captures.
- */
-declare global {
-  // eslint-disable-next-line no-var
-  var __agentEvalRawSink: RawProviderSink | undefined
-}
-
 const HERE = dirname(fileURLToPath(import.meta.url))
 const DEFAULT_ROOT = resolve(HERE, '..', '..')
+const TURN_MARKER = '__STARTER_FOUNDRY_TURN_'
 
 function shQuote(s: string): string {
   return `'${String(s).replace(/'/g, `'\\''`)}'`
@@ -155,6 +148,8 @@ function shQuote(s: string): string {
 interface LoadedJudge {
   fn: JudgeFn
   filePath: string
+  dimensions: readonly string[]
+  usesModel: boolean
 }
 
 async function loadJudgesFrom(dir: string): Promise<LoadedJudge[]> {
@@ -169,35 +164,143 @@ async function loadJudgesFrom(dir: string): Promise<LoadedJudge[]> {
     if (!entry.endsWith('.judge.ts') && !entry.endsWith('.judge.js')) continue
     const filePath = join(dir, entry)
     const url = pathToFileURL(isAbsolute(filePath) ? filePath : resolve(filePath)).href
-    const mod = (await import(url)) as { default?: JudgeFn }
-    if (typeof mod.default === 'function') judges.push({ fn: mod.default, filePath })
+    const mod = (await import(url)) as {
+      default?: JudgeFn
+      dimensions?: unknown
+      usesModel?: unknown
+    }
+    if (typeof mod.default !== 'function') {
+      throw new Error(`eval-harness: ${filePath} must default-export a JudgeFn`)
+    }
+    if (
+      !Array.isArray(mod.dimensions) ||
+      mod.dimensions.length === 0 ||
+      !mod.dimensions.every((value) => typeof value === 'string' && value.length > 0)
+    ) {
+      throw new Error(
+        `eval-harness: ${filePath} must export a non-empty string[] named dimensions`,
+      )
+    }
+    if (typeof mod.usesModel !== 'boolean') {
+      throw new Error(`eval-harness: ${filePath} must export a boolean named usesModel`)
+    }
+    judges.push({
+      fn: mod.default,
+      filePath,
+      dimensions: mod.dimensions as string[],
+      usesModel: mod.usesModel,
+    })
   }
   return judges
 }
 
-function createJudgeClient(apiKey: string | undefined, baseUrl: string | undefined): TCloud | undefined {
-  if (!apiKey) return undefined
+function createJudgeClient(apiKey: string | undefined, baseUrl: string | undefined): ChatClient {
+  if (!apiKey) {
+    return createChatClient({
+      transport: 'custom',
+      maximumAttempts: 1,
+      chat: async () => {
+        throw new Error('TANGLE_API_KEY not set; model-based judges cannot run')
+      },
+    })
+  }
   const trimmed = baseUrl?.replace(/\/+$/, '')
   const baseURL = trimmed ? (trimmed.endsWith('/v1') ? trimmed : `${trimmed}/v1`) : undefined
-  return TCloud.create({ apiKey, ...(baseURL ? { baseURL } : {}) })
+  return createChatClient({
+    transport: 'router',
+    apiKey,
+    ...(baseURL ? { baseUrl: baseURL } : {}),
+  })
+}
+
+function withRawCapture(
+  chat: ChatClient,
+  rawSink: RawProviderSink,
+  runId: string,
+  baseUrl: string | undefined,
+): ChatClient {
+  let callIndex = 0
+  const normalizedBaseUrl = baseUrl?.replace(/\/+$/, '') ?? 'https://router.tangle.tools'
+  return {
+    transport: chat.transport,
+    defaultModel: chat.defaultModel,
+    maximumAttempts: chat.maximumAttempts,
+    async chat(request, options) {
+      const index = callIndex++
+      const startedAt = Date.now()
+      const model = request.model ?? chat.defaultModel ?? 'unknown'
+      const eventBase = {
+        runId,
+        provider: 'judge-chat-client',
+        model,
+        endpoint: '/v1/chat/completions',
+        baseUrl: normalizedBaseUrl,
+        attemptIndex: 0,
+        redactedFields: [] as string[],
+      }
+      await rawSink.record({
+        ...eventBase,
+        eventId: `${runId}:judge:${index}:request`,
+        direction: 'request',
+        timestamp: startedAt,
+        requestBody: request,
+      })
+      try {
+        const response = await chat.chat(request, options)
+        await rawSink.record({
+          ...eventBase,
+          eventId: `${runId}:judge:${index}:response`,
+          direction: 'response',
+          timestamp: Date.now(),
+          durationMs: Date.now() - startedAt,
+          requestBody: request,
+          responseBody: response.raw ?? response,
+        })
+        return response
+      } catch (error) {
+        await rawSink.record({
+          ...eventBase,
+          eventId: `${runId}:judge:${index}:error`,
+          direction: 'error',
+          timestamp: Date.now(),
+          durationMs: Date.now() - startedAt,
+          requestBody: request,
+          errorMessage: error instanceof Error ? error.message : String(error),
+        })
+        throw error
+      }
+    },
+  }
 }
 
 // Translate a Scenario into a TestGradedScenario — the bridge between
 // the conversational scenario shape and the test-graded-runner shape.
 //
-// Default policy: every scenario's first turn is POST-ed at the target
-// URL's /chat route, and the response is checked for non-empty content.
-// Override by editing the testCommand in your scenario file's tags.
+// Default policy: every scenario turn is POST-ed to one resumed session.
+// Each response is base64-framed so arbitrary model text cannot corrupt the
+// turn boundary parsed after the command exits.
 function toTestGraded(scenario: Scenario, targetUrl: string): TestGradedScenario {
   const customTestCommand = (scenario as Scenario & { testCommand?: string }).testCommand
-  const firstTurn = scenario.turns[0]
-  const userMessage = firstTurn?.user ?? ''
-  const bodyPath = `/tmp/eval-body-${scenario.id.replace(/[^a-zA-Z0-9_-]/g, '_')}`
-  const defaultTest =
-    `body=${shQuote(bodyPath)}; status=$(curl -sS -o "$body" -w '%{http_code}' -X POST -H 'content-type: application/json' ` +
-    `--data ${shQuote(JSON.stringify({ message: userMessage, scenarioId: scenario.id }))} ` +
-    `${shQuote(`${targetUrl}/chat`)}); printf '%s' "$status" | grep -E '^(200|201)$' >/dev/null && ` +
-    `test $(wc -c < "$body") -ge 1 && cat "$body"`
+  const safeId = scenario.id.replace(/[^a-zA-Z0-9_-]/g, '_')
+  const sessionId = `${scenario.id}:${randomUUID()}`
+  const commands = scenario.turns.map((turn, turnIndex) => {
+    const bodyPath = `/tmp/eval-body-${safeId}-${turnIndex}`
+    const requestBody = JSON.stringify({
+      message: turn.user,
+      scenarioId: scenario.id,
+      sessionId,
+      turnIndex,
+    })
+    return (
+      `body=${shQuote(bodyPath)}; ` +
+      `status=$(curl -sS -o "$body" -w '%{http_code}' -X POST -H 'content-type: application/json' ` +
+      `--data ${shQuote(requestBody)} ${shQuote(`${targetUrl}/chat`)}); ` +
+      `printf '%s' "$status" | grep -E '^(200|201)$' >/dev/null; ` +
+      `test "$(wc -c < "$body")" -ge 1; ` +
+      `printf '${TURN_MARKER}${turnIndex}__'; base64 < "$body" | tr -d '\\n'; printf '\\n'`
+    )
+  })
+  const defaultTest = `set -eu; ${commands.join('; ')}`
   return {
     id: scenario.id,
     description: scenario.label ?? scenario.thesis ?? scenario.id,
@@ -210,12 +313,26 @@ function toTestGraded(scenario: Scenario, targetUrl: string): TestGradedScenario
   }
 }
 
+export function parseTurnResponses(stdout: string, expectedTurns: number): string[] {
+  const responses: string[] = []
+  const marker = new RegExp(`^${TURN_MARKER}(\\d+)__([A-Za-z0-9+/=]*)$`, 'gm')
+  for (const match of stdout.matchAll(marker)) {
+    const turnIndex = Number(match[1])
+    if (!Number.isInteger(turnIndex) || turnIndex < 0 || turnIndex >= expectedTurns) continue
+    responses[turnIndex] = Buffer.from(match[2] ?? '', 'base64').toString('utf8')
+  }
+  if (responses.filter((value) => value !== undefined).length === expectedTurns) {
+    return responses
+  }
+  return expectedTurns === 1 ? [stdout] : []
+}
+
 export interface RunReport {
   timestamp: string
   variantId?: string
   scenarioCount: number
   passCount: number
-  aggregate: number
+  aggregate: number | null
   measuredScenarioCount: number
   unmeasuredScenarioCount: number
   threshold: number
@@ -290,30 +407,16 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
     )
   }
   const judges = await loadJudgesFrom(judgesDir)
-  const judgeClient = createJudgeClient(
-    llmApiKey,
-    llmBaseUrl ?? process.env.LLM_ROUTER_URL,
-  )
+  const judgeBaseUrl = llmBaseUrl ?? process.env.LLM_ROUTER_URL
 
   const integrityReports: Record<string, RunIntegrityReport> = {}
   const outcomes: ScenarioOutcome[] = []
   for (const { scenario, filePath } of loaded) {
     const tgs = toTestGraded(scenario, targetUrl)
     const startedAt = Date.now()
-
-    // ── 0.21 Directive 1: per-run RawProviderSink ──────────────────────
-    // Allocated even when no LLM judge runs — the cost is one (possibly
-    // empty) NDJSON file per scenario, and the alternative is a silent
-    // partial-capture bug the next time someone wires in an LLM judge.
-    // Exposed via globalThis so the ad-hoc judge call sites in this
-    // template's `judges/` dir pick it up without explicit plumbing.
-    let rawSink: RawProviderSink | undefined
-    if (integrityMode !== 'off') {
-      rawSink = new FileSystemRawProviderSink({
-        dir: join(rawEventsDir, scenario.id),
-      })
-      globalThis.__agentEvalRawSink = rawSink
-    }
+    const applicableJudges = judges.filter((judge) =>
+      judge.dimensions.some((dimension) => scenario.dimensions.includes(dimension)),
+    )
 
     let result: TestGradedRunResult
     try {
@@ -327,30 +430,64 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
         failureClass: 'harness_error',
         filePath,
         runId: '',
+        applicableJudgeCount: applicableJudges.length,
         measuredJudgeCount: 0,
         unmeasuredJudgeCount: 0,
+        judgeErrorCount: 0,
       })
       console.error(`  ✗ ${scenario.id} — harness error: ${(err as Error).message}`)
-      globalThis.__agentEvalRawSink = undefined
       continue
     }
 
+    const stdout = result.harness.test?.stdout ?? ''
+    const responses = parseTurnResponses(stdout, scenario.turns.length)
+    if (responses.length !== scenario.turns.length) {
+      outcomes.push({
+        scenarioId: scenario.id,
+        pass: false,
+        score: null,
+        durationMs: Date.now() - startedAt,
+        failureClass: 'turn_capture_error',
+        filePath,
+        runId: result.runId,
+        applicableJudgeCount: applicableJudges.length,
+        measuredJudgeCount: 0,
+        unmeasuredJudgeCount: 0,
+        judgeErrorCount: 0,
+      })
+      console.error(
+        `  ✗ ${scenario.id} — captured ${responses.length}/${scenario.turns.length} turn responses`,
+      )
+      continue
+    }
+
+    const usesModel = applicableJudges.some((judge) => judge.usesModel)
+    const rawSink =
+      integrityMode !== 'off' && usesModel
+        ? new FileSystemRawProviderSink({ dir: join(rawEventsDir, scenario.id) })
+        : undefined
+    const baseJudgeClient = createJudgeClient(llmApiKey, judgeBaseUrl)
+    const judgeClient = rawSink
+      ? withRawCapture(baseJudgeClient, rawSink, result.runId, judgeBaseUrl)
+      : baseJudgeClient
     const judgeScores: JudgeScore[] = []
-    if (judges.length > 0) {
-      const response = result.harness.test?.stdout ?? ''
+    let judgeErrorCount = 0
+    if (applicableJudges.length > 0) {
+      const perTurnDuration = (result.harness.test?.wallMs ?? 0) / scenario.turns.length
       const judgeInput: JudgeInput = {
         scenario,
-        turns: [
-          {
-            turnIndex: 0,
-            userMessage: scenario.turns[0]?.user ?? '',
+        turns: scenario.turns.map((turn, turnIndex) => {
+          const response = responses[turnIndex] ?? ''
+          return {
+            turnIndex,
+            userMessage: turn.user,
             agentResponse: response,
-            durationMs: result.harness.test?.wallMs ?? 0,
+            durationMs: perTurnDuration,
             blocksExtracted: [],
             containsCode: response.includes('```'),
             containsToolCall: false,
-          },
-        ],
+          }
+        }),
         artifacts: {
           vaultFiles: [],
           blocksExtracted: [],
@@ -358,17 +495,26 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
           toolCalls: [],
         } as CollectedArtifacts,
       }
-      for (const judge of judges) {
+      for (const judge of applicableJudges) {
         try {
-          const scores = await judge.fn(judgeClient as TCloud, judgeInput)
-          judgeScores.push(...scores)
+          const scores = await judge.fn(judgeClient, judgeInput)
+          if (scores.length === 0) {
+            judgeScores.push({
+              judgeName: judge.filePath,
+              dimension: judge.dimensions[0]!,
+              score: Number.NaN,
+              status: 'unmeasured',
+              reasoning: 'Judge returned no scores.',
+            } as JudgeScore)
+          } else {
+            judgeScores.push(...scores)
+          }
         } catch (err) {
-          console.warn(`  ! judge ${judge.filePath} threw: ${(err as Error).message}`)
+          judgeErrorCount += 1
+          console.error(`  ✗ judge ${judge.filePath} threw: ${(err as Error).message}`)
         }
       }
     }
-    globalThis.__agentEvalRawSink = undefined
-
     let measuredJudgeCount = 0
     let unmeasuredJudgeCount = 0
     let judgeScoreTotal = 0
@@ -381,23 +527,21 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
         judgeScoreTotal += score.score
       }
     }
-    const score =
-      measuredJudgeCount > 0
+    const judgingIncomplete =
+      applicableJudges.length > 0 &&
+      (judgeErrorCount > 0 || unmeasuredJudgeCount > 0 || measuredJudgeCount === 0)
+    const score = judgingIncomplete
+      ? null
+      : measuredJudgeCount > 0
         ? (result.score + judgeScoreTotal) / (measuredJudgeCount + 1)
         : result.score
 
-    // ── 0.21 Directive 3: assert the run captured before declaring done ─
-    // Read-only. We do NOT set `requireRawCoverageOfLlmSpans` because
-    // the test-graded path may not call any LLM at all (the default
-    // testCommand is a curl). When an LLM judge IS wired the sink will
-    // be populated and consumers can tighten this in `runIntegrityExpect`.
     let integrityIssues: string[] | undefined
     if (integrityMode !== 'off' && result.runId) {
+      const requireRawEvents = usesModel && !judgingIncomplete && measuredJudgeCount > 0
       const report = await assertRunCaptured(traceStore, result.runId, {
-        rawSink,
-        // requireOutcome: the harness always sets pass/score, so this is
-        // a cheap belt-and-suspenders check.
         requireOutcome: true,
+        ...(requireRawEvents ? { rawSink, rawProviderEventsMin: 1 } : {}),
       })
       integrityReports[result.runId] = report
       if (!report.ok) {
@@ -406,38 +550,53 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
     }
 
     const integrityFailed = integrityMode === 'strict' && integrityIssues !== undefined
-    const scenarioPassed = result.pass && score >= threshold
+    const scenarioPassed = score !== null && result.pass && score >= threshold
+    const failureClass =
+      judgeErrorCount > 0
+        ? 'judge_error'
+        : judgingIncomplete
+          ? 'judge_unmeasured'
+          : (result.failureClass ?? null)
     outcomes.push({
       scenarioId: scenario.id,
       pass: integrityFailed ? false : scenarioPassed,
-      score: integrityFailed ? 0 : score,
+      score: integrityFailed ? null : score,
       durationMs: Date.now() - startedAt,
-      failureClass: integrityFailed ? 'integrity' : (result.failureClass ?? null),
+      failureClass: integrityFailed ? 'integrity' : failureClass,
       filePath,
       runId: result.runId,
+      applicableJudgeCount: applicableJudges.length,
       measuredJudgeCount,
       unmeasuredJudgeCount,
+      judgeErrorCount,
       ...(integrityIssues ? { integrityIssues } : {}),
     })
     const mark = integrityFailed ? '✗' : scenarioPassed ? '✓' : '✗'
     const integritySuffix = integrityIssues ? ` (integrity: ${integrityIssues.join(', ')})` : ''
     const judgeSuffix =
-      judges.length > 0
-        ? ` judges=${measuredJudgeCount} measured/${unmeasuredJudgeCount} unmeasured`
+      applicableJudges.length > 0
+        ? ` judges=${measuredJudgeCount} measured/${unmeasuredJudgeCount} unmeasured/${judgeErrorCount} errors`
         : ''
     console.log(
-      `  ${mark} ${scenario.id} — score=${score.toFixed(3)}${judgeSuffix}${integritySuffix}`,
+      `  ${mark} ${scenario.id} — score=${score?.toFixed(3) ?? 'unmeasured'}${judgeSuffix}${integritySuffix}`,
     )
   }
 
   const passCount = outcomes.filter((o) => o.pass).length
-  const aggregate = outcomes.reduce((a, o) => a + o.score, 0) / Math.max(outcomes.length, 1)
+  const measuredOutcomes = outcomes.filter(
+    (outcome): outcome is ScenarioOutcome & { score: number } => outcome.score !== null,
+  )
+  const aggregate =
+    measuredOutcomes.length > 0
+      ? measuredOutcomes.reduce((total, outcome) => total + outcome.score, 0) /
+        measuredOutcomes.length
+      : null
 
   const flows: ScorecardFlow[] = outcomes.map((o) => ({
     name: o.scenarioId,
     value: o.score,
     target: 1.0,
-    status: o.pass ? 'pass' : 'fail',
+    status: o.score === null ? 'skip' : o.pass ? 'pass' : 'fail',
     direction: 'higher-better',
     productValueClaim: `Scenario "${o.scenarioId}" — pass rate against the agent under test.`,
   }))
@@ -447,8 +606,8 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
     scenarioCount: outcomes.length,
     passCount,
     aggregate,
-    measuredScenarioCount: outcomes.length,
-    unmeasuredScenarioCount: 0,
+    measuredScenarioCount: measuredOutcomes.length,
+    unmeasuredScenarioCount: outcomes.length - measuredOutcomes.length,
     threshold,
     outcomes,
     tracesDir,
@@ -461,7 +620,7 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
     product: process.env.EVAL_PRODUCT_NAME ?? 'eval-harness',
     timestamp: report.timestamp,
     aggregate,
-    coverage: `${passCount}/${outcomes.length} scenarios passed`,
+    coverage: `${passCount}/${outcomes.length} scenarios passed; ${measuredOutcomes.length}/${outcomes.length} measured`,
     flows,
   })
   const integritySummary =
@@ -472,7 +631,7 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
           Object.keys(integrityReports).length
         } flagged`
   console.log(
-    `\naggregate=${aggregate.toFixed(3)} pass=${passCount}/${outcomes.length} threshold=${threshold} ${integritySummary}`,
+    `\naggregate=${aggregate?.toFixed(3) ?? 'unmeasured'} pass=${passCount}/${outcomes.length} threshold=${threshold} ${integritySummary}`,
   )
   return report
 }
@@ -482,7 +641,7 @@ if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
   const projectRoot = process.env.EVAL_PROJECT_ROOT ?? DEFAULT_ROOT
   runHarness({ projectRoot })
     .then((r) => {
-      process.exitCode = r.aggregate < r.threshold ? 1 : 0
+      process.exitCode = r.aggregate === null || r.aggregate < r.threshold ? 1 : 0
     })
     .catch((err) => {
       console.error('[runner] fatal:', err)

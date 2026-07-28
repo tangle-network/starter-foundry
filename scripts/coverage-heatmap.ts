@@ -20,7 +20,11 @@ const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const OUT = join(REPO, '.evolve/reports/coverage-heatmap.json')
 
 function readJson(path) {
-  try { return JSON.parse(readFileSync(path, 'utf8')) } catch { return null }
+  try {
+    return JSON.parse(readFileSync(path, 'utf8'))
+  } catch {
+    return null
+  }
 }
 
 const industries = readdirSync(join(REPO, 'registry/layers/industry'))
@@ -28,19 +32,96 @@ const partners = readdirSync(join(REPO, 'registry/partners'))
 
 // "Runtime buckets" — group the 94 families into meaningful axes.
 const runtimes = {
-  'web-frontend': ['react-vite-ts', 'nextjs-ts', 'remix-ts', 'sveltekit-ts', 'vue-ts', 'angular-ts', 'astro-static', 'eleventy-static', 'hugo-static', 'zola-static', 'frontend-static'],
+  'web-frontend': [
+    'react-vite-ts',
+    'nextjs-ts',
+    'remix-ts',
+    'sveltekit-ts',
+    'vue-ts',
+    'angular-ts',
+    'astro-static',
+    'eleventy-static',
+    'hugo-static',
+    'zola-static',
+    'frontend-static',
+  ],
   'web-fullstack': ['fullstack-ts', 'nextjs-app-router', 'fullstack-node-ts'],
-  'backend-node': ['api-service', 'node-http', 'node-worker', 'bun-http', 'deno-edge', 'cloudflare-worker-ts', 'agent-service-ts', 'agent-swarm-ts', 'mcp-server-ts'],
-  'backend-py': ['python-http', 'python-data-app', 'python-worker', 'fastapi-service', 'agent-service-py', 'rag-pipeline-py', 'dspy-pipeline-py'],
+  'backend-node': [
+    'api-service',
+    'node-http',
+    'node-worker',
+    'bun-http',
+    'deno-edge',
+    'cloudflare-worker-ts',
+    'agent-service-ts',
+    'agent-swarm-ts',
+    'mcp-server-ts',
+  ],
+  'backend-py': [
+    'python-http',
+    'python-data-app',
+    'python-worker',
+    'fastapi-service',
+    'agent-service-py',
+    'rag-pipeline-py',
+    'dspy-pipeline-py',
+  ],
   'backend-rust': ['rust-http', 'agent-service-rust', 'wasm-rust'],
   'backend-go': ['go-net-http', 'go-worker'],
-  'mobile': ['expo-react-native-ts', 'expo-rn-rich', 'flutter-app', 'kotlin-multiplatform'],
-  'desktop': ['electron-desktop-ts', 'electron-native-os', 'tauri-desktop', 'tauri-menubar', 'tauri-tray'],
-  'smart-contracts': ['hardhat-ts', 'forge-foundation', 'solana-native-rust', 'aptos-move', 'move-package', 'fhenix-contracts', 'fhevm-contracts', 'stylus-contracts', 'tangle-blueprint', 'eigenlayer-avs', 'celestia-da'],
-  'gpu-inference': ['ollama-server', 'tgi-server', 'vllm-server', 'sglang-server', 'triton-server', 'skypilot-serving', 'lora-training', 'webgpu-inference', 'webgpu-render'],
-  'games': ['threejs-game', 'phaser-game', 'pixijs-game', 'bevy-web', 'godot-web', 'unity-web-proxy'],
-  'av-realtime': ['livekit-sfu', 'hls-origin', 'realtime-audio-ts', 'voice-first-agent', 'vision-first-agent', 'multimodal-agent', 'x402-service'],
-  'verticals': ['healthcare-hipaa-backend', 'fintech-ledger-backend', 'legal-case-mgmt', 'k12-edtech', 'crm-backend', 'ecommerce-headless', 'hipaa-compliance-pack', 'pci-dss-compliance-pack', 'soc2-compliance-pack', 'gdpr-compliance-pack'],
+  mobile: ['expo-react-native-ts', 'expo-rn-rich', 'flutter-app', 'kotlin-multiplatform'],
+  desktop: [
+    'electron-desktop-ts',
+    'electron-native-os',
+    'tauri-desktop',
+    'tauri-menubar',
+    'tauri-tray',
+  ],
+  'smart-contracts': [
+    'hardhat-ts',
+    'forge-foundation',
+    'solana-native-rust',
+    'aptos-move',
+    'move-package',
+    'fhenix-contracts',
+    'fhevm-contracts',
+    'stylus-contracts',
+    'tangle-blueprint',
+    'eigenlayer-avs',
+    'celestia-da',
+  ],
+  'gpu-inference': [
+    'ollama-server',
+    'tgi-server',
+    'vllm-server',
+    'sglang-server',
+    'triton-server',
+    'skypilot-serving',
+    'lora-training',
+    'webgpu-inference',
+    'webgpu-render',
+  ],
+  games: ['threejs-game', 'phaser-game', 'pixijs-game', 'bevy-web', 'godot-web', 'unity-web-proxy'],
+  'av-realtime': [
+    'livekit-sfu',
+    'hls-origin',
+    'realtime-audio-ts',
+    'voice-first-agent',
+    'vision-first-agent',
+    'multimodal-agent',
+    'x402-service',
+  ],
+  verticals: [
+    'healthcare-hipaa-backend',
+    'fintech-ledger-backend',
+    'legal-case-mgmt',
+    'k12-edtech',
+    'crm-backend',
+    'ecommerce-headless',
+    'hipaa-compliance-pack',
+    'pci-dss-compliance-pack',
+    'soc2-compliance-pack',
+    'gdpr-compliance-pack',
+  ],
 }
 
 // Load family appliesTo → industry + partner relationships.
@@ -111,7 +192,8 @@ writeFileSync(OUT, JSON.stringify(report, null, 2))
 // ASCII table (industry × runtime).
 const cellW = 6
 const runtimeKeys = Object.keys(runtimes)
-const header = 'industry'.padEnd(18) + runtimeKeys.map((k) => k.slice(0, cellW - 1).padStart(cellW)).join('')
+const header =
+  'industry'.padEnd(18) + runtimeKeys.map((k) => k.slice(0, cellW - 1).padStart(cellW)).join('')
 console.log('\nCoverage heatmap: industry × runtime (value = # of families that apply)\n')
 console.log(header)
 console.log('─'.repeat(header.length))
@@ -124,7 +206,5 @@ for (const industry of industries) {
   console.log(line)
 }
 
-console.log(
-  `\ntotal gaps (industry × runtime pairs with 0 coverage): ${report.gaps.length}`,
-)
+console.log(`\ntotal gaps (industry × runtime pairs with 0 coverage): ${report.gaps.length}`)
 console.log(`wrote: ${OUT}`)

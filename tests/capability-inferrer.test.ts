@@ -129,7 +129,11 @@ test('inferCapabilities: explicit wallet-kit packages still imply wallet-dashboa
       },
       map,
     )
-    assert.equal(caps[0]?.capability, 'capability:evm-wallet-dashboard', `${pkg} should still infer evm-wallet-dashboard`)
+    assert.equal(
+      caps[0]?.capability,
+      'capability:evm-wallet-dashboard',
+      `${pkg} should still infer evm-wallet-dashboard`,
+    )
   }
 })
 

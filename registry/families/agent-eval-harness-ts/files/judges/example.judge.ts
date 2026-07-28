@@ -10,12 +10,13 @@
 // Calibrate before relying on the score in CI gates — see AGENTS.md.
 
 import {
-  createChatClient,
   llmJudge,
-  type ChatClient,
   type JudgeFn,
   type JudgeScore,
 } from '@tangle-network/agent-eval'
+
+export const dimensions = ['basic-coherence'] as const
+export const usesModel = true
 
 const DIMENSIONS = [
   {
@@ -26,48 +27,9 @@ const DIMENSIONS = [
   },
 ]
 
-// The runner threads in a TCloud-shaped client whose `.chat()` resolves an
-// OpenAI `ChatCompletion`. Normalize it into the `LlmCallResult` shape (top-level
-// `content`) that `createChatClient`'s `sandbox-sdk` transport — and therefore
-// `llmJudge` — expects.
-interface OpenAiChatClient {
-  chat(req: {
-    model: string
-    messages: { role: string; content: string }[]
-    temperature?: number
-    maxTokens?: number
-    jsonMode?: boolean
-  }): Promise<{ choices?: { message?: { content?: string } }[]; model?: string }>
-}
-
-function chatClientFor(tc: OpenAiChatClient): ChatClient {
-  return createChatClient({
-    transport: 'sandbox-sdk',
-    chat: async (req) => {
-      const resp = await tc.chat({
-        model: req.model ?? '',
-        messages: req.messages.map((m) => ({ role: String(m.role), content: String(m.content) })),
-        ...(req.temperature !== undefined ? { temperature: req.temperature } : {}),
-        ...(req.maxTokens !== undefined ? { maxTokens: req.maxTokens } : {}),
-        ...(req.jsonMode !== undefined ? { jsonMode: req.jsonMode } : {}),
-      })
-      return {
-        content: resp.choices?.[0]?.message?.content ?? '',
-        model: resp.model ?? req.model ?? '',
-        usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
-        costUsd: null,
-        durationMs: 0,
-        finishReason: null,
-        raw: resp,
-      }
-    },
-  })
-}
-
 const judge: JudgeFn = async (tc, input): Promise<JudgeScore[]> => {
-  const chat = chatClientFor(tc as OpenAiChatClient)
   const config = llmJudge<string>('example-coherence', 'You are a strict evaluator. Be terse.', {
-    chat,
+    chat: tc,
     dimensions: DIMENSIONS,
     scale: 'unit',
     model: 'claude-sonnet-4-5',

@@ -71,7 +71,10 @@ function extractCron(wranglerContent: string): { id: string; cron: string; capab
   return out
 }
 
-function deriveScheduleFromManifestAndCron(manifest: Manifest, wranglerCron: ReturnType<typeof extractCron>) {
+function deriveScheduleFromManifestAndCron(
+  manifest: Manifest,
+  wranglerCron: ReturnType<typeof extractCron>,
+) {
   // If manifest already has a schedule, leave it alone.
   if (Array.isArray(manifest.defaults?.schedule) && manifest.defaults!.schedule!.length > 0) {
     return manifest.defaults!.schedule as unknown[]
@@ -98,7 +101,7 @@ function inferToolsFromBundle(manifest: Manifest, bundleId: string): string {
     '',
     `The bundle inherits all primitives from \`agent-base:secure\`: \`secrets\`, \`workspace\`, \`webhook-in\`, \`webhook-out\`, \`schedule\`, \`identity\`, \`audit\`. Plus generic agent tools: \`Read\`, \`Write\`, \`Edit\`, \`Glob\`, \`Grep\`, \`Bash\`, \`WebFetch\`.`,
     '',
-    'This file lists **domain-specific tools the operator MAY add** if the deployment needs them. Each entry is intent — not implementation. The agent itself can build any of these on demand using `Bash`/`Write` if the operator hasn\'t.',
+    "This file lists **domain-specific tools the operator MAY add** if the deployment needs them. Each entry is intent — not implementation. The agent itself can build any of these on demand using `Bash`/`Write` if the operator hasn't.",
     '',
   ]
 
@@ -122,7 +125,9 @@ function inferToolsFromBundle(manifest: Manifest, bundleId: string): string {
 
   lines.push(`## Domain tools the operator may want`)
   lines.push('')
-  lines.push('Stub list — replace with role-specific entries. Keep ≤10 domain tools per deployment; more is fragmentation. Each tool should be:')
+  lines.push(
+    'Stub list — replace with role-specific entries. Keep ≤10 domain tools per deployment; more is fragmentation. Each tool should be:',
+  )
   lines.push('- Single-purpose')
   lines.push('- JSON output')
   lines.push('- ≤100 LOC')
@@ -133,17 +138,23 @@ function inferToolsFromBundle(manifest: Manifest, bundleId: string): string {
 
   // Derive 2-4 stubs from declared capabilities.
   for (const cap of declared.slice(0, 4)) {
-    lines.push(`| \`${cap.replace(/\s+/g, '-')}\` | Concrete tool implementing the \`${cap}\` capability | Operator implements when needed |`)
+    lines.push(
+      `| \`${cap.replace(/\s+/g, '-')}\` | Concrete tool implementing the \`${cap}\` capability | Operator implements when needed |`,
+    )
   }
 
   if (declared.length === 0) {
-    lines.push(`| (define) | Add tools the ${role} role would actually use | Per-deployment; intent before implementation |`)
+    lines.push(
+      `| (define) | Add tools the ${role} role would actually use | Per-deployment; intent before implementation |`,
+    )
   }
 
   lines.push('')
   lines.push('## Build a new tool when you need it')
   lines.push('')
-  lines.push('The agent\'s job includes building tools when the measurement doesn\'t exist. New tools should be small, JSON-output, single-purpose. Add an entry here via PR after shipping.')
+  lines.push(
+    "The agent's job includes building tools when the measurement doesn't exist. New tools should be small, JSON-output, single-purpose. Add an entry here via PR after shipping.",
+  )
 
   return lines.join('\n') + '\n'
 }
@@ -167,7 +178,9 @@ function convertOne(bundleDir: string): ConvertResult {
   // Skip if already converted (already has agent-base:secure).
   if (manifest.includes?.includes('agent-base:secure')) {
     // Verify it has TOOLS.md and methodology/ — if missing, keep going to backfill.
-    const filesDir = bundleDir.includes('/family-proposals/') ? join(bundleDir, 'files') : join(bundleDir, 'files')
+    const filesDir = bundleDir.includes('/family-proposals/')
+      ? join(bundleDir, 'files')
+      : join(bundleDir, 'files')
     if (existsSync(join(filesDir, 'TOOLS.md')) && existsSync(join(filesDir, 'methodology'))) {
       result.ok = true
       result.changes.push('already-converted')
@@ -183,7 +196,8 @@ function convertOne(bundleDir: string): ConvertResult {
 
   // 1. Add agent-base:secure to includes.
   manifest.includes = manifest.includes ?? []
-  if (!manifest.includes.includes('agent-base:tangle')) manifest.includes.unshift('agent-base:tangle')
+  if (!manifest.includes.includes('agent-base:tangle'))
+    manifest.includes.unshift('agent-base:tangle')
   if (!manifest.includes.includes('agent-base:secure')) {
     const idx = manifest.includes.indexOf('agent-base:tangle')
     manifest.includes.splice(idx + 1, 0, 'agent-base:secure')
@@ -208,7 +222,10 @@ function convertOne(bundleDir: string): ConvertResult {
   }
 
   // 3. Move allowedDomains → outboundDomains; allowedEnv → secrets.
-  if (Array.isArray(manifest.defaults.allowedDomains) && !Array.isArray(manifest.defaults.outboundDomains)) {
+  if (
+    Array.isArray(manifest.defaults.allowedDomains) &&
+    !Array.isArray(manifest.defaults.outboundDomains)
+  ) {
     manifest.defaults.outboundDomains = manifest.defaults.allowedDomains
     delete manifest.defaults.allowedDomains
     result.changes.push('renamed allowedDomains → outboundDomains')
@@ -255,7 +272,11 @@ function convertOne(bundleDir: string): ConvertResult {
       .filter((c) => c.path !== 'wrangler.toml' || c.type !== 'file-exists') // drop wrangler.toml file-exists
       .map((c) => {
         if (c.type === 'prompt-frontmatter-valid') return { type: 'agents-md-valid', path: c.path }
-        if (c.type === 'template-index-valid') return { type: 'methodology-index-valid', path: c.path?.replace(/^templates\//, 'methodology/') }
+        if (c.type === 'template-index-valid')
+          return {
+            type: 'methodology-index-valid',
+            path: c.path?.replace(/^templates\//, 'methodology/'),
+          }
         if (c.type === 'cron-syntax-valid') return { type: 'schedule-valid', path: 'manifest.json' }
         if (c.type === 'file-exists' && c.path?.startsWith('templates/')) {
           return { type: c.type, path: c.path.replace(/^templates\//, 'methodology/') }
@@ -310,7 +331,9 @@ function main(): void {
     if (!arg.startsWith('--') && existsSync(arg)) targets.push(resolve(arg))
   }
   if (targets.length === 0) {
-    console.error('usage: convert-to-markdown-only.ts <bundle-dir> | --all-registry | --all-proposals')
+    console.error(
+      'usage: convert-to-markdown-only.ts <bundle-dir> | --all-registry | --all-proposals',
+    )
     process.exit(2)
   }
 

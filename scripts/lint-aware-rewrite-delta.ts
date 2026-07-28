@@ -17,7 +17,17 @@
 // the pipeline.
 
 import { spawnSync } from 'node:child_process'
-import { existsSync, readFileSync, readdirSync, statSync, writeFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync as wfs } from 'node:fs'
+import {
+  existsSync,
+  readFileSync,
+  readdirSync,
+  statSync,
+  writeFileSync,
+  mkdirSync,
+  mkdtempSync,
+  rmSync,
+  writeFileSync as wfs,
+} from 'node:fs'
 import { dirname, join, resolve, extname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { tmpdir } from 'node:os'
@@ -36,7 +46,10 @@ const rewritten = data.topRewrittenFiles ?? []
 
 function hasESLint() {
   try {
-    const res = spawnSync('npx', ['--no-install', 'eslint', '--version'], { encoding: 'utf8', timeout: 5000 })
+    const res = spawnSync('npx', ['--no-install', 'eslint', '--version'], {
+      encoding: 'utf8',
+      timeout: 5000,
+    })
     return res.status === 0
   } catch {
     return false
@@ -52,11 +65,22 @@ function lintCheck(filePath) {
   if (!hasESLint()) {
     return { classified: 'unknown', reason: 'eslint-unavailable' }
   }
-  const res = spawnSync('npx', ['--no-install', 'eslint', '--no-eslintrc', '--rule', '{"no-unused-vars":"error","no-undef":"error"}', filePath], {
-    cwd: REPO,
-    encoding: 'utf8',
-    timeout: 10000,
-  })
+  const res = spawnSync(
+    'npx',
+    [
+      '--no-install',
+      'eslint',
+      '--no-eslintrc',
+      '--rule',
+      '{"no-unused-vars":"error","no-undef":"error"}',
+      filePath,
+    ],
+    {
+      cwd: REPO,
+      encoding: 'utf8',
+      timeout: 10000,
+    },
+  )
   return {
     classified: res.status === 0 ? 'pre-rewrite-clean' : 'pre-rewrite-had-issues',
     reason: res.status === 0 ? 'clean' : 'lint-errors',
@@ -85,7 +109,11 @@ function walkRegistry(base, depth = 0) {
   for (const name of readdirSync(base)) {
     const sub = join(base, name)
     let st
-    try { st = statSync(sub) } catch { continue }
+    try {
+      st = statSync(sub)
+    } catch {
+      continue
+    }
     if (!st.isDirectory()) continue
     const manifest = join(sub, 'manifest.json')
     if (existsSync(manifest)) indexManifest(manifest, sub)
@@ -93,7 +121,11 @@ function walkRegistry(base, depth = 0) {
   }
 }
 function readJson(path) {
-  try { return JSON.parse(readFileSync(path, 'utf8')) } catch { return null }
+  try {
+    return JSON.parse(readFileSync(path, 'utf8'))
+  } catch {
+    return null
+  }
 }
 walkRegistry(join(REPO, 'registry/families'))
 walkRegistry(join(REPO, 'registry/layers'))
@@ -113,7 +145,12 @@ for (const entry of rewritten.slice(0, 30)) {
   // `target` equals the rewritten path.
   const sourcePath = findSourceForTarget(relPath)
   if (!sourcePath) {
-    classifications.push({ file: relPath, classified: 'unknown', reason: 'source-not-in-registry', timesRewritten: entry.timesRewritten })
+    classifications.push({
+      file: relPath,
+      classified: 'unknown',
+      reason: 'source-not-in-registry',
+      timesRewritten: entry.timesRewritten,
+    })
     continue
   }
   const lint = lintCheck(sourcePath)
@@ -132,9 +169,12 @@ const report = {
   generatedAt: new Date().toISOString(),
   counts,
   interpretation: {
-    'pre-rewrite-clean': 'Template was fine before agent touched it — rewrite is stylistic drift. Signal: template is probably already good; rewrite count here should be discounted in judge scoring.',
-    'pre-rewrite-had-issues': 'Template had lint issues — agent rewrite was corrective. Signal: template IS the problem; prioritize fixing.',
-    'unknown': 'Could not classify (source not in registry, eslint unavailable, unsupported extension).',
+    'pre-rewrite-clean':
+      'Template was fine before agent touched it — rewrite is stylistic drift. Signal: template is probably already good; rewrite count here should be discounted in judge scoring.',
+    'pre-rewrite-had-issues':
+      'Template had lint issues — agent rewrite was corrective. Signal: template IS the problem; prioritize fixing.',
+    unknown:
+      'Could not classify (source not in registry, eslint unavailable, unsupported extension).',
   },
   files: classifications,
 }

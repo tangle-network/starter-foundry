@@ -17,7 +17,10 @@
 // and run `pnpm promote:family-proposal <id>` (implementation pending) or
 // manually `mv` into registry/ after inspection.
 
-import { proposeFamily, proposeFamilyWithRLMToDisk } from '../dist/training/family_proposer/propose.js'
+import {
+  proposeFamily,
+  proposeFamilyWithRLMToDisk,
+} from '../dist/training/family_proposer/propose.js'
 
 function arg(flag, fallback) {
   const i = process.argv.indexOf(flag)
@@ -41,7 +44,9 @@ const rlm = process.argv.includes('--rlm')
 const maxShots = Number(arg('--max-shots', '3')) || 3
 
 if (!id || !/^[a-z][a-z0-9-]*$/.test(id)) {
-  console.error('usage: --id <kebab> --description "..." [--language ...] [--runtime ...] [--surface ...] [--cues "..."] [--rlm] [--max-shots N]')
+  console.error(
+    'usage: --id <kebab> --description "..." [--language ...] [--runtime ...] [--surface ...] [--cues "..."] [--rlm] [--max-shots N]',
+  )
   process.exit(2)
 }
 if (!description) {
@@ -72,6 +77,10 @@ if (proposal.reasoning) {
 console.log('')
 console.log('next steps:')
 console.log('  1. Review the manifest + framework.manifest.json + files/')
-console.log(`  2. If acceptable, copy to registry/families/${id}/ and registry/layers/framework/${id}/`)
-console.log('  3. Wire routing in src/lib/planner/projects.ts + coverage test in tests/coverage.test.ts')
+console.log(
+  `  2. If acceptable, copy to registry/families/${id}/ and registry/layers/framework/${id}/`,
+)
+console.log(
+  '  3. Wire routing in src/lib/planner/projects.ts + coverage test in tests/coverage.test.ts',
+)
 console.log('  4. pnpm validate:registry && pnpm build && pnpm test')

@@ -1,9 +1,9 @@
-# {{projectName}} — agent-debug-ui-ts
+# {{projectName}}: agent-debug-ui-ts
 
 A Vite + React + TypeScript scaffold for **live debugging of agent runs** in
-a Tangle sandbox. Connects to a running sandbox via
+a Tangle sandbox. Connects through the browser-safe runtime and session clients in
 [`@tangle-network/sandbox`](https://www.npmjs.com/package/@tangle-network/sandbox),
-streams every SSE event from `streamPrompt()`, and renders four
+replays missed WebSocket events after a reconnect, and renders four
 synchronized views over the event log.
 
 This is a **debugger**, not an agent. The agent runs inside the sandbox; this
@@ -25,26 +25,43 @@ through the event log frame-by-frame for forensic review.
 
 ```bash
 cp .env.example .env
-# Fill in:
-#   VITE_TANGLE_SANDBOX_API_KEY   sk-tan-... operator-scoped
-#   VITE_TANGLE_SANDBOX_BASE_URL  https://api.tangle.tools
-#   VITE_SANDBOX_ID               sbx_... (must already exist)
+# Set VITE_SANDBOX_SESSION_URL to your backend route.
 pnpm install
 pnpm dev   # http://localhost:4180
 ```
 
-You need an existing sandbox with an agent runtime resident. To spin one up:
+The backend route must authenticate the user and return fresh credentials in this shape:
+
+```json
+{
+  "sandboxId": "sbx_...",
+  "gatewayUrl": "wss://api.example.com/session",
+  "gatewayToken": "eyJ...",
+  "browserSessionId": "browser-session-id",
+  "runtimeUrl": "https://runtime-proxy.example.com",
+  "runtimeToken": "eyJ...",
+  "runtimeSessionId": "runtime-session-id",
+  "expiresAt": 1785264000
+}
+```
+
+Mint `gatewayToken` with `box.mintScopedToken({ scope: 'session', sessionId: browserSessionId, runtimeSessionId })`.
+Mint `runtimeToken` with `box.mintScopedToken({ scope: 'session-runtime', sessionId: runtimeSessionId })`.
+The full Sandbox API key must remain on the backend.
+
+You need an existing sandbox with an agent runtime resident.
+To create one:
 
 ```bash
 pnpm dlx @tangle-network/sandbox create --product <product-id>
 ```
 
-Once the sandbox is running, open the debugger, type a prompt, hit **Run**.
-SSE events stream in real time.
+Once the sandbox is running, open the debugger, type a prompt, and select **Run**.
+Events stream in real time and replay after transient disconnects.
 
-## SSE event contract
+## Event contract
 
-The debugger consumes the documented sandbox SSE event types:
+The debugger consumes the documented sandbox agent event types:
 
 - `message.part.updated` — streaming chunks (text / reasoning / tool parts)
 - `status` — lifecycle (`generating_response`, `processing`, `completed`, `failed`)
@@ -57,22 +74,20 @@ Streaming `delta` chunks are accumulated into part text by
 `src/lib/sandbox-stream.ts` before reaching components — the rest of the app
 only ever sees cumulative snapshots.
 
-Source contract: see the
-[Sandbox SDK INTEGRATION notes](https://github.com/tangle-network/agent-dev-container/blob/main/products/sandbox/sdk/INTEGRATION.md#sse-event-contract).
+The SDK `SessionGatewayClient` owns reconnect, deduplication, and replay.
 
 ## Extending
 
-- `src/lib/sandbox-stream.ts` — add transports beyond `streamPrompt()`
-  (e.g. websocket bridges, replay-from-disk for postmortems).
-- `src/components/ToolCallTimeline.tsx` — already aggregates by
+- `src/lib/sandbox-stream.ts`: session bootstrap, command dispatch, reconnect, and normalization
+- `src/components/ToolCallTimeline.tsx`: already aggregates by
   `toolCallId`; replace `aggregateToolCalls` to add cost/latency overlays.
-- `src/lib/event-types.ts` — extend `SandboxEvent` if your runtime emits
+- `src/lib/event-types.ts`: extend `SandboxEvent` if your runtime emits
   custom event types (the inspector already falls through to raw JSON).
 
 ## What this is NOT
 
-- **Forensic replay UI** — see the sister `agent-eval-ui-ts` family for
+- **Completed-run analysis**: see the sister `agent-eval-ui-ts` family for
   scoring + judge integration over completed runs.
-- **A marketplace / discovery surface** — see `agent-marketplace-ui-ts`.
-- **An agent runtime** — this only debugs agents that already run in a
+- **A marketplace or discovery surface**: see `agent-marketplace-ui-ts`.
+- **An agent runtime**: this only debugs agents that already run in a
   sandbox. Pair with any `agent-runtime-*-ts` family.

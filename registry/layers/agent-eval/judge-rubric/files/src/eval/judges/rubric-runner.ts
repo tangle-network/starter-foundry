@@ -12,7 +12,6 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 import {
   calibrateJudge,
-  createChatClient,
   llmJudge,
   type CalibrationResult,
   type CandidateScore,
@@ -57,52 +56,6 @@ export function buildRubric(spec: RubricSpec): JudgeRubric {
   }
 }
 
-// A TCloud-shaped client: `.chat()` takes an OpenAI-style request and resolves
-// an OpenAI `ChatCompletion` (the legacy judge read `choices[0].message.content`).
-// The runner threads exactly this into every JudgeFn.
-interface OpenAiChatClient {
-  chat(req: {
-    model: string
-    messages: { role: string; content: string }[]
-    temperature?: number
-    maxTokens?: number
-    jsonMode?: boolean
-  }): Promise<{ choices?: { message?: { content?: string } }[]; model?: string }>
-}
-
-// Adapt the TCloud-shaped client (OpenAI `ChatCompletion` out) into the
-// transport-agnostic `ChatClient` `llmJudge` consumes (`LlmCallResult` out, i.e.
-// top-level `content`). The `sandbox-sdk` transport is the published
-// pass-through seam for "I already have a callable chat()"; we normalize the
-// completion shape so the judge stays decoupled from the OpenAI envelope. Model
-// is resolved per-judge (spec.model), so no defaultModel is required here.
-function chatClientFor(tc: OpenAiChatClient): ChatClient {
-  return createChatClient({
-    transport: 'sandbox-sdk',
-    chat: async (req) => {
-      const resp = await tc.chat({
-        model: req.model ?? '',
-        messages: req.messages.map((m) => ({
-          role: String(m.role),
-          content: typeof m.content === 'string' ? m.content : JSON.stringify(m.content),
-        })),
-        ...(req.temperature !== undefined ? { temperature: req.temperature } : {}),
-        ...(req.maxTokens !== undefined ? { maxTokens: req.maxTokens } : {}),
-        ...(req.jsonMode !== undefined ? { jsonMode: req.jsonMode } : {}),
-      })
-      return {
-        content: resp.choices?.[0]?.message?.content ?? '',
-        model: resp.model ?? req.model ?? '',
-        usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
-        costUsd: null,
-        durationMs: 0,
-        finishReason: null,
-        raw: resp,
-      }
-    },
-  })
-}
-
 // Render the rubric's dimensions as `llmJudge` dimension specs: the anchored
 // description becomes the per-dimension instruction the judge contract surfaces.
 // `llmJudge` owns the JSON output contract + [0,1] normalization, so authors
@@ -144,7 +97,7 @@ export function buildRubricJudge(spec: RubricSpec): JudgeFn {
   const dimensions = rubricDimensions(rubric)
   return async (tc, input): Promise<JudgeScore[]> => {
     const judge = llmJudge<string>(rubric.name, renderRubricSystemPrompt(rubric), {
-      chat: chatClientFor(tc as unknown as OpenAiChatClient),
+      chat: tc,
       dimensions,
       weights: rubricWeights(rubric),
       scale: 'unit',
@@ -178,12 +131,10 @@ anchored: 0.0 is the worst response, 1.0 is the best.`
 export async function runRubric(
   spec: RubricSpec,
   input: JudgeInput,
-  // The published JudgeFn signature wants a TCloud — callers thread it in.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  tc: any,
+  chat: ChatClient,
 ): Promise<JudgeScore[]> {
   const judge = buildRubricJudge(spec)
-  return judge(tc, input)
+  return judge(chat, input)
 }
 
 export interface CalibrationOutput {

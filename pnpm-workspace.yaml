@@ -3,5 +3,11 @@ minimumReleaseAgeExclude:
   - '@tangle-network/agent-core@0.4.25'
   - '@tangle-network/agent-eval@0.134.2'
   - '@tangle-network/agent-interface@0.36.0'
+  - '@tangle-network/sandbox@0.15.2'
 overrides:
+  '@huggingface/transformers>sharp': 0.35.3
   '@tangle-network/agent-eval>@hono/node-server': 2.0.11
+  'knip>smol-toml': 1.7.0
+  'knip>unbash': 4.0.3
+  'onnxruntime-node>adm-zip': 0.6.0
+  'viem': 2.55.8

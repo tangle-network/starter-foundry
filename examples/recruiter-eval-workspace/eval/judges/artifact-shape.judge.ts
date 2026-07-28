@@ -16,6 +16,9 @@
 
 import type { JudgeFn, JudgeScore } from '@tangle-network/agent-eval'
 
+export const dimensions = ['artifact-shape'] as const
+export const usesModel = false
+
 /**
  * Line-anchored artifact block regex. Both `:::artifact` (the opener) and
  * the closing `:::` must sit on a line by themselves (with optional

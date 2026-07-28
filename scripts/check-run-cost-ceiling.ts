@@ -41,8 +41,16 @@ function ceilingFor(profileName: string): number {
   return profile.costCeilingUsd
 }
 
-const lines = readFileSync(path, 'utf8').split('\n').filter((l) => l.trim().length > 0)
-const violations: Array<{ line: number; runId: string; profile: string; ceiling: number; cost: number }> = []
+const lines = readFileSync(path, 'utf8')
+  .split('\n')
+  .filter((l) => l.trim().length > 0)
+const violations: Array<{
+  line: number
+  runId: string
+  profile: string
+  ceiling: number
+  cost: number
+}> = []
 
 for (let i = 0; i < lines.length; i += 1) {
   let record: { runId?: string; experimentId?: string; costUsd?: number }
@@ -61,9 +69,13 @@ for (let i = 0; i < lines.length; i += 1) {
 }
 
 if (violations.length > 0) {
-  console.error(`check-run-cost-ceiling: ${violations.length} cost-ceiling violation(s) in ${path}:`)
+  console.error(
+    `check-run-cost-ceiling: ${violations.length} cost-ceiling violation(s) in ${path}:`,
+  )
   for (const v of violations) {
-    console.error(`  line ${v.line} runId=${v.runId} profile=${v.profile} cost=$${v.cost.toFixed(4)} > ceiling $${v.ceiling.toFixed(2)}`)
+    console.error(
+      `  line ${v.line} runId=${v.runId} profile=${v.profile} cost=$${v.cost.toFixed(4)} > ceiling $${v.ceiling.toFixed(2)}`,
+    )
   }
   process.exit(1)
 }

@@ -1,7 +1,3 @@
-// Regression tests for the foundational primitives. Each primitive
-// unblocks multiple ROADMAP.md branches; breaking one blocks the
-// downstream work wired on top of it.
-
 import assert from 'node:assert/strict'
 import fs from 'node:fs/promises'
 import path from 'node:path'

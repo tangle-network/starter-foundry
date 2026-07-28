@@ -43,6 +43,21 @@ export interface RubricDimensionSpec extends RubricDimension {
 }
 
 export function buildRubric(spec: RubricSpec): JudgeRubric {
+  if (spec.dimensions.length === 0) {
+    throw new Error(`rubric "${spec.name}" requires at least one dimension`)
+  }
+  const names = new Set<string>()
+  for (const dimension of spec.dimensions) {
+    if (names.has(dimension.name)) {
+      throw new Error(`rubric "${spec.name}" repeats dimension "${dimension.name}"`)
+    }
+    if (!Number.isFinite(dimension.weight) || dimension.weight <= 0) {
+      throw new Error(
+        `rubric "${spec.name}" dimension "${dimension.name}" requires a positive finite weight`,
+      )
+    }
+    names.add(dimension.name)
+  }
   return {
     name: spec.name,
     description: spec.description,
@@ -110,12 +125,19 @@ export function buildRubricJudge(spec: RubricSpec): JudgeFn {
       scenario: input.scenario as unknown as Parameters<typeof judge.score>[0]['scenario'],
       signal: new AbortController().signal,
     })
-    return rubric.dimensions.map<JudgeScore>((d) => ({
-      judgeName: rubric.name,
-      dimension: d.name,
-      score: verdict.dimensions[d.name],
-      reasoning: verdict.notes,
-    }))
+    return rubric.dimensions.map((dimension) => {
+      const score = verdict.dimensions[dimension.name]
+      if (typeof score !== 'number' || !Number.isFinite(score)) {
+        throw new Error(`rubric "${rubric.name}" returned no finite score for "${dimension.name}"`)
+      }
+      return {
+        judgeName: rubric.name,
+        dimension: dimension.name,
+        score,
+        reasoning: verdict.notes,
+        weight: dimension.weight,
+      }
+    })
   }
 }
 

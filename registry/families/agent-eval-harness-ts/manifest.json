@@ -55,8 +55,14 @@
     { "source": "files/agent.json", "target": "agent.json" },
     { "source": "files/AGENTS.md", "target": "AGENTS.md" },
     { "source": "files/README.md", "target": "README.md" },
+    { "source": "files/src/eval/conversation.ts", "target": "src/eval/conversation.ts" },
+    {
+      "source": "files/src/eval/conversation-cli.ts",
+      "target": "src/eval/conversation-cli.ts"
+    },
+    { "source": "files/src/eval/judge-client.ts", "target": "src/eval/judge-client.ts" },
+    { "source": "files/src/eval/judge-policy.ts", "target": "src/eval/judge-policy.ts" },
     { "source": "files/src/eval/runner.ts", "target": "src/eval/runner.ts" },
-    { "source": "files/src/eval/scorecard.ts", "target": "src/eval/scorecard.ts" },
     { "source": "files/src/eval/cli.ts", "target": "src/eval/cli.ts" },
     { "source": "files/src/eval/campaign.ts", "target": "src/eval/campaign.ts" },
     { "source": "files/scenarios/.gitkeep", "target": "scenarios/.gitkeep" },
@@ -70,6 +76,10 @@
     { "type": "file-exists", "path": "tsconfig.json" },
     { "type": "file-exists", "path": "AGENTS.md" },
     { "type": "agents-md-valid", "path": "AGENTS.md" },
+    { "type": "file-exists", "path": "src/eval/conversation.ts" },
+    { "type": "file-exists", "path": "src/eval/conversation-cli.ts" },
+    { "type": "file-exists", "path": "src/eval/judge-client.ts" },
+    { "type": "file-exists", "path": "src/eval/judge-policy.ts" },
     { "type": "file-exists", "path": "src/eval/runner.ts" },
     { "type": "file-exists", "path": "src/eval/scorecard.ts" },
     { "type": "file-exists", "path": "src/eval/cli.ts" },
@@ -113,7 +123,8 @@
     ],
     "entrypoints": [
       "src/eval/runner.ts",
-      "src/eval/cli.ts"
+      "src/eval/cli.ts",
+      "src/eval/conversation.ts"
     ],
     "extensionPoints": [
       "scenarios/",

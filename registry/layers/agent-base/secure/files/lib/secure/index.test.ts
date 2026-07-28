@@ -298,10 +298,9 @@ test('webhook-out: subdomain match works', async () => {
   process.env.OUT_SECRET2 = 'k'
   // Stub global fetch to capture the request without making it
   const realFetch = globalThis.fetch
-  const captured: { url: string; headers: Record<string, string> } = { url: '', headers: {} }
+  const captured: Array<{ url: string; headers: Record<string, string> }> = []
   globalThis.fetch = (async (url: string, init: RequestInit) => {
-    captured.url = url
-    captured.headers = init.headers as Record<string, string>
+    captured.push({ url, headers: init.headers as Record<string, string> })
     return new Response('ok', { status: 200 })
   }) as typeof fetch
   try {
@@ -311,9 +310,12 @@ test('webhook-out: subdomain match works', async () => {
       allowedDomains: ['tangle.tools'],
     })
     assert.equal(r.ok, true)
-    assert.equal(captured.url, 'https://api.tangle.tools/hook')
-    assert.ok(captured.headers['x-tangle-signature'])
-    assert.ok(captured.headers['x-tangle-timestamp'])
+    assert.equal(captured.length, 1)
+    const request = captured[0]
+    assert.ok(request)
+    assert.equal(request.url, 'https://api.tangle.tools/hook')
+    assert.ok(request.headers['x-tangle-signature'])
+    assert.ok(request.headers['x-tangle-timestamp'])
   } finally {
     globalThis.fetch = realFetch
     delete process.env.OUT_SECRET2

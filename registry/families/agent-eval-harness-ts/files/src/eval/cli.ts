@@ -5,7 +5,7 @@
 // `compare` diffs two scorecards (no statistical gate — for that, use the
 // regression layer's `eval:gate` CLI).
 
-import { runHarness } from './runner.js'
+import { exitCodeForReport, runHarness } from './runner.js'
 import { readScorecard, diffScorecards } from './scorecard.js'
 
 function help(): never {
@@ -30,7 +30,7 @@ async function cmdRun(argv: string[]): Promise<void> {
     process.exit(2)
   }
   const report = await runHarness({ targetUrl: target, threshold, variantId })
-  process.exitCode = report.aggregate === null || report.aggregate < report.threshold ? 1 : 0
+  process.exitCode = exitCodeForReport(report)
 }
 
 async function cmdCompare(argv: string[]): Promise<void> {

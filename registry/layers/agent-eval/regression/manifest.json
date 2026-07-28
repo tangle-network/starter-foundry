@@ -28,6 +28,10 @@
       "target": "src/eval/regression/README.md"
     },
     {
+      "source": "files/src/eval/scorecard.ts",
+      "target": "src/eval/scorecard.ts"
+    },
+    {
       "source": "files/.github/workflows/regression-gate.yml",
       "target": ".github/workflows/regression-gate.yml"
     }
@@ -36,6 +40,7 @@
     { "type": "file-exists", "path": "src/eval/regression/gate.ts" },
     { "type": "file-exists", "path": "src/eval/regression/cli.ts" },
     { "type": "file-exists", "path": "src/eval/regression/README.md" },
+    { "type": "file-exists", "path": "src/eval/scorecard.ts" },
     { "type": "file-exists", "path": ".github/workflows/regression-gate.yml" }
   ],
   "tieredKeywords": {
@@ -55,6 +60,6 @@
   },
   "contextHints": {
     "commands": ["pnpm eval:gate baseline.json head.json"],
-    "extensionPoints": ["src/eval/regression/gate.ts"]
+    "extensionPoints": ["src/eval/regression/gate.ts", "src/eval/scorecard.ts"]
   }
 }

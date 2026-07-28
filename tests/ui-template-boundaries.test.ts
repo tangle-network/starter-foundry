@@ -92,8 +92,8 @@ test('agent-with-ui declares its state-store peers and Stop closes the active me
   const pkg = JSON.parse(
     readFileSync(familyPath('agent-with-ui-ts', 'files/package.json'), 'utf8'),
   ) as { dependencies: Record<string, string> }
-  assert.equal(pkg.dependencies['@nanostores/react'], '^1.1.0')
-  assert.equal(pkg.dependencies.nanostores, '^1.4.1')
+  assert.equal(pkg.dependencies['@nanostores/react'], '1.1.0')
+  assert.equal(pkg.dependencies.nanostores, '1.4.1')
 
   const app = readFileSync(familyPath('agent-with-ui-ts', 'files/src/App.tsx'), 'utf8')
   assert.match(app, /active\.controller\.abort\(\)/)

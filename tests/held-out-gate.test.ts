@@ -49,14 +49,14 @@ test('PROMOTE on a clear positive delta with adequate effect size', () => {
   const gate = new HeldOutGate({ baselineKey: 'b', seed: 1 })
   // Large, consistent improvement: candidate ~0.9, baseline ~0.5
   const baseline = makeBatch([0.5, 0.52, 0.48, 0.51, 0.49, 0.53, 0.5, 0.48])
-  const candidate = makeBatch([0.9, 0.92, 0.88, 0.91, 0.89, 0.93, 0.9, 0.88])
+  const candidate = makeBatch([0.92, 0.89, 0.94, 0.88, 0.93, 0.9, 0.95, 0.87])
   const decision = gate.evaluate(candidate, baseline)
   assert.equal(
     decision.verdict,
     'PROMOTE',
     `expected PROMOTE got ${decision.verdict}: ${decision.reason}`,
   )
-  assert.ok(decision.evidence.cohensD > 0.5)
+  assert.ok(decision.evidence.cohensD !== null && decision.evidence.cohensD > 0.5)
   assert.ok(decision.evidence.pairedDeltaMedian > 0)
 })
 
@@ -80,7 +80,7 @@ test('REVERT on overfit (held-out gap exceeds threshold)', () => {
 test('REVERT on significantly worse paired-delta', () => {
   const gate = new HeldOutGate({ baselineKey: 'b', seed: 1 })
   const baseline = makeBatch([0.9, 0.92, 0.88, 0.91, 0.89, 0.93, 0.9, 0.88])
-  const candidate = makeBatch([0.5, 0.52, 0.48, 0.51, 0.49, 0.53, 0.5, 0.48])
+  const candidate = makeBatch([0.48, 0.55, 0.47, 0.53, 0.46, 0.57, 0.49, 0.44])
   const decision = gate.evaluate(candidate, baseline)
   assert.equal(
     decision.verdict,
@@ -102,13 +102,13 @@ test("HOLD when delta exists but Cohen's d below threshold", () => {
     'HOLD',
     `expected HOLD got ${decision.verdict}: ${decision.reason}`,
   )
-  assert.ok(Math.abs(decision.evidence.cohensD) < 5.0)
+  assert.ok(decision.evidence.cohensD !== null && Math.abs(decision.evidence.cohensD) < 5.0)
 })
 
 test('BH correction applies q-value when applyBHCorrection: true', () => {
   const gate = new HeldOutGate({ baselineKey: 'b', applyBHCorrection: true, seed: 1 })
   const baseline = makeBatch([0.5, 0.52, 0.48, 0.51, 0.49, 0.53])
-  const candidate = makeBatch([0.9, 0.92, 0.88, 0.91, 0.89, 0.93])
+  const candidate = makeBatch([0.92, 0.89, 0.94, 0.88, 0.93, 0.9])
   const decision = gate.evaluate(candidate, baseline)
   assert.notEqual(decision.evidence.qValueBh, null)
 })
@@ -119,6 +119,16 @@ test('q-value is null when applyBHCorrection: false', () => {
   const candidate = makeBatch([0.9, 0.92, 0.88, 0.91, 0.89, 0.93])
   const decision = gate.evaluate(candidate, baseline)
   assert.equal(decision.evidence.qValueBh, null)
+})
+
+test('HOLD when constant non-zero deltas make paired significance undefined', () => {
+  const gate = new HeldOutGate({ baselineKey: 'b' })
+  const decision = gate.evaluate(makeBatch([0.75, 0.75, 0.75]), makeBatch([0.5, 0.5, 0.5]))
+
+  assert.equal(decision.verdict, 'HOLD')
+  assert.equal(decision.evidence.cohensD, null)
+  assert.equal(decision.evidence.pValue, null)
+  assert.match(decision.reason, /undefined/)
 })
 
 test('decision carries baselineKey for traceability', () => {

@@ -128,17 +128,13 @@ test('agent.json points systemPromptFile at AGENTS.md', () => {
   )
 })
 
-test('package.json declares a current @tangle-network/agent-eval (^0.23+) dep', () => {
+test('package.json pins @tangle-network/agent-eval to the current cohort', () => {
   const pkg = JSON.parse(readFileSync(join(FAMILY_DIR, 'files/package.json'), 'utf8'))
   const dep = pkg.dependencies?.['@tangle-network/agent-eval']
-  // 0.21 introduced capture integrity, 0.22 added EvalCampaign + replay,
-  // 0.23 added the RL bridge subpath. The template wires all three, so
-  // ^0.23 is the lower bound — earlier versions don't export the
-  // primitives the runner/campaign import.
-  assert.match(
-    dep ?? '',
-    /^\^?0\.(2[3-9]|[3-9]\d)\./,
-    `package.json must depend on @tangle-network/agent-eval ^0.23+; got ${dep}`,
+  assert.equal(
+    dep,
+    '0.134.1',
+    `package.json must pin @tangle-network/agent-eval 0.134.1; got ${dep}`,
   )
   assert.ok(pkg.scripts?.eval, 'pnpm eval script must be wired')
   assert.ok(pkg.scripts?.['eval:gate'], 'pnpm eval:gate script must be wired')

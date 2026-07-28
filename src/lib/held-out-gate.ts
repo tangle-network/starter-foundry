@@ -1,18 +1,12 @@
 /**
  * HeldOutGate — promote/hold/revert decision over a candidate vs baseline.
  *
- * Composes from `@tangle-network/agent-eval@0.19.1` primitives:
+ * Composes current `@tangle-network/agent-eval` statistical primitives:
  *   - `bootstrapCi` for paired-delta CI
  *   - `pairedTTest` for paired p-value
  *   - `cohensD` for effect size
  *   - `welchsTTest` for unpaired fallback
  *   - `benjaminiHochberg` for FDR adjustment
- *
- * The shape is the v0.16 agent-eval `HeldOutGate` API exactly so the swap is
- * rename-only:
- *
- *   import { HeldOutGate } from '@tangle-network/agent-eval'
- *   `rm src/lib/held-out-gate.ts`
  *
  * Verdict logic:
  *   - REVERT if pairedDeltaMedian < 0 AND pValue < 0.05
@@ -69,11 +63,11 @@ export interface GateEvidence {
   n: number
   pairedDeltaMedian: number
   pairedDeltaCi95: { lower: number; upper: number }
-  cohensD: number
+  cohensD: number | null
   searchScore: number
   holdoutScore: number | null
   overfitGap: number | null
-  pValue: number
+  pValue: number | null
   /** BH-corrected q-value for this single hypothesis. null if applyBHCorrection: false. */
   qValueBh: number | null
 }
@@ -147,18 +141,17 @@ export class HeldOutGate {
     const baselineScores = baseline.map((r) => r.outcome.searchScore)
 
     const candidateMean = mean(candidateScores)
-    const baselineMean = mean(baselineScores)
 
     if (n < this.cfg.minProductiveRuns) {
       return this.decision('HOLD', `n=${n} below minProductiveRuns=${this.cfg.minProductiveRuns}`, {
         n,
         pairedDeltaMedian: 0,
         pairedDeltaCi95: { lower: 0, upper: 0 },
-        cohensD: 0,
+        cohensD: null,
         searchScore: candidateMean,
         holdoutScore: meanHoldoutScore(candidate),
         overfitGap: null,
-        pValue: 1,
+        pValue: null,
         qValueBh: null,
       })
     }
@@ -180,16 +173,18 @@ export class HeldOutGate {
 
     // Use paired t-test when arrays are equal length; fall back to Welch's
     // when they differ (rare; documented in reason).
-    let pValue: number
+    let pValue: number | null
     if (candidateScores.length === baselineScores.length) {
       pValue = pairedTTest(baselineScores, candidateScores).p
     } else {
-      pValue = welchsTTest(baselineScores, candidateScores).p
+      const welchP = welchsTTest(baselineScores, candidateScores).p
+      pValue = Number.isFinite(welchP) ? welchP : null
     }
 
-    const qValueBh = this.cfg.applyBHCorrection
-      ? benjaminiHochberg([pValue], this.cfg.alpha).qValues[0]
-      : null
+    const qValueBh =
+      this.cfg.applyBHCorrection && pValue !== null
+        ? benjaminiHochberg([pValue], this.cfg.alpha).qValues[0]
+        : null
 
     const candidateHoldout = meanHoldoutScore(candidate)
     const overfitGap = candidateHoldout !== null ? candidateMean - candidateHoldout : null
@@ -209,7 +204,7 @@ export class HeldOutGate {
     const effectiveP = qValueBh ?? pValue
 
     // REVERT: significantly worse on search
-    if (pairedDeltaMedian < 0 && effectiveP < this.cfg.alpha) {
+    if (pairedDeltaMedian < 0 && effectiveP !== null && effectiveP < this.cfg.alpha) {
       return this.decision(
         'REVERT',
         `paired-delta median ${pairedDeltaMedian.toFixed(4)} < 0 with p=${effectiveP.toFixed(4)} < alpha=${this.cfg.alpha}`,
@@ -228,8 +223,8 @@ export class HeldOutGate {
 
     // PROMOTE: positive median delta + adequate effect size + significant
     const positiveDelta = pairedDeltaMedian >= this.cfg.pairedDeltaThreshold
-    const adequateEffect = Math.abs(d) >= this.cfg.cohensDThreshold && d > 0
-    const significant = effectiveP < this.cfg.alpha
+    const adequateEffect = d !== null && Math.abs(d) >= this.cfg.cohensDThreshold && d > 0
+    const significant = effectiveP !== null && effectiveP < this.cfg.alpha
     if (positiveDelta && adequateEffect && significant) {
       return this.decision(
         'PROMOTE',
@@ -249,9 +244,11 @@ export class HeldOutGate {
       reasons.push(
         `paired-delta ${pairedDeltaMedian.toFixed(4)} < ${this.cfg.pairedDeltaThreshold}`,
       )
-    if (!adequateEffect)
+    if (d === null) reasons.push(`cohen's d is undefined`)
+    else if (!adequateEffect)
       reasons.push(`|cohen's d| ${Math.abs(d).toFixed(3)} < ${this.cfg.cohensDThreshold}`)
-    if (!significant) reasons.push(`p=${effectiveP.toFixed(4)} >= ${this.cfg.alpha}`)
+    if (effectiveP === null) reasons.push('p-value is undefined')
+    else if (!significant) reasons.push(`p=${effectiveP.toFixed(4)} >= ${this.cfg.alpha}`)
     return this.decision('HOLD', `insufficient evidence: ${reasons.join('; ')}`, evidence)
   }
 

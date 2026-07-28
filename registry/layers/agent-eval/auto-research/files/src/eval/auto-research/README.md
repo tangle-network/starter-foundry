@@ -1,6 +1,6 @@
 # auto-research
 
-Composable optimization layer over `@tangle-network/agent-eval@0.135.1`.
+Composable optimization layer over `@tangle-network/agent-eval`.
 
 Wraps `runOptimization`, `runImprovementLoop`, `PairwiseSteeringOptimizer`, `runProposeReview`, `paretoFrontier`, `paretoFrontierWithCrowding`, and `analyzeRuns` behind a small API for generated research projects.
 

@@ -1,7 +1,7 @@
 /**
  * auto-research:loop — composable optimization loop.
  *
- * Wraps the optimization primitives from `@tangle-network/agent-eval@0.135.1`.
+ * Wraps the optimization primitives from `@tangle-network/agent-eval`.
  * The eval-harness layers (scenarios, judge-rubric, regression) supply the
  * measurement substrate; this module supplies the optimizer that drives
  * variants against it.

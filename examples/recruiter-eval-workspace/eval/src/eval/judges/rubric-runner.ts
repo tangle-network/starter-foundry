@@ -43,6 +43,21 @@ export interface RubricDimensionSpec extends RubricDimension {
 }
 
 export function buildRubric(spec: RubricSpec): JudgeRubric {
+  if (spec.dimensions.length === 0) {
+    throw new Error(`rubric "${spec.name}" requires at least one dimension`)
+  }
+  const names = new Set<string>()
+  for (const dimension of spec.dimensions) {
+    if (names.has(dimension.name)) {
+      throw new Error(`rubric "${spec.name}" repeats dimension "${dimension.name}"`)
+    }
+    if (!Number.isFinite(dimension.weight) || dimension.weight <= 0) {
+      throw new Error(
+        `rubric "${spec.name}" dimension "${dimension.name}" requires a positive finite weight`,
+      )
+    }
+    names.add(dimension.name)
+  }
   return {
     name: spec.name,
     description: spec.description,
@@ -63,10 +78,7 @@ export function buildRubric(spec: RubricSpec): JudgeRubric {
 function rubricDimensions(rubric: JudgeRubric): LlmJudgeDimension[] {
   return rubric.dimensions.map((d) => ({
     key: d.name,
-    description:
-      `${d.description}\n` +
-      `0.0 = ${d.anchor_low}\n` +
-      `1.0 = ${d.anchor_high}`,
+    description: `${d.description}\n` + `0.0 = ${d.anchor_low}\n` + `1.0 = ${d.anchor_high}`,
   }))
 }
 
@@ -81,8 +93,7 @@ function rubricWeights(rubric: JudgeRubric): Record<string, number> {
 function renderTranscript(input: JudgeInput): string {
   return input.turns
     .map(
-      (t, i) =>
-        `Turn ${i + 1}:\nUser: ${t.userMessage}\nAgent: ${t.agentResponse.slice(0, 2000)}`,
+      (t, i) => `Turn ${i + 1}:\nUser: ${t.userMessage}\nAgent: ${t.agentResponse.slice(0, 2000)}`,
     )
     .join('\n\n---\n\n')
 }
@@ -110,12 +121,19 @@ export function buildRubricJudge(spec: RubricSpec): JudgeFn {
       scenario: input.scenario as unknown as Parameters<typeof judge.score>[0]['scenario'],
       signal: new AbortController().signal,
     })
-    return rubric.dimensions.map<JudgeScore>((d) => ({
-      judgeName: rubric.name,
-      dimension: d.name,
-      score: verdict.dimensions[d.name],
-      reasoning: verdict.notes,
-    }))
+    return rubric.dimensions.map((dimension) => {
+      const score = verdict.dimensions[dimension.name]
+      if (typeof score !== 'number' || !Number.isFinite(score)) {
+        throw new Error(`rubric "${rubric.name}" returned no finite score for "${dimension.name}"`)
+      }
+      return {
+        judgeName: rubric.name,
+        dimension: dimension.name,
+        score,
+        reasoning: verdict.notes,
+        weight: dimension.weight,
+      }
+    })
   }
 }
 

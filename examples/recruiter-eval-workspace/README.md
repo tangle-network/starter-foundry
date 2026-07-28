@@ -23,7 +23,7 @@ Each bundle has its own `.env` populated with placeholder URLs for sibling bundl
 Update them once each service is running locally:
 
 - `app/.env` reads `VITE_AGENT_ENDPOINT` from `agent` (`AGENT_ENDPOINT`)
-- `eval/.env` reads `EVAL_TARGET_URL` from `agent` (`AGENT_ENDPOINT`)
+- `eval/.env` reads `EVAL_TARGET_BASE_URL` from `agent` (`AGENT_ENDPOINT`)
 
 ## Next steps
 

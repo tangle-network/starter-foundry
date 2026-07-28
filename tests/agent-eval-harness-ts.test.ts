@@ -144,7 +144,7 @@ test('runner.ts imports the agent-eval primitives we claim to compose', () => {
   const src = readFileSync(join(FAMILY_DIR, 'files/src/eval/runner.ts'), 'utf8')
   for (const symbol of [
     'FileSystemTraceStore',
-    'FileSystemExperimentStore',
+    'fileExperimentStore',
     'SubprocessSandboxDriver',
     'runTestGradedScenario',
   ]) {
@@ -153,6 +153,18 @@ test('runner.ts imports the agent-eval primitives we claim to compose', () => {
       new RegExp(`\\b${symbol}\\b`),
       `runner.ts must import ${symbol} from @tangle-network/agent-eval`,
     )
+  }
+})
+
+test('family ships ordered conversation and run-bound judge modules', () => {
+  const targets = new Set(loadFamilyManifest().files.map((file) => file.target))
+  for (const target of [
+    'src/eval/conversation.ts',
+    'src/eval/conversation-cli.ts',
+    'src/eval/judge-client.ts',
+    'src/eval/judge-policy.ts',
+  ]) {
+    assert.ok(targets.has(target), `${target} must be composed into generated eval projects`)
   }
 })
 
@@ -292,6 +304,10 @@ test('regression layer requires eval:scenarios and ships gate + CLI + workflow',
   )
   assert.match(yml, /origin\/main/, 'regression CI must compare against origin/main')
   assert.match(yml, /pnpm eval:gate/, 'regression CI must invoke pnpm eval:gate')
+  assert.ok(
+    mf.files.some((file) => file.target === 'src/eval/scorecard.ts'),
+    'the regression layer must provide nullable scorecard support to both families',
+  )
 })
 
 test('every layer file declared in manifest.files exists on disk', () => {

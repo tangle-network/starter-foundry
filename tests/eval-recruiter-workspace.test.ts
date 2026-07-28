@@ -55,7 +55,11 @@ test('example workspace exists with expected file shape', () => {
   assert.ok(existsSync(join(WORKSPACE, '.env.example')))
   const envExample = readFileSync(join(WORKSPACE, '.env.example'), 'utf8')
   assert.match(envExample, /TANGLE_API_KEY=/, '.env.example must declare TANGLE_API_KEY')
-  assert.match(envExample, /EVAL_TARGET_URL=/, '.env.example must declare EVAL_TARGET_URL')
+  assert.match(
+    envExample,
+    /EVAL_TARGET_BASE_URL=/,
+    '.env.example must declare EVAL_TARGET_BASE_URL',
+  )
   assert.ok(existsSync(join(WORKSPACE, 'README.md')))
   for (const sub of ['app', 'agent', 'eval']) {
     assert.ok(existsSync(join(WORKSPACE, sub)), `expected slot dir ${sub}/`)
@@ -114,10 +118,19 @@ test('all 3 judges present, parse, and instantiate as functions', async () => {
     const filePath = join(JUDGES_DIR, judgeFile)
     assert.ok(existsSync(filePath), `missing judge file: ${judgeFile}`)
     const url = pathToFileURL(filePath).href
-    const mod = (await import(url)) as { default?: unknown }
+    const mod = (await import(url)) as {
+      default?: unknown
+      dimensions?: unknown
+      usesModel?: unknown
+    }
     const judge = mod.default
     assert.ok(judge, `${judgeFile} default export missing`)
     assert.equal(typeof judge, 'function', `${judgeFile} default export must be a JudgeFn`)
+    assert.ok(
+      Array.isArray(mod.dimensions) && mod.dimensions.length > 0,
+      `${judgeFile} must declare non-empty dimensions`,
+    )
+    assert.equal(typeof mod.usesModel, 'boolean', `${judgeFile} must declare usesModel`)
   }
 })
 
@@ -181,7 +194,7 @@ test('eval runner passes a router client to judges when TANGLE_API_KEY is presen
   dimensions: ['client'],
   turns: [{ user: 'hello', expectedBehaviors: ['respond'] }],
   artifactChecks: [],
-  testCommand: 'true'
+  testCommand: "printf 'answer'"
 }
 `,
     )
@@ -206,8 +219,9 @@ const report = await runHarness({
   threshold: 0.7,
   targetUrl: 'http://127.0.0.1:9',
   tracesDir: ${JSON.stringify(join(tmp, '.evolve/agent-eval/traces'))},
-  experimentsDir: ${JSON.stringify(join(tmp, '.evolve/agent-eval/experiments'))},
-  scorecardPath: ${JSON.stringify(join(tmp, '.evolve/scorecard.json'))}
+      experimentsDir: ${JSON.stringify(join(tmp, '.evolve/agent-eval/experiments'))},
+      scorecardPath: ${JSON.stringify(join(tmp, '.evolve/scorecard.json'))},
+      integrityMode: 'off'
 })
 console.log('REPORT_JSON ' + JSON.stringify({
   aggregate: report.aggregate,
@@ -578,6 +592,9 @@ test('CI workflow YAML parses + has triggers + gates on TANGLE_API_KEY (audit B4
 
   // pnpm eval invocation
   assert.match(allRunCmds, /pnpm eval/)
+  assert.doesNotMatch(allRunCmds, /pnpm eval \|\| true/)
+  assert.match(text, /EVAL_TARGET_BASE_URL/)
+  assert.match(text, /EVAL_INTEGRITY:\s*strict/)
 })
 
 test('rubric-quality judge fences agent transcript and instructs judge to ignore inner directives (audit A5)', async () => {

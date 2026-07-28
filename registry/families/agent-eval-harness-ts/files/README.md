@@ -24,9 +24,15 @@ Outputs land in `.evolve/scorecard.json` (latest) and
 ## Layout
 
 - `src/eval/runner.ts` — smoke-test entrypoint (`pnpm eval`). Loads
-  scenarios, runs each via `runTestGradedScenario`, persists traces
-  to `FileSystemTraceStore`, aggregates a scorecard. Capture
-  integrity (agent-eval 0.21+) is wired by default — see below.
+  scenarios, executes every declared turn with full conversation
+  history, persists traces to `FileSystemTraceStore`, and aggregates
+  a scorecard. Operational errors remain unmeasured and fail the CLI.
+- `src/eval/conversation.ts` — ordered HTTP conversation executor.
+  Every turn carries a stable session ID and accumulated messages.
+- `src/eval/judge-client.ts` — run-bound model client that records
+  linked LLM spans and redacted raw provider events.
+- `src/eval/judge-policy.ts` — strict applicability and weighted
+  judge-score aggregation.
 - `src/eval/campaign.ts` — **launch-decision-grade** entrypoint
   (agent-eval 0.22+). Wraps `runEvalCampaign` for sweeps over
   (variants × scenarios × seeds) with paired bootstrap CIs +
@@ -48,14 +54,14 @@ skill's "Capture integrity" section by default:
 
 1. **`RawProviderSink`** — a `FileSystemRawProviderSink` per scenario
    under `.evolve/agent-eval/raw-events/<scenarioId>/`. Headers + body
-   credentials auto-redacted. LLM judges that explicitly call `callLlm`
-   pick the sink up off `globalThis.__agentEvalRawSink`.
+   credentials are redacted at persistence. The runner passes the sink
+   directly to its run-bound judge client.
 2. **`assertLlmRoute`** at preflight — fires when `EVAL_LLM_BASE_URL`
    is set. Fails loud if the sweep would silently fall back to the
    public router or run unauthenticated.
 3. **`assertRunCaptured`** after each scenario — verifies the run wrote
-   spans + (when raw events are present) every `LlmSpan` has a matching
-   raw `request` event. Default `EVAL_INTEGRITY=log` surfaces issues
+   an outcome and every expected `LlmSpan` has a matching raw request
+   event. Default `EVAL_INTEGRITY=log` surfaces issues
    on the outcome row; `EVAL_INTEGRITY=strict` fails the scenario;
    `EVAL_INTEGRITY=off` disables the wiring.
 4. **`onRunComplete` hooks** — supported on the campaign path; pass
@@ -69,6 +75,7 @@ Env knobs:
 
 | Var | Default | Effect |
 | --- | ------- | ------ |
+| `EVAL_TARGET_BASE_URL` | `http://127.0.0.1:8787` | Base URL whose `/chat` route receives scenario turns. |
 | `EVAL_INTEGRITY` | `log` | `off` \| `log` \| `strict` capture-integrity policy. |
 | `EVAL_LLM_BASE_URL` | unset | Triggers `assertLlmRoute` preflight. |
 | `EVAL_LLM_API_KEY` | unset | Auth for the LLM judge route (falls back to `TANGLE_API_KEY`). |

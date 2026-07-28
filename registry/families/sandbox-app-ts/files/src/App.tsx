@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { WorkspaceLayout, TerminalPanel } from '@tangle-network/sandbox-ui/workspace'
 import { FileTree, FilePreview } from '@tangle-network/sandbox-ui/files'
 import { DocumentEditorPane } from '@tangle-network/sandbox-ui/editor'
@@ -15,78 +15,107 @@ const APP_KIND = (import.meta.env.VITE_APP_KIND ?? 'editor') as
   | 'repl'
   | 'file-browser'
 
-const SANDBOX_API_URL = import.meta.env.VITE_SANDBOX_API_URL ?? 'https://api.tangle.tools'
+const SANDBOX_API_URL =
+  import.meta.env.VITE_SANDBOX_API_URL ?? 'https://sandbox.tangle.tools'
 const SANDBOX_API_TOKEN = import.meta.env.VITE_SANDBOX_API_TOKEN ?? ''
+const SANDBOX_ID = import.meta.env.VITE_SANDBOX_ID ?? ''
 
 export function App(): JSX.Element {
   const [sandbox, setSandbox] = useState<SandboxHandle | null>(null)
   const [selectedPath, setSelectedPath] = useState<string | null>(null)
+  const [selectedContent, setSelectedContent] = useState('')
   const [connectError, setConnectError] = useState<string | null>(null)
-
-  // Connect on mount. Operator's job to actually wire this end-to-end against
-  // their sandbox-sdk transport — `connectToSandbox` returns a typed handle
-  // with TODO seams documented in lib/sandbox-client.ts.
-  useState(() => {
-    if (!SANDBOX_API_TOKEN) {
-      setConnectError(
-        'VITE_SANDBOX_API_TOKEN is empty — set it in .env.local. ' +
-          'See README.md for the wiring guide.',
-      )
-      return
-    }
-    connectToSandbox({ apiUrl: SANDBOX_API_URL, token: SANDBOX_API_TOKEN })
-      .then(setSandbox)
-      .catch((err) => setConnectError(err instanceof Error ? err.message : String(err)))
-  })
-
-  const { tree } = useSandboxFiles(sandbox, '/')
+  const { tree, read, write, error: fileError } = useSandboxFiles(sandbox, '/')
   const { lines } = useSandboxTerminal(sandbox)
 
-  if (connectError) {
+  useEffect(() => {
+    if (!SANDBOX_API_TOKEN || !SANDBOX_ID) {
+      setConnectError('Set VITE_SANDBOX_API_TOKEN and VITE_SANDBOX_ID in .env.local.')
+      return
+    }
+    let cancelled = false
+    connectToSandbox({
+      apiUrl: SANDBOX_API_URL,
+      token: SANDBOX_API_TOKEN,
+      sandboxId: SANDBOX_ID,
+    })
+      .then((handle) => {
+        if (!cancelled) setSandbox(handle)
+      })
+      .catch((cause: unknown) => {
+        if (!cancelled) {
+          setConnectError(cause instanceof Error ? cause.message : String(cause))
+        }
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!selectedPath) {
+      setSelectedContent('')
+      return
+    }
+    let cancelled = false
+    read(selectedPath)
+      .then((content) => {
+        if (!cancelled) setSelectedContent(content)
+      })
+      .catch((cause: unknown) => {
+        if (!cancelled) {
+          setConnectError(cause instanceof Error ? cause.message : String(cause))
+        }
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [read, selectedPath])
+
+  if (connectError || fileError) {
     return (
-      <div className="flex h-screen items-center justify-center p-8">
-        <div className="max-w-xl space-y-3">
-          <h1 className="text-xl font-semibold">Sandbox not connected</h1>
-          <pre className="rounded bg-red-50 p-3 text-sm text-red-900">{connectError}</pre>
-          <p className="text-sm text-neutral-600">
-            See README.md → "Required env vars" for setup.
-          </p>
+      <div className='flex h-screen items-center justify-center p-8'>
+        <div className='max-w-xl space-y-3'>
+          <h1 className='text-xl font-semibold'>Sandbox not connected</h1>
+          <pre className='rounded bg-red-50 p-3 text-sm text-red-900'>
+            {connectError ?? fileError?.message}
+          </pre>
         </div>
       </div>
     )
   }
 
-  const directoryPane = (
-    <FileTree
-      tree={tree}
-      selectedPath={selectedPath}
-      onSelect={(node) => setSelectedPath(node.path)}
-    />
-  )
-
-  const centerPane =
+  const editor =
     APP_KIND === 'editor' || APP_KIND === 'audit-tool' ? (
-      <DocumentEditorPane backend="local" initialContent="" />
+      <DocumentEditorPane
+        title={selectedPath ?? 'Editor'}
+        backend='local'
+        markdown={selectedContent}
+        onChange={setSelectedContent}
+        onSave={selectedPath ? (content) => write(selectedPath, content) : undefined}
+      />
     ) : selectedPath ? (
-      <FilePreview path={selectedPath} sandbox={sandbox} />
+      <FilePreview filename={selectedPath} content={selectedContent} />
     ) : (
-      <div className="flex h-full items-center justify-center text-sm text-neutral-500">
+      <div className='flex h-full items-center justify-center text-sm text-neutral-500'>
         Select a file from the tree
       </div>
     )
 
-  const bottomPane = (
-    <TerminalPanel
-      lines={lines.length > 0 ? lines : [{ id: 'init', text: '$ sandbox attached', type: 'system' }]}
-    />
-  )
-
   return (
     <WorkspaceLayout
-      title={`sandbox-app · ${APP_KIND}`}
-      directoryPane={directoryPane}
-      centerPane={centerPane}
-      bottomPane={bottomPane}
+      left={
+        <FileTree
+          root={tree}
+          selectedPath={selectedPath ?? undefined}
+          onSelect={(path) => setSelectedPath(path)}
+        />
+      }
+      leftHeader='Files'
+      center={editor}
+      centerHeader={`sandbox-app: ${APP_KIND}`}
+      bottom={<TerminalPanel lines={lines} />}
+      bottomHeader='Terminal'
     />
   )
 }

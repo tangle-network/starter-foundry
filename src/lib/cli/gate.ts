@@ -32,7 +32,9 @@ function readJsonl(path: string): RunRecord[] {
 
 export async function runGate(opts: GateCliOptions): Promise<number> {
   if (!opts.baselinePath || !opts.candidatePath) {
-    process.stderr.write('usage: pnpm gate <baseline.jsonl> <candidate.jsonl> [--baseline-key <name>]\n')
+    process.stderr.write(
+      'usage: pnpm gate <baseline.jsonl> <candidate.jsonl> [--baseline-key <name>]\n',
+    )
     return 2
   }
   const baseline = readJsonl(opts.baselinePath)
@@ -45,11 +47,9 @@ export async function runGate(opts: GateCliOptions): Promise<number> {
 
   const gate = new HeldOutGate({
     baselineKey: opts.baselineKey ?? opts.baselinePath,
-    overfitGapThreshold: 0.2,
-    cohensDThreshold: 0.5,
-    pairedDeltaThreshold: 0,
-    minProductiveRuns: 3,
-    applyBHCorrection: true,
+    maximumOverfitGap: 0.2,
+    minimumDelta: 0,
+    minPairs: 20,
   })
 
   const decision = gate.evaluate(candidate, baseline)

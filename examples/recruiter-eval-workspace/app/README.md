@@ -20,12 +20,12 @@ This bundle is the "single agent with UI" archetype. It composes:
 This UI is bundle-agnostic. Pair it with any of the existing agent-runtime
 families to ship a complete product:
 
-| Pair | Result |
-| --- | --- |
-| `agent-with-ui-ts` + `agent-runtime-cmo-advisor-ts` | CMO advisor with chat UI |
-| `agent-with-ui-ts` + `agent-runtime-tax-ts` | Tax assistant with filing artifacts |
-| `agent-with-ui-ts` + `agent-runtime-therapist-ts` | Therapy companion with screener-result pane |
-| `agent-with-ui-ts` + `agent-runtime-research` | Research agent with artifact pane |
+| Pair                                                | Result                                      |
+| --------------------------------------------------- | ------------------------------------------- |
+| `agent-with-ui-ts` + `agent-runtime-cmo-advisor-ts` | CMO advisor with chat UI                    |
+| `agent-with-ui-ts` + `agent-runtime-tax-ts`         | Tax assistant with filing artifacts         |
+| `agent-with-ui-ts` + `agent-runtime-therapist-ts`   | Therapy companion with screener-result pane |
+| `agent-with-ui-ts` + `agent-runtime-research`       | Research agent with artifact pane           |
 
 Eight agent-runtime bundles ship today — `business-partner`, `cmo-advisor`,
 `fitness-coach`, `language-tutor`, `legal-counsel`, `music-producer`,
@@ -55,8 +55,9 @@ streams in tandem with the chat surface.
 
 ```bash
 VITE_AGENT_NAME='my-agent'              # display name in the title bar
-VITE_SANDBOX_API_URL='https://api.tangle.tools'     # tangle sandbox API root
+VITE_SANDBOX_API_URL='https://sandbox.tangle.tools' # Tangle Sandbox API root
 VITE_SANDBOX_API_TOKEN='sk-tan-...'          # operator key, scoped to this agent's product
+VITE_SANDBOX_ID='sandbox_...'                 # existing sandbox
 ```
 
 ## Wiring the agent invoker (the one piece you write)
@@ -67,21 +68,18 @@ driving. Minimum implementation against `@tangle-network/sandbox`:
 
 ```tsx
 // src/main.tsx
-import { connectSandbox } from '@tangle-network/sandbox'
+import { Sandbox } from '@tangle-network/sandbox'
 
-const sandbox = await connectSandbox({
+const client = new Sandbox({
   baseUrl: import.meta.env.VITE_SANDBOX_API_URL!,
-  token: import.meta.env.VITE_SANDBOX_API_TOKEN!,
+  apiKey: import.meta.env.VITE_SANDBOX_API_TOKEN!,
 })
+const sandbox = await client.get(import.meta.env.VITE_SANDBOX_ID!)
+if (!sandbox) throw new Error('Sandbox not found')
 
 const invoker = {
   async invoke({ userText, onEvent, signal }) {
-    // TODO: replace with the exact sandbox-sdk method exposed by your
-    // agent-runtime bundle's worker. For the canonical agent-runtime
-    // shape (POST /api/chat returning an SSE stream of SdkSessionEvent),
-    // call `sandbox.session.stream({ message: userText, signal })` and
-    // forward each event into `onEvent`.
-    for await (const event of sandbox.session.stream({ message: userText, signal })) {
+    for await (const event of sandbox.streamPrompt(userText, { signal })) {
       onEvent(event)
     }
   },

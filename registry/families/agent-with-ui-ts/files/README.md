@@ -57,6 +57,7 @@ streams in tandem with the chat surface.
 VITE_AGENT_NAME='{{agentName}}'              # display name in the title bar
 VITE_SANDBOX_API_URL='{{sandboxApiUrl}}'     # tangle sandbox API root
 VITE_SANDBOX_API_TOKEN='sk-tan-...'          # operator key, scoped to this agent's product
+VITE_SANDBOX_ID='sandbox_...'                 # existing sandbox
 ```
 
 ## Wiring the agent invoker (the one piece you write)
@@ -67,21 +68,18 @@ driving. Minimum implementation against `@tangle-network/sandbox`:
 
 ```tsx
 // src/main.tsx
-import { connectSandbox } from '@tangle-network/sandbox'
+import { Sandbox } from '@tangle-network/sandbox'
 
-const sandbox = await connectSandbox({
+const client = new Sandbox({
   baseUrl: import.meta.env.VITE_SANDBOX_API_URL!,
-  token: import.meta.env.VITE_SANDBOX_API_TOKEN!,
+  apiKey: import.meta.env.VITE_SANDBOX_API_TOKEN!,
 })
+const sandbox = await client.get(import.meta.env.VITE_SANDBOX_ID!)
+if (!sandbox) throw new Error('Sandbox not found')
 
 const invoker = {
   async invoke({ userText, onEvent, signal }) {
-    // TODO: replace with the exact sandbox-sdk method exposed by your
-    // agent-runtime bundle's worker. For the canonical agent-runtime
-    // shape (POST /api/chat returning an SSE stream of SdkSessionEvent),
-    // call `sandbox.session.stream({ message: userText, signal })` and
-    // forward each event into `onEvent`.
-    for await (const event of sandbox.session.stream({ message: userText, signal })) {
+    for await (const event of sandbox.streamPrompt(userText, { signal })) {
       onEvent(event)
     }
   },

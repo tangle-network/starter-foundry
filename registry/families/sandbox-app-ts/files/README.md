@@ -30,12 +30,14 @@ The default is `editor`. Change `defaults.appKind` in `manifest.json` (or set `V
 ## Required env vars
 
 ```
-VITE_SANDBOX_API_URL=https://api.tangle.tools
+VITE_SANDBOX_API_URL=https://sandbox.tangle.tools
 VITE_SANDBOX_API_TOKEN=<your-token>
+VITE_SANDBOX_ID=<existing-sandbox-id>
 VITE_APP_KIND=editor
 ```
 
-Without `VITE_SANDBOX_API_TOKEN`, the app surfaces a clear "not connected" screen pointing back at this README — it does NOT silently render an empty workspace.
+Without the token or sandbox ID, the app shows a connection error instead of an
+empty workspace.
 
 ## Collaboration story
 
@@ -44,7 +46,7 @@ Without `VITE_SANDBOX_API_TOKEN`, the app surfaces a clear "not connected" scree
 ## Extension points
 
 - `src/App.tsx` — layout composition. Swap pane content per `appKind`, add toolbars, wire workspace-specific actions.
-- `src/lib/sandbox-client.ts` — sandbox-SDK transport. Each hook (`useSandboxFiles`, `useSandboxTerminal`) has a `// TODO:` comment naming the SDK method to call.
+- `src/lib/sandbox-client.ts` — Sandbox connection, file tree, file I/O, and command execution.
 
 ## What's NOT in scope
 

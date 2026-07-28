@@ -7,7 +7,7 @@
 //
 // Consumers iterate with `for await (const evt of streamRun(...))`.
 
-import { connectSandbox, type Sandbox } from '@tangle-network/sandbox'
+import { Sandbox } from '@tangle-network/sandbox'
 import {
   type AnySandboxEvent,
   type MessagePart,
@@ -39,11 +39,12 @@ function partKey(part: MessagePart, fallbackIdx: number): PartKey {
 export async function* streamRun(
   args: StreamRunArgs,
 ): AsyncIterable<NormalizedEvent> {
-  const sandbox: Sandbox = await connectSandbox({
+  const client = new Sandbox({
     baseUrl: args.baseUrl,
     apiKey: args.apiKey,
-    id: args.sandboxId,
   })
+  const sandbox = await client.get(args.sandboxId)
+  if (!sandbox) throw new Error(`Sandbox not found: ${args.sandboxId}`)
 
   yield* normalizeEventStream(
     sandbox.streamPrompt(args.prompt, {

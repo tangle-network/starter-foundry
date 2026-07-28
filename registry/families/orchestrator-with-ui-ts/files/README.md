@@ -64,9 +64,8 @@ with the CMO Advisor is still there when you click back from the Recruiter),
 and have the per-agent page read from the context instead of calling
 `useSdkSession()` directly. The `SandboxWorkbench` props don't change.
 
-For server-side persistence (resume across page reloads / devices), call the
-sandbox-sdk's session-history endpoint on mount and feed it through
-`session.replaceHistory(seeds)`.
+For persistence across reloads or devices, store session messages in your
+application and feed them through `session.replaceHistory(seeds)` on mount.
 
 ## The orchestrator pattern
 
@@ -81,9 +80,9 @@ in its own Tangle sandbox. The dashboard:
 4. The `:::output-block` parser converts agent-runtime output blocks into
    `SandboxWorkbenchArtifact[]` rendered in the artifact pane
 
-The dashboard is transport-agnostic: this scaffold ships a stub `onSend` that
-echoes back. You wire the real transport — Tangle sandbox-sdk client, custom
-HTTP, websockets — wherever fits your deployment.
+The dashboard accepts Sandbox events through `useSdkSession()`.
+Connect `handleSend` to `Sandbox.streamPrompt()`, an HTTP route, or another
+transport that emits those events.
 
 ## Required env
 

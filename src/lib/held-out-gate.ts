@@ -1,75 +1,56 @@
 /**
- * HeldOutGate — promote/hold/revert decision over a candidate vs baseline.
+ * Makes a promotion decision from matched candidate and baseline runs.
  *
- * Composes current `@tangle-network/agent-eval` statistical primitives:
- *   - `bootstrapCi` for paired-delta CI
- *   - `pairedTTest` for paired p-value
- *   - `cohensD` for effect size
- *   - `welchsTTest` for unpaired fallback
- *   - `benjaminiHochberg` for FDR adjustment
- *
- * Verdict logic:
- *   - REVERT if pairedDeltaMedian < 0 AND pValue < 0.05
- *     (candidate is significantly worse on the search distribution)
- *   - REVERT if overfitGap >= overfitGapThreshold AND holdoutScore is known
- *     (candidate gamed the search judge — held-out shows the gap)
- *   - PROMOTE if pairedDeltaMedian >= pairedDeltaThreshold AND
- *     cohensD >= cohensDThreshold AND
- *     n >= minProductiveRuns AND
- *     (pValue (or qValueBh) < 0.05) AND
- *     overfitGap < overfitGapThreshold (or holdoutScore unknown)
- *   - HOLD otherwise (insufficient evidence)
+ * Promotion requires enough paired observations, a confidence interval wholly
+ * above the minimum useful improvement, a significant one-sided sign test, and
+ * a defined paired effect size. Missing or mismatched evidence always holds.
  *
  * @public
  */
 
 import {
-  benjaminiHochberg,
-  bootstrapCi,
-  cohensD,
-  pairedTTest,
-  welchsTTest,
+  BOOTSTRAP_GATE_MIN_N,
+  pairedBootstrap,
+  pairedCohensDz,
+  pairedSignTest,
 } from '@tangle-network/agent-eval'
 
 import type { RunRecord } from './run-record.js'
 
 export interface HeldOutGateConfig {
-  /** Logical baseline name — recorded on the decision for traceability. */
+  /** Logical baseline name recorded with the decision. */
   baselineKey: string
-  /** Floor below which we always HOLD (not enough data). Default 3. */
-  minProductiveRuns?: number
-  /** Median paired-delta required for PROMOTE. Default 0. */
-  pairedDeltaThreshold?: number
-  /**
-   * Held-out vs search-score gap above which we REVERT (overfit). Default 0.20
-   * (20pp — operator-locked).
-   */
-  overfitGapThreshold?: number
-  /** Minimum |Cohen's d| required for PROMOTE. Default 0.5. */
-  cohensDThreshold?: number
-  /** Apply Benjamini-Hochberg correction across this evaluation. Default true. */
-  applyBHCorrection?: boolean
-  /** Confidence alpha for the bootstrap CI. Default 0.05 (95% CI). */
+  /** Required number of matched runs. Must be at least 20. Default 20. */
+  minPairs?: number
+  /** Smallest useful paired-score improvement. Default 0. */
+  minimumDelta?: number
+  /** Search minus held-out score that rejects a candidate. Default 0.20. */
+  maximumOverfitGap?: number
+  /** Confidence level for the paired bootstrap interval. Default 0.95. */
+  confidence?: number
+  /** Paired bootstrap resamples. Default 2000. */
+  resamples?: number
+  /** Significance level for the one-sided exact sign test. Default 0.05. */
   alpha?: number
-  /** Bootstrap iterations. Default 1000. */
-  iterations?: number
-  /** RNG seed for the bootstrap (reproducibility). */
+  /** Deterministic bootstrap seed. Default 0. */
   seed?: number
 }
 
 export type GateVerdict = 'PROMOTE' | 'HOLD' | 'REVERT'
 
 export interface GateEvidence {
-  n: number
-  pairedDeltaMedian: number
-  pairedDeltaCi95: { lower: number; upper: number }
-  cohensD: number | null
+  candidateN: number
+  baselineN: number
+  pairedN: number
+  holdoutN: number
+  pairedDeltaMedian: number | null
+  pairedDeltaMean: number | null
+  pairedDeltaInterval: { lower: number; upper: number; confidence: number } | null
+  pairedCohensDz: number | null
+  signPValue: number | null
   searchScore: number
   holdoutScore: number | null
   overfitGap: number | null
-  pValue: number | null
-  /** BH-corrected q-value for this single hypothesis. null if applyBHCorrection: false. */
-  qValueBh: number | null
 }
 
 export interface GateDecision {
@@ -80,176 +61,202 @@ export interface GateDecision {
 }
 
 const DEFAULTS = {
-  minProductiveRuns: 3,
-  pairedDeltaThreshold: 0,
-  overfitGapThreshold: 0.2,
-  cohensDThreshold: 0.5,
-  applyBHCorrection: true,
+  minPairs: BOOTSTRAP_GATE_MIN_N,
+  minimumDelta: 0,
+  maximumOverfitGap: 0.2,
+  confidence: 0.95,
+  resamples: 2000,
   alpha: 0.05,
-  iterations: 1000,
+  seed: 0,
 }
 
-function median(xs: number[]): number {
+function mean(xs: readonly number[]): number {
   if (xs.length === 0) return 0
-  const sorted = [...xs].sort((a, b) => a - b)
-  const mid = Math.floor(sorted.length / 2)
-  return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid]
+  return xs.reduce((sum, value) => sum + value, 0) / xs.length
 }
 
-function mean(xs: number[]): number {
-  if (xs.length === 0) return 0
-  let s = 0
-  for (const x of xs) s += x
-  return s / xs.length
+function holdoutSummary(runs: readonly RunRecord[]): { count: number; mean: number | null } {
+  const scores = runs
+    .map((run) => run.outcome.holdoutScore)
+    .filter((value): value is number => typeof value === 'number')
+  return {
+    count: scores.length,
+    mean: scores.length > 0 ? mean(scores) : null,
+  }
 }
 
-/** Average outcome.holdoutScore over runs where it's defined, else null. */
-function meanHoldoutScore(runs: readonly RunRecord[]): number | null {
-  const xs = runs
-    .map((r) => r.outcome.holdoutScore)
-    .filter((v): v is number => typeof v === 'number')
-  if (xs.length === 0) return null
-  return mean(xs)
+function indexBySeed(runs: readonly RunRecord[]): {
+  records: Map<number, RunRecord>
+  duplicateSeed: number | null
+} {
+  const records = new Map<number, RunRecord>()
+  for (const run of runs) {
+    if (records.has(run.seed)) return { records, duplicateSeed: run.seed }
+    records.set(run.seed, run)
+  }
+  return { records, duplicateSeed: null }
 }
 
 export class HeldOutGate {
   private readonly cfg: Required<HeldOutGateConfig>
 
   constructor(config: HeldOutGateConfig) {
+    const minPairs = config.minPairs ?? DEFAULTS.minPairs
+    if (minPairs < BOOTSTRAP_GATE_MIN_N) {
+      throw new RangeError(`minPairs must be at least ${BOOTSTRAP_GATE_MIN_N}`)
+    }
+
     this.cfg = {
       baselineKey: config.baselineKey,
-      minProductiveRuns: config.minProductiveRuns ?? DEFAULTS.minProductiveRuns,
-      pairedDeltaThreshold: config.pairedDeltaThreshold ?? DEFAULTS.pairedDeltaThreshold,
-      overfitGapThreshold: config.overfitGapThreshold ?? DEFAULTS.overfitGapThreshold,
-      cohensDThreshold: config.cohensDThreshold ?? DEFAULTS.cohensDThreshold,
-      applyBHCorrection: config.applyBHCorrection ?? DEFAULTS.applyBHCorrection,
+      minPairs,
+      minimumDelta: config.minimumDelta ?? DEFAULTS.minimumDelta,
+      maximumOverfitGap: config.maximumOverfitGap ?? DEFAULTS.maximumOverfitGap,
+      confidence: config.confidence ?? DEFAULTS.confidence,
+      resamples: config.resamples ?? DEFAULTS.resamples,
       alpha: config.alpha ?? DEFAULTS.alpha,
-      iterations: config.iterations ?? DEFAULTS.iterations,
-      seed: config.seed ?? 0,
+      seed: config.seed ?? DEFAULTS.seed,
     }
   }
 
-  /**
-   * Evaluate a candidate vs baseline. Both arrays are RunRecords; pairing
-   * is positional (record i in candidate paired with record i in baseline).
-   * If lengths differ, the smaller length is used for paired stats and a
-   * note is included in the reason.
-   */
   evaluate(candidate: readonly RunRecord[], baseline: readonly RunRecord[]): GateDecision {
-    const n = Math.min(candidate.length, baseline.length)
-    const candidateScores = candidate.map((r) => r.outcome.searchScore)
-    const baselineScores = baseline.map((r) => r.outcome.searchScore)
+    const candidateMean = mean(candidate.map((run) => run.outcome.searchScore))
+    const candidateHoldout = holdoutSummary(candidate)
+    const completeHoldout =
+      candidateHoldout.count === candidate.length ? candidateHoldout.mean : null
+    const overfitGap = completeHoldout === null ? null : candidateMean - completeHoldout
+    const baseEvidence: GateEvidence = {
+      candidateN: candidate.length,
+      baselineN: baseline.length,
+      pairedN: 0,
+      holdoutN: candidateHoldout.count,
+      pairedDeltaMedian: null,
+      pairedDeltaMean: null,
+      pairedDeltaInterval: null,
+      pairedCohensDz: null,
+      signPValue: null,
+      searchScore: candidateMean,
+      holdoutScore: candidateHoldout.mean,
+      overfitGap,
+    }
 
-    const candidateMean = mean(candidateScores)
+    const candidateBySeed = indexBySeed(candidate)
+    const baselineBySeed = indexBySeed(baseline)
+    if (candidateBySeed.duplicateSeed !== null || baselineBySeed.duplicateSeed !== null) {
+      const duplicateSeed = candidateBySeed.duplicateSeed ?? baselineBySeed.duplicateSeed
+      return this.decision(
+        'HOLD',
+        `duplicate seed ${duplicateSeed} prevents one-to-one pairing`,
+        baseEvidence,
+      )
+    }
 
-    if (n < this.cfg.minProductiveRuns) {
-      return this.decision('HOLD', `n=${n} below minProductiveRuns=${this.cfg.minProductiveRuns}`, {
-        n,
-        pairedDeltaMedian: 0,
-        pairedDeltaCi95: { lower: 0, upper: 0 },
-        cohensD: null,
-        searchScore: candidateMean,
-        holdoutScore: meanHoldoutScore(candidate),
-        overfitGap: null,
-        pValue: null,
-        qValueBh: null,
+    const candidateSeeds = [...candidateBySeed.records.keys()].sort((a, b) => a - b)
+    const missingFromBaseline = candidateSeeds.filter((seed) => !baselineBySeed.records.has(seed))
+    const missingFromCandidate = [...baselineBySeed.records.keys()]
+      .filter((seed) => !candidateBySeed.records.has(seed))
+      .sort((a, b) => a - b)
+    const pairedN = candidateSeeds.length - missingFromBaseline.length
+    if (missingFromBaseline.length > 0 || missingFromCandidate.length > 0) {
+      return this.decision(
+        'HOLD',
+        `seed sets differ: ${missingFromBaseline.length} missing from baseline, ` +
+          `${missingFromCandidate.length} missing from candidate`,
+        { ...baseEvidence, pairedN },
+      )
+    }
+
+    if (pairedN < this.cfg.minPairs) {
+      return this.decision('HOLD', `pairedN=${pairedN} below minPairs=${this.cfg.minPairs}`, {
+        ...baseEvidence,
+        pairedN,
       })
     }
 
-    const pairedDeltas: number[] = []
-    for (let i = 0; i < n; i += 1) {
-      pairedDeltas.push(candidateScores[i] - baselineScores[i])
+    if (candidateHoldout.count > 0 && candidateHoldout.count < candidate.length) {
+      return this.decision(
+        'HOLD',
+        `held-out scores are incomplete: ${candidateHoldout.count}/${candidate.length}`,
+        { ...baseEvidence, pairedN },
+      )
     }
-    const pairedDeltaMedian = median(pairedDeltas)
 
-    const boot = bootstrapCi(baselineScores, candidateScores, {
-      alpha: this.cfg.alpha,
-      iterations: this.cfg.iterations,
+    const candidateScores = candidateSeeds.map(
+      (seed) => candidateBySeed.records.get(seed)!.outcome.searchScore,
+    )
+    const baselineScores = candidateSeeds.map(
+      (seed) => baselineBySeed.records.get(seed)!.outcome.searchScore,
+    )
+    const bootstrap = pairedBootstrap(baselineScores, candidateScores, {
+      confidence: this.cfg.confidence,
+      resamples: this.cfg.resamples,
+      statistic: 'median',
       seed: this.cfg.seed,
     })
-    const ci95 = { lower: boot.ciLower, upper: boot.ciUpper }
-
-    const d = cohensD(baselineScores, candidateScores)
-
-    // Use paired t-test when arrays are equal length; fall back to Welch's
-    // when they differ (rare; documented in reason).
-    let pValue: number | null
-    if (candidateScores.length === baselineScores.length) {
-      pValue = pairedTTest(baselineScores, candidateScores).p
-    } else {
-      const welchP = welchsTTest(baselineScores, candidateScores).p
-      pValue = Number.isFinite(welchP) ? welchP : null
-    }
-
-    const qValueBh =
-      this.cfg.applyBHCorrection && pValue !== null
-        ? benjaminiHochberg([pValue], this.cfg.alpha).qValues[0]
-        : null
-
-    const candidateHoldout = meanHoldoutScore(candidate)
-    const overfitGap = candidateHoldout !== null ? candidateMean - candidateHoldout : null
-
+    const deltas = candidateScores.map((score, index) => score - baselineScores[index])
+    const pairedEffect = pairedCohensDz(baselineScores, candidateScores)
+    const positiveSignTest = pairedSignTest(deltas, 'greater')
+    const negativeSignTest = pairedSignTest(deltas, 'less')
     const evidence: GateEvidence = {
-      n,
-      pairedDeltaMedian,
-      pairedDeltaCi95: ci95,
-      cohensD: d,
-      searchScore: candidateMean,
-      holdoutScore: candidateHoldout,
-      overfitGap,
-      pValue,
-      qValueBh,
+      ...baseEvidence,
+      pairedN,
+      pairedDeltaMedian: bootstrap.median,
+      pairedDeltaMean: bootstrap.mean,
+      pairedDeltaInterval: {
+        lower: bootstrap.low,
+        upper: bootstrap.high,
+        confidence: bootstrap.confidence,
+      },
+      pairedCohensDz: pairedEffect,
+      signPValue: positiveSignTest.pValue,
     }
 
-    const effectiveP = qValueBh ?? pValue
-
-    // REVERT: significantly worse on search
-    if (pairedDeltaMedian < 0 && effectiveP !== null && effectiveP < this.cfg.alpha) {
+    if (!bootstrap.gateEligible) {
       return this.decision(
-        'REVERT',
-        `paired-delta median ${pairedDeltaMedian.toFixed(4)} < 0 with p=${effectiveP.toFixed(4)} < alpha=${this.cfg.alpha}`,
+        'HOLD',
+        `paired bootstrap requires at least ${BOOTSTRAP_GATE_MIN_N} pairs`,
         evidence,
       )
     }
 
-    // REVERT: overfit (held-out gap exceeds threshold)
-    if (overfitGap !== null && overfitGap >= this.cfg.overfitGapThreshold) {
+    if (overfitGap !== null && overfitGap >= this.cfg.maximumOverfitGap) {
       return this.decision(
         'REVERT',
-        `overfit-gap ${overfitGap.toFixed(4)} >= threshold ${this.cfg.overfitGapThreshold}`,
+        `overfit gap ${overfitGap.toFixed(4)} >= ${this.cfg.maximumOverfitGap}`,
         evidence,
       )
     }
 
-    // PROMOTE: positive median delta + adequate effect size + significant
-    const positiveDelta = pairedDeltaMedian >= this.cfg.pairedDeltaThreshold
-    const adequateEffect = d !== null && Math.abs(d) >= this.cfg.cohensDThreshold && d > 0
-    const significant = effectiveP !== null && effectiveP < this.cfg.alpha
-    if (positiveDelta && adequateEffect && significant) {
+    if (bootstrap.high < 0 && negativeSignTest.pValue < this.cfg.alpha) {
+      return this.decision(
+        'REVERT',
+        `paired interval is below zero and sign p=${negativeSignTest.pValue.toFixed(4)} < ${this.cfg.alpha}`,
+        evidence,
+      )
+    }
+
+    const intervalClearsMinimum = bootstrap.low > this.cfg.minimumDelta
+    const signIsSignificant = positiveSignTest.pValue < this.cfg.alpha
+    if (intervalClearsMinimum && signIsSignificant && pairedEffect !== null) {
       return this.decision(
         'PROMOTE',
-        `paired-delta ${pairedDeltaMedian.toFixed(4)} >= ${this.cfg.pairedDeltaThreshold}, ` +
-          `cohen's d ${d.toFixed(3)} >= ${this.cfg.cohensDThreshold}, ` +
-          `p=${effectiveP.toFixed(4)} < ${this.cfg.alpha}` +
-          (overfitGap !== null
-            ? `, overfit-gap ${overfitGap.toFixed(4)} < ${this.cfg.overfitGapThreshold}`
-            : ''),
+        `paired interval lower bound ${bootstrap.low.toFixed(4)} > ${this.cfg.minimumDelta}; ` +
+          `sign p=${positiveSignTest.pValue.toFixed(4)} < ${this.cfg.alpha}; ` +
+          `paired Cohen's dz=${pairedEffect.toFixed(3)}`,
         evidence,
       )
     }
 
-    // HOLD with explanation
     const reasons: string[] = []
-    if (!positiveDelta)
+    if (!intervalClearsMinimum) {
       reasons.push(
-        `paired-delta ${pairedDeltaMedian.toFixed(4)} < ${this.cfg.pairedDeltaThreshold}`,
+        `paired interval lower bound ${bootstrap.low.toFixed(4)} <= ${this.cfg.minimumDelta}`,
       )
-    if (d === null) reasons.push(`cohen's d is undefined`)
-    else if (!adequateEffect)
-      reasons.push(`|cohen's d| ${Math.abs(d).toFixed(3)} < ${this.cfg.cohensDThreshold}`)
-    if (effectiveP === null) reasons.push('p-value is undefined')
-    else if (!significant) reasons.push(`p=${effectiveP.toFixed(4)} >= ${this.cfg.alpha}`)
-    return this.decision('HOLD', `insufficient evidence: ${reasons.join('; ')}`, evidence)
+    }
+    if (!signIsSignificant) {
+      reasons.push(`sign p=${positiveSignTest.pValue.toFixed(4)} >= ${this.cfg.alpha}`)
+    }
+    if (pairedEffect === null) reasons.push(`paired Cohen's dz is undefined`)
+    return this.decision('HOLD', `inconclusive: ${reasons.join('; ')}`, evidence)
   }
 
   private decision(verdict: GateVerdict, reason: string, evidence: GateEvidence): GateDecision {

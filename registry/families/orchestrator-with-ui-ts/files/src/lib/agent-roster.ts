@@ -26,7 +26,7 @@
 //      Cache the result in a server-side store (Redis, KV, D1) keyed by
 //      AgentEntry.id so subsequent visits reuse the same sandbox.
 //
-// The dashboard does NOT call the sandbox-sdk's provisioning API directly
+// The dashboard does not call the Sandbox provisioning API directly
 // from this module — that would couple build-time scaffolding to runtime
 // secrets. Keep secrets server-side; expose only the resolved sandboxId to
 // the client.

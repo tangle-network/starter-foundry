@@ -15,28 +15,27 @@ import { agentRoster } from '../src/lib/agent-roster'
 // usage APIs. The shapes below match @tangle-network/sandbox-ui/dashboard's
 // expected props — just point at your tenant's data source.
 const placeholderBalance: BillingBalance = {
-  current: 124.5,
-  currency: 'USD',
-  lastUpdated: new Date().toISOString(),
+  available: 124.5,
+  used: 42.18,
 }
 
 const placeholderSubscription: BillingSubscription = {
-  plan: 'team',
+  tierName: 'team',
   status: 'active',
   renewsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
 }
 
 const placeholderUsage: BillingUsage = {
   period: 'month',
-  amount: 42.18,
-  currency: 'USD',
-  unit: 'compute-hours',
-  quantity: 31.4,
+  total: 31.4,
+  byModel: {
+    'default-model': 31.4,
+  },
 }
 
 const placeholderUsageSeries: UsageDataPoint[] = Array.from({ length: 14 }).map(
   (_, i) => ({
-    timestamp: new Date(Date.now() - (13 - i) * 24 * 60 * 60 * 1000).toISOString(),
+    date: new Date(Date.now() - (13 - i) * 24 * 60 * 60 * 1000).toISOString(),
     value: Math.round((Math.sin(i / 2) + 1.5) * 10 * 10) / 10,
   }),
 )
@@ -118,12 +117,22 @@ export default function FleetDashboardPage() {
               balance={placeholderBalance}
               subscription={placeholderSubscription}
               usage={placeholderUsage}
+              onManageSubscription={() => {
+                window.location.href = '/settings/billing'
+              }}
+              onAddCredits={() => {
+                window.location.href = '/settings/billing'
+              }}
             />
           </div>
           <div>
             <h2 className='mb-2 text-lg font-medium'>Usage (14d)</h2>
             {/* TODO(operator): swap placeholders for real usage series. */}
-            <UsageChart data={placeholderUsageSeries} unit='compute-hours' />
+            <UsageChart
+              data={placeholderUsageSeries}
+              title='Compute usage'
+              unit='compute-hours'
+            />
           </div>
         </aside>
       </main>

@@ -1,22 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSdkSession, type SdkSessionEvent } from '@tangle-network/sandbox-ui/hooks'
+import { AgentComposer } from '@tangle-network/sandbox-ui/chat'
 import {
   SandboxWorkbench,
   type SandboxWorkbenchArtifact,
 } from '@tangle-network/sandbox-ui/workspace'
 import type { TextPart } from '@tangle-network/sandbox-ui/types'
-import {
-  makeArtifactStreamAdapter,
-} from './lib/blocks-to-artifacts'
+import { makeArtifactStreamAdapter } from './lib/blocks-to-artifacts'
 
-// AgentInvoker is the seam between this UI scaffold and whichever
-// agent-runtime bundle the operator is driving. The scaffold has zero
-// per-bundle knowledge — the operator wires the actual transport
-// (sandbox-sdk client, fetch to /api/chat, websocket, etc.) here.
-//
-// Contract: invoke is given the full message history + the new user text;
-// it must stream `SdkSessionEvent`s back via onEvent until the run is done.
-// Returning ends the streaming state.
+// Connect this UI to Sandbox.streamPrompt(), an HTTP route, or another
+// transport by implementing AgentInvoker.
 export interface AgentInvoker {
   invoke: (args: {
     userText: string
@@ -46,6 +39,7 @@ export function App({ agentName = ENV_AGENT_NAME, invoker }: AppProps = {}) {
   } = useSdkSession()
 
   const [activeArtifactId, setActiveArtifactId] = useState<string | undefined>()
+  const [composerText, setComposerText] = useState('')
   const adapter = useMemo(() => makeArtifactStreamAdapter(), [])
   const [artifacts, setArtifacts] = useState<SandboxWorkbenchArtifact[]>([])
   const abortRef = useRef<AbortController | null>(null)
@@ -97,12 +91,9 @@ export function App({ agentName = ENV_AGENT_NAME, invoker }: AppProps = {}) {
       appendUserMessage({ content: trimmed })
       const assistantId = beginAssistantMessage()
 
-      // No invoker wired? Surface a helpful failure rather than a silent
-      // stuck-streaming spinner.
       if (!invoker) {
         failAssistantMessage(
-          'No agent invoker wired. See README — pass an `invoker` prop that ' +
-            'streams SdkSessionEvents from your sandbox-sdk client.',
+          'No agent invoker configured. Pass an `invoker` prop that streams Sandbox events.',
           { messageId: assistantId },
         )
         return
@@ -129,6 +120,13 @@ export function App({ agentName = ENV_AGENT_NAME, invoker }: AppProps = {}) {
 
   useEffect(() => () => abortRef.current?.abort(), [])
 
+  const handleSubmit = useCallback(() => {
+    const text = composerText.trim()
+    if (!text) return
+    setComposerText('')
+    void handleSend(text)
+  }, [composerText, handleSend])
+
   return (
     <SandboxWorkbench
       title={agentName}
@@ -137,7 +135,15 @@ export function App({ agentName = ENV_AGENT_NAME, invoker }: AppProps = {}) {
         messages,
         partMap,
         isStreaming,
-        onSend: handleSend,
+        composerControls: (
+          <AgentComposer
+            value={composerText}
+            onChange={setComposerText}
+            onSubmit={handleSubmit}
+            busy={isStreaming}
+            onCancel={() => abortRef.current?.abort()}
+          />
+        ),
       }}
       artifacts={artifacts}
       activeArtifactId={activeArtifactId}

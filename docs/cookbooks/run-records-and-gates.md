@@ -50,26 +50,31 @@ workflow `runs-export.yml` uploads it as a long-retention artifact.
 
 ## When to run `pnpm gate`
 
-Any time a prompt or profile change accumulates ~3+ paired runs against
-a baseline. The gate composes from current agent-eval
-`bootstrapCi`/`pairedTTest`/`cohensD`/`benjaminiHochberg` primitives —
-no reimplementation, no eyeballed p-values.
+Run it after a candidate accumulates at least 20 matched runs against a
+baseline.
+It uses agent-eval's paired bootstrap, exact sign test, and paired Cohen's dz.
+Runs pair by seed.
+Mismatched or duplicate seeds, partial held-out data, fewer than 20 pairs, or
+an undefined paired effect produce `HOLD`.
 
 ```bash
 pnpm gate baseline.jsonl candidate.jsonl
 echo "exit: $?"   # 0 = PROMOTE, 1 = REVERT, 2 = HOLD
 ```
 
-Decision logic (operator-locked thresholds):
+Decision logic:
 
-- **REVERT** if `pairedDeltaMedian < 0` AND `p < 0.05` (significantly worse)
-- **REVERT** if `holdoutScore` is known AND `searchScore - holdoutScore >= 0.20` (overfit gap)
-- **PROMOTE** if `pairedDeltaMedian >= 0` AND `|cohensD| >= 0.5` AND `p < 0.05` AND not overfit
+- **REVERT** if the paired interval is below zero and the one-sided exact sign
+  test has `p < 0.05`
+- **REVERT** if `holdoutScore` is known and
+  `searchScore - holdoutScore >= 0.20`
+- **PROMOTE** if the paired interval is wholly above the minimum useful delta,
+  the one-sided exact sign test has `p < 0.05`, paired Cohen's dz is defined,
+  and the held-out result does not show overfitting
 - **HOLD** otherwise
 
-`HeldOutGate` defaults: `minProductiveRuns: 3`, `pairedDeltaThreshold: 0`,
-`overfitGapThreshold: 0.20`, `cohensDThreshold: 0.5`,
-`applyBHCorrection: true`. Operator-overridable via the constructor.
+`HeldOutGate` defaults: `minPairs: 20`, `minimumDelta: 0`,
+`maximumOverfitGap: 0.20`, `confidence: 0.95`, and `resamples: 2000`.
 
 ## Profiles and `extends` inheritance
 

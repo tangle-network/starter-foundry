@@ -12,7 +12,7 @@ function tracesApiPlugin(rootDir: string): Plugin {
   return {
     name: 'agent-eval-traces-api',
     configureServer(server) {
-      server.middlewares.use('/__traces', (req, res) => {
+      server.middlewares.use('/__traces', (_req, res) => {
         try {
           if (!fs.existsSync(rootDir)) {
             res.statusCode = 200

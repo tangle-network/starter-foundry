@@ -1,11 +1,3 @@
-/**
- * HeldOutGate decision tests — productive-runs floor, paired-delta + Cohen's d
- * thresholds, overfit-gap REVERT path, BH correction.
- *
- * No mocked stats — uses the real `bootstrapCi` / `pairedTTest` / `cohensD` /
- * `benjaminiHochberg` from current agent-eval.
- */
-
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
@@ -38,101 +30,128 @@ function makeBatch(scores: number[], opts: { holdout?: number[] } = {}): RunReco
   )
 }
 
-test('HOLD when n < minProductiveRuns', () => {
-  const gate = new HeldOutGate({ baselineKey: 'b' })
-  const decision = gate.evaluate(makeBatch([0.9, 0.95]), makeBatch([0.5, 0.55]))
-  assert.equal(decision.verdict, 'HOLD')
-  assert.match(decision.reason, /below minProductiveRuns/)
-})
+const BASELINE = Array.from({ length: 24 }, (_, i) => 0.42 + (i % 6) * 0.015)
+const BETTER = BASELINE.map((score, i) => score + 0.16 + (i % 4) * 0.005)
+const WORSE = BASELINE.map((score, i) => score - 0.14 - (i % 3) * 0.005)
 
-test('PROMOTE on a clear positive delta with adequate effect size', () => {
-  const gate = new HeldOutGate({ baselineKey: 'b', seed: 1 })
-  // Large, consistent improvement: candidate ~0.9, baseline ~0.5
-  const baseline = makeBatch([0.5, 0.52, 0.48, 0.51, 0.49, 0.53, 0.5, 0.48])
-  const candidate = makeBatch([0.92, 0.89, 0.94, 0.88, 0.93, 0.9, 0.95, 0.87])
-  const decision = gate.evaluate(candidate, baseline)
-  assert.equal(
-    decision.verdict,
-    'PROMOTE',
-    `expected PROMOTE got ${decision.verdict}: ${decision.reason}`,
+test('HOLD below the paired sample floor', () => {
+  const decision = new HeldOutGate({ baselineKey: 'b' }).evaluate(
+    makeBatch(BETTER.slice(0, 19)),
+    makeBatch(BASELINE.slice(0, 19)),
   )
-  assert.ok(decision.evidence.cohensD !== null && decision.evidence.cohensD > 0.5)
-  assert.ok(decision.evidence.pairedDeltaMedian > 0)
+
+  assert.equal(decision.verdict, 'HOLD')
+  assert.match(decision.reason, /below minPairs=20/)
 })
 
-test('REVERT on overfit (held-out gap exceeds threshold)', () => {
-  const gate = new HeldOutGate({ baselineKey: 'b', overfitGapThreshold: 0.2, seed: 1 })
-  const baseline = makeBatch([0.5, 0.52, 0.48, 0.51, 0.49, 0.53])
-  // Candidate scores 0.95 on search but only 0.5 on held-out → overfit gap = 0.45
-  const candidate = makeBatch([0.95, 0.95, 0.95, 0.95, 0.95, 0.95], {
-    holdout: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+test('HOLD when candidate and baseline runs cannot be paired', () => {
+  const baseline = makeBatch(BASELINE.slice(0, 23))
+  baseline[0] = { ...baseline[0], seed: 99 }
+  const decision = new HeldOutGate({ baselineKey: 'b' }).evaluate(makeBatch(BETTER), baseline)
+
+  assert.equal(decision.verdict, 'HOLD')
+  assert.equal(decision.evidence.pairedN, 22)
+  assert.match(decision.reason, /seed sets differ/)
+})
+
+test('pairs by seed rather than array position', () => {
+  const baseline = makeBatch(BASELINE).reverse()
+  const decision = new HeldOutGate({ baselineKey: 'b', seed: 1 }).evaluate(
+    makeBatch(BETTER),
+    baseline,
+  )
+
+  assert.equal(decision.verdict, 'PROMOTE', decision.reason)
+})
+
+test('HOLD when duplicate seeds make pairing ambiguous', () => {
+  const candidate = makeBatch(BETTER)
+  candidate[1] = { ...candidate[1], seed: candidate[0].seed }
+  const decision = new HeldOutGate({ baselineKey: 'b' }).evaluate(candidate, makeBatch(BASELINE))
+
+  assert.equal(decision.verdict, 'HOLD')
+  assert.match(decision.reason, /duplicate seed/)
+})
+
+test('PROMOTE only when paired evidence clears every requirement', () => {
+  const decision = new HeldOutGate({ baselineKey: 'b', seed: 1 }).evaluate(
+    makeBatch(BETTER),
+    makeBatch(BASELINE),
+  )
+
+  assert.equal(decision.verdict, 'PROMOTE', decision.reason)
+  assert.ok(
+    decision.evidence.pairedDeltaInterval !== null &&
+      decision.evidence.pairedDeltaInterval.lower > 0,
+  )
+  assert.ok(decision.evidence.pairedCohensDz !== null && decision.evidence.pairedCohensDz > 0)
+  assert.ok(decision.evidence.signPValue !== null && decision.evidence.signPValue < 0.05)
+})
+
+test('REVERT when paired evidence is significantly worse', () => {
+  const decision = new HeldOutGate({ baselineKey: 'b', seed: 1 }).evaluate(
+    makeBatch(WORSE),
+    makeBatch(BASELINE),
+  )
+
+  assert.equal(decision.verdict, 'REVERT', decision.reason)
+  assert.ok(
+    decision.evidence.pairedDeltaInterval !== null &&
+      decision.evidence.pairedDeltaInterval.upper < 0,
+  )
+})
+
+test('REVERT when search performance does not survive held-out evaluation', () => {
+  const candidate = makeBatch(BETTER, {
+    holdout: BETTER.map((score) => score - 0.3),
   })
-  const decision = gate.evaluate(candidate, baseline)
-  assert.equal(
-    decision.verdict,
-    'REVERT',
-    `expected REVERT got ${decision.verdict}: ${decision.reason}`,
-  )
-  assert.match(decision.reason, /overfit-gap/)
-  assert.ok(decision.evidence.overfitGap !== null && decision.evidence.overfitGap >= 0.2)
+  const decision = new HeldOutGate({
+    baselineKey: 'b',
+    maximumOverfitGap: 0.2,
+    seed: 1,
+  }).evaluate(candidate, makeBatch(BASELINE))
+
+  assert.equal(decision.verdict, 'REVERT', decision.reason)
+  assert.match(decision.reason, /overfit gap/)
 })
 
-test('REVERT on significantly worse paired-delta', () => {
-  const gate = new HeldOutGate({ baselineKey: 'b', seed: 1 })
-  const baseline = makeBatch([0.9, 0.92, 0.88, 0.91, 0.89, 0.93, 0.9, 0.88])
-  const candidate = makeBatch([0.48, 0.55, 0.47, 0.53, 0.46, 0.57, 0.49, 0.44])
-  const decision = gate.evaluate(candidate, baseline)
-  assert.equal(
-    decision.verdict,
-    'REVERT',
-    `expected REVERT got ${decision.verdict}: ${decision.reason}`,
-  )
-  assert.ok(decision.evidence.pairedDeltaMedian < 0)
-})
-
-test("HOLD when delta exists but Cohen's d below threshold", () => {
-  // Pick widely-spread distributions so the effect size is small even with
-  // a positive mean delta. Threshold set high so d falls below it.
-  const gate = new HeldOutGate({ baselineKey: 'b', cohensDThreshold: 5.0, seed: 1 })
-  const baseline = makeBatch([0.1, 0.3, 0.5, 0.7, 0.9, 0.45, 0.55, 0.65])
-  const candidate = makeBatch([0.2, 0.4, 0.6, 0.8, 0.95, 0.55, 0.65, 0.75])
-  const decision = gate.evaluate(candidate, baseline)
-  assert.equal(
-    decision.verdict,
-    'HOLD',
-    `expected HOLD got ${decision.verdict}: ${decision.reason}`,
-  )
-  assert.ok(decision.evidence.cohensD !== null && Math.abs(decision.evidence.cohensD) < 5.0)
-})
-
-test('BH correction applies q-value when applyBHCorrection: true', () => {
-  const gate = new HeldOutGate({ baselineKey: 'b', applyBHCorrection: true, seed: 1 })
-  const baseline = makeBatch([0.5, 0.52, 0.48, 0.51, 0.49, 0.53])
-  const candidate = makeBatch([0.92, 0.89, 0.94, 0.88, 0.93, 0.9])
-  const decision = gate.evaluate(candidate, baseline)
-  assert.notEqual(decision.evidence.qValueBh, null)
-})
-
-test('q-value is null when applyBHCorrection: false', () => {
-  const gate = new HeldOutGate({ baselineKey: 'b', applyBHCorrection: false, seed: 1 })
-  const baseline = makeBatch([0.5, 0.52, 0.48, 0.51, 0.49, 0.53])
-  const candidate = makeBatch([0.9, 0.92, 0.88, 0.91, 0.89, 0.93])
-  const decision = gate.evaluate(candidate, baseline)
-  assert.equal(decision.evidence.qValueBh, null)
-})
-
-test('HOLD when constant non-zero deltas make paired significance undefined', () => {
-  const gate = new HeldOutGate({ baselineKey: 'b' })
-  const decision = gate.evaluate(makeBatch([0.75, 0.75, 0.75]), makeBatch([0.5, 0.5, 0.5]))
+test('HOLD when held-out scores cover only part of the candidate runs', () => {
+  const holdout = BETTER.map((score, index) => (index === 0 ? score : undefined))
+  const candidate = makeBatch(BETTER)
+  candidate[0] = {
+    ...candidate[0],
+    outcome: { ...candidate[0].outcome, holdoutScore: holdout[0] },
+  }
+  const decision = new HeldOutGate({ baselineKey: 'b' }).evaluate(candidate, makeBatch(BASELINE))
 
   assert.equal(decision.verdict, 'HOLD')
-  assert.equal(decision.evidence.cohensD, null)
-  assert.equal(decision.evidence.pValue, null)
+  assert.match(decision.reason, /held-out scores are incomplete/)
+})
+
+test('HOLD when a constant non-zero delta makes paired effect undefined', () => {
+  const baseline = Array.from({ length: 20 }, () => 0.5)
+  const candidate = Array.from({ length: 20 }, () => 0.75)
+  const decision = new HeldOutGate({ baselineKey: 'b' }).evaluate(
+    makeBatch(candidate),
+    makeBatch(baseline),
+  )
+
+  assert.equal(decision.verdict, 'HOLD')
+  assert.equal(decision.evidence.pairedCohensDz, null)
   assert.match(decision.reason, /undefined/)
 })
 
-test('decision carries baselineKey for traceability', () => {
-  const gate = new HeldOutGate({ baselineKey: 'frontier-2026-04' })
-  const decision = gate.evaluate(makeBatch([0.9, 0.9, 0.9]), makeBatch([0.5, 0.5, 0.5]))
+test('rejects a configured sample floor below the calibrated minimum', () => {
+  assert.throws(
+    () => new HeldOutGate({ baselineKey: 'b', minPairs: 19 }),
+    /minPairs must be at least 20/,
+  )
+})
+
+test('decision records the baseline key', () => {
+  const decision = new HeldOutGate({ baselineKey: 'frontier-2026-04' }).evaluate(
+    makeBatch(BETTER),
+    makeBatch(BASELINE),
+  )
   assert.equal(decision.baselineKey, 'frontier-2026-04')
 })

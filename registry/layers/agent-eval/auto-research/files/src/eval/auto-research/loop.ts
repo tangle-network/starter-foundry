@@ -62,11 +62,7 @@ export interface SteeringOptimizationInput {
 }
 export interface SteeringOptimizationOutput extends SteeringOptimizationResult {}
 
-/**
- * Run a single-shot steering-bundle optimization. The provided `evaluate`
- * function is the bridge to the eval-harness — it should call into the
- * scenarios + judge-rubric layers and return a `RunScore`.
- */
+/** Rank completed steering-bundle eval rows across variants and scenarios. */
 export async function runSteeringOptimization(
   input: SteeringOptimizationInput,
 ): Promise<SteeringOptimizationOutput> {

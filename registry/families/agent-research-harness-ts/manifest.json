@@ -1,6 +1,6 @@
 {
   "id": "agent-research-harness-ts",
-  "description": "Node-only TypeScript research workflow using @tangle-network/agent-eval@0.135.1. It screens hypotheses, validates the best candidates across repeated runs, and writes structured results under research-results/. The CLI supports `pnpm research propose|screen|validate|sweep`.",
+  "description": "Node-only TypeScript research workflow using @tangle-network/agent-eval@0.135.1. Ranks steering variants with PairwiseSteeringOptimizer, runs multi-turn search with runOptimization and runImprovementLoop, and analyzes repeated runs using analyzeRuns, bootstrap intervals, and Pareto frontiers. CLI: `pnpm research propose|screen|validate|sweep`. Results: `research-results/`.",
   "tags": [
     "research-harness",
     "agent-eval",

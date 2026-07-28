@@ -25,14 +25,18 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync, existsSync, readdirSync } from 'node:fs'
-import { join, dirname } from 'node:path'
+import { join, dirname, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { parse as parseYaml } from 'yaml'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const REPO = join(HERE, '..')
 const FAMILY_DIR = join(REPO, 'registry/families/agent-eval-harness-ts')
 const RESEARCH_FAMILY_DIR = join(REPO, 'registry/families/agent-research-harness-ts')
 const LAYERS_DIR = join(REPO, 'registry/layers/agent-eval')
+const REGISTRY_LAYERS_DIR = join(REPO, 'registry/layers')
+const AGENT_EVAL_PACKAGE = '@tangle-network/agent-eval'
+const AGENT_EVAL_VERSION = '0.135.1'
 
 interface FamilyManifest {
   id: string
@@ -56,6 +60,19 @@ interface LayerManifest {
   files: Array<{ source: string; target: string }>
   validationChecks?: Array<{ type: string; path?: string }>
   tieredKeywords?: { tier1?: string[] }
+  packageDeps?: {
+    dependencies?: Record<string, string>
+  }
+}
+
+interface PackageJson {
+  dependencies?: Record<string, string>
+  devDependencies?: Record<string, string>
+  scripts?: Record<string, string>
+}
+
+interface WorkspaceConfig {
+  minimumReleaseAgeExclude?: string[]
 }
 
 function loadFamilyManifest(): FamilyManifest {
@@ -66,6 +83,14 @@ function loadLayerManifest(layerId: string): LayerManifest {
   return JSON.parse(
     readFileSync(join(LAYERS_DIR, layerId, 'manifest.json'), 'utf8'),
   ) as LayerManifest
+}
+
+function findManifestFiles(directory: string): string[] {
+  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(directory, entry.name)
+    if (entry.isDirectory()) return findManifestFiles(path)
+    return entry.isFile() && entry.name === 'manifest.json' ? [path] : []
+  })
 }
 
 test('agent-eval-harness-ts family exists with required shape', () => {
@@ -129,21 +154,75 @@ test('agent.json points systemPromptFile at AGENTS.md', () => {
   )
 })
 
-test('package.json pins @tangle-network/agent-eval to the current cohort', () => {
-  const pkg = JSON.parse(readFileSync(join(FAMILY_DIR, 'files/package.json'), 'utf8'))
-  const dep = pkg.dependencies?.['@tangle-network/agent-eval']
-  assert.equal(
-    dep,
-    '0.135.1',
-    `package.json must pin @tangle-network/agent-eval 0.135.1; got ${dep}`,
+test('all generated agent-eval dependency pins match the current cohort', () => {
+  const packageFiles = [
+    join(REPO, 'package.json'),
+    join(REPO, 'examples/recruiter-eval-workspace/eval/package.json'),
+    join(FAMILY_DIR, 'files/package.json'),
+    join(RESEARCH_FAMILY_DIR, 'files/package.json'),
+  ]
+  for (const packageFile of packageFiles) {
+    const pkg = JSON.parse(readFileSync(packageFile, 'utf8')) as PackageJson
+    const version =
+      pkg.dependencies?.[AGENT_EVAL_PACKAGE] ?? pkg.devDependencies?.[AGENT_EVAL_PACKAGE]
+    assert.equal(
+      version,
+      AGENT_EVAL_VERSION,
+      `${relative(REPO, packageFile)} must pin ${AGENT_EVAL_PACKAGE} ${AGENT_EVAL_VERSION}; got ${version}`,
+    )
+  }
+
+  const layerPins = findManifestFiles(REGISTRY_LAYERS_DIR).flatMap((manifestFile) => {
+    const manifest = JSON.parse(readFileSync(manifestFile, 'utf8')) as LayerManifest
+    const version = manifest.packageDeps?.dependencies?.[AGENT_EVAL_PACKAGE]
+    return version === undefined ? [] : [{ manifestFile, version }]
+  })
+  assert.ok(
+    layerPins.length >= 5,
+    `expected at least 5 agent-eval layer pins; got ${layerPins.length}`,
   )
+  for (const { manifestFile, version } of layerPins) {
+    assert.equal(
+      version,
+      AGENT_EVAL_VERSION,
+      `${relative(REPO, manifestFile)} must pin ${AGENT_EVAL_PACKAGE} ${AGENT_EVAL_VERSION}; got ${version}`,
+    )
+  }
+
+  const workspaceFiles = [
+    join(REPO, 'pnpm-workspace.yaml'),
+    join(FAMILY_DIR, 'files/pnpm-workspace.yaml'),
+    join(RESEARCH_FAMILY_DIR, 'files/pnpm-workspace.yaml'),
+  ]
+  for (const workspaceFile of workspaceFiles) {
+    const workspace = parseYaml(readFileSync(workspaceFile, 'utf8')) as WorkspaceConfig
+    const pins = (workspace.minimumReleaseAgeExclude ?? []).filter((entry) =>
+      entry.startsWith(`${AGENT_EVAL_PACKAGE}@`),
+    )
+    assert.deepEqual(
+      pins,
+      [`${AGENT_EVAL_PACKAGE}@${AGENT_EVAL_VERSION}`],
+      `${relative(REPO, workspaceFile)} must exclude exactly ${AGENT_EVAL_PACKAGE}@${AGENT_EVAL_VERSION}`,
+    )
+  }
+})
+
+test('agent-eval template wires eval scripts', () => {
+  const pkg = JSON.parse(
+    readFileSync(join(FAMILY_DIR, 'files/package.json'), 'utf8'),
+  ) as PackageJson
   assert.ok(pkg.scripts?.eval, 'pnpm eval script must be wired')
   assert.ok(pkg.scripts?.['eval:gate'], 'pnpm eval:gate script must be wired')
 })
 
 test('research template runs TypeScript tests through tsx', () => {
-  const pkg = JSON.parse(readFileSync(join(RESEARCH_FAMILY_DIR, 'files/package.json'), 'utf8'))
-  assert.equal(pkg.scripts?.test, 'tsx --test --test-concurrency=1 tests/*.test.ts')
+  const packageFile = join(RESEARCH_FAMILY_DIR, 'files/package.json')
+  assert.ok(existsSync(packageFile), 'agent-research-harness-ts family must exist')
+  const pkg = JSON.parse(readFileSync(packageFile, 'utf8')) as PackageJson
+  assert.match(
+    pkg.scripts?.test ?? '',
+    /^tsx --test\b.*--test-concurrency=1\b.*tests\/\*\.test\.ts$/,
+  )
 })
 
 test('runner.ts imports the agent-eval primitives we claim to compose', () => {

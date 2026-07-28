@@ -2,20 +2,15 @@
 
 Composable optimization layer over `@tangle-network/agent-eval@0.135.1`.
 
-Wraps the upstream primitives (`runOptimization`, `runImprovementLoop`,
-`PairwiseSteeringOptimizer`, `runProposeReview`, `paretoFrontier`,
-`paretoFrontierWithCrowding`) plus the run-analysis bridge (`analyzeRuns`)
-into a small surface a research-harness family can compose without
-re-deriving the agent-eval API.
+Wraps `runOptimization`, `runImprovementLoop`, `PairwiseSteeringOptimizer`, `runProposeReview`, `paretoFrontier`, `paretoFrontierWithCrowding`, and `analyzeRuns` behind a small API for generated research projects.
 
 ## Capabilities
 
 - `provides`: `eval:auto-research`
 - `requires`: `eval:scenarios`, `eval:judge-rubric`, `eval:regression`
 
-The three required capabilities supply the measurement substrate
-(scenarios to run, judges to score, gates to promote). This layer
-supplies the optimizer that drives variants against that substrate.
+The required layers define scenarios, score runs, and decide whether a change can ship.
+This layer ranks the completed runs.
 
 ## How a family composes this
 
@@ -28,14 +23,23 @@ import {
   frontier,
   DEFAULT_OBJECTIVES,
 } from './eval/auto-research/index.js'
+import type { SteeringOptimizationRow } from '@tangle-network/agent-eval'
 
-// 1. Steering bundles → winner (FDR-corrected pairwise).
-const result = await runSteeringOptimization({
-  variants: [bundleA, bundleB, bundleC],
-  examples: scenarios.map((s) => ({ scenarioId: s.id, ... })),
-  evaluate: async ({ variant, scenarioId }) => harness.run(variant, scenarioId),
-  trialsPerScenario: 3,
-})
+// 1. Score each bundle and scenario first, then rank the resulting rows.
+const bundles = [bundleA, bundleB, bundleC]
+const rows: SteeringOptimizationRow[] = await Promise.all(
+  scenarios.flatMap((scenario) =>
+    bundles.map(async (bundle) => ({
+      variantId: bundle.id,
+      scenarioId: scenario.id,
+      bundle,
+      score: await runAndScore(bundle, scenario),
+    })),
+  ),
+)
+const result = await runSteeringOptimization({ rows })
+
+// runAndScore is your evaluator and returns an Agent Eval RunScore.
 
 // 2. Variable-length agent trajectory optimization.
 const optimized = await runMultiShotTrajectoryOptimization({
@@ -51,7 +55,7 @@ const optimized = await runMultiShotTrajectoryOptimization({
 })
 deploy(optimized.winnerSurface)
 
-// 3. Reflective hypothesis → final state via propose/verify/review.
+// 3. Reflective hypothesis to final state via propose/verify/review.
 const report = await proposeReview({
   goal: 'reduce judge-rubric failures on category=tool-use',
   initialState: { promptVersion: 'v1' },
@@ -76,20 +80,17 @@ const rl = await analyzeOptimization({
   candidateCandidateId: optimized.winnerSurfaceHash,
   split: 'holdout',
 })
-// rl.recommendations → ranked launch / hold / investigate guidance
+// rl.recommendations contains ranked launch, hold, or investigate guidance.
 ```
 
-The run-analysis bridge closes the auto-research loop into an evidence-backed
-decision packet. It preserves the rule that analysis starts from real
-`RunRecord[]`, not synthesized aggregate scores.
+`analyzeOptimization` reads captured `RunRecord[]` and returns launch recommendations.
+Do not construct fake records from aggregate scores.
 
 ## What this layer does NOT do
 
-- Run the actual eval (that's `eval:scenarios` + `eval:judge-rubric`)
-- Persist results (that's the family's runner — see
-  `agent-research-harness-ts`)
-- Decide promotions (that's `eval:regression`)
-- Generate hypotheses (that's the family's proposer)
+- Run the eval. That belongs to `eval:scenarios` and `eval:judge-rubric`.
+- Persist results. The generated research project owns storage.
+- Decide promotions. That belongs to `eval:regression`.
+- Generate hypotheses. The generated research project owns proposal logic.
 
-This layer is the OPTIMIZER. Measurement and bookkeeping are separate
-concerns and live in separate layers / families on purpose.
+This layer ranks variants. Other layers execute, score, store, and promote them.

@@ -1,5 +1,5 @@
 // Eval campaign — opinionated wrapper over `runEvalCampaign` from
-// `@tangle-network/agent-eval@0.22+`. Use this when the eval question is
+// `@tangle-network/agent-eval@0.135.1`. Use this when the eval question is
 // "does variant A beat variant B over scenarios × seeds?" — i.e. a
 // launch-decision-grade sweep, not a smoke test.
 //

@@ -28,7 +28,7 @@ locally and CI gates regressions on it.
 
 ## How you work
 
-The harness is a thin shell over `@tangle-network/agent-eval@^0.95.1`
+The harness is a thin shell over `@tangle-network/agent-eval@0.135.1`
 (already in `dependencies`). Reuse its primitives — do not reinvent.
 
 - **Scenarios** are typed objects (`Scenario` from agent-eval). Author

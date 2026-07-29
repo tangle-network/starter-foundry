@@ -1,6 +1,6 @@
 {
   "id": "agent-research-harness-ts",
-  "description": "Node-only TS bundle that operationalises the /research skill — hypothesis-driven prompt + steering optimization on top of @tangle-network/agent-eval@^0.77.0. Reads hypotheses from hypotheses/queue.json, runs a cheap screener pass (1-rep across all hypotheses), promotes the top deltas to a multi-rep validator pass with bootstrap-CI gates, and writes structured results under research-results/. Composes the eval-harness's auto-research layer (PairwiseSteeringOptimizer + runOptimization/runImprovementLoop + paretoFrontier) plus the run-analysis bridge (analyzeRuns -> lift, cost/quality frontier, and recommendations). Operator-facing CLI: `pnpm research propose|screen|validate|sweep`.",
+  "description": "Node-only TypeScript research workflow using @tangle-network/agent-eval. Ranks steering variants with PairwiseSteeringOptimizer, runs multi-turn search with runOptimization and runImprovementLoop, and analyzes repeated runs using analyzeRuns, bootstrap intervals, and Pareto frontiers. CLI: `pnpm research propose|screen|validate|sweep`. Results: `research-results/`.",
   "tags": [
     "research-harness",
     "agent-eval",

@@ -1,5 +1,5 @@
 // Eval campaign — opinionated wrapper over `runEvalCampaign` from
-// `@tangle-network/agent-eval@0.22+`. Use this when the eval question is
+// `@tangle-network/agent-eval`. Use this when the eval question is
 // "does variant A beat variant B over scenarios × seeds?" — i.e. a
 // launch-decision-grade sweep, not a smoke test.
 //
@@ -90,8 +90,7 @@ export interface CampaignOptions<V> {
  *   3. `assertRunCaptured` after every `endRun` (policy: `'mark_failed'`).
  *   4. `onRunComplete` hooks fire on every run (caller supplies the analyst).
  *
- * Skip this and you're back to writing the same shape ad hoc — at the
- * cost of the bug class 0.22 was designed to eliminate.
+ * Skip this and you must rebuild the per-run capture and integrity checks.
  */
 export async function runCampaign<V>(
   opts: CampaignOptions<V>,

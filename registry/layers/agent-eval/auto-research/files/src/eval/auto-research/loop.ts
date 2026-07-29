@@ -1,7 +1,7 @@
 /**
  * auto-research:loop — composable optimization loop.
  *
- * Wraps the optimization primitives from `@tangle-network/agent-eval@^0.77.0`.
+ * Wraps the optimization primitives from `@tangle-network/agent-eval`.
  * The eval-harness layers (scenarios, judge-rubric, regression) supply the
  * measurement substrate; this module supplies the optimizer that drives
  * variants against it.
@@ -62,11 +62,7 @@ export interface SteeringOptimizationInput {
 }
 export interface SteeringOptimizationOutput extends SteeringOptimizationResult {}
 
-/**
- * Run a single-shot steering-bundle optimization. The provided `evaluate`
- * function is the bridge to the eval-harness — it should call into the
- * scenarios + judge-rubric layers and return a `RunScore`.
- */
+/** Rank completed steering-bundle eval rows across variants and scenarios. */
 export async function runSteeringOptimization(
   input: SteeringOptimizationInput,
 ): Promise<SteeringOptimizationOutput> {

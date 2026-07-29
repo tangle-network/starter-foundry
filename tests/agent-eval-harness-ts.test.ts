@@ -19,7 +19,7 @@
 //   - Tier1 keywords overlap with another family — routing ambiguity.
 //   - The runner's TS imports an export that no longer exists in
 //     @tangle-network/agent-eval (covered by typecheck).
-//   - The auto-research scaffold must keep the 0.19 multi-shot adapter as
+//   - The auto-research scaffold must keep the multi-shot adapter as
 //     the product-agent default, not regress to prompt-only evolution.
 
 import test from 'node:test'
@@ -36,6 +36,7 @@ const RESEARCH_FAMILY_DIR = join(REPO, 'registry/families/agent-research-harness
 const LAYERS_DIR = join(REPO, 'registry/layers/agent-eval')
 const REGISTRY_LAYERS_DIR = join(REPO, 'registry/layers')
 const AGENT_EVAL_PACKAGE = '@tangle-network/agent-eval'
+// Move this only when every generated install root moves to the same release.
 const AGENT_EVAL_VERSION = '0.135.1'
 
 interface FamilyManifest {
@@ -179,7 +180,9 @@ test('all generated agent-eval dependency pins match the current cohort', () => 
   })
   assert.ok(
     layerPins.length >= 5,
-    `expected at least 5 agent-eval layer pins; got ${layerPins.length}`,
+    `expected at least 5 agent-eval layer pins; got ${layerPins.length}: ${
+      layerPins.map(({ manifestFile }) => relative(REPO, manifestFile)).join(', ') || '(none)'
+    }`,
   )
   for (const { manifestFile, version } of layerPins) {
     assert.equal(
@@ -253,7 +256,7 @@ test('family ships ordered conversation and run-bound judge modules', () => {
   }
 })
 
-test('runner.ts wires the 0.21 capture-integrity directives', () => {
+test('runner.ts wires the capture-integrity directives', () => {
   // Each primitive maps to one of the four directives in
   // SKILL.md § Capture integrity. Removing one reintroduces the
   // shipped-bug class (raw events lost / wrong route used silently /
@@ -280,11 +283,11 @@ test('runner.ts wires the 0.21 capture-integrity directives', () => {
   )
 })
 
-test('campaign.ts wraps runEvalCampaign with capture integrity by construction (0.22)', () => {
+test('campaign.ts wraps runEvalCampaign with capture integrity by construction', () => {
   const path = join(FAMILY_DIR, 'files/src/eval/campaign.ts')
   assert.ok(existsSync(path), 'campaign.ts must ship with the eval-harness template')
   const src = readFileSync(path, 'utf8')
-  // 0.22 EvalCampaign + replay: the canonical entrypoint for benchmark sweeps
+  // EvalCampaign + replay is the canonical entrypoint for benchmark sweeps.
   assert.match(
     src,
     /\brunEvalCampaign\b/,

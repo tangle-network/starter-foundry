@@ -9,8 +9,8 @@ Wraps `runOptimization`, `runImprovementLoop`, `PairwiseSteeringOptimizer`, `run
 - `provides`: `eval:auto-research`
 - `requires`: `eval:scenarios`, `eval:judge-rubric`, `eval:regression`
 
-The required layers define scenarios, score runs, and decide whether a change can ship.
-This layer ranks the completed runs.
+The required layers supply scenarios, scoring, and promotion policy.
+This layer coordinates optimization and turns captured runs into decisions.
 
 ## How a family composes this
 
@@ -22,24 +22,17 @@ import {
   proposeReview,
   frontier,
   DEFAULT_OBJECTIVES,
+  type SteeringOptimizationRow,
 } from './eval/auto-research/index.js'
-import type { SteeringOptimizationRow } from '@tangle-network/agent-eval'
 
-// 1. Score each bundle and scenario first, then rank the resulting rows.
-const bundles = [bundleA, bundleB, bundleC]
-const rows: SteeringOptimizationRow[] = await Promise.all(
-  scenarios.flatMap((scenario) =>
-    bundles.map(async (bundle) => ({
-      variantId: bundle.id,
-      scenarioId: scenario.id,
-      bundle,
-      score: await runAndScore(bundle, scenario),
-    })),
-  ),
-)
+// 1. Rank the completed scores produced by your scenario runner and rubric.
+const rows: SteeringOptimizationRow[] = scoredRuns.map(({ bundle, scenario, score }) => ({
+  variantId: bundle.id,
+  scenarioId: scenario.id,
+  bundle,
+  score,
+}))
 const result = await runSteeringOptimization({ rows })
-
-// runAndScore is your evaluator and returns an Agent Eval RunScore.
 
 // 2. Variable-length agent trajectory optimization.
 const optimized = await runMultiShotTrajectoryOptimization({
@@ -86,11 +79,11 @@ const rl = await analyzeOptimization({
 `analyzeOptimization` reads captured `RunRecord[]` and returns launch recommendations.
 Do not construct fake records from aggregate scores.
 
-## What this layer does NOT do
+## Ownership
 
-- Run the eval. That belongs to `eval:scenarios` and `eval:judge-rubric`.
-- Persist results. The generated research project owns storage.
-- Decide promotions. That belongs to `eval:regression`.
-- Generate hypotheses. The generated research project owns proposal logic.
+- This layer coordinates candidate search, ranking, promotion runs, and analysis.
+- The generated project supplies candidates, execution callbacks, and persistence.
+- `eval:scenarios` and `eval:judge-rubric` define cases and scoring.
+- `eval:regression` defines promotion policy.
 
-This layer ranks variants. Other layers execute, score, store, and promote them.
+The boundaries stay callback-based, so the generated project controls how work runs and where results live.

@@ -90,8 +90,7 @@ export interface CampaignOptions<V> {
  *   3. `assertRunCaptured` after every `endRun` (policy: `'mark_failed'`).
  *   4. `onRunComplete` hooks fire on every run (caller supplies the analyst).
  *
- * Skip this and you're back to writing the same shape ad hoc — at the
- * cost of the bug class 0.22 was designed to eliminate.
+ * Skip this and you must rebuild the per-run capture and integrity checks.
  */
 export async function runCampaign<V>(
   opts: CampaignOptions<V>,

@@ -1,6 +1,6 @@
 {
   "id": "react-vite-ts",
-  "description": "React and Vite ready TypeScript starter with instant preview shell.",
+  "description": "React and Vite ready TypeScript starter for host-managed previews.",
   "tags": [
     "frontend",
     "typescript",
@@ -15,9 +15,8 @@
   },
   "defaults": {
     "projectType": "frontend",
-    "port": 4174,
     "headline": "Starter Foundry React Surface",
-    "subheadline": "A React and Vite ready shell with a zero-install preview path."
+    "subheadline": "A React and Vite ready shell for a host-managed preview."
   },
   "slots": {
     "auth": {
@@ -51,10 +50,6 @@
     {
       "source": "files/package.json",
       "target": "package.json"
-    },
-    {
-      "source": "files/preview-server.mjs",
-      "target": "preview-server.mjs"
     },
     {
       "source": "files/validate-types.mjs",
@@ -93,22 +88,12 @@
         "validate-types.mjs"
       ],
       "expect": "typescript ok"
-    },
-    {
-      "type": "http-start",
-      "command": [
-        "node",
-        "preview-server.mjs"
-      ],
-      "path": "/",
-      "expect": "{{headline}}"
     }
   ],
   "contextHints": {
     "commands": [
-      "npm install",
-      "npm run dev",
-      "node preview-server.mjs"
+      "npm run build",
+      "npm run validate"
     ],
     "entrypoints": [
       "index.html",

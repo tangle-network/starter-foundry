@@ -58,6 +58,27 @@ test('composeFromPrompt: free-text fitness prompt produces React scaffold with i
     assert.match(result.contextMessage, new RegExp(result.spec.family))
     assert.match(result.contextMessage, /AGENTS\.md/)
     assert.match(result.contextMessage, /personalize/)
+    assert.match(result.contextMessage, /Preview ownership/)
+    assert.doesNotMatch(
+      result.contextMessage,
+      /SIDECAR_PORT|ensure-dev-server|localhost:9000|Step 0|dev-server route/,
+    )
+
+    const agentsDoc = await fs.readFile(path.join(outDir, 'AGENTS.md'), 'utf8')
+    assert.match(agentsDoc, /Preview ownership/)
+    assert.match(agentsDoc, /Run every listed build or validation command successfully/)
+    assert.doesNotMatch(
+      agentsDoc,
+      /SIDECAR_PORT|ensure-dev-server|localhost:9000|Step 0|dev-server route/,
+    )
+
+    const packageJson = JSON.parse(
+      await fs.readFile(path.join(outDir, 'package.json'), 'utf8'),
+    ) as {
+      scripts?: Record<string, string>
+    }
+    assert.equal(packageJson.scripts?.['preview:instant'], undefined)
+    await assert.rejects(fs.access(path.join(outDir, 'preview-server.mjs')))
   } finally {
     await removeDir(outDir)
   }

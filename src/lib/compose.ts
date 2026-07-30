@@ -19,6 +19,7 @@ import type {
 import { generateBuildPlan } from './build-plan.js'
 import { ensureDir, sanitizePackageName, writeJson } from './fs.js'
 import { renderIndustryFirstTurn } from './industry-flows.js'
+import { PREVIEW_OWNERSHIP_HEADING, PREVIEW_OWNERSHIP_LINES } from './preview-ownership.js'
 import { writePrimaryProjectManifest } from './primary-project-writer.js'
 import { buildVariables, resolveComponents, resolveTemplateObject } from './registry.js'
 import { selectTemplateVersion } from './selection.js'
@@ -472,28 +473,7 @@ function buildAgentsMd(
     lines.push(buildPlan.goal, '')
   }
 
-  // STEP 0 — Start the dev server. This MUST be the first H2 in AGENTS.md
-  // because agents that pattern-match on "find the run command" stop reading
-  // after the first thing that looks like one. The runtime exposes a single
-  // canonical idempotent route for this; do not let the agent improvise with
-  // bare `pnpm install`/`pnpm dev` calls (they race the agent's edits, have
-  // no error taxonomy, and aren't tracked by the runtime).
-  lines.push(
-    '## Step 0 — Start the dev server (do this FIRST)',
-    '',
-    'Before reading anything else in this file, run this command in `bash` to start the dev server. The user is waiting for a preview. This is idempotent — safe to call multiple times (returns the same pid). It auto-installs dependencies on first call, so you do NOT need to run `pnpm install` separately. Subsequent edits hot-reload via HMR; do NOT call this again to restart unless the response says you should.',
-    '',
-    '```bash',
-    'curl -fsS -X POST "http://localhost:${SIDECAR_PORT:-9000}/process/ensure-dev-server" -H "Content-Type: application/json" -H "Authorization: Bearer ${SIDECAR_AUTH_TOKEN}" -d \'{}\'',
-    '```',
-    '',
-    'The `SIDECAR_PORT` and `SIDECAR_AUTH_TOKEN` env vars are pre-set in your bash environment — you do NOT need to look them up.',
-    '',
-    "CRITICAL: Do NOT run `pnpm install`, `pnpm dev`, `npm install`, `npm run dev`, `next dev`, `vite`, `cargo run`, or any other dev/install command via `bash` directly. The command above handles all of that AND tracks the dev process for the runtime so the user's preview pane wires up automatically. Running them directly bypasses the runtime tracking and the user will not see a preview.",
-    '',
-    'The response is JSON: `{ "success": true, "data": { "pid": ..., "family": "node-pnpm", "command": "...", "startedNow": true|false, "installRan": true|false } }`. On error: `{ "success": false, "error": { "code": "...", "message": "..." } }` with codes `WORKSPACE_NOT_FOUND | NO_RUNNABLE_PROJECT | INSTALL_FAILED | DEV_COMMAND_NOT_FOUND | DEV_PROCESS_EXITED | PORT_BIND_FAILED`. React to each: `INSTALL_FAILED` → read the `log` field, fix `package.json`, call again; `DEV_COMMAND_NOT_FOUND` → add a `dev` script to `package.json`, call again; `DEV_PROCESS_EXITED` → read `log`, fix the bug in `src/`, call again.',
-    '',
-  )
+  lines.push(`## ${PREVIEW_OWNERSHIP_HEADING}`, '', ...PREVIEW_OWNERSHIP_LINES, '')
 
   // User's prompt — echo it near the top so the agent sees its brief
   // before the scaffold's default behavior.
@@ -525,9 +505,8 @@ function buildAgentsMd(
     lines.push('')
   }
 
-  // Key files only — no install/dev commands here, those are handled by
-  // Step 0 above. Listing them in a "Getting started" block was creating
-  // a competing recipe the agent followed instead of the runtime route.
+  // Keep runtime commands out of the file list so an agent can distinguish
+  // implementation files from the host-owned preview process.
   if (contextHints.entrypoints.length > 0) {
     lines.push('## Key files', '', contextHints.entrypoints.map((e) => `- \`${e}\``).join('\n'), '')
   }
@@ -547,7 +526,7 @@ function buildAgentsMd(
     lines.push(
       '## Pre-installed packages — do NOT re-install',
       '',
-      "These are already in `package.json` (the sidecar's ensure-dev-server auto-installed them on first call). If you need any of these, **import them** — do not run `pnpm add`, `pnpm install <name>`, `npm install <name>`, or equivalent. Re-installing a present package burns turns and tokens for zero gain.",
+      'These are already declared in `package.json`. If you need any of these, **import them** — do not run `pnpm add`, `pnpm install <name>`, `npm install <name>`, or equivalent. Re-installing a present package burns turns and tokens for zero gain.',
       '',
       preinstalledPackages.map((p) => `- \`${p}\``).join('\n'),
       '',
@@ -647,11 +626,10 @@ function buildAgentsMd(
   lines.push(
     '## Turn 1 (do these before writing features)',
     '',
-    '1. Call the dev-server route from Step 0 (above). Wait for success.',
-    "2. Read the user's brief (above) and the Placeholders section.",
-    '3. Rewrite `personalize.json` + `personalize.css` (brand strings + palette). These are render-time — preview updates on next refresh, no rebuild.',
-    '4. Delete or rewrite EVERY file in the Placeholders list. Not optional.',
-    '5. Only after (3) + (4) do you start feature work.',
+    "1. Read the user's brief (above) and the Placeholders section.",
+    '2. Rewrite `personalize.json` + `personalize.css` (brand strings + palette).',
+    '3. Delete or rewrite EVERY file in the Placeholders list. Not optional.',
+    '4. Only after (2) + (3) do you start feature work.',
     '',
     '## Before first preview screenshot',
     '',
@@ -661,7 +639,7 @@ function buildAgentsMd(
     '',
     '## Before shipping',
     '',
-    "- Run the family's validate script (see Key files above).",
+    '- Run every listed build or validation command successfully.',
     '- Re-check Gotchas (above) against what you built — those traps bite most at ship time.',
     "- If you added deps, they're in `package.json`; if you added routes/pages, they're reachable.",
     '',

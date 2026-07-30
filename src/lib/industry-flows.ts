@@ -5,7 +5,7 @@
 //
 // Each entry names the 2-3 features that matter most on turn 1 of a
 // buildout for products in that industry. Kept small and specific —
-// the agent reads these AFTER Step 0 (dev server) and before choosing
+// the agent reads these before choosing
 // what to build. See compose.ts (renderAgentsMd) for the injection site.
 
 interface IndustryFirstTurn {

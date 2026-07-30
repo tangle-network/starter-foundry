@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict'
-import { spawnSync } from 'node:child_process'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import test from 'node:test'
@@ -9,6 +8,7 @@ import {
   composeWorkspace,
   createWorkspaceContextPack,
 } from '../dist/lib/workspace.js'
+import { PREVIEW_OWNERSHIP_LINES } from '../dist/lib/preview-ownership.js'
 import type { WorkspaceReport } from '../dist/lib/workspace.js'
 import type { PrimaryProjectManifest, WorkspaceSpec } from '../dist/types.js'
 
@@ -33,7 +33,13 @@ test('workspace compose writes root instructions and launch plan', async () => {
     assert.equal(report.launchPlan.primaryProjectId, 'web')
     assert.match(projectDoc, /multichain product studio/i)
     assert.match(agentsDoc, /Primary project is `web`/)
-    assert.match(agentsDoc, /\{"cwd":"apps\/web"\}/)
+    for (const line of PREVIEW_OWNERSHIP_LINES) {
+      assert.ok(agentsDoc.includes(line), `workspace instructions must include: ${line}`)
+    }
+    assert.doesNotMatch(
+      agentsDoc,
+      /SIDECAR_PORT|ensure-dev-server|localhost:9000|Step 0|dev-server route/,
+    )
     assert.ok(report.projects.some((project) => project.path === 'apps/web'))
     assert.ok(report.projects.some((project) => project.path === 'contracts/solana'))
     assert.deepEqual(primaryProject, {
@@ -48,7 +54,7 @@ test('workspace compose writes root instructions and launch plan', async () => {
   }
 })
 
-test('workspace instructions safely pass the primary project cwd to the sidecar', async () => {
+test('workspace instructions do not assume a host-specific preview endpoint', async () => {
   const spec = await loadWorkspaceSpec()
   const primaryPath = "apps/o'brien"
   spec.projects[0] = { ...spec.projects[0]!, path: primaryPath }
@@ -57,18 +63,8 @@ test('workspace instructions safely pass the primary project cwd to the sidecar'
   try {
     await composeWorkspace({ spec, outDir })
     const agentsDoc = await fs.readFile(path.join(outDir, 'AGENTS.md'), 'utf8')
-    const command = agentsDoc.split('\n').find((line) => line.startsWith('curl '))
-    assert.ok(command, 'AGENTS.md should include the sidecar start command')
-
-    const dataIndex = command.lastIndexOf(' -d ')
-    assert.notEqual(dataIndex, -1, 'sidecar command should include a JSON request body')
-    const dataArgument = command.slice(dataIndex + 4)
-    const parsed = spawnSync('bash', ['-c', 'set -- -d ' + dataArgument + '; printf \'%s\' "$2"'], {
-      encoding: 'utf8',
-    })
-
-    assert.equal(parsed.status, 0, parsed.stderr)
-    assert.equal(parsed.stdout, JSON.stringify({ cwd: primaryPath }))
+    assert.match(agentsDoc, /path: `apps\/o'brien`/)
+    assert.doesNotMatch(agentsDoc, /curl -fsS|SIDECAR_AUTH_TOKEN|ensure-dev-server/)
   } finally {
     await removeDir(outDir)
   }

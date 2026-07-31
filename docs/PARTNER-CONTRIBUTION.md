@@ -33,8 +33,9 @@ PRs must:
 4. **Ship a config.json with real addresses**, not TODO placeholders. If you
    can't fill an address for every chain you support, drop that chain from
    `appliesTo` until you can.
-5. **Populate `docs` URL** on the config.json — our nightly refresh script
-   uses it to flag stale configs (>90 days without touch).
+5. **Populate `docs` URL** on the config.json — the partner-config refresh
+   (`pnpm refresh:partners`, run on demand) uses it to flag stale configs
+   (>90 days without touch).
 
 ## What you don't need to do
 

@@ -4,8 +4,11 @@ name: eval-recruiter
 # example workspace under examples/recruiter-eval-workspace. Runs on:
 #   - PR touching the recruiter family, the eval layer, or the example workspace
 #   - workflow_dispatch (manual)
-#   - schedule (daily 06:00 UTC) — catches model drift independent of code change
 #   - push to main — refresh scorecard on merge (PR-mediated, never direct push)
+#
+# There is deliberately NO cron: an unattended daily run spends model money
+# with nobody reading the result. Model drift is caught by the manual
+# workflow_dispatch run instead.
 #
 # Gating: the live LLM eval step only runs when the TANGLE_CI_ROUTER_KEY repo
 # secret is set. When absent, the workflow logs a structured warning and
@@ -17,8 +20,8 @@ name: eval-recruiter
 #             a bootstrap step on the cleanup branch when missing.
 #   HIGH A3 — `SYNC_FAIL_ON_DRIFT=1` so a registry change that affects
 #             the workspace fails CI rather than silently re-emitting.
-#   HIGH A4 — `concurrency:` block prevents two pushes/cron runs from
-#             racing on the on-main scorecard commit.
+#   HIGH A4 — `concurrency:` block prevents two pushes from racing on
+#             the on-main scorecard commit.
 #   MED  C1 — on-merge scorecard refresh opens a PR (mirroring
 #             scorecard-refresh.yml), no direct push to main.
 
@@ -32,8 +35,6 @@ on:
       - '.github/workflows/eval-recruiter.yml'
       - 'scripts/sync-example-workspaces.ts'
   workflow_dispatch:
-  schedule:
-    - cron: '0 6 * * *'
   push:
     branches: [main]
     paths:
@@ -46,7 +47,7 @@ permissions:
   contents: write
   pull-requests: write
 
-# Gen-16.1 audit HIGH A4 — prevent races on main + the daily cron.
+# Gen-16.1 audit HIGH A4 — prevent races between concurrent pushes.
 # `cancel-in-progress: false` so neither commit gets killed mid-push.
 concurrency:
   group: eval-recruiter-${{ github.ref }}
@@ -134,10 +135,8 @@ jobs:
       # Gen-16.1 audit MEDIUM C1 — open a PR for review instead of
       # direct push to main. Mirrors scorecard-refresh.yml pattern. A
       # single CI flake can no longer land a regressed scorecard.json.
-      - name: open scorecard PR on main + cron
-        if: |
-          (github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.live.outputs.ran == 'true') ||
-          (github.event_name == 'schedule' && steps.live.outputs.ran == 'true')
+      - name: open scorecard PR on main
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.live.outputs.ran == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

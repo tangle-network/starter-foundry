@@ -139,8 +139,10 @@ The canonical example for the recruiter bundle is
 copy and adapt:
 
 - **Triggers**: PR (paths-filtered to the bundle + the eval layer + the
-  example workspace), `workflow_dispatch`, daily cron at `0 6 * * *`,
-  push to main.
+  example workspace), `workflow_dispatch`, push to main.
+  Deliberately **no cron** — an unattended scheduled run spends model
+  money with nobody reading the result. Run `workflow_dispatch` when you
+  want a drift check.
 - **Gating**: the live eval step is gated on the `TANGLE_API_KEY`
   repo secret. When absent, the workflow logs a warning and exits 0 —
   it does **not** fail PRs.
@@ -185,7 +187,7 @@ emitted yet.
 ## How the metric flows back to `.evolve/scorecard.json`
 
 ```
-1. operator runs `pnpm eval` (locally) OR CI cron triggers
+1. operator runs `pnpm eval` (locally) OR CI triggers on PR / push to main
    ↓ (lives in examples/recruiter-eval-workspace/eval)
 2. harness loads scenarios + judges, calls EVAL_TARGET_URL, runs every judge
    ↓

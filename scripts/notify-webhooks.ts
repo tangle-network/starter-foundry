@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Notify registered webhook subscribers when the registry changes in
 // meaningful ways (new family lands, new capability lands, package
-// bumped for CVE). Runs from nightly-measurement or proposal-cron.
+// bumped for CVE). Run on demand by an operator — the scheduled
+// workflows that used to drive it were removed.
 //
 // Webhooks are stored in .evolve/webhooks.json. Each entry:
 //   { "id": "...", "url": "https://...", "events": ["family:added", ...], "secret": "..." }

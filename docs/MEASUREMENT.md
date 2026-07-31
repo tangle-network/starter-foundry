@@ -95,7 +95,7 @@ Both are useful. The scorecard prefers historical when fresh and falls back to c
 
 In **tests** — set `STARTER_FOUNDRY_NO_SELF_HEAL=1` to prevent recursion through fixture paths.
 
-In **CI running a subset of stages** — the nightly workflow sets this via `measure-refresh.mjs` which propagates it to sub-invocations of `refresh-scorecard.mjs`.
+In **a run of a subset of stages** — `scripts/measure-refresh.ts` sets this and propagates it to sub-invocations of `scripts/refresh-scorecard.ts`. Run it by hand with `pnpm measure:refresh`; there is no scheduled workflow that runs it.
 
 In **manual debugging** — when you want to see the stale data without the scorecard covering for it: `STARTER_FOUNDRY_NO_SELF_HEAL=1 node scripts/refresh-scorecard.mjs`.
 

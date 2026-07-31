@@ -534,8 +534,12 @@ test('CI workflow YAML parses + has triggers + gates on TANGLE_API_KEY (audit B4
     'pull_request paths must include the recruiter workspace',
   )
   assert.ok('workflow_dispatch' in (parsed.on ?? {}))
-  assert.ok(Array.isArray(parsed.on?.schedule), 'schedule trigger required')
-  assert.equal(parsed.on?.schedule?.[0]?.cron, '0 6 * * *', 'must run daily at 06:00 UTC')
+  // No cron, deliberately. The live eval step spends model money through
+  // TANGLE_CI_ROUTER_KEY; on a schedule it bills every day with nobody
+  // reading the result. Drift checks go through workflow_dispatch. This
+  // asserts the absence so a re-added cron fails here rather than on the
+  // invoice.
+  assert.equal(parsed.on?.schedule, undefined, 'workflow must NOT declare a paid cron')
   assert.deepEqual(parsed.on?.push?.branches, ['main'])
 
   // Permissions

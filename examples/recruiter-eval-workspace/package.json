@@ -9,5 +9,13 @@
     "eval": "pnpm --filter ./eval run eval",
     "test": "pnpm -r test"
   },
-  "packageManager": "pnpm@9.0.0"
+  "packageManager": "pnpm@9.0.0",
+  "pnpm": {
+    "overrides": {
+      "hono": "4.12.34",
+      "postcss": "8.5.23",
+      "@tiptap/core": "3.30.4",
+      "@tiptap/pm": "3.30.4"
+    }
+  }
 }

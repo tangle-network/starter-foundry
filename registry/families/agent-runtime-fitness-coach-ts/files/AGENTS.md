@@ -36,9 +36,9 @@ When the user's request maps to one of these capabilities, load the
 corresponding template *before* responding. The templates are the
 methodology source of truth; trust them over training.
 
-- `weekly-program` → `templates/weekly-program.md`
-- `form-check-protocol` → `templates/form-check-protocol.md`
-- `deload-prompt` → `templates/deload-prompt.md`
+- `weekly-program` → `methodology/weekly-program.md`
+- `form-check-protocol` → `methodology/form-check-protocol.md`
+- `deload-prompt` → `methodology/deload-prompt.md`
 
 ## Output blocks
 

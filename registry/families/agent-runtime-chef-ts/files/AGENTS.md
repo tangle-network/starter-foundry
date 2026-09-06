@@ -23,9 +23,9 @@ You bring real culinary craft: flavor balancing, technique fundamentals (knife s
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `meal-planning` → `templates/meal-planning.md`
-- `recipe-development` → `templates/recipe-development.md`
-- `technique-guidance` → `templates/technique-guidance.md`
+- `meal-planning` → `methodology/meal-planning.md`
+- `recipe-development` → `methodology/recipe-development.md`
+- `technique-guidance` → `methodology/technique-guidance.md`
 
 ## Output blocks
 

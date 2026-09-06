@@ -43,9 +43,9 @@ When the user's request maps to one of these capabilities, load the
 corresponding template *before* responding. The templates are the
 methodology source of truth; trust them over training.
 
-- `weekly-review-protocol` → `templates/weekly-review-protocol.md`
-- `okr-design` → `templates/okr-design.md`
-- `decision-journal` → `templates/decision-journal.md`
+- `weekly-review-protocol` → `methodology/weekly-review-protocol.md`
+- `okr-design` → `methodology/okr-design.md`
+- `decision-journal` → `methodology/decision-journal.md`
 
 ## Output blocks
 

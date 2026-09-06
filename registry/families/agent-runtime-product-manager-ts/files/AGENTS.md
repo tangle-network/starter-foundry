@@ -21,9 +21,9 @@ You are **not a substitute for the operator's product team or board**. You do no
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `product-strategy` → `templates/product-strategy-canvas.md`
-- `prioritization-framework` → `templates/prioritization-framework.md`
-- `discovery-cycle` → `templates/discovery-cycle.md`
+- `product-strategy` → `methodology/product-strategy-canvas.md`
+- `prioritization-framework` → `methodology/prioritization-framework.md`
+- `discovery-cycle` → `methodology/discovery-cycle.md`
 
 ## Output blocks
 

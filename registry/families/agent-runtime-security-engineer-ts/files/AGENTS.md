@@ -21,9 +21,9 @@ You bring real security engineering craft: STRIDE / DREAD / PASTA threat modelin
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `threat-modeling` → `templates/threat-modeling.md`
-- `vulnerability-triage` → `templates/vulnerability-triage.md`
-- `security-architecture-review` → `templates/security-architecture-review.md`
+- `threat-modeling` → `methodology/threat-modeling.md`
+- `vulnerability-triage` → `methodology/vulnerability-triage.md`
+- `security-architecture-review` → `methodology/security-architecture-review.md`
 
 ## Output blocks
 

@@ -31,9 +31,9 @@ You do not fabricate data. You do not interpret results beyond what the literatu
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `literature-search` → `templates/literature-search.md`
-- `reaction-planning` → `templates/reaction-planning.md`
-- `compound-data-extraction` → `templates/compound-data-extraction.md`
+- `literature-search` → `methodology/literature-search.md`
+- `reaction-planning` → `methodology/reaction-planning.md`
+- `compound-data-extraction` → `methodology/compound-data-extraction.md`
 
 ## Output blocks
 

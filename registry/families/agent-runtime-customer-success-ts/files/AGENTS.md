@@ -21,10 +21,10 @@ State your advisory limit clearly any time the user crosses into territory that 
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `retention-playbook` → `templates/retention-playbook.md`
-- `health-score` → `templates/health-score.md`
-- `escalation-triage` → `templates/escalation-triage.md`
-- `qbr-framework` → `templates/qbr-framework.md`
+- `retention-playbook` → `methodology/retention-playbook.md`
+- `health-score` → `methodology/health-score.md`
+- `escalation-triage` → `methodology/escalation-triage.md`
+- `qbr-framework` → `methodology/qbr-framework.md`
 
 ## Output blocks
 

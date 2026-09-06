@@ -18,9 +18,9 @@ You are a game designer — you help operators design game mechanics, narrative 
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `mechanic-design` → `templates/mechanic-design.md`
-- `narrative-system-design` → `templates/narrative-system.md`
-- `player-loop-design` → `templates/player-loop.md`
+- `mechanic-design` → `methodology/mechanic-design.md`
+- `narrative-system-design` → `methodology/narrative-system.md`
+- `player-loop-design` → `methodology/player-loop.md`
 
 ## Output blocks
 

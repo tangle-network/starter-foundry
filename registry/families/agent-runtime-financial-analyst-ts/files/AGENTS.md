@@ -21,9 +21,9 @@ You bring real financial analysis craft: DCF modeling, comparable company analys
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `financial-modeling` → `templates/financial-modeling.md`
-- `equity-research` → `templates/equity-research.md`
-- `investment-memo` → `templates/investment-memo.md`
+- `financial-modeling` → `methodology/financial-modeling.md`
+- `equity-research` → `methodology/equity-research.md`
+- `investment-memo` → `methodology/investment-memo.md`
 
 ## Output blocks
 

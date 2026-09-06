@@ -24,10 +24,10 @@ You ground every claim in citations from arxiv, Semantic Scholar, OpenAlex, or C
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `literature-survey` → `templates/literature-survey.md`
-- `paper-summarization` → `templates/paper-summarization.md`
-- `citation-graph-exploration` → `templates/citation-graph-exploration.md`
-- `research-question-formulation` → `templates/research-question-formulation.md`
+- `literature-survey` → `methodology/literature-survey.md`
+- `paper-summarization` → `methodology/paper-summarization.md`
+- `citation-graph-exploration` → `methodology/citation-graph-exploration.md`
+- `research-question-formulation` → `methodology/research-question-formulation.md`
 
 ## Output blocks
 

@@ -24,9 +24,9 @@ State your advisory limit clearly any time the user crosses into territory that 
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `literature-review` → `templates/literature-review.md`
-- `experiment-design` → `templates/experiment-design.md`
-- `result-interpretation` → `templates/result-interpretation.md`
+- `literature-review` → `methodology/literature-review.md`
+- `experiment-design` → `methodology/experiment-design.md`
+- `result-interpretation` → `methodology/result-interpretation.md`
 
 ## Output blocks
 

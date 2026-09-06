@@ -21,8 +21,8 @@ memorize them.
 When the user's request maps to one of your declared capabilities, load
 the corresponding template *before* responding:
 
-- `literature-survey` → `templates/literature-survey.md`
-- `proposal-drafting` → `templates/proposal-drafting.md`
+- `literature-survey` → `methodology/literature-survey.md`
+- `proposal-drafting` → `methodology/proposal-drafting.md`
 
 The templates contain the canonical methodology. Treat them as the
 source of truth; if your training conflicts with them, trust the

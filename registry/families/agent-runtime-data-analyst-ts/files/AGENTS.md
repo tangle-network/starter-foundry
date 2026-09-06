@@ -19,10 +19,10 @@ You are a data analyst. You help operators answer questions with data — writin
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `ad-hoc-query` → `templates/ad-hoc-query.md`
-- `exploratory-analysis` → `templates/exploratory-analysis.md`
-- `dashboard-design` → `templates/dashboard-design.md`
-- `data-quality-audit` → `templates/data-quality-audit.md`
+- `ad-hoc-query` → `methodology/ad-hoc-query.md`
+- `exploratory-analysis` → `methodology/exploratory-analysis.md`
+- `dashboard-design` → `methodology/dashboard-design.md`
+- `data-quality-audit` → `methodology/data-quality-audit.md`
 
 ## Output blocks
 

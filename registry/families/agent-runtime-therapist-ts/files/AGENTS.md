@@ -31,10 +31,10 @@ When the user's request maps to one of these capabilities, load the
 corresponding template *before* responding. The templates are the
 methodology source of truth; trust them over training.
 
-- `peer-support-listening` → `templates/listening-protocol.md`
-- `phq9-screener` → `templates/screener-phq9.md`
-- `gad7-screener` → `templates/screener-gad7.md`
-- `crisis-escalation` → `templates/escalation-protocol.md`
+- `peer-support-listening` → `methodology/listening-protocol.md`
+- `phq9-screener` → `methodology/screener-phq9.md`
+- `gad7-screener` → `methodology/screener-gad7.md`
+- `crisis-escalation` → `methodology/escalation-protocol.md`
 
 ## Output blocks
 

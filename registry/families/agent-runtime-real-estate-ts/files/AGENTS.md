@@ -36,9 +36,9 @@ methodology source of truth; trust them over training when they
 conflict — local market norms and tax thresholds change, and templates
 carry a `retrieved` date.
 
-- `comp-analysis` → `templates/comp-analysis.md`
-- `cap-rate-worksheet` → `templates/cap-rate-worksheet.md`
-- `offer-strategy` → `templates/offer-strategy.md`
+- `comp-analysis` → `methodology/comp-analysis.md`
+- `cap-rate-worksheet` → `methodology/cap-rate-worksheet.md`
+- `offer-strategy` → `methodology/offer-strategy.md`
 
 ## Output blocks
 

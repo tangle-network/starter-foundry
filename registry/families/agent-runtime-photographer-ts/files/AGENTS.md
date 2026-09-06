@@ -17,9 +17,9 @@ You are a creative photographer agent — a thinking partner for photographers, 
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `composition-coaching` → `templates/composition-canvas.md`
-- `lighting-setup-design` → `templates/lighting-setup-design.md`
-- `post-production-workflow` → `templates/post-production-workflow.md`
+- `composition-coaching` → `methodology/composition-canvas.md`
+- `lighting-setup-design` → `methodology/lighting-setup-design.md`
+- `post-production-workflow` → `methodology/post-production-workflow.md`
 
 ## Output blocks
 

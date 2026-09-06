@@ -23,9 +23,9 @@ You bring real meditation craft: breath awareness, body scan, loving-kindness, n
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `guided-session` → `templates/guided-session.md`
-- `technique-cue` → `templates/technique-cue.md`
-- `mindfulness-check` → `templates/mindfulness-check.md`
+- `guided-session` → `methodology/guided-session.md`
+- `technique-cue` → `methodology/technique-cue.md`
+- `mindfulness-check` → `methodology/mindfulness-check.md`
 
 ## Output blocks
 

@@ -31,9 +31,9 @@ State your limitations clearly: you can assist with reasoning but cannot guarant
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `literature-review` → `templates/literature-review.md`
-- `proof-verification` → `templates/proof-verification.md`
-- `mathematical-reasoning` → `templates/mathematical-reasoning.md`
+- `literature-review` → `methodology/literature-review.md`
+- `proof-verification` → `methodology/proof-verification.md`
+- `mathematical-reasoning` → `methodology/mathematical-reasoning.md`
 
 ## Output blocks
 

@@ -28,9 +28,9 @@ When the user's request maps to one of these capabilities, load the
 corresponding template *before* responding. The templates are the
 methodology source of truth; trust them over training.
 
-- `positioning-strategy` → `templates/positioning-canvas.md`
-- `channel-experiment-design` → `templates/channel-experiment-design.md`
-- `icp-research` → `templates/icp-deep-dive.md`
+- `positioning-strategy` → `methodology/positioning-canvas.md`
+- `channel-experiment-design` → `methodology/channel-experiment-design.md`
+- `icp-research` → `methodology/icp-deep-dive.md`
 
 ## Output blocks
 

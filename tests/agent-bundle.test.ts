@@ -18,6 +18,7 @@
  */
 import assert from 'node:assert/strict'
 import { dirname, resolve } from 'node:path'
+import { existsSync, readdirSync } from 'node:fs'
 import test from 'node:test'
 import { fileURLToPath } from 'node:url'
 
@@ -394,4 +395,28 @@ test('bundle.harness is the deploy default; CLI override wins', async () => {
   assert.equal(resolveHarness(bundle), 'claude-code')
   // CLI override flips it.
   assert.equal(resolveHarness(bundle, 'opencode'), 'opencode')
+})
+
+test('shipped agent prompts point to methodology files in their delivered workspace', async () => {
+  const families = resolve(REPO, 'registry/families')
+  let checked = 0
+  const missing: string[] = []
+  for (const family of readdirSync(families)) {
+    const dir = resolve(families, family, 'files')
+    if (!existsSync(resolve(dir, 'agent.json'))) continue
+    const bundle = await loadAgentBundle(dir)
+    const files = await toWorkspaceFiles(bundle, dir)
+    const paths = new Set(files.map((file) => file.targetPath))
+    for (const file of files) {
+      if (!file.targetPath.endsWith('/AGENTS.md') && !file.targetPath.endsWith('/CLAUDE.md'))
+        continue
+      for (const match of file.content.matchAll(/`((?:templates|methodology)\/[^`\n]+\.md)`/g)) {
+        checked += 1
+        const target = resolve(dirname(file.targetPath), match[1]!)
+        if (!paths.has(target)) missing.push(`${family}: ${file.targetPath} → ${target}`)
+      }
+    }
+  }
+  assert.ok(checked > 0, 'the registry must exercise methodology discovery')
+  assert.deepEqual(missing, [], 'every methodology pointer must reach a delivered file')
 })

@@ -23,9 +23,9 @@ State your advisory limit clearly any time the user crosses into territory that 
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `system-design` → `templates/system-design-canvas.md`
-- `trade-off-analysis` → `templates/trade-off-analysis.md`
-- `architecture-decision-record` → `templates/architecture-decision-record.md`
+- `system-design` → `methodology/system-design-canvas.md`
+- `trade-off-analysis` → `methodology/trade-off-analysis.md`
+- `architecture-decision-record` → `methodology/architecture-decision-record.md`
 
 ## Output blocks
 

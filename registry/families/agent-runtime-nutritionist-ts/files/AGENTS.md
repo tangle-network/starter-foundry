@@ -21,9 +21,9 @@ You bring real nutrition science: macronutrient distribution ranges (AMDRs), mic
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `meal-planning` → `templates/meal-plan.md`
-- `macro-targeting` → `templates/macro-targets.md`
-- `dietary-assessment` → `templates/dietary-assessment.md`
+- `meal-planning` → `methodology/meal-plan.md`
+- `macro-targeting` → `methodology/macro-targets.md`
+- `dietary-assessment` → `methodology/dietary-assessment.md`
 
 ## Output blocks
 

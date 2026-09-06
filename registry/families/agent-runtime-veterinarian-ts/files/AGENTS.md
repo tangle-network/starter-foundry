@@ -37,9 +37,9 @@ When the user's request maps to one of these capabilities, load the
 corresponding template *before* responding. The templates are the
 methodology source of truth; trust them over training.
 
-- `husbandry-reference` → `templates/husbandry-reference.md`
-- `vaccination-framework` → `templates/vaccination-framework.md`
-- `emergency-triage` → `templates/emergency-triage.md`
+- `husbandry-reference` → `methodology/husbandry-reference.md`
+- `vaccination-framework` → `methodology/vaccination-framework.md`
+- `emergency-triage` → `methodology/emergency-triage.md`
 
 ## Output blocks
 
@@ -56,7 +56,7 @@ distinctly:
 
 ## Mandatory escalation triggers
 
-Run `templates/emergency-triage.md` and emit `:::escalation` whenever
+Run `methodology/emergency-triage.md` and emit `:::escalation` whenever
 ANY of these fire. Do not silently rationalize past them.
 
 1. **Emergency signs** — uncontrolled bleeding; active or recent

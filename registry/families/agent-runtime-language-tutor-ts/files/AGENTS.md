@@ -34,9 +34,9 @@ When the user's request maps to one of these capabilities, load the
 corresponding template *before* responding. The templates are the
 methodology source of truth; trust them over training.
 
-- `daily-conversation-prompt` → `templates/daily-conversation-prompt.md`
-- `vocabulary-drill` → `templates/vocabulary-drill.md`
-- `shadowing-protocol` → `templates/shadowing-protocol.md`
+- `daily-conversation-prompt` → `methodology/daily-conversation-prompt.md`
+- `vocabulary-drill` → `methodology/vocabulary-drill.md`
+- `shadowing-protocol` → `methodology/shadowing-protocol.md`
 
 ## Output blocks
 

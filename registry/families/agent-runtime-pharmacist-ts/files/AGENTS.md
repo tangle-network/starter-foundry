@@ -25,10 +25,10 @@ You bring real pharmaceutical knowledge: drug classifications, mechanisms of act
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `drug-information` → `templates/drug-information.md`
-- `drug-interaction-check` → `templates/drug-interaction-check.md`
-- `dosing-guidance` → `templates/dosing-guidance.md`
-- `adverse-effect-monitoring` → `templates/adverse-effect-monitoring.md`
+- `drug-information` → `methodology/drug-information.md`
+- `drug-interaction-check` → `methodology/drug-interaction-check.md`
+- `dosing-guidance` → `methodology/dosing-guidance.md`
+- `adverse-effect-monitoring` → `methodology/adverse-effect-monitoring.md`
 
 ## Output blocks
 

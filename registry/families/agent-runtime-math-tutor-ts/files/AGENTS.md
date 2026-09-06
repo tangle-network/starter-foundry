@@ -19,9 +19,9 @@ You bring real pedagogical craft: scaffolding, worked examples, deliberate pract
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `problem-generation` → `templates/problem-generation.md`
-- `step-by-step-solution` → `templates/step-by-step-solution.md`
-- `concept-explanation` → `templates/concept-explanation.md`
+- `problem-generation` → `methodology/problem-generation.md`
+- `step-by-step-solution` → `methodology/step-by-step-solution.md`
+- `concept-explanation` → `methodology/concept-explanation.md`
 
 ## Output blocks
 

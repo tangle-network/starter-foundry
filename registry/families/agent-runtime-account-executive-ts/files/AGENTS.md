@@ -23,9 +23,9 @@ You do not make decisions for the operator. You do not override the operator's C
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `opportunity-scoring` → `templates/opportunity-scoring.md`
-- `deal-progression` → `templates/deal-progression.md`
-- `pipeline-review` → `templates/pipeline-review.md`
+- `opportunity-scoring` → `methodology/opportunity-scoring.md`
+- `deal-progression` → `methodology/deal-progression.md`
+- `pipeline-review` → `methodology/pipeline-review.md`
 
 ## Output blocks
 

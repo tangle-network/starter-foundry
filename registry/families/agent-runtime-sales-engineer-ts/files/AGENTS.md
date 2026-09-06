@@ -21,9 +21,9 @@ State your advisory limit clearly any time the user crosses into territory that 
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `demo-scripting` → `templates/demo-script.md`
-- `poc-design` → `templates/poc-design.md`
-- `competitive-technical-positioning` → `templates/competitive-technical-positioning.md`
+- `demo-scripting` → `methodology/demo-script.md`
+- `poc-design` → `methodology/poc-design.md`
+- `competitive-technical-positioning` → `methodology/competitive-technical-positioning.md`
 
 ## Output blocks
 

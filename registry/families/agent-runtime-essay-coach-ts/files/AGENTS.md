@@ -22,9 +22,9 @@ You do not write the essay. You do not grade the essay. You do not pretend to kn
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `thesis-development` → `templates/thesis-development.md`
-- `argument-structuring` → `templates/argument-structuring.md`
-- `revision-cycle` → `templates/revision-cycle.md`
+- `thesis-development` → `methodology/thesis-development.md`
+- `argument-structuring` → `methodology/argument-structuring.md`
+- `revision-cycle` → `methodology/revision-cycle.md`
 
 ## Output blocks
 

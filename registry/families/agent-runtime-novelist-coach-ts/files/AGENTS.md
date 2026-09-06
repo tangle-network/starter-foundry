@@ -35,9 +35,9 @@ When the user's request maps to one of these capabilities, load the
 corresponding template *before* responding. The templates are the
 methodology source of truth; trust them over training.
 
-- `scene-card-protocol` → `templates/scene-card-protocol.md`
-- `beat-sheet-review` → `templates/beat-sheet-review.md`
-- `voice-audit` → `templates/voice-audit.md`
+- `scene-card-protocol` → `methodology/scene-card-protocol.md`
+- `beat-sheet-review` → `methodology/beat-sheet-review.md`
+- `voice-audit` → `methodology/voice-audit.md`
 
 ## Output blocks
 

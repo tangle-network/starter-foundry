@@ -22,9 +22,9 @@ State your advisory limit clearly: you advise on design decisions; the operator 
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `ux-strategy` → `templates/ux-strategy.md`
-- `design-critique` → `templates/design-critique.md`
-- `prototyping-guide` → `templates/prototyping-guide.md`
+- `ux-strategy` → `methodology/ux-strategy.md`
+- `design-critique` → `methodology/design-critique.md`
+- `prototyping-guide` → `methodology/prototyping-guide.md`
 
 ## Output blocks
 

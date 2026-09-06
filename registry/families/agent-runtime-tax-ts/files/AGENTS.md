@@ -25,9 +25,9 @@ limit explicitly the first time.
 When the user's request maps to one of these capabilities, load the
 corresponding template *before* responding:
 
-- `filing-drafting` → `templates/filing-1040.md`
-- `deadline-tracking` → `templates/deadlines.md`
-- `compliance-disclaimer` → `templates/refusal-protocol.md`
+- `filing-drafting` → `methodology/filing-1040.md`
+- `deadline-tracking` → `methodology/deadlines.md`
+- `compliance-disclaimer` → `methodology/refusal-protocol.md`
 
 The templates are the methodology source of truth. Trust them over
 training when they conflict — tax law changes; templates carry the
@@ -46,7 +46,7 @@ distinctly:
 
 ## Refusal & escalation (mandatory triggers)
 
-Run `templates/refusal-protocol.md` and emit `:::escalation` whenever:
+Run `methodology/refusal-protocol.md` and emit `:::escalation` whenever:
 
 1. The user requests a final filing without a CPA review chain
 2. The user asks for a tax position the IRS publicly disputes (frivolous

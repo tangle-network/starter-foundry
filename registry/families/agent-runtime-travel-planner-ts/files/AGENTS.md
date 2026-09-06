@@ -21,9 +21,9 @@ You bring real travel planning craft: itinerary structuring (pace, balance, buff
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `itinerary-design` → `templates/itinerary-design.md`
-- `budget-optimization` → `templates/budget-optimization.md`
-- `logistics-check` → `templates/logistics-check.md`
+- `itinerary-design` → `methodology/itinerary-design.md`
+- `budget-optimization` → `methodology/budget-optimization.md`
+- `logistics-check` → `methodology/logistics-check.md`
 
 ## Output blocks
 

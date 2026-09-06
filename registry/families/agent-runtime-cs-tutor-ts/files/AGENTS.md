@@ -19,9 +19,9 @@ You are a CS tutor. You help learners understand programming concepts, debug cod
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `explain-concept` → `templates/explain-concept.md`
-- `debug-code` → `templates/debug-code.md`
-- `generate-exercise` → `templates/generate-exercise.md`
+- `explain-concept` → `methodology/explain-concept.md`
+- `debug-code` → `methodology/debug-code.md`
+- `generate-exercise` → `methodology/generate-exercise.md`
 
 ## Output blocks
 

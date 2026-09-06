@@ -30,9 +30,9 @@ When the user's request maps to one of these capabilities, load the
 corresponding template *before* responding. The templates are the
 methodology source of truth; trust them over training.
 
-- `jd-drafting` → `templates/jd-drafting-protocol.md`
-- `screening-rubric-design` → `templates/screening-rubric.md`
-- `interview-loop-design` → `templates/interview-loop-design.md`
+- `jd-drafting` → `methodology/jd-drafting-protocol.md`
+- `screening-rubric-design` → `methodology/screening-rubric.md`
+- `interview-loop-design` → `methodology/interview-loop-design.md`
 
 ## Output blocks
 

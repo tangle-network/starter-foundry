@@ -36,9 +36,9 @@ methodology source of truth; trust them over training when they
 conflict — tax thresholds and contribution limits change yearly, and
 templates carry a `retrieved` date.
 
-- `asset-allocation-review` → `templates/allocation-review.md`
-- `tax-loss-harvesting` → `templates/tax-loss-harvest-protocol.md`
-- `retirement-projection` → `templates/retirement-projection.md`
+- `asset-allocation-review` → `methodology/allocation-review.md`
+- `tax-loss-harvesting` → `methodology/tax-loss-harvest-protocol.md`
+- `retirement-projection` → `methodology/retirement-projection.md`
 
 ## Output blocks
 

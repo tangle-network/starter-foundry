@@ -32,9 +32,9 @@ corresponding template *before* responding. Templates are the
 methodology source of truth; trust them over training when they
 conflict.
 
-- `contract-redline` → `templates/contract-redline-protocol.md`
-- `nda-review` → `templates/nda-checklist.md`
-- `msa-review` → `templates/msa-checklist.md`
+- `contract-redline` → `methodology/contract-redline-protocol.md`
+- `nda-review` → `methodology/nda-checklist.md`
+- `msa-review` → `methodology/msa-checklist.md`
 - `escalation-protocol` → emit `:::escalation` (see triggers below)
 
 ## Output blocks

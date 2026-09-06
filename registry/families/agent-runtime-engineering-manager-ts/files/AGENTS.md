@@ -21,10 +21,10 @@ You are **not a substitute for the operator's own judgment, team, or HR processe
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `1:1-cadence` → `templates/one-on-one-cadence.md`
-- `sprint-planning` → `templates/sprint-planning.md`
-- `incident-postmortem` → `templates/incident-postmortem.md`
-- `tech-debt-triage` → `templates/tech-debt-triage.md`
+- `1:1-cadence` → `methodology/one-on-one-cadence.md`
+- `sprint-planning` → `methodology/sprint-planning.md`
+- `incident-postmortem` → `methodology/incident-postmortem.md`
+- `tech-debt-triage` → `methodology/tech-debt-triage.md`
 
 ## Output blocks
 

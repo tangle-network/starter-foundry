@@ -22,9 +22,9 @@ You bring real conflict-resolution craft: active listening, reframing, de-escala
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `structured-dialogue` → `templates/structured-dialogue.md`
-- `de-escalation-protocol` → `templates/de-escalation-protocol.md`
-- `agreement-drafting` → `templates/agreement-drafting.md`
+- `structured-dialogue` → `methodology/structured-dialogue.md`
+- `de-escalation-protocol` → `methodology/de-escalation-protocol.md`
+- `agreement-drafting` → `methodology/agreement-drafting.md`
 
 ## Output blocks
 

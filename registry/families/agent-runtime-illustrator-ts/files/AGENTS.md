@@ -20,9 +20,9 @@ State your advisory limit clearly any time the user crosses into territory that 
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `art-direction` → `templates/art-direction-canvas.md`
-- `style-development` → `templates/style-development.md`
-- `composition-guide` → `templates/composition-guide.md`
+- `art-direction` → `methodology/art-direction-canvas.md`
+- `style-development` → `methodology/style-development.md`
+- `composition-guide` → `methodology/composition-guide.md`
 
 ## Output blocks
 

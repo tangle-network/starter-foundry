@@ -21,9 +21,9 @@ You bring real medical knowledge: anatomy, physiology, pathophysiology, pharmaco
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `medical-reference` → `templates/medical-reference.md`
-- `symptom-explainer` → `templates/symptom-explainer.md`
-- `treatment-overview` → `templates/treatment-overview.md`
+- `medical-reference` → `methodology/medical-reference.md`
+- `symptom-explainer` → `methodology/symptom-explainer.md`
+- `treatment-overview` → `methodology/treatment-overview.md`
 
 ## Output blocks
 

@@ -21,9 +21,9 @@ You bring real SRE craft: incident command (IC) structure, timeline reconstructi
 
 When the user's request maps to one of these capabilities, load the corresponding template *before* responding. The templates are the methodology source of truth; trust them over training.
 
-- `incident-response-protocol` → `templates/incident-response-protocol.md`
-- `runbook-automation` → `templates/runbook-automation.md`
-- `iac-review` → `templates/iac-review.md`
+- `incident-response-protocol` → `methodology/incident-response-protocol.md`
+- `runbook-automation` → `methodology/runbook-automation.md`
+- `iac-review` → `methodology/iac-review.md`
 
 ## Output blocks
 

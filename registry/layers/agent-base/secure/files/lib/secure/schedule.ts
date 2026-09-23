@@ -39,16 +39,32 @@ export const schedule = {
   async _fire(trigger: ScheduledTrigger): Promise<void> {
     const handler = handlers.get(trigger.capability)
     if (!handler) {
-      audit.log({ event: 'schedule.miss', target: trigger.id, payload: { capability: trigger.capability, reason: 'no-handler-registered' } })
+      audit.log({
+        event: 'schedule.miss',
+        target: trigger.id,
+        payload: { capability: trigger.capability, reason: 'no-handler-registered' },
+      })
       throw new Error(`no schedule handler for capability ${trigger.capability}`)
     }
     const id = identity.current()
-    audit.log({ event: 'schedule.fire', target: trigger.id, payload: { capability: trigger.capability, agentId: id.agentId } })
+    audit.log({
+      event: 'schedule.fire',
+      target: trigger.id,
+      payload: { capability: trigger.capability, agentId: id.agentId },
+    })
     try {
       await handler(trigger)
-      audit.log({ event: 'schedule.complete', target: trigger.id, payload: { capability: trigger.capability } })
+      audit.log({
+        event: 'schedule.complete',
+        target: trigger.id,
+        payload: { capability: trigger.capability },
+      })
     } catch (err) {
-      audit.log({ event: 'schedule.error', target: trigger.id, payload: { capability: trigger.capability, error: (err as Error).message.slice(0, 200) } })
+      audit.log({
+        event: 'schedule.error',
+        target: trigger.id,
+        payload: { capability: trigger.capability, error: (err as Error).message.slice(0, 200) },
+      })
       throw err
     }
   },
@@ -59,15 +75,16 @@ export const schedule = {
   validateCron(cron: string): null | string {
     const fields = cron.trim().split(/\s+/)
     if (fields.length !== 5) return `expected 5 fields (m h dom mon dow), got ${fields.length}`
-    const ranges = [
+    const ranges: ReadonlyArray<readonly [number, number]> = [
       [0, 59], // minute
       [0, 23], // hour
       [1, 31], // day-of-month
       [1, 12], // month
-      [0, 7],  // day-of-week (7 == 0 == Sunday)
+      [0, 7], // day-of-week (7 == 0 == Sunday)
     ]
     for (let i = 0; i < 5; i++) {
       const f = fields[i]!
+      const [minimum, maximum] = ranges[i]!
       if (f === '*') continue
       // Allow simple comma-separated lists, ranges, steps.
       if (!/^(\*|\*\/\d+|\d+(-\d+)?(,\d+(-\d+)?)*(\/\d+)?)$/.test(f)) {
@@ -75,7 +92,9 @@ export const schedule = {
       }
       const numbers = f.match(/\d+/g)?.map(Number) ?? []
       for (const n of numbers) {
-        if (n < ranges[i]![0] || n > ranges[i]![1]) return `field ${i} value ${n} out of range [${ranges[i]![0]}, ${ranges[i]![1]}]`
+        if (n < minimum || n > maximum) {
+          return `field ${i} value ${n} out of range [${minimum}, ${maximum}]`
+        }
       }
     }
     return null

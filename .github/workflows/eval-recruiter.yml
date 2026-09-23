@@ -7,9 +7,9 @@ name: eval-recruiter
 #   - schedule (daily 06:00 UTC) — catches model drift independent of code change
 #   - push to main — refresh scorecard on merge (PR-mediated, never direct push)
 #
-# Gating: the live LLM eval step only runs when the TANGLE_CI_ROUTER_KEY repo
-# secret is set. When absent, the workflow logs a structured warning and
-# exits 0 — it does NOT fail PRs. Set the secret to unlock live measurement.
+# Gating: the live eval runs only when the router key and deployed recruiter
+# endpoint are configured. Once it runs, any execution or judge error fails
+# the job.
 #
 # Gen-16.1 audit hardening:
 #   CRIT A2 — `--frozen-lockfile` (committed pnpm-lock.yaml is the source
@@ -110,16 +110,17 @@ jobs:
         id: live
         env:
           TANGLE_API_KEY: ${{ secrets.TANGLE_CI_ROUTER_KEY }}
+          EVAL_TARGET_BASE_URL: ${{ vars.RECRUITER_EVAL_TARGET_URL }}
           RUBRIC_JUDGE_MODEL: deepseek/deepseek-chat
         working-directory: examples/recruiter-eval-workspace
         run: |
-          if [ -z "${TANGLE_API_KEY}" ]; then
-            echo "::warning::TANGLE_CI_ROUTER_KEY not set as repo secret. Skipping workspace install + live eval — agent_eval_meta_pass_rate will remain 'unmeasured'. Set the secret to enable live measurement."
+          if [ -z "${TANGLE_API_KEY}" ] || [ -z "${EVAL_TARGET_BASE_URL}" ]; then
+            echo "::warning::TANGLE_CI_ROUTER_KEY or RECRUITER_EVAL_TARGET_URL is not configured. Skipping live eval; agent_eval_meta_pass_rate remains unmeasured."
             echo "ran=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           pnpm install --frozen-lockfile
-          pnpm eval || true
+          pnpm eval
           echo "ran=true" >> "$GITHUB_OUTPUT"
       - name: upload scorecard artifact
         if: steps.live.outputs.ran == 'true' && github.event_name != 'pull_request'

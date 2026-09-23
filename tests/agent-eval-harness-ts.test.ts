@@ -136,6 +136,11 @@ test('package.json pins @tangle-network/agent-eval to the current cohort', () =>
     '0.134.1',
     `package.json must pin @tangle-network/agent-eval 0.134.1; got ${dep}`,
   )
+  assert.equal(
+    pkg.dependencies?.['@tangle-network/tcloud'],
+    undefined,
+    'the eval family must use the Agent Eval ChatClient instead of TCloud',
+  )
   assert.ok(pkg.scripts?.eval, 'pnpm eval script must be wired')
   assert.ok(pkg.scripts?.['eval:gate'], 'pnpm eval:gate script must be wired')
 })
@@ -144,7 +149,7 @@ test('runner.ts imports the agent-eval primitives we claim to compose', () => {
   const src = readFileSync(join(FAMILY_DIR, 'files/src/eval/runner.ts'), 'utf8')
   for (const symbol of [
     'FileSystemTraceStore',
-    'FileSystemExperimentStore',
+    'fileExperimentStore',
     'SubprocessSandboxDriver',
     'runTestGradedScenario',
   ]) {
@@ -153,6 +158,18 @@ test('runner.ts imports the agent-eval primitives we claim to compose', () => {
       new RegExp(`\\b${symbol}\\b`),
       `runner.ts must import ${symbol} from @tangle-network/agent-eval`,
     )
+  }
+})
+
+test('family ships ordered conversation and run-bound judge modules', () => {
+  const targets = new Set(loadFamilyManifest().files.map((file) => file.target))
+  for (const target of [
+    'src/eval/conversation.ts',
+    'src/eval/conversation-cli.ts',
+    'src/eval/judge-client.ts',
+    'src/eval/judge-policy.ts',
+  ]) {
+    assert.ok(targets.has(target), `${target} must be composed into generated eval projects`)
   }
 })
 
@@ -292,6 +309,10 @@ test('regression layer requires eval:scenarios and ships gate + CLI + workflow',
   )
   assert.match(yml, /origin\/main/, 'regression CI must compare against origin/main')
   assert.match(yml, /pnpm eval:gate/, 'regression CI must invoke pnpm eval:gate')
+  assert.ok(
+    mf.files.some((file) => file.target === 'src/eval/scorecard.ts'),
+    'the shared regression layer must provide scorecard.ts to eval and research families',
+  )
 })
 
 test('every layer file declared in manifest.files exists on disk', () => {

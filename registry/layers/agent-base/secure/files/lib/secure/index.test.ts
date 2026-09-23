@@ -7,7 +7,7 @@
 
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createHmac } from 'node:crypto'
@@ -39,7 +39,10 @@ function setupIdentity(agentId = 'agent-A', capabilities: string[] = []): void {
 // Every test that may trigger audit.log needs an isolated workspace root.
 // Tests that explicitly clear env (fail-closed checks) MUST run BEFORE
 // importing modules — or set the root pre-import. This helper does both.
-async function setupTestEnv(agentId = 'agent-A', capabilities: string[] = ['sensitive-fs']): Promise<string> {
+async function setupTestEnv(
+  agentId = 'agent-A',
+  capabilities: string[] = ['sensitive-fs'],
+): Promise<string> {
   const root = tempWorkspace()
   process.env.AGENT_WORKSPACE_ROOT = root
   setupIdentity(agentId, capabilities)
@@ -105,10 +108,7 @@ test('secrets: dotenvx ciphertext rejected as un-decrypted', async () => {
   process.env.NOT_DECRYPTED = 'encrypted:eyJBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBPT0='
   const { secrets } = await import('./secrets.js')
   secrets.clearCache()
-  assert.throws(
-    () => secrets.require('NOT_DECRYPTED'),
-    /value looks like dotenvx ciphertext/,
-  )
+  assert.throws(() => secrets.require('NOT_DECRYPTED'), /value looks like dotenvx ciphertext/)
   delete process.env.NOT_DECRYPTED
 })
 
@@ -176,7 +176,10 @@ test('workspace: agent root frozen at first call (H2 fix)', async () => {
 test('workspace: sensitive-zone requires sensitive-fs capability', async () => {
   await setupTestEnv('agent-A', []) // NO sensitive-fs
   const { workspace } = await import('./workspace.js')
-  assert.throws(() => workspace.write('sensitive/secret.txt', 'oops'), /sensitive zone access denied/)
+  assert.throws(
+    () => workspace.write('sensitive/secret.txt', 'oops'),
+    /sensitive zone access denied/,
+  )
 })
 
 test('workspace: sensitive-zone allowed with capability', async () => {
@@ -283,10 +286,14 @@ test('webhook-out: rejects target not in allowedDomains', async () => {
   process.env.AGENT_WORKSPACE_ROOT = tempWorkspace()
   process.env.OUT_SECRET = 'k'
   const { webhookOut } = await import('./webhook-out.js')
-  const r = await webhookOut('https://evil.example.com/hook', { x: 1 }, {
-    secretName: 'OUT_SECRET',
-    allowedDomains: ['tangle.tools'],
-  })
+  const r = await webhookOut(
+    'https://evil.example.com/hook',
+    { x: 1 },
+    {
+      secretName: 'OUT_SECRET',
+      allowedDomains: ['tangle.tools'],
+    },
+  )
   assert.equal(r.ok, false)
   assert.match(r.error ?? '', /allowedDomains/)
   delete process.env.OUT_SECRET
@@ -298,21 +305,27 @@ test('webhook-out: subdomain match works', async () => {
   process.env.OUT_SECRET2 = 'k'
   // Stub global fetch to capture the request without making it
   const realFetch = globalThis.fetch
-  let captured: { url: string; headers: Record<string, string> } | null = null
+  const captured: Array<{ url: string; headers: Record<string, string> }> = []
   globalThis.fetch = (async (url: string, init: RequestInit) => {
-    captured = { url, headers: init.headers as Record<string, string> }
+    captured.push({ url, headers: init.headers as Record<string, string> })
     return new Response('ok', { status: 200 })
   }) as typeof fetch
   try {
     const { webhookOut } = await import('./webhook-out.js')
-    const r = await webhookOut('https://api.tangle.tools/hook', { x: 1 }, {
-      secretName: 'OUT_SECRET2',
-      allowedDomains: ['tangle.tools'],
-    })
+    const r = await webhookOut(
+      'https://api.tangle.tools/hook',
+      { x: 1 },
+      {
+        secretName: 'OUT_SECRET2',
+        allowedDomains: ['tangle.tools'],
+      },
+    )
     assert.equal(r.ok, true)
-    assert.ok(captured)
-    assert.ok(captured!.headers['x-tangle-signature'])
-    assert.ok(captured!.headers['x-tangle-timestamp'])
+    assert.equal(captured.length, 1)
+    const request = captured[0]
+    assert.ok(request)
+    assert.ok(request.headers['x-tangle-signature'])
+    assert.ok(request.headers['x-tangle-timestamp'])
   } finally {
     globalThis.fetch = realFetch
     delete process.env.OUT_SECRET2
@@ -358,10 +371,7 @@ test('audit: verifyDay detects tampering', async () => {
 test('audit: fail-closed on missing identity (M2 fix)', async () => {
   clearEnvForFailClosed()
   const { audit } = await import('./audit.js')
-  assert.throws(
-    () => audit.log({ event: 'missing-actor' }),
-    /cannot resolve actor/,
-  )
+  assert.throws(() => audit.log({ event: 'missing-actor' }), /cannot resolve actor/)
 })
 
 // ── schedule ─────────────────────────────────────────────────────────────

@@ -140,7 +140,7 @@ export const WORKSPACE_PRESETS: WorkspacePreset[] = [
         from: 'agent',
         var: 'AGENT_ENDPOINT',
         to: 'eval',
-        toVar: 'EVAL_TARGET_URL',
+        toVar: 'EVAL_TARGET_BASE_URL',
         placeholder: 'http://localhost:3001',
       },
     ],
@@ -193,7 +193,7 @@ export const WORKSPACE_PRESETS: WorkspacePreset[] = [
         from: 'agent',
         var: 'AGENT_ENDPOINT',
         to: 'eval',
-        toVar: 'EVAL_TARGET_URL',
+        toVar: 'EVAL_TARGET_BASE_URL',
         placeholder: 'http://localhost:3001',
       },
       {

@@ -2,10 +2,7 @@
   "id": "regression",
   "group": "agent-eval",
   "description": "Statistical regression gate for the eval harness. Reads two scorecards (baseline + head), compares per-flow distributions via `bootstrapCi` + `welchsTTest` + `cohensD`, applies Benjamini–Hochberg FDR correction across dimensions, and emits a PROMOTE / HOLD / REVERT verdict. Ships a CLI (`eval-regression-gate`) and a CI workflow that wires the gate against `origin/main` on every PR.",
-  "appliesTo": [
-    "agent-eval-harness-ts",
-    "agent-research-harness-ts"
-  ],
+  "appliesTo": ["agent-eval-harness-ts", "agent-research-harness-ts"],
   "provides": ["eval:regression"],
   "requires": ["eval:scenarios"],
   "defaults": {
@@ -28,6 +25,10 @@
       "target": "src/eval/regression/README.md"
     },
     {
+      "source": "files/src/eval/scorecard.ts",
+      "target": "src/eval/scorecard.ts"
+    },
+    {
       "source": "files/.github/workflows/regression-gate.yml",
       "target": ".github/workflows/regression-gate.yml"
     }
@@ -36,6 +37,7 @@
     { "type": "file-exists", "path": "src/eval/regression/gate.ts" },
     { "type": "file-exists", "path": "src/eval/regression/cli.ts" },
     { "type": "file-exists", "path": "src/eval/regression/README.md" },
+    { "type": "file-exists", "path": "src/eval/scorecard.ts" },
     { "type": "file-exists", "path": ".github/workflows/regression-gate.yml" }
   ],
   "tieredKeywords": {
@@ -55,6 +57,6 @@
   },
   "contextHints": {
     "commands": ["pnpm eval:gate baseline.json head.json"],
-    "extensionPoints": ["src/eval/regression/gate.ts"]
+    "extensionPoints": ["src/eval/regression/gate.ts", "src/eval/scorecard.ts"]
   }
 }

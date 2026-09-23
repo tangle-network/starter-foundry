@@ -48,16 +48,16 @@ skill's "Capture integrity" section by default:
 
 1. **`RawProviderSink`** — a `FileSystemRawProviderSink` per scenario
    under `.evolve/agent-eval/raw-events/<scenarioId>/`. Headers + body
-   credentials auto-redacted. LLM judges that explicitly call `callLlm`
-   pick the sink up off `globalThis.__agentEvalRawSink`.
+   credentials auto-redacted. The runner passes it directly to the
+   run-bound `ChatClient`.
 2. **`assertLlmRoute`** at preflight — fires when `EVAL_LLM_BASE_URL`
    is set. Fails loud if the sweep would silently fall back to the
    public router or run unauthenticated.
-3. **`assertRunCaptured`** after each scenario — verifies the run wrote
-   spans + (when raw events are present) every `LlmSpan` has a matching
-   raw `request` event. Default `EVAL_INTEGRITY=log` surfaces issues
-   on the outcome row; `EVAL_INTEGRITY=strict` fails the scenario;
-   `EVAL_INTEGRITY=off` disables the wiring.
+3. **`assertRunCaptured`** after each scenario — curl-only runs require
+   a completed outcome. Runs with local model calls also require every
+   `LlmSpan` to have a matching raw request. Default
+   `EVAL_INTEGRITY=log` surfaces issues; `strict` fails the run;
+   `off` disables capture checks.
 4. **`onRunComplete` hooks** — supported on the campaign path; pass
    `traceAnalystOnRunComplete(...)` via `onRunComplete` in
    `runCampaign` opts. The smoke-test path uses
@@ -67,12 +67,13 @@ skill's "Capture integrity" section by default:
 
 Env knobs:
 
-| Var | Default | Effect |
-| --- | ------- | ------ |
-| `EVAL_INTEGRITY` | `log` | `off` \| `log` \| `strict` capture-integrity policy. |
-| `EVAL_LLM_BASE_URL` | unset | Triggers `assertLlmRoute` preflight. |
-| `EVAL_LLM_API_KEY` | unset | Auth for the LLM judge route (falls back to `TANGLE_API_KEY`). |
-| `EVAL_LLM_PROVIDER` | unset | Pin the expected provider (`openai`, `anthropic`, …). |
+| Var                    | Default                 | Effect                                                         |
+| ---------------------- | ----------------------- | -------------------------------------------------------------- |
+| `EVAL_TARGET_BASE_URL` | `http://127.0.0.1:8787` | Agent endpoint used for every scenario turn.                   |
+| `EVAL_INTEGRITY`       | `log`                   | `off` \| `log` \| `strict` capture-integrity policy.           |
+| `EVAL_LLM_BASE_URL`    | unset                   | Triggers `assertLlmRoute` preflight.                           |
+| `EVAL_LLM_API_KEY`     | unset                   | Auth for the LLM judge route (falls back to `TANGLE_API_KEY`). |
+| `EVAL_LLM_PROVIDER`    | unset                   | Pin the expected provider (`openai`, `anthropic`, …).          |
 
 ## Campaign mode (agent-eval 0.22+)
 
@@ -88,7 +89,7 @@ const result = await runCampaign({
   comparator: 'baseline',
   variants: [
     { id: 'baseline', payload: { systemPrompt: '...' } },
-    { id: 'v2',       payload: { systemPrompt: '...' } },
+    { id: 'v2', payload: { systemPrompt: '...' } },
   ],
   scenarios: [{ scenarioId: 'math-1' }, { scenarioId: 'tools-a' }],
   seeds: [0, 1, 2],

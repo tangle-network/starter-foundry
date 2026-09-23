@@ -165,3 +165,4 @@ const judge: JudgeFn = async (tc, input): Promise<JudgeScore[]> => {
 
 export default judge
 export { RECRUITER_RUBRIC, FENCE_OPEN, FENCE_CLOSE, buildFencedTranscript }
+export const appliesToDimensions = ['rubric-quality']

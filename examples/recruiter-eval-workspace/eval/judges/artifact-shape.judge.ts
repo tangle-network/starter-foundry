@@ -80,3 +80,4 @@ const judge: JudgeFn = async (_tc, input): Promise<JudgeScore[]> => {
 
 export default judge
 export { ARTIFACT_BLOCK }
+export const appliesToDimensions = ['artifact-shape']

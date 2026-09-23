@@ -11,12 +11,16 @@
 // loop has silently broken.
 
 import assert from 'node:assert/strict'
-import { execFileSync, spawnSync } from 'node:child_process'
+import { spawnSync } from 'node:child_process'
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync, mkdirSync } from 'node:fs'
+import { createServer } from 'node:http'
+import type { AddressInfo } from 'node:net'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import test from 'node:test'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import type { JudgeFn } from '@tangle-network/agent-eval'
+import { tsImport } from 'tsx/esm/api'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const REPO = resolve(HERE, '..')
@@ -55,7 +59,11 @@ test('example workspace exists with expected file shape', () => {
   assert.ok(existsSync(join(WORKSPACE, '.env.example')))
   const envExample = readFileSync(join(WORKSPACE, '.env.example'), 'utf8')
   assert.match(envExample, /TANGLE_API_KEY=/, '.env.example must declare TANGLE_API_KEY')
-  assert.match(envExample, /EVAL_TARGET_URL=/, '.env.example must declare EVAL_TARGET_URL')
+  assert.match(
+    envExample,
+    /EVAL_TARGET_BASE_URL=/,
+    '.env.example must declare EVAL_TARGET_BASE_URL',
+  )
   assert.ok(existsSync(join(WORKSPACE, 'README.md')))
   for (const sub of ['app', 'agent', 'eval']) {
     assert.ok(existsSync(join(WORKSPACE, sub)), `expected slot dir ${sub}/`)
@@ -165,81 +173,425 @@ test('rubric-quality judge returns unmeasured (status + NaN) when TANGLE_API_KEY
   }
 })
 
-test('eval runner passes a router client to judges when TANGLE_API_KEY is present', async () => {
-  const tmp = mkdtempSync(join(tmpdir(), 'sf-eval-client-'))
+test('rubric judge reads the canonical ChatClient content response', async () => {
+  const { createChatClient } = await import('@tangle-network/agent-eval')
+  const { buildRubricJudge } = (await import(
+    pathToFileURL(join(WORKSPACE, 'eval/src/eval/judges/rubric-runner.ts')).href
+  )) as {
+    buildRubricJudge: (spec: {
+      name: string
+      description: string
+      model: string
+      dimensions: Array<{
+        name: string
+        description: string
+        anchor_low: string
+        anchor_high: string
+        weight: number
+      }>
+    }) => JudgeFn
+  }
+  let calls = 0
+  const chat = createChatClient({
+    transport: 'mock',
+    handler: async (request) => {
+      calls += 1
+      return {
+        content: JSON.stringify({
+          dimensions: { quality: 0.75 },
+          composite: 0.75,
+          notes: 'canonical response',
+        }),
+        model: request.model ?? 'judge-test',
+        usage: { promptTokens: 3, completionTokens: 2, totalTokens: 5 },
+        costUsd: null,
+        durationMs: 1,
+        finishReason: 'stop',
+        raw: {},
+      }
+    },
+  })
+  const judge = buildRubricJudge({
+    name: 'canonical-content',
+    description: 'Score one quality dimension.',
+    model: 'judge-test',
+    dimensions: [
+      {
+        name: 'quality',
+        description: 'Response quality.',
+        anchor_low: 'incorrect',
+        anchor_high: 'correct',
+        weight: 1,
+      },
+    ],
+  })
+  const scores = await judge(chat, {
+    scenario: {
+      id: 'canonical-content',
+      persona: 'test',
+      label: 'Canonical content',
+      thesis: 'The rubric must consume ChatClient content.',
+      dimensions: ['quality'],
+      turns: [{ user: 'question', expectedBehaviors: ['answer'] }],
+      artifactChecks: [],
+    },
+    turns: [
+      {
+        turnIndex: 0,
+        userMessage: 'question',
+        agentResponse: 'answer',
+        durationMs: 1,
+        blocksExtracted: [],
+        containsCode: false,
+        containsToolCall: false,
+      },
+    ],
+    artifacts: {
+      vaultFiles: [],
+      blocksExtracted: [],
+      codeBlocks: [],
+      toolCalls: [],
+    },
+  })
+
+  assert.equal(calls, 1)
+  assert.deepEqual(
+    scores.map(({ dimension, score }) => ({ dimension, score })),
+    [{ dimension: 'quality', score: 0.75 }],
+  )
+})
+
+test('judge policy applies only relevant judges and honors rubric weights', async () => {
+  const policy = (await import(
+    pathToFileURL(join(WORKSPACE, 'eval/src/eval/judge-policy.ts')).href
+  )) as {
+    judgeAppliesTo: (
+      appliesToDimensions: readonly string[] | undefined,
+      scenarioDimensions: readonly string[],
+    ) => boolean
+    aggregateJudgeScores: (
+      scores: Array<{
+        judgeName: string
+        dimension: string
+        score: number
+        reasoning: string
+        status?: 'measured' | 'unmeasured'
+        weight?: number
+      }>,
+    ) => {
+      mean: number | null
+      measuredCount: number
+      unmeasuredCount: number
+      measuredJudgeCount: number
+      unmeasuredJudgeCount: number
+    }
+  }
+
+  assert.equal(policy.judgeAppliesTo(['artifact-shape'], ['artifact-shape']), true)
+  assert.equal(policy.judgeAppliesTo(['refusal-correctness'], ['artifact-shape']), false)
+  const aggregate = policy.aggregateJudgeScores([
+    {
+      judgeName: 'rubric',
+      dimension: 'coverage',
+      score: 0,
+      reasoning: 'low',
+      weight: 1,
+    },
+    {
+      judgeName: 'rubric',
+      dimension: 'bias-resistance',
+      score: 1,
+      reasoning: 'high',
+      weight: 3,
+    },
+    {
+      judgeName: 'artifact',
+      dimension: 'artifact-shape',
+      score: 0.5,
+      reasoning: 'partial',
+    },
+    {
+      judgeName: 'unavailable',
+      dimension: 'quality',
+      score: Number.NaN,
+      reasoning: 'not measured',
+      status: 'unmeasured',
+    },
+  ])
+
+  assert.equal(aggregate.mean, 0.625)
+  assert.equal(aggregate.measuredCount, 3)
+  assert.equal(aggregate.unmeasuredCount, 1)
+  assert.equal(aggregate.measuredJudgeCount, 2)
+  assert.equal(aggregate.unmeasuredJudgeCount, 1)
+})
+
+test('runner executes every turn in order with carried conversation context', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'sf-eval-multi-turn-'))
+  const requests: Array<{
+    conversationId: string
+    turnIndex: number
+    message: string
+    messages: Array<{ role: string; content: string }>
+  }> = []
+  const server = createServer((request, response) => {
+    let body = ''
+    request.setEncoding('utf8')
+    request.on('data', (chunk: string) => {
+      body += chunk
+    })
+    request.on('end', () => {
+      const parsed = JSON.parse(body) as (typeof requests)[number]
+      requests.push(parsed)
+      response.writeHead(200, { 'content-type': 'application/json' })
+      response.end(JSON.stringify({ content: `assistant-${parsed.turnIndex}` }))
+    })
+  })
+  await new Promise<void>((resolvePromise, reject) => {
+    server.once('error', reject)
+    server.listen(0, '127.0.0.1', resolvePromise)
+  })
+
   try {
     mkdirSync(join(tmp, 'scenarios'), { recursive: true })
     mkdirSync(join(tmp, 'judges'), { recursive: true })
     writeFileSync(join(tmp, 'package.json'), '{"type":"module"}\n')
     writeFileSync(
-      join(tmp, 'scenarios/client.scenario.js'),
+      join(tmp, 'scenarios/multi.scenario.js'),
       `export default {
-  id: 'router-client/live',
+  id: 'runner/multi-turn',
   persona: 'test',
-  label: 'Router client smoke',
-  thesis: 'The runner must pass a TCloud client to live judges.',
-  dimensions: ['client'],
-  turns: [{ user: 'hello', expectedBehaviors: ['respond'] }],
-  artifactChecks: [],
-  testCommand: 'true'
+  label: 'Three ordered turns',
+  thesis: 'All declared turns must execute with the preceding conversation.',
+  dimensions: ['multi-turn'],
+  turns: [
+    { user: 'first', expectedBehaviors: ['reply'] },
+    { user: 'second', expectedBehaviors: ['reply'] },
+    { user: 'third', expectedBehaviors: ['reply'] }
+  ],
+  artifactChecks: []
 }
 `,
     )
     writeFileSync(
-      join(tmp, 'judges/client.judge.js'),
-      `export default async function judge(tc) {
-  if (!tc || typeof tc.chat !== 'function') throw new Error('missing router chat client')
-  return [{ judgeName: 'client-smoke', dimension: 'client', score: 1, reasoning: 'router client present' }]
+      join(tmp, 'judges/multi.judge.js'),
+      `export const appliesToDimensions = ['multi-turn']
+export default async function judge(_chat, input) {
+  const transcript = input.turns.map((turn) => turn.agentResponse).join(',')
+  const pass = transcript === 'assistant-0,assistant-1,assistant-2'
+  return [{
+    judgeName: 'multi-turn',
+    dimension: 'multi-turn',
+    score: pass ? 1 : 0,
+    reasoning: transcript
+  }]
 }
 `,
     )
-    writeFileSync(
-      join(tmp, 'run-client.mjs'),
-      `
-import { runHarness } from ${JSON.stringify(pathToFileURL(join(WORKSPACE, 'eval/src/eval/runner.ts')).href)}
-
-const report = await runHarness({
-  projectRoot: ${JSON.stringify(tmp)},
-  threshold: 0.7,
-  targetUrl: 'http://127.0.0.1:9',
-  tracesDir: ${JSON.stringify(join(tmp, '.evolve/agent-eval/traces'))},
-  experimentsDir: ${JSON.stringify(join(tmp, '.evolve/agent-eval/experiments'))},
-  scorecardPath: ${JSON.stringify(join(tmp, '.evolve/scorecard.json'))}
-})
-console.log('REPORT_JSON ' + JSON.stringify({
-  aggregate: report.aggregate,
-  measuredScenarioCount: report.measuredScenarioCount,
-  measuredJudgeCount: report.outcomes[0]?.measuredJudgeCount
-}))
-`,
-    )
-
-    const env: NodeJS.ProcessEnv = {
-      ...process.env,
-      TANGLE_API_KEY: 'sk-tan-test',
-      LLM_ROUTER_URL: 'https://router.tangle.tools',
+    const { exitCodeForReport, runHarness } = (await tsImport(
+      pathToFileURL(join(WORKSPACE, 'eval/src/eval/runner.ts')).href,
+      import.meta.url,
+    )) as {
+      runHarness: (options: Record<string, unknown>) => Promise<{
+        outcomes: Array<{ pass: boolean; measuredJudgeCount: number; runId: string }>
+        integrityReports: Record<
+          string,
+          { ok: boolean; llmSpanCount: number; rawProviderEventCount: number }
+        >
+      }>
+      exitCodeForReport: (report: unknown) => 0 | 1
     }
-    delete env.EVAL_LLM_API_KEY
-    const r = spawnSync(process.execPath, ['--import', 'tsx', join(tmp, 'run-client.mjs')], {
-      cwd: REPO,
-      env,
-      stdio: 'pipe',
-      encoding: 'utf8',
+    const address = server.address() as AddressInfo
+    const report = await runHarness({
+      projectRoot: join(WORKSPACE, 'eval'),
+      scenariosDir: join(tmp, 'scenarios'),
+      judgesDir: join(tmp, 'judges'),
+      targetUrl: `http://127.0.0.1:${address.port}`,
+      threshold: 0.7,
+      integrityMode: 'strict',
+      tracesDir: join(tmp, 'traces'),
+      experimentsDir: join(tmp, 'experiments'),
+      rawEventsDir: join(tmp, 'raw-events'),
+      scorecardPath: join(tmp, 'scorecard.json'),
     })
-    assert.equal(r.status, 0, `runner subprocess failed:\nSTDOUT:\n${r.stdout}\nSTDERR:\n${r.stderr}`)
-    const match = r.stdout.match(/REPORT_JSON (.+)$/m)
-    assert.ok(match, `runner subprocess did not print report JSON:\n${r.stdout}`)
-    const report = JSON.parse(match[1]) as {
-      aggregate: number | null
-      measuredScenarioCount: number
-      measuredJudgeCount: number
+
+    assert.equal(report.outcomes[0]?.pass, true)
+    assert.equal(exitCodeForReport(report), 0)
+    assert.equal(report.outcomes[0]?.measuredJudgeCount, 1)
+    assert.equal(requests.length, 3)
+    assert.deepEqual(
+      requests.map(({ turnIndex, message, messages }) => ({
+        turnIndex,
+        message,
+        messageCount: messages.length,
+      })),
+      [
+        { turnIndex: 0, message: 'first', messageCount: 1 },
+        { turnIndex: 1, message: 'second', messageCount: 3 },
+        { turnIndex: 2, message: 'third', messageCount: 5 },
+      ],
+    )
+    assert.equal(new Set(requests.map((request) => request.conversationId)).size, 1)
+    assert.deepEqual(requests[2]?.messages, [
+      { role: 'user', content: 'first' },
+      { role: 'assistant', content: 'assistant-0' },
+      { role: 'user', content: 'second' },
+      { role: 'assistant', content: 'assistant-1' },
+      { role: 'user', content: 'third' },
+    ])
+    const runId = report.outcomes[0]?.runId
+    assert.ok(runId)
+    assert.deepEqual(report.integrityReports[runId], {
+      ok: true,
+      runId,
+      llmSpanCount: 0,
+      judgeSpanCount: 0,
+      toolSpanCount: 0,
+      rawProviderEventCount: 0,
+      rawSpanCoverage: { covered: 0, total: 0 },
+      issues: [],
+    })
+  } finally {
+    await new Promise<void>((resolvePromise, reject) => {
+      server.close((error) => (error ? reject(error) : resolvePromise()))
+    })
+    rmSync(tmp, { recursive: true, force: true })
+  }
+})
+
+test('runner fails closed when an applicable judge throws', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'sf-eval-judge-error-'))
+  try {
+    mkdirSync(join(tmp, 'scenarios'), { recursive: true })
+    mkdirSync(join(tmp, 'judges'), { recursive: true })
+    writeFileSync(join(tmp, 'package.json'), '{"type":"module"}\n')
+    writeFileSync(
+      join(tmp, 'scenarios/error.scenario.js'),
+      `export default {
+  id: 'runner/judge-error',
+  persona: 'test',
+  label: 'Judge error',
+  thesis: 'An applicable judge error must fail the scenario.',
+  dimensions: ['quality'],
+  turns: [{ user: 'question', expectedBehaviors: ['answer'] }],
+  artifactChecks: [],
+  testCommand: "printf 'answer'"
+}
+`,
+    )
+    writeFileSync(
+      join(tmp, 'judges/error.judge.js'),
+      `export const appliesToDimensions = ['quality']
+export default async function judge() {
+  throw new Error('judge unavailable')
+}
+`,
+    )
+    const { exitCodeForReport, runHarness } = (await tsImport(
+      pathToFileURL(join(WORKSPACE, 'eval/src/eval/runner.ts')).href,
+      import.meta.url,
+    )) as {
+      runHarness: (options: Record<string, unknown>) => Promise<{
+        aggregate: number
+        outcomes: Array<{
+          pass: boolean
+          score: number
+          failureClass: string | null
+          evaluationErrors?: string[]
+        }>
+      }>
+      exitCodeForReport: (report: unknown) => 0 | 1
     }
-    assert.equal(report.aggregate, 1)
-    assert.equal(report.measuredScenarioCount, 1)
-    assert.equal(report.measuredJudgeCount, 1)
+    const report = await runHarness({
+      projectRoot: join(WORKSPACE, 'eval'),
+      scenariosDir: join(tmp, 'scenarios'),
+      judgesDir: join(tmp, 'judges'),
+      threshold: 0.7,
+      integrityMode: 'strict',
+      tracesDir: join(tmp, 'traces'),
+      experimentsDir: join(tmp, 'experiments'),
+      rawEventsDir: join(tmp, 'raw-events'),
+      scorecardPath: join(tmp, 'scorecard.json'),
+    })
+
+    assert.equal(report.aggregate, 0)
+    assert.equal(exitCodeForReport(report), 1)
+    assert.equal(report.outcomes[0]?.pass, false)
+    assert.equal(report.outcomes[0]?.score, 0)
+    assert.equal(report.outcomes[0]?.failureClass, 'judge_error')
+    assert.match(report.outcomes[0]?.evaluationErrors?.[0] ?? '', /judge unavailable/)
   } finally {
     rmSync(tmp, { recursive: true, force: true })
   }
+})
+
+test('judge client records both an LLM span and raw provider events', async () => {
+  const { InMemoryRawProviderSink, InMemoryTraceStore, TraceEmitter, assertRunCaptured } =
+    await import('@tangle-network/agent-eval')
+  const { createJudgeClient } = (await import(
+    pathToFileURL(join(WORKSPACE, 'eval/src/eval/judge-client.ts')).href
+  )) as {
+    createJudgeClient: (options: Record<string, unknown>) => {
+      chat: (request: Record<string, unknown>) => Promise<{ content: string }>
+    }
+  }
+  const runId = 'judge-capture'
+  const traceStore = new InMemoryTraceStore()
+  const rawSink = new InMemoryRawProviderSink()
+  const emitter = new TraceEmitter(traceStore, { runId })
+  await emitter.startRun({ scenarioId: 'judge-capture', layer: 'meta' })
+  const client = createJudgeClient({
+    apiKey: 'test-key',
+    baseUrl: 'https://judge.example/v1',
+    provider: 'test-provider',
+    maximumAttempts: 1,
+    rawSink,
+    traceStore,
+    runId,
+    fetch: async () =>
+      new Response(
+        JSON.stringify({
+          id: 'response-1',
+          model: 'judge-test',
+          choices: [
+            {
+              index: 0,
+              message: { role: 'assistant', content: 'canonical content' },
+              finish_reason: 'stop',
+            },
+          ],
+          usage: { prompt_tokens: 3, completion_tokens: 2, total_tokens: 5 },
+        }),
+        { status: 200, headers: { 'content-type': 'application/json' } },
+      ),
+  })
+  const response = await client.chat({
+    model: 'judge-test',
+    messages: [{ role: 'user', content: 'grade this' }],
+  })
+  await emitter.endRun({ pass: true, score: 1 })
+
+  assert.equal(response.content, 'canonical content')
+  const complete = await assertRunCaptured(traceStore, runId, {
+    rawSink,
+    llmSpansMin: 1,
+    requireRawCoverageOfLlmSpans: true,
+    requireOutcome: true,
+  })
+  assert.equal(complete.ok, true)
+  assert.equal(complete.llmSpanCount, 1)
+  assert.equal(complete.rawProviderEventCount, 2)
+  assert.deepEqual(complete.rawSpanCoverage, { covered: 1, total: 1 })
+
+  const missingRaw = await assertRunCaptured(traceStore, runId, {
+    rawSink: new InMemoryRawProviderSink(),
+    llmSpansMin: 1,
+    requireRawCoverageOfLlmSpans: true,
+    requireOutcome: true,
+  })
+  assert.equal(missingRaw.ok, false)
+  assert.ok(missingRaw.issues.some((issue) => issue.code === 'missing_raw_events'))
+  assert.ok(missingRaw.issues.some((issue) => issue.code === 'orphan_llm_span'))
 })
 
 test('aggregateJudgeScores skips unmeasured scores rather than averaging them as 0', async () => {
@@ -568,9 +920,20 @@ test('CI workflow YAML parses + has triggers + gates on TANGLE_API_KEY (audit B4
     /\$\{\{\s*secrets\.TANGLE_CI_ROUTER_KEY\s*\}\}/,
     'workflow must reference secrets.TANGLE_CI_ROUTER_KEY',
   )
+  const liveStep = steps.find((step) => step.id === 'live')
+  assert.equal(
+    liveStep?.env?.EVAL_TARGET_BASE_URL,
+    '${{ vars.RECRUITER_EVAL_TARGET_URL }}',
+    'live eval must target an explicitly configured recruiter endpoint',
+  )
 
   // pnpm eval invocation
   assert.match(allRunCmds, /pnpm eval/)
+  assert.doesNotMatch(
+    allRunCmds,
+    /pnpm eval\s*\|\|\s*true/,
+    'live recruiter grading must propagate a failing eval exit code',
+  )
 })
 
 test('rubric-quality judge fences agent transcript and instructs judge to ignore inner directives (audit A5)', async () => {
@@ -756,6 +1119,3 @@ test('sync-example-workspaces script exists and is executable as tsx', () => {
   assert.match(src, /examples\/recruiter-eval-workspace/, 'script must handle recruiter workspace')
   assert.match(src, /composePresetWorkspace/, 'script must call composePresetWorkspace')
 })
-
-// Reference execFileSync to silence unused-import lint without importing.
-void execFileSync

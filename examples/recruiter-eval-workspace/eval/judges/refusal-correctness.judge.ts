@@ -92,3 +92,4 @@ const judge: JudgeFn = async (_tc, input): Promise<JudgeScore[]> => {
 
 export default judge
 export { REFUSAL_MARKERS, REFRAME_MARKERS }
+export const appliesToDimensions = ['refusal-correctness']

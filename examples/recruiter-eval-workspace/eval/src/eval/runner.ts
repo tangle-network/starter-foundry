@@ -37,6 +37,7 @@ import {
   FileSystemTraceStore,
   fileExperimentStore,
   SubprocessSandboxDriver,
+  TraceEmitter,
   assertLlmRoute,
   createChatClient,
   LlmRouteAssertionError,
@@ -115,6 +116,8 @@ export interface RunnerOptions {
     provider?: string
     apiKey?: string
   }
+  /** Override the model client, for example with a CLI bridge or test backend. */
+  judgeClient?: ChatClient
 }
 
 interface ScenarioOutcome {
@@ -148,7 +151,7 @@ function shQuote(s: string): string {
 interface LoadedJudge {
   fn: JudgeFn
   filePath: string
-  dimensions: readonly string[]
+  appliesTo: readonly string[]
   usesModel: boolean
 }
 
@@ -166,29 +169,37 @@ async function loadJudgesFrom(dir: string): Promise<LoadedJudge[]> {
     const url = pathToFileURL(isAbsolute(filePath) ? filePath : resolve(filePath)).href
     const mod = (await import(url)) as {
       default?: JudgeFn
-      dimensions?: unknown
-      usesModel?: unknown
+      judgeConfig?: unknown
     }
     if (typeof mod.default !== 'function') {
       throw new Error(`eval-harness: ${filePath} must default-export a JudgeFn`)
     }
-    if (
-      !Array.isArray(mod.dimensions) ||
-      mod.dimensions.length === 0 ||
-      !mod.dimensions.every((value) => typeof value === 'string' && value.length > 0)
-    ) {
+    if (!mod.judgeConfig || typeof mod.judgeConfig !== 'object' || Array.isArray(mod.judgeConfig)) {
       throw new Error(
-        `eval-harness: ${filePath} must export a non-empty string[] named dimensions`,
+        `eval-harness: ${filePath} must export judgeConfig with appliesTo and usesModel`,
       )
     }
-    if (typeof mod.usesModel !== 'boolean') {
-      throw new Error(`eval-harness: ${filePath} must export a boolean named usesModel`)
+    const config = mod.judgeConfig as { appliesTo?: unknown; usesModel?: unknown }
+    if (
+      !Array.isArray(config.appliesTo) ||
+      config.appliesTo.length === 0 ||
+      !config.appliesTo.every(
+        (value) => typeof value === 'string' && value.trim().length > 0,
+      ) ||
+      new Set(config.appliesTo).size !== config.appliesTo.length
+    ) {
+      throw new Error(
+        `eval-harness: ${filePath} judgeConfig.appliesTo must be a non-empty list of unique dimensions`,
+      )
+    }
+    if (typeof config.usesModel !== 'boolean') {
+      throw new Error(`eval-harness: ${filePath} judgeConfig.usesModel must be boolean`)
     }
     judges.push({
       fn: mod.default,
       filePath,
-      dimensions: mod.dimensions as string[],
-      usesModel: mod.usesModel,
+      appliesTo: config.appliesTo as string[],
+      usesModel: config.usesModel,
     })
   }
   return judges
@@ -213,24 +224,39 @@ function createJudgeClient(apiKey: string | undefined, baseUrl: string | undefin
   })
 }
 
-function withRawCapture(
+interface ChatCaptureStats {
+  calls: number
+}
+
+function withChatTracing(
   chat: ChatClient,
-  rawSink: RawProviderSink,
+  rawSink: RawProviderSink | undefined,
   runId: string,
   baseUrl: string | undefined,
-): ChatClient {
-  let callIndex = 0
+  emitter: TraceEmitter,
+): { client: ChatClient; stats: ChatCaptureStats } {
+  const stats: ChatCaptureStats = { calls: 0 }
   const normalizedBaseUrl = baseUrl?.replace(/\/+$/, '') ?? 'https://router.tangle.tools'
-  return {
+  const client: ChatClient = {
     transport: chat.transport,
     defaultModel: chat.defaultModel,
     maximumAttempts: chat.maximumAttempts,
     async chat(request, options) {
-      const index = callIndex++
+      const index = stats.calls++
       const startedAt = Date.now()
       const model = request.model ?? chat.defaultModel ?? 'unknown'
+      const span = await emitter.span({
+        kind: 'llm',
+        name: `judge:${model}`,
+        attributes: {
+          'eval.phase': 'judge',
+          'llm.model': model,
+          'llm.transport': chat.transport,
+        },
+      })
       const eventBase = {
         runId,
+        spanId: span.span.spanId,
         provider: 'judge-chat-client',
         model,
         endpoint: '/v1/chat/completions',
@@ -238,16 +264,16 @@ function withRawCapture(
         attemptIndex: 0,
         redactedFields: [] as string[],
       }
-      await rawSink.record({
-        ...eventBase,
-        eventId: `${runId}:judge:${index}:request`,
-        direction: 'request',
-        timestamp: startedAt,
-        requestBody: request,
-      })
       try {
+        await rawSink?.record({
+          ...eventBase,
+          eventId: `${runId}:judge:${index}:request`,
+          direction: 'request',
+          timestamp: startedAt,
+          requestBody: request,
+        })
         const response = await chat.chat(request, options)
-        await rawSink.record({
+        await rawSink?.record({
           ...eventBase,
           eventId: `${runId}:judge:${index}:response`,
           direction: 'response',
@@ -256,21 +282,33 @@ function withRawCapture(
           requestBody: request,
           responseBody: response.raw ?? response,
         })
+        await span.end({
+          attributes: {
+            'eval.phase': 'judge',
+            'llm.model': response.model ?? model,
+            'llm.transport': chat.transport,
+          },
+        })
         return response
       } catch (error) {
-        await rawSink.record({
-          ...eventBase,
-          eventId: `${runId}:judge:${index}:error`,
-          direction: 'error',
-          timestamp: Date.now(),
-          durationMs: Date.now() - startedAt,
-          requestBody: request,
-          errorMessage: error instanceof Error ? error.message : String(error),
-        })
+        try {
+          await rawSink?.record({
+            ...eventBase,
+            eventId: `${runId}:judge:${index}:error`,
+            direction: 'error',
+            timestamp: Date.now(),
+            durationMs: Date.now() - startedAt,
+            requestBody: request,
+            errorMessage: error instanceof Error ? error.message : String(error),
+          })
+        } finally {
+          await span.fail(error instanceof Error ? error : String(error))
+        }
         throw error
       }
     },
   }
+  return { client, stats }
 }
 
 // Translate a Scenario into a TestGradedScenario — the bridge between
@@ -279,12 +317,14 @@ function withRawCapture(
 // Default policy: every scenario turn is POST-ed to one resumed session.
 // Each response is base64-framed so arbitrary model text cannot corrupt the
 // turn boundary parsed after the command exits.
-function toTestGraded(scenario: Scenario, targetUrl: string): TestGradedScenario {
-  const customTestCommand = (scenario as Scenario & { testCommand?: string }).testCommand
+export function toTestGraded(scenario: Scenario, targetUrl: string): TestGradedScenario {
   const safeId = scenario.id.replace(/[^a-zA-Z0-9_-]/g, '_')
   const sessionId = `${scenario.id}:${randomUUID()}`
+  const bodyPaths = scenario.turns.map(
+    (_turn, turnIndex) => `/tmp/eval-body-${safeId}-${sessionId.slice(-36)}-${turnIndex}`,
+  )
   const commands = scenario.turns.map((turn, turnIndex) => {
-    const bodyPath = `/tmp/eval-body-${safeId}-${turnIndex}`
+    const bodyPath = bodyPaths[turnIndex]!
     const requestBody = JSON.stringify({
       message: turn.user,
       scenarioId: scenario.id,
@@ -293,19 +333,20 @@ function toTestGraded(scenario: Scenario, targetUrl: string): TestGradedScenario
     })
     return (
       `body=${shQuote(bodyPath)}; ` +
-      `status=$(curl -sS -o "$body" -w '%{http_code}' -X POST -H 'content-type: application/json' ` +
+      `status=$(curl -sS --max-filesize 5242880 -o "$body" -w '%{http_code}' -X POST -H 'content-type: application/json' ` +
       `--data ${shQuote(requestBody)} ${shQuote(`${targetUrl}/chat`)}); ` +
       `printf '%s' "$status" | grep -E '^(200|201)$' >/dev/null; ` +
       `test "$(wc -c < "$body")" -ge 1; ` +
       `printf '${TURN_MARKER}${turnIndex}__'; base64 < "$body" | tr -d '\\n'; printf '\\n'`
     )
   })
-  const defaultTest = `set -eu; ${commands.join('; ')}`
+  const cleanup = bodyPaths.map(shQuote).join(' ')
+  const defaultTest = `set -eu; trap 'rm -f ${cleanup}' EXIT; ${commands.join('; ')}`
   return {
     id: scenario.id,
     description: scenario.label ?? scenario.thesis ?? scenario.id,
     harness: {
-      testCommand: customTestCommand ?? defaultTest,
+      testCommand: defaultTest,
       timeoutMs: 30_000,
     },
     passThreshold: 1.0,
@@ -314,17 +355,60 @@ function toTestGraded(scenario: Scenario, targetUrl: string): TestGradedScenario
 }
 
 export function parseTurnResponses(stdout: string, expectedTurns: number): string[] {
-  const responses: string[] = []
+  if (!Number.isInteger(expectedTurns) || expectedTurns < 1) return []
+  const responses = new Map<number, string>()
   const marker = new RegExp(`^${TURN_MARKER}(\\d+)__([A-Za-z0-9+/=]*)$`, 'gm')
   for (const match of stdout.matchAll(marker)) {
     const turnIndex = Number(match[1])
     if (!Number.isInteger(turnIndex) || turnIndex < 0 || turnIndex >= expectedTurns) continue
-    responses[turnIndex] = Buffer.from(match[2] ?? '', 'base64').toString('utf8')
+    if (responses.has(turnIndex)) return []
+    responses.set(turnIndex, Buffer.from(match[2] ?? '', 'base64').toString('utf8'))
   }
-  if (responses.filter((value) => value !== undefined).length === expectedTurns) {
-    return responses
+  if (responses.size !== expectedTurns) return []
+  return Array.from({ length: expectedTurns }, (_value, turnIndex) => responses.get(turnIndex)!)
+}
+
+export function validateJudgeScores(filePath: string, value: unknown): JudgeScore[] {
+  if (!Array.isArray(value)) {
+    throw new Error(`eval-harness: ${filePath} must return JudgeScore[]`)
   }
-  return expectedTurns === 1 ? [stdout] : []
+  const dimensions = new Set<string>()
+  for (const candidate of value) {
+    if (!candidate || typeof candidate !== 'object' || Array.isArray(candidate)) {
+      throw new Error(`eval-harness: ${filePath} returned a non-object judge score`)
+    }
+    const score = candidate as JudgeScore & { status?: unknown }
+    if (typeof score.judgeName !== 'string' || score.judgeName.trim().length === 0) {
+      throw new Error(`eval-harness: ${filePath} returned a score without judgeName`)
+    }
+    if (typeof score.dimension !== 'string' || score.dimension.trim().length === 0) {
+      throw new Error(`eval-harness: ${filePath} returned a score without dimension`)
+    }
+    if (dimensions.has(score.dimension)) {
+      throw new Error(
+        `eval-harness: ${filePath} returned duplicate dimension ${score.dimension}`,
+      )
+    }
+    dimensions.add(score.dimension)
+    if (typeof score.reasoning !== 'string' || score.reasoning.trim().length === 0) {
+      throw new Error(`eval-harness: ${filePath} returned a score without reasoning`)
+    }
+    if (score.status === 'unmeasured') {
+      if (!Number.isNaN(score.score)) {
+        throw new Error(
+          `eval-harness: ${filePath} must represent unmeasured scores with Number.NaN`,
+        )
+      }
+    } else if (
+      (score.status !== undefined && score.status !== 'measured') ||
+      !Number.isFinite(score.score) ||
+      score.score < 0 ||
+      score.score > 1
+    ) {
+      throw new Error(`eval-harness: ${filePath} returned an invalid score for ${score.dimension}`)
+    }
+  }
+  return value as JudgeScore[]
 }
 
 export interface RunReport {
@@ -407,6 +491,19 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
     )
   }
   const judges = await loadJudgesFrom(judgesDir)
+  const uncoveredScenarios = loaded.filter(
+    ({ scenario }) =>
+      !judges.some((judge) =>
+        judge.appliesTo.some((dimension) => scenario.dimensions.includes(dimension)),
+      ),
+  )
+  if (uncoveredScenarios.length > 0) {
+    throw new Error(
+      `eval-harness: scenarios without an applicable judge: ${uncoveredScenarios
+        .map(({ scenario }) => scenario.id)
+        .join(', ')}`,
+    )
+  }
   const judgeBaseUrl = llmBaseUrl ?? process.env.LLM_ROUTER_URL
 
   const integrityReports: Record<string, RunIntegrityReport> = {}
@@ -415,7 +512,7 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
     const tgs = toTestGraded(scenario, targetUrl)
     const startedAt = Date.now()
     const applicableJudges = judges.filter((judge) =>
-      judge.dimensions.some((dimension) => scenario.dimensions.includes(dimension)),
+      judge.appliesTo.some((dimension) => scenario.dimensions.includes(dimension)),
     )
 
     let result: TestGradedRunResult
@@ -442,6 +539,15 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
     const stdout = result.harness.test?.stdout ?? ''
     const responses = parseTurnResponses(stdout, scenario.turns.length)
     if (responses.length !== scenario.turns.length) {
+      await traceStore.updateRun(result.runId, {
+        endedAt: Date.now(),
+        status: 'failed',
+        outcome: {
+          pass: false,
+          failureClass: 'format_drift',
+          notes: 'turn_capture_error',
+        },
+      })
       outcomes.push({
         scenarioId: scenario.id,
         pass: false,
@@ -464,12 +570,21 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
     const usesModel = applicableJudges.some((judge) => judge.usesModel)
     const rawSink =
       integrityMode !== 'off' && usesModel
-        ? new FileSystemRawProviderSink({ dir: join(rawEventsDir, scenario.id) })
+        ? new FileSystemRawProviderSink({ dir: join(rawEventsDir, result.runId) })
         : undefined
-    const baseJudgeClient = createJudgeClient(llmApiKey, judgeBaseUrl)
-    const judgeClient = rawSink
-      ? withRawCapture(baseJudgeClient, rawSink, result.runId, judgeBaseUrl)
-      : baseJudgeClient
+    const emitter = new TraceEmitter(traceStore, { runId: result.runId })
+    const baseJudgeClient = opts.judgeClient ?? createJudgeClient(llmApiKey, judgeBaseUrl)
+    const tracedChat = withChatTracing(
+      baseJudgeClient,
+      rawSink,
+      result.runId,
+      judgeBaseUrl,
+      emitter,
+    )
+    const targetSpan = (await traceStore.spans({ runId: result.runId, kind: 'sandbox' })).at(-1)
+    if (!targetSpan) {
+      throw new Error(`eval-harness: run ${result.runId} has no sandbox span to judge`)
+    }
     const judgeScores: JudgeScore[] = []
     let judgeErrorCount = 0
     if (applicableJudges.length > 0) {
@@ -496,18 +611,46 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
         } as CollectedArtifacts,
       }
       for (const judge of applicableJudges) {
+        const callsBefore = tracedChat.stats.calls
         try {
-          const scores = await judge.fn(judgeClient, judgeInput)
+          const scores = validateJudgeScores(
+            judge.filePath,
+            await judge.fn(tracedChat.client, judgeInput),
+          )
+          const modelCalls = tracedChat.stats.calls - callsBefore
+          const measuredScores = scores.filter((score) => {
+            const status = (score as JudgeScore & { status?: string }).status
+            return status !== 'unmeasured' && Number.isFinite(score.score)
+          })
+          if (judge.usesModel && measuredScores.length > 0 && modelCalls === 0) {
+            throw new Error('judgeConfig.usesModel is true but no model call was captured')
+          }
+          if (!judge.usesModel && modelCalls > 0) {
+            throw new Error('judgeConfig.usesModel is false but the judge called the model')
+          }
           if (scores.length === 0) {
             judgeScores.push({
               judgeName: judge.filePath,
-              dimension: judge.dimensions[0]!,
+              dimension:
+                judge.appliesTo.find((dimension) => scenario.dimensions.includes(dimension)) ??
+                judge.appliesTo[0]!,
               score: Number.NaN,
               status: 'unmeasured',
               reasoning: 'Judge returned no scores.',
             } as JudgeScore)
           } else {
             judgeScores.push(...scores)
+            for (const score of measuredScores) {
+              await emitter.recordJudge({
+                name: `judge:${score.judgeName}:${score.dimension}`,
+                judgeId: score.judgeName,
+                targetSpanId: targetSpan.spanId,
+                dimension: score.dimension,
+                score: score.score,
+                rationale: score.reasoning,
+                evidence: score.evidence,
+              })
+            }
           }
         } catch (err) {
           judgeErrorCount += 1
@@ -533,15 +676,23 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
     const score = judgingIncomplete
       ? null
       : measuredJudgeCount > 0
-        ? (result.score + judgeScoreTotal) / (measuredJudgeCount + 1)
-        : result.score
+        ? judgeScoreTotal / measuredJudgeCount
+        : null
 
     let integrityIssues: string[] | undefined
     if (integrityMode !== 'off' && result.runId) {
-      const requireRawEvents = usesModel && !judgingIncomplete && measuredJudgeCount > 0
+      const modelCallCount = tracedChat.stats.calls
       const report = await assertRunCaptured(traceStore, result.runId, {
         requireOutcome: true,
-        ...(requireRawEvents ? { rawSink, rawProviderEventsMin: 1 } : {}),
+        judgeSpansMin: measuredJudgeCount,
+        ...(modelCallCount > 0
+          ? {
+              llmSpansMin: modelCallCount,
+              rawSink,
+              rawProviderEventsMin: modelCallCount * 2,
+              requireRawCoverageOfLlmSpans: true,
+            }
+          : {}),
       })
       integrityReports[result.runId] = report
       if (!report.ok) {
@@ -552,17 +703,34 @@ export async function runHarness(opts: RunnerOptions = {}): Promise<RunReport> {
     const integrityFailed = integrityMode === 'strict' && integrityIssues !== undefined
     const scenarioPassed = score !== null && result.pass && score >= threshold
     const failureClass =
-      judgeErrorCount > 0
+      scenarioPassed
+        ? null
+        : judgeErrorCount > 0
         ? 'judge_error'
         : judgingIncomplete
           ? 'judge_unmeasured'
-          : (result.failureClass ?? null)
+          : !result.pass
+            ? (result.failureClass ?? 'harness_error')
+            : 'judge_failed'
+    const finalPass = integrityFailed ? false : scenarioPassed
+    const finalScore = integrityFailed ? null : score
+    const finalFailureClass = integrityFailed ? 'integrity' : failureClass
+    await traceStore.updateRun(result.runId, {
+      endedAt: Date.now(),
+      status: finalPass ? 'completed' : 'failed',
+      outcome: {
+        pass: finalPass,
+        ...(finalScore === null ? {} : { score: finalScore }),
+        failureClass: finalPass ? 'success' : result.pass ? 'unknown' : result.failureClass,
+        ...(finalFailureClass ? { notes: finalFailureClass } : {}),
+      },
+    })
     outcomes.push({
       scenarioId: scenario.id,
-      pass: integrityFailed ? false : scenarioPassed,
-      score: integrityFailed ? null : score,
+      pass: finalPass,
+      score: finalScore,
       durationMs: Date.now() - startedAt,
-      failureClass: integrityFailed ? 'integrity' : failureClass,
+      failureClass: finalFailureClass,
       filePath,
       runId: result.runId,
       applicableJudgeCount: applicableJudges.length,
@@ -641,7 +809,8 @@ if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
   const projectRoot = process.env.EVAL_PROJECT_ROOT ?? DEFAULT_ROOT
   runHarness({ projectRoot })
     .then((r) => {
-      process.exitCode = r.aggregate === null || r.aggregate < r.threshold ? 1 : 0
+      process.exitCode =
+        r.aggregate === null || r.aggregate < r.threshold || r.unmeasuredScenarioCount > 0 ? 1 : 0
     })
     .catch((err) => {
       console.error('[runner] fatal:', err)

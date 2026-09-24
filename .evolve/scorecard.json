@@ -1,0 +1,265 @@
+{
+  "product": "starter-foundry",
+  "timestamp": "2026-07-26T05:13:53.801Z",
+  "coverage": "12/29 flows measured",
+  "aggregate": 0.833,
+  "inputs": [
+    {
+      "path": ".evolve/buildout-analysis.json",
+      "mtime": "2026-07-26T04:54:53.003Z"
+    },
+    {
+      "path": ".evolve/capability-gaps.json",
+      "mtime": "2026-07-26T04:54:53.080Z"
+    },
+    {
+      "path": ".evolve/buildout-analysis-internal.json",
+      "mtime": "2026-07-26T04:54:53.167Z"
+    }
+  ],
+  "sourceMtime": "2026-07-26T04:30:13.969Z",
+  "stale": {
+    "anyFlowStale": true,
+    "buildout": false,
+    "gaps": false,
+    "audit": true
+  },
+  "buildoutSource": "historical",
+  "flows": [
+    {
+      "name": "route_accuracy_held_out",
+      "value": 1,
+      "target": 1,
+      "status": "pass",
+      "productValueClaim": "Every prompt in the held-out corpus routes to the expected family. If this slips, agents start on the wrong scaffold and burn turns pivoting.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "buildout_pass_rate",
+      "value": null,
+      "target": 0.85,
+      "status": "unmeasured",
+      "productValueClaim": "Fraction of VB-run agent sessions whose composed scaffold reaches a working state. Directly = user sees something that works.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "buildout_pass_rate_counterfactual",
+      "value": 0,
+      "target": 0.85,
+      "status": "fail",
+      "productValueClaim": "Buildout pass rate on the subset of historical traces that current SF can re-plan. Tracks current SF capability without waiting for BA to re-sweep. When this leads buildout_pass_rate by >5pp, BA owes a re-sweep.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "install_prevention_rate",
+      "value": 0,
+      "target": 0.85,
+      "status": "fail",
+      "productValueClaim": "Fraction of historical agent installs that current SF would prevent. Each prevented install = one less turn of wasted agent setup work. Forward-looking measure of SF coverage; moves immediately when families gain deps, even before BA re-runs.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "scaffold_audit_pass_rate",
+      "value": null,
+      "target": 1,
+      "status": "unmeasured",
+      "productValueClaim": "Fraction of framework layers where pnpm install + tsc noEmit succeeds on a freshly composed scaffold. A failure here means agents fight install errors on turn 1.",
+      "direction": "higher-better",
+      "stale": true
+    },
+    {
+      "name": "scaffold_gap_installs",
+      "value": 0,
+      "target": 10,
+      "status": "pass",
+      "productValueClaim": "Count of agent installs that map to packages NO family ships. Each one is a turn of agent work the scaffold should have avoided. Lower = less wasted setup.",
+      "direction": "lower-better"
+    },
+    {
+      "name": "top_file_rewrite_count",
+      "value": null,
+      "target": 5,
+      "status": "unmeasured",
+      "productValueClaim": "Rewrite count for the most-rewritten file in the corpus. High number = scaffold shipped a template agents systematically replace. Lower = tokens spent on features instead of setup.",
+      "direction": "lower-better"
+    },
+    {
+      "name": "median_turns_per_buildout",
+      "value": null,
+      "target": 40,
+      "status": "unmeasured",
+      "productValueClaim": "Median number of agent turns per buildout session. Fewer turns = agent reaches working preview faster = less user wait + fewer tokens spent on setup that could go to features.",
+      "direction": "lower-better",
+      "notes": "scenario-mean-weighted — unweighted by run count per scenario"
+    },
+    {
+      "name": "median_turns_per_buildout_run_weighted",
+      "value": null,
+      "target": 40,
+      "status": "unmeasured",
+      "productValueClaim": "Run-weighted median agent turns. Matches what a random user experiences, since high-frequency scenarios dominate the distribution. Complement to the scenario-mean-weighted metric — both must pass for the corpus to be healthy.",
+      "direction": "lower-better"
+    },
+    {
+      "name": "median_wall_seconds_per_buildout",
+      "value": null,
+      "target": 600,
+      "status": "unmeasured",
+      "productValueClaim": "Median wall-time per buildout session in seconds. Faster = user sees working product sooner = lower abandon rate.",
+      "direction": "lower-better"
+    },
+    {
+      "name": "orchestration_installs",
+      "value": 0,
+      "target": 15,
+      "status": "pass",
+      "productValueClaim": "Count of redundant agent installs when the scaffold already ships the package. Each one is a sign that the consumer pipeline isn't running install before handing the scaffold to the agent — informs blueprint-agent orchestration, not our scaffold.",
+      "direction": "lower-better"
+    },
+    {
+      "name": "estimated_tokens_per_buildout",
+      "value": null,
+      "target": 80000,
+      "status": "unmeasured",
+      "productValueClaim": "Median tokens spent per buildout (real when emitBuildoutEvent supplies tokenCount, proxy from turns otherwise). Fewer tokens = lower cost per user session + lower LLM API cost for consumers.",
+      "direction": "lower-better"
+    },
+    {
+      "name": "cost_usd_per_buildout",
+      "value": null,
+      "target": 0.5,
+      "status": "unmeasured",
+      "productValueClaim": "Mean $ cost per scaffold buildout. Catches regressions where a change doubles token spend even if pass rate stays flat. Drives the ROI conversation on every future capability — is the delta on pass rate worth $X more per user?",
+      "direction": "lower-better"
+    },
+    {
+      "name": "families",
+      "value": 169,
+      "target": 40,
+      "status": "pass",
+      "productValueClaim": "Number of distinct family archetypes the router can route to. Breadth = more prompts find a good home.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "capability_layers",
+      "value": 118,
+      "target": 50,
+      "status": "pass",
+      "productValueClaim": "Distinct capability layers available for attachment. Each one is a bundle of deps + files + context agents get for free.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "partners",
+      "value": 19,
+      "target": 10,
+      "status": "pass",
+      "productValueClaim": "Partner packs — ecosystem-specific biases + config. More partners = more prompts get routed with SDK/addresses pre-wired.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "catalog_breadth_agent_runtime",
+      "value": 53,
+      "target": 50,
+      "status": "pass",
+      "productValueClaim": "Count of distinct agent-runtime bundles in the registry. Each bundle = one role (CMO advisor / wealth manager / music producer / etc.) the operator can compose without authoring a new manifest. When this moves, the share of unrouteable BA prompts that map to fallback-static drops, and agent-runtime becomes a real product category instead of a 3-seed proof-of-concept.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "catalog_breadth_agent_ui",
+      "value": 6,
+      "target": 6,
+      "status": "pass",
+      "productValueClaim": "Count of UI scaffolds that compose over agent-runtime bundles or the Tangle sandbox SDK directly. Each unlocks a new product category: single-agent app, multi-agent dashboard, non-agent workspace (editor / audit-tool / REPL / file-browser). When this moves, operators can ship visible UX in hours instead of weeks of glue code.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "catalog_breadth_eval_runner",
+      "value": 4,
+      "target": 4,
+      "status": "pass",
+      "productValueClaim": "Count of eval-runner and research-runner family bundles. Each = a deployable harness for measuring or improving an agent (scenario-based eval, hypothesis-driven research). When this moves, the develop → measure → improve loop closes in catalog-shaped form instead of one-shot scripts.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "catalog_breadth_eval_shapes",
+      "value": 7,
+      "target": 7,
+      "status": "pass",
+      "productValueClaim": "Count of composable eval-shape layers under agent-eval/. Each = a distinct measurement primitive (rubric vs pairwise vs trace vs redteam etc). When this moves, harness families can express richer measurement contracts without hand-rolling internals.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "proposal_promotion_rate",
+      "value": null,
+      "target": 0.3,
+      "status": "unmeasured",
+      "productValueClaim": "Fraction of proposed families/capabilities that passed all validation gates (schema+compose+build) and landed in registry/ over the last 30 days. When this moves, vertical expansion is working — new buildable surfaces per week without manual registry authoring.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "proposed_family_first_ship_hours",
+      "value": null,
+      "target": 24,
+      "status": "unmeasured",
+      "productValueClaim": "Median hours from proposal draft creation → registry promotion. Baseline was unbounded (drafts sat as TODOs indefinitely). Target 24h via nightly cron.",
+      "direction": "lower-better"
+    },
+    {
+      "name": "llm_proposal_success_rate",
+      "value": null,
+      "target": 0.8,
+      "status": "unmeasured",
+      "productValueClaim": "Fraction of proposal attempts that produced an LLM-mode draft (vs falling back to deterministic TODO skeleton). Low → router/provider is unreachable or rate-limiting; deterministic mode cannot produce promotable drafts, so this gates the funnel.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "full_stack_proposal_rate",
+      "value": null,
+      "target": 0.7,
+      "status": "unmeasured",
+      "productValueClaim": "Fraction of LLM-mode proposals whose templateFiles.length ≥ 3. Bare-README drafts pass the build gate trivially but scaffold nothing useful. This flow catches the \"too-minimal proposal\" regression — Gen 6 Track A (filesForTaxonomy expansion) exists to lift it.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "capability_promotion_rate",
+      "value": null,
+      "target": 0.4,
+      "status": "unmeasured",
+      "productValueClaim": "Fraction of capability promotion attempts that passed all gates. Capabilities have lower validation bar than families (slot into existing), so this rate should exceed proposal_promotion_rate — parallel high-volume registry expansion.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "coverage_lift_per_promote",
+      "value": null,
+      "target": 0.1,
+      "status": "unmeasured",
+      "productValueClaim": "Median liftRatio from coverage-measured events — fraction of previously-unrouted buildout scenarios that now route somewhere after a promote. If this is 0, promotes are not absorbing demand; the registry is expanding without product effect.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "agent_eval_build_pass_rate",
+      "value": null,
+      "target": 0.95,
+      "status": "unmeasured",
+      "productValueClaim": "Fraction of composed scaffolds that pass install+build locally (mean build_score from agent-eval scaffold run). Regresses when a capability manifest changes break compose or a family's build recipe stops working — fast local signal, no VB sweep needed.",
+      "direction": "higher-better"
+    },
+    {
+      "name": "agent_eval_meta_pass_rate",
+      "value": null,
+      "target": 0.85,
+      "status": "unmeasured",
+      "productValueClaim": "Mean LLM-judge meta_score on scaffold quality — correctness + completeness + idiomatic layout + production-readiness per the scaffold rubric. Null when judge disabled (--no-judge) or no runs yet. Will switch to the live recruiter eval aggregate once examples/recruiter-eval-workspace/.evolve/scorecard.json exists.",
+      "direction": "higher-better",
+      "notes": "source=no-source"
+    },
+    {
+      "name": "auto_dispatched_fix_pr_rate",
+      "value": null,
+      "target": 0.5,
+      "status": "unmeasured",
+      "productValueClaim": "Fraction of agent-dispatched scaffold-fix attempts that pass all validation gates (schema + compose + judge fleet + sandbox harness) and would open a PR. Null until ≥5 dispatches recorded — avoid false signal from small N.",
+      "direction": "higher-better"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-26T04:54:53.081Z",
+  "processedEvents": 0,
+  "totalAgentInstalls": 0,
+  "breakdown": {
+    "scaffoldGap": 0,
+    "orchestration": 0
+  },
+  "topScaffoldGaps": [],
+  "topOrchestrationInstalls": [],
+  "topMissedCapabilities": [],
+  "perScenarioGap": []
+}

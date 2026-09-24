@@ -1,0 +1,32 @@
+{
+  "name": "eval-harness",
+  "description": "Operator-facing eval harness bundle. Runs scenarios + judges + regression gates against an agent under test (HTTP target or in-process function). Emits scorecard.json into .evolve/ for the project dashboard. Read-only against the router by default — does not need write capabilities. When deployed to a sandbox via the harness-aware deploy script, this agent reads scenarios/, judges/, and writes scorecards back to .evolve/scorecard.json.",
+  "version": "0.1.0",
+  "tags": [
+    "agent-eval",
+    "eval-harness",
+    "node",
+    "typescript"
+  ],
+  "prompt": {
+    "systemPromptFile": "AGENTS.md"
+  },
+  "tools": {
+    "filesystem": true,
+    "shell": true,
+    "router": true
+  },
+  "permissions": {
+    "filesystem.read": "allow",
+    "filesystem.write": "ask",
+    "shell.exec": "ask",
+    "network": "deny"
+  },
+  "resources": {
+    "files": [
+      { "source": "scenarios/" },
+      { "source": "judges/" },
+      { "source": "README.md" }
+    ]
+  }
+}

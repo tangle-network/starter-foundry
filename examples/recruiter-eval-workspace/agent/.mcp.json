@@ -1,0 +1,27 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/home/agent"]
+    },
+    "fetch": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-fetch"]
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${env:GITHUB_TOKEN}"
+      }
+    },
+    "memory": {
+      "command": "node",
+      "args": ["/home/agent/lib/mcp/memory-server.js"]
+    },
+    "scheduler": {
+      "command": "node",
+      "args": ["/home/agent/lib/mcp/scheduler-server.js"]
+    }
+  }
+}

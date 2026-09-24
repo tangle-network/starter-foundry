@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "generator": "starter-foundry:replay-traces",
+  "registryCommit": "35799a9",
+  "summary": {
+    "generatedAt": "2026-07-17T05:26:23.531Z",
+    "totalBuildouts": 0,
+    "withOutcome": 0,
+    "passRate": 0,
+    "meanBlendedScore": 0,
+    "totalPassing": 0,
+    "totalFailing": 0,
+    "distinctScenarios": 0,
+    "distinctPartners": [],
+    "totalHistoricalInstalls": 0,
+    "totalPreventedInstalls": 0,
+    "totalRemainingGapInstalls": 0,
+    "preventionRate": 0,
+    "estimatedGapInstallsPerBuildout": 0,
+    "costRollup": {
+      "sampleCount": 0,
+      "meanCostUsd": null,
+      "meanTokens": null,
+      "totalCostUsd": null,
+      "totalTokens": null,
+      "meanCostOnPass": null,
+      "meanCostOnFail": null
+    }
+  },
+  "perScenario": [],
+  "topRemainingGapInstalls": [],
+  "topPreventedInstalls": [],
+  "topRewrittenFiles": []
+}

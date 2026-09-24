@@ -1,0 +1,8 @@
+{"ts":"2026-07-17T05:26:44.921Z","source":"promote-family-proposal","event":"promote-outcome","id":"test-todo-reject-ozxx4e","gateReached":"schema-fail","message":"schema: 1 errors"}
+{"ts":"2026-07-17T05:26:45.032Z","source":"promote-family-proposal","event":"promote-outcome","id":"test-id-mismatch-h2jvbd","gateReached":"schema-fail","message":"schema: 1 errors"}
+{"ts":"2026-07-17T05:26:45.233Z","source":"promote-family-proposal","event":"promote-outcome","id":"definitely-nonexistent-draft-xyz123","gateReached":"no-draft","message":"missing manifest at /home/drew/code/starter-foundry-release-fix/.evolve/family-proposals/definitely-nonexistent-draft-xyz123"}
+{"ts":"2026-07-17T05:26:46.236Z","source":"promote-capability-proposal","event":"promote-cap-outcome","id":"test-cap-no-applies-7braya","gateReached":"schema-fail","message":"schema: 1 errors"}
+{"ts":"2026-07-17T05:26:46.351Z","source":"promote-capability-proposal","event":"promote-cap-outcome","id":"test-cap-todo-oqwq76","gateReached":"schema-fail","message":"schema: 1 errors"}
+{"ts":"2026-07-17T05:26:48.285Z","source":"promote-capability-proposal","event":"promote-cap-outcome","id":"test-cap-phantom-family-zc3bbt","gateReached":"schema-pass","message":"no appliesTo family has matching framework layer: definitely-nonexistent-family-xyz"}
+{"ts":"2026-07-17T05:26:50.681Z","source":"promote-family-proposal","event":"promote-outcome","id":"test-fidelity-skip-i8cyzj","gateReached":"compose-pass","message":"build failed: score=0.00"}
+{"ts":"2026-07-17T05:26:50.785Z","source":"promote-family-proposal","event":"promote-outcome","id":"nonexistent-xyz","gateReached":"no-draft","message":"missing manifest at /home/drew/code/starter-foundry-release-fix/.evolve/family-proposals/nonexistent-xyz"}

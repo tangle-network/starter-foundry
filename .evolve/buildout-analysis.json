@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "summary": {
+    "generatedAt": "2026-07-17T05:26:23.376Z",
+    "totalBuildouts": 5,
+    "withOutcome": 0,
+    "passRate": null,
+    "meanBlendedScore": null,
+    "totalPassing": 0,
+    "totalFailing": 0,
+    "distinctScenarios": 3,
+    "distinctPartners": [
+      "fixture-partner"
+    ],
+    "costRollup": {
+      "sampleCount": 0,
+      "totalCostUsd": null,
+      "meanCostUsd": null,
+      "totalTokens": null,
+      "meanTokens": null,
+      "meanCostOnPass": null,
+      "meanCostOnFail": null
+    }
+  },
+  "perScenario": [
+    {
+      "partner": "fixture-partner",
+      "scenarioId": "holographic-inventory-tracker",
+      "total": 3,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1,
+        2,
+        3
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "fixture-partner",
+      "scenarioId": "quantum-opinion-index",
+      "total": 1,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1
+      ],
+      "passRate": null
+    },
+    {
+      "partner": "fixture-partner",
+      "scenarioId": "ephemeral-gift-registry",
+      "total": 1,
+      "withOutcome": 0,
+      "pass": 0,
+      "meanScore": 0,
+      "meanWallMs": 0,
+      "meanTurns": 0,
+      "meanCostUsd": null,
+      "meanTokenCount": null,
+      "costSampleCount": 0,
+      "replayRounds": [
+        1
+      ],
+      "passRate": null
+    }
+  ],
+  "topAddedPackages": [],
+  "topAddedDirs": [],
+  "topRewrittenFiles": []
+}

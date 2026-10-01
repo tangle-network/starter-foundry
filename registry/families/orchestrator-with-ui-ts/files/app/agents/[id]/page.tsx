@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { notFound, useParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import { SandboxWorkbench } from '@tangle-network/sandbox-ui/workspace'
-import { AgentComposer } from '@tangle-network/sandbox-ui/chat'
+import { ChatComposer } from '@tangle-network/agent-app/web-react'
 import type { SandboxWorkbenchArtifact } from '@tangle-network/sandbox-ui/workspace'
 import { useSdkSession } from '@tangle-network/sandbox-ui/sdk-hooks'
 import { findAgent } from '../../../src/lib/agent-roster'
@@ -82,58 +82,44 @@ export default function AgentChatPage() {
     session.completeAssistantMessage()
   }
 
-  const handleSubmit = () => {
-    const text = composerText.trim()
-    if (!text) return
-    setComposerText('')
-    handleSend(text)
-  }
-
   return (
-    <div className='flex min-h-screen flex-col bg-[hsl(var(--background))] text-[hsl(var(--foreground))]'>
-      <header className='flex items-center justify-between border-b border-[hsl(var(--border))] px-6 py-4'>
-        <div className='flex items-center gap-3'>
-          <Link
-            href='/'
-            className='text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]'
-          >
-            ← Back to fleet
-          </Link>
-          <span className='text-2xl' aria-hidden>
-            {agent.icon ?? '🤖'}
-          </span>
-          <div>
-            <h1 className='text-lg font-semibold'>{agent.displayName}</h1>
-            <p className='font-mono text-xs text-[hsl(var(--muted-foreground))]'>
-              {agent.family}
-              {agent.sandboxId ? ` · ${agent.sandboxId}` : ' · unprovisioned'}
-            </p>
-          </div>
-        </div>
-      </header>
-
-      <div className='flex-1'>
-        <SandboxWorkbench
-          title={agent.displayName}
-          subtitle={agent.description}
-          session={{
-            messages: session.messages,
-            partMap: session.partMap,
-            isStreaming: session.isStreaming,
-            composerControls: (
-              <AgentComposer
-                value={composerText}
-                onChange={setComposerText}
-                onSubmit={handleSubmit}
-                busy={session.isStreaming}
-              />
-            ),
-          }}
-          artifacts={artifacts}
-          activeArtifactId={activeArtifactId}
-          onArtifactChange={setActiveArtifactId}
-        />
-      </div>
+    <div className='h-screen bg-[hsl(var(--background))] text-[hsl(var(--foreground))]'>
+      <SandboxWorkbench
+        title={agent.displayName}
+        subtitle={agent.description}
+        status={
+          agent.sandboxId ? `Sandbox ${agent.sandboxId}` : 'Unprovisioned'
+        }
+        session={{
+          messages: session.messages,
+          partMap: session.partMap,
+          isStreaming: session.isStreaming,
+          eyebrow: (
+            <span aria-label={agent.family} title={agent.family}>
+              {agent.icon ?? '\u{1F916}'}
+            </span>
+          ),
+          headerActions: (
+            <Link
+              href='/'
+              className='text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]'
+            >
+              Back to fleet
+            </Link>
+          ),
+          composerControls: (
+            <ChatComposer
+              value={composerText}
+              onValueChange={setComposerText}
+              onSend={handleSend}
+              isStreaming={session.isStreaming}
+            />
+          ),
+        }}
+        artifacts={artifacts}
+        activeArtifactId={activeArtifactId}
+        onArtifactChange={setActiveArtifactId}
+      />
     </div>
   )
 }

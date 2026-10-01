@@ -1,8 +1,12 @@
 minimumReleaseAge: 4320
 minimumReleaseAgeExclude:
+  - '@tangle-network/agent-app@0.50.20'
   - '@tangle-network/agent-core@0.4.25'
-  - '@tangle-network/agent-interface@0.36.0'
-  - '@tangle-network/brand@1.1.0'
-  - '@tangle-network/sandbox@0.15.2'
-  - '@tangle-network/sandbox-ui@0.90.3'
-  - '@tangle-network/ui@11.2.1'
+  - '@tangle-network/agent-eval@0.200.1'
+  - '@tangle-network/agent-integrations@0.57.0'
+  - '@tangle-network/agent-interface@2.13.0'
+  - '@tangle-network/brand@1.9.0'
+  - '@tangle-network/sandbox@0.58.1'
+  - '@tangle-network/sandbox-ui@0.116.1'
+  - '@tangle-network/ui@11.11.5'
+  - postcss-import@17.0.0

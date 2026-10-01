@@ -100,7 +100,6 @@ export function App(): JSX.Element {
       }
       leftHeader='Files'
       center={editor}
-      centerHeader={`sandbox-app: ${APP_KIND}`}
       bottom={<TerminalPanel lines={lines} />}
       bottomHeader='Terminal'
     />

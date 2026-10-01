@@ -11,8 +11,8 @@
 
 import type { OpenUIComponentNode } from '@tangle-network/sandbox-ui/openui'
 import type { SandboxWorkbenchArtifact } from '@tangle-network/sandbox-ui/workspace'
-import type { AgentBlock, ParsedBlock } from './parse-blocks.js'
-import { isAgentBlock, parseBlocks } from './parse-blocks.js'
+import type { AgentBlock, ParsedBlock } from './parse-blocks'
+import { isAgentBlock, parseBlocks } from './parse-blocks'
 
 export type { SandboxWorkbenchArtifact }
 

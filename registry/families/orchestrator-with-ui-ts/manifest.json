@@ -32,7 +32,7 @@
     { "source": "files/package.json", "target": "package.json" },
     { "source": "files/next.config.mjs", "target": "next.config.mjs" },
     { "source": "files/tsconfig.json", "target": "tsconfig.json" },
-    { "source": "files/tailwind.config.cjs", "target": "tailwind.config.cjs" },
+    { "source": "files/tailwind.config.mjs", "target": "tailwind.config.mjs" },
     { "source": "files/postcss.config.cjs", "target": "postcss.config.cjs" },
     { "source": "files/README.md", "target": "README.md" },
     { "source": "files/app/layout.tsx", "target": "app/layout.tsx" },

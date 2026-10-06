@@ -46,8 +46,8 @@ The `model` field MUST be `<alias>@<snapshot>` (for example, `claude-sonnet-4-6@
 The CI invariant `scripts/check-bare-alias.ts` rejects any record without the snapshot suffix.
 Validation is the exported `@tangle-network/agent-eval` validator; Starter Foundry has no second parser.
 
-The file is gitignored — it's high-volume local state. The monthly CI
-workflow `runs-export.yml` uploads it as a long-retention artifact.
+The file is gitignored — it's high-volume local state. Export it with
+`pnpm export-runs --month YYYY-MM` when you need a monthly snapshot.
 
 ## When to run `pnpm gate`
 
@@ -139,7 +139,7 @@ profile still pins `stable-sonnet-4-6` to its dated router snapshot for
 audit; the bridge flag just tells the router to route the call through
 the local harness instead of billing-metered inference.
 
-**CI (daily cron in `.github/workflows/snapshot-deprecation-check.yml`):**
+**Before pinning or promoting (run locally; no scheduled workflow runs it):**
 
 ```bash
 pnpm refresh-snapshots --check
@@ -156,9 +156,8 @@ and fails past deprecation. It never writes the lock.
    `pnpm audit`, `pnpm propose:family`, `scripts/agent-eval-scaffold.ts` —
    appends to `.evolve/runs.jsonl`.
 3. **Split for the gate.** Move records into baseline/candidate jsonls
-   (typically: candidate = your branch's runs, baseline = main's). The
-   monthly export from `.github/workflows/runs-export.yml` is the source
-   of truth for historical baselines.
+   (typically: candidate = your branch's runs, baseline = main's).
+   `pnpm export-runs --month YYYY-MM` produces a historical baseline.
 4. **Decide.** `pnpm gate baseline.jsonl candidate.jsonl`. PROMOTE → ship;
    REVERT → fix or roll back; HOLD → collect more runs and re-run.
 
@@ -186,8 +185,8 @@ workflows):
    profile's `logicalModel` resolves in the lock (or the lock is empty).
 3. **Cost ceiling** — `scripts/check-run-cost-ceiling.ts` — no record's
    `costUsd` exceeds its role's profile ceiling.
-4. **Snapshot freshness** — `.github/workflows/snapshot-deprecation-check.yml`
-   — daily; warns at 30d, fails past deprecation.
+4. **Snapshot freshness** — `pnpm refresh-snapshots --check` (local) —
+   warns at 30d, fails past deprecation.
 5. **Gate-on-profile-change** —
    `.github/workflows/gate-on-profile-change.yml` — any PR touching
    `.evolve/profiles/` requires either a `gate-decision` check

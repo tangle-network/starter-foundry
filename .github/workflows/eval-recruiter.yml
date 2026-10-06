@@ -22,8 +22,8 @@ name: eval-recruiter
 #             the workspace fails CI rather than silently re-emitting.
 #   HIGH A4 — `concurrency:` block prevents two pushes from racing on
 #             the on-main scorecard commit.
-#   MED  C1 — on-merge scorecard refresh opens a PR (mirroring
-#             scorecard-refresh.yml), no direct push to main.
+#   MED  C1 — on-merge scorecard refresh opens a PR, no direct push
+#             to main.
 
 on:
   pull_request:
@@ -55,7 +55,7 @@ concurrency:
 
 jobs:
   eval:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, ci-public]
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
@@ -133,7 +133,7 @@ jobs:
           if-no-files-found: warn
 
       # Gen-16.1 audit MEDIUM C1 — open a PR for review instead of
-      # direct push to main. Mirrors scorecard-refresh.yml pattern. A
+      # direct push to main. A
       # single CI flake can no longer land a regressed scorecard.json.
       - name: open scorecard PR on main
         if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.live.outputs.ran == 'true'

@@ -34,7 +34,7 @@ That is the entire runtime story. There is nothing for starter-foundry to host.
 
 The in-sandbox harness — OpenCode (default), Claude Code, Hermes, Codex, Amp, Kimi-Code — auto-discovers two files at the workspace root and wires them into the agent loop without any explicit instruction from the deploy script:
 
-- **`AGENTS.md`** is read on session start and concatenated into every agent's system prompt. See `apps/sidecar/src/agents/base-agent.ts:170` in `agent-dev-container` — `loadAgentsMarkdown()` reads `AGENTS.md` from disk and `buildSystemPrompt()` injects it ahead of the role-specific prompt.
+- **`AGENTS.md`** is read on session start and concatenated into every agent's system prompt. See `apps/sidecar/src/agents/base-agent.ts:170` in `agent-container` — `loadAgentsMarkdown()` reads `AGENTS.md` from disk and `buildSystemPrompt()` injects it ahead of the role-specific prompt.
 - **`agents.json`** is the OpenCode subagent registry. `apps/sidecar/src/agents/subagents/load-agents-config.ts` searches a fixed list of paths (workspace root included) for `agents.json`, parses it, and registers each entry as a callable subagent in the harness.
 
 Bundles emit these exact filenames so the harness picks them up with zero glue. Custom names (`system-prompt.md`, `agent-roster.json`, `coordination-protocol.md`) are not read by anything — they would require us to ship a parallel loader inside every bundle, which is what the harness already does for free.
@@ -288,6 +288,6 @@ Network egress, identity injection, audit retention, permissions, and confidenti
 - **Deploy script**: `scripts/deploy-agent-bundle.ts` — translates `@file:` refs and pushes the bundle to a sandbox via the SDK. Smoke-tested in [`docs/cookbooks/deploy-agent-runtime-research.md`](../cookbooks/deploy-agent-runtime-research.md).
 - **End-to-end multi-agent**: [`docs/cookbooks/deploy-multi-agent-startup-team.md`](../cookbooks/deploy-multi-agent-startup-team.md) walks the full path from compose → deploy → `box.task("…")` against a real LLM.
 
-[agent-profile]: https://github.com/tangle-network/agent-dev-container/blob/main/products/sandbox/sdk/src/agent-profile.ts
-[resource-ref]: https://github.com/tangle-network/agent-dev-container/blob/main/products/sandbox/sdk/src/agent-profile.ts#L17-L28
-[sandbox-task]: https://github.com/tangle-network/agent-dev-container/blob/main/products/sandbox/sdk/src/sandbox.ts#L1012-L1023
+[agent-profile]: https://github.com/tangle-network/agent-container/blob/main/products/sandbox/sdk/src/agent-profile.ts
+[resource-ref]: https://github.com/tangle-network/agent-container/blob/main/products/sandbox/sdk/src/agent-profile.ts#L17-L28
+[sandbox-task]: https://github.com/tangle-network/agent-container/blob/main/products/sandbox/sdk/src/sandbox.ts#L1012-L1023

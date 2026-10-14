@@ -65,7 +65,7 @@ Two harness-native files do the bootstrap work for free:
   (`:::handoff`, `:::artifact`), and delegation triggers — what would
   have lived in a separate `coordination-protocol.md` lives here. The
   harness reads this file at session start (`apps/sidecar/src/agents/base-agent.ts:170`
-  in `agent-dev-container`) and concatenates it into every agent's
+  in `agent-container`) and concatenates it into every agent's
   system prompt.
 - `agents.json` is the OpenCode subagent registry. `apps/sidecar/src/agents/subagents/load-agents-config.ts`
   parses it and registers each entry as a callable subagent in the
@@ -259,4 +259,4 @@ multi-role artifact.
 - [`docs/cookbooks/deploy-agent-runtime-research.md`](./deploy-agent-runtime-research.md) — the single-agent variant, same flow without `subagents`.
 - [`docs/specs/agent-base-secure.md`](../specs/agent-base-secure.md) — bias safeguards on HR and `notALicensedAdvisor` on CFO are policy metadata; enforcement is the in-sandbox agent's policy compliance.
 
-[agent-profile]: https://github.com/tangle-network/agent-dev-container/blob/main/products/sandbox/sdk/src/agent-profile.ts
+[agent-profile]: https://github.com/tangle-network/agent-container/blob/main/products/sandbox/sdk/src/agent-profile.ts

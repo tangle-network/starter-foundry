@@ -4,7 +4,7 @@
 |---|---|
 | **Status** | shipped |
 | **Owner** | starter-foundry |
-| **Surface** | files mounted into a Tangle sandbox via `AgentProfile.resources.files` (or auto-included when an agent bundle declares `includes: ["agent-base:secure"]`). Mounts land at `/home/agent/lib/secure/` inside the sandbox — `/home/agent` is the canonical workspace root (see `apps/sidecar/src/constants.ts:106` in `agent-dev-container`). |
+| **Surface** | files mounted into a Tangle sandbox via `AgentProfile.resources.files` (or auto-included when an agent bundle declares `includes: ["agent-base:secure"]`). Mounts land at `/home/agent/lib/secure/` inside the sandbox — `/home/agent` is the canonical workspace root (see `apps/sidecar/src/constants.ts:106` in `agent-container`). |
 | **Trust boundary** | the Tangle sandbox process itself; the gateway and OS sandbox handle isolation |
 
 ## What this layer is

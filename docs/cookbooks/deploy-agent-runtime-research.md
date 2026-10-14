@@ -192,7 +192,7 @@ Local-only assertions (verified, deterministic):
 - **Compose latency**: ~0.6 s from a cold process, ~5 ms with a warm cache.
 - **Validate latency**: `pnpm exec tsx scripts/validate-registry.ts` runs
   the schema check across all 163 families in ~250 ms.
-- **Sandbox create p50** (per [`agent-dev-container` SDK README][sdk-readme]):
+- **Sandbox create p50** (per [`agent-container` SDK README][sdk-readme]):
   typically a few seconds, dominated by container provisioning.
 - **`box.task()` first-response latency**: dominated by the LLM call;
   for `claude-sonnet-4-20250514` against `router.tangle.tools`, in-repo
@@ -204,5 +204,5 @@ Local-only assertions (verified, deterministic):
 - [`docs/cookbooks/deploy-multi-agent-startup-team.md`](./deploy-multi-agent-startup-team.md) — the multi-agent variant of this same flow.
 - [`docs/specs/agent-base-secure.md`](../specs/agent-base-secure.md) — the in-process security helpers a bundle author can use.
 
-[resource-ref]: https://github.com/tangle-network/agent-dev-container/blob/main/products/sandbox/sdk/src/agent-profile.ts#L17-L28
-[sdk-readme]: https://github.com/tangle-network/agent-dev-container/blob/main/products/sandbox/sdk/README.md
+[resource-ref]: https://github.com/tangle-network/agent-container/blob/main/products/sandbox/sdk/src/agent-profile.ts#L17-L28
+[sdk-readme]: https://github.com/tangle-network/agent-container/blob/main/products/sandbox/sdk/README.md

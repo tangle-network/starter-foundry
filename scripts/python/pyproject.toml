@@ -35,7 +35,7 @@ allow-direct-references = true
 
 [tool.uv.sources]
 # Local-first: prefer the in-tree sdk-python checkout. Comment out + fall back to
-# `tangle-sandbox = { git = "ssh://git@github.com/tangle-network/agent-dev-container.git", subdirectory = "products/sandbox/sdk-python" }`
+# `tangle-sandbox = { git = "ssh://git@github.com/tangle-network/agent-container.git", subdirectory = "products/sandbox/sdk-python" }`
 # when the sibling repo isn't on disk.
 tangle-sandbox = { path = "../../../../../agent-dev-container/products/sandbox/sdk-python", editable = false }
 

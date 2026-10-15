@@ -9,11 +9,12 @@ import { AgentsMdPreview } from '../../../components/AgentsMdPreview'
 import { loadBundleDetail, resolveRegistryPath } from '../../../lib/catalog'
 
 interface Params {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 export default async function BundleDetailPage({ params }: Params) {
-  const bundle = await loadBundleDetail(resolveRegistryPath(), params.id)
+  const { id } = await params
+  const bundle = await loadBundleDetail(resolveRegistryPath(), id)
   if (!bundle) notFound()
 
   return (

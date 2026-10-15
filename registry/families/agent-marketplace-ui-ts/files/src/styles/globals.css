@@ -15,8 +15,8 @@ body {
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
   line-height: 1.5;
 }
 
@@ -50,7 +50,7 @@ pre {
 }
 
 .mp-header {
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid hsl(var(--border));
   padding: 24px 0;
   margin-bottom: 24px;
 }
@@ -68,7 +68,7 @@ pre {
 }
 
 .mp-muted {
-  color: var(--muted-foreground);
+  color: hsl(var(--muted-foreground));
   font-size: 0.875rem;
 }
 
@@ -79,18 +79,18 @@ pre {
 }
 
 .mp-card {
-  border: 1px solid var(--border);
+  border: 1px solid hsl(var(--border));
   border-radius: 8px;
   padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
   transition: border-color 0.15s ease;
-  background: var(--background);
+  background: hsl(var(--background));
 }
 
 .mp-card:hover {
-  border-color: var(--primary);
+  border-color: hsl(var(--primary));
 }
 
 .mp-card-title {
@@ -100,7 +100,7 @@ pre {
 }
 
 .mp-card-desc {
-  color: var(--muted-foreground);
+  color: hsl(var(--muted-foreground));
   font-size: 0.875rem;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -112,8 +112,8 @@ pre {
   display: inline-block;
   padding: 2px 8px;
   border-radius: 999px;
-  background: var(--muted);
-  color: var(--muted-foreground);
+  background: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
   font-size: 0.75rem;
   margin-right: 4px;
   margin-bottom: 4px;
@@ -125,43 +125,43 @@ pre {
   gap: 4px;
   padding: 2px 8px;
   border-radius: 4px;
-  background: var(--accent);
-  color: var(--accent-foreground);
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
   font-size: 0.75rem;
   font-weight: 500;
 }
 
 .mp-badge-multi {
-  background: hsl(217 91% 60% / 0.15);
-  color: hsl(217 91% 35%);
+  background: var(--surface-info-bg);
+  color: var(--surface-info-text);
 }
 
 .mp-badge-single {
-  background: hsl(142 71% 45% / 0.15);
-  color: hsl(142 71% 30%);
+  background: var(--surface-success-bg);
+  color: var(--surface-success-text);
 }
 
 .mp-input {
   width: 100%;
   padding: 8px 12px;
-  border: 1px solid var(--border);
+  border: 1px solid hsl(var(--border));
   border-radius: 6px;
-  background: var(--background);
-  color: var(--foreground);
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
   font-size: 0.875rem;
 }
 
 .mp-input:focus {
-  outline: 2px solid var(--primary);
+  outline: 2px solid hsl(var(--primary));
   outline-offset: -1px;
 }
 
 .mp-button {
   padding: 8px 16px;
-  border: 1px solid var(--border);
+  border: 1px solid hsl(var(--border));
   border-radius: 6px;
-  background: var(--primary);
-  color: var(--primary-foreground);
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
   font-weight: 500;
   font-size: 0.875rem;
 }
@@ -171,8 +171,8 @@ pre {
 }
 
 .mp-button-secondary {
-  background: var(--background);
-  color: var(--foreground);
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
 }
 
 .mp-filters {
@@ -184,7 +184,7 @@ pre {
 }
 
 .mp-step {
-  border: 1px solid var(--border);
+  border: 1px solid hsl(var(--border));
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 12px;
@@ -195,8 +195,8 @@ pre {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: var(--primary);
-  color: var(--primary-foreground);
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
   text-align: center;
   line-height: 24px;
   font-size: 0.8125rem;

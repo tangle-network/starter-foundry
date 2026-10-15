@@ -125,7 +125,7 @@ export function AgentsMdPreview({ bundle }: Props) {
 function DefRow({ k, v }: { k: string; v: string }) {
   return (
     <>
-      <dt style={{ color: 'var(--muted-foreground)' }}>{k}</dt>
+      <dt style={{ color: 'hsl(var(--muted-foreground))' }}>{k}</dt>
       <dd>{v}</dd>
     </>
   )

@@ -15,7 +15,7 @@
 // the host app, swap the final step for a POST with these same fields.
 
 import { useState } from 'react'
-import { CodeBlock } from '@tangle-network/ui/markdown'
+import { CodeBlock, CopyButton } from '@tangle-network/ui/markdown'
 import type { Bundle } from '../lib/catalog'
 
 interface Props {
@@ -77,6 +77,15 @@ export function DeployFlow({ bundle, bundlePathHint }: Props) {
   const deployCmd = buildCommand(bundle, bundlePath, form)
   const exportCmd = `export ${form.apiKeyEnv}=sk-tan-...   # paste the minted key`
 
+  const progressOutput = `[deploy-agent] loading bundle: registry/families/${bundle.id}
+[deploy-agent] profile built: name=... workspace=/home/agent systemPrompt=... chars subagents=${bundle.isMultiAgent ? 'N' : '0'} workspace-files=...
+[deploy-agent] creating sandbox name=${form.sandboxName || '<name>'} image=${form.image}
+[deploy-agent] sandbox created: id=box-...
+[deploy-agent] wrote /home/agent/AGENTS.md (... bytes)
+${bundle.isMultiAgent ? '[deploy-agent] wrote /home/agent/agents.json (... bytes)\n' : ''}[deploy-agent] done. Re-enter this sandbox with:
+  const box = await client.get('box-...')
+  await box.task('your prompt here')`
+
   return (
     <div>
       <h2 className='mp-h2'>Deploy {bundle.id}</h2>
@@ -97,7 +106,7 @@ export function DeployFlow({ bundle, bundlePathHint }: Props) {
           The key is product-scoped to <code>sandbox</code> so it can only
           create + manage sandboxes — no router or billing surface.
         </p>
-        <CodeBlock code={mintCmd} />
+        <CodeBlock code={mintCmd} language="bash"><CopyButton text={mintCmd} /></CodeBlock>
         <p className='mp-muted' style={{ fontSize: '0.75rem' }}>
           Output: <code>sk-tan-...</code> on stdout. Save it to a password
           manager or pass it to the next step inline.
@@ -174,8 +183,8 @@ export function DeployFlow({ bundle, bundlePathHint }: Props) {
           From a starter-foundry checkout (<code>git clone</code> the repo if
           you don't have it), export the API key and run the script:
         </p>
-        <CodeBlock code={exportCmd} />
-        <CodeBlock code={deployCmd} />
+        <CodeBlock code={exportCmd} language="bash"><CopyButton text={exportCmd} /></CodeBlock>
+        <CodeBlock code={deployCmd} language="bash"><CopyButton text={deployCmd} /></CodeBlock>
       </section>
 
       <section className='mp-step'>
@@ -190,16 +199,7 @@ export function DeployFlow({ bundle, bundlePathHint }: Props) {
           methodology + (multi-agent only) agents.json, and on success a
           re-entry snippet.
         </p>
-        <CodeBlock
-          code={`[deploy-agent] loading bundle: registry/families/${bundle.id}
-[deploy-agent] profile built: name=... workspace=/home/agent systemPrompt=... chars subagents=${bundle.isMultiAgent ? 'N' : '0'} workspace-files=...
-[deploy-agent] creating sandbox name=${form.sandboxName || '<name>'} image=${form.image}
-[deploy-agent] sandbox created: id=box-...
-[deploy-agent] wrote /home/agent/AGENTS.md (... bytes)
-${bundle.isMultiAgent ? '[deploy-agent] wrote /home/agent/agents.json (... bytes)\n' : ''}[deploy-agent] done. Re-enter this sandbox with:
-  const box = await client.get('box-...')
-  await box.task('your prompt here')`}
-        />
+        <CodeBlock code={progressOutput} language="text"><CopyButton text={progressOutput} /></CodeBlock>
         <p className='mp-muted' style={{ fontSize: '0.75rem' }}>
           Once running, drive the agent with <code>box.task()</code> from the
           sandbox SDK or via your own UI (see <code>agent-with-ui-ts</code> /

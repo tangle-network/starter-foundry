@@ -3,7 +3,7 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Avatar } from "@/components/ui/avatar"
-import { CodeBlock } from "@tangle-network/ui/markdown"
+import { CodeBlock, CopyButton } from "@tangle-network/ui/markdown"
 
 interface ChatMessageProps {
   role: "user" | "assistant"
@@ -32,7 +32,7 @@ function parseContent(content: string) {
     if (match.index > lastIndex) {
       parts.push(<span key={lastIndex} className="whitespace-pre-wrap">{content.slice(lastIndex, match.index)}</span>)
     }
-    parts.push(<CodeBlock key={match.index} language={match[1]} code={match[2].trimEnd()} />)
+    parts.push(<CodeBlock key={match.index} language={match[1]} code={match[2].trimEnd()}><CopyButton text={match[2].trimEnd()} /></CodeBlock>)
     lastIndex = regex.lastIndex
   }
 

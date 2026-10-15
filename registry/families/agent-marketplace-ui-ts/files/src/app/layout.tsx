@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import type { ReactNode } from 'react'
 import Link from 'next/link'
+import { Theme } from '../components/Theme'
 import '../styles/globals.css'
 
 export const metadata: Metadata = {
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang='en'>
       <body>
+        <Theme />
         <header className='mp-header'>
           <div className='mp-container' style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
             <Link href='/'>

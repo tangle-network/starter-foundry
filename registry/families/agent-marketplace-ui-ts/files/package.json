@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "@tangle-network/agent-interface": "0.36.0",
-    "@tangle-network/brand": "1.1.0",
+    "@tangle-network/brand": "1.24.2",
     "@tangle-network/sandbox-ui": "0.90.3",
-    "@tangle-network/ui": "11.2.1",
+    "@tangle-network/ui": "11.35.0",
     "fuse.js": "^7.0.0",
     "next": "^15.5.21",
     "react": "^18.3.0",
@@ -22,7 +22,9 @@
     "@types/node": "^20.17.0",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
-    "typescript": "^5.9.0"
+    "typescript": "^5.9.0",
+    "@tailwindcss/postcss": "^4.0.0",
+    "tailwindcss": "^4.0.0"
   },
   "overrides": {
     "vite": "^6.4.3"

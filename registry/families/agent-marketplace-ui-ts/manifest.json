@@ -29,6 +29,7 @@
   "files": [
     { "source": "files/package.json", "target": "package.json" },
     { "source": "files/next.config.js", "target": "next.config.js" },
+    { "source": "files/postcss.config.mjs", "target": "postcss.config.mjs" },
     { "source": "files/tsconfig.json", "target": "tsconfig.json" },
     { "source": "files/.env.example", "target": ".env.example" },
     { "source": "files/README.md", "target": "README.md" },
@@ -42,6 +43,7 @@
     { "source": "files/src/components/SearchFilters.tsx", "target": "src/components/SearchFilters.tsx" },
     { "source": "files/src/components/AgentsMdPreview.tsx", "target": "src/components/AgentsMdPreview.tsx" },
     { "source": "files/src/components/DeployFlow.tsx", "target": "src/components/DeployFlow.tsx" },
+    { "source": "files/src/components/Theme.tsx", "target": "src/components/Theme.tsx" },
     { "source": "files/src/lib/catalog.ts", "target": "src/lib/catalog.ts" },
     { "source": "files/src/lib/search.ts", "target": "src/lib/search.ts" },
     { "source": "files/src/styles/globals.css", "target": "src/styles/globals.css" },

@@ -1,0 +1,74 @@
+{
+  "source_before": "90d72bf4bf01aa4448a56c9e04ad408103eb1cb7",
+  "source_after": "606b98e2bec609ec1861c80f7aa607d518f50802",
+  "normal_gate": {
+    "id": "beelink1-e1773020ff20cb2798aacf3f4f5b9d11",
+    "exit": 0,
+    "tests": {
+      "pass": 7,
+      "total": 7
+    }
+  },
+  "captured_at": "2026-10-15T19:52Z",
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "width": 390,
+      "height": 1000
+    }
+  ],
+  "themes": ["light", "dark"],
+  "surfaces": ["primitives/sidebar/chat", "marketplace command flow"],
+  "scope": "Isolated source-template fixtures; exact clipboard and input/action checks. Actual composed React and Next production builds checked separately. No deployed website claim.",
+  "recordings": [
+    {
+      "stage": "before",
+      "width": 390,
+      "duration_s": 4.64,
+      "file": "before/interaction-390.webm"
+    },
+    {
+      "stage": "before",
+      "width": 1440,
+      "duration_s": 5.52,
+      "file": "before/interaction-1440.webm"
+    },
+    {
+      "stage": "after",
+      "width": 390,
+      "duration_s": 5.32,
+      "file": "after/interaction-390.webm"
+    },
+    {
+      "stage": "after",
+      "width": 1440,
+      "duration_s": 7.16,
+      "file": "after/interaction-1440.webm"
+    }
+  ],
+  "sha256": {
+    "after/interaction-1440.webm": "aeaaabea92fdd25410f92ecad0a8b563df5669902d3ccec29b86d6741cc26753",
+    "after/interaction-390.webm": "97a96396ce18f18143d138523d78dee8111af0c838165e53ef00a895b321ac3e",
+    "after/marketplace-1440-dark.png": "d50309afede978c0456b72ea4abf7dbcdc805c8eaa7bcea1a6eb98c0f3821917",
+    "after/marketplace-1440-light.png": "fc9814caf2e0ed9ddb4c00870097dab21dcd0b97125fed1c01869f55616f38bc",
+    "after/marketplace-390-dark.png": "b3c17bb42463fccfb6e8ddf5eea973b4e8c9d2ca77a9dd64fa542a628b71b4ce",
+    "after/marketplace-390-light.png": "354b244220592376ef1e4c2689695614b4f34956c910e475042879c080ff6f45",
+    "after/primitives-1440-dark.png": "713d4437419a0c1888d2d308e7616700cd5ada30caa61fd92f16c2600d1cff4a",
+    "after/primitives-1440-light.png": "5909e61fd40a2d139850eaf51d6bac3e5b286700ea11585233ddd8dc3ed89e59",
+    "after/primitives-390-dark.png": "a7297af699e2d7839debc8a6753cd584e7e15777aef1902ee754b5a440840a35",
+    "after/primitives-390-light.png": "7ffb0d4410500d6b2a9d30f367163e1244ccdfaec451224d966cdd12ffaa31c3",
+    "before/interaction-1440.webm": "462c0d1cef1d82a2b2811f8946e669494cb419ae7ac7968e242f9f4bb024a85c",
+    "before/interaction-390.webm": "3661570b292d2d26ccd61e4e7358bab88ea2eec1ad87694736e15b8f85e22e92",
+    "before/marketplace-1440-dark.png": "9629afd2214b352cf531bb35b5d24b0837f06af8b5b853018c773c1b9e0c2c06",
+    "before/marketplace-1440-light.png": "da60e93d976be5dd89e283f112d9a8d47a1d3bd2cfc12c75bc8ef23cb36f56b3",
+    "before/marketplace-390-dark.png": "aefe775423b769fee1726980f172fd660e4b7682658c3b4c749d1c5a70c17ecf",
+    "before/marketplace-390-light.png": "8a8cd288ffe608791a0ca67f886fcd1eedcd9b86fb04fe8840dc2989ddb7308e",
+    "before/primitives-1440-dark.png": "a42e9b3314d108d40ee21946106aaa46b05fe868d23721e8dc8a51f6f7007ad8",
+    "before/primitives-1440-light.png": "9cc2feb282f2fcdf3d91c0cf308a00241d33944abf09c00fca92553bb3e75ffa",
+    "before/primitives-390-dark.png": "cde91b1f7618c80eda688a5a287f2719aa16ee3446f07202aa4062983e9c5e60",
+    "before/primitives-390-light.png": "e92bbb057fa53cbbebea73d4bf85d06e022a362152d7597620b61c633ee8b0e6"
+  }
+}

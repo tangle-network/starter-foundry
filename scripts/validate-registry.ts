@@ -270,3 +270,24 @@ if (failures.length > 0) {
   process.exit(1)
 }
 console.log(`✓ registry validation passed (${familyIds.size} families)`)
+
+const sharedPresentationSources = [
+  ...['button', 'card', 'badge', 'input', 'table', 'sidebar'].map(
+    (name) => `registry/layers/capability/shadcn/files/${name}.tsx`,
+  ),
+  'registry/layers/capability/layout-chat/files/chat-message.tsx',
+  'registry/families/agent-marketplace-ui-ts/files/src/components/DeployFlow.tsx',
+  'registry/families/agent-marketplace-ui-ts/files/src/styles/globals.css',
+]
+const sharedPresentationCount = sharedPresentationSources.filter((file) => {
+  const source = readFileSync(join(REPO, file), 'utf8')
+  return (
+    /@tangle-network\/(?:ui|brand|sandbox-ui)/.test(source) &&
+    !/(?:function (?:CodeBlock|CopyButton)|(?:const|function) (?:Button|Card|Badge|Input|Table|Sidebar)\b|--(?:background|foreground|primary|muted|border):)/.test(
+      source,
+    )
+  )
+}).length
+console.log(
+  `Shared presentation sources: ${sharedPresentationCount}/${sharedPresentationSources.length} inventoried templates delegate to Brand/UI/Sandbox UI`,
+)

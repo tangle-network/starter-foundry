@@ -8,12 +8,13 @@ import { DeployFlow } from '../../../components/DeployFlow'
 import { loadCatalog, resolveRegistryPath } from '../../../lib/catalog'
 
 interface Params {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 export default async function DeployPage({ params }: Params) {
+  const { id } = await params
   const bundles = await loadCatalog(resolveRegistryPath())
-  const bundle = bundles.find((b) => b.id === params.id)
+  const bundle = bundles.find((b) => b.id === id)
   if (!bundle) notFound()
   return (
     <div>

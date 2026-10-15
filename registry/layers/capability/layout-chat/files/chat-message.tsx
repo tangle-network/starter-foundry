@@ -3,38 +3,13 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Avatar } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Copy, Check } from "lucide-react"
+import { CodeBlock } from "@tangle-network/ui/markdown"
 
 interface ChatMessageProps {
   role: "user" | "assistant"
   content: string
   timestamp?: Date
   isStreaming?: boolean
-}
-
-function CodeBlock({ code, lang }: { code: string; lang?: string }) {
-  const [copied, setCopied] = React.useState(false)
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(code)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
-  return (
-    <div className="group relative my-2 rounded-lg bg-zinc-950 dark:bg-zinc-900">
-      <div className="flex items-center justify-between border-b border-zinc-800 px-4 py-1.5">
-        <span className="text-xs text-zinc-400">{lang || "code"}</span>
-        <Button variant="ghost" size="icon" className="h-6 w-6 text-zinc-400 hover:text-zinc-200" onClick={handleCopy}>
-          {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-        </Button>
-      </div>
-      <pre className="overflow-x-auto p-4 text-sm leading-relaxed">
-        <code className="text-zinc-100">{code}</code>
-      </pre>
-    </div>
-  )
 }
 
 function StreamingDots() {
@@ -57,7 +32,7 @@ function parseContent(content: string) {
     if (match.index > lastIndex) {
       parts.push(<span key={lastIndex} className="whitespace-pre-wrap">{content.slice(lastIndex, match.index)}</span>)
     }
-    parts.push(<CodeBlock key={match.index} lang={match[1]} code={match[2].trimEnd()} />)
+    parts.push(<CodeBlock key={match.index} language={match[1]} code={match[2].trimEnd()} />)
     lastIndex = regex.lastIndex
   }
 

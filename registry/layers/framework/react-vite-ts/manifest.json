@@ -1,7 +1,9 @@
 {
   "id": "react-vite-ts",
   "description": "React and Vite framework layer with Tailwind CSS and shadcn/ui support.",
-  "appliesTo": ["react-vite-ts"],
+  "appliesTo": [
+    "react-vite-ts"
+  ],
   "defaults": {
     "headline": "Starter Foundry React Surface",
     "subheadline": "A React and Vite ready shell with room for rapid agent edits."
@@ -39,5 +41,12 @@
       "source": "files/App.tsx",
       "target": "src/App.tsx"
     }
-  ]
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "@tangle-network/ui": "11.35.0",
+      "@tangle-network/brand": "1.24.2",
+      "@tangle-network/sandbox-ui": "0.134.7"
+    }
+  }
 }

@@ -168,3 +168,42 @@ test('layers without variants still use files/ directory', async () => {
     await removeDir(outDir)
   }
 })
+
+test('shared primitive scaffolds deliver runtime dependencies and stylesheet sources', async () => {
+  for (const family of ['react-vite-ts', 'nextjs-ts']) {
+    const outDir = await createTempDir('sf-shared-primitives')
+    try {
+      await composeStarter({
+        spec: {
+          projectName: 'shared-primitives',
+          family,
+          layers: [
+            family === 'react-vite-ts' ? 'framework:react-vite-ts' : 'framework:nextjs-app-router',
+            'capability:tailwind',
+            'capability:shadcn',
+            'capability:layout-chat',
+          ],
+        },
+        outDir,
+      })
+      const pkg = await readJson<{ dependencies: Record<string, string> }>(
+        path.join(outDir, 'package.json'),
+      )
+      for (const name of ['ui', 'brand', 'sandbox-ui'])
+        assert.ok(pkg.dependencies[`@tangle-network/${name}`])
+      const button = await fs.readFile(path.join(outDir, 'src/components/ui/button.tsx'), 'utf8')
+      assert.match(button, /from "@tangle-network\/ui\/primitives"/)
+      const cssPath = family === 'react-vite-ts' ? 'src/styles.css' : 'app/globals.css'
+      const css = await fs.readFile(path.join(outDir, cssPath), 'utf8')
+      assert.match(css, /@tangle-network\/brand\/styles/)
+      assert.match(css, /@source "\.\.\/node_modules\/@tangle-network\/ui\/dist"/)
+      const chat = await fs.readFile(
+        path.join(outDir, 'src/components/chat/chat-message.tsx'),
+        'utf8',
+      )
+      assert.match(chat, /from "@tangle-network\/ui\/markdown"/)
+    } finally {
+      await removeDir(outDir)
+    }
+  }
+})

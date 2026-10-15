@@ -1,7 +1,9 @@
 {
   "id": "nextjs-app-router",
   "description": "Next.js app router framework layer with instant preview.",
-  "appliesTo": ["nextjs-ts"],
+  "appliesTo": [
+    "nextjs-ts"
+  ],
   "defaults": {
     "headline": "Starter Foundry App Router",
     "subheadline": "A Next.js ready shell with a staged path from preview to full app router."
@@ -43,5 +45,12 @@
       "source": "files/preview-client.js",
       "target": "preview/client.js"
     }
-  ]
+  ],
+  "packageDeps": {
+    "dependencies": {
+      "@tangle-network/ui": "11.35.0",
+      "@tangle-network/brand": "1.24.2",
+      "@tangle-network/sandbox-ui": "0.134.7"
+    }
+  }
 }

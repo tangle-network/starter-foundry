@@ -77,7 +77,7 @@
       "ChatMessage renders user and assistant messages with avatar, timestamp, and markdown.",
       "ChatInput supports multi-line with Shift+Enter and send on Enter.",
       "Wire /api/chat to your LLM provider (OpenAI, Anthropic, etc.) with streaming response.",
-      "Code blocks in assistant messages use syntax highlighting placeholder — add shiki or prism."
+      "Code blocks in assistant messages use @tangle-network/ui/markdown CodeBlock, including syntax highlighting and copy behavior."
     ]
   },
   "tieredKeywords": {

@@ -15,6 +15,7 @@
 // the host app, swap the final step for a POST with these same fields.
 
 import { useState } from 'react'
+import { CodeBlock } from '@tangle-network/ui/markdown'
 import type { Bundle } from '../lib/catalog'
 
 interface Props {
@@ -69,39 +70,6 @@ function quote(s: string): string {
   return `'${escaped}'`
 }
 
-function CopyButton({ text }: { text: string }) {
-  const [copied, setCopied] = useState(false)
-  return (
-    <button
-      type='button'
-      onClick={() => {
-        void navigator.clipboard.writeText(text).then(() => {
-          setCopied(true)
-          setTimeout(() => setCopied(false), 1500)
-        })
-      }}
-      className='mp-button mp-button-secondary'
-      style={{ position: 'absolute', top: 8, right: 8, padding: '4px 10px', fontSize: '0.75rem' }}
-      aria-label='Copy command to clipboard'
-    >
-      {copied ? 'Copied' : 'Copy'}
-    </button>
-  )
-}
-
-interface CodeBlockProps {
-  text: string
-}
-
-function CodeBlock({ text }: CodeBlockProps) {
-  return (
-    <div className='mp-codeblock'>
-      <CopyButton text={text} />
-      <pre>{text}</pre>
-    </div>
-  )
-}
-
 export function DeployFlow({ bundle, bundlePathHint }: Props) {
   const [form, setForm] = useState<DeployForm>(INITIAL_FORM)
   const bundlePath = bundlePathHint ?? `registry/families/${bundle.id}`
@@ -129,7 +97,7 @@ export function DeployFlow({ bundle, bundlePathHint }: Props) {
           The key is product-scoped to <code>sandbox</code> so it can only
           create + manage sandboxes — no router or billing surface.
         </p>
-        <CodeBlock text={mintCmd} />
+        <CodeBlock code={mintCmd} />
         <p className='mp-muted' style={{ fontSize: '0.75rem' }}>
           Output: <code>sk-tan-...</code> on stdout. Save it to a password
           manager or pass it to the next step inline.
@@ -206,8 +174,8 @@ export function DeployFlow({ bundle, bundlePathHint }: Props) {
           From a starter-foundry checkout (<code>git clone</code> the repo if
           you don't have it), export the API key and run the script:
         </p>
-        <CodeBlock text={exportCmd} />
-        <CodeBlock text={deployCmd} />
+        <CodeBlock code={exportCmd} />
+        <CodeBlock code={deployCmd} />
       </section>
 
       <section className='mp-step'>
@@ -223,7 +191,7 @@ export function DeployFlow({ bundle, bundlePathHint }: Props) {
           re-entry snippet.
         </p>
         <CodeBlock
-          text={`[deploy-agent] loading bundle: registry/families/${bundle.id}
+          code={`[deploy-agent] loading bundle: registry/families/${bundle.id}
 [deploy-agent] profile built: name=... workspace=/home/agent systemPrompt=... chars subagents=${bundle.isMultiAgent ? 'N' : '0'} workspace-files=...
 [deploy-agent] creating sandbox name=${form.sandboxName || '<name>'} image=${form.image}
 [deploy-agent] sandbox created: id=box-...

@@ -2,12 +2,6 @@
 @import "@tangle-network/brand/styles";
 @source "../../node_modules/@tangle-network/ui/dist";
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
 html,
 body {
   height: 100%;

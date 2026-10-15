@@ -79,7 +79,7 @@ pre {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  transition: border-color 0.15s ease;
+  transition: border-color var(--motion-surface);
   background: hsl(var(--background));
 }
 
@@ -196,4 +196,10 @@ pre {
   font-size: 0.8125rem;
   font-weight: 600;
   margin-right: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mp-card {
+    transition: none;
+  }
 }

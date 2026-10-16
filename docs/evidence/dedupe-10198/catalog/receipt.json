@@ -1,0 +1,116 @@
+{
+  "source": "3028e74baa1590679387f9cd6b6f7b7b0d1b4152",
+  "node": "v22.23.3",
+  "sdk": "1.63.0",
+  "cases": [
+    {
+      "name": "1440-light-no-preference",
+      "initial": {
+        "duration": "0.24s",
+        "property": "border-color",
+        "role": ".24s cubic-bezier(.22,1,.36,1)",
+        "border": "rgb(200, 199, 214)",
+        "overflow": 0
+      },
+      "hovered": "rgb(76, 63, 198)",
+      "latencyAcceptance": "UNKNOWN",
+      "motionQualification": "UNQUALIFIED: diagnostic only; no calibrated2x40 presented-frame batch"
+    },
+    {
+      "name": "1440-light-reduce",
+      "initial": {
+        "duration": "0s",
+        "property": "none",
+        "role": "0s cubic-bezier(.22,1,.36,1)",
+        "border": "rgb(200, 199, 214)",
+        "overflow": 0
+      },
+      "hovered": "rgb(76, 63, 198)",
+      "latencyAcceptance": "UNKNOWN",
+      "motionQualification": "UNQUALIFIED: diagnostic only; no calibrated2x40 presented-frame batch"
+    },
+    {
+      "name": "1440-dark-no-preference",
+      "initial": {
+        "duration": "0.24s",
+        "property": "border-color",
+        "role": ".24s cubic-bezier(.22,1,.36,1)",
+        "border": "rgb(42, 41, 61)",
+        "overflow": 0
+      },
+      "hovered": "rgb(76, 63, 198)",
+      "latencyAcceptance": "UNKNOWN",
+      "motionQualification": "UNQUALIFIED: diagnostic only; no calibrated2x40 presented-frame batch"
+    },
+    {
+      "name": "1440-dark-reduce",
+      "initial": {
+        "duration": "0s",
+        "property": "none",
+        "role": "0s cubic-bezier(.22,1,.36,1)",
+        "border": "rgb(42, 41, 61)",
+        "overflow": 0
+      },
+      "hovered": "rgb(76, 63, 198)",
+      "latencyAcceptance": "UNKNOWN",
+      "motionQualification": "UNQUALIFIED: diagnostic only; no calibrated2x40 presented-frame batch"
+    },
+    {
+      "name": "390-light-no-preference",
+      "initial": {
+        "duration": "0.24s",
+        "property": "border-color",
+        "role": ".24s cubic-bezier(.22,1,.36,1)",
+        "border": "rgb(199, 198, 213)",
+        "overflow": 0
+      },
+      "hovered": "rgb(76, 63, 198)",
+      "latencyAcceptance": "UNKNOWN",
+      "motionQualification": "UNQUALIFIED: diagnostic only; no calibrated2x40 presented-frame batch"
+    },
+    {
+      "name": "390-light-reduce",
+      "initial": {
+        "duration": "0s",
+        "property": "none",
+        "role": "0s cubic-bezier(.22,1,.36,1)",
+        "border": "rgb(200, 199, 214)",
+        "overflow": 0
+      },
+      "hovered": "rgb(76, 63, 198)",
+      "latencyAcceptance": "UNKNOWN",
+      "motionQualification": "UNQUALIFIED: diagnostic only; no calibrated2x40 presented-frame batch"
+    },
+    {
+      "name": "390-dark-no-preference",
+      "initial": {
+        "duration": "0.24s",
+        "property": "border-color",
+        "role": ".24s cubic-bezier(.22,1,.36,1)",
+        "border": "rgb(42, 41, 61)",
+        "overflow": 0
+      },
+      "hovered": "rgb(76, 63, 198)",
+      "latencyAcceptance": "UNKNOWN",
+      "motionQualification": "UNQUALIFIED: diagnostic only; no calibrated2x40 presented-frame batch"
+    },
+    {
+      "name": "390-dark-reduce",
+      "initial": {
+        "duration": "0s",
+        "property": "none",
+        "role": "0s cubic-bezier(.22,1,.36,1)",
+        "border": "rgb(42, 41, 61)",
+        "overflow": 0
+      },
+      "hovered": "rgb(76, 63, 198)",
+      "latencyAcceptance": "UNKNOWN",
+      "motionQualification": "UNQUALIFIED: diagnostic only; no calibrated2x40 presented-frame batch"
+    }
+  ],
+  "errors": [],
+  "scope": "Actual source-generated marketplace production build catalog; local diagnostic, no deploy/account/spend",
+  "productionAcceptance": "UNKNOWN",
+  "physicalAcceptance": "UNKNOWN",
+  "latencyAcceptance": "UNKNOWN"
+}

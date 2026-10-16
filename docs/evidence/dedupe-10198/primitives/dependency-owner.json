@@ -1,0 +1,20 @@
+{
+  "source": "registry/families/react-vite-ts/files/package.json",
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "@tangle-network/sandbox-ui": "0.134.7",
+    "@radix-ui/react-avatar": "^1.1.0",
+    "@radix-ui/react-slot": "^1.1.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.0.0",
+    "lucide-react": "^0.468.0",
+    "vite": "^6.4.3",
+    "@tailwindcss/vite": "^4.0.0",
+    "tailwindcss": "^4.0.0",
+    "@tangle-network/ui": "11.37.0",
+    "@tangle-network/brand": "1.25.1"
+  },
+  "scope": "Controlled source-component fixture using current consumer pins in both before and after; not a historical whole-application dependency replay."
+}

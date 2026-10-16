@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type ComponentProps } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -29,6 +29,7 @@ export interface FieldDef {
 interface EntityFormProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  onCloseAutoFocus?: ComponentProps<typeof DialogContent>['onCloseAutoFocus']
   onSubmit: (values: Record<string, string>) => void
   defaultValues?: Record<string, string>
   fields: FieldDef[]
@@ -38,6 +39,7 @@ interface EntityFormProps {
 export function EntityForm({
   open,
   onOpenChange,
+  onCloseAutoFocus,
   onSubmit,
   defaultValues,
   fields,
@@ -59,7 +61,7 @@ export function EntityForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" onCloseAutoFocus={onCloseAutoFocus}>
         <DialogHeader>
           <DialogTitle>{title ?? (defaultValues ? 'Edit' : 'Create')}</DialogTitle>
         </DialogHeader>

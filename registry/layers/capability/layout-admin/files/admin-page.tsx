@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
 import { DataTable } from '@/components/admin/data-table'
 import { ColumnHeader } from '@/components/admin/column-header'
@@ -55,7 +55,7 @@ export default function AdminPage() {
   const [formOpen, setFormOpen] = useState(false)
   const [editUser, setEditUser] = useState<User | null>(null)
 
-  const columns: ColumnDef<User>[] = [
+  const columns = useMemo<ColumnDef<User>[]>(() => [
     {
       accessorKey: 'name',
       header: ({ column }) => <ColumnHeader column={column} title="Name" />,
@@ -108,7 +108,7 @@ export default function AdminPage() {
         </DropdownMenu>
       ),
     },
-  ]
+  ], [])
 
   return (
     <div className="space-y-6">

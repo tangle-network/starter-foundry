@@ -735,13 +735,13 @@
     },
     {
       "source": "starter-controlled-a002-evidence/after-build.log",
-      "candidate": "receipts/after-build.log",
+      "candidate": "receipts/after-build.log.txt",
       "sha256": "8d1ee73210d05e1e2a980fa668d2daa2d10f294e357766ab6cc2d39d7362cff6",
       "bytes": 667
     },
     {
       "source": "starter-controlled-a002-evidence/after-syntax-validation.log",
-      "candidate": "receipts/after-syntax-validation.log",
+      "candidate": "receipts/after-syntax-validation.log.txt",
       "sha256": "0dfdec20bb3f8e93cdf00054cbd367dfff414d69e2b34f89d960e58eb9a2f542",
       "bytes": 341
     }

@@ -1,0 +1,7 @@
+
+> shared-surfaces-proof@ validate /home/drew/.local/state/agent-work/dedupe-10198/generated-surfaces-eb1374a5350f
+> node validate-types.mjs
+
+(node:4092807) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+typescript ok

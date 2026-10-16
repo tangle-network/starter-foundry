@@ -923,7 +923,7 @@
       "sha256": "858a7eb186ab19d94df43fed07caefe0c3380f447f0bc403afcb48ff1d4309fd"
     },
     {
-      "path": "controlled-callers/receipts/after-build.log",
+      "path": "controlled-callers/receipts/after-build.log.txt",
       "bytes": 667,
       "sha256": "8d1ee73210d05e1e2a980fa668d2daa2d10f294e357766ab6cc2d39d7362cff6"
     },
@@ -933,7 +933,7 @@
       "sha256": "b084e4614c38161b16ace14178edd001468cf7d6375b2aef1084e8baa31392ff"
     },
     {
-      "path": "controlled-callers/receipts/after-syntax-validation.log",
+      "path": "controlled-callers/receipts/after-syntax-validation.log.txt",
       "bytes": 341,
       "sha256": "0dfdec20bb3f8e93cdf00054cbd367dfff414d69e2b34f89d960e58eb9a2f542"
     },
@@ -954,8 +954,8 @@
     },
     {
       "path": "controlled-callers/receipts/media-provenance.json",
-      "bytes": 35379,
-      "sha256": "48734c54a4736b6f66d4d79a4a5e6d7004c15ab3c7b43f6ebf27c41c47ab97dd"
+      "bytes": 35387,
+      "sha256": "91637cfe13c37cea4c19b51791357530f8143a48fd892ef6f85a5cd9565a3fcf"
     },
     {
       "path": "controlled-callers/receipts/original-baseline-custody.json.txt",

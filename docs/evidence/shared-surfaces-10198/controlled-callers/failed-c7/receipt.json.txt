@@ -1,0 +1,73 @@
+{
+  "stage": "after",
+  "mode": "callers",
+  "identity": {
+    "source": "c7f18f2cdd526e1aa30299dac8c38f9bb863e910",
+    "baseline": "229a5a9fa2d83c0cab586fe8415f0e5b16b5382b",
+    "stage": "after",
+    "generatedRoot": "/home/drew/.local/state/agent-work/dedupe-10198/generated-surfaces-eb1374a5350f",
+    "browser": "153.0.8010.12",
+    "ui": "11.38.1",
+    "brand": "1.25.1",
+    "modules": {
+      "src/components/admin/admin-page.tsx": "e5e1aac6ee3ad19e420eaf66529d744632efe79493706a8e12834d28902a34ed",
+      "src/components/admin/entity-form.tsx": "1964e7a74ec56a2d14af024488ee8c5e3726756bc6869427cc57a2fb2a504860",
+      "src/components/teams/team-members.tsx": "7d160434f2ca3af55fdb1df936ef66cec11befb7d1ff967b2112ef4b2b9bd332"
+    }
+  },
+  "rows": [
+    {
+      "flow": "add",
+      "dismiss": "cancel",
+      "width": 390,
+      "reducedMotion": "no-preference",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": true,
+        "connected": true,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "Add user",
+        "activeTag": "BUTTON"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "flow": "add",
+      "dismiss": "escape",
+      "width": 390,
+      "reducedMotion": "no-preference",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": true,
+        "connected": true,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "Add user",
+        "activeTag": "BUTTON"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "PASS"
+    }
+  ],
+  "latency": "UNKNOWN",
+  "served": "UNKNOWN",
+  "scope": "Existing generated React consumer with actual AdminPage/EntityForm and TeamMembers template modules. Native Cancel/Escape; CSS events withheld. Team host props/state are disposable UI fixture, not backend/auth/removal integration. pnpm validate is syntactic, not semantic typecheck."
+}

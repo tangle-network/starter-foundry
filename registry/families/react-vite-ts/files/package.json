@@ -17,7 +17,7 @@
     "tailwind-merge": "latest",
     "@tanstack/react-table": "latest",
     "recharts": "latest",
-    "@tangle-network/ui": "11.37.0",
+    "@tangle-network/ui": "11.38.1",
     "@tangle-network/brand": "1.25.1"
   },
   "devDependencies": {

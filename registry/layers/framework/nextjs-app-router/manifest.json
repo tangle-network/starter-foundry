@@ -48,7 +48,7 @@
   ],
   "packageDeps": {
     "dependencies": {
-      "@tangle-network/ui": "11.37.0",
+      "@tangle-network/ui": "11.38.1",
       "@tangle-network/brand": "1.25.1",
       "@tangle-network/sandbox-ui": "0.134.7"
     }

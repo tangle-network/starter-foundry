@@ -35,9 +35,9 @@ function formatRelativeTime(date: Date) {
 export function ChatSidebar({ conversations, activeId, onSelect, onNew }: ChatSidebarProps) {
   return (
     <div className="flex h-full flex-col">
-      <div className="flex h-14 items-center justify-between border-b px-4">
+      <div className="flex h-14 items-center justify-between border-b px-4 pr-12 lg:pr-4">
         <span className="text-sm font-semibold">Chats</span>
-        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onNew}>
+        <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="New conversation" onClick={onNew}>
           <Plus className="h-4 w-4" />
         </Button>
       </div>

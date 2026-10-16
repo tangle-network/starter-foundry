@@ -1,0 +1,267 @@
+{
+  "lockDiff": [
+    {
+      "path": "/importers/./dependencies/@tanstack/react-table/specifier",
+      "change": "changed"
+    },
+    {
+      "path": "/importers/./dependencies/@tanstack/react-table/version",
+      "change": "changed"
+    },
+    {
+      "path": "/packages/@tanstack/react-store@0.11.2",
+      "change": "removed"
+    },
+    {
+      "path": "/packages/@tanstack/react-table@9.3.1",
+      "change": "removed"
+    },
+    {
+      "path": "/packages/@tanstack/store@0.11.2",
+      "change": "removed"
+    },
+    {
+      "path": "/packages/@tanstack/table-core@9.3.1",
+      "change": "removed"
+    },
+    {
+      "path": "/packages/@tanstack/react-table@8.21.3",
+      "change": "added"
+    },
+    {
+      "path": "/packages/@tanstack/table-core@8.21.3",
+      "change": "added"
+    },
+    {
+      "path": "/snapshots/@tanstack/react-store@0.11.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)",
+      "change": "removed"
+    },
+    {
+      "path": "/snapshots/@tanstack/react-table@9.3.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)",
+      "change": "removed"
+    },
+    {
+      "path": "/snapshots/@tanstack/store@0.11.2",
+      "change": "removed"
+    },
+    {
+      "path": "/snapshots/@tanstack/table-core@9.3.1",
+      "change": "removed"
+    },
+    {
+      "path": "/snapshots/@tanstack/react-table@8.21.3(react-dom@19.3.1(react@19.3.1))(react@19.3.1)",
+      "change": "added"
+    },
+    {
+      "path": "/snapshots/@tanstack/table-core@8.21.3",
+      "change": "added"
+    }
+  ],
+  "retiredStoreGraph": [
+    {
+      "snapshot": "@tanstack/store@0.11.2",
+      "package": "@tanstack/store@0.11.2",
+      "incoming": [
+        "@tanstack/react-store@0.11.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)",
+        "@tanstack/table-core@9.3.1"
+      ],
+      "reachableFrom": "@tanstack/react-table@9.3.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)",
+      "allConsumersRetired": true,
+      "removedOnly": true
+    },
+    {
+      "snapshot": "@tanstack/react-store@0.11.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)",
+      "package": "@tanstack/react-store@0.11.2",
+      "incoming": [
+        "@tanstack/react-table@9.3.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)"
+      ],
+      "reachableFrom": "@tanstack/react-table@9.3.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)",
+      "allConsumersRetired": true,
+      "removedOnly": true
+    }
+  ],
+  "source": "c7f18f2cdd526e1aa30299dac8c38f9bb863e910",
+  "dependencyOwner": {
+    "spec": {
+      "projectName": "controlled-callers-admin-dependency-proof",
+      "family": "react-vite-ts",
+      "layers": [
+        "framework:react-vite-ts",
+        "capability:tailwind",
+        "capability:shadcn",
+        "capability:layout-admin"
+      ]
+    },
+    "result": {
+      "outDir": "/home/drew/.local/state/agent-work/dedupe-10198/generated-surfaces-eb1374a5350f/controlled-callers-c7f18f2cdd52-compose-v4/actual-admin-compose",
+      "filesWritten": [
+        ".starter-foundry/primary-project.json",
+        "AGENTS.md",
+        "CLAUDE.md",
+        "app/admin/page.tsx",
+        "design-tokens.json",
+        "index.html",
+        "llms.txt",
+        "media-manifest.json",
+        "package.json",
+        "preview-client.js",
+        "shadcn-config.json",
+        "src/App.tsx",
+        "src/components/admin/column-header.tsx",
+        "src/components/admin/data-table.tsx",
+        "src/components/admin/entity-form.tsx",
+        "src/components/ui/alert.tsx",
+        "src/components/ui/avatar.tsx",
+        "src/components/ui/badge.tsx",
+        "src/components/ui/breadcrumb.tsx",
+        "src/components/ui/button.tsx",
+        "src/components/ui/card.tsx",
+        "src/components/ui/checkbox.tsx",
+        "src/components/ui/collapsible.tsx",
+        "src/components/ui/command.tsx",
+        "src/components/ui/dialog.tsx",
+        "src/components/ui/dropdown-menu.tsx",
+        "src/components/ui/form.tsx",
+        "src/components/ui/input.tsx",
+        "src/components/ui/label.tsx",
+        "src/components/ui/popover.tsx",
+        "src/components/ui/progress.tsx",
+        "src/components/ui/scroll-area.tsx",
+        "src/components/ui/select.tsx",
+        "src/components/ui/separator.tsx",
+        "src/components/ui/sheet.tsx",
+        "src/components/ui/sidebar.tsx",
+        "src/components/ui/skeleton.tsx",
+        "src/components/ui/switch.tsx",
+        "src/components/ui/table.tsx",
+        "src/components/ui/tabs.tsx",
+        "src/components/ui/textarea.tsx",
+        "src/components/ui/toast.tsx",
+        "src/components/ui/toggle.tsx",
+        "src/components/ui/tooltip.tsx",
+        "src/lib/utils.ts",
+        "src/main.ts",
+        "src/personalize.css",
+        "src/styles.css",
+        "tailwind-config.json",
+        "tsconfig.json",
+        "validate-types.mjs",
+        "vite.config.ts"
+      ],
+      "composeReportPath": "/home/drew/.local/state/agent-work/dedupe-10198/generated-surfaces-eb1374a5350f/controlled-callers-c7f18f2cdd52-compose-v4/actual-admin-compose/.starter-foundry/compose-report.json",
+      "components": {
+        "family": "react-vite-ts",
+        "layers": [
+          "framework:react-vite-ts",
+          "capability:tailwind",
+          "capability:shadcn",
+          "capability:layout-admin",
+          "auth:none",
+          "payments:none",
+          "sdk:none"
+        ],
+        "partner": null,
+        "slots": {
+          "auth": "auth:none",
+          "payments": "payments:none",
+          "sdk": "sdk:none"
+        }
+      },
+      "promptFragment": "",
+      "sbomPath": "/home/drew/.local/state/agent-work/dedupe-10198/generated-surfaces-eb1374a5350f/controlled-callers-c7f18f2cdd52-compose-v4/actual-admin-compose/.starter-foundry/sbom.cdx.json"
+    },
+    "manifestPackageDeps": {
+      "dependencies": {
+        "@tanstack/react-table": "^8.21.0"
+      }
+    }
+  },
+  "packageBefore": "latest",
+  "packageAfter": "^8.21.0",
+  "lockBefore": {
+    "specifier": "latest",
+    "version": "9.3.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)"
+  },
+  "lockAfter": {
+    "specifier": "^8.21.0",
+    "version": "8.21.3(react-dom@19.3.1(react@19.3.1))(react@19.3.1)"
+  },
+  "ui": {
+    "resolution": {
+      "integrity": "sha512-1pKjHBw52XqikCJL+buZwDuCbgIeu+/ushDMOt57Cd64ibIfjHRarAp6qSe91i1rw5HFkIrxD4sZxP/LCSDKow=="
+    },
+    "peerDependencies": {
+      "@hocuspocus/provider": ">=2.15.0 <5.0.0",
+      "@nanostores/react": ">=0.8.4 <3.0.0",
+      "@tangle-network/brand": "^1.25.1",
+      "@tiptap/core": ">=3.20.4 <4.0.0",
+      "@tiptap/extension-collaboration": ">=3.20.4 <4.0.0",
+      "@tiptap/extension-collaboration-caret": ">=3.7.0 <4.0.0",
+      "@tiptap/react": ">=3.20.4 <4.0.0",
+      "@tiptap/starter-kit": ">=3.20.4 <4.0.0",
+      "nanostores": ">=0.11.3 <2.0.0",
+      "pdfjs-dist": ">=6.0.0 <7.0.0",
+      "react": "^18 || ^19",
+      "react-dom": "^18 || ^19",
+      "react-router": "^7 || ^8",
+      "yjs": "^13.6.0"
+    },
+    "peerDependenciesMeta": {
+      "@hocuspocus/provider": {
+        "optional": true
+      },
+      "@nanostores/react": {
+        "optional": true
+      },
+      "@tiptap/core": {
+        "optional": true
+      },
+      "@tiptap/extension-collaboration": {
+        "optional": true
+      },
+      "@tiptap/extension-collaboration-caret": {
+        "optional": true
+      },
+      "@tiptap/react": {
+        "optional": true
+      },
+      "@tiptap/starter-kit": {
+        "optional": true
+      },
+      "nanostores": {
+        "optional": true
+      },
+      "pdfjs-dist": {
+        "optional": true
+      },
+      "react-router": {
+        "optional": true
+      },
+      "yjs": {
+        "optional": true
+      }
+    }
+  },
+  "brand": {
+    "resolution": {
+      "integrity": "sha512-ahsX9AWIZ9cE2qZxvGDo+IEJWgvueMUbMnC9957xiN9YIr/o/kepkBfn1jfAerAXOilSotnaaQVU33AK1+LZRQ=="
+    },
+    "hasBin": true,
+    "peerDependencies": {
+      "react": ">=18"
+    },
+    "peerDependenciesMeta": {
+      "react": {
+        "optional": true
+      }
+    }
+  },
+  "guard": {
+    "overrides": {
+      "vite": "^6.4.3"
+    },
+    "minimumReleaseAge": 4320,
+    "minimumReleaseAgeExclude": []
+  },
+  "otherPackageAndLockFieldsUnchanged": true
+}

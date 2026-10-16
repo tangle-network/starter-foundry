@@ -1,0 +1,36 @@
+{
+  "stage": "after",
+  "rows": [
+    {
+      "kind": "sheet",
+      "width": 390,
+      "reducedMotion": "no-preference",
+      "headerTargets": {
+        "newConversation": {
+          "x": 206.9561767578125,
+          "y": 11.5,
+          "width": 32,
+          "height": 32
+        },
+        "close": {
+          "x": 254.9964141845703,
+          "y": 16,
+          "width": 15.999984741210938,
+          "height": 16
+        },
+        "overlapAreaPx2": 0
+      },
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "focusReturned": true,
+      "reopened": true,
+      "overflow": 0,
+      "verdict": "PASS"
+    }
+  ],
+  "source": "229a5a9fa2d83c0cab586fe8415f0e5b16b5382b",
+  "latency": "UNKNOWN",
+  "served": "UNKNOWN",
+  "scope": "Generated React ChatPage and actual adapter fixtures; native Escape with CSS end/cancel withheld; normal reopened after dismissal; no in-flight continuity claim"
+}

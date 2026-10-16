@@ -1,0 +1,129 @@
+{
+  "stage": "after",
+  "rows": [
+    {
+      "kind": "dialog",
+      "width": 390,
+      "reducedMotion": "no-preference",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "focusReturned": true,
+      "reopened": true,
+      "overflow": 0,
+      "verdict": "PASS"
+    },
+    {
+      "kind": "popover",
+      "width": 390,
+      "reducedMotion": "no-preference",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "focusReturned": true,
+      "reopened": true,
+      "overflow": 0,
+      "verdict": "PASS"
+    },
+    {
+      "kind": "sheet",
+      "width": 390,
+      "reducedMotion": "no-preference",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "focusReturned": true,
+      "reopened": true,
+      "overflow": 0,
+      "verdict": "PASS"
+    },
+    {
+      "kind": "dialog",
+      "width": 390,
+      "reducedMotion": "reduce",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "focusReturned": true,
+      "reopened": true,
+      "overflow": 0,
+      "verdict": "PASS"
+    },
+    {
+      "kind": "popover",
+      "width": 390,
+      "reducedMotion": "reduce",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "focusReturned": true,
+      "reopened": true,
+      "overflow": 0,
+      "verdict": "PASS"
+    },
+    {
+      "kind": "sheet",
+      "width": 390,
+      "reducedMotion": "reduce",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "focusReturned": true,
+      "reopened": true,
+      "overflow": 0,
+      "verdict": "PASS"
+    },
+    {
+      "kind": "dialog",
+      "width": 1440,
+      "reducedMotion": "no-preference",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "focusReturned": true,
+      "reopened": true,
+      "overflow": 0,
+      "verdict": "PASS"
+    },
+    {
+      "kind": "popover",
+      "width": 1440,
+      "reducedMotion": "no-preference",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "focusReturned": true,
+      "reopened": true,
+      "overflow": 0,
+      "verdict": "PASS"
+    },
+    {
+      "kind": "dialog",
+      "width": 1440,
+      "reducedMotion": "reduce",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "focusReturned": true,
+      "reopened": true,
+      "overflow": 0,
+      "verdict": "PASS"
+    },
+    {
+      "kind": "popover",
+      "width": 1440,
+      "reducedMotion": "reduce",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "focusReturned": true,
+      "reopened": true,
+      "overflow": 0,
+      "verdict": "PASS"
+    }
+  ],
+  "source": "eb1374a5350fbe0a8d451c043033e5345a9c9156",
+  "latency": "UNKNOWN",
+  "served": "UNKNOWN",
+  "scope": "Generated React ChatPage and actual adapter fixtures; native Escape with CSS end/cancel withheld; normal reopened after dismissal; no in-flight continuity claim"
+}

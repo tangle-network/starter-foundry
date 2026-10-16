@@ -1,0 +1,7 @@
+{
+  "original": "/home/drew/.local/state/agent-work/dedupe-10198/generated-surfaces-eb1374a5350f/controlled-callers-c7f18f2cdd52-compose-v3",
+  "sha256": {
+    "package.before.json": "b38e6d378e67eb348e6b3c30e7f55171491d3bc3a4da9e6e8e9db2cd96e89979",
+    "pnpm-lock.before.yaml": "31004b54254a00f21f8ba50016aa26c18d5577384152910c8b15fff707670704"
+  }
+}

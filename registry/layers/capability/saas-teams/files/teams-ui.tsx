@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -65,6 +65,7 @@ export function TeamMembers({
 }: TeamMembersProps) {
   const [inviteEmail, setInviteEmail] = useState('')
   const [inviteRole, setInviteRole] = useState<Role>('member')
+  const removeReturnTarget = useRef<HTMLButtonElement | null>(null)
   const [removeTarget, setRemoveTarget] = useState<Member | null>(null)
   const canManage = ROLE_RANK[currentUserRole] >= ROLE_RANK.admin
 
@@ -138,10 +139,12 @@ export function TeamMembers({
                 <TableCell>
                   {m.role !== 'owner' && ROLE_RANK[currentUserRole] > ROLE_RANK[m.role] && (
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
+                      <DropdownMenuTrigger
+                        className={buttonVariants({ variant: 'ghost', size: 'icon', className: 'h-8 w-8' })}
+                        aria-label={`Actions for ${m.name}`}
+                        onClick={(event) => { removeReturnTarget.current = event.currentTarget }}
+                      >
+                        <MoreHorizontal className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         {ROLES.filter((r) => r !== m.role && ROLE_RANK[r] < ROLE_RANK[currentUserRole]).map((r) => (
@@ -209,7 +212,12 @@ export function TeamMembers({
       )}
 
       <Dialog open={!!removeTarget} onOpenChange={() => setRemoveTarget(null)}>
-        <DialogContent>
+        <DialogContent onCloseAutoFocus={(event) => {
+          if (removeReturnTarget.current?.isConnected) {
+            event.preventDefault()
+            removeReturnTarget.current.focus()
+          }
+        }}>
           <DialogHeader>
             <DialogTitle>Remove Member</DialogTitle>
             <DialogDescription>

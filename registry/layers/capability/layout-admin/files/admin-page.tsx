@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
 import { DataTable } from '@/components/admin/data-table'
 import { ColumnHeader } from '@/components/admin/column-header'
 import { EntityForm, type FieldDef } from '@/components/admin/entity-form'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -51,10 +51,11 @@ const formFields: FieldDef[] = [
 ]
 
 export default function AdminPage() {
+  const formReturnTarget = useRef<HTMLButtonElement | null>(null)
   const [formOpen, setFormOpen] = useState(false)
   const [editUser, setEditUser] = useState<User | null>(null)
 
-  const columns: ColumnDef<User>[] = [
+  const columns = useMemo<ColumnDef<User>[]>(() => [
     {
       accessorKey: 'name',
       header: ({ column }) => <ColumnHeader column={column} title="Name" />,
@@ -87,10 +88,12 @@ export default function AdminPage() {
       id: 'actions',
       cell: ({ row }) => (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
+          <DropdownMenuTrigger
+            className={buttonVariants({ variant: 'ghost', size: 'icon', className: 'h-8 w-8' })}
+            aria-label={`Actions for ${row.original.name}`}
+            onClick={(event) => { formReturnTarget.current = event.currentTarget }}
+          >
+            <MoreHorizontal className="h-4 w-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => { setEditUser(row.original); setFormOpen(true) }}>
@@ -105,7 +108,7 @@ export default function AdminPage() {
         </DropdownMenu>
       ),
     },
-  ]
+  ], [])
 
   return (
     <div className="space-y-6">
@@ -114,7 +117,7 @@ export default function AdminPage() {
           <h1 className="text-3xl font-bold tracking-tight">Users</h1>
           <p className="text-muted-foreground">Manage user accounts and permissions.</p>
         </div>
-        <Button onClick={() => { setEditUser(null); setFormOpen(true) }}>
+        <Button onClick={(event) => { formReturnTarget.current = event.currentTarget; setEditUser(null); setFormOpen(true) }}>
           <Plus className="mr-2 h-4 w-4" />
           Add user
         </Button>
@@ -131,6 +134,12 @@ export default function AdminPage() {
       <EntityForm
         open={formOpen}
         onOpenChange={setFormOpen}
+        onCloseAutoFocus={(event) => {
+          if (formReturnTarget.current?.isConnected) {
+            event.preventDefault()
+            formReturnTarget.current.focus()
+          }
+        }}
         fields={formFields}
         defaultValues={editUser ? { name: editUser.name, email: editUser.email, role: editUser.role, status: editUser.status } : undefined}
         title={editUser ? 'Edit user' : 'Add user'}

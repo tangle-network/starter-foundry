@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Sheet, SheetContent } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { ChatMessage } from "@/components/chat/chat-message"
 import { ChatInput } from "@/components/chat/chat-input"
 import { ChatSidebar } from "@/components/chat/chat-sidebar"
@@ -78,72 +78,75 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex h-screen bg-background">
-      <aside className="hidden w-72 border-r lg:block">
-        <ChatSidebar
-          conversations={sampleConversations}
-          activeId={activeConv}
-          onSelect={setActiveConv}
-          onNew={() => setMessages([])}
-        />
-      </aside>
-
-      <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-        <SheetContent side="left" className="w-72 p-0">
+    <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+      <div className="flex h-screen bg-background">
+        <aside className="hidden w-72 border-r lg:block">
           <ChatSidebar
             conversations={sampleConversations}
             activeId={activeConv}
-            onSelect={(id) => { setActiveConv(id); setSidebarOpen(false) }}
-            onNew={() => { setMessages([]); setSidebarOpen(false) }}
+            onSelect={setActiveConv}
+            onNew={() => setMessages([])}
           />
-        </SheetContent>
-      </Sheet>
+        </aside>
 
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex h-14 items-center gap-3 border-b px-4">
-          <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setSidebarOpen(true)}>
-            <Menu className="h-5 w-5" />
-          </Button>
+          <SheetContent side="left" className="w-72 p-0" aria-describedby={undefined}>
+            <SheetTitle className="sr-only">Conversations</SheetTitle>
+            <ChatSidebar
+              conversations={sampleConversations}
+              activeId={activeConv}
+              onSelect={(id) => { setActiveConv(id); setSidebarOpen(false) }}
+              onNew={() => { setMessages([]); setSidebarOpen(false) }}
+            />
+          </SheetContent>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="gap-1 text-sm font-medium">
-                {model}
-                <ChevronDown className="h-3 w-3 text-muted-foreground" />
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <header className="flex h-14 items-center gap-3 border-b px-4">
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open conversations">
+                <Menu className="h-5 w-5" />
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              {models.map((m) => (
-                <DropdownMenuItem key={m} onClick={() => setModel(m)}>
-                  {m}
-                </DropdownMenuItem>
+            </SheetTrigger>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="gap-1 text-sm font-medium">
+                  {model}
+                  <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                {models.map((m) => (
+                  <DropdownMenuItem key={m} onClick={() => setModel(m)}>
+                    {m}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <div className="flex-1" />
+
+            <Button variant="ghost" size="icon">
+              <Settings className="h-4 w-4" />
+            </Button>
+          </header>
+
+          <ScrollArea className="flex-1" ref={scrollRef}>
+            <div className="mx-auto max-w-3xl py-4">
+              {messages.map((msg) => (
+                <ChatMessage
+                  key={msg.id}
+                  role={msg.role}
+                  content={msg.content}
+                  timestamp={msg.timestamp}
+                  isStreaming={isLoading && msg === messages[messages.length - 1] && msg.role === "assistant"}
+                />
               ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </div>
+          </ScrollArea>
 
-          <div className="flex-1" />
-
-          <Button variant="ghost" size="icon">
-            <Settings className="h-4 w-4" />
-          </Button>
-        </header>
-
-        <ScrollArea className="flex-1" ref={scrollRef}>
-          <div className="mx-auto max-w-3xl py-4">
-            {messages.map((msg) => (
-              <ChatMessage
-                key={msg.id}
-                role={msg.role}
-                content={msg.content}
-                timestamp={msg.timestamp}
-                isStreaming={isLoading && msg === messages[messages.length - 1] && msg.role === "assistant"}
-              />
-            ))}
-          </div>
-        </ScrollArea>
-
-        <ChatInput onSend={handleSend} isLoading={isLoading} />
+          <ChatInput onSend={handleSend} isLoading={isLoading} />
+        </div>
       </div>
-    </div>
+    </Sheet>
   )
 }

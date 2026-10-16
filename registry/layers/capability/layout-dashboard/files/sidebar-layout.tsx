@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { Avatar } from "@/components/ui/avatar"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { navConfig } from "@/config/nav"
 import { Menu, PanelLeftClose, PanelLeft, Moon, Sun, Search, Bell } from "lucide-react"
 
@@ -95,55 +95,58 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
   )
 
   return (
-    <div className="flex h-screen bg-background">
-      {/* Desktop sidebar */}
-      <aside
-        className={cn(
-          "hidden lg:flex flex-col border-r bg-card transition-all duration-200",
-          collapsed ? "w-16" : "w-64"
-        )}
-      >
-        {sidebarContent}
-      </aside>
-
-      {/* Mobile sidebar */}
-      <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <SheetContent side="left" className="w-64 p-0">
+    <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+      <div className="flex h-screen bg-background">
+        {/* Desktop sidebar */}
+        <aside
+          className={cn(
+            "hidden lg:flex flex-col border-r bg-card transition-all duration-200",
+            collapsed ? "w-16" : "w-64"
+          )}
+        >
           {sidebarContent}
-        </SheetContent>
-      </Sheet>
+        </aside>
 
-      {/* Main content */}
-      <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Header */}
-        <header className="flex h-14 items-center gap-4 border-b bg-card px-4 lg:px-6">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden"
-            onClick={() => setMobileOpen(true)}
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
+        {/* Mobile sidebar */}
+          <SheetContent side="left" className="w-64 p-0" aria-describedby={undefined}>
+            <SheetTitle className="sr-only">Navigation</SheetTitle>
+            {sidebarContent}
+          </SheetContent>
 
-          <div className="flex-1" />
+        {/* Main content */}
+        <div className="flex flex-1 flex-col overflow-hidden">
+          {/* Header */}
+          <header className="flex h-14 items-center gap-4 border-b bg-card px-4 lg:px-6">
+            <SheetTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
+              aria-label="Open navigation"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+            </SheetTrigger>
 
-          <Button variant="ghost" size="icon">
-            <Search className="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="icon">
-            <Bell className="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={() => setDark(!dark)}>
-            {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </Button>
-        </header>
+            <div className="flex-1" />
 
-        {/* Page content */}
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
-          <div className="mx-auto max-w-7xl">{children}</div>
-        </main>
+            <Button variant="ghost" size="icon">
+              <Search className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon">
+              <Bell className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={() => setDark(!dark)}>
+              {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
+          </header>
+
+          {/* Page content */}
+          <main className="flex-1 overflow-y-auto p-4 lg:p-6">
+            <div className="mx-auto max-w-7xl">{children}</div>
+          </main>
+        </div>
       </div>
-    </div>
+    </Sheet>
   )
 }

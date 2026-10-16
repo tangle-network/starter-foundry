@@ -1,0 +1,40 @@
+{
+  "beforeSource": "229a5a9fa2d83c0cab586fe8415f0e5b16b5382b",
+  "failedCallerSource": "c7f18f2cdd526e1aa30299dac8c38f9bb863e910",
+  "afterSource": "a0020e837cbe17f195e1650d5436dae2481634cf",
+  "baselineCases": 24,
+  "afterCases": 24,
+  "baselineFocusReturned": 0,
+  "afterFocusReturned": 24,
+  "afterFocusInside": 24,
+  "afterClosed": 24,
+  "afterTargetConnected": 24,
+  "afterRowRetained": 24,
+  "documentOverflowMaxPx": 0,
+  "widthsCssPx": [
+    390,
+    1440
+  ],
+  "motionPreferences": [
+    "no-preference",
+    "reduce"
+  ],
+  "flows": [
+    "add",
+    "edit",
+    "remove"
+  ],
+  "dismiss": [
+    "cancel",
+    "escape"
+  ],
+  "inspection": "Temporal contact-sheet samples from all8before/after recordings and full-size phone Edit open/closed, phone Remove and desktop Remove screenshots inspected. Original recordings retained; no frame-by-frame playback claim.",
+  "qualifications": [
+    "Source-fixture proof, not production/auth/backend deletion acceptance.",
+    "Generated pnpm validate is syntax-only; actual generated production build is separately retained.",
+    "Success capture checks page errors/HTTP failures; console entries are collected but not persisted on success, so after-console evidence is unretained.",
+    "Animationend/animationcancel capture suppression listener configured; actual intercepted-event count UNKNOWN.",
+    "Calibrated latency, in-flight continuity, physical touch, screen reader, zoom and served production UNKNOWN.",
+    "No dependency/lock/age guard change after checked cohort; exact identities in receipts."
+  ]
+}

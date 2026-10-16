@@ -1,0 +1,59 @@
+[
+  {
+    "name": "starter-controlled-caller-d849-failed",
+    "kind": "instrument",
+    "cause": "Manually extended Chat fixture retained Table9 while actual Admin capability owns Table8; before generated build failed, no browser.",
+    "custodyResult": "sha=c7f18f2cdd526e1aa30299dac8c38f9bb863e910\ngate=beelink1-d849e1a6712409a30ed65b7776dee721\nlauncher_or_attach_exit=1\nkind=command-receipt\nfinished=2026-10-16T03:17:02Z\n",
+    "authoritativeReceipt": [
+      "beelink-gate receipt: sha=c7f18f2cdd526e1aa30299dac8c38f9bb863e910 install=install command=bash /home/drew/.local/state/agent-work/dedupe-10198/starter-controlled-caller-gate.sh exit=1 duration=62s waited=334s host=beelink1 timed_out=0 watchdog=0 load=31.13 preview=none class=normal cpu_s=30.2 node=v22.23.3 rebuild=none cpu_pressure=0.00 starved=0 cgroup=beelink-gate cache=unpruned sparse=none checkout=warm workers=3 reaped=0 bundle=none host_cpu=38.50 gate_id=beelink1-d849e1a6712409a30ed65b7776dee721",
+      "beelink-gate timing: {\"cache_lock_wait_ms\": {\"cleanup\": 0, \"precheck\": 0}, \"cache_prune_work_ms\": {\"cleanup\": 12359, \"precheck\": 14719}, \"capacity_claim_wait_ms\": 6, \"cleanup_s\": 14, \"command_s\": 21, \"fetch_s\": 0, \"pre_command_s\": 27}"
+    ]
+  },
+  {
+    "name": "starter-controlled-caller-compose-v2-gate",
+    "kind": "instrument",
+    "cause": "Gate clean removed compiled public compose entry after preflight; command0s, before dependency authoring/browser.",
+    "custodyResult": "sha=c7f18f2cdd526e1aa30299dac8c38f9bb863e910\ngate=beelink1-297190b06f449fcc57517103575d9471\nlauncher_or_attach_exit=1\nkind=command-receipt\nfinished=2026-10-16T03:21:03Z\n",
+    "authoritativeReceipt": [
+      "beelink-gate receipt: sha=c7f18f2cdd526e1aa30299dac8c38f9bb863e910 install=install command=bash /home/drew/.local/state/agent-work/dedupe-10198/starter-controlled-caller-compose-v2-gate.sh exit=1 duration=40s waited=2s host=beelink1 timed_out=0 watchdog=0 load=27.63 preview=none class=normal cpu_s=0.1 node=v22.23.3 rebuild=none cpu_pressure=1.68 starved=0 cgroup=beelink-gate cache=ok sparse=none checkout=warm workers=5 reaped=0 bundle=none host_cpu=33.39 gate_id=beelink1-297190b06f449fcc57517103575d9471",
+      "beelink-gate timing: {\"cache_lock_wait_ms\": {\"cleanup\": 0, \"precheck\": 0}, \"cache_prune_work_ms\": {\"cleanup\": 14921, \"precheck\": 13762}, \"capacity_claim_wait_ms\": 8, \"cleanup_s\": 16, \"command_s\": 0, \"fetch_s\": 1, \"pre_command_s\": 24}"
+    ]
+  },
+  {
+    "name": "starter-controlled-caller-compose-v3-gate",
+    "kind": "instrument",
+    "cause": "Guard omitted removed-only store packages reachable exclusively from retired Table9 graph; lock metadata authored, frozen install/browser unrun.",
+    "custodyResult": "sha=c7f18f2cdd526e1aa30299dac8c38f9bb863e910\ngate=beelink1-30c7ff6973b6469f652d2d15bbf64e6f\nlauncher_or_attach_exit=1\nkind=command-receipt\nfinished=2026-10-16T03:24:15Z\n",
+    "authoritativeReceipt": [
+      "beelink-gate receipt: sha=c7f18f2cdd526e1aa30299dac8c38f9bb863e910 install=install command=bash /home/drew/.local/state/agent-work/dedupe-10198/starter-controlled-caller-compose-v3-gate.sh exit=1 duration=50s waited=97s host=beelink1 timed_out=0 watchdog=0 load=30.25 preview=none class=normal cpu_s=15.8 node=v22.23.3 rebuild=none cpu_pressure=5.52 starved=0 cgroup=beelink-gate cache=ok sparse=none checkout=warm workers=4 reaped=0 bundle=none host_cpu=39.44 gate_id=beelink1-30c7ff6973b6469f652d2d15bbf64e6f",
+      "beelink-gate timing: {\"cache_lock_wait_ms\": {\"cleanup\": 0, \"precheck\": 0}, \"cache_prune_work_ms\": {\"cleanup\": 14985, \"precheck\": 14100}, \"capacity_claim_wait_ms\": 22, \"cleanup_s\": 15, \"command_s\": 10, \"fetch_s\": 1, \"pre_command_s\": 25}"
+    ]
+  },
+  {
+    "name": "starter-controlled-caller-compose-v4-gate",
+    "kind": "caller failure",
+    "cause": "Guard/frozen install/build passed. Baseline24rows captured; c7 Add-user2rows passed, first Edit focus failed because action renderer remounted opener.",
+    "custodyResult": "sha=c7f18f2cdd526e1aa30299dac8c38f9bb863e910\ngate=beelink1-154426febdbe6a76323d009fc034a7f5\nlauncher_or_attach_exit=1\nkind=command-receipt\nfinished=2026-10-16T03:28:15Z\n",
+    "authoritativeReceipt": [
+      "beelink-gate receipt: sha=c7f18f2cdd526e1aa30299dac8c38f9bb863e910 install=install command=bash /home/drew/.local/state/agent-work/dedupe-10198/starter-controlled-caller-compose-v4-gate.sh exit=1 duration=93s waited=1s host=beelink1 timed_out=0 watchdog=0 load=27.19 preview=none class=normal cpu_s=56.0 node=v22.23.3 rebuild=none cpu_pressure=12.81 starved=0 cgroup=beelink-gate cache=ok sparse=none checkout=warm workers=3 reaped=0 bundle=none host_cpu=31.02 gate_id=beelink1-154426febdbe6a76323d009fc034a7f5",
+      "beelink-gate timing: {\"cache_lock_wait_ms\": {\"cleanup\": 0, \"precheck\": 0}, \"cache_prune_work_ms\": {\"cleanup\": 14981, \"precheck\": 15153}, \"capacity_claim_wait_ms\": 31, \"cleanup_s\": 15, \"command_s\": 54, \"fetch_s\": 1, \"pre_command_s\": 24}"
+    ]
+  },
+  {
+    "name": "starter-controlled-caller-a002-after-gate",
+    "kind": "launcher",
+    "cause": "Misordered --no-install after positional host; usage exit2, no gateID/remote command.",
+    "custodyResult": "sha=a0020e837cbe17f195e1650d5436dae2481634cf\ngate=\nlauncher_or_attach_exit=2\nkind=launcher-no-command-receipt\nfinished=2026-10-16T03:30:46Z\n",
+    "authoritativeReceipt": []
+  },
+  {
+    "name": "starter-controlled-caller-a002-after-fixed-gate",
+    "kind": "checked proof",
+    "cause": "Flags corrected; after-only generated build and24native cancellation cases passed on a002; prior immutable baseline/frozen cohort reused.",
+    "custodyResult": "sha=a0020e837cbe17f195e1650d5436dae2481634cf\ngate=beelink1-16c3db76fc0aa1246f901abc0a2038e6\nlauncher_or_attach_exit=0\nkind=command-receipt\nfinished=2026-10-16T03:32:45Z\n",
+    "authoritativeReceipt": [
+      "beelink-gate receipt: sha=a0020e837cbe17f195e1650d5436dae2481634cf install=no-install command=bash /home/drew/.local/state/agent-work/dedupe-10198/starter-controlled-caller-a002-after-gate.sh exit=0 duration=84s waited=2s host=beelink1 timed_out=0 watchdog=0 load=31.75 preview=none class=normal cpu_s=32.3 node=v22.23.3 rebuild=none cpu_pressure=6.92 starved=0 cgroup=beelink-gate cache=ok sparse=none checkout=warm workers=4 reaped=0 bundle=none host_cpu=32.80 gate_id=beelink1-16c3db76fc0aa1246f901abc0a2038e6",
+      "beelink-gate timing: {\"cache_lock_wait_ms\": {\"cleanup\": 0, \"precheck\": 0}, \"cache_prune_work_ms\": {\"cleanup\": 15886, \"precheck\": 14230}, \"capacity_claim_wait_ms\": 23, \"cleanup_s\": 16, \"command_s\": 50, \"fetch_s\": 1, \"pre_command_s\": 18}"
+    ]
+  }
+]

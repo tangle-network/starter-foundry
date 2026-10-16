@@ -1,0 +1,6 @@
+package.json: OK
+pnpm-lock.yaml: OK
+controlled-callers-c7f18f2cdd52-compose-v4/dependency-cohort-receipt.json: OK
+@tanstack/react-table=8.21.3
+@tangle-network/ui=11.38.1
+@tangle-network/brand=1.25.1

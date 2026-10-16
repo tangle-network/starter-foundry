@@ -1,0 +1,623 @@
+{
+  "stage": "before",
+  "mode": "callers",
+  "identity": {
+    "source": "c7f18f2cdd526e1aa30299dac8c38f9bb863e910",
+    "baseline": "229a5a9fa2d83c0cab586fe8415f0e5b16b5382b",
+    "stage": "before",
+    "generatedRoot": "/home/drew/.local/state/agent-work/dedupe-10198/generated-surfaces-eb1374a5350f",
+    "browser": "153.0.8010.12",
+    "ui": "11.38.1",
+    "brand": "1.25.1",
+    "modules": {
+      "src/components/admin/admin-page.tsx": "e5727cc2ec3041401af9bebcbedfa9e07b61734276d910318be764f6d26b1b6a",
+      "src/components/admin/entity-form.tsx": "42e6d8ad37f320d8dc9ac0f3d21dbe4c714ad2be3c76b7f5ebe1c6db17407dc9",
+      "src/components/teams/team-members.tsx": "3b683a60aab279f5b237f81f19e578df1bb11d0aa804dc6a962deac1b17926e6"
+    }
+  },
+  "rows": [
+    {
+      "flow": "add",
+      "dismiss": "cancel",
+      "width": 390,
+      "reducedMotion": "no-preference",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": false,
+        "connected": true,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "Add user",
+        "activeTag": "BODY"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "BASELINE_OBSERVATION"
+    },
+    {
+      "flow": "add",
+      "dismiss": "escape",
+      "width": 390,
+      "reducedMotion": "no-preference",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": false,
+        "connected": true,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "Add user",
+        "activeTag": "BODY"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "BASELINE_OBSERVATION"
+    },
+    {
+      "flow": "edit",
+      "dismiss": "cancel",
+      "width": 390,
+      "reducedMotion": "no-preference",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": false,
+        "connected": false,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "",
+        "activeTag": "BODY"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "BASELINE_OBSERVATION"
+    },
+    {
+      "flow": "edit",
+      "dismiss": "escape",
+      "width": 390,
+      "reducedMotion": "no-preference",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": false,
+        "connected": false,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "",
+        "activeTag": "BODY"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "BASELINE_OBSERVATION"
+    },
+    {
+      "flow": "remove",
+      "dismiss": "cancel",
+      "width": 390,
+      "reducedMotion": "no-preference",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": false,
+        "connected": true,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "",
+        "activeTag": "BODY"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "BASELINE_OBSERVATION"
+    },
+    {
+      "flow": "remove",
+      "dismiss": "escape",
+      "width": 390,
+      "reducedMotion": "no-preference",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": false,
+        "connected": true,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "",
+        "activeTag": "BODY"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "BASELINE_OBSERVATION"
+    },
+    {
+      "flow": "add",
+      "dismiss": "cancel",
+      "width": 390,
+      "reducedMotion": "reduce",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": false,
+        "connected": true,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "Add user",
+        "activeTag": "BODY"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "BASELINE_OBSERVATION"
+    },
+    {
+      "flow": "add",
+      "dismiss": "escape",
+      "width": 390,
+      "reducedMotion": "reduce",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": false,
+        "connected": true,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "Add user",
+        "activeTag": "BODY"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "BASELINE_OBSERVATION"
+    },
+    {
+      "flow": "edit",
+      "dismiss": "cancel",
+      "width": 390,
+      "reducedMotion": "reduce",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": false,
+        "connected": false,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "",
+        "activeTag": "BODY"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "BASELINE_OBSERVATION"
+    },
+    {
+      "flow": "edit",
+      "dismiss": "escape",
+      "width": 390,
+      "reducedMotion": "reduce",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": false,
+        "connected": false,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "",
+        "activeTag": "BODY"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "BASELINE_OBSERVATION"
+    },
+    {
+      "flow": "remove",
+      "dismiss": "cancel",
+      "width": 390,
+      "reducedMotion": "reduce",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": false,
+        "connected": true,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "",
+        "activeTag": "BODY"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "BASELINE_OBSERVATION"
+    },
+    {
+      "flow": "remove",
+      "dismiss": "escape",
+      "width": 390,
+      "reducedMotion": "reduce",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": false,
+        "connected": true,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "",
+        "activeTag": "BODY"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "BASELINE_OBSERVATION"
+    },
+    {
+      "flow": "add",
+      "dismiss": "cancel",
+      "width": 1440,
+      "reducedMotion": "no-preference",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": false,
+        "connected": true,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "Add user",
+        "activeTag": "BODY"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 1440,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "BASELINE_OBSERVATION"
+    },
+    {
+      "flow": "add",
+      "dismiss": "escape",
+      "width": 1440,
+      "reducedMotion": "no-preference",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": false,
+        "connected": true,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "Add user",
+        "activeTag": "BODY"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 1440,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "BASELINE_OBSERVATION"
+    },
+    {
+      "flow": "edit",
+      "dismiss": "cancel",
+      "width": 1440,
+      "reducedMotion": "no-preference",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": false,
+        "connected": false,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "",
+        "activeTag": "BODY"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 1440,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "BASELINE_OBSERVATION"
+    },
+    {
+      "flow": "edit",
+      "dismiss": "escape",
+      "width": 1440,
+      "reducedMotion": "no-preference",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": false,
+        "connected": false,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "",
+        "activeTag": "BODY"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 1440,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "BASELINE_OBSERVATION"
+    },
+    {
+      "flow": "remove",
+      "dismiss": "cancel",
+      "width": 1440,
+      "reducedMotion": "no-preference",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": false,
+        "connected": true,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "",
+        "activeTag": "BODY"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 1440,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "BASELINE_OBSERVATION"
+    },
+    {
+      "flow": "remove",
+      "dismiss": "escape",
+      "width": 1440,
+      "reducedMotion": "no-preference",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": false,
+        "connected": true,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "",
+        "activeTag": "BODY"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 1440,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "BASELINE_OBSERVATION"
+    },
+    {
+      "flow": "add",
+      "dismiss": "cancel",
+      "width": 1440,
+      "reducedMotion": "reduce",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": false,
+        "connected": true,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "Add user",
+        "activeTag": "BODY"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 1440,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "BASELINE_OBSERVATION"
+    },
+    {
+      "flow": "add",
+      "dismiss": "escape",
+      "width": 1440,
+      "reducedMotion": "reduce",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": false,
+        "connected": true,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "Add user",
+        "activeTag": "BODY"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 1440,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "BASELINE_OBSERVATION"
+    },
+    {
+      "flow": "edit",
+      "dismiss": "cancel",
+      "width": 1440,
+      "reducedMotion": "reduce",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": false,
+        "connected": false,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "",
+        "activeTag": "BODY"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 1440,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "BASELINE_OBSERVATION"
+    },
+    {
+      "flow": "edit",
+      "dismiss": "escape",
+      "width": 1440,
+      "reducedMotion": "reduce",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": false,
+        "connected": false,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "",
+        "activeTag": "BODY"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 1440,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "BASELINE_OBSERVATION"
+    },
+    {
+      "flow": "remove",
+      "dismiss": "cancel",
+      "width": 1440,
+      "reducedMotion": "reduce",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": false,
+        "connected": true,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "",
+        "activeTag": "BODY"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 1440,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "BASELINE_OBSERVATION"
+    },
+    {
+      "flow": "remove",
+      "dismiss": "escape",
+      "width": 1440,
+      "reducedMotion": "reduce",
+      "cssLifecycleEvents": "withheld",
+      "focusInside": true,
+      "closed": true,
+      "logicalReturnTarget": {
+        "returned": false,
+        "connected": true,
+        "tag": "BUTTON",
+        "label": null,
+        "text": "",
+        "activeTag": "BODY"
+      },
+      "rowRetained": true,
+      "overflow": 0,
+      "viewport": {
+        "width": 1440,
+        "height": 844,
+        "meta": "width=device-width, initial-scale=1.0"
+      },
+      "verdict": "BASELINE_OBSERVATION"
+    }
+  ],
+  "latency": "UNKNOWN",
+  "served": "UNKNOWN",
+  "scope": "Existing generated React consumer with actual AdminPage/EntityForm and TeamMembers template modules. Native Cancel/Escape; CSS events withheld. Team host props/state are disposable UI fixture, not backend/auth/removal integration. pnpm validate is syntactic, not semantic typecheck."
+}

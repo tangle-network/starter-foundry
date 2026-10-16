@@ -1,0 +1,318 @@
+{
+  "stage": "after",
+  "errors": [],
+  "styles": [
+    {
+      "surface": "primitives",
+      "width": 1440,
+      "theme": "light",
+      "computed": [
+        {
+          "tag": "HTML",
+          "classes": "light",
+          "color": "rgb(0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0)",
+          "foreground": "0 0% 17.6471%",
+          "cardForeground": "0 0% 17.6471%",
+          "hslCardForeground": "0 0% 17.6471%"
+        },
+        {
+          "tag": "BODY",
+          "classes": "",
+          "color": "rgb(45, 45, 45)",
+          "background": "rgb(236, 238, 243)",
+          "foreground": "0 0% 17.6471%",
+          "cardForeground": "0 0% 17.6471%",
+          "hslCardForeground": "0 0% 17.6471%"
+        },
+        {
+          "tag": "DIV",
+          "classes": "rounded-[var(--radius-lg)] border text-card-foreground [transition:color_var(--motion-control),background-color_var(--motion-control),border-color_var(--motion-control),box-shadow_var(--motion-control),transform_var(--motion-control),scale_var(--motion-control),opacity_var(--motion-control)] motion-reduce:transition-none bg-card border-border shadow-[var(--edge-highlight),var(--shadow-card)]",
+          "color": "rgb(45, 45, 45)",
+          "background": "rgb(255, 255, 255)",
+          "foreground": "0 0% 17.6471%",
+          "cardForeground": "0 0% 17.6471%",
+          "hslCardForeground": "0 0% 17.6471%"
+        },
+        {
+          "tag": "TD",
+          "classes": "p-4 align-middle [&:has([role=checkbox])]:pr-0",
+          "color": "rgb(45, 45, 45)",
+          "background": "rgba(0, 0, 0, 0)",
+          "foreground": "0 0% 17.6471%",
+          "cardForeground": "0 0% 17.6471%",
+          "hslCardForeground": "0 0% 17.6471%"
+        },
+        {
+          "tag": "TD",
+          "classes": "p-4 align-middle [&:has([role=checkbox])]:pr-0",
+          "color": "rgb(45, 45, 45)",
+          "background": "rgba(0, 0, 0, 0)",
+          "foreground": "0 0% 17.6471%",
+          "cardForeground": "0 0% 17.6471%",
+          "hslCardForeground": "0 0% 17.6471%"
+        }
+      ]
+    },
+    {
+      "surface": "primitives",
+      "width": 1440,
+      "theme": "dark",
+      "computed": [
+        {
+          "tag": "HTML",
+          "classes": "dark",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgba(0, 0, 0, 0)",
+          "foreground": "0 0% 90.1961%",
+          "cardForeground": "0 0% 90.1961%",
+          "hslCardForeground": "0 0% 90.1961%"
+        },
+        {
+          "tag": "BODY",
+          "classes": "",
+          "color": "rgb(230, 230, 230)",
+          "background": "rgb(10, 10, 20)",
+          "foreground": "0 0% 90.1961%",
+          "cardForeground": "0 0% 90.1961%",
+          "hslCardForeground": "0 0% 90.1961%"
+        },
+        {
+          "tag": "DIV",
+          "classes": "rounded-[var(--radius-lg)] border text-card-foreground [transition:color_var(--motion-control),background-color_var(--motion-control),border-color_var(--motion-control),box-shadow_var(--motion-control),transform_var(--motion-control),scale_var(--motion-control),opacity_var(--motion-control)] motion-reduce:transition-none bg-card border-border shadow-[var(--edge-highlight),var(--shadow-card)]",
+          "color": "rgb(230, 230, 230)",
+          "background": "rgb(25, 24, 38)",
+          "foreground": "0 0% 90.1961%",
+          "cardForeground": "0 0% 90.1961%",
+          "hslCardForeground": "0 0% 90.1961%"
+        },
+        {
+          "tag": "TD",
+          "classes": "p-4 align-middle [&:has([role=checkbox])]:pr-0",
+          "color": "rgb(230, 230, 230)",
+          "background": "rgba(0, 0, 0, 0)",
+          "foreground": "0 0% 90.1961%",
+          "cardForeground": "0 0% 90.1961%",
+          "hslCardForeground": "0 0% 90.1961%"
+        },
+        {
+          "tag": "TD",
+          "classes": "p-4 align-middle [&:has([role=checkbox])]:pr-0",
+          "color": "rgb(230, 230, 230)",
+          "background": "rgba(0, 0, 0, 0)",
+          "foreground": "0 0% 90.1961%",
+          "cardForeground": "0 0% 90.1961%",
+          "hslCardForeground": "0 0% 90.1961%"
+        }
+      ]
+    },
+    {
+      "surface": "marketplace",
+      "width": 1440,
+      "theme": "light",
+      "computed": [
+        {
+          "tag": "HTML",
+          "classes": "light",
+          "color": "rgb(0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0)",
+          "foreground": "0 0% 17.6471%",
+          "cardForeground": "0 0% 17.6471%",
+          "hslCardForeground": "0 0% 17.6471%"
+        },
+        {
+          "tag": "BODY",
+          "classes": "",
+          "color": "rgb(45, 45, 45)",
+          "background": "rgb(236, 238, 243)",
+          "foreground": "0 0% 17.6471%",
+          "cardForeground": "0 0% 17.6471%",
+          "hslCardForeground": "0 0% 17.6471%"
+        }
+      ]
+    },
+    {
+      "surface": "marketplace",
+      "width": 1440,
+      "theme": "dark",
+      "computed": [
+        {
+          "tag": "HTML",
+          "classes": "dark",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgba(0, 0, 0, 0)",
+          "foreground": "0 0% 90.1961%",
+          "cardForeground": "0 0% 90.1961%",
+          "hslCardForeground": "0 0% 90.1961%"
+        },
+        {
+          "tag": "BODY",
+          "classes": "",
+          "color": "rgb(230, 230, 230)",
+          "background": "rgb(10, 10, 20)",
+          "foreground": "0 0% 90.1961%",
+          "cardForeground": "0 0% 90.1961%",
+          "hslCardForeground": "0 0% 90.1961%"
+        }
+      ]
+    },
+    {
+      "surface": "primitives",
+      "width": 390,
+      "theme": "light",
+      "computed": [
+        {
+          "tag": "HTML",
+          "classes": "light",
+          "color": "rgb(0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0)",
+          "foreground": "0 0% 17.6471%",
+          "cardForeground": "0 0% 17.6471%",
+          "hslCardForeground": "0 0% 17.6471%"
+        },
+        {
+          "tag": "BODY",
+          "classes": "",
+          "color": "rgb(45, 45, 45)",
+          "background": "rgb(236, 238, 243)",
+          "foreground": "0 0% 17.6471%",
+          "cardForeground": "0 0% 17.6471%",
+          "hslCardForeground": "0 0% 17.6471%"
+        },
+        {
+          "tag": "DIV",
+          "classes": "rounded-[var(--radius-lg)] border text-card-foreground [transition:color_var(--motion-control),background-color_var(--motion-control),border-color_var(--motion-control),box-shadow_var(--motion-control),transform_var(--motion-control),scale_var(--motion-control),opacity_var(--motion-control)] motion-reduce:transition-none bg-card border-border shadow-[var(--edge-highlight),var(--shadow-card)]",
+          "color": "rgb(45, 45, 45)",
+          "background": "rgb(255, 255, 255)",
+          "foreground": "0 0% 17.6471%",
+          "cardForeground": "0 0% 17.6471%",
+          "hslCardForeground": "0 0% 17.6471%"
+        },
+        {
+          "tag": "TD",
+          "classes": "p-4 align-middle [&:has([role=checkbox])]:pr-0",
+          "color": "rgb(45, 45, 45)",
+          "background": "rgba(0, 0, 0, 0)",
+          "foreground": "0 0% 17.6471%",
+          "cardForeground": "0 0% 17.6471%",
+          "hslCardForeground": "0 0% 17.6471%"
+        },
+        {
+          "tag": "TD",
+          "classes": "p-4 align-middle [&:has([role=checkbox])]:pr-0",
+          "color": "rgb(45, 45, 45)",
+          "background": "rgba(0, 0, 0, 0)",
+          "foreground": "0 0% 17.6471%",
+          "cardForeground": "0 0% 17.6471%",
+          "hslCardForeground": "0 0% 17.6471%"
+        }
+      ]
+    },
+    {
+      "surface": "primitives",
+      "width": 390,
+      "theme": "dark",
+      "computed": [
+        {
+          "tag": "HTML",
+          "classes": "dark",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgba(0, 0, 0, 0)",
+          "foreground": "0 0% 90.1961%",
+          "cardForeground": "0 0% 90.1961%",
+          "hslCardForeground": "0 0% 90.1961%"
+        },
+        {
+          "tag": "BODY",
+          "classes": "",
+          "color": "rgb(230, 230, 230)",
+          "background": "rgb(10, 10, 20)",
+          "foreground": "0 0% 90.1961%",
+          "cardForeground": "0 0% 90.1961%",
+          "hslCardForeground": "0 0% 90.1961%"
+        },
+        {
+          "tag": "DIV",
+          "classes": "rounded-[var(--radius-lg)] border text-card-foreground [transition:color_var(--motion-control),background-color_var(--motion-control),border-color_var(--motion-control),box-shadow_var(--motion-control),transform_var(--motion-control),scale_var(--motion-control),opacity_var(--motion-control)] motion-reduce:transition-none bg-card border-border shadow-[var(--edge-highlight),var(--shadow-card)]",
+          "color": "rgb(230, 230, 230)",
+          "background": "rgb(25, 24, 38)",
+          "foreground": "0 0% 90.1961%",
+          "cardForeground": "0 0% 90.1961%",
+          "hslCardForeground": "0 0% 90.1961%"
+        },
+        {
+          "tag": "TD",
+          "classes": "p-4 align-middle [&:has([role=checkbox])]:pr-0",
+          "color": "rgb(230, 230, 230)",
+          "background": "rgba(0, 0, 0, 0)",
+          "foreground": "0 0% 90.1961%",
+          "cardForeground": "0 0% 90.1961%",
+          "hslCardForeground": "0 0% 90.1961%"
+        },
+        {
+          "tag": "TD",
+          "classes": "p-4 align-middle [&:has([role=checkbox])]:pr-0",
+          "color": "rgb(230, 230, 230)",
+          "background": "rgba(0, 0, 0, 0)",
+          "foreground": "0 0% 90.1961%",
+          "cardForeground": "0 0% 90.1961%",
+          "hslCardForeground": "0 0% 90.1961%"
+        }
+      ]
+    },
+    {
+      "surface": "marketplace",
+      "width": 390,
+      "theme": "light",
+      "computed": [
+        {
+          "tag": "HTML",
+          "classes": "light",
+          "color": "rgb(0, 0, 0)",
+          "background": "rgba(0, 0, 0, 0)",
+          "foreground": "0 0% 17.6471%",
+          "cardForeground": "0 0% 17.6471%",
+          "hslCardForeground": "0 0% 17.6471%"
+        },
+        {
+          "tag": "BODY",
+          "classes": "",
+          "color": "rgb(45, 45, 45)",
+          "background": "rgb(236, 238, 243)",
+          "foreground": "0 0% 17.6471%",
+          "cardForeground": "0 0% 17.6471%",
+          "hslCardForeground": "0 0% 17.6471%"
+        }
+      ]
+    },
+    {
+      "surface": "marketplace",
+      "width": 390,
+      "theme": "dark",
+      "computed": [
+        {
+          "tag": "HTML",
+          "classes": "dark",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgba(0, 0, 0, 0)",
+          "foreground": "0 0% 90.1961%",
+          "cardForeground": "0 0% 90.1961%",
+          "hslCardForeground": "0 0% 90.1961%"
+        },
+        {
+          "tag": "BODY",
+          "classes": "",
+          "color": "rgb(230, 230, 230)",
+          "background": "rgb(10, 10, 20)",
+          "foreground": "0 0% 90.1961%",
+          "cardForeground": "0 0% 90.1961%",
+          "hslCardForeground": "0 0% 90.1961%"
+        }
+      ]
+    }
+  ],
+  "viewports": [1440, 390],
+  "surfaces": ["primitives", "marketplace"],
+  "clipboard": "PASS",
+  "inputAction": "PASS"
+}

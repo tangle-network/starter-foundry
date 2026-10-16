@@ -12,7 +12,7 @@
     "@tangle-network/agent-interface": "0.36.0",
     "@tangle-network/brand": "1.25.1",
     "@tangle-network/sandbox-ui": "0.90.3",
-    "@tangle-network/ui": "11.36.0",
+    "@tangle-network/ui": "11.37.0",
     "fuse.js": "^7.0.0",
     "next": "^15.5.21",
     "react": "^18.3.0",

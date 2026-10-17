@@ -5347,7 +5347,7 @@
     },
     {
       "id": "layout-settings",
-      "description": "Pre-built settings page with tabbed navigation for profile, billing, and team management.",
+      "description": "Settings pages for profile, billing and team on the shared settings layout, one URL per section.",
       "appliesTo": [
         "nextjs-ts",
         "react-vite-ts",

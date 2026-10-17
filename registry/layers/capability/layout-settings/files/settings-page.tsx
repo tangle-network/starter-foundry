@@ -1,165 +1,173 @@
 "use client"
 
-import * as React from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
-import { Badge } from "@/components/ui/badge"
-import { Avatar } from "@/components/ui/avatar"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Switch } from "@/components/ui/switch"
-import { User, CreditCard, Users, Mail, Shield, Bell } from "lucide-react"
+import { useRef, useState, type ChangeEvent } from "react"
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Button,
+  Field,
+  fieldMessageId,
+  Input,
+  SettingsRow,
+  SettingsSection,
+  Switch,
+} from "@tangle-network/ui/primitives"
+import { ConfirmAction, useSettingField } from "@tangle-network/agent-app/settings-react"
+import {
+  changeEmail,
+  emailProblem,
+  saveName,
+  saveNotification,
+  savePhoto,
+  useSettings,
+  type NotificationId,
+} from "./settings-api"
 
-const teamMembers = [
-  { name: "You", email: "you@example.com", role: "Owner", initials: "YO" },
-  { name: "Sarah Chen", email: "sarah@example.com", role: "Admin", initials: "SC" },
-  { name: "Marcus Johnson", email: "marcus@example.com", role: "Member", initials: "MJ" },
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024
+
+const NOTIFICATIONS: { id: NotificationId; label: string }[] = [
+  { id: "activity", label: "Account activity" },
+  { id: "security", label: "Security alerts" },
+  { id: "product", label: "Product updates" },
 ]
 
-export default function SettingsPage() {
-  const [activeTab, setActiveTab] = React.useState("profile")
+function initials(name: string): string {
+  const letters = name
+    .trim()
+    .split(/\s+/)
+    .map((part) => part[0] ?? "")
+    .join("")
+  return (letters.slice(0, 2) || "?").toUpperCase()
+}
+
+function PhotoRow({ name, photoUrl }: { name: string; photoUrl: string | null }) {
+  const photo = useSettingField<string | null>({ saved: photoUrl, save: savePhoto })
+  const fileInput = useRef<HTMLInputElement>(null)
+  const [fileError, setFileError] = useState<string | null>(null)
+
+  function choose(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0]
+    event.target.value = ""
+    if (!file) return
+    if (!file.type.startsWith("image/")) return setFileError("Choose an image file.")
+    if (file.size > MAX_PHOTO_BYTES) return setFileError("Choose an image under 5 MB.")
+    setFileError(null)
+    photo.setDraft(URL.createObjectURL(file))
+  }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-        <p className="text-muted-foreground">Manage your account, billing, and team preferences.</p>
+    <SettingsRow label="Photo" htmlFor="profile-photo" layout="compact" {...photo.rowProps} error={fileError ?? photo.rowProps.error}>
+      <div className="flex items-center gap-3">
+        <Avatar>
+          {photo.draft ? <AvatarImage src={photo.draft} alt="" /> : null}
+          <AvatarFallback>{initials(name)}</AvatarFallback>
+        </Avatar>
+        <Input ref={fileInput} id="profile-photo" type="file" accept="image/*" hidden onChange={choose} />
+        <Button type="button" variant="outline" onClick={() => fileInput.current?.click()}>
+          Change photo
+        </Button>
       </div>
+    </SettingsRow>
+  )
+}
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="profile" className="gap-2">
-            <User className="h-4 w-4" /> Profile
-          </TabsTrigger>
-          <TabsTrigger value="billing" className="gap-2">
-            <CreditCard className="h-4 w-4" /> Billing
-          </TabsTrigger>
-          <TabsTrigger value="team" className="gap-2">
-            <Users className="h-4 w-4" /> Team
-          </TabsTrigger>
-        </TabsList>
+function NameRow({ name }: { name: string }) {
+  const field = useSettingField({
+    saved: name,
+    commitOn: "blur",
+    validate: (value) => (value.trim() ? null : "Enter your name."),
+    save: saveName,
+  })
+  return (
+    <SettingsRow label="Full name" htmlFor="profile-name" {...field.rowProps}>
+      <Input
+        id="profile-name"
+        value={field.draft}
+        autoComplete="name"
+        onChange={(event) => field.setDraft(event.target.value)}
+        onBlur={() => field.commit()}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") field.commit()
+          if (event.key === "Escape") field.revert()
+        }}
+      />
+    </SettingsRow>
+  )
+}
 
-        <TabsContent value="profile" className="mt-6 space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Profile Information</CardTitle>
-              <CardDescription>Update your name, email, and profile photo.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xl font-medium">
-                  U
-                </Avatar>
-                <Button variant="outline" size="sm">Change Photo</Button>
-              </div>
-              <Separator />
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
-                  <Input id="name" defaultValue="John Doe" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="settings-email">Email</Label>
-                  <Input id="settings-email" type="email" defaultValue="john@example.com" />
-                </div>
-              </div>
-              <Button>Save Changes</Button>
-            </CardContent>
-          </Card>
+function EmailRow({ email }: { email: string }) {
+  const [next, setNext] = useState("")
+  const [touched, setTouched] = useState(false)
+  const value = next.trim()
+  const problem = !value
+    ? null
+    : value.toLowerCase() === email.toLowerCase()
+      ? "This is already your email."
+      : emailProblem(value)
+  const shownProblem = touched || value.includes("@") ? problem : null
+  return (
+    <SettingsRow label="Email">
+      <div className="flex min-w-0 items-center gap-3">
+        <span className="min-w-0 text-sm text-foreground [overflow-wrap:anywhere]">{email}</span>
+        <ConfirmAction
+          trigger={
+            <Button type="button" variant="outline">
+              Change…
+            </Button>
+          }
+          onOpenChange={(open) => {
+            if (open) return
+            setNext("")
+            setTouched(false)
+          }}
+          title="Change your email?"
+          consequence="You sign in with the new address from now on, and account emails go there."
+          confirmLabel="Change email"
+          canConfirm={Boolean(value) && !problem}
+          onConfirm={() => changeEmail(value)}
+        >
+          <Field label="New email" htmlFor="profile-new-email" error={shownProblem}>
+            <Input
+              id="profile-new-email"
+              type="email"
+              autoComplete="email"
+              value={next}
+              aria-invalid={Boolean(shownProblem)}
+              aria-describedby={shownProblem ? fieldMessageId("profile-new-email") : undefined}
+              onChange={(event) => setNext(event.target.value)}
+              onBlur={() => setTouched(true)}
+            />
+          </Field>
+        </ConfirmAction>
+      </div>
+    </SettingsRow>
+  )
+}
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Notifications</CardTitle>
-              <CardDescription>Choose what you get notified about.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {[
-                { label: "Email notifications", description: "Receive emails about account activity", icon: Mail },
-                { label: "Security alerts", description: "Get notified about security events", icon: Shield },
-                { label: "Product updates", description: "Hear about new features and improvements", icon: Bell },
-              ].map((item) => (
-                <div key={item.label} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <item.icon className="h-4 w-4 text-muted-foreground" />
-                    <div>
-                      <p className="text-sm font-medium">{item.label}</p>
-                      <p className="text-xs text-muted-foreground">{item.description}</p>
-                    </div>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </TabsContent>
+function NotificationRow({ id, label, on }: { id: NotificationId; label: string; on: boolean }) {
+  const field = useSettingField({ saved: on, save: (next: boolean) => saveNotification(id, next) })
+  return (
+    <SettingsRow label={label} htmlFor={`notify-${id}`} layout="compact" {...field.rowProps}>
+      <Switch id={`notify-${id}`} checked={field.draft} onCheckedChange={field.setDraft} />
+    </SettingsRow>
+  )
+}
 
-        <TabsContent value="billing" className="mt-6 space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Current Plan</CardTitle>
-              <CardDescription>You are currently on the Pro plan.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between rounded-lg border p-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg font-bold">Pro Plan</span>
-                    <Badge>Current</Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground">$29/month · Billed monthly</p>
-                </div>
-                <Button variant="outline">Change Plan</Button>
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">Next billing date</p>
-                  <p className="text-sm text-muted-foreground">April 15, 2026</p>
-                </div>
-                <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
-                  Cancel Subscription
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="team" className="mt-6 space-y-6">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Team Members</CardTitle>
-                  <CardDescription>Manage who has access to this workspace.</CardDescription>
-                </div>
-                <Button size="sm">Invite Member</Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {teamMembers.map((member) => (
-                  <div key={member.email} className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-8 w-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-medium">
-                        {member.initials}
-                      </Avatar>
-                      <div>
-                        <p className="text-sm font-medium">{member.name}</p>
-                        <p className="text-xs text-muted-foreground">{member.email}</p>
-                      </div>
-                    </div>
-                    <Badge variant={member.role === "Owner" ? "default" : "secondary"}>
-                      {member.role}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
+export default function ProfileSettings() {
+  const { profile, notifications } = useSettings()
+  return (
+    <>
+      <SettingsSection id="profile" title="Profile">
+        <PhotoRow name={profile.name} photoUrl={profile.photoUrl} />
+        <NameRow name={profile.name} />
+        <EmailRow email={profile.email} />
+      </SettingsSection>
+      <SettingsSection id="notifications" title="Notifications" description={`Emails go to ${profile.email}.`}>
+        {NOTIFICATIONS.map((item) => (
+          <NotificationRow key={item.id} id={item.id} label={item.label} on={notifications[item.id]} />
+        ))}
+      </SettingsSection>
+    </>
   )
 }

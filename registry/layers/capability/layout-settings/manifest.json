@@ -1,6 +1,6 @@
 {
   "id": "layout-settings",
-  "description": "Pre-built settings page with tabbed navigation for profile, billing, and team management.",
+  "description": "Settings pages for profile, billing and team on the shared settings layout, one URL per section.",
   "appliesTo": [
     "nextjs-ts",
     "react-vite-ts",
@@ -9,8 +9,28 @@
   ],
   "files": [
     {
+      "source": "files/settings-layout.tsx",
+      "target": "app/settings/layout.tsx"
+    },
+    {
+      "source": "files/settings-nav.tsx",
+      "target": "app/settings/settings-nav.tsx"
+    },
+    {
+      "source": "files/settings-api.ts",
+      "target": "app/settings/settings-api.ts"
+    },
+    {
       "source": "files/settings-page.tsx",
       "target": "app/settings/page.tsx"
+    },
+    {
+      "source": "files/billing-page.tsx",
+      "target": "app/settings/billing/page.tsx"
+    },
+    {
+      "source": "files/team-page.tsx",
+      "target": "app/settings/team/page.tsx"
     }
   ],
   "keywords": [
@@ -30,16 +50,27 @@
       "/settings/team"
     ],
     "components": [
-      "SettingsPage",
-      "ProfileForm",
-      "BillingSection",
-      "TeamSection"
+      "SettingsLayout",
+      "ProfileSettings",
+      "BillingSettings",
+      "TeamSettings",
+      "MembersSection",
+      "InvitationsSection"
     ],
     "architectureNotes": [
-      "Settings page is pre-built with tabs for Profile, Billing, and Team.",
-      "Connect form submissions to your API or auth provider.",
-      "Billing tab shows plan info — connect to Stripe or your billing provider.",
-      "Team tab has member list and invite form — connect to your team management API."
+      "Settings compose @tangle-network/agent-app/settings-react. app/settings/layout.tsx draws the title and one link per section with SettingsLayout, and each section is its own route: /settings (Profile), /settings/billing and /settings/team.",
+      "Add a section as a folder under app/settings/ plus an entry in app/settings/settings-nav.tsx. Build its cards from SettingsSection and SettingsRow in @tangle-network/ui/primitives: label on the left, one control on the right.",
+      "Low-risk fields save on change or blur through useSettingField, and the row shows Saving, Saved or the refusal with Retry. Changes that cost money, remove something or change how a person signs in (plan, cancellation, email) go through ConfirmAction.",
+      "app/settings/settings-api.ts keeps the data in memory. Replace each write with your API call, wrapped in confirmSettingResponse(fetch(...), () => next), so a row says Saved only after the server confirms and shows the server's refusal message otherwise.",
+      "Team uses MembersSection and InvitationsSection with the teams MemberView and InvitationView shapes. ExportSection, DeleteWorkspaceSection and TimezonePicker come from the same entry when the app needs them."
     ]
+  },
+  "packageDeps": {
+    "dependencies": {
+      "@tangle-network/agent-app": "0.60.185",
+      "@tangle-network/ui": "11.40.0",
+      "@tangle-network/brand": "1.26.0",
+      "@tangle-network/sandbox-ui": "0.134.10"
+    }
   }
 }

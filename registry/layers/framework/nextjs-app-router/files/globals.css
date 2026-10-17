@@ -1,8 +1,10 @@
 @import "tailwindcss";
 
 @import "@tangle-network/brand/styles";
+@import "@tangle-network/ui/styles/presentation.css";
 @source "../node_modules/@tangle-network/ui/dist";
 @source "../node_modules/@tangle-network/sandbox-ui/dist";
+@source "../node_modules/@tangle-network/agent-app/dist";
 
 @layer base {
   * {

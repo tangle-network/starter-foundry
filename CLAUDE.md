@@ -10,7 +10,7 @@ Everything in `package.json` `exports` is public — consumer code can `import` 
 2. Update the boundary contract in `tests/public-api-boundary.test.ts`
 3. Document the API stability commitment in the function/type's JSDoc
 
-Removing or renaming a public export is a breaking change; bump major version. The boundary test catches accidental surface drift in CI.
+Removing or renaming a public export is a breaking change; bump major version. The boundary contract checks accidental surface drift during local and package publication qualification. Local commands are owned by README.md#development.
 
 `src/lib/index.ts` is the main public barrel — every export there must trace back to either an `exports` entry or a convenience re-export from one.
 

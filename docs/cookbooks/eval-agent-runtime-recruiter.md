@@ -131,30 +131,13 @@ LLM judge you author — it is the no-fake-success contract from
 `docs/DESIGN-INVARIANTS.md` and the muffled-gate measurement-layer rule
 in `.evolve/patterns/muffled-gate.md`.
 
-## Step 4 — Wire CI
+## Step 4 — Run an explicit experiment
 
-Add a top-level workflow at `.github/workflows/eval-<bundle-slug>.yml`.
-The canonical example for the recruiter bundle is
-[`.github/workflows/eval-recruiter.yml`](../../.github/workflows/eval-recruiter.yml) —
-copy and adapt:
-
-- **Triggers**: PR (paths-filtered to the bundle + the eval layer + the
-  example workspace), `workflow_dispatch`, push to main.
-  Deliberately **no cron** — an unattended scheduled run spends model
-  money with nobody reading the result. Run `workflow_dispatch` when you
-  want a drift check.
-- **Gating**: the live eval step is gated on the `TANGLE_API_KEY`
-  repo secret. When absent, the workflow logs a warning and exits 0 —
-  it does **not** fail PRs.
-- **Artifact**: `eval/.evolve/scorecard.json` uploaded.
-- **On main push**: scorecard committed under `.evolve/eval-runs/<bundle>/<date>.json`,
-  then `pnpm exec tsx scripts/refresh-scorecard.ts` re-emits the
-  repo-level `.evolve/scorecard.json` so the `agent_eval_meta_pass_rate`
-  flow updates.
+The recruiter bundle's maintained example is [`.github/workflows/eval-recruiter.yml`](../../.github/workflows/eval-recruiter.yml). It is `workflow_dispatch` only, with no PR/push verification and deliberately no paid cron. The live step requires the `TANGLE_CI_ROUTER_KEY` repository secret and `RECRUITER_EVAL_TARGET_URL` repository variable; absence leaves measurement unmeasured. A measured manual experiment uploads `recruiter-eval-scorecard` from the example workspace. The old push-only scorecard refresh does not run on dispatch; this trigger change grants no new repository-write authority. Code qualification belongs to the [admitted local gate](../../README.md#development).
 
 ## Expected output
 
-When `pnpm eval` runs (locally or in CI), the harness writes to
+When `pnpm eval` runs in an explicit experiment, the harness writes to
 `examples/recruiter-eval-workspace/.evolve/scorecard.json`:
 
 ```json

@@ -174,20 +174,8 @@ The script appends canonical RunRecords tagged `dev`, with `terminalOutcome: 'un
 The `dev` tag prevents historical rows from entering search-versus-holdout promotion decisions.
 The migration is idempotent: reruns deduplicate by content hash.
 
-## CI invariants
+## Local qualification and profile decisions
 
-The five CI checks (all gated in `.github/workflows/ci.yml` or dedicated
-workflows):
+The canonical [admitted local gate](../../README.md#development) includes bare-alias, profile-coherence and cost-ceiling qualification before tests. The implementations remain `scripts/check-bare-alias.ts`, `scripts/check-profile-coherence.ts`, and `scripts/check-run-cost-ceiling.ts`.
 
-1. **Bare-alias scan** — `scripts/check-bare-alias.ts` — every RunRecord
-   must carry a pinned model.
-2. **Profile coherence** — `scripts/check-profile-coherence.ts` — every
-   profile's `logicalModel` resolves in the lock (or the lock is empty).
-3. **Cost ceiling** — `scripts/check-run-cost-ceiling.ts` — no record's
-   `costUsd` exceeds its role's profile ceiling.
-4. **Snapshot freshness** — `pnpm refresh-snapshots --check` (local) —
-   warns at 30d, fails past deprecation.
-5. **Gate-on-profile-change** —
-   `.github/workflows/gate-on-profile-change.yml` — any PR touching
-   `.evolve/profiles/` requires either a `gate-decision` check
-   (conclusion=success) or a `bypass-gate` PR label with a reason.
+Snapshot freshness is checked explicitly with `pnpm refresh-snapshots --check` inside an admitted gate when changing model snapshots. Profile changes use the held-out comparison and `pnpm gate baseline.jsonl candidate.jsonl` described above; retain the measured decision with the change. No PR status or bypass label substitutes for the product decision evidence.

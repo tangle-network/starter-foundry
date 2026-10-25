@@ -527,12 +527,6 @@ test('CI workflow YAML parses + has triggers + gates on TANGLE_API_KEY (audit B4
   }
   assert.equal(parsed.name, 'eval-recruiter')
   assert.ok(parsed.on, 'top-level `on:` must exist')
-  assert.ok(parsed.on?.pull_request, 'pull_request trigger required')
-  assert.ok(
-    Array.isArray(parsed.on?.pull_request?.paths) &&
-      parsed.on!.pull_request!.paths!.includes('examples/recruiter-eval-workspace/**'),
-    'pull_request paths must include the recruiter workspace',
-  )
   assert.ok('workflow_dispatch' in (parsed.on ?? {}))
   // No cron, deliberately. The live eval step spends model money through
   // TANGLE_CI_ROUTER_KEY; on a schedule it bills every day with nobody
@@ -540,7 +534,6 @@ test('CI workflow YAML parses + has triggers + gates on TANGLE_API_KEY (audit B4
   // asserts the absence so a re-added cron fails here rather than on the
   // invoice.
   assert.equal(parsed.on?.schedule, undefined, 'workflow must NOT declare a paid cron')
-  assert.deepEqual(parsed.on?.push?.branches, ['main'])
 
   // Permissions
   assert.equal(parsed.permissions?.contents, 'write')

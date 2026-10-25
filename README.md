@@ -96,6 +96,16 @@ npx @tangle-network/starter-foundry select --prompt "..."   # what a prompt rout
 - `docs/cookbooks/` — end-to-end recipes
 - `docs/reference/` — family and capability reference
 
+## Development
+
+Use the admitted local gate for the full candidate SHA; it owns the frozen pnpm install. Rust/Cargo and Foundry must be provisioned on the Beelink for scaffold integration tests (`scripts/check-toolchain.ts` names their consumers). Build precedes the tests.
+
+```sh
+beelink-gate auto https://github.com/tangle-network/starter-foundry.git <full-sha> -- bash -lc 'pnpm verify && pnpm validate:registry && pnpm build && pnpm check:bare-alias && pnpm check:profile-coherence && pnpm check:cost-ceiling && pnpm test'
+```
+
+For router changes, run the existing deterministic `scripts/meta-harness-eval.ts` baseline inside the admitted gate without `--brief` or `--rewriter`, and retain its JSONL report outside the checkout. Registry changes retain the existing measurement-delta commands as local diagnostics. Profile decisions use the held-out comparison described in [Run records and gates](docs/cookbooks/run-records-and-gates.md), without a PR status or bypass-label requirement. Live recruiter evaluation remains an explicit manual experiment; see its [cookbook](docs/cookbooks/eval-agent-runtime-recruiter.md). Tagged/manual publication retains its own build, tests and package qualification.
+
 ## License
 
 Licensed under either of **MIT** ([LICENSE-MIT](./LICENSE-MIT)) or **Apache-2.0** ([LICENSE-APACHE](./LICENSE-APACHE)) at your option.

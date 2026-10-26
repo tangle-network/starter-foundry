@@ -9,7 +9,7 @@ overrides:
   postcss: 8.5.31
   '@tiptap/core': 3.32.0
   '@tiptap/pm': 3.32.0
-  zod@<4.6.6: 4.6.7
+  zod@>=4.0.0 <4.6.6: 4.6.7
 
 importers:
 

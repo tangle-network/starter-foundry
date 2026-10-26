@@ -12,5 +12,5 @@ overrides:
   'knip>unbash': 4.0.3
   'onnxruntime-node>adm-zip': 0.6.1
   'viem': 2.55.8
-  'zod@<4.6.6': 4.6.7
+  'zod@>=4.0.0 <4.6.6': 4.6.7
   'brace-expansion@>=5 <5.0.12': 5.0.12

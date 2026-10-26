@@ -6,9 +6,11 @@ minimumReleaseAgeExclude:
   - '@tangle-network/sandbox@0.15.2'
 overrides:
   hono: '4.12.34'
-  '@huggingface/transformers>sharp': 0.35.3
+  '@huggingface/transformers>sharp': 0.35.5
   '@tangle-network/agent-eval>@hono/node-server': 2.0.11
-  'knip>smol-toml': 1.7.0
+  'knip>smol-toml': 1.9.1
   'knip>unbash': 4.0.3
-  'onnxruntime-node>adm-zip': 0.6.0
+  'onnxruntime-node>adm-zip': 0.6.1
   'viem': 2.55.8
+  'zod@>=4.0.0 <4.6.6': 4.6.7
+  'brace-expansion@>=5 <5.0.12': 5.0.12

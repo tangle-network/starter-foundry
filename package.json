@@ -1,6 +1,6 @@
 {
   "name": "@tangle-network/starter-foundry",
-  "version": "0.13.6",
+  "version": "0.13.7",
   "description": "Deterministic project scaffold engine for AI coding platforms",
   "type": "module",
   "license": "MIT OR Apache-2.0",
@@ -133,6 +133,7 @@
     "@eslint/js": "^10.0.1",
     "@huggingface/transformers": "^4.0.0",
     "@tangle-network/agent-eval": "0.135.1",
+    "@tangle-network/tcloud-agent": "^0.3.0",
     "@types/node": "^20.0.0",
     "eslint": "^10.2.1",
     "eslint-config-prettier": "^10.1.8",
@@ -149,11 +150,10 @@
   },
   "dependencies": {
     "@ax-llm/ax": "^19.0.45",
-    "@tangle-network/tcloud": "^0.4.2"
+    "@tangle-network/tcloud": "^0.8.6"
   },
   "optionalDependencies": {
-    "@opentelemetry/api": "^1.9.0",
-    "@tangle-network/tcloud-agent": "^0.3.0"
+    "@opentelemetry/api": "^1.9.0"
   },
   "peerDependencies": {
     "@huggingface/transformers": "^4.0.0"

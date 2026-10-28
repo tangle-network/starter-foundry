@@ -14,11 +14,6 @@ name: Release
 on:
   push:
     tags:
-      - name: Admit the release version
-        uses: tangle-network/agent-runtime/.github/actions/admit-release@76b8de28191e31f0c1301a3621bab2188f8695e7
-        with:
-          directories: .
-
       - 'v*'
   workflow_dispatch:
     inputs:

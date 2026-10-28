@@ -23,8 +23,8 @@ importers:
         specifier: ^19.0.45
         version: 19.0.45(zod@4.6.7)
       '@tangle-network/tcloud':
-        specifier: ^0.8.6
-        version: 0.8.6(typescript@5.9.3)(zod@4.6.7)
+        specifier: ^1.0.0
+        version: 1.0.0(typescript@5.9.3)(zod@4.6.7)
     devDependencies:
       '@eslint/js':
         specifier: ^10.0.1
@@ -934,8 +934,8 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  '@tangle-network/tcloud@0.8.6':
-    resolution: {integrity: sha512-H3BAAi+Pw6rW64J5iU9m5M/zpWLNX04F4zUHqs2YYRmY/YSq1yAQXnvyzeWItFTmu5eojWnjBOEhQTX3EmwYig==}
+  '@tangle-network/tcloud@1.0.0':
+    resolution: {integrity: sha512-VjIEVpax7z755LABdtKdyWkT/AwGRRIsXjAOLek5thEMb96w8F0aHrBug60kS2aPe65VVc3i/5pZY9vwAulmCg==}
     engines: {node: '>=22.12.0'}
     hasBin: true
 
@@ -2878,7 +2878,7 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@tangle-network/tcloud@0.8.6(typescript@5.9.3)(zod@4.6.7)':
+  '@tangle-network/tcloud@1.0.0(typescript@5.9.3)(zod@4.6.7)':
     dependencies:
       '@tangle-network/sandbox': 1.0.15(viem@2.55.8(typescript@5.9.3)(zod@4.6.7))
       '@tangle-network/tcloud-attestation': 0.1.1

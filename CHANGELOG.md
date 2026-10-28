@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.0.0
+
+- First stable release, the same code as 0.13.7, on `@tangle-network/tcloud` ^1.0.0 (tcloud graduated to 1.0.0 with no code change). Later compatible changes ship as patch releases.
+
 ## v0.12.0 (2026-05-13, @ 009c1f3)
 
 **Generated range:** `v0.11.0..HEAD`

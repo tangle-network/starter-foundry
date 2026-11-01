@@ -73,7 +73,7 @@ function quote(s: string): string {
 export function DeployFlow({ bundle, bundlePathHint }: Props) {
   const [form, setForm] = useState<DeployForm>(INITIAL_FORM)
   const bundlePath = bundlePathHint ?? `registry/families/${bundle.id}`
-  const mintCmd = `tangle-admin create-key --product sandbox --label ${bundle.id}-deploy`
+  const mintCmd = `tangle-ops create-key ${bundle.id}-deploy --product sandbox`
   const deployCmd = buildCommand(bundle, bundlePath, form)
   const exportCmd = `export ${form.apiKeyEnv}=sk-tan-...   # paste the minted key`
 

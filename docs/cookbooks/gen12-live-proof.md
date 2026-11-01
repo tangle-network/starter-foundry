@@ -99,7 +99,7 @@ Operator/SRE side, not code:
 
 ```sh
 # 1. Mint the sandbox-scoped key (one-time)
-~/company/devops/scripts/tangle-admin create-key "starter-foundry deploy" --product sandbox
+tangle-ops create-key "starter-foundry deploy" --product sandbox
 # saves to stdout — paste into TANGLE_SANDBOX_API_KEY
 
 # 2. Deploy the example bundle

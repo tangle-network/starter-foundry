@@ -66,7 +66,7 @@ test('generated full-stack templates declare and build both browser and server e
     assert.match(pkg.scripts.build, /tsconfig\.server\.json/)
     assert.equal(pkg.scripts.start, 'node server-dist/index.js')
     assert.equal(pkg.dependencies['@tangle-network/sandbox'], '0.15.2')
-    assert.ok(pkg.dependencies[@hono/node-server])
+    assert.ok(pkg.dependencies['@hono/node-server'])
     assert.ok(pkg.dependencies.hono)
     assert.ok(pkg.devDependencies['@types/node'])
 

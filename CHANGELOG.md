@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.0.1
+
+- Template refresh under `registry/`: the `sandbox-app-ts` family bumps `@hono/node-server` to 2.1.3 (#218), and the `agent-marketplace-ui-ts` DeployFlow mint command names the `tangle-ops` operator CLI (#217). The release workflow now admits the release version before publishing (#216).
+
 ## 1.0.0
 
 - First stable release, the same code as 0.13.7, on `@tangle-network/tcloud` ^1.0.0 (tcloud graduated to 1.0.0 with no code change). Later compatible changes ship as patch releases.

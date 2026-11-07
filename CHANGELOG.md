@@ -1,8 +1,8 @@
 # CHANGELOG
 
-## 1.0.1
+## 1.0.2
 
-- Template refresh under `registry/`: the `sandbox-app-ts` family bumps `@hono/node-server` to 2.1.3 (#218), and the `agent-marketplace-ui-ts` DeployFlow mint command names the `tangle-ops` operator CLI (#217). The release workflow now admits the release version before publishing (#216).
+- Tag v1.0.1 failed its test step on a stale pin and published nothing; this is the first publication since 1.0.0. Template refresh under `registry/`: the `sandbox-app-ts` family bumps `@hono/node-server` to 2.1.3 (#218), and the `agent-marketplace-ui-ts` DeployFlow mint command names the `tangle-ops` operator CLI (#217). The release workflow now admits the release version before publishing (#216).
 
 ## 1.0.0
 

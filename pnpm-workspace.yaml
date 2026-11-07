@@ -1,3 +1,6 @@
+packages:
+  - .
+
 minimumReleaseAge: 4320
 minimumReleaseAgeExclude:
   # First-party releases are consumed by this fleet as they are cut; the

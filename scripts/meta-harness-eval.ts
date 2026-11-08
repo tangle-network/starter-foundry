@@ -33,19 +33,6 @@ const configLabel = arg('--label', useBrief ? 'brief' : useRewriter ? 'rewriter'
 const plannerMod = await import(resolve(plannerPath))
 const planPrompt = plannerMod.planPrompt
 
-// Optional brief loader for multi-pursue variants. When provided, the loader
-// module must export `installLoader({ optimizedPath })` which replaces the
-// default brief agent via product-brief's __setTestBrief hook.
-const briefLoaderPath = arg('--brief-loader', null)
-const briefOptimizedPath = process.env.STARTER_FOUNDRY_BRIEF_OPTIMIZED
-if (briefLoaderPath) {
-  const loader = await import(resolve(briefLoaderPath))
-  if (typeof loader.installLoader !== 'function') {
-    console.error(`brief loader ${briefLoaderPath} does not export installLoader`)
-    process.exit(3)
-  }
-  await loader.installLoader({ optimizedPath: briefOptimizedPath })
-}
 if (typeof planPrompt !== 'function') {
   console.error('planner module does not export planPrompt:', plannerPath)
   process.exit(2)
